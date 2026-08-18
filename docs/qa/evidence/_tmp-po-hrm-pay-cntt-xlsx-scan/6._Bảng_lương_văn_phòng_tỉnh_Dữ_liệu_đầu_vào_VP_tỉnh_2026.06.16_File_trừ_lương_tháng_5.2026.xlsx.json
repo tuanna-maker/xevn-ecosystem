@@ -1,0 +1,191 @@
+{
+  "sheets": [
+    {
+      "name": "Sheet1",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "BẢNG TRỪ LƯƠNG THÁNG 05/2026"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "STT",
+            "Ngày",
+            "h",
+            "Lộ trình",
+            "Tên lái",
+            "BKS",
+            "Nhân viên bị trừ lương",
+            "Bộ Phận",
+            "Trừ lương",
+            "Lý do",
+            "Mã nv trừ lương"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "=SUBTOTAL(3,$B$3:B3)",
+            "2026-05-01 00:00:00",
+            "17:00",
+            "BC - NB",
+            "Lê Hữu Bích",
+            "29H73719",
+            "Phạm Thu Hà",
+            "Nhân viên tổng đài",
+            "20000",
+            "cầu huyện 200k trừ phạm thu hà+phạm thị ngọc bích",
+            "XE00420"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=SUBTOTAL(3,$B$3:B4)",
+            "2026-05-01 00:00:00",
+            "17:00",
+            "BC - NB",
+            "Lê Hữu Bích",
+            "29H73719",
+            "Phạm Thị Ngọc Bích",
+            "Nhân viên tổng đài",
+            "20000",
+            "cầu huyện 200k trừ phạm thu hà+phạm thị ngọc bích",
+            "XE01362"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=SUBTOTAL(3,$B$3:B5)",
+            "2026-05-01 00:00:00",
+            "18:20:00",
+            "HĐ - NB",
+            "Trần Thanh An",
+            "29E32327",
+            "Lương Thị Ánh Huyền",
+            "Nhân viên tổng đài",
+            "20000",
+            "Sai giá, Ninh vân 200k trừ TĐ Lương Thị Ánh Huyền",
+            "XE01436"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=SUBTOTAL(3,$B$3:B6)",
+            "2026-05-02 00:00:00",
+            "06:00",
+            "HĐ - NB",
+            "Lê Trọng Giáp",
+            "29E32490",
+            "Đỗ Thị Hoa",
+            "Nhân viên tổng đài",
+            "40000",
+            "thôn nội 200k trừ tđ đỗ thị hoa",
+            "XE00126"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=SUBTOTAL(3,$B$3:B7)",
+            "2026-05-03 00:00:00",
+            "06:00",
+            "BC - NB",
+            "Nguyễn Xuân Thắng",
+            "29F02625",
+            "Nguyễn Thị Minh Ngọc",
+            "Nhân viên tổng đài",
+            "200000",
+            "(trừ theo sự vu 3/5 TĐ Nguyễn thị Minh Ngọc",
+            "XE01452"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=SUBTOTAL(3,$B$3:B8)",
+            "2026-05-03 00:00:00",
+            "11:00",
+            "NB - GA",
+            "Phạm Thanh Tùng",
+            "29F01796",
+            "Trần Thị Mai Hương",
+            "Nhân viên tổng đài",
+            "20000",
+            "trường yên 210k trừ trần thị mai hương",
+            "XE00348"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=SUBTOTAL(3,$B$3:B9)",
+            "2026-05-03 00:00:00",
+            "10:00",
+            "NB - BC",
+            "Hoàng Ngọc Cường",
+            "29G02338",
+            "Nguyễn Thị Thúy Liễu",
+            "Nhân viên tổng đài",
+            "20000",
+            "cầu áng sơn 200k trừ nguyễn thị thuý liễu",
+            "XE00081"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=SUBTOTAL(3,$B$3:B10)",
+            "2026-05-04 00:00:00",
+            "14:00",
+            "NB - GA",
+            "Trần Đức Toản",
+            "29E09614",
+            "Cao Ngọc Thuý",
+            "Nhân viên tổng đài",
+            "20000",
+            "bệnh viện c.an tỉnh 200k trừ cao ngọc thuý",
+            "XE00219"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=SUBTOTAL(3,$B$3:B11)",
+            "2026-05-06 00:00:00",
+            "16:00",
+            "NB - GA",
+            "Nguyễn Ngọc Trường",
+            "29K07658",
+            "Lương Thị Ánh Huyền",
+            "Nhân viên tổng đài",
+            "40000",
+            "cầu bình khê 200k trừ lương thị ánh huyền",
+            "XE01436"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=SUBTOTAL(3,$B$3:B12)",
+            "2026-05-08 00:00:00",
+            "12:00",
+            "BC - NB",
+            "Nguyễn Thành Đạt",
+            "29K06830",
+            "Lường Thị Mỹ Linh",
+            "Nhân viên tổng đài",
+            "7500",
+            "nhà máy nhôm việt pháp 190k trừ lường thị mỹ linh +nguyễn lan anh",
+            "XE00579"
+          ]
+        }
+      ]
+    }
+  ]
+}

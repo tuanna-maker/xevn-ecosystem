@@ -1,0 +1,302 @@
+{
+  "work_item_id": "PO-UC-TC-W4-QA-E4-CI01-R4",
+  "uc_id": "HRM-CI-01",
+  "startedAt": "2026-08-04T03:17:56.849Z",
+  "endedAt": "2026-08-04T03:17:56.849Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "seed_used": false,
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "RUN": "W4E4R4-37Y3B",
+    "contractStamp": "HD-388XZ",
+    "apiContractCode": "HD-388XZ",
+    "surface": "iframe",
+    "pageUrlFinal": "http://127.0.0.1:5173/command-center/hrm/contracts"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "verdict": "PASS",
+  "createOk": true,
+  "stampOnList": true,
+  "formReady": true,
+  "surface": "iframe",
+  "dialogProbe": {
+    "parentVisible": true,
+    "latchVisible": true,
+    "latchCount": 1,
+    "iframeDlgCount": 0,
+    "open": true
+  },
+  "posts": [
+    {
+      "phase": "response",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "at": "2026-08-04T03:17:49.818Z",
+      "code": "HRM-CON-201",
+      "message": "Contract created",
+      "id": "04191837-2624-46bf-aa52-ced64e1671df",
+      "contract_code": "HD-388XZ"
+    }
+  ],
+  "steps": {
+    "LOGIN": {
+      "verdict": "PASS",
+      "summary": "login=null:,201:XBOS-AUTH-200 url=http://127.0.0.1:5173/command-center",
+      "at": "2026-08-04T03:17:36.651Z"
+    },
+    "OPEN_LIST": {
+      "verdict": "PASS",
+      "summary": "listOk=true chrome=true gets=1 codes=HRM-CON-200 page=http://127.0.0.1:5173/command-center/hrm/contracts iframe=http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main&_v=1785813457651",
+      "at": "2026-08-04T03:17:45.620Z"
+    },
+    "OPEN_DIALOG_IFRAME": {
+      "verdict": "PASS",
+      "summary": "parentDlg=true latch=true latchCount=1 iframeDlgCount=0 parentFormOrDlg=true (TECHSPEC §4.1 parent portal — iframe miss alone ≠ FAIL)",
+      "at": "2026-08-04T03:17:47.062Z"
+    },
+    "FORM_READY": {
+      "verdict": "PASS",
+      "summary": "formReady=true code=HD-388XZ surface=iframe page=http://127.0.0.1:5173/command-center/hrm/contracts",
+      "at": "2026-08-04T03:17:48.646Z"
+    },
+    "MAIN_SAVE": {
+      "verdict": "PASS",
+      "summary": "createOk=true posts=201:HRM-CON-201:HD-388XZ toast=[] tabBefore=Tất cả đơn vị (rollup) tabAfter=Tất cả đơn vị (rollup) toastOk=false",
+      "at": "2026-08-04T03:17:51.851Z"
+    },
+    "FE_F5": {
+      "verdict": "PASS",
+      "summary": "stampOnList=true searchCode=HD-388XZ apiContractCode=HD-388XZ contractStamp=HD-388XZ",
+      "at": "2026-08-04T03:17:56.849Z"
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-04T03:17:33.143Z",
+      "msg": "LOGIN_CEO_UI"
+    },
+    {
+      "at": "2026-08-04T03:17:39.690Z",
+      "msg": "MENU_CLICK_HOP_DONG"
+    },
+    {
+      "at": "2026-08-04T03:17:45.502Z",
+      "msg": "HRM_SCOPE",
+      "note": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main&_v=1785813457651"
+    },
+    {
+      "at": "2026-08-04T03:17:45.765Z",
+      "msg": "CLICK_THEM_HOP_DONG_IFRAME"
+    },
+    {
+      "at": "2026-08-04T03:17:48.651Z",
+      "msg": "CLICK_LUU",
+      "note": "disabled=false formReady=true"
+    }
+  ],
+  "network": [
+    {
+      "phase": "request",
+      "method": "POST",
+      "status": null,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-04T03:17:33.142Z"
+    },
+    {
+      "phase": "response",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-04T03:17:33.186Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Đăng nhập thành công",
+      "id": null
+    },
+    {
+      "phase": "request",
+      "method": "GET",
+      "status": null,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-04T03:17:38.387Z"
+    },
+    {
+      "phase": "request",
+      "method": "GET",
+      "status": null,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-04T03:17:38.387Z"
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-04T03:17:38.426Z",
+      "code": "HRM-EMP-200",
+      "message": "Employees listed",
+      "id": null
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-04T03:17:38.625Z",
+      "code": "HRM-EMP-SUMMARY-200",
+      "message": "Employee summary loaded",
+      "id": null
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T03:17:38.640Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview",
+      "id": null
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T03:17:38.822Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview",
+      "id": null
+    },
+    {
+      "phase": "request",
+      "method": "GET",
+      "status": null,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T03:17:39.877Z"
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T03:17:40.082Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "id": null
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T03:17:40.149Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview",
+      "id": null
+    },
+    {
+      "phase": "request",
+      "method": "GET",
+      "status": null,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T03:17:45.726Z"
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T03:17:45.764Z",
+      "code": "HRM-EMP-200",
+      "message": "Employees listed",
+      "id": null
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T03:17:46.038Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview",
+      "id": null
+    },
+    {
+      "phase": "request",
+      "method": "POST",
+      "status": null,
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "at": "2026-08-04T03:17:48.716Z"
+    },
+    {
+      "phase": "request",
+      "method": "GET",
+      "status": null,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T03:17:49.819Z"
+    },
+    {
+      "phase": "response",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "at": "2026-08-04T03:17:49.818Z",
+      "code": "HRM-CON-201",
+      "message": "Contract created",
+      "id": "04191837-2624-46bf-aa52-ced64e1671df",
+      "contract_code": "HD-388XZ"
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T03:17:50.035Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "id": null
+    },
+    {
+      "phase": "request",
+      "method": "GET",
+      "status": null,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T03:17:53.189Z"
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T03:17:53.388Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "id": null
+    },
+    {
+      "phase": "response",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T03:17:53.429Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview",
+      "id": null
+    }
+  ],
+  "consoleErrors": [],
+  "residuals": [],
+  "screens": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e4-ci01-r4",
+  "ack_status": "PASS_TO_PM",
+  "uat_done": false,
+  "phase1_done_claimed": false,
+  "no_hr_fallback": true
+}

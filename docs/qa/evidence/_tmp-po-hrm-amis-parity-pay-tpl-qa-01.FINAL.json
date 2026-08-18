@@ -1,0 +1,707 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-TPL-QA-01",
+  "stamp": "PAYTPLQA-MSIGIKB1",
+  "lane": "L1_API_smoke_only",
+  "u65": "zero-seed · probe ≠ UF · cấm claim payroll_e2e_ready · cấm treat pack as mẫu",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "browser_uf": false,
+    "module_uat": false,
+    "pack_is_not_mau": true
+  },
+  "account": "ceo@xe.vn",
+  "company_id": "main",
+  "steps": [
+    {
+      "name": "L0_hrm_health",
+      "status": 200,
+      "ok": true,
+      "note": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"t"
+    },
+    {
+      "name": "stale_dist_probe_unauth",
+      "status": 401,
+      "ok": true,
+      "note": "route present (401)",
+      "body": "{\"success\":false,\"code\":\"HRM-AUTH-001\",\"message\":\"Unauthorized payroll access\",\"timestamp\":\"2026-08-07T04:40:46.718Z\"}"
+    },
+    {
+      "name": "login",
+      "status": 201,
+      "ok": true,
+      "sub": "ceo@xe.vn",
+      "note": "Bearer ok"
+    },
+    {
+      "name": "list_templates_before",
+      "method": "GET",
+      "path": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "status": 200,
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed",
+      "dataSummary": "{\"items\":[]}",
+      "data": {
+        "items": []
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-200",
+        "message": "Pay sheet templates listed",
+        "data": {
+          "items": []
+        },
+        "timestamp": "2026-08-07T04:40:46.930Z"
+      },
+      "count": 0
+    },
+    {
+      "name": "create_template",
+      "method": "POST",
+      "path": "/api/hrm/payroll/pay-sheet-templates",
+      "status": 201,
+      "code": "qa_sheet_msigikb1",
+      "message": "Pay sheet template created",
+      "dataSummary": "{\"id\":\"e23e72eb-da3b-4bea-b9b0-adf10f7274a3\",\"companyId\":\"holding\",\"code\":\"qa_sheet_msigikb1\",\"name\":\"QA mẫu bảng lương PAYTPLQA-MSIGIKB1\",\"description\":\"L1 smoke AMIS mẫu — not pack\",\"status\":\"draft\",\"isDefault\":false,\"applicabilityScope\":\"company\",\"ouId\":null,\"positionKey\":null,\"employeeId\":null,\"archivedAt\":null,\"createdBy\":\"ceo@xe.vn\",\"updatedBy\":\"ceo@xe.vn\",\"createdAt\":\"2026-08-07 04:40:57.558031+00\",\"updatedAt\":\"2026-08-07 04:40:57.558031+00\"}",
+      "data": {
+        "id": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+        "companyId": "holding",
+        "code": "qa_sheet_msigikb1",
+        "name": "QA mẫu bảng lương PAYTPLQA-MSIGIKB1",
+        "description": "L1 smoke AMIS mẫu — not pack",
+        "status": "draft",
+        "isDefault": false,
+        "applicabilityScope": "company",
+        "ouId": null,
+        "positionKey": null,
+        "employeeId": null,
+        "archivedAt": null,
+        "createdBy": "ceo@xe.vn",
+        "updatedBy": "ceo@xe.vn",
+        "createdAt": "2026-08-07 04:40:57.558031+00",
+        "updatedAt": "2026-08-07 04:40:57.558031+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-201",
+        "message": "Pay sheet template created",
+        "data": {
+          "id": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+          "companyId": "holding",
+          "code": "qa_sheet_msigikb1",
+          "name": "QA mẫu bảng lương PAYTPLQA-MSIGIKB1",
+          "description": "L1 smoke AMIS mẫu — not pack",
+          "status": "draft",
+          "isDefault": false,
+          "applicabilityScope": "company",
+          "ouId": null,
+          "positionKey": null,
+          "employeeId": null,
+          "archivedAt": null,
+          "createdBy": "ceo@xe.vn",
+          "updatedBy": "ceo@xe.vn",
+          "createdAt": "2026-08-07 04:40:57.558031+00",
+          "updatedAt": "2026-08-07 04:40:57.558031+00"
+        },
+        "timestamp": "2026-08-07T04:40:47.013Z"
+      },
+      "createdId": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+      "persistCompany": "holding"
+    },
+    {
+      "name": "get_by_id_main",
+      "method": "GET",
+      "path": "/api/hrm/payroll/pay-sheet-templates/e23e72eb-da3b-4bea-b9b0-adf10f7274a3?company_id=main",
+      "status": 200,
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template loaded",
+      "dataSummary": "{\"id\":\"e23e72eb-da3b-4bea-b9b0-adf10f7274a3\",\"companyId\":\"holding\",\"code\":\"qa_sheet_msigikb1\",\"name\":\"QA mẫu bảng lương PAYTPLQA-MSIGIKB1\",\"description\":\"L1 smoke AMIS mẫu — not pack\",\"status\":\"draft\",\"isDefault\":false,\"applicabilityScope\":\"company\",\"ouId\":null,\"positionKey\":null,\"employeeId\":null,\"archivedAt\":null,\"createdBy\":\"ceo@xe.vn\",\"updatedBy\":\"ceo@xe.vn\",\"createdAt\":\"2026-08-07 04:40:57.558031+00\",\"updatedAt\":\"2026-08-07 04:40:57.558031+00\"}",
+      "data": {
+        "id": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+        "companyId": "holding",
+        "code": "qa_sheet_msigikb1",
+        "name": "QA mẫu bảng lương PAYTPLQA-MSIGIKB1",
+        "description": "L1 smoke AMIS mẫu — not pack",
+        "status": "draft",
+        "isDefault": false,
+        "applicabilityScope": "company",
+        "ouId": null,
+        "positionKey": null,
+        "employeeId": null,
+        "archivedAt": null,
+        "createdBy": "ceo@xe.vn",
+        "updatedBy": "ceo@xe.vn",
+        "createdAt": "2026-08-07 04:40:57.558031+00",
+        "updatedAt": "2026-08-07 04:40:57.558031+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-200",
+        "message": "Pay sheet template loaded",
+        "data": {
+          "id": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+          "companyId": "holding",
+          "code": "qa_sheet_msigikb1",
+          "name": "QA mẫu bảng lương PAYTPLQA-MSIGIKB1",
+          "description": "L1 smoke AMIS mẫu — not pack",
+          "status": "draft",
+          "isDefault": false,
+          "applicabilityScope": "company",
+          "ouId": null,
+          "positionKey": null,
+          "employeeId": null,
+          "archivedAt": null,
+          "createdBy": "ceo@xe.vn",
+          "updatedBy": "ceo@xe.vn",
+          "createdAt": "2026-08-07 04:40:57.558031+00",
+          "updatedAt": "2026-08-07 04:40:57.558031+00"
+        },
+        "timestamp": "2026-08-07T04:40:47.105Z"
+      }
+    },
+    {
+      "name": "patch_activate",
+      "method": "PATCH",
+      "path": "/api/hrm/payroll/pay-sheet-templates/e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+      "status": 200,
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template updated",
+      "dataSummary": "{\"id\":\"e23e72eb-da3b-4bea-b9b0-adf10f7274a3\",\"companyId\":\"holding\",\"code\":\"qa_sheet_msigikb1\",\"name\":\"QA mẫu bảng lương PAYTPLQA-MSIGIKB1 (patched)\",\"description\":\"L1 smoke AMIS mẫu — not pack\",\"status\":\"active\",\"isDefault\":false,\"applicabilityScope\":\"company\",\"ouId\":null,\"positionKey\":null,\"employeeId\":null,\"archivedAt\":null,\"createdBy\":\"ceo@xe.vn\",\"updatedBy\":\"ceo@xe.vn\",\"createdAt\":\"2026-08-07 04:40:57.558031+00\",\"updatedAt\":\"2026-08-07 04:40:57.767652+00\"}",
+      "data": {
+        "id": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+        "companyId": "holding",
+        "code": "qa_sheet_msigikb1",
+        "name": "QA mẫu bảng lương PAYTPLQA-MSIGIKB1 (patched)",
+        "description": "L1 smoke AMIS mẫu — not pack",
+        "status": "active",
+        "isDefault": false,
+        "applicabilityScope": "company",
+        "ouId": null,
+        "positionKey": null,
+        "employeeId": null,
+        "archivedAt": null,
+        "createdBy": "ceo@xe.vn",
+        "updatedBy": "ceo@xe.vn",
+        "createdAt": "2026-08-07 04:40:57.558031+00",
+        "updatedAt": "2026-08-07 04:40:57.767652+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-200",
+        "message": "Pay sheet template updated",
+        "data": {
+          "id": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+          "companyId": "holding",
+          "code": "qa_sheet_msigikb1",
+          "name": "QA mẫu bảng lương PAYTPLQA-MSIGIKB1 (patched)",
+          "description": "L1 smoke AMIS mẫu — not pack",
+          "status": "active",
+          "isDefault": false,
+          "applicabilityScope": "company",
+          "ouId": null,
+          "positionKey": null,
+          "employeeId": null,
+          "archivedAt": null,
+          "createdBy": "ceo@xe.vn",
+          "updatedBy": "ceo@xe.vn",
+          "createdAt": "2026-08-07 04:40:57.558031+00",
+          "updatedAt": "2026-08-07 04:40:57.767652+00"
+        },
+        "timestamp": "2026-08-07T04:40:47.222Z"
+      }
+    },
+    {
+      "name": "list_salary_components",
+      "status": 200,
+      "code": "HRM-SC-200",
+      "count": 1,
+      "c1": {
+        "id": "13b7668b-1416-40e0-bd4d-128d0bccca30",
+        "code": "D",
+        "name": "cơ bản"
+      },
+      "c2": {
+        "id": "13b7668b-1416-40e0-bd4d-128d0bccca30",
+        "code": "D"
+      }
+    },
+    {
+      "name": "list_formulas_optional_ovc",
+      "status": 200,
+      "code": "HRM-PAY-FORMULA-200",
+      "count": 1,
+      "picked": {
+        "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+        "code": "qa_formula_msigd3e0",
+        "status": "active"
+      }
+    },
+    {
+      "name": "put_lines",
+      "method": "PUT",
+      "path": "/api/hrm/payroll/pay-sheet-templates/e23e72eb-da3b-4bea-b9b0-adf10f7274a3/lines",
+      "status": 200,
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template lines replaced",
+      "dataSummary": "{\"templateId\":\"e23e72eb-da3b-4bea-b9b0-adf10f7274a3\",\"lines\":[{\"id\":\"fa8101ed-8a8a-4e17-80e2-766cc4f260df\",\"templateId\":\"e23e72eb-da3b-4bea-b9b0-adf10f7274a3\",\"companyId\":\"holding\",\"componentId\":\"13b7668b-1416-40e0-bd4d-128d0bccca30\",\"componentCode\":\"D\",\"displayLabel\":\"Nhãn QA PAYTPLQA-MSIGIKB1\",\"sortOrder\":10,\"groupKey\":null,\"isVisible\":true,\"isIdentityOrTotal\":false,\"formulaOverrideDefinitionId\":\"d06e0d6d-a615-477e-b787-012191a6b88c\",\"formulaOverrideJson\":{\"note\":\"preview-only OV-C stash\",\"stub\":true,\"stamp\":\"PAYTPLQA-MSIGIKB1\"},\"formulaOverrideCode\":null,\"formulaOverrideVersion\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 04:40:57.987218+00\",\"updatedAt\":\"2026-08-07 04:40:57.987218+00\"}…",
+      "data": {
+        "templateId": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+        "lines": [
+          {
+            "id": "fa8101ed-8a8a-4e17-80e2-766cc4f260df",
+            "templateId": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+            "companyId": "holding",
+            "componentId": "13b7668b-1416-40e0-bd4d-128d0bccca30",
+            "componentCode": "D",
+            "displayLabel": "Nhãn QA PAYTPLQA-MSIGIKB1",
+            "sortOrder": 10,
+            "groupKey": null,
+            "isVisible": true,
+            "isIdentityOrTotal": false,
+            "formulaOverrideDefinitionId": "d06e0d6d-a615-477e-b787-012191a6b88c",
+            "formulaOverrideJson": {
+              "note": "preview-only OV-C stash",
+              "stub": true,
+              "stamp": "PAYTPLQA-MSIGIKB1"
+            },
+            "formulaOverrideCode": null,
+            "formulaOverrideVersion": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 04:40:57.987218+00",
+            "updatedAt": "2026-08-07 04:40:57.987218+00"
+          }
+        ]
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-200",
+        "message": "Pay sheet template lines replaced",
+        "data": {
+          "templateId": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+          "lines": [
+            {
+              "id": "fa8101ed-8a8a-4e17-80e2-766cc4f260df",
+              "templateId": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+              "companyId": "holding",
+              "componentId": "13b7668b-1416-40e0-bd4d-128d0bccca30",
+              "componentCode": "D",
+              "displayLabel": "Nhãn QA PAYTPLQA-MSIGIKB1",
+              "sortOrder": 10,
+              "groupKey": null,
+              "isVisible": true,
+              "isIdentityOrTotal": false,
+              "formulaOverrideDefinitionId": "d06e0d6d-a615-477e-b787-012191a6b88c",
+              "formulaOverrideJson": {
+                "note": "preview-only OV-C stash",
+                "stub": true,
+                "stamp": "PAYTPLQA-MSIGIKB1"
+              },
+              "formulaOverrideCode": null,
+              "formulaOverrideVersion": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 04:40:57.987218+00",
+              "updatedAt": "2026-08-07 04:40:57.987218+00"
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T04:40:47.526Z"
+      },
+      "lineHasLabel": true,
+      "lineHasSort": true,
+      "lineHasOvc": true,
+      "linesCount": 1
+    },
+    {
+      "name": "get_lines",
+      "method": "GET",
+      "path": "/api/hrm/payroll/pay-sheet-templates/e23e72eb-da3b-4bea-b9b0-adf10f7274a3/lines?company_id=main",
+      "status": 200,
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template lines listed",
+      "dataSummary": "{\"templateId\":\"e23e72eb-da3b-4bea-b9b0-adf10f7274a3\",\"lines\":[{\"id\":\"fa8101ed-8a8a-4e17-80e2-766cc4f260df\",\"templateId\":\"e23e72eb-da3b-4bea-b9b0-adf10f7274a3\",\"companyId\":\"holding\",\"componentId\":\"13b7668b-1416-40e0-bd4d-128d0bccca30\",\"componentCode\":\"D\",\"displayLabel\":\"Nhãn QA PAYTPLQA-MSIGIKB1\",\"sortOrder\":10,\"groupKey\":null,\"isVisible\":true,\"isIdentityOrTotal\":false,\"formulaOverrideDefinitionId\":\"d06e0d6d-a615-477e-b787-012191a6b88c\",\"formulaOverrideJson\":{\"note\":\"preview-only OV-C stash\",\"stub\":true,\"stamp\":\"PAYTPLQA-MSIGIKB1\"},\"formulaOverrideCode\":null,\"formulaOverrideVersion\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 04:40:57.987218+00\",\"updatedAt\":\"2026-08-07 04:40:57.987218+00\"}…",
+      "data": {
+        "templateId": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+        "lines": [
+          {
+            "id": "fa8101ed-8a8a-4e17-80e2-766cc4f260df",
+            "templateId": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+            "companyId": "holding",
+            "componentId": "13b7668b-1416-40e0-bd4d-128d0bccca30",
+            "componentCode": "D",
+            "displayLabel": "Nhãn QA PAYTPLQA-MSIGIKB1",
+            "sortOrder": 10,
+            "groupKey": null,
+            "isVisible": true,
+            "isIdentityOrTotal": false,
+            "formulaOverrideDefinitionId": "d06e0d6d-a615-477e-b787-012191a6b88c",
+            "formulaOverrideJson": {
+              "note": "preview-only OV-C stash",
+              "stub": true,
+              "stamp": "PAYTPLQA-MSIGIKB1"
+            },
+            "formulaOverrideCode": null,
+            "formulaOverrideVersion": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 04:40:57.987218+00",
+            "updatedAt": "2026-08-07 04:40:57.987218+00"
+          }
+        ]
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-200",
+        "message": "Pay sheet template lines listed",
+        "data": {
+          "templateId": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+          "lines": [
+            {
+              "id": "fa8101ed-8a8a-4e17-80e2-766cc4f260df",
+              "templateId": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+              "companyId": "holding",
+              "componentId": "13b7668b-1416-40e0-bd4d-128d0bccca30",
+              "componentCode": "D",
+              "displayLabel": "Nhãn QA PAYTPLQA-MSIGIKB1",
+              "sortOrder": 10,
+              "groupKey": null,
+              "isVisible": true,
+              "isIdentityOrTotal": false,
+              "formulaOverrideDefinitionId": "d06e0d6d-a615-477e-b787-012191a6b88c",
+              "formulaOverrideJson": {
+                "note": "preview-only OV-C stash",
+                "stub": true,
+                "stamp": "PAYTPLQA-MSIGIKB1"
+              },
+              "formulaOverrideCode": null,
+              "formulaOverrideVersion": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 04:40:57.987218+00",
+              "updatedAt": "2026-08-07 04:40:57.987218+00"
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T04:40:47.621Z"
+      }
+    },
+    {
+      "name": "archive_template",
+      "method": "POST",
+      "path": "/api/hrm/payroll/pay-sheet-templates/e23e72eb-da3b-4bea-b9b0-adf10f7274a3/archive?company_id=main",
+      "status": 201,
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template archived",
+      "dataSummary": "{\"id\":\"e23e72eb-da3b-4bea-b9b0-adf10f7274a3\",\"companyId\":\"holding\",\"code\":\"qa_sheet_msigikb1\",\"name\":\"QA mẫu bảng lương PAYTPLQA-MSIGIKB1 (patched)\",\"description\":\"L1 smoke AMIS mẫu — not pack\",\"status\":\"retired\",\"isDefault\":false,\"applicabilityScope\":\"company\",\"ouId\":null,\"positionKey\":null,\"employeeId\":null,\"archivedAt\":\"2026-08-07 04:40:58.275625+00\",\"createdBy\":\"ceo@xe.vn\",\"updatedBy\":\"ceo@xe.vn\",\"createdAt\":\"2026-08-07 04:40:57.558031+00\",\"updatedAt\":\"2026-08-07 04:40:58.275625+00\"}",
+      "data": {
+        "id": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+        "companyId": "holding",
+        "code": "qa_sheet_msigikb1",
+        "name": "QA mẫu bảng lương PAYTPLQA-MSIGIKB1 (patched)",
+        "description": "L1 smoke AMIS mẫu — not pack",
+        "status": "retired",
+        "isDefault": false,
+        "applicabilityScope": "company",
+        "ouId": null,
+        "positionKey": null,
+        "employeeId": null,
+        "archivedAt": "2026-08-07 04:40:58.275625+00",
+        "createdBy": "ceo@xe.vn",
+        "updatedBy": "ceo@xe.vn",
+        "createdAt": "2026-08-07 04:40:57.558031+00",
+        "updatedAt": "2026-08-07 04:40:58.275625+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-200",
+        "message": "Pay sheet template archived",
+        "data": {
+          "id": "e23e72eb-da3b-4bea-b9b0-adf10f7274a3",
+          "companyId": "holding",
+          "code": "qa_sheet_msigikb1",
+          "name": "QA mẫu bảng lương PAYTPLQA-MSIGIKB1 (patched)",
+          "description": "L1 smoke AMIS mẫu — not pack",
+          "status": "retired",
+          "isDefault": false,
+          "applicabilityScope": "company",
+          "ouId": null,
+          "positionKey": null,
+          "employeeId": null,
+          "archivedAt": "2026-08-07 04:40:58.275625+00",
+          "createdBy": "ceo@xe.vn",
+          "updatedBy": "ceo@xe.vn",
+          "createdAt": "2026-08-07 04:40:57.558031+00",
+          "updatedAt": "2026-08-07 04:40:58.275625+00"
+        },
+        "timestamp": "2026-08-07T04:40:47.731Z"
+      }
+    },
+    {
+      "name": "list_after_archive",
+      "status": 200,
+      "activeCount": 0,
+      "inActive": false,
+      "archivedListStatus": 200,
+      "inArchived": true
+    },
+    {
+      "name": "create_template_for_bind",
+      "method": "POST",
+      "path": "/api/hrm/payroll/pay-sheet-templates",
+      "status": 201,
+      "code": "HRM-PAY-TPL-201",
+      "message": "Pay sheet template created",
+      "dataSummary": "{\"id\":\"c2073510-1b19-475e-9ce1-129e4a1b4e4d\",\"companyId\":\"holding\",\"code\":\"qa_sheet_msigikb1_b\",\"name\":\"QA mẫu bind PAYTPLQA-MSIGIKB1\",\"description\":null,\"status\":\"active\",\"isDefault\":false,\"applicabilityScope\":\"company\",\"ouId\":null,\"positionKey\":null,\"employeeId\":null,\"archivedAt\":null,\"createdBy\":\"ceo@xe.vn\",\"updatedBy\":\"ceo@xe.vn\",\"createdAt\":\"2026-08-07 04:40:58.546843+00\",\"updatedAt\":\"2026-08-07 04:40:58.546843+00\"}",
+      "data": {
+        "id": "c2073510-1b19-475e-9ce1-129e4a1b4e4d",
+        "companyId": "holding",
+        "code": "qa_sheet_msigikb1_b",
+        "name": "QA mẫu bind PAYTPLQA-MSIGIKB1",
+        "description": null,
+        "status": "active",
+        "isDefault": false,
+        "applicabilityScope": "company",
+        "ouId": null,
+        "positionKey": null,
+        "employeeId": null,
+        "archivedAt": null,
+        "createdBy": "ceo@xe.vn",
+        "updatedBy": "ceo@xe.vn",
+        "createdAt": "2026-08-07 04:40:58.546843+00",
+        "updatedAt": "2026-08-07 04:40:58.546843+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-201",
+        "message": "Pay sheet template created",
+        "data": {
+          "id": "c2073510-1b19-475e-9ce1-129e4a1b4e4d",
+          "companyId": "holding",
+          "code": "qa_sheet_msigikb1_b",
+          "name": "QA mẫu bind PAYTPLQA-MSIGIKB1",
+          "description": null,
+          "status": "active",
+          "isDefault": false,
+          "applicabilityScope": "company",
+          "ouId": null,
+          "positionKey": null,
+          "employeeId": null,
+          "archivedAt": null,
+          "createdBy": "ceo@xe.vn",
+          "updatedBy": "ceo@xe.vn",
+          "createdAt": "2026-08-07 04:40:58.546843+00",
+          "updatedAt": "2026-08-07 04:40:58.546843+00"
+        },
+        "timestamp": "2026-08-07T04:40:48.001Z"
+      },
+      "tplBindId": "c2073510-1b19-475e-9ce1-129e4a1b4e4d"
+    },
+    {
+      "name": "create_draft_period",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods",
+      "status": 201,
+      "code": "HRM-PAY-201",
+      "message": "Payroll period created",
+      "dataSummary": "{\"id\":\"bb194e52-54e2-4292-bb54-37d392ddcaf6\",\"company_id\":\"holding\",\"period_label\":\"QA-TPL-PAYTPLQA-MSIGIKB1\",\"start_date\":\"2026-07-31T17:00:00.000Z\",\"end_date\":\"2026-08-30T17:00:00.000Z\",\"status\":\"draft\",\"created_by\":\"ceo@xe.vn\",\"processed_at\":null,\"closed_at\":null,\"created_at\":\"2026-08-07T04:40:58.828Z\",\"updated_at\":\"2026-08-07T04:40:58.828Z\",\"employee_count\":0}",
+      "data": {
+        "id": "bb194e52-54e2-4292-bb54-37d392ddcaf6",
+        "company_id": "holding",
+        "period_label": "QA-TPL-PAYTPLQA-MSIGIKB1",
+        "start_date": "2026-07-31T17:00:00.000Z",
+        "end_date": "2026-08-30T17:00:00.000Z",
+        "status": "draft",
+        "created_by": "ceo@xe.vn",
+        "processed_at": null,
+        "closed_at": null,
+        "created_at": "2026-08-07T04:40:58.828Z",
+        "updated_at": "2026-08-07T04:40:58.828Z",
+        "employee_count": 0
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-201",
+        "message": "Payroll period created",
+        "data": {
+          "id": "bb194e52-54e2-4292-bb54-37d392ddcaf6",
+          "company_id": "holding",
+          "period_label": "QA-TPL-PAYTPLQA-MSIGIKB1",
+          "start_date": "2026-07-31T17:00:00.000Z",
+          "end_date": "2026-08-30T17:00:00.000Z",
+          "status": "draft",
+          "created_by": "ceo@xe.vn",
+          "processed_at": null,
+          "closed_at": null,
+          "created_at": "2026-08-07T04:40:58.828Z",
+          "updated_at": "2026-08-07T04:40:58.828Z",
+          "employee_count": 0
+        },
+        "timestamp": "2026-08-07T04:40:48.284Z"
+      },
+      "periodId": "bb194e52-54e2-4292-bb54-37d392ddcaf6",
+      "label": "QA-TPL-PAYTPLQA-MSIGIKB1"
+    },
+    {
+      "name": "bind_sheet_template",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/bb194e52-54e2-4292-bb54-37d392ddcaf6/bind-sheet-template",
+      "status": 201,
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template bound to period",
+      "dataSummary": "{\"id\":\"bb194e52-54e2-4292-bb54-37d392ddcaf6\",\"company_id\":\"holding\",\"period_label\":\"QA-TPL-PAYTPLQA-MSIGIKB1\",\"start_date\":\"2026-08-01\",\"end_date\":\"2026-08-31\",\"status\":\"draft\",\"pay_sheet_template_id\":\"c2073510-1b19-475e-9ce1-129e4a1b4e4d\",\"sheet_template_snapshot_json\":{\"columns\":[{\"sort_order\":1,\"display_label\":\"Bind col PAYTPLQA-MSIGIKB1\",\"component_code\":\"D\",\"override_applied\":false,\"formula_definition_id\":null}],\"bound_at\":\"2026-08-07T04:40:48.380Z\",\"template_id\":\"c2073510-1b19-475e-9ce1-129e4a1b4e4d\",\"template_code\":\"qa_sheet_msigikb1_b\",\"template_name\":\"QA mẫu bind PAYTPLQA-MSIGIKB1\"},\"processed_at\":null,\"closed_at\":null,\"created_at\":\"2026-08-07 04:40:58.828166+00\",\"updated_at\":\"2026-…",
+      "data": {
+        "id": "bb194e52-54e2-4292-bb54-37d392ddcaf6",
+        "company_id": "holding",
+        "period_label": "QA-TPL-PAYTPLQA-MSIGIKB1",
+        "start_date": "2026-08-01",
+        "end_date": "2026-08-31",
+        "status": "draft",
+        "pay_sheet_template_id": "c2073510-1b19-475e-9ce1-129e4a1b4e4d",
+        "sheet_template_snapshot_json": {
+          "columns": [
+            {
+              "sort_order": 1,
+              "display_label": "Bind col PAYTPLQA-MSIGIKB1",
+              "component_code": "D",
+              "override_applied": false,
+              "formula_definition_id": null
+            }
+          ],
+          "bound_at": "2026-08-07T04:40:48.380Z",
+          "template_id": "c2073510-1b19-475e-9ce1-129e4a1b4e4d",
+          "template_code": "qa_sheet_msigikb1_b",
+          "template_name": "QA mẫu bind PAYTPLQA-MSIGIKB1"
+        },
+        "processed_at": null,
+        "closed_at": null,
+        "created_at": "2026-08-07 04:40:58.828166+00",
+        "updated_at": "2026-08-07 04:40:58.932636+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-200",
+        "message": "Pay sheet template bound to period",
+        "data": {
+          "id": "bb194e52-54e2-4292-bb54-37d392ddcaf6",
+          "company_id": "holding",
+          "period_label": "QA-TPL-PAYTPLQA-MSIGIKB1",
+          "start_date": "2026-08-01",
+          "end_date": "2026-08-31",
+          "status": "draft",
+          "pay_sheet_template_id": "c2073510-1b19-475e-9ce1-129e4a1b4e4d",
+          "sheet_template_snapshot_json": {
+            "columns": [
+              {
+                "sort_order": 1,
+                "display_label": "Bind col PAYTPLQA-MSIGIKB1",
+                "component_code": "D",
+                "override_applied": false,
+                "formula_definition_id": null
+              }
+            ],
+            "bound_at": "2026-08-07T04:40:48.380Z",
+            "template_id": "c2073510-1b19-475e-9ce1-129e4a1b4e4d",
+            "template_code": "qa_sheet_msigikb1_b",
+            "template_name": "QA mẫu bind PAYTPLQA-MSIGIKB1"
+          },
+          "processed_at": null,
+          "closed_at": null,
+          "created_at": "2026-08-07 04:40:58.828166+00",
+          "updated_at": "2026-08-07 04:40:58.932636+00"
+        },
+        "timestamp": "2026-08-07T04:40:48.387Z"
+      }
+    },
+    {
+      "name": "create_period_with_paySheetTemplateId",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods",
+      "status": 409,
+      "code": "HRM-PAY-002",
+      "message": "Payroll period overlaps with existing period",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-002\",\"message\":\"Payroll period overlaps with existing period\",\"timestamp\":\"2026-08-07T04:40:48.450Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-002",
+        "message": "Payroll period overlaps with existing period",
+        "timestamp": "2026-08-07T04:40:48.450Z"
+      },
+      "hasSnapshot": false
+    },
+    {
+      "name": "scope_parity_main_holding",
+      "getMain": 200,
+      "getHolding": 200,
+      "listHolding": 200,
+      "persistCompany": "holding",
+      "holdingIdMatch": true
+    },
+    {
+      "name": "salary_templates_pack_regression",
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "count": 0,
+      "packHasMauId": false,
+      "packLooksLikeMau": false
+    }
+  ],
+  "ac": {
+    "ac1_list_create_get_patch": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "list=200/HRM-PAY-TPL-200 create=201/HRM-PAY-TPL-201 get=200 patch=200 status=active"
+    },
+    "ac2_put_lines_label_sort_ovc": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "put=200/HRM-PAY-TPL-200 label=true sort=true ovc=true comps=1"
+    },
+    "ac3_archive_hide": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "archive=201/HRM-PAY-TPL-200 inActive=false inArchived=true"
+    },
+    "ac4_bind_snapshot": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "bind=201/HRM-PAY-TPL-200 snapshotCols=1 createBound=409 createBoundSnap=false"
+    },
+    "ac5_scope_parity": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "getMain=200 getHolding=200 persist=holding"
+    },
+    "ac6_pack_enroll_only": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "pack=200/HRM-PAY-200 packHasMauId=false createCode=HRM-PAY-TPL-201"
+    },
+    "ac7_honesty_locks": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "payroll_e2e_ready=false · no browser UF · no seed · pack≠mẫu"
+    }
+  },
+  "residual": [
+    {
+      "id": "R-PAY-TPL-FE",
+      "item": "Settings mẫu GĐ1 form — after L1 PASS",
+      "owner": "dev-fe"
+    },
+    {
+      "id": "HONESTY",
+      "item": "payroll_e2e_ready remains false · module UAT DENIED",
+      "owner": "pm/qa"
+    }
+  ],
+  "overall": {
+    "verdict": "PASS",
+    "ack_status": "PASS_TO_PM",
+    "ac_summary": {
+      "ac1_list_create_get_patch": "PASS",
+      "ac2_put_lines_label_sort_ovc": "PASS",
+      "ac3_archive_hide": "PASS",
+      "ac4_bind_snapshot": "PASS",
+      "ac5_scope_parity": "PASS",
+      "ac6_pack_enroll_only": "PASS",
+      "ac7_honesty_locks": "PASS"
+    }
+  }
+}

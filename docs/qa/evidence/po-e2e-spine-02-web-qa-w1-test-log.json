@@ -1,0 +1,241 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-PO-E2E-SPINE-02-WEB-QA-W1-20260803",
+  "work_item_id": "PO-E2E-SPINE-02-WEB-QA-W1",
+  "tester": {
+    "role": "qa",
+    "agent": "PO-E2E-SPINE-02-WEB-QA-W1-browser"
+  },
+  "started_at": "2026-08-03T15:08:48.759Z",
+  "ended_at": "2026-08-03T15:11:06.260Z",
+  "environment": {
+    "portal_url": "http://127.0.0.1:5173",
+    "hrm_vite": "http://127.0.0.1:8080/hr/",
+    "hrm_api": "http://127.0.0.1:28001/api/hrm",
+    "xbos_api": "http://127.0.0.1:28002/api/xbos",
+    "persona": "ceo@xe.vn",
+    "company_id": "main",
+    "notes": "U65 zero-seed · SPINE-02 web LV-03/04 · mount must_keep W1-B-01 GWC"
+  },
+  "spec_ref": "FR-UC-H03 · BR-LEAVE-ATT-01 · J-HRM-06 · PO_E2E_BUSINESS_SPINE_PROGRAM § SPINE-02 · po-e2e-ba-case-matrix-01",
+  "hdsd_sot": "HDSD Chấm công → Nghỉ phép — tạo / danh sách / CC Việc cần xử lý",
+  "hdsd_align": true,
+  "u65_zero_seed": true,
+  "evidence_narrative": "docs/qa/evidence/po-e2e-spine-02-web-qa-w1.md",
+  "raw_harness": "docs/qa/evidence/_tmp-po-e2e-spine-02-web-qa-w1-browser.json",
+  "verdict": "fail",
+  "ack_status": "FAIL_TO_PM",
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-03T15:08:40.000Z",
+      "action": "L0_QC_DEV_STACK",
+      "expected": "hrm-api + xbos-api + portal 200",
+      "actual": "hrm 200 · xbos 200 · portal 200",
+      "network": { "method": "GET", "url": "/api/hrm", "status": 200 },
+      "result": "pass"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-03T15:08:48.759Z",
+      "action": "API_LOGIN_POST",
+      "expected": "Login 2xx + accessToken",
+      "actual": "HTTP 201",
+      "network": { "method": "POST", "url": "/api/xbos/auth/login", "status": 201 },
+      "result": "pass"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-03T15:08:52.844Z",
+      "action": "NAV_ATTENDANCE_LEAVE",
+      "expected": "/hr/attendance mounts · Nghỉ phép tab",
+      "actual": "#root=4 · leave tab · mount GWC kept",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/02-leave-tab.png"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-03T15:09:01.909Z",
+      "action": "LV03_OPEN_CREATE",
+      "expected": "Tạo yêu cầu nghỉ dialog",
+      "actual": "dialog open",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/03-create-dialog.png"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-03T15:09:11.751Z",
+      "action": "LV03_SUBMIT_SICK_NO_ATTACH_RUN1",
+      "expected": "POST 4xx HRM-LEAVE-VAL-ATT",
+      "actual": "POST 201 HRM-LEAVE-201 · leave_type=LVT_02 · total_days=5 · attachment_url=null · id=70461e4d-fb7a-4456-9d53-39c9dba6539b",
+      "network": {
+        "method": "POST",
+        "url": "/api/hrm/attendance/leave-requests",
+        "status": 201,
+        "code": "HRM-LEAVE-201"
+      },
+      "result": "fail",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/04-lv03-fail.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-03T15:10:47.471Z",
+      "action": "LV03_SUBMIT_SICK_NO_ATTACH_RUN2",
+      "expected": "HRM-LEAVE-VAL-ATT",
+      "actual": "POST 409 HRM-LEAVE-VAL-OVERLAP (overlap from run1 — not VAL-ATT)",
+      "network": {
+        "method": "POST",
+        "url": "/api/hrm/attendance/leave-requests",
+        "status": 409,
+        "code": "HRM-LEAVE-VAL-OVERLAP",
+        "reqBody": {
+          "leave_type": "LVT_02",
+          "total_days": 5,
+          "attachment_url": null,
+          "start_date": "2027-10-12",
+          "end_date": "2027-10-16"
+        }
+      },
+      "result": "fail"
+    },
+    {
+      "seq": 7,
+      "at": "2026-08-03T15:10:54.977Z",
+      "action": "LV04_ATTACH_PROBE",
+      "expected": "FE upload path or honest BLOCKED",
+      "actual": "fileInputCount=0 · no attach label · payload omits attachment_url",
+      "result": "blocked",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/05-lv04-attach-probe.png"
+    },
+    {
+      "seq": 8,
+      "at": "2026-08-03T15:10:57.287Z",
+      "action": "WEB_LIST_AND_J_HRM_06",
+      "expected": "List labels VI · row click",
+      "actual": "GET 200 HRM-LEAVE-200 · status_label=Chờ duyệt · 30 rows · detail click",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/attendance/leave-requests",
+        "status": 200,
+        "code": "HRM-LEAVE-200"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/06-web-list.png"
+    },
+    {
+      "seq": 9,
+      "at": "2026-08-03T15:11:00.652Z",
+      "action": "APPROVE_HONESTY_CC_INBOX",
+      "expected": "Approve only if FE-origin task actionable; no seed",
+      "actual": "WF tasks pending include hrm_leave for ceo@xe.vn; Duyệt not actionable after open — BLOCKED U65",
+      "network": {
+        "method": "GET",
+        "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+        "status": 200,
+        "code": "XBOS-WF-203"
+      },
+      "result": "blocked",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/10-approve-no-duyet.png"
+    },
+    {
+      "seq": 10,
+      "at": "2026-08-03T15:11:06.260Z",
+      "action": "LV02_SPEC_GAP_CAP",
+      "expected": "max SPEC_GAP / BLOCKED — no invent N",
+      "actual": "GAP-LEAVE-LADDER-01 OPEN · WF 1 step",
+      "result": "blocked"
+    },
+    {
+      "seq": 11,
+      "at": "2026-08-03T15:11:06.260Z",
+      "action": "IDLE_GUARD",
+      "expected": ">=8 real clicks",
+      "actual": "34 click_log entries",
+      "result": "pass"
+    }
+  ],
+  "case_matrix": [
+    {
+      "id": "LV_03",
+      "name": "A_fail_deep_sick_attach",
+      "status": "fail",
+      "notes": "Catalog LVT_02 ốm ≥3d no attach → 201 (run1); VAL-ATT not returned"
+    },
+    {
+      "id": "WEB_LIST",
+      "name": "B_happy_list_labels_J_HRM_06",
+      "status": "pass",
+      "notes": "List 200 · Chờ duyệt · row click"
+    },
+    {
+      "id": "LV_04",
+      "name": "C_attach_path",
+      "status": "blocked",
+      "notes": "No FE attach UI"
+    },
+    {
+      "id": "WEB_APPROVE",
+      "name": "C_approve_honesty",
+      "status": "blocked",
+      "notes": "FE-origin leave tasks in CC; Duyệt not actionable; no seed"
+    },
+    {
+      "id": "LV_02",
+      "name": "C_ladder_spec_gap",
+      "status": "blocked",
+      "notes": "SPEC_GAP day ladder"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "R-SPINE-LV03-VAL-ATT-CATALOG",
+      "severity": "P0",
+      "expected": "HRM-LEAVE-VAL-ATT",
+      "actual": "POST 201 for leave_type=LVT_02 total_days=5 attachment_url=null",
+      "residual_work_item": "PO-E2E-SPINE-02-BE-LV03-VAL-ATT-01"
+    },
+    {
+      "id": "R-SPINE-LV04-ATTACH-FE-01",
+      "severity": "P1",
+      "expected": "FE upload → attachment_url",
+      "actual": "no file input on create dialog",
+      "residual_work_item": "dev-fe LV04 attach"
+    },
+    {
+      "id": "R-SPINE-WEB-APPROVE-UX-01",
+      "severity": "P1",
+      "expected": "Duyệt 2xx for FE-origin leave task",
+      "actual": "tasks visible; Duyệt not actionable",
+      "residual_work_item": "dev-fe approve UX"
+    },
+    {
+      "id": "R-LEAVE-TYPE-LABEL-DEPTH",
+      "severity": "P2",
+      "expected": "catalog VI leave_type_label",
+      "actual": "LVT_02 echo",
+      "residual_work_item": "defer"
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 2,
+    "blocked": 4,
+    "skipped": 0,
+    "click_count": 34
+  },
+  "attachments": [
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/00-shell.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/01-attendance.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/02-leave-tab.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/03-create-dialog.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/04-lv03-fail.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/05-lv04-attach-probe.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/06-web-list.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/07-web-list-detail.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/08-cc-shell.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/09-inbox.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/10-approve-no-duyet.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/10a-leave-task-open.png",
+    "docs/qa/evidence/screens/po-e2e-spine-02-web-qa-w1/11-pending-list.png"
+  ]
+}

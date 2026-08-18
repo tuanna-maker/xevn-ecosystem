@@ -1,0 +1,146 @@
+{
+  "work_item_id": "PO-HRM-REC-IV-ONE-ACTIVE-QA-02-R3",
+  "startedAt": "2026-08-06T10:08:13.653Z",
+  "u65": "zero-seed",
+  "recruitment_uat_ready": false,
+  "network": [
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/job-templates?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-JD-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/job-postings?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-JP-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-CP-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-PLAN-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-CA-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-CP-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "status": 200,
+      "code": "HRM-REC-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-CP-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/job-templates?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-JD-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/job-postings?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-JP-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-CA-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-PLAN-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-CP-200"
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "status": 200,
+      "code": "HRM-REC-200"
+    }
+  ],
+  "api": {
+    "spineHasTargetEmail": true,
+    "emailMergeGap": false,
+    "activeBefore": {
+      "has_active_interview": true,
+      "active_interview_status": "scheduled",
+      "active_interview_at": "2026-08-10T10:06:50.073Z",
+      "active_interview_display_time_vi_vn": "10/08/2026 17:06",
+      "active_interview_badge_label": "Đã có lịch"
+    },
+    "slugPost": {
+      "status": 409,
+      "code": "HRM-REC-IV-409-ACTIVE",
+      "pass": true
+    },
+    "conflict409": {
+      "status": 409,
+      "code": "HRM-REC-IV-409-ACTIVE",
+      "pass": true
+    }
+  },
+  "browser": {
+    "badgeBefore": {
+      "visible": true,
+      "label": "Đã có lịch\n10/08/2026 17:06",
+      "time": "10/08/2026 17:06"
+    },
+    "scheduleOpened": true,
+    "postCreates": [],
+    "badgeAfterSchedule": {
+      "visible": true,
+      "label": "Đã có lịch\n10/08/2026 17:06",
+      "time": "10/08/2026 17:06"
+    },
+    "badgeTimePattern": "vi-VN",
+    "conflictToast": null,
+    "f5Badge": {
+      "visible": true,
+      "label": "Đã có lịch\n10/08/2026 17:06",
+      "time": "10/08/2026 17:06"
+    },
+    "f5BadgePersists": true,
+    "pageErrors": 0,
+    "consoleErrors": 0
+  },
+  "ac": {
+    "AC-01-slug-post-201-or-409-not-val001": "PASS",
+    "AC-02-badge-datetime-f5": "PASS",
+    "AC-03-duplicate-409-toast": "PASS",
+    "AC-04-cancel-complete-create": "FAIL",
+    "AC-05-console-clean": "PASS"
+  },
+  "overall": "FAIL_TO_PM",
+  "endedAt": "2026-08-06T10:09:13.345Z"
+}

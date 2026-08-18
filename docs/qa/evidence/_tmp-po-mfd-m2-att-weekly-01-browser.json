@@ -1,0 +1,422 @@
+{
+  "work_item_id": "PO-MFD-M2-ATT-WEEKLY-01",
+  "startedAt": "2026-08-04T08:11:33.750Z",
+  "u65": "zero-seed",
+  "u76_hdsd_align": true,
+  "hdsd_align": "CC → HRM → Chấm công → ▼ → Chấm công tuần (#14) · Tổng hợp công (#15) · sheet→weekly context",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "portal_url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+  "click_path": [
+    "Login ceo@xe.vn → inject token → /hr/attendance?portal=1&companyId=main → hard reload",
+    "Chấm công ▼ → menuitem «Chấm công tuần»",
+    "Chấm công ▼ → Bảng chấm công (list for sheet context)",
+    "Click sheet name QA-SHEET-MFD-M2 → weekly grid (sheet context)",
+    "Chấm công ▼ → menuitem «Tổng hợp công»"
+  ],
+  "hdsd_inventory": [
+    {
+      "hdsd_ref": "Matrix #14 · Chấm công tuần",
+      "fe_label": "Chấm công tuần",
+      "control": "menuitem attendance ▼ → weekly",
+      "present": true
+    },
+    {
+      "hdsd_ref": "Matrix #15 · Tổng hợp",
+      "fe_label": "Tổng hợp công",
+      "control": "menuitem attendance ▼ → summary → viewMode=data",
+      "present": true
+    },
+    {
+      "hdsd_ref": "Sheet → weekly grid context",
+      "fe_label": "Bảng chấm công → open row",
+      "control": "setSelectedSheetId + attendanceViewMode=weekly",
+      "present": true
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:11:37.207Z",
+      "t": 1785831097207,
+      "xCompanyId": null,
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:11:37.452Z",
+      "t": 1785831097452,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:11:37.864Z",
+      "t": 1785831097864,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:11:37.963Z",
+      "t": 1785831097963,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:11:38.134Z",
+      "t": 1785831098134,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:11:38.478Z",
+      "t": 1785831098479,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:11:39.401Z",
+      "t": 1785831099401,
+      "xCompanyId": null,
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:11:39.625Z",
+      "t": 1785831099625,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:11:39.895Z",
+      "t": 1785831099895,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:11:40.016Z",
+      "t": 1785831100016,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:11:40.027Z",
+      "t": 1785831100027,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:11:40.259Z",
+      "t": 1785831100259,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:11:42.534Z",
+      "t": 1785831102534,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:11:42.536Z",
+      "t": 1785831102536,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null,
+      "code": "HRM-AS-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-03&to_date=2026-08-09&page=1&page_size=100",
+      "at": "2026-08-04T08:11:42.721Z",
+      "t": 1785831102721,
+      "xCompanyId": "main",
+      "from_date": "2026-08-03",
+      "to_date": "2026-08-09",
+      "code": "HRM-ATT-200",
+      "rowCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-06-30&to_date=2026-07-06&page=1&page_size=100",
+      "at": "2026-08-04T08:12:00.157Z",
+      "t": 1785831120157,
+      "xCompanyId": "main",
+      "from_date": "2026-06-30",
+      "to_date": "2026-07-06",
+      "code": "HRM-ATT-200",
+      "rowCount": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "at": "2026-08-04T08:12:11.475Z",
+      "t": 1785831131475,
+      "xCompanyId": "main",
+      "from_date": "2026-08-04",
+      "to_date": "2026-08-04",
+      "code": "HRM-ATT-200",
+      "rowCount": 4
+    }
+  ],
+  "recordsGets": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-03&to_date=2026-08-09&page=1&page_size=100",
+      "at": "2026-08-04T08:11:42.721Z",
+      "t": 1785831102721,
+      "xCompanyId": "main",
+      "from_date": "2026-08-03",
+      "to_date": "2026-08-09",
+      "code": "HRM-ATT-200",
+      "rowCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-06-30&to_date=2026-07-06&page=1&page_size=100",
+      "at": "2026-08-04T08:12:00.157Z",
+      "t": 1785831120157,
+      "xCompanyId": "main",
+      "from_date": "2026-06-30",
+      "to_date": "2026-07-06",
+      "code": "HRM-ATT-200",
+      "rowCount": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "at": "2026-08-04T08:12:11.475Z",
+      "t": 1785831131475,
+      "xCompanyId": "main",
+      "from_date": "2026-08-04",
+      "to_date": "2026-08-04",
+      "code": "HRM-ATT-200",
+      "rowCount": 4
+    }
+  ],
+  "sheetsGets": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:11:42.536Z",
+      "t": 1785831102536,
+      "xCompanyId": "main",
+      "from_date": null,
+      "to_date": null,
+      "code": "HRM-AS-200"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "networkBad": [],
+  "mutateCalls": [],
+  "steps": {
+    "login": {
+      "http": 201,
+      "companyId": "main",
+      "email": "ceo@xe.vn"
+    },
+    "landed": {
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    "weekly_default": {
+      "status": "LIVE",
+      "note": "Chấm công tuần",
+      "at": "2026-08-04T08:11:55.781Z"
+    },
+    "weekly_sheet_context": {
+      "status": "LIVE",
+      "note": "sheets=2",
+      "at": "2026-08-04T08:12:10.714Z"
+    },
+    "summary": {
+      "status": "LIVE",
+      "note": "Tổng hợp công",
+      "at": "2026-08-04T08:12:24.757Z"
+    }
+  },
+  "surfaces": {
+    "row14_weekly": {
+      "runtime": "LIVE",
+      "menuLabel": "Chấm công tuần",
+      "shellVisible": true,
+      "emptyHonesty": true,
+      "syncError": false,
+      "loadingStuck": false,
+      "dataRowCount": 1,
+      "listGets": [
+        {
+          "status": 200,
+          "code": "HRM-ATT-200",
+          "rowCount": 4,
+          "from_date": "2026-08-03",
+          "to_date": "2026-08-09"
+        }
+      ],
+      "listCode": "HRM-ATT-200",
+      "weekRange": {
+        "from_date": "2026-08-03",
+        "to_date": "2026-08-09"
+      },
+      "storm10s": 0,
+      "stormOk": true,
+      "sheetContext": null,
+      "note": "Menu weekly without selected sheet → resolveWeeklyDateRange(null) current week"
+    },
+    "row14_sheet_context": {
+      "sheetsAvailable": 2,
+      "opened": true,
+      "runtime": "LIVE",
+      "syncError": false,
+      "leftSheetsList": true,
+      "weeklyTitleVisible": true,
+      "listGets": [
+        {
+          "status": 200,
+          "code": "HRM-ATT-200",
+          "rowCount": 0,
+          "from_date": "2026-06-30",
+          "to_date": "2026-07-06"
+        }
+      ],
+      "weekRange": {
+        "from_date": "2026-06-30",
+        "to_date": "2026-07-06"
+      },
+      "rangeUsesSheetPeriod": false,
+      "storm8s": 0,
+      "stormOk": true,
+      "emptyHonesty": true,
+      "note": "Open sheet name → setSelectedSheetId + weekly; GET records from_date/to_date should follow sheet week window"
+    },
+    "row15_summary": {
+      "runtime": "LIVE",
+      "menuLabel": "Tổng hợp công",
+      "shellVisible": true,
+      "emptyHonesty": false,
+      "syncError": false,
+      "loadingStuck": false,
+      "dataRowCount": 4,
+      "listGets": [
+        {
+          "status": 200,
+          "code": "HRM-ATT-200",
+          "rowCount": 4,
+          "from_date": "2026-08-04",
+          "to_date": "2026-08-04"
+        }
+      ],
+      "listCode": "HRM-ATT-200",
+      "storm10s": 0,
+      "stormOk": true,
+      "productNote": "activeAttendanceType=summary sets attendanceViewMode=data — same GET /attendance/records as records (no dedicated summary API)",
+      "sameAsRecordsSurface": true,
+      "newGetsOnOpen": 1
+    }
+  },
+  "residuals": [
+    {
+      "id": "OBS-MFD-M2-ATT-WEEKLY-SHEET-RANGE",
+      "severity": "P2",
+      "note": "Sheet July opened but GET range=2026-06-30..2026-07-06 — document honesty vs expected sheet week"
+    }
+  ],
+  "criteria": {
+    "l0_entry": true,
+    "login_main": true,
+    "weekly_load": true,
+    "weekly_storm": true,
+    "weekly_no_error_banner": true,
+    "sheet_context": true,
+    "summary_load": true,
+    "summary_storm": true,
+    "summary_no_error_banner": true,
+    "pageErrors_zero": true,
+    "no_http_500": true,
+    "u65_no_mutate": true,
+    "uat_done_false": true,
+    "attendance_not_closed": true
+  },
+  "failReasons": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-weekly-01/01-weekly-default.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-weekly-01/02-sheets-for-context.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-weekly-01/03-weekly-sheet-context.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-weekly-01/04-summary.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-weekly-01/05-final.png"
+  ],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "uat_done": false,
+  "attendance_closed": false,
+  "endedAt": "2026-08-04T08:12:24.835Z"
+}

@@ -1,0 +1,267 @@
+{
+  "work_item_id": "W1-B-01-QA-LEAVE-LIVE",
+  "layer": "browser-U65-HDSD",
+  "hdsd_align": true,
+  "u65": "zero-seed",
+  "startedAt": "2026-08-03T14:21:29.922Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:8080",
+    "EMAIL": "ceo@xe.vn"
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T14:21:29.922Z",
+      "action": "API_LOGIN_POST",
+      "url": "http://127.0.0.1:5173/api/xbos/auth/login"
+    },
+    {
+      "at": "2026-08-03T14:21:29.985Z",
+      "action": "API_LOGIN_OK",
+      "status": 201
+    },
+    {
+      "at": "2026-08-03T14:21:30.615Z",
+      "action": "NAV_GOTO_PORTAL_OR_HRM",
+      "url": "http://127.0.0.1:5173"
+    },
+    {
+      "at": "2026-08-03T14:21:33.472Z",
+      "action": "NAV_FALLBACK_ATTENDANCE_URL",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T14:21:38.139Z",
+      "action": "CLICK_TAB_NGHI_PHEP_MISS"
+    },
+    {
+      "at": "2026-08-03T14:21:38.220Z",
+      "action": "ASSERT_LEAVE_SURFACE",
+      "rootChild": 0,
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+      "hasLeaveTitle": false
+    },
+    {
+      "at": "2026-08-03T14:21:38.220Z",
+      "action": "CASE_A_START",
+      "intent": "fail_deep — sick≥3 no attach OR validation toast / disabled submit"
+    },
+    {
+      "at": "2026-08-03T14:21:38.234Z",
+      "action": "CASE_A_INPUT_COUNT",
+      "inputCount": 0,
+      "pickedSick": false
+    },
+    {
+      "at": "2026-08-03T14:21:38.242Z",
+      "action": "CASE_A_SUBMIT_DISABLED_OR_MISS",
+      "submitDisabled": false,
+      "hasDialog": false
+    },
+    {
+      "at": "2026-08-03T14:21:38.836Z",
+      "action": "CASE_A_DONE",
+      "verdict": "FAIL"
+    },
+    {
+      "at": "2026-08-03T14:21:38.836Z",
+      "action": "CASE_B_START",
+      "intent": "open leave list/balance · display labels not raw codes"
+    },
+    {
+      "at": "2026-08-03T14:21:38.901Z",
+      "action": "CASE_B_DONE",
+      "verdict": "FAIL"
+    },
+    {
+      "at": "2026-08-03T14:21:38.901Z",
+      "action": "CASE_C_START",
+      "intent": "F5 after navigate — data still bound"
+    },
+    {
+      "at": "2026-08-03T14:21:39.127Z",
+      "action": "CASE_C_F5_RELOAD",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T14:21:43.703Z",
+      "action": "CASE_C_DONE",
+      "verdict": "FAIL"
+    }
+  ],
+  "ac": {
+    "display_labels": {
+      "verdict": "FAIL",
+      "note": "honest empty or surface loaded — no invent display labels"
+    }
+  },
+  "case_matrix": {
+    "A_fail": {
+      "verdict": "FAIL",
+      "hasDialog": false,
+      "submitDisabled": false,
+      "validationUi": false,
+      "valAtt": false,
+      "noSuccessCreate": true,
+      "pickedSick": false,
+      "postAfter": [],
+      "note": "Expect FE block / toast / HRM-LEAVE-VAL-ATT / disabled submit — no silent 2xx create on invalid"
+    },
+    "B_happy": {
+      "verdict": "FAIL",
+      "listStatus": null,
+      "listCode": null,
+      "rowCountApi": 0,
+      "balHits": 0,
+      "balSample": null,
+      "ui": {
+        "rootChild": 0,
+        "textLen": 0,
+        "cards": 0,
+        "hasViStatus": false,
+        "hasRawPendingOnly": false,
+        "hasLeaveTypeVi": false,
+        "emptyHonest": false,
+        "snippet": ""
+      },
+      "detailClicked": false,
+      "labelNote": "honest empty or surface loaded — no invent display labels"
+    },
+    "C_f5": {
+      "verdict": "FAIL",
+      "beforeUrl": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+      "afterUrl": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+      "afterListStatus": null,
+      "afterUi": {
+        "rootChild": 0,
+        "textLen": 0,
+        "hasLeave": false,
+        "whitescreen": true
+      },
+      "beforeTextLen": 0
+    }
+  },
+  "network": [
+    {
+      "at": "2026-08-03T14:21:30.950Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded",
+        "accessToken": false
+      }
+    },
+    {
+      "at": "2026-08-03T14:21:30.972Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded",
+        "accessToken": false
+      }
+    }
+  ],
+  "consoleErrors": [
+    {
+      "at": "2026-08-03T14:21:34.155Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T14:21:34.156Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T14:21:34.301Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T14:21:34.301Z",
+      "text": "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=dc4c"
+    },
+    {
+      "at": "2026-08-03T14:21:39.392Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T14:21:39.404Z",
+      "text": "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=dc4c"
+    }
+  ],
+  "pageErrors": [
+    {
+      "at": "2026-08-03T14:21:34.301Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Attendance.tsx"
+    },
+    {
+      "at": "2026-08-03T14:21:34.301Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Attendance.tsx"
+    },
+    {
+      "at": "2026-08-03T14:21:34.301Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Attendance.tsx"
+    },
+    {
+      "at": "2026-08-03T14:21:39.392Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Attendance.tsx"
+    },
+    {
+      "at": "2026-08-03T14:21:39.404Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Attendance.tsx"
+    },
+    {
+      "at": "2026-08-03T14:21:39.404Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Attendance.tsx"
+    }
+  ],
+  "screens": [
+    {
+      "at": "2026-08-03T14:21:33.438Z",
+      "name": "00-shell",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-01-qa-leave-live-20260803/00-shell.png"
+    },
+    {
+      "at": "2026-08-03T14:21:38.113Z",
+      "name": "01-attendance",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-01-qa-leave-live-20260803/01-attendance.png"
+    },
+    {
+      "at": "2026-08-03T14:21:38.203Z",
+      "name": "02-leave-tab",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-01-qa-leave-live-20260803/02-leave-tab.png"
+    },
+    {
+      "at": "2026-08-03T14:21:38.302Z",
+      "name": "04-case-a-fail",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-01-qa-leave-live-20260803/04-case-a-fail.png"
+    },
+    {
+      "at": "2026-08-03T14:21:38.895Z",
+      "name": "05-case-b-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-01-qa-leave-live-20260803/05-case-b-list.png"
+    },
+    {
+      "at": "2026-08-03T14:21:43.702Z",
+      "name": "07-case-c-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-01-qa-leave-live-20260803/07-case-c-f5.png"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "J-HRM-06",
+      "verdict": "FAIL",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+      "listStatus": null
+    }
+  ],
+  "idle_guard": {
+    "qa_idle_viewport": "PASS",
+    "click_count": 15,
+    "note": "anti-idle: real clicks required"
+  },
+  "verdict": "FAIL",
+  "endedAt": "2026-08-03T14:21:43.703Z"
+}

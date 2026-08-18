@@ -1,0 +1,1143 @@
+{
+  "work_item_id": "PO-E2E-SPINE-01-QA-W2",
+  "program": "PO-E2E-BIZ-SPINE-01",
+  "spine": "E2E-SPINE-01",
+  "startedAt": "2026-08-03T15:10:04.304Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "MEMBER_EMAIL": "du-lich.ceo@xe.vn",
+    "u65": "zero-seed",
+    "stamp": "SP2SDD8FM8",
+    "companyId": "main",
+    "retest_of": "PO-E2E-SPINE-01-QA-W1"
+  },
+  "l0": {
+    "portal": 200,
+    "hrm_api": 200,
+    "xbos_api": 200,
+    "hrm_vite": 200
+  },
+  "vite_probes": {
+    "recruitment_tsx_5173": 200,
+    "job_templates_tab_5173": 200,
+    "recruitment_tsx_8080": 200,
+    "job_templates_tab_8080": 200
+  },
+  "mount": {
+    "mounted": true,
+    "viteFail": false,
+    "hasChrome": true,
+    "rootKids": 4,
+    "bodySample": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nDashboard\nYêu cầu tuyển dụng\nThư viện JD\nTin Tuyển dụng\nỨng viên\nĐề xuất\nChiến dịch\nPhỏng vấn\nĐánh giá\nKế hoạch\nBáo cáo\nThư viện mô tả công việc (JD)\n\nTạo template một lần, gắn vào "
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T15:10:05.585Z",
+      "action": "open_portal",
+      "url": "http://127.0.0.1:5173"
+    },
+    {
+      "at": "2026-08-03T15:10:08.288Z",
+      "action": "goto_cc",
+      "url": "http://127.0.0.1:5173/command-center?settings=workflow"
+    },
+    {
+      "at": "2026-08-03T15:10:11.565Z",
+      "action": "search_wf",
+      "text": "tuyển"
+    },
+    {
+      "at": "2026-08-03T15:10:12.609Z",
+      "action": "click_role",
+      "text": "/tuyển dụng|requisition|hrm_recruitment|hrm_requisition|pipeline/i",
+      "url": "http://127.0.0.1:5173/command-center?settings=workflow"
+    },
+    {
+      "at": "2026-08-03T15:10:14.852Z",
+      "action": "click_role",
+      "text": "/Lưu|Save|Kích hoạt|Active|Xuất bản/i",
+      "url": "http://127.0.0.1:5173/command-center?settings=workflow"
+    },
+    {
+      "at": "2026-08-03T15:10:16.948Z",
+      "action": "f5_wf",
+      "url": "http://127.0.0.1:5173/command-center?settings=workflow"
+    },
+    {
+      "at": "2026-08-03T15:10:21.166Z",
+      "action": "goto_recruitment",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=jd-library",
+      "tab": "jd-library"
+    },
+    {
+      "at": "2026-08-03T15:10:24.245Z",
+      "action": "click_role",
+      "text": "/Thư viện JD|JD/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=jd-library"
+    },
+    {
+      "at": "2026-08-03T15:10:26.117Z",
+      "action": "goto_recruitment",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=jd-library",
+      "tab": "jd-library"
+    },
+    {
+      "at": "2026-08-03T15:10:29.219Z",
+      "action": "click_role",
+      "text": "/Thư viện JD|JD/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=jd-library"
+    },
+    {
+      "at": "2026-08-03T15:10:30.612Z",
+      "action": "click_role",
+      "text": "/Thêm|Tạo.*JD|Tạo mẫu|Thêm mẫu/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=jd-library"
+    },
+    {
+      "at": "2026-08-03T15:10:31.536Z",
+      "action": "fill",
+      "sel": "[role=\"dialog\"] input[name=\"title\"]",
+      "tag": "input",
+      "value": "JD HireToPay SP2SDD8FM8"
+    },
+    {
+      "at": "2026-08-03T15:10:31.610Z",
+      "action": "fill",
+      "sel": "[role=\"dialog\"] textarea",
+      "tag": "textarea",
+      "value": "JD Hire-to-pay Nest HRM-API."
+    },
+    {
+      "at": "2026-08-03T15:10:31.663Z",
+      "action": "click_role",
+      "text": "/Lưu|Tạo|Save/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=jd-library"
+    },
+    {
+      "at": "2026-08-03T15:10:35.620Z",
+      "action": "goto_recruitment",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions",
+      "tab": "requisitions"
+    },
+    {
+      "at": "2026-08-03T15:10:38.694Z",
+      "action": "click_role",
+      "text": "/Yêu cầu tuyển dụng/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions"
+    },
+    {
+      "at": "2026-08-03T15:10:40.115Z",
+      "action": "click_role",
+      "text": "/Thêm yêu cầu/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions"
+    },
+    {
+      "at": "2026-08-03T15:10:42.624Z",
+      "action": "pick_option",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions"
+    },
+    {
+      "at": "2026-08-03T15:10:42.956Z",
+      "action": "fill",
+      "sel": "[data-testid=\"hdsd-requisition-title\"]",
+      "tag": "input",
+      "value": "YCTD HireToPay SP2SDD8FM8"
+    },
+    {
+      "at": "2026-08-03T15:10:43.041Z",
+      "action": "open_department"
+    },
+    {
+      "at": "2026-08-03T15:10:43.519Z",
+      "action": "pick_option",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions"
+    },
+    {
+      "at": "2026-08-03T15:10:43.817Z",
+      "action": "fill",
+      "sel": "[data-testid=\"hdsd-requisition-headcount\"]",
+      "tag": "input",
+      "value": "1"
+    },
+    {
+      "at": "2026-08-03T15:10:44.411Z",
+      "action": "pick_option",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions"
+    },
+    {
+      "at": "2026-08-03T15:10:44.819Z",
+      "action": "click_role",
+      "text": "/Lưu yêu cầu|Lưu/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions"
+    },
+    {
+      "at": "2026-08-03T15:10:49.769Z",
+      "action": "goto_recruitment",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions",
+      "tab": "requisitions"
+    },
+    {
+      "at": "2026-08-03T15:10:52.826Z",
+      "action": "click_role",
+      "text": "/Yêu cầu tuyển dụng/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions"
+    },
+    {
+      "at": "2026-08-03T15:10:54.482Z",
+      "action": "f5_after_create"
+    },
+    {
+      "at": "2026-08-03T15:10:58.128Z",
+      "action": "submit_row",
+      "stamp": "SP2SDD8FM8"
+    },
+    {
+      "at": "2026-08-03T15:11:02.809Z",
+      "action": "goto_cc",
+      "url": "http://127.0.0.1:5173/command-center/inbox"
+    },
+    {
+      "at": "2026-08-03T15:11:07.108Z",
+      "action": "goto_recruitment",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates",
+      "tab": "candidates"
+    },
+    {
+      "at": "2026-08-03T15:11:10.288Z",
+      "action": "click_role",
+      "text": "/Ứng viên|Candidates/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates"
+    },
+    {
+      "at": "2026-08-03T15:11:12.191Z",
+      "action": "click_locator",
+      "text": "/Thêm ứng viên|Thêm UV|Tạo ứng viên|Thêm/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates"
+    },
+    {
+      "at": "2026-08-03T15:11:13.529Z",
+      "action": "fill",
+      "sel": "[role=\"dialog\"] input[name=\"full_name\"]",
+      "tag": "input",
+      "value": "Nguyen Hire Pay SP2SDD8FM8"
+    },
+    {
+      "at": "2026-08-03T15:11:13.758Z",
+      "action": "fill",
+      "sel": "[role=\"dialog\"] input[type=\"email\"]",
+      "tag": "input",
+      "value": "hire.pay.1785769804304@example.vn"
+    },
+    {
+      "at": "2026-08-03T15:11:51.563Z",
+      "action": "click_locator",
+      "text": "/hired|Đã tuyển|Thuê|Hire|Offer/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates"
+    },
+    {
+      "at": "2026-08-03T15:11:53.942Z",
+      "action": "f5_candidates"
+    },
+    {
+      "at": "2026-08-03T15:11:56.821Z",
+      "action": "goto_recruitment",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates",
+      "tab": "candidates"
+    },
+    {
+      "at": "2026-08-03T15:12:00.006Z",
+      "action": "click_role",
+      "text": "/Ứng viên|Candidates/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates"
+    },
+    {
+      "at": "2026-08-03T15:12:02.260Z",
+      "action": "goto_employees",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:12:06.039Z",
+      "action": "click_employee_row"
+    },
+    {
+      "at": "2026-08-03T15:12:08.997Z",
+      "action": "goto_contracts",
+      "url": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:12:13.186Z",
+      "action": "goto_payroll",
+      "url": "http://127.0.0.1:5173/hr/payroll?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:12:16.375Z",
+      "action": "goto_payroll",
+      "url": "http://127.0.0.1:5173/hr/salary?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:12:19.323Z",
+      "action": "goto_payroll",
+      "url": "http://127.0.0.1:5173/command-center/hrm/payroll"
+    },
+    {
+      "at": "2026-08-03T15:12:22.437Z",
+      "action": "f5_payroll"
+    },
+    {
+      "at": "2026-08-03T15:12:26.106Z",
+      "action": "member_recruitment",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=xe-du-lich&tab=requisitions"
+    }
+  ],
+  "steps": {
+    "SP1": {
+      "url": "http://127.0.0.1:5173/command-center?settings=workflow",
+      "clickPath": [
+        "CC settings=workflow",
+        "find hrm_recruitment*",
+        "reload"
+      ],
+      "network": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+          "at": "2026-08-03T15:10:08.957Z"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+          "at": "2026-08-03T15:10:08.959Z"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/xbos/workflow-engine/definitions",
+          "at": "2026-08-03T15:10:09.004Z"
+        }
+      ],
+      "f5": true,
+      "spec_ref": "J-REC-WF-01 · FR-UC-B03",
+      "summary": "listOk=true stillHasRec=true opened=true saved=true",
+      "gap": null,
+      "verdict": "🟢",
+      "at": "2026-08-03T15:10:19.739Z"
+    },
+    "SP2-MOUNT": {
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=jd-library",
+      "clickPath": [
+        "/hr/recruitment",
+        "tab=jd-library"
+      ],
+      "network": [],
+      "f5": null,
+      "spec_ref": "UF-HRM-12 mount · R-PO-SPINE01-REC-MOUNT",
+      "gap": null,
+      "summary": "mounted=true viteFail=false viteOk=true probes={\"recruitment_tsx_5173\":200,\"job_templates_tab_5173\":200,\"recruitment_tsx_8080\":200,\"job_templates_tab_8080\":200}",
+      "verdict": "🟢",
+      "at": "2026-08-03T15:10:25.542Z"
+    },
+    "SP2": {
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions",
+      "clickPath": [
+        "tab=requisitions",
+        "Thêm yêu cầu",
+        "Lưu",
+        "F5",
+        "Gửi duyệt"
+      ],
+      "network": [
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "/api/hrm/recruitment/requisitions",
+          "at": "2026-08-03T15:10:44.962Z",
+          "createdId": "34a421e7-33df-4c8b-b96c-559082b78086",
+          "code": "HRM-REC-201"
+        },
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "/api/hrm/recruitment/requisitions/34a421e7-33df-4c8b-b96c-559082b78086/submit-workflow?company_id=holding",
+          "at": "2026-08-03T15:10:58.641Z",
+          "code": "HRM-REC-WF-200",
+          "spawnMissing": false
+        }
+      ],
+      "f5": true,
+      "spec_ref": "UF-HRM-12 · J-HRM-05 · J-REC-WF-02",
+      "gap": null,
+      "summary": "create=true id=34a421e7-33df-4c8b-b96c-559082b78086 submit=201 spawn=false f5=true",
+      "createOk": true,
+      "spawnBanner": false,
+      "verdict": "🟢",
+      "at": "2026-08-03T15:11:02.221Z"
+    },
+    "SP3": {
+      "url": "http://127.0.0.1:5173/command-center/inbox",
+      "clickPath": [
+        "/command-center/inbox",
+        "observe no this-wave task"
+      ],
+      "network": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+          "at": "2026-08-03T15:11:03.046Z"
+        }
+      ],
+      "f5": false,
+      "spec_ref": "J-REC-WF-03 · UF-XBOS-08",
+      "gap": "Prior tuyển tasks may exist but THIS-WAVE stamp absent — U65 BLOCKED chain (no seed · no prior-task approve)",
+      "summary": "thisWave=false priorRec=true emptyHint=false approveOk=false seed=false",
+      "hasTask": false,
+      "approveOk": false,
+      "blocked_u65": true,
+      "verdict": "🟡",
+      "at": "2026-08-03T15:11:06.107Z"
+    },
+    "SP4": {
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates",
+      "clickPath": [
+        "tab=candidates",
+        "Thêm UV / stage hire"
+      ],
+      "network": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+          "at": "2026-08-03T15:11:54.984Z"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+          "at": "2026-08-03T15:11:57.449Z"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+          "at": "2026-08-03T15:11:57.449Z"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+          "at": "2026-08-03T15:11:57.534Z"
+        }
+      ],
+      "f5": true,
+      "spec_ref": "J-REC-WF-04 · UF-HRM-12",
+      "gap": "candidate/hire CTA incomplete — product_gap or missing prior approve",
+      "summary": "open=true createOk=false patches= hiredShown=true",
+      "verdict": "🟡",
+      "at": "2026-08-03T15:12:01.319Z"
+    },
+    "SP5": {
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main",
+      "detailUrl": "http://127.0.0.1:5173/hr/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010",
+      "contractUrl": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main",
+      "clickPath": [
+        "/hr/employees",
+        "row→detail",
+        "/hr/contracts",
+        "name→profile"
+      ],
+      "network": [],
+      "f5": null,
+      "spec_ref": "J-HRM-01 · J-HRM-02 · J-HRM-03",
+      "gap": "new hire stamp not on emp/contract lists (hire incomplete upstream)",
+      "summary": "empBanner=false detailOk=true jhrm01=false hasContracts=false stampSeen=false",
+      "verdict": "🟡",
+      "at": "2026-08-03T15:12:12.193Z"
+    },
+    "SP6": {
+      "url": "http://127.0.0.1:5173/command-center/hrm/payroll",
+      "clickPath": [
+        "/hr/payroll",
+        "/hr/salary",
+        "/command-center/hrm/payroll"
+      ],
+      "network": [],
+      "f5": true,
+      "spec_ref": "J-HRM-07 · UF-HRM-06 · FR-UC-H04",
+      "gap": null,
+      "summary": "loaded=true banner=false emptyHonest=false hasRows=true stamp=false",
+      "verdict": "🟡",
+      "at": "2026-08-03T15:12:25.062Z"
+    },
+    "SP-MEM": {
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=xe-du-lich&tab=requisitions",
+      "clickPath": [
+        "member login",
+        "/hr/recruitment?companyId=xe-du-lich"
+      ],
+      "network": [],
+      "f5": null,
+      "spec_ref": "UF-HRM-13 scope · SPINE-01 negative",
+      "gap": null,
+      "summary": "ok=true banner=false",
+      "verdict": "🟢",
+      "at": "2026-08-03T15:12:29.814Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:10:08.957Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-03T15:10:08.959Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-08-03T15:10:09.004Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:10:09.008Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions/befaec7a-2609-44a8-a327-cb84c7dbb149",
+      "at": "2026-08-03T15:10:14.868Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:10:17.297Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-03T15:10:17.297Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-08-03T15:10:17.308Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:10:17.345Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:10:22.707Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:10:22.721Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:10:22.764Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:10:22.765Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:10:22.765Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:10:27.083Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:10:27.083Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:10:27.097Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:10:27.097Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:10:27.103Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:10:36.401Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:10:36.418Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:10:36.419Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:10:36.419Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:10:36.434Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-03T15:10:36.666Z",
+      "rowCount": 5,
+      "hasStamp": false
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions",
+      "at": "2026-08-03T15:10:44.962Z",
+      "createdId": "34a421e7-33df-4c8b-b96c-559082b78086",
+      "code": "HRM-REC-201"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-03T15:10:45.096Z",
+      "rowCount": 6,
+      "hasStamp": true
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:10:50.587Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:10:50.592Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:10:50.607Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:10:50.619Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:10:50.655Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-03T15:10:50.791Z",
+      "rowCount": 6,
+      "hasStamp": true
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:10:55.163Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:10:55.163Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:10:55.164Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:10:55.170Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:10:55.172Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-03T15:10:55.335Z",
+      "rowCount": 6,
+      "hasStamp": true
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions/34a421e7-33df-4c8b-b96c-559082b78086/submit-workflow?company_id=holding",
+      "at": "2026-08-03T15:10:58.641Z",
+      "code": "HRM-REC-WF-200",
+      "spawnMissing": false
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-03T15:10:58.776Z",
+      "rowCount": 6,
+      "hasStamp": true
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:11:03.046Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:11:07.959Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:11:07.959Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:11:07.987Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:11:08.006Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:11:08.052Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:11:08.120Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-03T15:11:12.239Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:11:54.801Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:11:54.839Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:11:54.873Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:11:54.899Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:11:54.899Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:11:54.984Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:11:57.418Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:11:57.437Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:11:57.449Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:11:57.449Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:11:57.449Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:11:57.534Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-03T15:12:02.672Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-03T15:12:02.672Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010?company_id=main",
+      "at": "2026-08-03T15:12:06.851Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010/work-timeline?company_id=main",
+      "at": "2026-08-03T15:12:07.015Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:12:19.785Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-03T15:12:19.786Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:12:19.817Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:12:22.828Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-03T15:12:22.830Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:12:22.870Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:12:27.065Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=xe-du-lich",
+      "at": "2026-08-03T15:12:27.066Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=xe-du-lich",
+      "at": "2026-08-03T15:12:27.066Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/recruitment/job-postings?company_id=xe-du-lich",
+      "at": "2026-08-03T15:12:27.070Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=xe-du-lich",
+      "at": "2026-08-03T15:12:27.070Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-03T15:12:27.078Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=xe-du-lich",
+      "at": "2026-08-03T15:12:28.105Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/recruitment/job-postings?company_id=xe-du-lich",
+      "at": "2026-08-03T15:12:28.108Z"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modul",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modul",
+    "404 Error: User attempted to access non-existent route: /salary",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modul",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modul",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Error fetching candidates: ApiClientError: tenantId mismatches token scope\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts:62:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts:115:26)\n",
+    "Error fetching departments: ApiClientError: tenantId mismatches token scope\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts:62:15)\n    at async getSettingsCatalogsOverview (http://127.0.0.1:5173/hr/src/integrations/",
+    "Error fetching recruitment plans: ApiClientError: tenantId mismatches token scope\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts:62:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts:1",
+    "Error fetching job requisitions: ApiClientError: tenantId mismatches token scope\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts:62:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts:11",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "pageErrors": [
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Contracts.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Contracts.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Contracts.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Payroll.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Payroll.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Payroll.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Payroll.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Payroll.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Payroll.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Payroll.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Payroll.tsx?t=1785769118058",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Payroll.tsx?t=1785769118058"
+  ],
+  "screens": [
+    {
+      "at": "2026-08-03T15:10:07.699Z",
+      "name": "00-shell",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/00-shell.png"
+    },
+    {
+      "at": "2026-08-03T15:10:11.495Z",
+      "name": "01-wf-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/01-wf-list.png"
+    },
+    {
+      "at": "2026-08-03T15:10:14.784Z",
+      "name": "01-wf-detail",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/01-wf-detail.png"
+    },
+    {
+      "at": "2026-08-03T15:10:19.739Z",
+      "name": "01-wf-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/01-wf-f5.png"
+    },
+    {
+      "at": "2026-08-03T15:10:25.530Z",
+      "name": "02-mount",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/02-mount.png"
+    },
+    {
+      "at": "2026-08-03T15:10:30.506Z",
+      "name": "02-jd-lib",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/02-jd-lib.png"
+    },
+    {
+      "at": "2026-08-03T15:10:39.985Z",
+      "name": "02-req-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/02-req-list.png"
+    },
+    {
+      "at": "2026-08-03T15:10:42.020Z",
+      "name": "02-req-dialog",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/02-req-dialog.png"
+    },
+    {
+      "at": "2026-08-03T15:10:49.407Z",
+      "name": "02-after-create",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/02-after-create.png"
+    },
+    {
+      "at": "2026-08-03T15:10:58.111Z",
+      "name": "02-f5-create",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/02-f5-create.png"
+    },
+    {
+      "at": "2026-08-03T15:11:02.221Z",
+      "name": "02-after-submit",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/02-after-submit.png"
+    },
+    {
+      "at": "2026-08-03T15:11:05.937Z",
+      "name": "03-inbox",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/03-inbox.png"
+    },
+    {
+      "at": "2026-08-03T15:11:06.107Z",
+      "name": "03-inbox-after",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/03-inbox-after.png"
+    },
+    {
+      "at": "2026-08-03T15:11:11.746Z",
+      "name": "04-candidates",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/04-candidates.png"
+    },
+    {
+      "at": "2026-08-03T15:12:01.319Z",
+      "name": "04-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/04-f5.png"
+    },
+    {
+      "at": "2026-08-03T15:12:05.903Z",
+      "name": "05-employees",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/05-employees.png"
+    },
+    {
+      "at": "2026-08-03T15:12:08.638Z",
+      "name": "05-employee-detail",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/05-employee-detail.png"
+    },
+    {
+      "at": "2026-08-03T15:12:12.134Z",
+      "name": "05-contracts",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/05-contracts.png"
+    },
+    {
+      "at": "2026-08-03T15:12:22.276Z",
+      "name": "06-payroll",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/06-payroll.png"
+    },
+    {
+      "at": "2026-08-03T15:12:25.062Z",
+      "name": "06-payroll-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/06-payroll-f5.png"
+    },
+    {
+      "at": "2026-08-03T15:12:29.730Z",
+      "name": "07-member-rec",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w2-20260803/07-member-rec.png"
+    }
+  ],
+  "ids": {
+    "requisitionId": "34a421e7-33df-4c8b-b96c-559082b78086",
+    "candidateId": null,
+    "employeeId": null,
+    "workflowInstanceId": "5590cbb1-80ff-4c1b-af72-4a78ce3a3782"
+  },
+  "inboxEmpty": true,
+  "inboxThisWave": false,
+  "seed_used": false,
+  "finishedAt": "2026-08-03T15:12:29.816Z",
+  "click_count": 46,
+  "idle_guard": {
+    "qa_idle_viewport": "PASS",
+    "click_count": 46
+  },
+  "blocked_reason": "HP-03 Inbox this-wave empty after FE submit — U65 no seed (mount+HP-02 may still PASS residual)",
+  "ack_status": "PASS_TO_PM"
+}

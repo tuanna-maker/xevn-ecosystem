@@ -1,0 +1,325 @@
+{
+  "work_item_id": "PO-HRM-CTR-WORKSPACE-G4-REC-HIRE-FE-CHAIN-QA-01-RETEST-02",
+  "parent": "PO-HRM-CTR-WORKSPACE-G4-REC-ACCEPT-OFFER-CTA-FE-02",
+  "prior_defect": "DEF-REC-ACCEPT-OFFER-CTA-OFFER-STAGE",
+  "stamp": "CTRG4HIRE-RT2-MSO89GMT",
+  "startedAt": "2026-08-11T05:36:22.204Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "contracts_printable_ready": false,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "5ccb26e"
+  },
+  "prereq": {
+    "candidates_count": 5,
+    "with_employee_id": 0,
+    "accept_target": {
+      "id": "9120c6c1-1bf3-42d9-8c1f-7150f7cfc624",
+      "name": "UV Kênh QA RECCHQA-MSNK95YR",
+      "status": "offer"
+    }
+  },
+  "rows": {
+    "WS-G4-13": {
+      "verdict": "PASS",
+      "url": "http://127.0.0.1:5173/command-center/hrm/contracts?tab=candidates&candidateId=9120c6c1-1bf3-42d9-8c1f-7150f7cfc624&workspace=create&employee_id=235428a3-f74b-413a-a27d-51ad9963cd75&subject_type=employee",
+      "hasWorkspace": true,
+      "hasEmp": true,
+      "step1": true,
+      "employee_id": "235428a3-f74b-413a-a27d-51ad9963cd75",
+      "hireCtaFrom": "accept-dialog",
+      "acceptOfferStatus": 201,
+      "candidateId": "9120c6c1-1bf3-42d9-8c1f-7150f7cfc624",
+      "deepLinkTabOk": false
+    },
+    "WS-G4-14": {
+      "verdict": "PASS_WITH_HOLD",
+      "hire_readiness_status": 200,
+      "active_contract": null,
+      "note": "HTP probe after accept-offer — full HĐ mutate out of slice"
+    }
+  },
+  "journeys": {
+    "J-HRM-CTR-HIRE-01": {
+      "verdict": "PASS",
+      "clickPath": "Tuyển dụng → Chấp nhận offer → Tạo HĐ → workspace create",
+      "hireCtaFrom": "accept-dialog",
+      "deepLinkTabOk": false
+    },
+    "J-HRM-REC-07-03": {
+      "verdict": "PASS_WITH_HOLD"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/",
+      "status": 200,
+      "at": "2026-08-11T05:36:24.825Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/",
+      "status": 200,
+      "at": "2026-08-11T05:36:24.825Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-11T05:36:25.200Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:36:25.542Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:36:25.803Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-11T05:36:25.974Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:36:26.381Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates-pool?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:36:26.400Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "status": 200,
+      "at": "2026-08-11T05:36:26.530Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:36:26.565Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates-pool?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:36:27.143Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:37.440Z"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/applications/9120c6c1-1bf3-42d9-8c1f-7150f7cfc624/accept-offer?company_id=main",
+      "status": 201,
+      "at": "2026-08-11T05:37:39.594Z"
+    },
+    {
+      "tag": "accept-offer",
+      "status": 201,
+      "employee_id": "235428a3-f74b-413a-a27d-51ad9963cd75"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75/hire-readiness?company_id=holding",
+      "status": 200,
+      "at": "2026-08-11T05:37:40.056Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates-pool?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:40.544Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "status": 200,
+      "at": "2026-08-11T05:37:40.707Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-11T05:37:42.163Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/employment-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:42.336Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-11T05:37:42.371Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:42.523Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "status": 200,
+      "at": "2026-08-11T05:37:42.763Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-11T05:37:42.860Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-11T05:37:42.939Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:42.987Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/employees/235428a3-f74b-413a-a27d-51ad9963cd75/contract-create-context?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:43.375Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:43.511Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:43.924Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/employees/235428a3-f74b-413a-a27d-51ad9963cd75/contract-create-context?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:43.924Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:44.253Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/employees/235428a3-f74b-413a-a27d-51ad9963cd75/contract-create-context?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:44.391Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:44.633Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/employees/235428a3-f74b-413a-a27d-51ad9963cd75/contract-create-context?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:44.911Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:45.005Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:45.409Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/employees/235428a3-f74b-413a-a27d-51ad9963cd75/contract-create-context?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:45.409Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:45.856Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/employees/235428a3-f74b-413a-a27d-51ad9963cd75/contract-create-context?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:46.002Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/employees/235428a3-f74b-413a-a27d-51ad9963cd75?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:37:46.318Z"
+    }
+  ],
+  "steps_attempted": [
+    "Goto http://127.0.0.1:5173/command-center/hrm/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates&candidateId=9120c6c1-1bf3-42d9-8c1f-7150f7cfc624",
+    "Deep-link tab candidates active: false (uvNavActive=false, dashboardActive=false)",
+    "Fallback click recruitment-nav-candidates",
+    "Recruitment UI ready: true",
+    "Click Chấp nhận offer",
+    "Submit accept-offer",
+    "Click Tạo HĐ from accept dialog"
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-rec-hire-fe-chain-retest-02/01-after-deeplink.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-rec-hire-fe-chain-retest-02/03-accept-offer-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-rec-hire-fe-chain-retest-02/04-after-accept-offer.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-rec-hire-fe-chain-retest-02/05-workspace-after-hire-cta.png"
+  ],
+  "defects": [
+    {
+      "id": "DEF-REC-ACCEPT-OFFER-CTA-OFFER-STAGE",
+      "severity": "P0",
+      "owner": "dev-fe",
+      "note": "CLOSED — FE-02 retest PASS",
+      "status": "CLOSED"
+    }
+  ],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "endedAt": "2026-08-11T05:37:46.595Z"
+}

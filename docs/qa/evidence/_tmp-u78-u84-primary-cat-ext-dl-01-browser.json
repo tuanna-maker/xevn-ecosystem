@@ -1,0 +1,488 @@
+{
+  "work_item_id": "U78-U84-PRIMARY-CAT-EXT-DL-01",
+  "startedAt": "2026-08-03T18:01:10.594Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "COMPANY": "main",
+    "TENANT": "xevn",
+    "STAMP": "DL-CAT-DJCH4Y",
+    "commit": "dc930c5"
+  },
+  "persona_note": "Group CEO ceo@xe.vn · company_group_hr select xe-du-lich (CO-DL) · holding gov inbox approve",
+  "api_probes": {
+    "wf_cat_def": {
+      "id": "3cb08a22-8fb3-4b1a-ae64-0663de807ac9",
+      "status": "active",
+      "code": "wf_hrm_catalog_extension_xe_du_lich"
+    },
+    "defs_codes": [
+      "TDIT",
+      "hrm_candidate_pipeline",
+      "hrm_recruitment_plan_approval",
+      "hrm_requisition_approval",
+      "wf_hrm_catalog_extension_xe_du_lich"
+    ],
+    "member_dl": {
+      "id": "f7cd381f-6a1e-4976-be04-9bdf002da3dc",
+      "tenant_id": "visun",
+      "name": "Công ty TNHH Du lịch Visun",
+      "short": "Visun"
+    },
+    "members_count": 4,
+    "gov_inbox_before": 6,
+    "gov_inbox_code": "XBOS-CAT-212",
+    "wf_cat_def_post_hp": {
+      "id": "3cb08a22-8fb3-4b1a-ae64-0663de807ac9",
+      "status": "active",
+      "code": "wf_hrm_catalog_extension_xe_du_lich"
+    },
+    "gov_inbox_after_hp": 6,
+    "gov_inbox_after_ap": 6
+  },
+  "steps": {
+    "precond_member_api": {
+      "summary": "member_dl id=f7cd381f-6a1e-4976-be04-9bdf002da3dc tenant=visun",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:01:10.701Z"
+    },
+    "wf_precond": {
+      "summary": "feDesignerSave=201:wf_hrm_catalog_extension_xe_du_lich def=3cb08a22-8fb3-4b1a-ae64-0663de807ac9 — if missing, product ensure on apply may still spawn",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:01:22.322Z"
+    },
+    "hp_member_visible": {
+      "summary": "Du lịch / xe-du-lich visible in scope bar",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:01:27.469Z"
+    },
+    "hp_open_cfg": {
+      "summary": "Cấu hình chi tiết dialog open",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:01:32.715Z"
+    },
+    "hp_add_field": {
+      "summary": "Thêm field clicked; stampInDlg=false label=QA-DL-CAT-DJCH4Y-phu-cap-tour",
+      "verdict": "PARTIAL",
+      "at": "2026-08-03T18:01:34.979Z"
+    },
+    "hp_apply": {
+      "summary": "posts=201:HRM-SET-209:hrm_employee_personal_fields | 201:HRM-SET-209:hrm_employee_insurance_fields | 201:HRM-SET-209:hrm_employee_emergency_fields | 201:HRM-SET-209:hrm_employee_basic_fields | 201:HRM-SET-209:hrm_employee_contact_fields | 201:HRM-SET-209:hrm_employee_address_fields wi=9e92221d-fd81-4e20-84eb-9e5263b15b92 batch=8b89eaf9-f2ea-47eb-a666-ee57357cae33",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:01:43.079Z"
+    },
+    "hp_f5": {
+      "summary": "F5 reopen dialog stampPresent=false",
+      "verdict": "PARTIAL",
+      "at": "2026-08-03T18:01:52.395Z"
+    },
+    "ap_inbox": {
+      "summary": "inbox=6 targetTask=f1b9df4a-9e76-4341-9ab8-02653b380f2b instance=9e92221d-fd81-4e20-84eb-9e5263b15b92",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:01:59.106Z"
+    },
+    "ap_approve": {
+      "summary": "approveClicked=true status=? code=? task=f1b9df4a-9e76-4341-9ab8-02653b380f2b",
+      "verdict": "FAIL",
+      "at": "2026-08-03T18:02:37.866Z"
+    },
+    "ap_f5": {
+      "summary": "inbox 6→6; approvedTaskGone=false",
+      "verdict": "FAIL",
+      "at": "2026-08-03T18:02:41.514Z"
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T18:01:11.120Z",
+      "msg": "GOTO_CC_WF",
+      "url": "http://127.0.0.1:5173/command-center?settings=workflow"
+    },
+    {
+      "at": "2026-08-03T18:01:22.323Z",
+      "msg": "GOTO_GROUP_HR",
+      "url": "http://127.0.0.1:5173/command-center?settings=company_group_hr"
+    },
+    {
+      "at": "2026-08-03T18:01:52.426Z",
+      "msg": "GOTO_GOV",
+      "url": "http://127.0.0.1:5173/command-center?settings=hrm_catalog_governance"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-03T18:01:11.674Z",
+      "code": "XBOS-TENANT-200",
+      "message": "Group member units loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-03T18:01:11.677Z",
+      "code": "XBOS-TENANT-200",
+      "message": "Group member units loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-08-03T18:01:11.689Z",
+      "code": "XBOS-WF-200",
+      "message": "Definitions loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:01:11.693Z",
+      "code": "XBOS-CAT-212",
+      "message": "Catalog approval inbox"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-08-03T18:01:17.755Z",
+      "code": "XBOS-WF-201",
+      "message": "Definition saved",
+      "wfCode": "wf_hrm_catalog_extension_xe_du_lich",
+      "wfId": "3cb08a22-8fb3-4b1a-ae64-0663de807ac9"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-03T18:01:22.582Z",
+      "code": "XBOS-TENANT-200",
+      "message": "Group member units loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-03T18:01:22.602Z",
+      "code": "XBOS-TENANT-200",
+      "message": "Group member units loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:01:22.623Z",
+      "code": "XBOS-CAT-212",
+      "message": "Catalog approval inbox"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/settings-catalogs/hrm_employee_personal_fields/extension-items",
+      "at": "2026-08-03T18:01:35.201Z",
+      "code": "HRM-SET-209",
+      "message": "Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).",
+      "extension": {
+        "status": 201,
+        "code": "HRM-SET-209",
+        "catalogKey": "hrm_employee_personal_fields",
+        "batchId": "40d9bb0b-09d0-4440-add7-6b216c8785cf",
+        "workflowInstanceId": "c1615d0b-3cc7-450f-ade1-6436af5d9cc9",
+        "submitted": 4
+      }
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/settings-catalogs/hrm_employee_insurance_fields/extension-items",
+      "at": "2026-08-03T18:01:35.203Z",
+      "code": "HRM-SET-209",
+      "message": "Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).",
+      "extension": {
+        "status": 201,
+        "code": "HRM-SET-209",
+        "catalogKey": "hrm_employee_insurance_fields",
+        "batchId": "c2212d5b-b95e-4f5f-8da6-fa295e867d28",
+        "workflowInstanceId": "19cd400d-1268-4686-9de1-a87af269f331",
+        "submitted": 1
+      }
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/settings-catalogs/hrm_employee_emergency_fields/extension-items",
+      "at": "2026-08-03T18:01:35.212Z",
+      "code": "HRM-SET-209",
+      "message": "Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).",
+      "extension": {
+        "status": 201,
+        "code": "HRM-SET-209",
+        "catalogKey": "hrm_employee_emergency_fields",
+        "batchId": "2147d9fd-91d5-4010-8db3-f4bdba15baf7",
+        "workflowInstanceId": "e405456b-91c2-48e7-9c7f-2e4155f619c7",
+        "submitted": 3
+      }
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/extension-items",
+      "at": "2026-08-03T18:01:35.213Z",
+      "code": "HRM-SET-209",
+      "message": "Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).",
+      "extension": {
+        "status": 201,
+        "code": "HRM-SET-209",
+        "catalogKey": "hrm_employee_basic_fields",
+        "batchId": "2f1f0d5a-28cc-47b3-8504-78ef78341b05",
+        "workflowInstanceId": "46510a0e-f7fa-4abb-9d0a-13884a2ee90f",
+        "submitted": 5
+      }
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/settings-catalogs/hrm_employee_contact_fields/extension-items",
+      "at": "2026-08-03T18:01:35.220Z",
+      "code": "HRM-SET-209",
+      "message": "Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).",
+      "extension": {
+        "status": 201,
+        "code": "HRM-SET-209",
+        "catalogKey": "hrm_employee_contact_fields",
+        "batchId": "cc35b263-c1c7-4c3b-b35d-f38a7c6ddb93",
+        "workflowInstanceId": "e9f75b9b-460b-4a94-8d4e-7a851f611263",
+        "submitted": 3
+      }
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/settings-catalogs/hrm_employee_address_fields/extension-items",
+      "at": "2026-08-03T18:01:35.221Z",
+      "code": "HRM-SET-209",
+      "message": "Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).",
+      "extension": {
+        "status": 201,
+        "code": "HRM-SET-209",
+        "catalogKey": "hrm_employee_address_fields",
+        "batchId": "8b89eaf9-f2ea-47eb-a666-ee57357cae33",
+        "workflowInstanceId": "9e92221d-fd81-4e20-84eb-9e5263b15b92",
+        "submitted": 2
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-03T18:01:43.313Z",
+      "code": "XBOS-TENANT-200",
+      "message": "Group member units loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-03T18:01:43.324Z",
+      "code": "XBOS-TENANT-200",
+      "message": "Group member units loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:01:43.341Z",
+      "code": "XBOS-CAT-212",
+      "message": "Catalog approval inbox"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-03T18:01:52.681Z",
+      "code": "XBOS-TENANT-200",
+      "message": "Group member units loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-03T18:01:52.701Z",
+      "code": "XBOS-TENANT-200",
+      "message": "Group member units loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:01:52.707Z",
+      "code": "XBOS-CAT-212",
+      "message": "Catalog approval inbox"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:01:53.184Z",
+      "code": "XBOS-CAT-212",
+      "message": "Catalog approval inbox"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:01:53.197Z",
+      "code": "XBOS-CAT-212",
+      "message": "Catalog approval inbox"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/instances/9e92221d-fd81-4e20-84eb-9e5263b15b92",
+      "at": "2026-08-03T18:01:53.250Z",
+      "code": "XBOS-CAT-213",
+      "message": "Catalog approval detail"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:01:56.519Z",
+      "code": "XBOS-CAT-212",
+      "message": "Catalog approval inbox"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-03T18:02:38.132Z",
+      "code": "XBOS-TENANT-200",
+      "message": "Group member units loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-03T18:02:38.149Z",
+      "code": "XBOS-TENANT-200",
+      "message": "Group member units loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:02:38.160Z",
+      "code": "XBOS-CAT-212",
+      "message": "Catalog approval inbox"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:02:38.642Z",
+      "code": "XBOS-CAT-212",
+      "message": "Catalog approval inbox"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:02:38.654Z",
+      "code": "XBOS-CAT-212",
+      "message": "Catalog approval inbox"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/instances/9e92221d-fd81-4e20-84eb-9e5263b15b92",
+      "at": "2026-08-03T18:02:38.720Z",
+      "code": "XBOS-CAT-213",
+      "message": "Catalog approval detail"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/00-wf-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/00b-wf-new.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/00c-wf-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/00d-wf-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/01-group-hr.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/02-dl-selected.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/03-cfg-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/04-work-block.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/05-field-added.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/06-after-apply.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/07-f5-cfg.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/08-f5-field.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/09-gov-inbox.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/10-gov-selected.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/11-gov-after-approve.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-cat-ext-dl-01/12-gov-f5.png"
+  ],
+  "ids": {
+    "wfDefId": "3cb08a22-8fb3-4b1a-ae64-0663de807ac9",
+    "batchId": "8b89eaf9-f2ea-47eb-a666-ee57357cae33",
+    "workflowInstanceId": "9e92221d-fd81-4e20-84eb-9e5263b15b92",
+    "fieldLabel": "QA-DL-CAT-DJCH4Y-phu-cap-tour",
+    "approveTaskId": null
+  },
+  "extensionPosts": [
+    {
+      "status": 201,
+      "code": "HRM-SET-209",
+      "catalogKey": "hrm_employee_personal_fields",
+      "batchId": "40d9bb0b-09d0-4440-add7-6b216c8785cf",
+      "workflowInstanceId": "c1615d0b-3cc7-450f-ade1-6436af5d9cc9",
+      "submitted": 4
+    },
+    {
+      "status": 201,
+      "code": "HRM-SET-209",
+      "catalogKey": "hrm_employee_insurance_fields",
+      "batchId": "c2212d5b-b95e-4f5f-8da6-fa295e867d28",
+      "workflowInstanceId": "19cd400d-1268-4686-9de1-a87af269f331",
+      "submitted": 1
+    },
+    {
+      "status": 201,
+      "code": "HRM-SET-209",
+      "catalogKey": "hrm_employee_emergency_fields",
+      "batchId": "2147d9fd-91d5-4010-8db3-f4bdba15baf7",
+      "workflowInstanceId": "e405456b-91c2-48e7-9c7f-2e4155f619c7",
+      "submitted": 3
+    },
+    {
+      "status": 201,
+      "code": "HRM-SET-209",
+      "catalogKey": "hrm_employee_basic_fields",
+      "batchId": "2f1f0d5a-28cc-47b3-8504-78ef78341b05",
+      "workflowInstanceId": "46510a0e-f7fa-4abb-9d0a-13884a2ee90f",
+      "submitted": 5
+    },
+    {
+      "status": 201,
+      "code": "HRM-SET-209",
+      "catalogKey": "hrm_employee_contact_fields",
+      "batchId": "cc35b263-c1c7-4c3b-b35d-f38a7c6ddb93",
+      "workflowInstanceId": "e9f75b9b-460b-4a94-8d4e-7a851f611263",
+      "submitted": 3
+    },
+    {
+      "status": 201,
+      "code": "HRM-SET-209",
+      "catalogKey": "hrm_employee_address_fields",
+      "batchId": "8b89eaf9-f2ea-47eb-a666-ee57357cae33",
+      "workflowInstanceId": "9e92221d-fd81-4e20-84eb-9e5263b15b92",
+      "submitted": 2
+    }
+  ],
+  "approve": {},
+  "residuals": [],
+  "endedAt": "2026-08-03T18:02:41.515Z"
+}

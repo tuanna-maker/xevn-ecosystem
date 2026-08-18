@@ -1,0 +1,15 @@
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1YXQubnYwMDAxQHhlLnZuIiwidGVuYW50SWQiOiJ4ZXZuIiwiY29tcGFueUlkIjoiaG9sZGluZyIsImVtcGxveWVlX2lkIjoiMzc5NmQ5NDktNDUxMy00NWMwLTg4ZmEtMzMwMzBhMDYyYjE3IiwiY29tcGFueV91dWlkIjoiMTAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwicm9sZXMiOlsiZW1wbG95ZWUiXSwiaXNzIjoieGV2bi1pbnRlcm5hbCIsImF1ZCI6Inhldm4tYXBpIiwiaWF0IjoxNzg1NzcwMDA4LCJleHAiOjE3ODU4MTMyMDh9.rtxpWu81BKLNbZMdgFNRMnaJVbXwPJhWEVtDW-5q-Qk",
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1YXQubnYwMDAxQHhlLnZuIiwidGVuYW50SWQiOiJ4ZXZuIiwiY29tcGFueUlkIjoiaG9sZGluZyIsImVtcGxveWVlX2lkIjoiMzc5NmQ5NDktNDUxMy00NWMwLTg4ZmEtMzMwMzBhMDYyYjE3IiwiY29tcGFueV91dWlkIjoiMTAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwicm9sZXMiOlsiZW1wbG95ZWUiXSwidHlwIjoicmVmcmVzaCIsImlzcyI6Inhldm4taW50ZXJuYWwiLCJhdWQiOiJ4ZXZuLWFwaSIsImlhdCI6MTc4NTc3MDAwOCwiZXhwIjoxNzg4MzYyMDA4fQ.-i5mc8F1x0gxTTnecccca6OtzZFFOzivvdMa4aKXXsA",
+  "tenant": "xevn",
+  "company": "holding",
+  "uuid": "10000000-0000-4000-8000-000000000001",
+  "emp": "3796d949-4513-45c0-88fa-33030a062b17",
+  "company_label": "Tập đoàn X.E",
+  "tenant_label": "Tập đoàn XeVN",
+  "role_label": "Nhân viên",
+  "job_title_label": "Nhân viên",
+  "employee_code": "HLD-0001",
+  "employee_name": "Nguyễn Văn An",
+  "email": "uat.nv0001@xe.vn"
+}

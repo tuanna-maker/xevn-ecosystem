@@ -1,0 +1,63 @@
+﻿{
+  "work_item_id": "P1-HRM-SCALE-W3-T-CONC",
+  "portal": "http://127.0.0.1:8088",
+  "hrm_base": "http://127.0.0.1:3101/api/hrm",
+  "stages": [
+    1000
+  ],
+  "stage_hold_ms": 300000,
+  "think_ms": 1000,
+  "targets": {
+    "error_rate": 0.01,
+    "p95_list_ms": 2000
+  },
+  "abort_error_rate": 0.05
+}
+login: OK
+pre_health: [{"url":"http://127.0.0.1:3101/api/hrm/","status":200,"ms":8,"ok":true},{"url":"http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main","status":200,"ms":108,"ok":true}]
+
+=== STAGE 1000 VU Ă— 300000ms ===
+{
+  "vus": 1000,
+  "errorRate": 0.0749,
+  "rate429": 0,
+  "rate5xx": 0.0659,
+  "p50": 419,
+  "p95": 1515,
+  "p99": 2448,
+  "rps": 621.03,
+  "list_p95": 1545,
+  "summary_p95": 1491,
+  "gates": {
+    "error_budget_ok": false,
+    "p95_list_ok": true,
+    "abort_triggered": true
+  },
+  "statusCounts": {
+    "0": 613,
+    "200": 62823,
+    "502": 4475
+  }
+}
+post-stage health FAIL at 1000 VU [
+  {
+    url: 'http://127.0.0.1:3101/api/hrm/',
+    status: 502,
+    ms: 5,
+    ok: false
+  },
+  {
+    url: 'http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main',
+    status: 502,
+    ms: 1,
+    ok: false
+  }
+]
+
+Wrote /opt/xevn-ecosystem/docs/qa/evidence/_p1-hrm-scale-w3-t-conc-raw.json
+{
+  "t_conc_met": false,
+  "max_passing_vu": null,
+  "measured_ceiling_vu": 1000,
+  "blocked_reason": "post-stage health FAIL at 1000 VU"
+}

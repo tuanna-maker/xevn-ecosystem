@@ -1,0 +1,139 @@
+{
+  "work_item_id": "PO-MFD-M2-ATT-WIRE-BALANCE-01-QA",
+  "fe_work_item": "PO-MFD-M2-ATT-WIRE-BALANCE-01",
+  "startedAt": "2026-08-04T05:37:39.889Z",
+  "u65": "zero-seed",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "steps": {
+    "login": {
+      "http": 201,
+      "persona": "ceo@xe.vn",
+      "companyId": "main"
+    },
+    "leaveEmployee": {
+      "picked": true,
+      "label": "QA Import W4B1E63RYV — QA-IM-W4B1E63RYV · staff"
+    },
+    "leaveBalance": {
+      "clickPath": "Nghỉ phép → Tạo yêu cầu nghỉ → chọn NV",
+      "j_ref": "J-HRM-06 (attendance leave surface)",
+      "leaveBalanceGets": [
+        {
+          "at": "2026-08-04T05:37:48.326Z",
+          "status": 200,
+          "path": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=646306df-f4a6-4199-bf99-9ea8a3ff8584&leave_type=annual&year=2026"
+        }
+      ],
+      "panelText": "Số dư phép\n\nCòn lại: 0 ngày\n\nHưởng 0 · Đã dùng 0 · Chờ duyệt 0 · Phép năm · năm 2026",
+      "hasDemo": false,
+      "foreverSpin": false,
+      "showsRemainingDays": true,
+      "pass": true
+    },
+    "shiftSchedule": {
+      "clickPath": "Ca làm việc → Lịch phân ca",
+      "holdVisible": true,
+      "shiftsTableVisible": false,
+      "pass": true
+    },
+    "shiftOvertime": {
+      "clickPath": "Ca làm việc → Ca làm thêm",
+      "holdVisible": true,
+      "shiftsTableVisible": false,
+      "pass": true
+    },
+    "faceHold": {
+      "clickPath": "Chấm công → Clock-In wizard → Face ID",
+      "holdBanner": true,
+      "holdErrorToast": true,
+      "checkInSuccessToast": false,
+      "checkInPostCount": 0,
+      "pass": true
+    },
+    "settingsRulesSave": {
+      "clickPath": "Thiết lập → Quy định chấm công → Chung → Lưu thay đổi",
+      "toastExcerpt": "",
+      "patchAttendanceRules": [
+        {
+          "status": 200,
+          "at": "2026-08-04T05:38:13.634Z"
+        }
+      ],
+      "buildStamp": "commit dc930c5 · CFG persist=unknown",
+      "passHonest": true,
+      "cfgMergedNote": "destructive/hold or error toast documented"
+    }
+  },
+  "leaveBalanceGets": [
+    {
+      "at": "2026-08-04T05:37:48.326Z",
+      "status": 200,
+      "path": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=646306df-f4a6-4199-bf99-9ea8a3ff8584&leave_type=annual&year=2026"
+    }
+  ],
+  "rulesPatches": [
+    {
+      "status": 200,
+      "at": "2026-08-04T05:38:13.634Z"
+    }
+  ],
+  "consoleErrors": [
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+  ],
+  "pageErrors": [],
+  "networkBad": [],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "failReasons": [],
+  "endedAt": "2026-08-04T05:38:16.208Z"
+}

@@ -1,0 +1,632 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-QA-01",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01",
+  "program": "PO-HRM-CONTINUOUS-W8-20260807",
+  "startedAt": "2026-08-07T14:49:13.190Z",
+  "stamp": "EMPTOKQA-MSJ290VB",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "apiCompanyId": "holding"
+  },
+  "u65": "zero-seed · browser-only · FE after 2xx + F5 · assert merge-tokens",
+  "hdsd_align": "Settings → Loại giấy tờ EMP · Loại hình thuê EMP → Lưu → F5 GET merge-tokens?domain=EMP · resolve-preview",
+  "honesty": {
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "contracts_printable_ready": false,
+    "seed_used": false,
+    "deny_module_emp_uat": true,
+    "deny_honesty_flip": true,
+    "deny_reopen_emp_qc": true,
+    "deny_custom_emp_live": true,
+    "r_emp_tok_ext_hold": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "DOC_KEY": "hr_doc_tok_msj290vb",
+    "DOC_LABEL": "GT MergeTok QA msj290vb",
+    "ET_KEY": "seasonal_tok_msj290vb",
+    "ET_FULLTIME_INPUT": "full-time",
+    "ET_FULLTIME_PERSIST": "full_time"
+  },
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    },
+    "unauth_list": {
+      "status": 401,
+      "url": "http://127.0.0.1:28001/api/hrm/merge-tokens?domain=EMP&company_id=main"
+    },
+    "unauth_preview": {
+      "status": 400,
+      "url": "http://127.0.0.1:28001/api/hrm/merge-tokens/resolve-preview"
+    }
+  },
+  "stale_dist": {
+    "merge_tokens_controller_present": true,
+    "emp_merge_token_register_js": true,
+    "src_register_present": true,
+    "constants_has_emp_catalog": true,
+    "constants_has_allowance_catalog": true,
+    "doc_service_has_register_hook": true,
+    "et_service_has_register_hook": true,
+    "verdict": "OK"
+  },
+  "ac": {
+    "L0-STACK": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:13.223Z",
+      "summary": "portal 200 · hrm 200 · xbos 200"
+    },
+    "L0-MERGE-TOKENS-ROUTE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:13.224Z",
+      "summary": "unauth list=401 preview=400 (expect 401/400 not 404)"
+    },
+    "STALE-DIST-PROBE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:13.226Z",
+      "summary": "dist has emp_catalog + emp-merge-token-register + DOC/ET hooks",
+      "detail": {
+        "merge_tokens_controller_present": true,
+        "emp_merge_token_register_js": true,
+        "src_register_present": true,
+        "constants_has_emp_catalog": true,
+        "constants_has_allowance_catalog": true,
+        "doc_service_has_register_hook": true,
+        "et_service_has_register_hook": true,
+        "verdict": "OK"
+      }
+    },
+    "AC-PLT-EMP-TOK-01-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:19.254Z",
+      "summary": "Clicked settings-tab-emp-document-types"
+    },
+    "AC-PLT-EMP-TOK-01-CREATE-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:20.715Z",
+      "summary": "UPSERT document-types PUT → 200 key=hr_doc_tok_msj290vb code=HRM-EMP-DOC-200",
+      "network": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/employees/document-types",
+        "id": "5a17b7d8-52df-4c16-bb11-dabd8a104639",
+        "documentTypeKey": "hr_doc_tok_msj290vb",
+        "code": "HRM-EMP-DOC-200"
+      }
+    },
+    "AC-PLT-EMP-TOK-01": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:24.783Z",
+      "summary": "GET merge-tokens?domain=EMP has emp.doc.hr_doc_tok_msj290vb origin=emp_catalog",
+      "probes": {
+        "expectTok": "emp.doc.hr_doc_tok_msj290vb",
+        "holding": {
+          "status": 200,
+          "code": "HRM-PLT-TOK-200",
+          "count": 4,
+          "hit": {
+            "tokenKey": "emp.doc.hr_doc_tok_msj290vb",
+            "origin": "emp_catalog",
+            "status": "active",
+            "domain": "EMP",
+            "labelVi": "GT MergeTok QA msj290vb",
+            "archivedAt": null
+          },
+          "sampleKeys": [
+            "emp.doc.hr_doc_tok_msj23zi2",
+            "emp.doc.hr_doc_tok_msj26rce",
+            "emp.doc.hr_doc_tok_msj290vb",
+            "emp.et.full_time"
+          ]
+        },
+        "main": {
+          "status": 200,
+          "code": "HRM-PLT-TOK-200",
+          "count": 4,
+          "hit": {
+            "tokenKey": "emp.doc.hr_doc_tok_msj290vb",
+            "origin": "emp_catalog",
+            "status": "active",
+            "domain": "EMP",
+            "labelVi": "GT MergeTok QA msj290vb",
+            "archivedAt": null
+          },
+          "sampleKeys": [
+            "emp.doc.hr_doc_tok_msj23zi2",
+            "emp.doc.hr_doc_tok_msj26rce",
+            "emp.doc.hr_doc_tok_msj290vb",
+            "emp.et.full_time"
+          ]
+        }
+      }
+    },
+    "AC-PLT-EMP-TOK-02-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:30.084Z",
+      "summary": "Clicked settings-tab-emp-employment-types"
+    },
+    "AC-PLT-EMP-TOK-02-CREATE-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:31.383Z",
+      "summary": "UPSERT employment-types → 200 key=seasonal_tok_msj290vb code=HRM-EMP-ET-200"
+    },
+    "AC-PLT-EMP-TOK-02-NORMALIZE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:31.483Z",
+      "summary": "full-time input → persist key=full_time (expect full_time) status=200"
+    },
+    "AC-PLT-EMP-TOK-02-TOKEN": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:34.235Z",
+      "summary": "Tokens emp.et.seasonal_tok_msj290vb + emp.et.full_time origin=emp_catalog",
+      "probes": {
+        "expectEt": "emp.et.seasonal_tok_msj290vb",
+        "expectFt": "emp.et.full_time",
+        "seasonal": {
+          "status": 200,
+          "code": "HRM-PLT-TOK-200",
+          "count": 5,
+          "hit": {
+            "tokenKey": "emp.et.seasonal_tok_msj290vb",
+            "origin": "emp_catalog",
+            "status": "active",
+            "domain": "EMP",
+            "labelVi": "Thuê mùa vụ Tok QA msj290vb",
+            "archivedAt": null
+          },
+          "sampleKeys": [
+            "emp.doc.hr_doc_tok_msj23zi2",
+            "emp.doc.hr_doc_tok_msj26rce",
+            "emp.doc.hr_doc_tok_msj290vb",
+            "emp.et.full_time",
+            "emp.et.seasonal_tok_msj290vb"
+          ]
+        },
+        "fulltime": {
+          "status": 200,
+          "code": "HRM-PLT-TOK-200",
+          "count": 5,
+          "hit": {
+            "tokenKey": "emp.et.full_time",
+            "origin": "emp_catalog",
+            "status": "active",
+            "domain": "EMP",
+            "labelVi": "Toàn thời gian Tok QA msj290vb",
+            "archivedAt": null
+          },
+          "sampleKeys": [
+            "emp.doc.hr_doc_tok_msj23zi2",
+            "emp.doc.hr_doc_tok_msj26rce",
+            "emp.doc.hr_doc_tok_msj290vb",
+            "emp.et.full_time",
+            "emp.et.seasonal_tok_msj290vb"
+          ]
+        }
+      }
+    },
+    "AC-PLT-EMP-TOK-02-RETIRE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:34.827Z",
+      "summary": "ET retire 201 → token emp.et.seasonal_tok_msj290vb retired/hidden from active",
+      "probes": {
+        "activeListHit": null,
+        "allListHit": null
+      }
+    },
+    "AC-PLT-EMP-TOK-02": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:34.828Z",
+      "summary": "rollup PASS/PASS/PASS/PASS"
+    },
+    "AC-PLT-EMP-TOK-03": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:34.887Z",
+      "summary": "resolve-preview 2xx · catalog labels present · CCCD missing (no invent) · full_time registry OK",
+      "inventForbidden": false,
+      "docLabelHit": true,
+      "etLabelHit": true,
+      "cccdSource": "missing"
+    },
+    "AC-PLT-EMP-TOK-05": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:49:35.377Z",
+      "summary": "must_keep: contracts/SI/catalog-sync 2xx · builtin resolve-preview 2xx · EMP-QC not reopened · custom.emp HOLD"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:49:17.748Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:49:17.749Z",
+      "body": null
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types",
+      "at": "2026-08-07T14:49:19.452Z",
+      "body": {
+        "code": "HRM-EMP-DOC-200",
+        "id": "5a17b7d8-52df-4c16-bb11-dabd8a104639",
+        "key": "hr_doc_tok_msj290vb",
+        "itemCount": 0
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:49:19.454Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:49:19.472Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:49:19.483Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:49:23.473Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:49:23.473Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:49:28.576Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:49:28.713Z",
+      "body": null
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types",
+      "at": "2026-08-07T14:49:30.297Z",
+      "body": {
+        "code": "HRM-EMP-ET-200",
+        "id": "633836a1-fa2f-49db-9c62-fd2b5c11a3ad",
+        "key": "seasonal_tok_msj290vb",
+        "itemCount": 0
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:49:30.301Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:49:30.460Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:49:30.605Z",
+      "body": null
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types",
+      "at": "2026-08-07T14:49:31.483Z",
+      "body": {
+        "code": "HRM-EMP-ET-200",
+        "id": "7bd59ed9-ffda-4ccd-a792-b6dca088d779",
+        "key": "full_time",
+        "itemCount": 0
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:49:31.485Z",
+      "body": null
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-merge-token-emp-qa-01/01-settings-emp-doc.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-merge-token-emp-qa-01/02-doc-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-merge-token-emp-qa-01/03-doc-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-merge-token-emp-qa-01/04-settings-emp-et.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-merge-token-emp-qa-01/05-et-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-merge-token-emp-qa-01/99-final.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T14:49:13.283Z",
+      "msg": "loginApi ok"
+    },
+    {
+      "at": "2026-08-07T14:49:13.655Z",
+      "msg": "Settings DOC tab"
+    },
+    {
+      "at": "2026-08-07T14:49:19.346Z",
+      "msg": "DOC save key=hr_doc_tok_msj290vb"
+    },
+    {
+      "at": "2026-08-07T14:49:20.716Z",
+      "msg": "F5 settings DOC then assert merge-tokens"
+    },
+    {
+      "at": "2026-08-07T14:49:24.784Z",
+      "msg": "Settings ET tab"
+    },
+    {
+      "at": "2026-08-07T14:49:30.191Z",
+      "msg": "ET save key=seasonal_tok_msj290vb"
+    }
+  ],
+  "probes": {
+    "docUpsert": {
+      "status": 200,
+      "method": "PUT",
+      "url": "/api/hrm/employees/document-types",
+      "id": "5a17b7d8-52df-4c16-bb11-dabd8a104639",
+      "documentTypeKey": "hr_doc_tok_msj290vb",
+      "code": "HRM-EMP-DOC-200"
+    },
+    "mergeTokenDoc": {
+      "expectTok": "emp.doc.hr_doc_tok_msj290vb",
+      "holding": {
+        "status": 200,
+        "code": "HRM-PLT-TOK-200",
+        "count": 4,
+        "hit": {
+          "tokenKey": "emp.doc.hr_doc_tok_msj290vb",
+          "origin": "emp_catalog",
+          "status": "active",
+          "domain": "EMP",
+          "labelVi": "GT MergeTok QA msj290vb",
+          "archivedAt": null
+        },
+        "sampleKeys": [
+          "emp.doc.hr_doc_tok_msj23zi2",
+          "emp.doc.hr_doc_tok_msj26rce",
+          "emp.doc.hr_doc_tok_msj290vb",
+          "emp.et.full_time"
+        ]
+      },
+      "main": {
+        "status": 200,
+        "code": "HRM-PLT-TOK-200",
+        "count": 4,
+        "hit": {
+          "tokenKey": "emp.doc.hr_doc_tok_msj290vb",
+          "origin": "emp_catalog",
+          "status": "active",
+          "domain": "EMP",
+          "labelVi": "GT MergeTok QA msj290vb",
+          "archivedAt": null
+        },
+        "sampleKeys": [
+          "emp.doc.hr_doc_tok_msj23zi2",
+          "emp.doc.hr_doc_tok_msj26rce",
+          "emp.doc.hr_doc_tok_msj290vb",
+          "emp.et.full_time"
+        ]
+      }
+    },
+    "etUpsert": {
+      "status": 200,
+      "id": "633836a1-fa2f-49db-9c62-fd2b5c11a3ad",
+      "employmentTypeKey": "seasonal_tok_msj290vb",
+      "code": "HRM-EMP-ET-200"
+    },
+    "etFulltime": {
+      "status": 200,
+      "id": "7bd59ed9-ffda-4ccd-a792-b6dca088d779",
+      "input": "full-time",
+      "persistedKey": "full_time",
+      "code": "HRM-EMP-ET-200"
+    },
+    "mergeTokenEt": {
+      "expectEt": "emp.et.seasonal_tok_msj290vb",
+      "expectFt": "emp.et.full_time",
+      "seasonal": {
+        "status": 200,
+        "code": "HRM-PLT-TOK-200",
+        "count": 5,
+        "hit": {
+          "tokenKey": "emp.et.seasonal_tok_msj290vb",
+          "origin": "emp_catalog",
+          "status": "active",
+          "domain": "EMP",
+          "labelVi": "Thuê mùa vụ Tok QA msj290vb",
+          "archivedAt": null
+        },
+        "sampleKeys": [
+          "emp.doc.hr_doc_tok_msj23zi2",
+          "emp.doc.hr_doc_tok_msj26rce",
+          "emp.doc.hr_doc_tok_msj290vb",
+          "emp.et.full_time",
+          "emp.et.seasonal_tok_msj290vb"
+        ]
+      },
+      "fulltime": {
+        "status": 200,
+        "code": "HRM-PLT-TOK-200",
+        "count": 5,
+        "hit": {
+          "tokenKey": "emp.et.full_time",
+          "origin": "emp_catalog",
+          "status": "active",
+          "domain": "EMP",
+          "labelVi": "Toàn thời gian Tok QA msj290vb",
+          "archivedAt": null
+        },
+        "sampleKeys": [
+          "emp.doc.hr_doc_tok_msj23zi2",
+          "emp.doc.hr_doc_tok_msj26rce",
+          "emp.doc.hr_doc_tok_msj290vb",
+          "emp.et.full_time",
+          "emp.et.seasonal_tok_msj290vb"
+        ]
+      }
+    },
+    "etRetire": {
+      "status": 201,
+      "code": "HRM-EMP-ET-200",
+      "id": "633836a1-fa2f-49db-9c62-fd2b5c11a3ad"
+    },
+    "mergeTokenEtRetire": {
+      "activeListHit": null,
+      "allListHit": null
+    },
+    "resolvePreview": {
+      "keys": [
+        "emp.doc.hr_doc_tok_msj290vb",
+        "emp.et.full_time",
+        "emp.doc.CCCD",
+        "emp.et.FULL_TIME"
+      ],
+      "holding": {
+        "status": 201,
+        "code": "HRM-PLT-TOK-200",
+        "bag": {
+          "emp.doc.cccd": "",
+          "emp.doc.hr_doc_tok_msj290vb": "GT MergeTok QA msj290vb",
+          "emp.et.full_time": "Toàn thời gian Tok QA msj290vb"
+        },
+        "tokenRows": [
+          {
+            "tokenKey": "emp.doc.cccd",
+            "source": "missing",
+            "value": null,
+            "warning": "HRM-PLT-TOKEN-UNKNOWN:emp.doc.cccd"
+          },
+          {
+            "tokenKey": "emp.doc.hr_doc_tok_msj290vb",
+            "source": "registry",
+            "value": "GT MergeTok QA msj290vb",
+            "warning": null
+          },
+          {
+            "tokenKey": "emp.et.full_time",
+            "source": "registry",
+            "value": "Toàn thời gian Tok QA msj290vb",
+            "warning": null
+          }
+        ]
+      },
+      "main": {
+        "status": 201,
+        "code": "HRM-PLT-TOK-200",
+        "bag": {
+          "emp.doc.cccd": "",
+          "emp.doc.hr_doc_tok_msj290vb": "GT MergeTok QA msj290vb",
+          "emp.et.full_time": "Toàn thời gian Tok QA msj290vb"
+        },
+        "tokenRows": [
+          {
+            "tokenKey": "emp.doc.cccd",
+            "source": "missing",
+            "value": null,
+            "warning": "HRM-PLT-TOKEN-UNKNOWN:emp.doc.cccd"
+          },
+          {
+            "tokenKey": "emp.doc.hr_doc_tok_msj290vb",
+            "source": "registry",
+            "value": "GT MergeTok QA msj290vb",
+            "warning": null
+          },
+          {
+            "tokenKey": "emp.et.full_time",
+            "source": "registry",
+            "value": "Toàn thời gian Tok QA msj290vb",
+            "warning": null
+          }
+        ]
+      }
+    },
+    "mustKeep": {
+      "contracts": {
+        "status": 200,
+        "code": "HRM-CON-200"
+      },
+      "si": {
+        "status": 200,
+        "code": "HRM-EINS-200"
+      },
+      "catalogSync": {
+        "status": 200,
+        "code": "HRM-SYNC-202"
+      },
+      "builtinPreview": {
+        "status": 201,
+        "code": "HRM-PLT-TOK-200",
+        "source": "builtin",
+        "bagSnippet": "{\"employee.full_name\":\"builtin\"}"
+      },
+      "empQcNotReopened": true,
+      "customEmpNotClaimedLive": true
+    }
+  },
+  "residuals": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T14:49:35.644Z",
+  "summary": {
+    "pass": 14,
+    "fail": 0,
+    "stamp": "EMPTOKQA-MSJ290VB",
+    "residuals": []
+  }
+}

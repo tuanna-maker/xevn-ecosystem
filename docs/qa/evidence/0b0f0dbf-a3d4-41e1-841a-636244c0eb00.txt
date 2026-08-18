@@ -1,0 +1,250 @@
+=== audit: docker ps ===
+NAMES                STATUS                    PORTS
+xevn-xbos-be-dev     Up 2 minutes (healthy)    0.0.0.0:28002->28002/tcp, [::]:28002->28002/tcp
+xevn-portal-fe-dev   Up 20 minutes             0.0.0.0:8088->5173/tcp, [::]:8088->5173/tcp
+xevn-hrm-fe-dev      Up 20 minutes             0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+xevn-hrm-be-dev      Up 20 minutes (healthy)   0.0.0.0:3001->3001/tcp, [::]:3001->3001/tcp
+ytexa_frontend_dev   Up 19 hours (healthy)     0.0.0.0:8090->80/tcp, [::]:8090->80/tcp
+ytexa_backend_dev    Up 19 hours (healthy)     4000/tcp
+ytexa_db_dev         Up 19 hours (healthy)     0.0.0.0:5434->5432/tcp, [::]:5434->5432/tcp
+ytexa_cache_dev      Up 19 hours (healthy)     6379/tcp
+hsbx_web_prod        Up 3 weeks (healthy)      0.0.0.0:8082->3000/tcp, [::]:8082->3000/tcp
+hsbx_api_prod        Up 3 weeks (healthy)      0.0.0.0:3002->3001/tcp, [::]:3002->3001/tcp
+hsbx_db_prod         Up 3 weeks (healthy)      127.0.0.1:5432->5432/tcp
+asms_frontend        Up 6 weeks                0.0.0.0:4173->80/tcp, [::]:4173->80/tcp
+asms_backend         Up 6 weeks                0.0.0.0:4001->4001/tcp, [::]:4001->4001/tcp
+viconnec_web_prod    Up 2 weeks (unhealthy)    0.0.0.0:8081->80/tcp, [::]:8081->80/tcp
+xevn-xbos-fe-dev     Up 6 weeks                0.0.0.0:5173->5173/tcp, [::]:5173->5173/tcp
+=== audit: listen ports ===
+State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess                                                                                                                                                                                                                                                             
+LISTEN 0      4096         0.0.0.0:4173       0.0.0.0:*    users:(("docker-proxy",pid=170111,fd=8))                                                                                                                                                                                                                           
+LISTEN 0      4096       127.0.0.1:5432       0.0.0.0:*    users:(("docker-proxy",pid=1462513,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096         0.0.0.0:5173       0.0.0.0:*    users:(("docker-proxy",pid=4033675,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096         0.0.0.0:5434       0.0.0.0:*    users:(("docker-proxy",pid=330301,fd=8))                                                                                                                                                                                                                           
+LISTEN 0      4096         0.0.0.0:8082       0.0.0.0:*    users:(("docker-proxy",pid=243364,fd=8))                                                                                                                                                                                                                           
+LISTEN 0      4096         0.0.0.0:8081       0.0.0.0:*    users:(("docker-proxy",pid=3577679,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096         0.0.0.0:8080       0.0.0.0:*    users:(("docker-proxy",pid=1772101,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096         0.0.0.0:8090       0.0.0.0:*    users:(("docker-proxy",pid=331320,fd=8))                                                                                                                                                                                                                           
+LISTEN 0      4096         0.0.0.0:8088       0.0.0.0:*    users:(("docker-proxy",pid=1772207,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      128          0.0.0.0:22         0.0.0.0:*    users:(("sshd",pid=1456609,fd=3))                                                                                                                                                                                                                                  
+LISTEN 0      4096       127.0.0.1:9099       0.0.0.0:*    users:(("calico-node",pid=4035568,fd=9))                                                                                                                                                                                                                           
+LISTEN 0      511          0.0.0.0:80         0.0.0.0:*    users:(("nginx",pid=3581481,fd=8),("nginx",pid=1627684,fd=8),("nginx",pid=1627683,fd=8),("nginx",pid=1627682,fd=8),("nginx",pid=1627681,fd=8),("nginx",pid=1627680,fd=8),("nginx",pid=1627679,fd=8),("nginx",pid=1627678,fd=8),("nginx",pid=1627677,fd=8))         
+LISTEN 0      4096         0.0.0.0:111        0.0.0.0:*    users:(("rpcbind",pid=3569060,fd=4),("systemd",pid=1,fd=142))                                                                                                                                                                                                      
+LISTEN 0      8            0.0.0.0:179        0.0.0.0:*    users:(("bird",pid=4035906,fd=7))                                                                                                                                                                                                                                  
+LISTEN 0      511          0.0.0.0:443        0.0.0.0:*    users:(("nginx",pid=3581481,fd=10),("nginx",pid=1627684,fd=10),("nginx",pid=1627683,fd=10),("nginx",pid=1627682,fd=10),("nginx",pid=1627681,fd=10),("nginx",pid=1627680,fd=10),("nginx",pid=1627679,fd=10),("nginx",pid=1627678,fd=10),("nginx",pid=1627677,fd=10))
+LISTEN 0      4096       127.0.0.1:42351      0.0.0.0:*    users:(("containerd",pid=4031522,fd=14))                                                                                                                                                                                                                           
+LISTEN 0      4096       127.0.0.1:10249      0.0.0.0:*    users:(("kube-proxy",pid=4034599,fd=11))                                                                                                                                                                                                                           
+LISTEN 0      4096         0.0.0.0:3002       0.0.0.0:*    users:(("docker-proxy",pid=2520422,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096         0.0.0.0:3001       0.0.0.0:*    users:(("docker-proxy",pid=1772000,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096         0.0.0.0:4001       0.0.0.0:*    users:(("docker-proxy",pid=169992,fd=8))                                                                                                                                                                                                                           
+LISTEN 0      4096         0.0.0.0:28002      0.0.0.0:*    users:(("docker-proxy",pid=1801582,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096            [::]:4173          [::]:*    users:(("docker-proxy",pid=170118,fd=8))                                                                                                                                                                                                                           
+LISTEN 0      4096            [::]:5173          [::]:*    users:(("docker-proxy",pid=4033681,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096            [::]:5434          [::]:*    users:(("docker-proxy",pid=330308,fd=8))                                                                                                                                                                                                                           
+LISTEN 0      4096            [::]:8082          [::]:*    users:(("docker-proxy",pid=243370,fd=8))                                                                                                                                                                                                                           
+LISTEN 0      4096            [::]:8081          [::]:*    users:(("docker-proxy",pid=3577685,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096            [::]:8080          [::]:*    users:(("docker-proxy",pid=1772108,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096            [::]:8090          [::]:*    users:(("docker-proxy",pid=331327,fd=8))                                                                                                                                                                                                                           
+LISTEN 0      4096            [::]:8088          [::]:*    users:(("docker-proxy",pid=1772214,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096               *:9100             *:*    users:(("node_exporter",pid=1753967,fd=4))                                                                                                                                                                                                                         
+LISTEN 0      128             [::]:22            [::]:*    users:(("sshd",pid=1456609,fd=4))                                                                                                                                                                                                                                  
+LISTEN 0      511             [::]:80            [::]:*    users:(("nginx",pid=3581481,fd=9),("nginx",pid=1627684,fd=9),("nginx",pid=1627683,fd=9),("nginx",pid=1627682,fd=9),("nginx",pid=1627681,fd=9),("nginx",pid=1627680,fd=9),("nginx",pid=1627679,fd=9),("nginx",pid=1627678,fd=9),("nginx",pid=1627677,fd=9))         
+LISTEN 0      4096            [::]:111           [::]:*    users:(("rpcbind",pid=3569060,fd=6),("systemd",pid=1,fd=160))                                                                                                                                                                                                      
+LISTEN 0      511             [::]:443           [::]:*    users:(("nginx",pid=3581481,fd=11),("nginx",pid=1627684,fd=11),("nginx",pid=1627683,fd=11),("nginx",pid=1627682,fd=11),("nginx",pid=1627681,fd=11),("nginx",pid=1627680,fd=11),("nginx",pid=1627679,fd=11),("nginx",pid=1627678,fd=11),("nginx",pid=1627677,fd=11))
+LISTEN 0      4096            [::]:3002          [::]:*    users:(("docker-proxy",pid=2520429,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096            [::]:3001          [::]:*    users:(("docker-proxy",pid=1772006,fd=8))                                                                                                                                                                                                                          
+LISTEN 0      4096               *:10256            *:*    users:(("kube-proxy",pid=4034599,fd=14))                                                                                                                                                                                                                           
+LISTEN 0      4096            [::]:4001          [::]:*    users:(("docker-proxy",pid=169997,fd=8))                                                                                                                                                                                                                           
+LISTEN 0      4096            [::]:28002         [::]:*    users:(("docker-proxy",pid=1801588,fd=8))                                                                                                                                                                                                                          
+=== audit: compose ps ===
+NAME                 IMAGE            COMMAND                  SERVICE     CREATED          STATUS                    PORTS
+xevn-hrm-be-dev      node:22-alpine   "docker-entrypoint.s…"   hrm-be      20 minutes ago   Up 20 minutes (healthy)   0.0.0.0:3001->3001/tcp, :::3001->3001/tcp
+xevn-hrm-fe-dev      node:22-alpine   "docker-entrypoint.s…"   hrm-fe      20 minutes ago   Up 20 minutes             0.0.0.0:8080->8080/tcp, :::8080->8080/tcp
+xevn-portal-fe-dev   node:22-alpine   "docker-entrypoint.s…"   portal-fe   20 minutes ago   Up 20 minutes             0.0.0.0:8088->5173/tcp, :::8088->5173/tcp
+xevn-xbos-be-dev     node:22-alpine   "docker-entrypoint.s…"   xbos-be     2 minutes ago    Up 2 minutes (healthy)    0.0.0.0:28002->28002/tcp, :::28002->28002/tcp
+xevn-xbos-fe-dev     node:22-alpine   "docker-entrypoint.s…"   xbos-fe     8 weeks ago      Up 6 weeks                0.0.0.0:5173->5173/tcp, :::5173->5173/tcp
+=== audit: env ports ===
+DB_PORT=6432
+PORTAL_FE_PORT=8088
+HRM_FE_PORT=8080
+XBOS_FE_PORT=5173
+HRM_BE_PORT=3001
+XBOS_BE_PORT=28002
+# WEB_PORTAL_PORT=8088
+# HRM_WEB_PORT=8080
+# XBOS_CORE_PORT=5173
+# HRM_API_PORT=3001
+# XBOS_API_PORT=3002
+NODE_ENV=development
+=== audit: xbos logs recent ===
+! Corepack is about to download https://registry.npmjs.org/pnpm/-/pnpm-9.15.0.tgz
+
+> xbos-api@0.0.1 build /app/apps/api/xbos-api
+> nest build
+
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFoundationModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mXbosDbModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCommandCenterModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPositionRbacModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mWorkflowEngineModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAssetRequestModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTenantScopeModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOrgFoundationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCatalogGovernanceModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRaciGovernanceModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLegalEntityProfileModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/api/xbos}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/metrics, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mConfigSyncController {/api/xbos/config-sync}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/config-sync/bootstrap-xevn, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/config-sync/catalog/:catalogKey/publish, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/config-sync/catalog/:catalogKey, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/config-sync/catalogs, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAssetsController {/api/xbos/assets}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/assets, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/assets, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/assets/:assetId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/assets/:assetId, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mInfrastructureController {/api/xbos/infrastructure}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/infrastructure/settings, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/infrastructure/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/infrastructure/settings, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mBusinessMasterController {/api/xbos/business-master}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/business-master/domains, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/business-master/:domain/items, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/business-master/:domain, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/business-master/:domain/items/:itemId, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/business-master/:domain/items/:itemId, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mKpiEngineController {/api/xbos/kpi-engine}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/kpi-engine/evaluate, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/kpi-engine/evaluate-batch, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/kpi-engine/rollup, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/kpi-engine/portal-alerts, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/kpi-engine/portal-alerts, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAlertsController {/api/xbos/alerts}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/alerts/violation-ingest, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPlatformAuditController {/api/xbos/platform-audit}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/platform-audit/events, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOrgFoundationController {/api/xbos/org-foundation}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/org-units/tree, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/org-units, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/org-units/:unitId, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/org-units/:unitId, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/business-lines/promote, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/segments/:segmentId/promote, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLegalEntityProfileController {/api/xbos/org-foundation}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId/shareholders, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId/shareholders, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId/shareholders/:shareholderId, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId/shareholders/:shareholderId, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId/documents, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId/documents, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-entities/:entityId/documents/:documentId/upload, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/org-foundation/legal-documents/:documentId/file, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCommandCenterController {/api/xbos/command-center}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/command-center/workspace-meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/xbos/auth}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/auth/login, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/auth/me, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mTenantScopeController {/api/xbos/tenant-scope}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/tenant-scope/accessible, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/tenant-scope/group-org-overview, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/tenant-scope/group-member-units, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPositionRbacController {/api/xbos/position-rbac}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/templates, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/templates, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/templates/:templateId, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/assignments, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/assignments, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/permissions, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/permissions, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/grants/conflicts, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/grants, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/matrix, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/matrix, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/position-rbac/job-descriptions/:templateId, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mWorkflowEngineController {/api/xbos/workflow-engine}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/definitions, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/definitions, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/definitions/:definitionId, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/instances, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/instances, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/tasks, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/instances/:instanceId/detail, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/tasks/:taskId/complete, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/tasks/:taskId/reject, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/reporting-routes, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/workflow-engine/reporting-routes, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAssetRequestController {/api/xbos/asset-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/asset-requests, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/asset-requests, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/asset-requests/:requestId/transition, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCatalogGovernanceController {/api/xbos/catalog-governance}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/catalog-governance/publish, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/catalog-governance/workflows/seed-xe-du-lich-catalog, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/catalog-governance/workflows/start, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/catalog-governance/inbox, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/catalog-governance/instances/:instanceId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/catalog-governance/tasks/:taskId/approve, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/catalog-governance/tasks/:taskId/reject, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/catalog-governance/extension-requests, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRaciGovernanceController {/api/xbos/raci-governance}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/raci-governance/catalog, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/raci-governance/companies/:companyId/matrix, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/raci-governance/capabilities, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/raci-governance/companies/:companyId/coverage, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/xbos/raci-governance/companies/:companyId/matrix/cell, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m07/17/2026, 3:04:43 AM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +0ms[39m
+{"level":"info","time":"2026-07-17T03:04:46.252Z","service":"xbos-api","requestId":"447c4322-dcf1-4e05-b6b8-599c68f45c18","method":"GET","path":"/api/xbos/","status":200,"durationMs":15,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:04:49.136Z","service":"xbos-api","requestId":"1035c465-c12f-466e-afb4-5ec0d23ca76c","method":"GET","path":"/api/xbos/","status":200,"durationMs":3,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:04:49.209Z","service":"xbos-api","requestId":"ccebb92f-3ae9-41f5-8209-222dd03cc923","method":"GET","path":"/api/xbos/","status":200,"durationMs":2,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:05:01.334Z","service":"xbos-api","requestId":"55cbd905-e1b8-40b3-a7be-3e70e003993c","method":"GET","path":"/api/xbos/","status":200,"durationMs":2,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:05:06.245Z","service":"xbos-api","requestId":"609977ae-7885-4031-835f-44adf931623d","method":"GET","path":"/api/xbos/","status":200,"durationMs":2,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:05:16.393Z","service":"xbos-api","requestId":"352cdefc-76f6-4ef4-a626-d1ff8b80c1b9","method":"GET","path":"/api/xbos/","status":200,"durationMs":1,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:05:31.504Z","service":"xbos-api","requestId":"fd9c31d5-b096-4bc8-8a9c-0787c261cbd2","method":"GET","path":"/api/xbos/","status":200,"durationMs":1,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:05:46.563Z","service":"xbos-api","requestId":"1ee37239-96c3-4972-adac-b05f27f3bf76","method":"GET","path":"/api/xbos/","status":200,"durationMs":1,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:01.618Z","service":"xbos-api","requestId":"6f52ecec-1d91-4504-acdf-44ac49cc6a2c","method":"GET","path":"/api/xbos/","status":200,"durationMs":2,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:16.682Z","service":"xbos-api","requestId":"a411d93d-9bdf-4821-b1a8-d67e12162f04","method":"GET","path":"/api/xbos/","status":200,"durationMs":1,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:19.001Z","service":"xbos-api","requestId":"c887e9d5-ae55-499e-ba74-6e7769bc4cd4","tenantId":"xe-du-lich","companyId":"main","method":"GET","path":"/api/xbos/tenant-scope/accessible","status":200,"durationMs":106,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:26.537Z","service":"xbos-api","requestId":"54a730aa-3099-4ac3-8e42-f736c9fd1844","tenantId":"xe-du-lich","companyId":"main","method":"GET","path":"/api/xbos/tenant-scope/accessible","status":200,"durationMs":28,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:31.149Z","service":"xbos-api","requestId":"8ac5a201-cbb7-445b-958c-cdac59ace483","method":"POST","path":"/api/xbos/auth/login","status":201,"durationMs":123,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:31.736Z","service":"xbos-api","requestId":"f446f942-141f-41a0-b6ae-5217344c3d6f","method":"GET","path":"/api/xbos/","status":200,"durationMs":1,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:33.874Z","service":"xbos-api","requestId":"2fe14ffa-6186-496c-9696-9bc4db161ea6","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main","status":200,"durationMs":29,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:33.963Z","service":"xbos-api","requestId":"229d2cc2-6ce9-4927-af2d-d12a92ac37e0","tenantId":"xevn","companyId":"main","method":"GET","path":"/api/xbos/position-rbac/matrix?roleId=raci_hdqt","status":200,"durationMs":110,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:33.992Z","service":"xbos-api","requestId":"0b504790-42e5-4921-a982-2e926c78ef4c","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main","status":200,"durationMs":136,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:34.001Z","service":"xbos-api","requestId":"f2ab596d-4054-45ee-91bc-02e929d33b18","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main","status":200,"durationMs":30,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:34.019Z","service":"xbos-api","requestId":"90e977d7-ae88-4275-8e72-19df329f3fc8","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/tenant-scope/group-member-units","status":200,"durationMs":157,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:34.047Z","service":"xbos-api","requestId":"dcd33959-6879-4e89-9dcc-ff45c54eed09","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn","status":200,"durationMs":198,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:34.060Z","service":"xbos-api","requestId":"c58f1c50-4a8d-4689-97c8-d6da8dc03a68","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending","status":200,"durationMs":201,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:34.085Z","service":"xbos-api","requestId":"4e8d7022-fee7-4deb-9347-9b851bbd6cb9","tenantId":"xevn","companyId":"main","method":"GET","path":"/api/xbos/position-rbac/matrix?roleId=raci_hdqt","status":200,"durationMs":26,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:34.176Z","service":"xbos-api","requestId":"f450ff65-fc14-40b7-a64f-6825b5d7ca87","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/tenant-scope/group-member-units","status":200,"durationMs":78,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:34.348Z","service":"xbos-api","requestId":"2764e30e-2ec5-4426-9bc8-43d48a5e85cd","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn","status":200,"durationMs":45,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:34.683Z","service":"xbos-api","requestId":"57f0a458-c1c2-4b72-8bd7-dcafbf5a8392","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20","status":200,"durationMs":58,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:38.929Z","service":"xbos-api","requestId":"1e3949af-1e98-4268-8b6a-332f2e851109","tenantId":"xe-du-lich","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/tenant-scope/accessible","status":200,"durationMs":26,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:38.955Z","service":"xbos-api","requestId":"ce935565-aeee-43b6-b3d2-669d15a857aa","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/auth/me","status":200,"durationMs":51,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:39.039Z","service":"xbos-api","requestId":"17518609-d3c6-4a0a-af7c-141d49b64adb","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/auth/me","status":200,"durationMs":51,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:39.769Z","service":"xbos-api","requestId":"ad633d3a-aeae-41f7-bb12-44e7fd4053eb","tenantId":"xe-du-lich","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/tenant-scope/accessible","status":200,"durationMs":27,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:39.797Z","service":"xbos-api","requestId":"2bbacb2a-43d3-4b7b-9262-9553f25f5354","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/auth/me","status":200,"durationMs":51,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:39.888Z","service":"xbos-api","requestId":"bb64d4d0-1951-49a4-8b34-77a1d29bf537","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/auth/me","status":200,"durationMs":52,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:40.786Z","service":"xbos-api","requestId":"1ae923fd-ce63-473a-a639-f6d272be595b","tenantId":"xevn","companyId":"main","method":"GET","path":"/api/xbos/position-rbac/matrix?roleId=raci_hdqt","status":200,"durationMs":25,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:40.793Z","service":"xbos-api","requestId":"689a5d13-3218-493e-bcc6-be3c8e8341b5","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main","status":200,"durationMs":29,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:40.818Z","service":"xbos-api","requestId":"411b2e53-cb02-4a10-887f-5cbec6ad9aea","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main","status":200,"durationMs":55,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:40.844Z","service":"xbos-api","requestId":"e9184e68-c2bd-4df9-9fc8-4307b4df6bb5","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/tenant-scope/group-member-units","status":200,"durationMs":82,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:40.894Z","service":"xbos-api","requestId":"cfaaa90e-f09b-4138-9d44-8c99afbc87e1","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending","status":200,"durationMs":128,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:40.897Z","service":"xbos-api","requestId":"032303c0-5f04-4bef-b6c1-6bf3684b36b2","tenantId":"xevn","companyId":"main","method":"GET","path":"/api/xbos/position-rbac/matrix?roleId=raci_hdqt","status":200,"durationMs":35,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:40.898Z","service":"xbos-api","requestId":"6ffafec3-5f65-4819-8539-47f222602a52","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main","status":200,"durationMs":31,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:40.898Z","service":"xbos-api","requestId":"f7f071c1-3f3c-46b8-9120-f27a1bdff856","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn","status":200,"durationMs":139,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:41.016Z","service":"xbos-api","requestId":"184472cc-06d0-4bcd-ba19-9f7e341eed49","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/tenant-scope/group-member-units","status":200,"durationMs":84,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:41.243Z","service":"xbos-api","requestId":"b955e511-bf39-4d83-9f30-b635e44f449e","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn","status":200,"durationMs":142,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:41.563Z","service":"xbos-api","requestId":"b5157cfc-7cd1-44f6-8a8b-06da5ee04bc6","tenantId":"xevn","companyId":"main","userId":"ceo@xe.vn","method":"GET","path":"/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20","status":200,"durationMs":72,"msg":"request completed"}
+{"level":"info","time":"2026-07-17T03:06:46.793Z","service":"xbos-api","requestId":"40f40891-f5a2-4971-9848-952b87cf74d0","method":"GET","path":"/api/xbos/","status":200,"durationMs":1,"msg":"request completed"}

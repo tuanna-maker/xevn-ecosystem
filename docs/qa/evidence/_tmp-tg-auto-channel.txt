@@ -1,0 +1,10 @@
+﻿[xevn-ecosystem] Trả lời TG-INTAKE-1785231274872
+
+OK — bạn không cần chạy lệnh.
+
+Đã gắn tự động:
+1) Mở project Cursor → task folderOpen + sessionStart tự start telegram channel
+2) Agent mode RUN (tự nối vòng)
+3) Channel đang chạy trên máy này
+
+Bạn chỉ nhắn Telegram; PM tự nhận và tự báo khi xong việc.

@@ -1,0 +1,88 @@
+﻿{
+  "work_item_id": "P1-HRM-SCALE-W3-T-CONC",
+  "generatedAt": "2026-07-17T16:56:49.654Z",
+  "target": "http://127.0.0.1:8088",
+  "hrm_base": "http://127.0.0.1:3101/api/hrm",
+  "adr_targets": {
+    "T_CONC": "1000 VU Ă— 5min, error <1%, list p95 <2s",
+    "T_P95_LIST_ms": 2000,
+    "T_P95_SUM_ms": 1000
+  },
+  "stages": [
+    {
+      "vus": 1000,
+      "hold_ms": 300000,
+      "aborted": true,
+      "overall": {
+        "total": 67911,
+        "ok": 62823,
+        "failed": 5088,
+        "errorRate": 0.07492158854971949,
+        "rate429": 0,
+        "rate5xx": 0.06589506854559644,
+        "statusCounts": {
+          "0": 613,
+          "200": 62823,
+          "502": 4475
+        },
+        "p50_ms": 419,
+        "p95_ms": 1515,
+        "p99_ms": 2448,
+        "max_ms": 4629,
+        "min_ms": 0,
+        "throughput_rps": 621.0254862692382,
+        "duration_sec": 109.35
+      },
+      "list": {
+        "n": 44960,
+        "p50_ms": 412,
+        "p95_ms": 1545,
+        "p99_ms": 2458
+      },
+      "summary": {
+        "n": 22951,
+        "p50_ms": 433,
+        "p95_ms": 1491,
+        "p99_ms": 2418
+      },
+      "gates": {
+        "error_budget_ok": false,
+        "p95_list_ok": true,
+        "abort_triggered": true
+      },
+      "post_health": [
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/",
+          "status": 502,
+          "ms": 5,
+          "ok": false
+        },
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main",
+          "status": 502,
+          "ms": 1,
+          "ok": false
+        }
+      ]
+    }
+  ],
+  "measured_ceiling_vu": 1000,
+  "max_passing_vu": null,
+  "blocked_reason": "post-stage health FAIL at 1000 VU",
+  "t_conc_met": false,
+  "post_test_health": [
+    {
+      "url": "http://127.0.0.1:3101/api/hrm/",
+      "status": 502,
+      "ms": 0,
+      "ok": false
+    },
+    {
+      "url": "http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main",
+      "status": 502,
+      "ms": 1,
+      "ok": false
+    }
+  ],
+  "u65_note": "NFR probe only â€” not UF browser acceptance"
+}

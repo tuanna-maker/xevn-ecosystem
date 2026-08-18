@@ -1,0 +1,101 @@
+{
+  "work_item_id": "PO-MFD-M1-ATT-P0-CFG-QA-01",
+  "uc_id": "HRM-AT-14",
+  "startedAt": "2026-08-04T05:35:56.302Z",
+  "u65_zero_seed": true,
+  "hdsd_align": "Chấm công → Thiết lập → Quy định chấm công",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "EMAIL": "ceo@xe.vn",
+    "COMPANY": "main",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm_api": 200,
+    "portal": 200
+  },
+  "steps": [
+    {
+      "id": "AT-14-rules-chung-save-f5",
+      "verdict": "PASS",
+      "notes": [],
+      "get_before": {
+        "status": 200,
+        "notify_late": true
+      },
+      "patch": {
+        "status": 200,
+        "url": "/api/hrm/attendance/rules?company_id=main"
+      },
+      "get_after": {
+        "status": 200,
+        "notify_late": false
+      },
+      "ui_notify_after": false
+    },
+    {
+      "id": "AT-14-gps-work-site-crud",
+      "verdict": "PASS",
+      "siteName": "QA-GPS-e86a38",
+      "notes": [],
+      "post": {
+        "status": 201,
+        "url": "/api/hrm/attendance/work-sites"
+      },
+      "visible_after_add": true,
+      "visible_after_f5": true,
+      "get_work_sites": {
+        "status": 200,
+        "count": 1
+      },
+      "api_has_site": true
+    },
+    {
+      "id": "AT-14-d4-stub-banners",
+      "verdict": "PASS",
+      "stubs": [
+        {
+          "sidebar": "Quy định làm thêm",
+          "verdict": "PASS",
+          "stub_visible": true,
+          "fake_save": false,
+          "settings_link": true
+        },
+        {
+          "sidebar": "Quy định nghỉ",
+          "verdict": "PASS",
+          "stub_visible": true,
+          "fake_save": false,
+          "settings_link": true
+        },
+        {
+          "sidebar": "Quy định đi muộn - về sớm",
+          "verdict": "PASS",
+          "stub_visible": true,
+          "fake_save": false,
+          "settings_link": true
+        },
+        {
+          "sidebar": "Quy định làm đơn",
+          "verdict": "PASS",
+          "stub_visible": true,
+          "fake_save": false,
+          "settings_link": true
+        }
+      ]
+    },
+    {
+      "id": "AT-14-faceid-readonly",
+      "verdict": "PASS",
+      "notes": [],
+      "banner": true,
+      "face_toggle_disabled": "n/a"
+    }
+  ],
+  "verdict": "PASS_TO_PM",
+  "endedAt": "2026-08-04T05:36:38.194Z",
+  "ack_status": "PASS_TO_PM",
+  "uat_done": false
+}

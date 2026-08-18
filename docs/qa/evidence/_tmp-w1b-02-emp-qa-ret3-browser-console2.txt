@@ -1,0 +1,471 @@
+﻿{
+  "work_item_id": "W1-B-02-EMP-QA-RET3",
+  "layer": "browser-U65-HDSD",
+  "hdsd_align": true,
+  "u65": "zero-seed",
+  "startedAt": "2026-08-03T13:47:32.769Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:8080",
+    "EMAIL": "ceo@xe.vn"
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T13:47:32.846Z",
+      "action": "API_LOGIN_POST",
+      "url": "http://127.0.0.1:5173/api/xbos/auth/login"
+    },
+    {
+      "at": "2026-08-03T13:47:32.886Z",
+      "action": "API_LOGIN_OK",
+      "status": 201
+    },
+    {
+      "at": "2026-08-03T13:47:33.267Z",
+      "action": "NAV_GOTO_PORTAL_OR_HRM",
+      "url": "http://127.0.0.1:5173/"
+    },
+    {
+      "at": "2026-08-03T13:47:36.026Z",
+      "action": "NAV_FALLBACK_EMPLOYEES_URL",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main",
+      "reason": "menu miss or not on /employees"
+    },
+    {
+      "at": "2026-08-03T13:47:40.404Z",
+      "action": "ASSERT_LIST_RENDER",
+      "rootChild": 4,
+      "rowCount": 43,
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T13:47:40.405Z",
+      "action": "CASE_A_START",
+      "intent": "validation fail Ă¢â‚¬â€ empty required / bad phone"
+    },
+    {
+      "at": "2026-08-03T13:47:40.425Z",
+      "action": "CASE_A_CLICK_ROW",
+      "text": "UAT-0201",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T13:47:43.001Z",
+      "action": "CASE_A_SUBMIT_MISS"
+    },
+    {
+      "at": "2026-08-03T13:47:43.048Z",
+      "action": "CASE_A_DONE",
+      "verdict": "FAIL"
+    },
+    {
+      "at": "2026-08-03T13:47:43.049Z",
+      "action": "CASE_B_START",
+      "intent": "J-HRM-02 listĂ¢â€ â€™detail + PATCH success + F5"
+    },
+    {
+      "at": "2026-08-03T13:47:43.049Z",
+      "action": "CASE_B_RENAV_LIST",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T13:47:47.255Z",
+      "action": "CASE_B_CLICK_HOLDING_ROW",
+      "text": "QA-SD-SD8EZ1HE",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T13:47:50.802Z",
+      "action": "CASE_B_ROW_TEXT",
+      "text": "QA-SD-SD8EZ1HESQA SoftDel SD8EZ1HEqa-sd-sd8ez1he@xevn.localTáº­p Ä‘oĂ n XeVN31/7/2026Äang lĂ m viá»‡c"
+    },
+    {
+      "at": "2026-08-03T13:47:50.852Z",
+      "action": "CASE_B_PATCH_UI_MISS",
+      "detailId": "4315dade-ef5a-4db2-99ee-f724896ffa09",
+      "note": "No UI LÆ°u/PATCH observed â€” refuse API-only invent (U65)"
+    },
+    {
+      "at": "2026-08-03T13:47:50.852Z",
+      "action": "CASE_B_F5_RELOAD",
+      "url": "http://127.0.0.1:5173/hr/employees/4315dade-ef5a-4db2-99ee-f724896ffa09"
+    },
+    {
+      "at": "2026-08-03T13:47:54.583Z",
+      "action": "CASE_B_DONE",
+      "verdict": "FAIL"
+    },
+    {
+      "at": "2026-08-03T13:47:54.583Z",
+      "action": "CASE_C_START",
+      "intent": "scope logic Ă¢â‚¬â€ detail GET company_id=main for holding row; no snake label"
+    },
+    {
+      "at": "2026-08-03T13:47:54.596Z",
+      "action": "CASE_C_GOTO_LIST"
+    },
+    {
+      "at": "2026-08-03T13:47:57.807Z",
+      "action": "CASE_C_RECLICK_ROW",
+      "text": "UAT-0201",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T13:48:00.862Z",
+      "action": "CASE_C_DONE",
+      "verdict": "FAIL"
+    }
+  ],
+  "ac": {
+    "ac1_list": {
+      "verdict": "PASS",
+      "rootChild": 4,
+      "rowCount": 43,
+      "listStatus": 200,
+      "sample": {
+        "id": "84df5edb-77b1-4069-b5e5-2d2abc7ff2f9",
+        "company_id": "trsport",
+        "display_name": "UAT NV 0201",
+        "job_title_label": "STAFF",
+        "status_label": "Äang lĂ m viá»‡c",
+        "department": null
+      }
+    },
+    "ac2_jhrm02": {
+      "verdict": "FAIL",
+      "journey": "J-HRM-02",
+      "clickPath": "menuĂ¢â€ â€™NhÄ‚Â¢n viÄ‚ÂªnĂ¢â€ â€™row[QA-SD-SD8EZ1HESQA SoftDel SD8EZ1HEqa-sd-sd8ez1he@xevn.localTáº­p Ä‘oĂ n XeVN31/7/2026Äang lĂ m viá»‡c]Ă¢â€ â€™profile",
+      "finalUrl": "http://127.0.0.1:5173/hr/employees/4315dade-ef5a-4db2-99ee-f724896ffa09",
+      "detailId": "4315dade-ef5a-4db2-99ee-f724896ffa09",
+      "detailStatus": null,
+      "detailBody": null,
+      "company_id_of_row": null
+    },
+    "ac4_ui_no_snake": {
+      "verdict": "PASS",
+      "snakeUiFiltered": []
+    },
+    "ac3_patch": {
+      "verdict": "FAIL",
+      "status": null,
+      "body": null,
+      "note": "UI PATCH missing or non-2xx â€” no API invent"
+    },
+    "ac5_fe_f5": {
+      "verdict": "FAIL",
+      "afterF5Url": "http://127.0.0.1:5173/hr/employees/4315dade-ef5a-4db2-99ee-f724896ffa09",
+      "f5DetailStatus": null
+    }
+  },
+  "case_matrix": {
+    "A_fail": {
+      "verdict": "FAIL",
+      "typed": false,
+      "hasDialog": false,
+      "validationUi": false,
+      "noSuccessMutate": true,
+      "mutateCalls": [],
+      "note": "Expect FE validation block or non-2xx Ă¢â‚¬â€ no silent success on bad input"
+    },
+    "B_success": {
+      "verdict": "FAIL",
+      "ac1": "PASS",
+      "ac2": "FAIL",
+      "ac3": "FAIL",
+      "ac5": "FAIL"
+    },
+    "C_logic": {
+      "verdict": "FAIL",
+      "scopeOk": false,
+      "rollupLogic": false,
+      "company_id_of_row": null,
+      "query_company_id": "main",
+      "snake_ui": "PASS",
+      "note": "Group CEO company_id=main must resolve holding employee detail 2xx; UI never shows snake job_title_label"
+    }
+  },
+  "network": [
+    {
+      "at": "2026-08-03T13:47:33.492Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded"
+      }
+    },
+    {
+      "at": "2026-08-03T13:47:33.506Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded"
+      }
+    },
+    {
+      "at": "2026-08-03T13:47:36.600Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "bodySnippet": {
+        "total": 43,
+        "first": {
+          "id": "84df5edb-77b1-4069-b5e5-2d2abc7ff2f9",
+          "company_id": "trsport",
+          "display_name": "UAT NV 0201",
+          "job_title_label": "STAFF",
+          "status_label": "Äang lĂ m viá»‡c",
+          "department": null
+        }
+      }
+    },
+    {
+      "at": "2026-08-03T13:47:36.641Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "bodySnippet": {
+        "code": "HRM-EMP-SUMMARY-200",
+        "message": "Employee summary loaded"
+      }
+    },
+    {
+      "at": "2026-08-03T13:47:43.430Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "bodySnippet": {
+        "code": "HRM-EMP-SUMMARY-200",
+        "message": "Employee summary loaded"
+      }
+    },
+    {
+      "at": "2026-08-03T13:47:43.431Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "bodySnippet": {
+        "total": 43,
+        "first": {
+          "id": "84df5edb-77b1-4069-b5e5-2d2abc7ff2f9",
+          "company_id": "trsport",
+          "display_name": "UAT NV 0201",
+          "job_title_label": "STAFF",
+          "status_label": "Äang lĂ m viá»‡c",
+          "department": null
+        }
+      }
+    },
+    {
+      "at": "2026-08-03T13:47:54.963Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "bodySnippet": {
+        "total": 43,
+        "first": {
+          "id": "84df5edb-77b1-4069-b5e5-2d2abc7ff2f9",
+          "company_id": "trsport",
+          "display_name": "UAT NV 0201",
+          "job_title_label": "STAFF",
+          "status_label": "Äang lĂ m viá»‡c",
+          "department": null
+        }
+      }
+    },
+    {
+      "at": "2026-08-03T13:47:54.963Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "bodySnippet": {
+        "code": "HRM-EMP-SUMMARY-200",
+        "message": "Employee summary loaded"
+      }
+    }
+  ],
+  "consoleErrors": [
+    {
+      "at": "2026-08-03T13:47:40.499Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T13:47:40.507Z",
+      "text": "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=dc4c"
+    },
+    {
+      "at": "2026-08-03T13:47:47.335Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T13:47:47.338Z",
+      "text": "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=dc4c"
+    },
+    {
+      "at": "2026-08-03T13:47:51.113Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T13:47:51.117Z",
+      "text": "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=dc4c"
+    },
+    {
+      "at": "2026-08-03T13:47:57.870Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T13:47:57.874Z",
+      "text": "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=dc4c"
+    }
+  ],
+  "pageErrors": [
+    {
+      "at": "2026-08-03T13:47:40.500Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:40.506Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:40.507Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:47.335Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:47.337Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:47.338Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:51.114Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:51.117Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:51.118Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:57.871Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:57.873Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    },
+    {
+      "at": "2026-08-03T13:47:57.874Z",
+      "text": "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx"
+    }
+  ],
+  "screens": [
+    {
+      "at": "2026-08-03T13:47:36.004Z",
+      "name": "00-shell",
+      "path": "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-02-emp-qa-ret3-20260803/00-shell.png"
+    },
+    {
+      "at": "2026-08-03T13:47:40.387Z",
+      "name": "01-employees-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-02-emp-qa-ret3-20260803/01-employees-list.png"
+    },
+    {
+      "at": "2026-08-03T13:47:43.042Z",
+      "name": "03-case-a-fail",
+      "path": "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-02-emp-qa-ret3-20260803/03-case-a-fail.png"
+    },
+    {
+      "at": "2026-08-03T13:47:50.847Z",
+      "name": "04-case-b-detail",
+      "path": "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-02-emp-qa-ret3-20260803/04-case-b-detail.png"
+    },
+    {
+      "at": "2026-08-03T13:47:54.581Z",
+      "name": "06-case-b-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-02-emp-qa-ret3-20260803/06-case-b-f5.png"
+    },
+    {
+      "at": "2026-08-03T13:48:00.862Z",
+      "name": "07-case-c-reopen",
+      "path": "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-02-emp-qa-ret3-20260803/07-case-c-reopen.png"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "J-HRM-02",
+      "verdict": "Ä‘Å¸â€Â´",
+      "url": "http://127.0.0.1:5173/hr/employees/4315dade-ef5a-4db2-99ee-f724896ffa09",
+      "detailStatus": null
+    }
+  ],
+  "boot": {
+    "http://127.0.0.1:5173/hr/src/App.tsx": {
+      "status": 200,
+      "fleetErr": false,
+      "libErr": false,
+      "resolveErr": false
+    },
+    "http://127.0.0.1:8080/hr/src/App.tsx": {
+      "status": 200,
+      "fleetErr": false,
+      "libErr": false,
+      "resolveErr": false
+    },
+    "http://127.0.0.1:8080/hr/src/pages/Fleet.tsx": {
+      "status": 200,
+      "fleetErr": false,
+      "libErr": false,
+      "resolveErr": false
+    },
+    "http://127.0.0.1:8080/hr/src/pages/Employees.tsx": {
+      "status": 200,
+      "fleetErr": false,
+      "libErr": false,
+      "resolveErr": false
+    },
+    "http://127.0.0.1:8080/hr/src/lib/hrmDialogPortalA11y.ts": {
+      "status": 200,
+      "fleetErr": false,
+      "libErr": false,
+      "resolveErr": false
+    },
+    "http://127.0.0.1:8080/hr/src/lib/embedWorkingContext.ts": {
+      "status": 200,
+      "fleetErr": false,
+      "libErr": false,
+      "resolveErr": false
+    },
+    "http://127.0.0.1:8080/hr/src/components/ui/dialog.tsx": {
+      "status": 200,
+      "fleetErr": false,
+      "libErr": false,
+      "resolveErr": false
+    },
+    "http://127.0.0.1:8080/hr/src/components/hrm/HrmOperatingUnitFilter.tsx": {
+      "status": 200,
+      "fleetErr": false,
+      "libErr": false,
+      "resolveErr": false
+    }
+  },
+  "idle_guard": {
+    "qa_idle_viewport": "PASS",
+    "click_count": 20,
+    "note": "Each interaction timestamped in click_log"
+  },
+  "finishedAt": "2026-08-03T13:48:00.862Z",
+  "overall": "FAIL"
+}

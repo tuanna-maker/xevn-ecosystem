@@ -1,0 +1,526 @@
+{
+  "work_item_id": "PO-MFD-M2-ATT-CLOCK-01",
+  "startedAt": "2026-08-04T06:15:56.549Z",
+  "u65": "zero-seed",
+  "u76_hdsd_align": true,
+  "hdsd_inventory": [
+    {
+      "surface": 6,
+      "menu_path": "CC→HRM→Chấm công→Chấm công vào/ra (Clock-In hub)",
+      "testid": "clock-in-wizard + clock-in-method-selector",
+      "present": true
+    },
+    {
+      "surface": 7,
+      "menu_path": "Clock-In→Thủ công",
+      "testid": "clock-in-method-manual / clock-in-panel-manual",
+      "present": true
+    },
+    {
+      "surface": 8,
+      "menu_path": "Clock-In→QR",
+      "testid": "clock-in-method-qrcode / clock-in-panel-qrcode",
+      "present": true
+    },
+    {
+      "surface": 9,
+      "menu_path": "Clock-In→Face ID",
+      "testid": "clock-in-method-faceid / att-faceid-hold-banner",
+      "present": true,
+      "note": "GĐ2-HOLD — do not claim LIVE"
+    },
+    {
+      "surface": 10,
+      "menu_path": "Clock-In→GPS",
+      "testid": "clock-in-method-gps / clock-in-panel-gps",
+      "present": true
+    }
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "NV_EMAIL": "uat.nv0007@xe.vn",
+    "OU": "trsport",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    }
+  },
+  "steps": {
+    "l0": {
+      "verdict": "PASS",
+      "summary": "{\"hrm\":{\"status\":200,\"url\":\"http://127.0.0.1:28001/api/hrm\"},\"portal\":{\"status\":200,\"url\":\"http://127.0.0.1:5173\"}}",
+      "at": "2026-08-04T06:15:56.576Z"
+    },
+    "login": {
+      "verdict": "PASS",
+      "summary": "jwtOu=trsport emp=b06422c0-f640-45d1-8cab-cb4a609848d6",
+      "passwordUsed": "xevn-uat-2026",
+      "at": "2026-08-04T06:15:56.653Z"
+    },
+    "open_hub": {
+      "verdict": "PASS",
+      "summary": "wizard=true methods={\"manual\":true,\"qrcode\":true,\"faceid\":true,\"gps\":true}",
+      "at": "2026-08-04T06:16:02.161Z"
+    },
+    "manual_checkin": {
+      "verdict": "PASS",
+      "summary": "POST 201 code=HRM-ATT-201 F5=true",
+      "at": "2026-08-04T06:16:15.745Z"
+    },
+    "face_hold": {
+      "verdict": "PASS",
+      "summary": "banner=true posts=0",
+      "at": "2026-08-04T06:16:17.387Z"
+    },
+    "qr_panel": {
+      "verdict": "PASS",
+      "summary": "panel=true copy=true",
+      "at": "2026-08-04T06:16:19.680Z"
+    },
+    "gps_checkin": {
+      "verdict": "PARTIAL",
+      "summary": "GPS UI LIVE but POST /attendance/records omits latitude/longitude — geofence HRM-ATT-GEO-001 never fired (silent GEO bypass)",
+      "at": "2026-08-04T06:16:27.385Z"
+    }
+  },
+  "networkRecords": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:00.730Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&page=1&page_size=100",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:00.732Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:04.190Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:06.561Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/records",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:06.970Z",
+      "bodyKeys": [
+        "company_id",
+        "employee_id",
+        "attendance_date",
+        "check_in_at",
+        "status",
+        "created_by"
+      ],
+      "hasLatLon": false,
+      "latitude": null,
+      "longitude": null,
+      "employee_id": "84df5edb-77b1-4069-b5e5-2d2abc7ff2f9",
+      "code": "HRM-ATT-201",
+      "message": "Attendance record created"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&page=1&page_size=100",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:07.176Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&page=1&page_size=100",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:11.140Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:11.146Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:13.811Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&page=1&page_size=100",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:16.117Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&page=1&page_size=100",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:18.376Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&page=1&page_size=100",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:20.000Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:22.856Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:23.015Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:23.195Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:23.371Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:23.634Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:23.827Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:24.051Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:24.237Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:24.403Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:24.576Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:24.777Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:24.991Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:25.153Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:25.334Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:25.501Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:25.681Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:25.883Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:26.080Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:26.256Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:26.426Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:26.568Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:26.722Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:26.884Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:27.042Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=84df5edb-77b1-4069-b5e5-2d2abc7ff2f9&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:16:27.206Z"
+    }
+  ],
+  "consoleErrors": [
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+  ],
+  "pageErrors": [],
+  "surfaces": {
+    "6": {
+      "runtime": "LIVE",
+      "note": "Clock hub shell + method selector"
+    },
+    "7": {
+      "runtime": "LIVE",
+      "employeePicked": {
+        "picked": true,
+        "label": "UAT-0201\n-\nUAT NV 0201"
+      },
+      "checkInEnabled": true,
+      "post": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/attendance/records",
+        "xCompanyId": "main",
+        "at": "2026-08-04T06:16:06.970Z",
+        "bodyKeys": [
+          "company_id",
+          "employee_id",
+          "attendance_date",
+          "check_in_at",
+          "status",
+          "created_by"
+        ],
+        "hasLatLon": false,
+        "latitude": null,
+        "longitude": null,
+        "employee_id": "84df5edb-77b1-4069-b5e5-2d2abc7ff2f9",
+        "code": "HRM-ATT-201",
+        "message": "Attendance record created"
+      },
+      "feAfter": {
+        "checkInTimeVisible": true,
+        "toast": "",
+        "f5": {
+          "empRepicked": true,
+          "textSnippet": "Chấm công Check-in/Check-out\n13:16:14\nThứ Ba, 04/08/2026\nChọn nhân viên\nUAT-0201\n-\nUAT NV 0201\nU\nUAT NV 0201\nUAT-0201\nSTAFF\nTrạng thái hôm nay\nstatus.present\nCheck-in\n06:16\nCheck-out\n--:--\nCheck-in\nCheck-out\nHướng dẫn chấm công\n• Chọn nhân viên cần chấm công từ danh sách\n• Nhấn Check-in khi bắt đầu làm việc\n• Nhấn Check-out khi kết thúc làm việc\n• Hệ thống tự động tính giờ làm và đi muộn/về sớm\n• ",
+          "stillHasCheckInTime": true
+        }
+      },
+      "postsDelta": 1
+    },
+    "8": {
+      "runtime": "PARTIAL",
+      "panel": true,
+      "hasScannerCopy": true,
+      "note": "QR shell present; camera scan mutate not exercised (no seed QR) — PARTIAL / UNMAPPED depth",
+      "mutateAttempted": false
+    },
+    "9": {
+      "runtime": "GĐ2-HOLD",
+      "holdBanner": true,
+      "panel": true,
+      "checkInPostCount": 0,
+      "note": "Face = HOLD per backlog — not LIVE"
+    },
+    "10": {
+      "runtime": "PARTIAL",
+      "panel": true,
+      "showsCoords": true,
+      "employeePicked": {
+        "picked": true,
+        "label": "UAT NV 0201\n(UAT-0201)"
+      },
+      "ctaEnabled": true,
+      "dialogConfirmed": true,
+      "post": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/attendance/records",
+        "xCompanyId": "main",
+        "at": "2026-08-04T06:16:06.970Z",
+        "bodyKeys": [
+          "company_id",
+          "employee_id",
+          "attendance_date",
+          "check_in_at",
+          "status",
+          "created_by"
+        ],
+        "hasLatLon": false,
+        "latitude": null,
+        "longitude": null,
+        "employee_id": "84df5edb-77b1-4069-b5e5-2d2abc7ff2f9",
+        "code": "HRM-ATT-201",
+        "message": "Attendance record created"
+      },
+      "postWithLatLon": null,
+      "geo001": false,
+      "note": "GPS UI LIVE but POST /attendance/records omits latitude/longitude — geofence HRM-ATT-GEO-001 never fired (silent GEO bypass)",
+      "mockGeo": {
+        "latitude": 10,
+        "longitude": 10
+      }
+    }
+  },
+  "residual": [
+    {
+      "id": "R-MFD-M2-CLOCK-GPS-LATLON",
+      "owner": "dev-fe",
+      "note": "GPSAttendance/checkIn must pass latitude+longitude on createAttendanceRecord so BE assertWithinWorkSite can return HRM-ATT-GEO-001"
+    },
+    {
+      "id": "R-MFD-M2-CLOCK-QR-DEPTH",
+      "owner": "ba-process",
+      "note": "QR clock mutate depth UNMAPPED/SPEC_GAP — shell PARTIAL; P1-10 backlog",
+      "severity": "P1"
+    }
+  ],
+  "verdict": "FAIL",
+  "ack_status": "FAIL",
+  "uat_done": false,
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-clock-01/01-clock-hub.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-clock-01/02-manual-panel.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-clock-01/03-manual-after-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-clock-01/04-face-hold.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-clock-01/05-qr-panel.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-clock-01/06-gps-panel.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-clock-01/07-gps-after-attempt.png"
+  ],
+  "endedAt": "2026-08-04T06:16:27.387Z"
+}

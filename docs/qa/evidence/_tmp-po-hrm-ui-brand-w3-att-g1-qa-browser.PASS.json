@@ -1,0 +1,463 @@
+{
+  "work_item_id": "PO-HRM-UI-BRAND-W3-ATT-G1-QA",
+  "startedAt": "2026-08-05T04:19:01.346Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "inventory": [
+    "S04",
+    "S17",
+    "S18",
+    "S19",
+    "S39",
+    "S40",
+    "S41",
+    "S58",
+    "S59",
+    "S60",
+    "S66",
+    "S69",
+    "S70"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM_FE": "http://127.0.0.1:8080",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main",
+    "commit": "dc930c5",
+    "BASE": "http://127.0.0.1:8080",
+    "PORTAL_MODE": false,
+    "loginHttp": 201,
+    "loginVia": "http://127.0.0.1:28002/api/xbos/auth/login"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": "ECONNREFUSED",
+    "hrm_fe": 200,
+    "portal_fallback": "hrm_fe_8080"
+  },
+  "themeContrastStrict": {
+    "note": "run separately: pnpm verify:xevn:theme-contrast -- --strict"
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-shifts?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-shifts?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    }
+  ],
+  "mutates": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Error loading face recognition models: Error: failed to fetch: (404) Not Found, from url: http://127.0.0.1:8080/models/tiny_face_detector_model-weights_manifest.json\n    at http://127.0.0.1:8080/hr/no",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Error loading face recognition models: Error: failed to fetch: (404) Not Found, from url: http://127.0.0.1:8080/models/tiny_face_detector_model-weights_manifest.json\n    at http://127.0.0.1:8080/hr/no",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Error loading face recognition models: Error: failed to fetch: (404) Not Found, from url: http://127.0.0.1:8080/models/tiny_face_detector_model-weights_manifest.json\n    at http://127.0.0.1:8080/hr/no",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Error loading face recognition models: Error: failed to fetch: (404) Not Found, from url: http://127.0.0.1:8080/models/tiny_face_detector_model-weights_manifest.json\n    at http://127.0.0.1:8080/hr/no",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Error loading face recognition models: Error: failed to fetch: (404) Not Found, from url: http://127.0.0.1:8080/models/tiny_face_detector_model-weights_manifest.json\n    at http://127.0.0.1:8080/hr/no",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Error loading face recognition models: Error: failed to fetch: (404) Not Found, from url: http://127.0.0.1:8080/models/tiny_face_detector_model-weights_manifest.json\n    at http://127.0.0.1:8080/hr/no",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": [],
+  "steps": {
+    "L0": {
+      "status": "PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":\"ECONNREFUSED\",\"hrm_fe\":200,\"portal_fallback\":\"hrm_fe_8080\"}",
+      "at": "2026-08-05T04:19:01.376Z"
+    },
+    "login": {
+      "status": "PASS",
+      "note": "HTTP 201",
+      "at": "2026-08-05T04:19:01.435Z"
+    },
+    "S04": {
+      "status": "PASS",
+      "note": "overview customize HOLD",
+      "at": "2026-08-05T04:19:05.602Z"
+    },
+    "S17_S19": {
+      "status": "PASS",
+      "note": "Face GĐ2-HOLD + PROP-03e SKIP",
+      "at": "2026-08-05T04:19:10.070Z"
+    },
+    "S40": {
+      "status": "PASS",
+      "note": "schedule GĐ2 HOLD",
+      "at": "2026-08-05T04:19:12.426Z"
+    },
+    "S41": {
+      "status": "PASS",
+      "note": "OT GĐ2 HOLD",
+      "at": "2026-08-05T04:19:14.749Z"
+    },
+    "S39": {
+      "status": "PASS",
+      "note": "shift copy stub",
+      "at": "2026-08-05T04:19:18.883Z"
+    },
+    "S58_leave_summary": {
+      "status": "PASS",
+      "note": "leave-summary",
+      "at": "2026-08-05T04:19:21.163Z"
+    },
+    "S59_compensatory": {
+      "status": "PASS",
+      "note": "compensatory-summary",
+      "at": "2026-08-05T04:19:23.415Z"
+    },
+    "S60_leave_plan": {
+      "status": "PASS",
+      "note": "leave-plan",
+      "at": "2026-08-05T04:19:25.662Z"
+    },
+    "S66": {
+      "status": "PASS",
+      "note": "Filter/Download stubs",
+      "at": "2026-08-05T04:19:29.896Z"
+    },
+    "S69_S70": {
+      "status": "PASS",
+      "note": "rules customize stubs",
+      "at": "2026-08-05T04:19:33.901Z"
+    },
+    "honesty": {
+      "status": "PASS",
+      "note": "no invent CLOSED/LIVE/DONE",
+      "at": "2026-08-05T04:19:33.921Z"
+    }
+  },
+  "checks": {
+    "L0": {
+      "pass": true,
+      "hrm": 200,
+      "xbos": 200,
+      "portal": "ECONNREFUSED",
+      "hrm_fe": 200,
+      "portal_fallback": "hrm_fe_8080"
+    },
+    "S04_customize_hold": {
+      "pass": true,
+      "customizeVisible": true,
+      "customizeDisabled": true,
+      "customizeBadge": 1,
+      "customizeTextColor": "rgb(17, 24, 39)",
+      "purpleHits": []
+    },
+    "S17_S19_face_hold": {
+      "pass": true,
+      "faceBannerVisible": true,
+      "faceTitle": {
+        "text": "Tính năng đang được phát triểnGĐ2— Chấm công Face ID",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "gd2Visible": true,
+      "shellVisible": true,
+      "shellPointerEvents": "none",
+      "faceLiveClaim": 0,
+      "purpleHits": [],
+      "propSkipVisible": true,
+      "employeeQrLive": false
+    },
+    "S40_schedule_hold": {
+      "pass": true,
+      "schedVisible": true,
+      "schedTitle": {
+        "text": "Tính năng đang được phát triểnGĐ2— Lịch phân ca",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "schedBadge": true,
+      "purpleHits": []
+    },
+    "S41_ot_hold": {
+      "pass": true,
+      "otVisible": true,
+      "otTitle": {
+        "text": "Tính năng đang được phát triểnGĐ2— Ca làm thêm",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "otBadge": true,
+      "purpleHits": []
+    },
+    "S39_copy_stub": {
+      "pass": true,
+      "livePass": false,
+      "emptyPass": true,
+      "rowCount": 0,
+      "copyCount": 0,
+      "copyDisabled": false,
+      "copyTitle": "",
+      "staticFloor": {
+        "ok": true,
+        "slice": " type=\"button\" variant=\"ghost\" size=\"icon\" className=\"h-8 w-8 text-xevn-textMuted disabled:opacity-60\" disabled title={t('attPage.shiftCopyHold', 'Sao chép ca — chưa có API (stub)')} aria-label={t('attPage.shiftCopyHold'"
+      },
+      "mutatesAfterClick": 0
+    },
+    "S58_leave_summary": {
+      "pass": true,
+      "visible": true,
+      "honestyVisible": true,
+      "title": {
+        "text": "Bảng tổng hợp nghỉ phépALIAS",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "hasAlias": true,
+      "hasGd2": true,
+      "textColorOk": true,
+      "purpleHits": [],
+      "bodySnippet": "Bảng tổng hợp nghỉ phép\nALIAS\nMàn này dùng cùng danh sách đơn nghỉ (LeaveTab) — chưa phải báo cáo tổng hợp / kế hoạch ri"
+    },
+    "S59_compensatory": {
+      "pass": true,
+      "visible": true,
+      "honestyVisible": true,
+      "title": {
+        "text": "Bảng tổng hợp nghỉ bùALIAS",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "hasAlias": true,
+      "hasGd2": true,
+      "textColorOk": true,
+      "purpleHits": [],
+      "bodySnippet": "Bảng tổng hợp nghỉ bù\nALIAS\nMàn này dùng cùng danh sách đơn nghỉ (LeaveTab) — chưa phải báo cáo tổng hợp / kế hoạch riên"
+    },
+    "S60_leave_plan": {
+      "pass": true,
+      "visible": true,
+      "honestyVisible": true,
+      "title": {
+        "text": "Kế hoạch nghỉ phépALIASGĐ2",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "hasAlias": true,
+      "hasGd2": true,
+      "textColorOk": true,
+      "purpleHits": [],
+      "bodySnippet": "Kế hoạch nghỉ phép\nALIAS\nGĐ2\nMàn này dùng cùng danh sách đơn nghỉ (LeaveTab) — chưa phải báo cáo tổng hợp / kế hoạch riê"
+    },
+    "S66_filter_download": {
+      "pass": true,
+      "filterVisible": true,
+      "downloadVisible": true,
+      "filterDisabled": true,
+      "downloadDisabled": true,
+      "mutatesDelta": 0,
+      "purpleHits": []
+    },
+    "S69_S70_rules_customize": {
+      "pass": true,
+      "rulesVisible": true,
+      "holdVisible": true,
+      "holdTitle": {
+        "text": "Tính năng đang được phát triểnGĐ2",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "stubs": {
+        "reset": true,
+        "preview": true,
+        "add": true
+      },
+      "stubsDisabled": {
+        "reset": true,
+        "preview": true,
+        "add": true
+      },
+      "mutatesDelta": 0,
+      "purpleHits": []
+    },
+    "honesty_gates": {
+      "pass": true,
+      "mutates": 0,
+      "face_live_claimed": false,
+      "attendance_closed_claimed": false,
+      "remaster_program_done_claimed": false,
+      "prop_03e_invented": false
+    }
+  },
+  "failReasons": [],
+  "screens": [
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/01-s04-customize-hold.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/02-s17-face-hold.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/03-s40-schedule-hold.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/04-s41-ot-hold.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/05-s39-copy-stub.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/06-s58_leave_summary.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/06-s59_compensatory.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/06-s60_leave_plan.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/07-s66-filter-download.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/08-s69-s70-rules-customize.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-g1-qa/09-final.png"
+  ],
+  "residuals": [
+    {
+      "id": "OBS-G1-S39-EMPTY-LIST",
+      "severity": "P2",
+      "note": "shifts list empty — S39 asserted via static disabled stub floor (U65 no invent rows)"
+    }
+  ],
+  "honesty": {
+    "face_live_claimed": false,
+    "attendance_closed_claimed": false,
+    "remaster_program_done_claimed": false,
+    "prop_03e_invented": false
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-05T04:19:33.975Z",
+  "summary": {
+    "checksPass": 12,
+    "checksTotal": 12,
+    "mutates": 0,
+    "failReasons": []
+  }
+}

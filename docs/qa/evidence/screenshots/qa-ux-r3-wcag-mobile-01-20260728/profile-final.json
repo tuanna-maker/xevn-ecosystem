@@ -1,0 +1,269 @@
+{
+  "hits": {
+    "info": {
+      "id": "",
+      "text": "",
+      "desc": "Thông tin",
+      "clickable": true,
+      "x1": 50,
+      "y1": 515,
+      "x2": 373,
+      "y2": 631,
+      "w": 323,
+      "h": 116
+    },
+    "work": {
+      "id": "",
+      "text": "",
+      "desc": "Công việc",
+      "clickable": true,
+      "x1": 378,
+      "y1": 515,
+      "x2": 702,
+      "y2": 631,
+      "w": 324,
+      "h": 116
+    },
+    "docs": {
+      "id": "",
+      "text": "",
+      "desc": "Tài liệu",
+      "clickable": true,
+      "x1": 707,
+      "y1": 515,
+      "x2": 1030,
+      "y2": 631,
+      "w": 323,
+      "h": 116
+    }
+  },
+  "segmentsTouchOk": true,
+  "save": {
+    "id": "profile-ess-save",
+    "text": "",
+    "desc": "Lưu thông tin liên hệ",
+    "clickable": true,
+    "x1": 87,
+    "y1": 1128,
+    "x2": 993,
+    "y2": 1243,
+    "w": 906,
+    "h": 115
+  },
+  "saveClearsTab": true,
+  "saveTouchOk": true,
+  "tabTop2": 2148,
+  "gapSaveToTab": 905,
+  "interesting": [
+    {
+      "id": "vn.xevn.hrm.mobile:id/action_bar_root",
+      "text": "",
+      "desc": "",
+      "w": 1080,
+      "h": 2337,
+      "y1": 0,
+      "y2": 2337,
+      "click": false
+    },
+    {
+      "id": "android:id/content",
+      "text": "",
+      "desc": "",
+      "w": 1080,
+      "h": 2337,
+      "y1": 0,
+      "y2": 2337,
+      "click": false
+    },
+    {
+      "id": "",
+      "text": "Hồ sơ",
+      "desc": "",
+      "w": 139,
+      "h": 71,
+      "y1": 166,
+      "y2": 237,
+      "click": false
+    },
+    {
+      "id": "profile-screen",
+      "text": "",
+      "desc": "",
+      "w": 996,
+      "h": 1807,
+      "y1": 275,
+      "y2": 2082,
+      "click": false
+    },
+    {
+      "id": "profile-tab-info",
+      "text": "",
+      "desc": "",
+      "w": 996,
+      "h": 1807,
+      "y1": 275,
+      "y2": 2082,
+      "click": false
+    },
+    {
+      "id": "dynamic-profile-form",
+      "text": "",
+      "desc": "",
+      "w": 996,
+      "h": 1075,
+      "y1": 275,
+      "y2": 1350,
+      "click": false
+    },
+    {
+      "id": "profile-ess-edit-section",
+      "text": "",
+      "desc": "",
+      "w": 996,
+      "h": 1013,
+      "y1": 275,
+      "y2": 1288,
+      "click": false
+    },
+    {
+      "id": "profile-ess-editor-xbos_personal_hometown",
+      "text": "",
+      "desc": "",
+      "w": 906,
+      "h": 164,
+      "y1": 275,
+      "y2": 439,
+      "click": false
+    },
+    {
+      "id": "profile-ess-editor-ethnicity",
+      "text": "",
+      "desc": "",
+      "w": 906,
+      "h": 194,
+      "y1": 461,
+      "y2": 655,
+      "click": false
+    },
+    {
+      "id": "profile-ess-editor-professional_qualification",
+      "text": "",
+      "desc": "",
+      "w": 906,
+      "h": 195,
+      "y1": 676,
+      "y2": 871,
+      "click": false
+    },
+    {
+      "id": "profile-ess-editor-religion",
+      "text": "",
+      "desc": "",
+      "w": 906,
+      "h": 194,
+      "y1": 891,
+      "y2": 1085,
+      "click": false
+    },
+    {
+      "id": "profile-ess-save",
+      "text": "",
+      "desc": "Lưu thông tin liên hệ",
+      "w": 906,
+      "h": 115,
+      "y1": 1128,
+      "y2": 1243,
+      "click": true
+    },
+    {
+      "id": "",
+      "text": "Lưu",
+      "desc": "",
+      "w": 76,
+      "h": 58,
+      "y1": 1157,
+      "y2": 1215,
+      "click": false
+    },
+    {
+      "id": "",
+      "text": "Cập nhật hồ sơ (HR)",
+      "desc": "",
+      "w": 358,
+      "h": 53,
+      "y1": 1397,
+      "y2": 1450,
+      "click": false
+    },
+    {
+      "id": "profile-hr-save",
+      "text": "",
+      "desc": "Lưu",
+      "w": 906,
+      "h": 126,
+      "y1": 1850,
+      "y2": 1976,
+      "click": true
+    },
+    {
+      "id": "",
+      "text": "Lưu",
+      "desc": "",
+      "w": 76,
+      "h": 58,
+      "y1": 1884,
+      "y2": 1942,
+      "click": false
+    },
+    {
+      "id": "",
+      "text": "",
+      "desc": ", 1, Hồ sơ",
+      "w": 270,
+      "h": 126,
+      "y1": 2148,
+      "y2": 2274,
+      "click": true
+    },
+    {
+      "id": "",
+      "text": "Hồ sơ",
+      "desc": "",
+      "w": 70,
+      "h": 37,
+      "y1": 2237,
+      "y2": 2274,
+      "click": false
+    },
+    {
+      "id": "tab-bar-safe-zone",
+      "text": "",
+      "desc": "",
+      "w": 1080,
+      "h": 63,
+      "y1": 2274,
+      "y2": 2337,
+      "click": false
+    },
+    {
+      "id": "check-in-fab",
+      "text": "",
+      "desc": "Thao tác nhanh",
+      "w": 147,
+      "h": 147,
+      "y1": 2136,
+      "y2": 2283,
+      "click": true
+    },
+    {
+      "id": "android:id/navigationBarBackground",
+      "text": "",
+      "desc": "",
+      "w": 1080,
+      "h": 63,
+      "y1": 2337,
+      "y2": 2400,
+      "click": false
+    }
+  ]
+}

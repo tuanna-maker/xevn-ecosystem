@@ -1,0 +1,471 @@
+{
+  "work_item_id": "QA-HRM-U72-FIELD-DISPLAY-02",
+  "startedAt": "2026-07-27T08:40:09.864Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "XBOS_API": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "EMP_ID": "ff16d855-41e4-4390-8381-9ec56262848c",
+    "EMP_CODE": "HLD-0996"
+  },
+  "ac": {
+    "AC-FD-U02": {
+      "verdict": "PASS",
+      "detail": "HLD-0996 header/Chức vụ VI or —; no LEGAL_SPECIALIST · vi=true · chucVu=Chức vụChuyên viên Pháp chế",
+      "profile": {
+        "url": "http://127.0.0.1:5173/hr/employees/ff16d855-41e4-4390-8381-9ec56262848c?portal=1&tenantId=xevn&companyId=main",
+        "headerSlice": " vị (rollup)Đang xem: Tất cả đơn vị (rollup)·Tổng giám đốc tập đoànPhạm Đức HùngHLD-0996Chỉnh sửaThông tin chungCông việcHợp đồngLương & Phụ cấpThêmHPhạm Đức HùngChuyên viên Pháp chếKinh doanhĐang làm việcThông tin cá nhânEmailuat.nv0996@xe",
+        "jobSlice": "Chức vụChuyên viên Pháp chếĐịa điểm làm việc--Ngày vào làm27/10/2025Ngày kết thúc--Loại hợp đồng—Thô",
+        "chucVuValue": "Chức vụChuyên viên Pháp chế",
+        "hasJobKeyVisible": false,
+        "hasJobKeyInBody": false,
+        "hasViJob": true,
+        "hasEmpCode": true,
+        "hasName": true,
+        "bodyHead": "!function(){try{var d=document.documentElement,c=d.classList;c.remove('light','dark');var e=localStorage.getItem('theme');if('system'===e||(!e&&true)){var t='(prefers-color-scheme: dark)',m=window.matchMedia(t);if(m.media!==t||m.matches){d.style.colorScheme = 'dark';c.add('dark')}else{d.style.colorScheme = 'light';c.add('light')}}else if(e){c.add(e|| '')}if(e==='light'||e==='dark')d.style.colorScheme=e}catch(e){}}()Đơn vị thành viênTất cả đơn vị (rollup)Đang xem: Tất cả đơn vị (rollup)·Tổng giám đốc tập đoànPhạm Đức HùngHLD-0996Chỉnh sửaThông tin chungCông việcHợp đồngLương & Phụ cấpThêmHPhạm Đức HùngChuyên viên Pháp chếKinh doanhĐang làm việcThông tin cá nhânEmailuat.nv0996@xe.vnĐiện thoại-"
+      }
+    },
+    "AC-FD-U02-F5": {
+      "verdict": "PASS",
+      "detail": "F5 keeps VI/—; no LEGAL_SPECIALIST · vi=true · chucVu=Chức vụChuyên viên Pháp chế",
+      "afterF5": {
+        "url": "http://127.0.0.1:5173/hr/employees/ff16d855-41e4-4390-8381-9ec56262848c?portal=1&tenantId=xevn&companyId=main",
+        "headerSlice": " vị (rollup)Đang xem: Tất cả đơn vị (rollup)·Tổng giám đốc tập đoànPhạm Đức HùngHLD-0996Chỉnh sửaThông tin chungCông việcHợp đồngLương & Phụ cấpThêmHPhạm Đức HùngChuyên viên Pháp chếKinh doanhĐang làm việcThông tin cá nhânEmailuat.nv0996@xe",
+        "jobSlice": "Chức vụChuyên viên Pháp chếĐịa điểm làm việc--Ngày vào làm27/10/2025Ngày kết thúc--Loại hợp đồng—Thô",
+        "chucVuValue": "Chức vụChuyên viên Pháp chế",
+        "hasJobKeyVisible": false,
+        "hasJobKeyInBody": false,
+        "hasViJob": true,
+        "hasEmpCode": true,
+        "hasName": true,
+        "bodyHead": "!function(){try{var d=document.documentElement,c=d.classList;c.remove('light','dark');var e=localStorage.getItem('theme');if('system'===e||(!e&&true)){var t='(prefers-color-scheme: dark)',m=window.matchMedia(t);if(m.media!==t||m.matches){d.style.colorScheme = 'dark';c.add('dark')}else{d.style.colorScheme = 'light';c.add('light')}}else if(e){c.add(e|| '')}if(e==='light'||e==='dark')d.style.colorScheme=e}catch(e){}}()Đơn vị thành viênTất cả đơn vị (rollup)Đang xem: Tất cả đơn vị (rollup)·Tổng giám đốc tập đoànPhạm Đức HùngHLD-0996Chỉnh sửaThông tin chungCông việcHợp đồngLương & Phụ cấpThêmHPhạm Đức HùngChuyên viên Pháp chếKinh doanhĐang làm việcThông tin cá nhânEmailuat.nv0996@xe.vnĐiện thoại-"
+      }
+    },
+    "AC-U72-LEAVE-SOFT": {
+      "verdict": "PASS",
+      "detail": "No raw leave codes visible · viHint=true · active=Lịch nghỉ",
+      "leave": {
+        "active": [
+          "Lịch nghỉ"
+        ],
+        "rawVisible": [],
+        "sideSlice": "Nghỉ phépBáo cáoThiết lậpQuản lý nghỉ phépTheo dõi và duyệt yêu cầu nghỉ phép của nhân viênTạo yêu cầu nghỉTổng yêu cầu1",
+        "hasOm": true,
+        "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+      }
+    },
+    "AC-CO-IND-02": {
+      "verdict": "PASS",
+      "detail": "industry cells=[\"-\",\"-\",\"-\",\"-\",\"-\"] · no holding/subsidiary",
+      "industry": {
+        "headers": [
+          "",
+          "Tên công ty",
+          "Mã công ty",
+          "Ngành nghề",
+          "Số nhân viên",
+          "Trạng thái",
+          ""
+        ],
+        "industries": [
+          "-",
+          "-",
+          "-",
+          "-",
+          "-"
+        ],
+        "leak": [],
+        "bodyLeak": [],
+        "rowCount": 5,
+        "url": "http://127.0.0.1:5173/hr/company?portal=1&tenantId=xevn&companyId=main"
+      }
+    },
+    "AC-FD-04": {
+      "verdict": "PASS",
+      "detail": "VI types=[\"Hợp đồng thử việc\",\"Có thời hạn\",\"Không thời hạn\"] · raw=0",
+      "contracts": {
+        "headers": [
+          "",
+          "Mã HĐ",
+          "Tên nhân sự",
+          "Phòng ban",
+          "Loại hợp đồng",
+          "Ngày hiệu lực",
+          "Ngày hết hạn",
+          "Tình trạng",
+          "Thao tác"
+        ],
+        "typeIdx": 4,
+        "samples": [
+          [
+            "",
+            "HLD-0006-HD",
+            "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+            "Kinh doanh",
+            "Hợp đồng thử việc",
+            "21/07/2026"
+          ],
+          [
+            "",
+            "HLD-0006-HD",
+            "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+            "Kinh doanh",
+            "Có thời hạn",
+            "03/06/2026"
+          ],
+          [
+            "",
+            "HLD-0006-HD",
+            "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+            "Kinh doanh",
+            "Không thời hạn",
+            "01/06/2026"
+          ],
+          [
+            "",
+            "HLD-0006-HD",
+            "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+            "Kinh doanh",
+            "Không thời hạn",
+            "01/06/2026"
+          ],
+          [
+            "",
+            "HLD-0006-HD",
+            "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+            "Kinh doanh",
+            "Có thời hạn",
+            "01/06/2026"
+          ],
+          [
+            "",
+            "TCN-0954-HD",
+            "ĐXĐặng Xuân Hà",
+            "Vận hành",
+            "Có thời hạn",
+            "01/06/2026"
+          ],
+          [
+            "",
+            "HLD-0006-HD",
+            "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+            "Kinh doanh",
+            "Có thời hạn",
+            "01/06/2026"
+          ],
+          [
+            "",
+            "HLD-0006-HD",
+            "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+            "Kinh doanh",
+            "Có thời hạn",
+            "01/06/2026"
+          ],
+          [
+            "",
+            "HLD-0006-HD",
+            "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+            "Kinh doanh",
+            "Không thời hạn",
+            "01/06/2026"
+          ],
+          [
+            "",
+            "HLD-0006-HD",
+            "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+            "Kinh doanh",
+            "Có thời hạn",
+            "01/06/2026"
+          ]
+        ],
+        "rawType": [],
+        "viType": [
+          "Hợp đồng thử việc",
+          "Có thời hạn",
+          "Không thời hạn"
+        ],
+        "url": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main"
+      }
+    },
+    "AC-U72-GLOBAL": {
+      "verdict": "PASS",
+      "detail": "U02 closed; no job_title_key leak on profile spot"
+    }
+  },
+  "observations": {
+    "login": {
+      "ok": true,
+      "email": "ceo@xe.vn"
+    },
+    "profile_before_f5": {
+      "url": "http://127.0.0.1:5173/hr/employees/ff16d855-41e4-4390-8381-9ec56262848c?portal=1&tenantId=xevn&companyId=main",
+      "headerSlice": " vị (rollup)Đang xem: Tất cả đơn vị (rollup)·Tổng giám đốc tập đoànPhạm Đức HùngHLD-0996Chỉnh sửaThông tin chungCông việcHợp đồngLương & Phụ cấpThêmHPhạm Đức HùngChuyên viên Pháp chếKinh doanhĐang làm việcThông tin cá nhânEmailuat.nv0996@xe",
+      "jobSlice": "Chức vụChuyên viên Pháp chếĐịa điểm làm việc--Ngày vào làm27/10/2025Ngày kết thúc--Loại hợp đồng—Thô",
+      "chucVuValue": "Chức vụChuyên viên Pháp chế",
+      "hasJobKeyVisible": false,
+      "hasJobKeyInBody": false,
+      "hasViJob": true,
+      "hasEmpCode": true,
+      "hasName": true,
+      "bodyHead": "!function(){try{var d=document.documentElement,c=d.classList;c.remove('light','dark');var e=localStorage.getItem('theme');if('system'===e||(!e&&true)){var t='(prefers-color-scheme: dark)',m=window.matchMedia(t);if(m.media!==t||m.matches){d.style.colorScheme = 'dark';c.add('dark')}else{d.style.colorScheme = 'light';c.add('light')}}else if(e){c.add(e|| '')}if(e==='light'||e==='dark')d.style.colorScheme=e}catch(e){}}()Đơn vị thành viênTất cả đơn vị (rollup)Đang xem: Tất cả đơn vị (rollup)·Tổng giám đốc tập đoànPhạm Đức HùngHLD-0996Chỉnh sửaThông tin chungCông việcHợp đồngLương & Phụ cấpThêmHPhạm Đức HùngChuyên viên Pháp chếKinh doanhĐang làm việcThông tin cá nhânEmailuat.nv0996@xe.vnĐiện thoại-"
+    },
+    "profile_after_f5": {
+      "url": "http://127.0.0.1:5173/hr/employees/ff16d855-41e4-4390-8381-9ec56262848c?portal=1&tenantId=xevn&companyId=main",
+      "headerSlice": " vị (rollup)Đang xem: Tất cả đơn vị (rollup)·Tổng giám đốc tập đoànPhạm Đức HùngHLD-0996Chỉnh sửaThông tin chungCông việcHợp đồngLương & Phụ cấpThêmHPhạm Đức HùngChuyên viên Pháp chếKinh doanhĐang làm việcThông tin cá nhânEmailuat.nv0996@xe",
+      "jobSlice": "Chức vụChuyên viên Pháp chếĐịa điểm làm việc--Ngày vào làm27/10/2025Ngày kết thúc--Loại hợp đồng—Thô",
+      "chucVuValue": "Chức vụChuyên viên Pháp chế",
+      "hasJobKeyVisible": false,
+      "hasJobKeyInBody": false,
+      "hasViJob": true,
+      "hasEmpCode": true,
+      "hasName": true,
+      "bodyHead": "!function(){try{var d=document.documentElement,c=d.classList;c.remove('light','dark');var e=localStorage.getItem('theme');if('system'===e||(!e&&true)){var t='(prefers-color-scheme: dark)',m=window.matchMedia(t);if(m.media!==t||m.matches){d.style.colorScheme = 'dark';c.add('dark')}else{d.style.colorScheme = 'light';c.add('light')}}else if(e){c.add(e|| '')}if(e==='light'||e==='dark')d.style.colorScheme=e}catch(e){}}()Đơn vị thành viênTất cả đơn vị (rollup)Đang xem: Tất cả đơn vị (rollup)·Tổng giám đốc tập đoànPhạm Đức HùngHLD-0996Chỉnh sửaThông tin chungCông việcHợp đồngLương & Phụ cấpThêmHPhạm Đức HùngChuyên viên Pháp chếKinh doanhĐang làm việcThông tin cá nhânEmailuat.nv0996@xe.vnĐiện thoại-"
+    },
+    "leave": {
+      "active": [
+        "Lịch nghỉ"
+      ],
+      "rawVisible": [],
+      "sideSlice": "Nghỉ phépBáo cáoThiết lậpQuản lý nghỉ phépTheo dõi và duyệt yêu cầu nghỉ phép của nhân viênTạo yêu cầu nghỉTổng yêu cầu1",
+      "hasOm": true,
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    "industry": {
+      "headers": [
+        "",
+        "Tên công ty",
+        "Mã công ty",
+        "Ngành nghề",
+        "Số nhân viên",
+        "Trạng thái",
+        ""
+      ],
+      "industries": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-"
+      ],
+      "leak": [],
+      "bodyLeak": [],
+      "rowCount": 5,
+      "url": "http://127.0.0.1:5173/hr/company?portal=1&tenantId=xevn&companyId=main"
+    },
+    "contracts": {
+      "headers": [
+        "",
+        "Mã HĐ",
+        "Tên nhân sự",
+        "Phòng ban",
+        "Loại hợp đồng",
+        "Ngày hiệu lực",
+        "Ngày hết hạn",
+        "Tình trạng",
+        "Thao tác"
+      ],
+      "typeIdx": 4,
+      "samples": [
+        [
+          "",
+          "HLD-0006-HD",
+          "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+          "Kinh doanh",
+          "Hợp đồng thử việc",
+          "21/07/2026"
+        ],
+        [
+          "",
+          "HLD-0006-HD",
+          "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+          "Kinh doanh",
+          "Có thời hạn",
+          "03/06/2026"
+        ],
+        [
+          "",
+          "HLD-0006-HD",
+          "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+          "Kinh doanh",
+          "Không thời hạn",
+          "01/06/2026"
+        ],
+        [
+          "",
+          "HLD-0006-HD",
+          "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+          "Kinh doanh",
+          "Không thời hạn",
+          "01/06/2026"
+        ],
+        [
+          "",
+          "HLD-0006-HD",
+          "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+          "Kinh doanh",
+          "Có thời hạn",
+          "01/06/2026"
+        ],
+        [
+          "",
+          "TCN-0954-HD",
+          "ĐXĐặng Xuân Hà",
+          "Vận hành",
+          "Có thời hạn",
+          "01/06/2026"
+        ],
+        [
+          "",
+          "HLD-0006-HD",
+          "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+          "Kinh doanh",
+          "Có thời hạn",
+          "01/06/2026"
+        ],
+        [
+          "",
+          "HLD-0006-HD",
+          "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+          "Kinh doanh",
+          "Có thời hạn",
+          "01/06/2026"
+        ],
+        [
+          "",
+          "HLD-0006-HD",
+          "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+          "Kinh doanh",
+          "Không thời hạn",
+          "01/06/2026"
+        ],
+        [
+          "",
+          "HLD-0006-HD",
+          "HVHuỳnh Văn An UF03-1781892744494 QA762651 UF03-1781892785716 UF03-1781894041484 QA050912 QA063037 UF03-1781917215522 QA214228 UF03-1781918995216 QA995180",
+          "Kinh doanh",
+          "Có thời hạn",
+          "01/06/2026"
+        ]
+      ],
+      "rawType": [],
+      "viType": [
+        "Hợp đồng thử việc",
+        "Có thời hạn",
+        "Không thời hạn"
+      ],
+      "url": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main"
+    }
+  },
+  "screenshots": [
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-hrm-u72-field-display-02\\01-profile-u02.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-hrm-u72-field-display-02\\02-profile-u02-f5.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-hrm-u72-field-display-02\\03-leave-soft.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-hrm-u72-field-display-02\\04-company-industry.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-hrm-u72-field-display-02\\05-contracts.png"
+  ],
+  "consoleErrors": [],
+  "network": [
+    {
+      "url": "/api/hrm/employees/ff16d855-41e4-4390-8381-9ec56262848c?company_id=main",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/employees/ff16d855-41e4-4390-8381-9ec56262848c/work-timeline?company_id=main",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/employees/ff16d855-41e4-4390-8381-9ec56262848c?company_id=main",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/employees/ff16d855-41e4-4390-8381-9ec56262848c/work-timeline?company_id=main",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/employees/summary?company_id=main",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=2&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=3&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=4&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=5&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=6&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=7&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=8&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=9&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=10&page_size=100",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=11&page_size=100",
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "overall": "PASS",
+  "finishedAt": "2026-07-27T08:40:41.988Z",
+  "ack_status": "PASS_TO_PM",
+  "l0": {
+    "note": "HRM Vite :8080 required for /hr proxy; started if ECONNREFUSED"
+  }
+}

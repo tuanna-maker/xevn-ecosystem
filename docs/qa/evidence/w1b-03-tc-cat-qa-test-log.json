@@ -1,0 +1,245 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-W1B-03-TC-CAT-QA-20260803",
+  "work_item_id": "W1-B-03-TC-CAT-QA",
+  "tester": "qa",
+  "harness": "scripts/qa/w1b-03-tc-cat-qa-browser.mjs",
+  "started_at": "2026-08-03T14:31:27.000Z",
+  "ended_at": "2026-08-03T14:32:04.668Z",
+  "environment": {
+    "portal": "http://127.0.0.1:5173",
+    "hrm_api": "http://127.0.0.1:28001",
+    "xbos_api": "http://127.0.0.1:28002",
+    "persona": "ceo@xe.vn",
+    "company_id": "main",
+    "l0": { "hrm": 200, "xbos": 200, "portal": 200 }
+  },
+  "spec_ref": [
+    "FR-UC-B04",
+    "API_CONTRACT_NEW.md §2",
+    "docs/program/slices/DOC-ENT-P0-XBOS-CAT.md",
+    "J-XBOS-CTRL-01",
+    "UF-HRM-10"
+  ],
+  "hdsd_align": true,
+  "u65_zero_seed": true,
+  "verdict": "fail",
+  "ack_status": "FAIL_TO_PM",
+  "summary": {
+    "passed": 11,
+    "failed": 1,
+    "blocked": 0,
+    "skipped": 0,
+    "clicks": 18
+  },
+  "cases": [
+    { "id": "CASE-A", "name": "fail-deep-wrong-password", "status": "pass" },
+    { "id": "CASE-B", "name": "success-hdsd-publish-pull-picker", "status": "fail", "notes": "AC1 XBOS status_label missing" },
+    { "id": "CASE-C", "name": "f5-persist", "status": "pass" }
+  ],
+  "ac": [
+    {
+      "id": "AC1",
+      "status": "fail",
+      "publish": { "code": "XBOS-CFG-204", "status": 201, "appliedCount": 1 },
+      "get_source": { "code": "XBOS-CFG-201", "status": 200, "version": 7, "status_label": null }
+    },
+    {
+      "id": "AC2",
+      "status": "pass",
+      "fe_sync_clicked": true,
+      "pull": {
+        "code": "HRM-SYNC-200",
+        "status": 201,
+        "published_version": 7,
+        "version": 7,
+        "topLevelItems": true,
+        "status_label": "Đang dùng"
+      }
+    },
+    {
+      "id": "AC3",
+      "status": "pass",
+      "get": { "code": "HRM-SYNC-201", "status": 200, "topLevelItems": true }
+    },
+    {
+      "id": "AC4",
+      "status": "pass",
+      "pickerShowsLabel": true,
+      "miss": { "status": 404, "code": "HRM-SYNC-002" }
+    },
+    { "id": "AC5", "status": "pass", "f5": true }
+  ],
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-03T14:31:27.000Z",
+      "action": "L0 health",
+      "expected": "hrm+xbos+portal 200",
+      "actual": "all 200",
+      "result": "pass"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-03T14:31:27.920Z",
+      "action": "Case A wrong password",
+      "expected": "401 + stay login",
+      "actual": "XBOS-AUTH-401",
+      "network": { "method": "POST", "url": "/api/xbos/auth/login", "status": 401, "code": "XBOS-AUTH-401" },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-03-tc-cat-qa/A-wrong-password.png"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-03T14:31:30.999Z",
+      "action": "Login ceo@xe.vn",
+      "expected": "2xx command-center",
+      "actual": "201 XBOS-AUTH-200",
+      "network": { "method": "POST", "url": "/api/xbos/auth/login", "status": 201, "code": "XBOS-AUTH-200" },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-03-tc-cat-qa/01-after-login.png"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-03T14:31:35.025Z",
+      "action": "Open Áp dụng danh mục HRM",
+      "expected": "panel visible",
+      "actual": "panelOk=true",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-03-tc-cat-qa/02-apply-panel.png"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-03T14:31:38.655Z",
+      "action": "Tải lại nguồn tập đoàn",
+      "expected": "2xx + items[].status_label",
+      "actual": "XBOS-CFG-201 v7 items=4 status_label missing",
+      "network": {
+        "method": "GET",
+        "url": "/api/xbos/config-sync/catalog/job_titles?target=hrm&tenantId=xevn&companyId=holding",
+        "status": 200,
+        "code": "XBOS-CFG-201"
+      },
+      "result": "fail",
+      "attachment": "docs/qa/evidence/screens/w1b-03-tc-cat-qa/03-source-loaded.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-03T14:31:43.052Z",
+      "action": "Áp dụng danh mục ĐVTV",
+      "expected": "XBOS-CFG-203 or CFG-204",
+      "actual": "XBOS-CFG-204 appliedCount=1",
+      "network": {
+        "method": "POST",
+        "url": "/api/xbos/config-sync/catalog/job_titles/apply-to-members",
+        "status": 201,
+        "code": "XBOS-CFG-204"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-03-tc-cat-qa/04-after-apply.png"
+    },
+    {
+      "seq": 7,
+      "at": "2026-08-03T14:31:47.912Z",
+      "action": "Open HRM settings-catalogs",
+      "expected": "Đồng bộ từ XBOS visible",
+      "actual": "hasPull=true",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-03-tc-cat-qa/05-hrm-catalogs.png"
+    },
+    {
+      "seq": 8,
+      "at": "2026-08-03T14:31:52.051Z",
+      "action": "Click Đồng bộ từ XBOS",
+      "expected": "POST sync-from-xbos",
+      "actual": "request observed",
+      "network": {
+        "method": "POST",
+        "url": "/api/hrm/settings-catalogs/sync-from-xbos",
+        "phase": "request"
+      },
+      "result": "pass"
+    },
+    {
+      "seq": 9,
+      "at": "2026-08-03T14:32:00.837Z",
+      "action": "POST catalog-sync/pull/job_titles",
+      "expected": "HRM-SYNC-200 top-level items published_version",
+      "actual": "201 HRM-SYNC-200 v=7 pub=7 status_label=Đang dùng",
+      "network": {
+        "method": "POST",
+        "url": "/api/hrm/catalog-sync/pull/job_titles",
+        "status": 201,
+        "code": "HRM-SYNC-200"
+      },
+      "result": "pass"
+    },
+    {
+      "seq": 10,
+      "at": "2026-08-03T14:32:00.900Z",
+      "action": "GET catalog-sync/job_titles",
+      "expected": "HRM-SYNC-201 display-ready",
+      "actual": "200 HRM-SYNC-201 top-level items",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/catalog-sync/job_titles",
+        "status": 200,
+        "code": "HRM-SYNC-201"
+      },
+      "result": "pass"
+    },
+    {
+      "seq": 11,
+      "at": "2026-08-03T14:32:00.950Z",
+      "action": "Picker labels + miss key",
+      "expected": "label visible + 404 honest",
+      "actual": "Tổng Giám đốc visible; miss HRM-SYNC-002",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/catalog-sync/__no_such_catalog_key__",
+        "status": 404,
+        "code": "HRM-SYNC-002"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-03-tc-cat-qa/06-after-pull.png"
+    },
+    {
+      "seq": 12,
+      "at": "2026-08-03T14:32:01.085Z",
+      "action": "F5 persist",
+      "expected": "catalogs remain",
+      "actual": "f5Ok=true",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-03-tc-cat-qa/07-after-f5.png"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "R-CAT-XBOS-STATUS-LABEL",
+      "severity": "P0",
+      "expected": "XBOS catalog items include status_label/status_tone",
+      "actual": "live GET items have status only",
+      "residual_wi": "W1-B-03-TC-CAT-XBOS-LABEL-01"
+    },
+    {
+      "id": "R-CAT-PICKER-LABEL",
+      "severity": "P2",
+      "expected": "settings-catalogs picker status_label from BE",
+      "actual": "may still FE-map status; catalog-sync items OK",
+      "residual_wi": "defer"
+    }
+  ],
+  "attachments": [
+    "docs/qa/evidence/screens/w1b-03-tc-cat-qa/A-wrong-password.png",
+    "docs/qa/evidence/screens/w1b-03-tc-cat-qa/00-login.png",
+    "docs/qa/evidence/screens/w1b-03-tc-cat-qa/01-after-login.png",
+    "docs/qa/evidence/screens/w1b-03-tc-cat-qa/02-apply-panel.png",
+    "docs/qa/evidence/screens/w1b-03-tc-cat-qa/03-source-loaded.png",
+    "docs/qa/evidence/screens/w1b-03-tc-cat-qa/04-after-apply.png",
+    "docs/qa/evidence/screens/w1b-03-tc-cat-qa/05-hrm-catalogs.png",
+    "docs/qa/evidence/screens/w1b-03-tc-cat-qa/06-after-pull.png",
+    "docs/qa/evidence/screens/w1b-03-tc-cat-qa/07-after-f5.png"
+  ],
+  "narrative_evidence": "docs/qa/evidence/w1b-03-tc-cat-qa.md",
+  "runtime_source": "docs/qa/evidence/_tmp-w1b-03-tc-cat-qa-runtime.json"
+}

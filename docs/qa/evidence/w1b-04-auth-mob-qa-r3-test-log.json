@@ -1,0 +1,197 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-W1B-04-AUTH-MOB-QA-R3-20260803",
+  "work_item_id": "W1-B-04-AUTH-MOB-QA-R3",
+  "tester": "qa-device",
+  "started_at": "2026-08-03T14:09:24+07:00",
+  "ended_at": "2026-08-03T14:13:18+07:00",
+  "environment": {
+    "device": "emulator-5554",
+    "package": "vn.xevn.hrm.mobile",
+    "apk_path": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+    "apk_sha256": "E71EC1AB2AD4F0740949CC33014D95F9DEB251CA9C81FF5734FF0BB3230A0758",
+    "lastUpdateTime": "2026-08-03 20:56:48",
+    "api_base_device": "http://10.0.2.2:28001",
+    "api_host_probe": "http://127.0.0.1:28001/api/hrm/metrics?format=prometheus",
+    "api_host_status": 200
+  },
+  "spec_ref": "J-MOB-01 / FR-UC-M01 / W1-B-04-AUTH-MOB AC2",
+  "hdsd_align": true,
+  "hdsd_inventory": [
+    "Login Email",
+    "Login Mật khẩu",
+    "Login Đăng nhập",
+    "Login URL máy chủ",
+    "Alert Lỗi OK",
+    "Tab Hồ sơ",
+    "Cài đặt",
+    "Phạm vi công ty",
+    "Scope Đang dùng"
+  ],
+  "u65_zero_seed": true,
+  "anti_idle": true,
+  "click_count": 8,
+  "narrative_evidence": "docs/qa/evidence/w1b-04-auth-mob-qa-r3.md",
+  "steps": [
+    {
+      "seq": 1,
+      "time": "2026-08-03T14:09:24+07:00",
+      "action": "L0 adb + APK + metrics",
+      "expected": "emulator online; fresh APK; HRM 200",
+      "actual": "emulator-5554; lastUpdate 2026-08-03 20:56:48; SHA match; metrics 200",
+      "network": "GET metrics 200",
+      "result": "pass",
+      "attachment": null
+    },
+    {
+      "seq": 2,
+      "time": "2026-08-03T14:09:32+07:00",
+      "action": "pm clear + am start MainActivity",
+      "expected": "Login screen",
+      "actual": "XeVN HRM login visible",
+      "network": null,
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screenshots/w1b-04-auth-mob-qa-r3/00-launch.png"
+    },
+    {
+      "seq": 3,
+      "time": "2026-08-03T14:10:22+07:00",
+      "action": "assert login form",
+      "expected": "email/password/submit visible",
+      "actual": "login-email login-password login-submit present",
+      "network": null,
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screenshots/w1b-04-auth-mob-qa-r3/01-login-ready.png"
+    },
+    {
+      "seq": 4,
+      "time": "2026-08-03T14:10:35+07:00",
+      "action": "set URL máy chủ",
+      "expected": "http://10.0.2.2:28001",
+      "actual": "URL field = http://10.0.2.2:28001",
+      "network": null,
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screenshots/w1b-04-auth-mob-qa-r3/02-url-set.png"
+    },
+    {
+      "seq": 5,
+      "time": "2026-08-03T14:10:57+07:00",
+      "action": "Case A fill bad credentials",
+      "expected": "fields filled",
+      "actual": "bad.user@xe.vn / wrong-password-999",
+      "network": null,
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screenshots/w1b-04-auth-mob-qa-r3/10-case-a-filled.png"
+    },
+    {
+      "seq": 6,
+      "time": "2026-08-03T14:11:04+07:00",
+      "action": "Case A tap Đăng nhập",
+      "expected": "401 VI alert",
+      "actual": "HRM-AUTH-401: Email hoặc mật khẩu không đúng",
+      "network": "POST mobile login 401",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screenshots/w1b-04-auth-mob-qa-r3/11-case-a-fail.png"
+    },
+    {
+      "seq": 7,
+      "time": "2026-08-03T14:11:05+07:00",
+      "action": "tap OK dismiss alert",
+      "expected": "return login",
+      "actual": "alert dismissed",
+      "network": null,
+      "result": "pass",
+      "attachment": null
+    },
+    {
+      "seq": 8,
+      "time": "2026-08-03T14:11:30+07:00",
+      "action": "Case B fill UAT persona",
+      "expected": "uat.nv0001 fields",
+      "actual": "uat.nv0001@xe.vn / xevn-uat-2026",
+      "network": null,
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screenshots/w1b-04-auth-mob-qa-r3/20-case-b-filled.png"
+    },
+    {
+      "seq": 9,
+      "time": "2026-08-03T14:11:41+07:00",
+      "action": "Case B tap Đăng nhập",
+      "expected": "Home + company_label VI",
+      "actual": "Nguyễn Văn An · Tập đoàn X.E",
+      "network": "POST mobile login 2xx",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screenshots/w1b-04-auth-mob-qa-r3/21-case-b-home.png"
+    },
+    {
+      "seq": 10,
+      "time": "2026-08-03T14:11:48+07:00",
+      "action": "tap tab Hồ sơ",
+      "expected": "Profile",
+      "actual": "Hồ sơ with Cài đặt",
+      "network": null,
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screenshots/w1b-04-auth-mob-qa-r3/30-profile.png"
+    },
+    {
+      "seq": 11,
+      "time": "2026-08-03T14:11:54+07:00",
+      "action": "tap Cài đặt",
+      "expected": "Settings",
+      "actual": "Phạm vi đang dùng + Điều hướng nhanh",
+      "network": null,
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screenshots/w1b-04-auth-mob-qa-r3/31-settings.png"
+    },
+    {
+      "seq": 12,
+      "time": "2026-08-03T14:12:48+07:00",
+      "action": "scroll + tap Phạm vi công ty",
+      "expected": "Scope screen",
+      "actual": "opened Phạm vi công ty",
+      "network": null,
+      "result": "pass",
+      "attachment": null
+    },
+    {
+      "seq": 13,
+      "time": "2026-08-03T14:13:02+07:00",
+      "action": "assert AC2 Đang dùng labels",
+      "expected": "company_label tenant_label role_label job_title_label; not Tenant:xevn primary",
+      "actual": "Công ty: Tập đoàn X.E; Pháp nhân: Tập đoàn XeVN; Vai trò: Nhân viên; Chức danh: Nhân viên; stale_Tenant_colon_primary=false",
+      "network": null,
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screenshots/w1b-04-auth-mob-qa-r3/40-scope.png"
+    }
+  ],
+  "cases": [
+    { "id": "CASE-A", "name": "fail deep wrong password", "status": "pass" },
+    { "id": "CASE-B", "name": "success password login HDSD", "status": "pass" },
+    { "id": "CASE-C-AC2", "name": "Scope Đang dùng four labels", "status": "pass" },
+    { "id": "AC1", "name": "multi-membership toast", "status": "skipped", "notes": "n=1 U65" },
+    { "id": "AC4", "name": "select-membership JWT switch", "status": "skipped", "notes": "n=1 U65" }
+  ],
+  "incidents": [
+    {
+      "id": "R-M01-MULTI-PERSONA",
+      "severity": "P2",
+      "expected": "AC1/AC4 device proof",
+      "actual": "skipped single membership",
+      "residual_wi": "pm / BA account prep without seed"
+    },
+    {
+      "id": "R-M01-DEV-META",
+      "severity": "P3",
+      "expected": "optional hide DEV wire lines",
+      "actual": "Tenant key / Query / Header still under labels",
+      "residual_wi": "dev-mobile optional"
+    }
+  ],
+  "summary": {
+    "passed": 13,
+    "failed": 0,
+    "blocked": 0,
+    "skipped": 2
+  },
+  "ack_status": "PASS_TO_PM"
+}

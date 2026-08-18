@@ -1,0 +1,1 @@
+﻿[xevn-ecosystem] Watchdog R4 54321 = stale (đã CLOSED 31/05). Không làm lại. Cursor vẫn HOLD chờ Claude.

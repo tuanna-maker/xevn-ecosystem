@@ -1,0 +1,157 @@
+{
+  "work_item_id": "QA-PO-HRM-EMPLOYMENT-TYPES-CONSUMER-CTR-01",
+  "stamp": "ETCTRQA1-MSNNRUZQ",
+  "startedAt": "2026-08-10T20:02:48.671Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "settings_catalog_e2e_ready": false,
+    "uf_hrm_10_full": "DENY"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0 (pre-run)"
+  },
+  "vitest": {
+    "contractCreateWizard": "14 PASS (pre-run)"
+  },
+  "ac": {
+    "AC-SET-CONSUMER-ET-CTR-01-EFF0": {
+      "verdict": "NOT_RUN",
+      "note": "pilot EFF=15; CTA testid present=false; vitest covers EFF=0 wiring"
+    },
+    "AC-SET-CONSUMER-ET-CTR-01": {
+      "verdict": "PASS",
+      "spec_ref": "PO-HRM-SETTINGS-SRS-FIDELITY-DELTA-01 §6.2 AC-SET-CONSUMER-ET-CTR-01",
+      "click_path": "Command Center → Hợp đồng → Tạo HĐ bước 1 → Hình thức làm việc",
+      "api_effective": {
+        "status": 200,
+        "codes": [
+          "fidmzcr85emp",
+          "fidmzgc71emp",
+          "qn2uwxcemp",
+          "rt2myzn13emp",
+          "rt2n1jwghemp",
+          "rt2n252hlemp",
+          "rt2n2j1c4emp",
+          "rt2n2vjgxemp",
+          "rt2n8lfwzemp",
+          "rt2n8nk8memp",
+          "rt2n95np4emp",
+          "rt2n9kg40emp",
+          "w3ngxbwkemp",
+          "w3nh5hq0emp",
+          "w3nhb5vdemp"
+        ],
+        "count": 15,
+        "rawCount": 15
+      },
+      "picker": {
+        "ok": true,
+        "note": "15 EMP options; via ctr-create-work-arrangement-combobox",
+        "optionCount": 15,
+        "codes": [
+          "fidmzcr85emp",
+          "fidmzgc71emp",
+          "qn2uwxcemp",
+          "rt2myzn13emp",
+          "rt2n1jwghemp",
+          "rt2n252hlemp",
+          "rt2n2j1c4emp",
+          "rt2n2vjgxemp",
+          "rt2n8lfwzemp",
+          "rt2n8nk8memp",
+          "rt2n95np4emp",
+          "rt2n9kg40emp",
+          "w3ngxbwkemp",
+          "w3nh5hq0emp",
+          "w3nhb5vdemp"
+        ],
+        "usedTestId": "ctr-create-work-arrangement-combobox"
+      },
+      "parity_ok": true,
+      "post": {
+        "status": 200,
+        "work_arrangement": "fidmzgc71emp",
+        "selectedCode": "fidmzgc71emp",
+        "contractId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+      },
+      "f5_label_ok": true,
+      "mutate_ok": true,
+      "cta_visible": false
+    }
+  },
+  "regression": {
+    "cite": "QACONPAYSTQC1 baseline dept=4 contract_type=5",
+    "dept": {
+      "ok": true,
+      "note": "6 options; via ctr-create-department-picker-combobox",
+      "optionCount": 6,
+      "codes": [
+        "DEPT_01",
+        "DEPT_02",
+        "DEPT_03",
+        "DEPT_04",
+        "swpnhpjgrmast",
+        "swpnhwvtomast"
+      ],
+      "usedTestId": "ctr-create-department-picker-combobox"
+    },
+    "contractType": {
+      "ok": true,
+      "note": "5 options; via hdsd-contracts-form-contract-type",
+      "optionCount": 5,
+      "codes": [
+        "HDHV",
+        "HDLD_KTH",
+        "HDLD_XDHN_12",
+        "HDLD_XDHN_36",
+        "HDTV_60"
+      ],
+      "usedTestId": "hdsd-contracts-form-contract-type"
+    },
+    "dept_unchanged": true,
+    "type_unchanged": true
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-employment-types-consumer-ctr-01/step1-pickers.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-employment-types-consumer-ctr-01/after-registry-post.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-employment-types-consumer-ctr-01/f5-edit-work-arrangement.png"
+  ],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "endedAt": "2026-08-10T20:03:09.798Z",
+  "api_effective_employment_types": {
+    "status": 200,
+    "codes": [
+      "fidmzcr85emp",
+      "fidmzgc71emp",
+      "qn2uwxcemp",
+      "rt2myzn13emp",
+      "rt2n1jwghemp",
+      "rt2n252hlemp",
+      "rt2n2j1c4emp",
+      "rt2n2vjgxemp",
+      "rt2n8lfwzemp",
+      "rt2n8nk8memp",
+      "rt2n95np4emp",
+      "rt2n9kg40emp",
+      "w3ngxbwkemp",
+      "w3nh5hq0emp",
+      "w3nhb5vdemp"
+    ],
+    "count": 15,
+    "rawCount": 15
+  }
+}

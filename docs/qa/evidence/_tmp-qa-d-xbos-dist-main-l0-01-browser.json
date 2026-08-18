@@ -1,0 +1,87 @@
+{
+  "work_item_id": "QA-D-XBOS-DIST-MAIN-L0-01",
+  "portal": "http://127.0.0.1:5173",
+  "account": "ceo@xe.vn",
+  "seed": false,
+  "hold_deploy": true,
+  "afterLoginUrl": "(session inject via POST /api/xbos/auth/login 201)",
+  "commandCenterUrl": "http://127.0.0.1:5173/command-center",
+  "econnrefused_28002_count": 0,
+  "econnrefused_28002": [],
+  "xbos_api_response_count": 14,
+  "xbos_api_2xx_count": 14,
+  "sample_xbos_responses": [
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/auth/me",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/auth/me",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/tenant-scope/accessible",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/tenant-scope/group-member-units",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/tenant-scope/group-member-units",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "status": 200
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:5173/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "status": 200
+    }
+  ],
+  "console_excerpt": [],
+  "browser_pass": true
+}

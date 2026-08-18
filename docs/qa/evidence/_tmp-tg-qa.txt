@@ -1,0 +1,2 @@
+﻿[xevn-ecosystem] Dev E1-A+E1-B xong → QA browser đang chạy (2 seat).
+Claude peer tiếp. HOLD_DEPLOY.

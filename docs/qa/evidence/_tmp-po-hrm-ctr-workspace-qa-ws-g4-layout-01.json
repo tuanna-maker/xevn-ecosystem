@@ -1,0 +1,298 @@
+{
+  "work_item_id": "PO-HRM-CTR-WORKSPACE-QA-WS-G4-LAYOUT-01",
+  "stamp": "CTRWSG4L-MSO293PE",
+  "startedAt": "2026-08-11T02:48:07.743Z",
+  "url_required": "http://127.0.0.1:5173/command-center/hrm/contracts",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "contracts_printable_ready": false,
+    "c_slice": true,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {},
+  "rows": {
+    "WS-G4-09": {
+      "verdict": "PASS",
+      "viewOk": true,
+      "getOk": true,
+      "getCountOnOpen": 1,
+      "gets": [
+        {
+          "status": 200,
+          "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2?company_id=main"
+        }
+      ],
+      "partyVisible": true,
+      "contractId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+      "page_url": "http://127.0.0.1:5173/command-center/hrm/contracts?_=1786416492298"
+    },
+    "WS-G4-10": {
+      "verdict": "PASS",
+      "layoutVisible": true,
+      "canvasVisible": true,
+      "clauseItems": 1,
+      "api_clause_layout_len": 1,
+      "readOnlyLabel": true,
+      "paletteVisible": false,
+      "oneGetOnly": true,
+      "clause_list_on_step2": [],
+      "note": "clause_layout from GET; no palette in view readOnly"
+    },
+    "WS-G4-11": {
+      "verdict": "PASS",
+      "can_issue_api": false,
+      "issueDisabled": true,
+      "pdfDisabled": true,
+      "previewEnabled": true,
+      "hintVisible": true,
+      "hintText": "Chưa đủ điều kiện phát hành — kiểm tra mẫu in và thông tin hợp đồng.",
+      "preview_summary": {
+        "pack_code": "DRIVER",
+        "template_code": "XEVN_FT_12M_DRIVER",
+        "missing_fields": [],
+        "missing_clauses": []
+      },
+      "honesty": false
+    },
+    "WS-G4-09-F5": {
+      "verdict": "PASS",
+      "layoutAfterF5": true,
+      "itemsAfterF5": 1,
+      "getCountTotal": 2
+    }
+  },
+  "journeys": {
+    "J-HRM-03": {
+      "verdict": "PASS"
+    }
+  },
+  "network": {
+    "view_gets": [
+      {
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2?company_id=main"
+      },
+      {
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2?company_id=main"
+      }
+    ],
+    "clause_list_calls": [],
+    "step2_clause_list_after": []
+  },
+  "api_probe": {
+    "list": [
+      {
+        "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+        "company_id": "holding",
+        "employee_id": "22222222-2222-4222-8222-222222222222",
+        "contract_code": null,
+        "contract_type": "Hợp đồng 1 năm",
+        "start_date": "2026-07-10T17:00:00.000Z",
+        "end_date": "2026-08-29T17:00:00.000Z",
+        "status": "active",
+        "notes": null,
+        "position": null,
+        "position_key": null,
+        "department": "CHRO",
+        "department_key": null,
+        "signer_name": null,
+        "signer_position": null,
+        "signer_position_key": null,
+        "compensation_package_id": null,
+        "pack_code": null,
+        "template_id": null,
+        "template_code": null,
+        "signed_at": null,
+        "contract_name": null,
+        "work_arrangement": null,
+        "salary_ratio_percent": null,
+        "subject_type": null,
+        "candidate_id": null,
+        "requisition_id": null,
+        "contract_abstract": null,
+        "term_type": null,
+        "work_location": null,
+        "work_location_scope": null,
+        "job_description_text": null,
+        "probation_days": null,
+        "probation_end": null,
+        "license_class": null,
+        "driver_license_number": null,
+        "driver_license_issued_on": null,
+        "driver_license_issued_place": null,
+        "vehicle_plate": null,
+        "route_or_region": null,
+        "created_at": "2026-08-10T05:39:42.599Z",
+        "updated_at": "2026-08-10T05:39:42.599Z",
+        "employee_name": "Tran Thi B",
+        "employee_code": "NV002",
+        "candidate_name": null,
+        "signing_date": null,
+        "candidate_label": null,
+        "work_form_label_vi": null
+      },
+      {
+        "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+        "company_id": "holding",
+        "employee_id": "11111111-1111-4111-8111-111111111111",
+        "contract_code": null,
+        "contract_type": "HDLD_XDHN_36",
+        "start_date": "2026-04-11T17:00:00.000Z",
+        "end_date": "2026-09-23T17:00:00.000Z",
+        "status": "active",
+        "notes": null,
+        "position": null,
+        "position_key": null,
+        "department": "CEO",
+        "department_key": null,
+        "signer_name": null,
+        "signer_position": null,
+        "signer_position_key": null,
+        "compensation_package_id": null,
+        "pack_code": "GENERAL",
+        "template_id": null,
+        "template_code": null,
+        "signed_at": "2026-04-12",
+        "contract_name": "NV001-HD — Hợp đồng lao động xác định thời hạn 36 tháng",
+        "work_arrangement": "fidmzgc71emp",
+        "salary_ratio_percent": "100.00",
+        "subject_type": null,
+        "candidate_id": null,
+        "requisition_id": null,
+        "contract_abstract": null,
+        "term_type": null,
+        "work_location": null,
+        "work_location_scope": null,
+        "job_description_text": null,
+        "probation_days": null,
+        "probation_end": null,
+        "license_class": null,
+        "driver_license_number": null,
+        "driver_license_issued_on": null,
+        "driver_license_issued_place": null,
+        "vehicle_plate": null,
+        "route_or_region": null,
+        "created_at": "2026-08-10T05:39:42.599Z",
+        "updated_at": "2026-08-10T20:03:11.353Z",
+        "employee_name": "Nguyen Van A",
+        "employee_code": "NV001",
+        "candidate_name": null,
+        "signing_date": "2026-04-12",
+        "candidate_label": null,
+        "work_form_label_vi": "QA FID02 fidmzgc71emp"
+      }
+    ],
+    "picked": {
+      "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+      "status": 200,
+      "can_issue": false,
+      "clause_layout_len": 1,
+      "preview_summary": {
+        "pack_code": "DRIVER",
+        "template_code": "XEVN_FT_12M_DRIVER",
+        "missing_fields": [],
+        "missing_clauses": []
+      },
+      "contract_code": null,
+      "employee_name": "Nguyen Van A"
+    },
+    "detail": {
+      "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+      "company_id": "holding",
+      "employee_id": "11111111-1111-4111-8111-111111111111",
+      "contract_code": null,
+      "contract_type": "HDLD_XDHN_36",
+      "start_date": "2026-04-11T17:00:00.000Z",
+      "end_date": "2026-09-23T17:00:00.000Z",
+      "status": "active",
+      "notes": null,
+      "position": null,
+      "position_key": null,
+      "department": "CEO",
+      "department_key": null,
+      "signer_name": null,
+      "signer_position": null,
+      "signer_position_key": null,
+      "compensation_package_id": null,
+      "pack_code": "GENERAL",
+      "template_id": null,
+      "template_code": null,
+      "signed_at": "2026-04-12",
+      "contract_name": "NV001-HD — Hợp đồng lao động xác định thời hạn 36 tháng",
+      "work_arrangement": "fidmzgc71emp",
+      "salary_ratio_percent": "100.00",
+      "subject_type": null,
+      "candidate_id": null,
+      "requisition_id": null,
+      "contract_abstract": null,
+      "term_type": null,
+      "work_location": null,
+      "work_location_scope": null,
+      "job_description_text": null,
+      "probation_days": null,
+      "probation_end": null,
+      "license_class": null,
+      "driver_license_number": null,
+      "driver_license_issued_on": null,
+      "driver_license_issued_place": null,
+      "vehicle_plate": null,
+      "route_or_region": null,
+      "created_at": "2026-08-10T05:39:42.599Z",
+      "updated_at": "2026-08-10T20:03:11.353Z",
+      "employee_name": "Nguyen Van A",
+      "employee_code": "NV001",
+      "candidate_name": null,
+      "print_overlay_clause_ids": null,
+      "signing_date": "2026-04-12",
+      "candidate_label": null,
+      "work_form_label_vi": "QA FID02 fidmzgc71emp",
+      "clause_ids": [
+        "f7387d0a-1ea5-471e-a506-18005e28cf71"
+      ],
+      "clause_layout": [
+        {
+          "id": "f7387d0a-1ea5-471e-a506-18005e28cf71",
+          "code": "THHDLD",
+          "title_vi": "Thời hạn và công việc hợp đồng",
+          "body_vi": "- Loại Hợp đồng: Hợp đồng thử việc.\t\t\t\t\n- Từ ngày 00/01/1900 đến ngày 00/01/1900.\t\t\t\t\n- Địa điểm làm việc: .\t\t\t\t\n- Chức danh chuyên môn: \t\t\t\t\n- Công việc phải làm: Theo mô tả công việc.",
+          "clause_group": "IP_WORK_PRODUCT",
+          "mandatory": false,
+          "sort_order": 0
+        }
+      ],
+      "can_issue": false,
+      "preview_summary": {
+        "pack_code": "DRIVER",
+        "template_code": "XEVN_FT_12M_DRIVER",
+        "missing_fields": [],
+        "missing_clauses": []
+      }
+    }
+  },
+  "consoleErrors": [
+    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <div> p \n    at div\n    at Badge (http://127.0.0.1:5173/hr/src/components/ui/badge.tsx:37:18)\n    at p\n    at div\n    at div\n    at div\n    at ContractWorkspaceVi",
+    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <div> p \n    at div\n    at Badge (http://127.0.0.1:5173/hr/src/components/ui/badge.tsx:37:18)\n    at p\n    at div\n    at div\n    at div\n    at ContractWorkspaceVi"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-qa-ws-g4-layout-01/01-view-step1.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-qa-ws-g4-layout-01/02-view-step2-clause-layout.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-qa-ws-g4-layout-01/03-issue-gate.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-qa-ws-g4-layout-01/04-f5-step2.png"
+  ],
+  "ack_status": "PASS_TO_PM",
+  "defects": [],
+  "endedAt": "2026-08-11T02:48:27.272Z"
+}

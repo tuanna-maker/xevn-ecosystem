@@ -1,0 +1,849 @@
+{
+  "work_item_id": "QA-HDSD-BF-03-BULK-01",
+  "program": "P-HDSD-ECOSYSTEM-03 · BF-03 · Đ2 bulk",
+  "startedAt": "2026-07-30T20:02:46.525Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed"
+  },
+  "l0": {
+    "hrm": {
+      "ok": true,
+      "status": 200
+    },
+    "xbos": {
+      "ok": true,
+      "status": 200
+    },
+    "portal": {
+      "ok": true,
+      "status": 200
+    }
+  },
+  "tc": [
+    {
+      "id": "TC-MOB-020",
+      "verdict": "🟡",
+      "detail": "Deferred qa-device — J-MOB-04 PayslipDetail; prior evidence qa-hdsd-bf-salary-01-20260801.md + qa-hdsd-mob-ch12-01-r7; sub-WI QA-HDSD-MOB-BF03-DEPTH-01",
+      "at": "2026-07-30T20:02:46.567Z",
+      "owner": "qa-device",
+      "journey": "J-MOB-04 PayslipDetail"
+    },
+    {
+      "id": "TC-MOB-021",
+      "verdict": "🟡",
+      "detail": "Deferred qa-device — PayrollSummary; prior evidence qa-hdsd-mob-ch12-01-r7-20260801.md; sub-WI QA-HDSD-MOB-BF03-DEPTH-01",
+      "at": "2026-07-30T20:02:46.568Z",
+      "owner": "qa-device",
+      "journey": "PayrollSummary"
+    },
+    {
+      "id": "TC-MOB-022",
+      "verdict": "🟡",
+      "detail": "Deferred qa-device — Payslip error recovery; prior evidence qa-hdsd-mob-ch12-01-r7-20260801.md; sub-WI QA-HDSD-MOB-BF03-DEPTH-01",
+      "at": "2026-07-30T20:02:46.568Z",
+      "owner": "qa-device",
+      "journey": "Payslip error recovery"
+    },
+    {
+      "id": "TC-MOB-030",
+      "verdict": "🟡",
+      "detail": "Deferred qa-device — ContractsScreen profile; prior evidence qa-device defer QA-HDSD-MOB-BF03-DEPTH-01; sub-WI QA-HDSD-MOB-BF03-DEPTH-01",
+      "at": "2026-07-30T20:02:46.569Z",
+      "owner": "qa-device",
+      "journey": "ContractsScreen profile"
+    },
+    {
+      "id": "TC-HDSD-05-03-01",
+      "verdict": "🟢",
+      "detail": "Preserved Đ2 mutate GWC — NV POST 201 F5; not re-mutated · qa-hdsd-mutate-ret-03-hrm-r14-20260801.md",
+      "at": "2026-07-30T20:02:46.570Z",
+      "preserved": true,
+      "mutate": true,
+      "evidence": "qa-hdsd-mutate-ret-03-hrm-r14-20260801.md"
+    },
+    {
+      "id": "TC-HDSD-06-02-01",
+      "verdict": "🟢",
+      "detail": "Preserved Đ2 mutate GWC — HĐ POST 201 F5; not re-mutated · qc-hdsd-bf-03-gate-01-20260801.md",
+      "at": "2026-07-30T20:02:46.571Z",
+      "preserved": true,
+      "mutate": true,
+      "evidence": "qc-hdsd-bf-03-gate-01-20260801.md"
+    },
+    {
+      "id": "TC-HDSD-07-02-01",
+      "verdict": "🟢",
+      "detail": "Preserved Đ2 mutate GWC — YCTD JD+req POST 201; not re-mutated · qc-hdsd-bf-03-gate-01-20260801.md",
+      "at": "2026-07-30T20:02:46.572Z",
+      "preserved": true,
+      "mutate": true,
+      "evidence": "qc-hdsd-bf-03-gate-01-20260801.md"
+    },
+    {
+      "id": "TC-HDSD-08-02-01",
+      "verdict": "🟢",
+      "detail": "Preserved Đ2 mutate GWC — Leave POST 201 F5; not re-mutated · qc-hdsd-bf-03-gate-01-20260801.md",
+      "at": "2026-07-30T20:02:46.572Z",
+      "preserved": true,
+      "mutate": true,
+      "evidence": "qc-hdsd-bf-03-gate-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-008",
+      "verdict": "🟢",
+      "detail": "§5.1 Tiêu đề trang mount GET=200",
+      "at": "2026-07-30T20:02:53.506Z",
+      "clickPath": "/hr/employees",
+      "uf": "UF-HRM-01"
+    },
+    {
+      "id": "TC-HRM-HDSD-009",
+      "verdict": "🟢",
+      "detail": "§5.1 Toolbar buttons visible=true",
+      "at": "2026-07-30T20:02:53.507Z",
+      "clickPath": "employees toolbar"
+    },
+    {
+      "id": "TC-HRM-HDSD-010",
+      "verdict": "🟡",
+      "detail": "§5.1 Bộ lọc visible=false",
+      "at": "2026-07-30T20:02:53.508Z",
+      "clickPath": "filter bar"
+    },
+    {
+      "id": "TC-HRM-HDSD-011",
+      "verdict": "🟢",
+      "detail": "§5.1 Bảng cột rows=32",
+      "at": "2026-07-30T20:02:53.508Z",
+      "clickPath": "employee table"
+    },
+    {
+      "id": "TC-HRM-HDSD-012",
+      "verdict": "🟢",
+      "detail": "§5.1 Hành vi bảng rows=32 banner=false",
+      "at": "2026-07-30T20:02:53.509Z",
+      "clickPath": "table interaction load-only"
+    },
+    {
+      "id": "TC-HRM-HDSD-013",
+      "verdict": "🟢",
+      "detail": "§5.1 Trạng thái nghiệp vụ visible=true",
+      "at": "2026-07-30T20:02:53.509Z",
+      "clickPath": "status column/labels"
+    },
+    {
+      "id": "TC-HRM-HDSD-014",
+      "verdict": "🟢",
+      "detail": "§5.1 Lỗi thường gặp — no ERROR banner on list load",
+      "at": "2026-07-30T20:02:53.510Z",
+      "clickPath": "load stability"
+    },
+    {
+      "id": "TC-HRM-HDSD-015",
+      "verdict": "🟢",
+      "detail": "§5.2 Mục đích — dialog doc cross-ref HDSD Ch05 §5.2",
+      "at": "2026-07-30T20:02:55.647Z",
+      "clickPath": "doc"
+    },
+    {
+      "id": "TC-HRM-HDSD-016",
+      "verdict": "🟢",
+      "detail": "§5.2 Mở hộp thoại preserved dialog=true tabs=4",
+      "at": "2026-07-30T20:02:55.647Z",
+      "preserved": true,
+      "clickPath": "#hdsd-employees-create-btn"
+    },
+    {
+      "id": "TC-HRM-HDSD-017",
+      "verdict": "🟢",
+      "detail": "§5.2 Tab hộp thoại load-only dialogOpen=true",
+      "at": "2026-07-30T20:02:55.648Z",
+      "clickPath": "employee dialog shell"
+    },
+    {
+      "id": "TC-HRM-HDSD-018",
+      "verdict": "🟢",
+      "detail": "§5.2 Tab Thông tin cơ bản load-only dialogOpen=true",
+      "at": "2026-07-30T20:02:55.648Z",
+      "clickPath": "employee dialog shell"
+    },
+    {
+      "id": "TC-HRM-HDSD-019",
+      "verdict": "🟢",
+      "detail": "§5.2 Tab Cá nhân load-only dialogOpen=true",
+      "at": "2026-07-30T20:02:55.649Z",
+      "clickPath": "employee dialog shell"
+    },
+    {
+      "id": "TC-HRM-HDSD-020",
+      "verdict": "🟢",
+      "detail": "§5.2 Tab Công việc load-only dialogOpen=true",
+      "at": "2026-07-30T20:02:55.649Z",
+      "clickPath": "employee dialog shell"
+    },
+    {
+      "id": "TC-HRM-HDSD-021",
+      "verdict": "🟢",
+      "detail": "§5.2 Tab Tài chính load-only dialogOpen=true",
+      "at": "2026-07-30T20:02:55.650Z",
+      "clickPath": "employee dialog shell"
+    },
+    {
+      "id": "TC-HRM-HDSD-022",
+      "verdict": "🟢",
+      "detail": "§5.2 Nút chân hộp thoại load-only dialogOpen=true",
+      "at": "2026-07-30T20:02:55.650Z",
+      "clickPath": "employee dialog shell"
+    },
+    {
+      "id": "TC-HRM-HDSD-023",
+      "verdict": "🟢",
+      "detail": "§5.2 Trạng thái dialog load-only dialogOpen=true",
+      "at": "2026-07-30T20:02:55.651Z",
+      "clickPath": "employee dialog shell"
+    },
+    {
+      "id": "TC-HRM-HDSD-024",
+      "verdict": "🟢",
+      "detail": "§5.2 Lỗi dialog load-only dialogOpen=true",
+      "at": "2026-07-30T20:02:55.652Z",
+      "clickPath": "employee dialog shell"
+    },
+    {
+      "id": "TC-HRM-HDSD-025",
+      "verdict": "🟡",
+      "detail": "§5.3 Xóa mềm — load-only doc; mutate defer (no delete in bulk U65)",
+      "at": "2026-07-30T20:02:56.490Z",
+      "clickPath": "doc only"
+    },
+    {
+      "id": "TC-HRM-HDSD-026",
+      "verdict": "🟢",
+      "detail": "§5.4 Mục đích profile — doc cross-ref",
+      "at": "2026-07-30T20:02:56.493Z",
+      "clickPath": "doc"
+    },
+    {
+      "id": "TC-HRM-HDSD-027",
+      "verdict": "🟢",
+      "detail": "§5.4 Điều hướng preserved profileNav=false",
+      "at": "2026-07-30T20:02:56.493Z",
+      "preserved": true,
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-028",
+      "verdict": "🟡",
+      "detail": "§5.4 Header profile=false tabs=0",
+      "at": "2026-07-30T20:02:56.494Z",
+      "clickPath": "employee profile shell",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-029",
+      "verdict": "🟡",
+      "detail": "§5.4 Dải tab cốt lõi profile=false tabs=0",
+      "at": "2026-07-30T20:02:56.494Z",
+      "clickPath": "employee profile shell",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-030",
+      "verdict": "🟡",
+      "detail": "§5.4 Tab mở rộng popover profile=false tabs=0",
+      "at": "2026-07-30T20:02:56.495Z",
+      "clickPath": "employee profile shell",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-031",
+      "verdict": "🟡",
+      "detail": "§5.4 Tab Thông tin chung profile=false tabs=0",
+      "at": "2026-07-30T20:02:56.496Z",
+      "clickPath": "employee profile shell",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-032",
+      "verdict": "🟡",
+      "detail": "§5.4 Phân quyền nhạy cảm profile=false tabs=0",
+      "at": "2026-07-30T20:02:56.496Z",
+      "clickPath": "employee profile shell",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-033",
+      "verdict": "🟡",
+      "detail": "§5.4 Trạng thái hồ sơ profile=false tabs=0",
+      "at": "2026-07-30T20:02:56.497Z",
+      "clickPath": "employee profile shell",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-034",
+      "verdict": "🟡",
+      "detail": "§5.4 Lỗi hồ sơ profile=false tabs=0",
+      "at": "2026-07-30T20:02:56.497Z",
+      "clickPath": "employee profile shell",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-035",
+      "verdict": "🟢",
+      "detail": "§5.5 Liên kết danh mục — catalog-sync cross-ref GET 200 from L0",
+      "at": "2026-07-30T20:02:56.498Z",
+      "clickPath": "catalog linkage doc + L0 probe"
+    },
+    {
+      "id": "TC-HRM-HDSD-036",
+      "verdict": "🟢",
+      "detail": "§6 Ch06 intro mount contracts",
+      "at": "2026-07-30T20:02:59.747Z",
+      "clickPath": "/hr/contracts"
+    },
+    {
+      "id": "TC-HRM-HDSD-037",
+      "verdict": "🟢",
+      "detail": "§2.1 Tổng quan preserved GET=200",
+      "at": "2026-07-30T20:02:59.748Z",
+      "preserved": true,
+      "uf": "UF-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-038",
+      "verdict": "🟡",
+      "detail": "§2.2 Bộ lọc nâng cao filter=false",
+      "at": "2026-07-30T20:02:59.749Z",
+      "clickPath": "contracts filter"
+    },
+    {
+      "id": "TC-HRM-HDSD-039",
+      "verdict": "🟢",
+      "detail": "§2.3 Dialog Thêm/Sửa — preserved mutate TC-HDSD-06-02-01 GWC qc-hdsd-bf-03-gate-01; not re-mutated",
+      "at": "2026-07-30T20:02:59.749Z",
+      "preserved": true,
+      "mutate": true,
+      "evidence": "qc-hdsd-bf-03-gate-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-040",
+      "verdict": "🟡",
+      "detail": "§2.4 Hộp thoại Xem HĐ detail=false",
+      "at": "2026-07-30T20:02:59.755Z",
+      "journey": "J-HRM-03"
+    },
+    {
+      "id": "TC-HRM-HDSD-041",
+      "verdict": "🟡",
+      "detail": "§2.5 Xóa HĐ — load-only defer mutate delete U65",
+      "at": "2026-07-30T20:02:59.755Z",
+      "clickPath": "doc defer"
+    },
+    {
+      "id": "TC-HRM-HDSD-042",
+      "verdict": "🟡",
+      "detail": "§2.6 Trạng thái HĐ status=false",
+      "at": "2026-07-30T20:02:59.756Z",
+      "clickPath": "contracts list status"
+    },
+    {
+      "id": "TC-HRM-HDSD-043",
+      "verdict": "🟢",
+      "detail": "§2.7 Lỗi HĐ — no ERROR banner",
+      "at": "2026-07-30T20:02:59.756Z",
+      "clickPath": "load stability"
+    },
+    {
+      "id": "TC-HRM-HDSD-044",
+      "verdict": "🟢",
+      "detail": "§3.1 Tổng quan BH preserved GET=200",
+      "at": "2026-07-30T20:03:02.986Z",
+      "preserved": true,
+      "uf": "UF-HRM-04"
+    },
+    {
+      "id": "TC-HRM-HDSD-045",
+      "verdict": "🟢",
+      "detail": "§3.2 Panel chính sách master tabs=0",
+      "at": "2026-07-30T20:03:02.987Z",
+      "clickPath": "insurance master panel"
+    },
+    {
+      "id": "TC-HRM-HDSD-046",
+      "verdict": "🟢",
+      "detail": "§3.3 Cảnh báo & thẻ preserved banner=false",
+      "at": "2026-07-30T20:03:02.988Z",
+      "preserved": true
+    },
+    {
+      "id": "TC-HRM-HDSD-047",
+      "verdict": "🟡",
+      "detail": "§3.4 Dải lọc filter=false",
+      "at": "2026-07-30T20:03:02.988Z",
+      "clickPath": "insurance filters"
+    },
+    {
+      "id": "TC-HRM-HDSD-048",
+      "verdict": "🟢",
+      "detail": "§3.5 Bảng tham gia preserved table=true rows=1",
+      "at": "2026-07-30T20:03:02.989Z",
+      "preserved": true
+    },
+    {
+      "id": "TC-HRM-HDSD-049",
+      "verdict": "🟡",
+      "detail": "§3.6 Dialog Thêm/Sửa BH — load-only defer mutate U65",
+      "at": "2026-07-30T20:03:02.989Z",
+      "clickPath": "doc defer"
+    },
+    {
+      "id": "TC-HRM-HDSD-050",
+      "verdict": "🟡",
+      "detail": "§3.7 Dialog Xem BH — load-only defer",
+      "at": "2026-07-30T20:03:02.990Z",
+      "clickPath": "doc defer"
+    },
+    {
+      "id": "TC-HRM-HDSD-051",
+      "verdict": "🟡",
+      "detail": "§3.8 Trạng thái BH status=false",
+      "at": "2026-07-30T20:03:02.990Z",
+      "clickPath": "insurance status labels"
+    },
+    {
+      "id": "TC-HRM-HDSD-052",
+      "verdict": "🟢",
+      "detail": "§3.9 Lỗi BH — no ERROR banner",
+      "at": "2026-07-30T20:03:02.991Z",
+      "clickPath": "load stability"
+    },
+    {
+      "id": "TC-HRM-HDSD-053",
+      "verdict": "🟢",
+      "detail": "§4 Liên kết kiểm thử — matrix + J-HRM-02/03 cross-ref in evidence",
+      "at": "2026-07-30T20:03:02.991Z",
+      "clickPath": "doc traceability"
+    },
+    {
+      "id": "TC-HRM-HDSD-089",
+      "verdict": "🟢",
+      "detail": "§9.1 Giới thiệu mount GET periods=soft",
+      "at": "2026-07-30T20:03:06.197Z",
+      "clickPath": "/hr/payroll",
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-090",
+      "verdict": "🟢",
+      "detail": "§9.2 Tổng quan tab=Tổng quan banner=false",
+      "at": "2026-07-30T20:03:07.726Z",
+      "clickPath": "Tab Tổng quan",
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-091",
+      "verdict": "🟢",
+      "detail": "§9.3 TP lương tab=Thành phần lương banner=false",
+      "at": "2026-07-30T20:03:09.362Z",
+      "clickPath": "Tab Thành phần lương",
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-092",
+      "verdict": "🟢",
+      "detail": "§9.4.1 Chính sách thuế tab=Chính sách banner=false",
+      "at": "2026-07-30T20:03:10.953Z",
+      "clickPath": "Tab Chính sách",
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-095",
+      "verdict": "🟢",
+      "detail": "§9.5 Dữ liệu tab=Dữ liệu banner=false",
+      "at": "2026-07-30T20:03:12.529Z",
+      "clickPath": "Tab Dữ liệu",
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-101",
+      "verdict": "🟢",
+      "detail": "§9.7 Chi trả tab=Chi trả banner=false",
+      "at": "2026-07-30T20:03:14.139Z",
+      "clickPath": "Tab Chi trả",
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-102",
+      "verdict": "🟢",
+      "detail": "§9.8 Báo cáo tab=Báo cáo banner=false",
+      "at": "2026-07-30T20:03:15.728Z",
+      "clickPath": "Tab Báo cáo",
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-093",
+      "verdict": "🟢",
+      "detail": "§9.4.2 Chính sách BH — Chính sách tab load cross-ref salary-01",
+      "at": "2026-07-30T20:03:15.841Z",
+      "clickPath": "Tab Chính sách sub",
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-094",
+      "verdict": "🟢",
+      "detail": "§9.4.3 Phụ cấp/Thưởng — policy tab shell cross-ref salary-01",
+      "at": "2026-07-30T20:03:15.842Z",
+      "clickPath": "Tab Chính sách",
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-096",
+      "verdict": "🟢",
+      "detail": "§9.6.1 Tạo bảng lương preserved periods GET=200",
+      "at": "2026-07-30T20:03:19.371Z",
+      "preserved": true,
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-097",
+      "verdict": "🟢",
+      "detail": "§9.6.2 Danh sách bảng lương preserved salary-01 rows=1",
+      "at": "2026-07-30T20:03:19.372Z",
+      "preserved": true,
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    },
+    {
+      "id": "TC-HRM-HDSD-098",
+      "verdict": "🟢",
+      "detail": "§9.6.3 Tạm ứng lương tab shell banner=false",
+      "at": "2026-07-30T20:03:19.373Z",
+      "clickPath": "Tab Tính lương"
+    },
+    {
+      "id": "TC-HRM-HDSD-099",
+      "verdict": "🟢",
+      "detail": "§9.6.4 Mẫu bảng lương tab shell",
+      "at": "2026-07-30T20:03:19.373Z",
+      "clickPath": "Tab Tính lương"
+    },
+    {
+      "id": "TC-HRM-HDSD-100",
+      "verdict": "🟢",
+      "detail": "§9.6.5 Quyết toán thuế tab shell",
+      "at": "2026-07-30T20:03:19.374Z",
+      "clickPath": "Tab Tính lương"
+    },
+    {
+      "id": "TC-HRM-HDSD-103",
+      "verdict": "🟡",
+      "detail": "§9.9 Trạng thái nghiệp vụ lương visible=false",
+      "at": "2026-07-30T20:03:19.440Z",
+      "clickPath": "payroll status labels"
+    },
+    {
+      "id": "TC-HRM-HDSD-104",
+      "verdict": "🟢",
+      "detail": "§9.10 Lỗi thường gặp — no ERROR banner on exercised paths",
+      "at": "2026-07-30T20:03:19.441Z",
+      "clickPath": "load stability"
+    },
+    {
+      "id": "TC-HRM-HDSD-105",
+      "verdict": "🟢",
+      "detail": "§9.11 Liên kết kiểm thử — J-MOB-04 + salary-01 + matrix cross-ref",
+      "at": "2026-07-30T20:03:19.441Z",
+      "clickPath": "doc traceability",
+      "journey": "J-MOB-04"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "J-HRM-03",
+      "verdict": "🟡",
+      "detail": "view button not found — prior PASS preserved"
+    },
+    {
+      "id": "J-MOB-04",
+      "verdict": "🟡",
+      "detail": "Mobile payslip defer qa-device; list probe 🟢 salary-01 pilot :3001 total=1",
+      "evidence": "qa-hdsd-bf-salary-01-20260801.md"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T20:02:47.180Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-07-30T20:02:48.123Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:02:48.382Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T20:02:48.382Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:02:48.382Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T20:02:48.385Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T20:02:48.386Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-07-30T20:02:48.394Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T20:02:48.394Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:02:48.394Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:02:48.399Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T20:02:48.419Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-07-30T20:02:48.431Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T20:02:50.492Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T20:02:50.538Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T20:02:50.691Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-30T20:02:50.741Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:02:50.762Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:02:50.807Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:02:53.632Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T20:02:56.752Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T20:02:56.813Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:02:56.979Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-07-30T20:02:57.001Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T20:02:59.949Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T20:02:59.978Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page_size=100",
+      "at": "2026-07-30T20:03:00.157Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/insurance-policy-participants?company_id=main",
+      "at": "2026-07-30T20:03:00.205Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:03:00.207Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-07-30T20:03:00.227Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance?company_id=main&page=1&page_size=100",
+      "at": "2026-07-30T20:03:00.232Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T20:03:03.179Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T20:03:03.209Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T20:03:03.447Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T20:03:03.503Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-07-30T20:03:07.873Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-component-categories?company_id=main",
+      "at": "2026-07-30T20:03:07.874Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:03:07.919Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payment-batches?company_id=main",
+      "at": "2026-07-30T20:03:12.639Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-07-30T20:03:12.654Z"
+    }
+  ],
+  "consoleErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/00-employees-mount.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/01-employee-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/03-contracts-mount.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/05-insurance-mount.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/06-payroll-mount.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/tc_hrm_hdsd_090.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/tc_hrm_hdsd_091.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/tc_hrm_hdsd_092.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/tc_hrm_hdsd_095.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/tc_hrm_hdsd_101.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/tc_hrm_hdsd_102.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bulk-01-20260801/07-payroll-calc-tab.png"
+  ],
+  "preserveGreen": [
+    "TC-HRM-HDSD-016",
+    "TC-HRM-HDSD-027",
+    "TC-HRM-HDSD-037",
+    "TC-HRM-HDSD-044",
+    "TC-HRM-HDSD-046",
+    "TC-HRM-HDSD-048",
+    "TC-HRM-HDSD-096",
+    "TC-HRM-HDSD-097"
+  ],
+  "mutatePreserved": true,
+  "finishedAt": "2026-07-30T20:03:19.442Z",
+  "summary": {
+    "total": 71,
+    "green": 49,
+    "yellow": 22,
+    "red": 0
+  }
+}

@@ -1,0 +1,1800 @@
+{
+  "sheets": [
+    {
+      "name": "CP BD, SC trích trước",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "Tháng",
+            "2025-12-01 00:00:00"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "Row Labels",
+            "Sum of Chi phí khấu trừ quỹ lương tháng",
+            "2026-01-01 00:00:00",
+            "2026-02-01 00:00:00",
+            "2026-03-01 00:00:00",
+            "2026-04-01 00:00:00",
+            "2026-05-01 00:00:00",
+            "2026-06-01 00:00:00",
+            "2026-07-01 00:00:00",
+            "2026-08-01 00:00:00",
+            "2026-09-01 00:00:00",
+            "2026-10-01 00:00:00",
+            "2026-11-01 00:00:00",
+            "2026-12-01 00:00:00"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "CP BD, SC trích trước",
+            "29376741.253108315",
+            "29376741.253108315",
+            "25569209.395032488",
+            "27280163.537706167",
+            "26788521.007701658",
+            "=+SUMIF('Chi tiết T5'!$D:$D,'CP BD, SC trích trước'!A4,'Chi tiết T5'!$N:$N)"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "CP liên quan đến khấu hao PT",
+            "209688400.0000002",
+            "209688400.0000002",
+            "208550900.0000002",
+            "207194650.0000001",
+            "191763183.3333334",
+            "=+SUMIF('Chi tiết T5'!$D:$D,'CP BD, SC trích trước'!A5,'Chi tiết T5'!$N:$N)"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "CP mua sắm TTB VP",
+            "9195764.133547008",
+            "9195764.133547008",
+            "9195764.133547008",
+            "9195764.133547008",
+            "9195764.133547008",
+            "=+SUMIF('Chi tiết T5'!$D:$D,'CP BD, SC trích trước'!A6,'Chi tiết T5'!$N:$N)"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "CP năng lượng/ nhiên liệu",
+            "82863451",
+            "96567970",
+            "84885792",
+            "114916397",
+            "114260329",
+            "=+SUMIF('Chi tiết T5'!$D:$D,'CP BD, SC trích trước'!A7,'Chi tiết T5'!$N:$N)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "CP quản lý khác",
+            "12124005.2",
+            "12894024.1",
+            "11551934",
+            "4468650",
+            "13542135.2",
+            "=+SUMIF('Chi tiết T5'!$D:$D,'CP BD, SC trích trước'!A8,'Chi tiết T5'!$N:$N)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "CP vận hành khác",
+            "4505000",
+            "5220000",
+            "11121099",
+            "10555248",
+            "6315000",
+            "=+SUMIF('Chi tiết T5'!$D:$D,'CP BD, SC trích trước'!A9,'Chi tiết T5'!$N:$N)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "Grand Total",
+            "347753361.58665556",
+            "=SUM(C4:C9)",
+            "=SUM(D4:D9)",
+            "=SUM(E4:E9)",
+            "=SUM(F4:F9)",
+            "=SUM(G4:G9)",
+            "=SUM(H4:H9)",
+            "=SUM(I4:I9)",
+            "=SUM(J4:J9)",
+            "=SUM(K4:K9)",
+            "=SUM(L4:L9)",
+            "=SUM(M4:M9)",
+            "=SUM(N4:N9)"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "CP vận hành khác",
+            "CP rửa xe",
+            "=+SUMIF('Chi tiết T5'!E:E,'CP BD, SC trích trước'!B13,'Chi tiết T5'!N:N)"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "CP vận hành khác",
+            "CP vá lốp",
+            "=+SUMIF('Chi tiết T5'!E:E,'CP BD, SC trích trước'!B14,'Chi tiết T5'!N:N)"
+          ]
+        },
+        {
+          "row": 15,
+          "cells": [
+            "CP quản lý khác",
+            "CP điện nước",
+            "=+SUMIF('Chi tiết T5'!E:E,'CP BD, SC trích trước'!B15,'Chi tiết T5'!N:N)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chi tiết t12",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "STT",
+            "Tháng",
+            "Tỉnh",
+            "Nhóm CP",
+            "Hạng mục chi",
+            "Diễn giải chi tiết",
+            "Tính chất chi phí",
+            "Đối tượng theo dõi\n(BSX)",
+            "Phân loại phương tiện/ Chức danh nhân sự",
+            "KM hoạt động",
+            "Ngày phát sinh chi phí",
+            "Tổng số tiền (VNĐ)",
+            "Số tháng khấu hao",
+            "Chi phí khấu trừ quỹ lương tháng",
+            "Tháng tính khấu hao cuối cùng",
+            "Ghi chú"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B2)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30330",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B2>O2,\"\",L2/M2)",
+            "=EDATE(K2, M2-1)"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B3)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30765",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B3>O3,\"\",L3/M3)",
+            "=EDATE(K3, M3-1)"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B4)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L86870",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B4>O4,\"\",L4/M4)",
+            "=EDATE(K4, M4-1)"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B5)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63619",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B5>O5,\"\",L5/M5)",
+            "=EDATE(K5, M5-1)"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B6)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63716",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B6>O6,\"\",L6/M6)",
+            "=EDATE(K6, M6-1)"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B7)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29D58817",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B7>O7,\"\",L7/M7)",
+            "=EDATE(K7, M7-1)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B8)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K24076",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B8>O8,\"\",L8/M8)",
+            "=EDATE(K8, M8-1)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B9)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30445",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B9>O9,\"\",L9/M9)",
+            "=EDATE(K9, M9-1)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B10)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30431",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B10>O10,\"\",L10/M10)",
+            "=EDATE(K10, M10-1)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B11)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30711",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B11>O11,\"\",L11/M11)",
+            "=EDATE(K11, M11-1)"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B12)",
+            "2025-12-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K00263",
+            "Ford",
+            "2024-04-26 00:00:00",
+            "775808000",
+            "60",
+            "=IF(B12>O12,\"\",L12/M12)",
+            "=EDATE(K12, M12-1)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chi tiết T1",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "STT",
+            "Tháng",
+            "Tỉnh",
+            "Nhóm CP",
+            "Hạng mục chi",
+            "Diễn giải chi tiết",
+            "Tính chất chi phí",
+            "Đối tượng theo dõi\n(BSX)",
+            "Phân loại phương tiện/ Chức danh nhân sự",
+            "KM hoạt động",
+            "Ngày phát sinh chi phí",
+            "Tổng số tiền (VNĐ)",
+            "Số tháng khấu hao",
+            "Chi phí khấu trừ quỹ lương tháng",
+            "Tháng tính khấu hao cuối cùng",
+            "Ghi chú"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B2)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30330",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B2>O2,\"\",L2/M2)",
+            "=EDATE(K2, M2-1)"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B3)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30765",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B3>O3,\"\",L3/M3)",
+            "=EDATE(K3, M3-1)"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B4)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L86870",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B4>O4,\"\",L4/M4)",
+            "=EDATE(K4, M4-1)"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B5)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63619",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B5>O5,\"\",L5/M5)",
+            "=EDATE(K5, M5-1)"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B6)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63716",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B6>O6,\"\",L6/M6)",
+            "=EDATE(K6, M6-1)"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B7)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29D58817",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B7>O7,\"\",L7/M7)",
+            "=EDATE(K7, M7-1)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B8)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K24076",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B8>O8,\"\",L8/M8)",
+            "=EDATE(K8, M8-1)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B9)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30445",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B9>O9,\"\",L9/M9)",
+            "=EDATE(K9, M9-1)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B10)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30431",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B10>O10,\"\",L10/M10)",
+            "=EDATE(K10, M10-1)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B11)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30711",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B11>O11,\"\",L11/M11)",
+            "=EDATE(K11, M11-1)"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B12)",
+            "2026-01-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K00263",
+            "Ford",
+            "2024-04-26 00:00:00",
+            "775808000",
+            "60",
+            "=IF(B12>O12,\"\",L12/M12)",
+            "=EDATE(K12, M12-1)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chi tiết T2",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "STT",
+            "Tháng",
+            "Tỉnh",
+            "Nhóm CP",
+            "Hạng mục chi",
+            "Diễn giải chi tiết",
+            "Tính chất chi phí",
+            "Đối tượng theo dõi\n(BSX)",
+            "Phân loại phương tiện/ Chức danh nhân sự",
+            "KM hoạt động",
+            "Ngày phát sinh chi phí",
+            "Tổng số tiền (VNĐ)",
+            "Số tháng khấu hao",
+            "Chi phí khấu trừ quỹ lương tháng",
+            "Tháng tính khấu hao cuối cùng",
+            "Ghi chú"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B2)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30330",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B2>O2,\"\",L2/M2)",
+            "=EDATE(K2, M2-1)"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B3)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30765",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B3>O3,\"\",L3/M3)",
+            "=EDATE(K3, M3-1)"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B4)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L86870",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B4>O4,\"\",L4/M4)",
+            "=EDATE(K4, M4-1)"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B5)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63619",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B5>O5,\"\",L5/M5)",
+            "=EDATE(K5, M5-1)"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B6)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63716",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B6>O6,\"\",L6/M6)",
+            "=EDATE(K6, M6-1)"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B7)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29D58817",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B7>O7,\"\",L7/M7)",
+            "=EDATE(K7, M7-1)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B8)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K24076",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B8>O8,\"\",L8/M8)",
+            "=EDATE(K8, M8-1)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B9)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30445",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B9>O9,\"\",L9/M9)",
+            "=EDATE(K9, M9-1)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B10)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30431",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B10>O10,\"\",L10/M10)",
+            "=EDATE(K10, M10-1)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B11)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30711",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B11>O11,\"\",L11/M11)",
+            "=EDATE(K11, M11-1)"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B12)",
+            "2026-02-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K00263",
+            "Ford",
+            "2024-04-26 00:00:00",
+            "775808000",
+            "60",
+            "=IF(B12>O12,\"\",L12/M12)",
+            "=EDATE(K12, M12-1)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chi tiết T3",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "STT",
+            "Tháng",
+            "Tỉnh",
+            "Nhóm CP",
+            "Hạng mục chi",
+            "Diễn giải chi tiết",
+            "Tính chất chi phí",
+            "Đối tượng theo dõi\n(BSX)",
+            "Phân loại phương tiện/ Chức danh nhân sự",
+            "KM hoạt động",
+            "Ngày phát sinh chi phí",
+            "Tổng số tiền (VNĐ)",
+            "Số tháng khấu hao",
+            "Chi phí khấu trừ quỹ lương tháng",
+            "Tháng tính khấu hao cuối cùng",
+            "Ghi chú"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B2)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30330",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "13083333.333333334",
+            "2030-03-01 00:00:00"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B3)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30765",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "13083333.333333334",
+            "2030-03-01 00:00:00"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B4)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L86870",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "13083333.333333334",
+            "2030-03-01 00:00:00"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B5)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63619",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "13083333.333333334",
+            "2030-03-01 00:00:00"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B6)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63716",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "13083333.333333334",
+            "2030-03-01 00:00:00"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B7)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29D58817",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "13083333.333333334",
+            "2030-03-01 00:00:00"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B8)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K24076",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "13083333.333333334",
+            "2030-03-01 00:00:00"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B9)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30445",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "13083333.333333334",
+            "2030-03-01 00:00:00"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B10)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30431",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "13083333.333333334",
+            "2030-03-01 00:00:00"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B11)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30711",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "13083333.333333334",
+            "2030-03-01 00:00:00"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B12)",
+            "2026-03-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K00263",
+            "Ford",
+            "2024-04-26 00:00:00",
+            "775808000",
+            "60",
+            "12930133.333333334",
+            "2029-03-26 00:00:00"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chi tiết T4",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "STT",
+            "Tháng",
+            "Tỉnh",
+            "Nhóm CP",
+            "Hạng mục chi",
+            "Diễn giải chi tiết",
+            "Tính chất chi phí",
+            "Đối tượng theo dõi\n(BSX)",
+            "Phân loại phương tiện/ Chức danh nhân sự",
+            "KM hoạt động",
+            "Ngày phát sinh chi phí",
+            "Tổng số tiền (VNĐ)",
+            "Số tháng khấu hao",
+            "Chi phí khấu trừ quỹ lương tháng",
+            "Tháng tính khấu hao cuối cùng",
+            "Ghi chú"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B2)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30330",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B2>O2,\"\",L2/M2)",
+            "=EDATE(K2, M2-1)"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B3)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30765",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B3>O3,\"\",L3/M3)",
+            "=EDATE(K3, M3-1)"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B4)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L86870",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B4>O4,\"\",L4/M4)",
+            "=EDATE(K4, M4-1)"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B5)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63619",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B5>O5,\"\",L5/M5)",
+            "=EDATE(K5, M5-1)"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B6)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63716",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B6>O6,\"\",L6/M6)",
+            "=EDATE(K6, M6-1)"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B7)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29D58817",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B7>O7,\"\",L7/M7)",
+            "=EDATE(K7, M7-1)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B8)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K24076",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B8>O8,\"\",L8/M8)",
+            "=EDATE(K8, M8-1)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B9)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30445",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B9>O9,\"\",L9/M9)",
+            "=EDATE(K9, M9-1)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B10)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30431",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B10>O10,\"\",L10/M10)",
+            "=EDATE(K10, M10-1)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B11)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30711",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B11>O11,\"\",L11/M11)",
+            "=EDATE(K11, M11-1)"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B12)",
+            "2026-04-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K00263",
+            "Ford",
+            "2024-04-26 00:00:00",
+            "775808000",
+            "60",
+            "=IF(B12>O12,\"\",L12/M12)",
+            "=EDATE(K12, M12-1)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chi tiết T5",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "STT",
+            "Tháng",
+            "Tỉnh",
+            "Nhóm CP",
+            "Hạng mục chi",
+            "Diễn giải chi tiết",
+            "Tính chất chi phí",
+            "Đối tượng theo dõi\n(BSX)",
+            "Phân loại phương tiện/ Chức danh nhân sự",
+            "KM hoạt động",
+            "Ngày phát sinh chi phí",
+            "Tổng số tiền (VNĐ)",
+            "Số tháng khấu hao",
+            "Chi phí khấu trừ quỹ lương tháng",
+            "Tháng tính khấu hao cuối cùng",
+            "Ghi chú"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B2)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30330",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B2>O2,\"\",L2/M2)",
+            "=EDATE(K2, M2-1)"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B3)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30765",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B3>O3,\"\",L3/M3)",
+            "=EDATE(K3, M3-1)"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B4)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L86870",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B4>O4,\"\",L4/M4)",
+            "=EDATE(K4, M4-1)"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B5)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63619",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B5>O5,\"\",L5/M5)",
+            "=EDATE(K5, M5-1)"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B6)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "30L63716",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B6>O6,\"\",L6/M6)",
+            "=EDATE(K6, M6-1)"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B7)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29D58817",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B7>O7,\"\",L7/M7)",
+            "=EDATE(K7, M7-1)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B8)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K24076",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B8>O8,\"\",L8/M8)",
+            "=EDATE(K8, M8-1)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B9)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30445",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B9>O9,\"\",L9/M9)",
+            "=EDATE(K9, M9-1)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B10)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30431",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B10>O10,\"\",L10/M10)",
+            "=EDATE(K10, M10-1)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B11)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29B30711",
+            "Vf6",
+            "2025-04-01 00:00:00",
+            "785000000",
+            "60",
+            "=IF(B11>O11,\"\",L11/M11)",
+            "=EDATE(K11, M11-1)"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=SUBTOTAL(3,$B$2:B12)",
+            "2026-05-01 00:00:00",
+            "NB",
+            "CP liên quan đến khấu hao PT",
+            "Mua xe trung chuyển",
+            "CP mua xe mới",
+            "Mua 1 lần, tính khấu hao hàng tháng",
+            "29K00263",
+            "Ford",
+            "2024-04-26 00:00:00",
+            "775808000",
+            "60",
+            "=IF(B12>O12,\"\",L12/M12)",
+            "=EDATE(K12, M12-1)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Đơn giá SCBD",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "Stt",
+            "Khoản mục",
+            "Định mức thay/trích trước",
+            "Đơn giá \n(đồng)",
+            "Định ngạch sử dụng (km)",
+            "Đơn giá chi phí (đ/km)",
+            "29B30330",
+            "VF6",
+            "=+INDEX($O:$O,MATCH(K1,$N:$N,0))",
+            "BKS",
+            "Km sử dụng trong tháng"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "CP thay dầu, nhớt",
+            "Ford",
+            "9.5",
+            "135000",
+            "10000",
+            "=C2*D2/E2",
+            "29B30765",
+            "VF6",
+            "=+INDEX($O:$O,MATCH(K2,$N:$N,0))",
+            "29B30330",
+            "=+VLOOKUP(N2,$S$2:$U$16,3,0)",
+            "VF6",
+            "29B30330",
+            "Vinfast VF6S",
+            "6093"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "CP thay dầu, nhớt",
+            "Solati",
+            "7.5",
+            "135000",
+            "10000",
+            "=C3*D3/E3",
+            "30L86870",
+            "VF6",
+            "=+INDEX($O:$O,MATCH(K3,$N:$N,0))",
+            "29B30765",
+            "=+VLOOKUP(N3,$S$2:$U$16,3,0)",
+            "VF6",
+            "29B30765",
+            "Vinfast VF6S",
+            "5291"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "CP thay dầu, nhớt",
+            "Suzu",
+            "4",
+            "140000",
+            "10000",
+            "=C4*D4/E4",
+            "30L63619",
+            "VF6",
+            "=+INDEX($O:$O,MATCH(K4,$N:$N,0))",
+            "30L86870",
+            "=+VLOOKUP(N4,$S$2:$U$16,3,0)",
+            "VF6",
+            "30L86870",
+            "Vinfast VF6S",
+            "5691"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "CP thay dầu, nhớt",
+            "Vf6",
+            "0",
+            "30L63716",
+            "VF6",
+            "=+INDEX($O:$O,MATCH(K5,$N:$N,0))",
+            "30L63619",
+            "=+VLOOKUP(N5,$S$2:$U$16,3,0)",
+            "VF6",
+            "30L63619",
+            "Vinfast VF6S",
+            "5769"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "CP thay lốp",
+            "Ford",
+            "4",
+            "2635000",
+            "100000",
+            "=C6*D6/E6",
+            "Lốp theo xe",
+            "29D58817",
+            "VF6",
+            "=+INDEX($O:$O,MATCH(K6,$N:$N,0))",
+            "30L63716",
+            "=+VLOOKUP(N6,$S$2:$U$16,3,0)",
+            "VF6",
+            "30L63716",
+            "Vinfast VF6S",
+            "6040"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "CP thay lốp",
+            "Solati",
+            "4",
+            "2635000",
+            "100000",
+            "=C7*D7/E7",
+            "Bridgestone",
+            "29K24076",
+            "VF6",
+            "=+INDEX($O:$O,MATCH(K7,$N:$N,0))",
+            "29D58817",
+            "=+VLOOKUP(N7,$S$2:$U$16,3,0)",
+            "VF6",
+            "29D58817",
+            "Vinfast VF6S",
+            "5527"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "CP thay lốp",
+            "Suzu",
+            "4",
+            "1360000",
+            "80000",
+            "=C8*D8/E8",
+            "29B30445",
+            "VF6",
+            "=+INDEX($O:$O,MATCH(K8,$N:$N,0))",
+            "29K24076",
+            "=+VLOOKUP(N8,$S$2:$U$16,3,0)",
+            "VF6",
+            "29K24076",
+            "Vinfast VF6S",
+            "6013"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "CP thay lốp",
+            "Vf6",
+            "4",
+            "3600000",
+            "80000",
+            "=C9*D9/E9",
+            "29B30431",
+            "VF6",
+            "=+INDEX($O:$O,MATCH(K9,$N:$N,0))",
+            "29B30445",
+            "=+VLOOKUP(N9,$S$2:$U$16,3,0)",
+            "VF6",
+            "29B30445",
+            "Vinfast VF6S",
+            "4423"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "CP thay ắc quy",
+            "Ford",
+            "1",
+            "1850000",
+            "100000",
+            "=C10*D10/E10",
+            "29B30711",
+            "VF6",
+            "=+INDEX($O:$O,MATCH(K10,$N:$N,0))",
+            "29B30431",
+            "=+VLOOKUP(N10,$S$2:$U$16,3,0)",
+            "VF6",
+            "29B30431",
+            "Vinfast VF6S",
+            "6314"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "CP thay ắc quy",
+            "Solati",
+            "1",
+            "2950000",
+            "100000",
+            "=C11*D11/E11",
+            "30K12525",
+            "Limo green",
+            "=+INDEX($O:$O,MATCH(K11,$N:$N,0))",
+            "29B30711",
+            "=+VLOOKUP(N11,$S$2:$U$16,3,0)",
+            "VF6",
+            "29B30711",
+            "Vinfast VF6S",
+            "5920"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "CP thay ắc quy",
+            "Suzu",
+            "1",
+            "1650000",
+            "100000",
+            "=C12*D12/E12",
+            "29K00263",
+            "Ford",
+            "=+INDEX($O:$O,MATCH(K12,$N:$N,0))",
+            "30K12525",
+            "=+VLOOKUP(N12,$S$2:$U$16,3,0)",
+            "Limo green",
+            "30K12525",
+            "Limo green",
+            "6526"
+          ]
+        }
+      ]
+    }
+  ]
+}

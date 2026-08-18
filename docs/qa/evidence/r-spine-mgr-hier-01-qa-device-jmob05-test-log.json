@@ -1,0 +1,173 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-R-SPINE-MGR-HIER-01-QA-DEVICE-JMOB05-20260803",
+  "work_item_id": "R-SPINE-MGR-HIER-01-QA-DEVICE-JMOB05",
+  "tester": "qa-device",
+  "started_at": "2026-08-03T15:46:04.184Z",
+  "ended_at": "2026-08-03T15:53:48.577Z",
+  "environment": {
+    "device": "emulator-5554",
+    "package": "vn.xevn.hrm.mobile",
+    "versionName": "1.0.0",
+    "apk": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk",
+    "apk_bytes": 71602307,
+    "apk_sha256": "AB93DA36B9B44776764268F994873FFB2E77A1E1F2B9C1701610C5A65433F5AB",
+    "host_api": "http://127.0.0.1:28001",
+    "emu_api": "http://10.0.2.2:28001",
+    "company_uuid": "10000000-0000-4000-8000-000000000001"
+  },
+  "hdsd_sot": "Mobile FAB Tạo đơn nghỉ · ManagerApprovals Nghỉ phép · Duyệt",
+  "spec_ref": "FR-UC-H03 · J-MOB-05 · r-spine-mgr-hier-01.md Option A",
+  "hdsd_align": true,
+  "u65_zero_seed": true,
+  "verdict": "fail",
+  "evidence_narrative": "docs/qa/evidence/r-spine-mgr-hier-01-qa-device-jmob05.md",
+  "screens_dir": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-device-jmob05/",
+  "persona": {
+    "submitter": "uat.nv0003@xe.vn",
+    "approver": "uat.nv0001@xe.vn",
+    "ceo_as_l1": false,
+    "option_c": false
+  },
+  "leave": {
+    "id": "ac9db485-5d4f-4d77-9d25-114b157f70cf",
+    "type": "unpaid",
+    "status": "pending",
+    "employee_id": "2680f15f-02b6-44e1-8b42-92a6aaeb7bfb",
+    "manager_employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+    "mgr_filter_total_after_submit": 2
+  },
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-03T15:46:04.184Z",
+      "action": "Preflight hierarchy + persona + leave probe",
+      "expected": "manager_id UAT-0003→HLD-0001; holding UUID; pending probe readable",
+      "actual": "hierarchy_ok=true; uuid holding; leave_pending_mgr≥1; nv0001 roles=[employee] is_manager=false mobile_persona=emp",
+      "network": { "method": "GET", "url": "/api/hrm/attendance/leave-requests?status=pending&manager_employee_id=HLD-0001", "status": 200 },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-device-jmob05/_preflight.json"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-03T15:47:00.000Z",
+      "action": "adb install -r hrm-mobile-qa-device.apk",
+      "expected": "Success",
+      "actual": "Success",
+      "result": "pass",
+      "attachment": "apps/mobile/hrm-mobile/dist/hrm-mobile-qa-device.apk"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-03T15:48:44.371Z",
+      "action": "Deep-link login uat.nv0003 → Trang chủ",
+      "expected": "Home markers",
+      "actual": "hit Trang chủ",
+      "network": { "method": "POST", "url": "/api/hrm/auth/mobile/login", "status": 200 },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-device-jmob05/r-home-uat.nv0003.png"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-03T15:52:44.575Z",
+      "action": "FAB → Tạo đơn nghỉ → Nghỉ không lương → Gửi đơn",
+      "expected": "FE success toast/dialog; pending under mgr filter",
+      "actual": "Đơn nghỉ phép đã được gửi thành công; leave ac9db485 unpaid pending; fromSub=1",
+      "network": { "method": "GET", "url": "/api/hrm/attendance/leave-requests?manager_employee_id=HLD-0001&status=pending", "status": 200 },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-device-jmob05/r18-after.png"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-03T15:53:41.601Z",
+      "action": "Deep-link login uat.nv0001 → Trang chủ persona",
+      "expected": "Manager persona / Duyệt path available",
+      "actual": "roles=[employee] is_manager=false tile label Việc",
+      "network": { "method": "POST", "url": "/api/hrm/auth/mobile/login", "status": 200 },
+      "result": "fail",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-device-jmob05/r-home-uat.nv0001.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-03T15:53:48.577Z",
+      "action": "Tap home-action-tile-approve → ManagerApprovals Nghỉ phép",
+      "expected": "manager-approvals-screen · Nghỉ phép (n) · Duyệt",
+      "actual": "Thông báo inbox; managerApprovals=false",
+      "result": "fail",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-device-jmob05/r30-pathA.png"
+    },
+    {
+      "seq": 7,
+      "at": "2026-08-03T15:50:42.643Z",
+      "action": "FAB / Profile ManagerApprovals entry",
+      "expected": "fab-action-manager-approvals or profile-approvals-entry",
+      "actual": "fabHasApprovals=false; no profile approvals entry",
+      "result": "fail",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-device-jmob05/33-fab.png"
+    },
+    {
+      "seq": 8,
+      "at": "2026-08-03T15:53:48.577Z",
+      "action": "Duyệt 2xx → F5 queue clear",
+      "expected": "Thành công; Nghỉ phép count decreases",
+      "actual": "not reached — ManagerApprovals not mounted",
+      "result": "blocked",
+      "attachment": ""
+    }
+  ],
+  "cases": [
+    {
+      "id": "A-fail-deep",
+      "title": "Approve tile without manager JWT",
+      "status": "fail",
+      "notes": "Reproduced: tile → Thông báo inbox"
+    },
+    {
+      "id": "B-success-hdsd",
+      "title": "FE submit → ManagerApprovals Duyệt → F5",
+      "status": "fail",
+      "notes": "Submit pass; Duyệt blocked by persona lock"
+    },
+    {
+      "id": "C-logic-br",
+      "title": "FR-UC-H03 direct_manager + U65",
+      "status": "pass",
+      "notes": "mgr filter lists UAT-0003 leave; no seed; no ceo L1; no Option C"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "INC-JMOB05-PERSONA-LOCK",
+      "severity": "P0",
+      "expected": "uat.nv0001 with direct reports opens ManagerApprovals and can Duyệt",
+      "actual": "custom_fields.mobile_persona=emp locks JWT employee; tile opens Thông báo",
+      "residual_wi": "R-SPINE-MGR-HIER-01-PERSONA-LOCK"
+    },
+    {
+      "id": "INC-LEAVE-BALANCE-0",
+      "severity": "P2",
+      "expected": "Annual balance usable for submit",
+      "actual": "UI 0/0 — unpaid leave used for FE submit",
+      "residual_wi": null
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 3,
+    "blocked": 1,
+    "skipped": 0,
+    "ack_status": "FAIL_TO_PM"
+  },
+  "checks": [
+    { "id": "GATE-HIERARCHY", "pass": true, "note": "UAT-0003 manager_id=HLD-0001" },
+    { "id": "GATE-UUID", "pass": true, "note": "company_uuid=10000000-0000-4000-8000-000000000001 not main" },
+    { "id": "GATE-PENDING", "pass": true, "note": "mgr filter total=2 incl UAT-0003 unpaid" },
+    { "id": "J-MOB-05-SUBMIT", "pass": true, "note": "FE unpaid submit ac9db485…" },
+    { "id": "J-MOB-05-NAV", "pass": false, "note": "tile→Thông báo; ManagerApprovals not mounted" },
+    { "id": "J-MOB-05-DUYET", "pass": false, "note": "blocked" },
+    { "id": "GATE-NO-CEO-L1", "pass": true, "note": "ceo not used as L1" },
+    { "id": "GATE-U65", "pass": true, "note": "no seed" }
+  ],
+  "ack_status": "FAIL_TO_PM",
+  "pm_dispatch_hint": "R-SPINE-MGR-HIER-01-PERSONA-LOCK — dev-be: unlock manager JWT/home is_manager when directReports>0 despite mobile_persona=emp; then qa-device JMOB05-R2 Duyệt"
+}

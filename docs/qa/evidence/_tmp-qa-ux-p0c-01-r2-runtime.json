@@ -1,0 +1,107 @@
+{
+  "work_item_id": "QA-UX-P0C-01",
+  "startedAt": "2026-07-28T08:10:34.174Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "hold_deploy": true
+  },
+  "steps": [
+    {
+      "id": "L0-portal",
+      "ok": true,
+      "detail": "http://127.0.0.1:5173",
+      "at": "2026-07-28T08:10:34.175Z"
+    },
+    {
+      "id": "login",
+      "ok": true,
+      "detail": "token ok · company main",
+      "at": "2026-07-28T08:10:34.313Z"
+    },
+    {
+      "id": "UF-P0C-payroll-mount",
+      "ok": true,
+      "detail": "rootLen=3017290 tUndefined=false floatingCrash=false pageErrors=[]",
+      "at": "2026-07-28T08:10:38.589Z"
+    },
+    {
+      "id": "UF-P0C-tab-switch",
+      "ok": true,
+      "detail": "overviewOk=true calcVia=menuitem policyOk=true roots=29656/10581/26881/18311 crash=false overviewHint=true calcHint=true",
+      "at": "2026-07-28T08:10:49.281Z"
+    },
+    {
+      "id": "UF-P0C-tax-c1-mustkeep",
+      "ok": true,
+      "detail": "taxVisible=true floatingCrash=false",
+      "at": "2026-07-28T08:10:49.338Z"
+    },
+    {
+      "id": "UF-P0C-ux06-tax-cancel-reopen",
+      "ok": true,
+      "detail": "closed=true yearBefore=2026 typed=2099 yearAfterReopen=2026 expectYear≈2026",
+      "at": "2026-07-28T08:10:51.697Z"
+    },
+    {
+      "id": "UF-P0C-ux06-advance-cancel-reopen",
+      "ok": true,
+      "detail": "liveTab=AdvanceRequestsTab closed=true reopen={\"open\":true,\"title\":\"Tạo bảng tạm ứng mới\",\"inputs\":[\"\",\"Tháng 7/2026\"]} bodyHint=true",
+      "at": "2026-07-28T08:10:57.990Z"
+    },
+    {
+      "id": "UF-P0C-components-tab",
+      "ok": true,
+      "detail": "opened Thành phần lương",
+      "at": "2026-07-28T08:11:02.741Z"
+    },
+    {
+      "id": "UF-P0C-d5-add-dialog-open",
+      "ok": true,
+      "detail": "opened=true dialog={\"open\":true,\"title\":\"Thêm mới thành phần lương\"}",
+      "at": "2026-07-28T08:11:03.691Z"
+    },
+    {
+      "id": "UF-P0C-d5-zod-rhf",
+      "ok": true,
+      "detail": "title=Thêm mới thành phần lương formItemMessage=3 msgs=[\"Mã thành phần không được để trống\",\"Tên thành phần không được để trống\",\"Vui lòng chọn loại thành phần\"]",
+      "at": "2026-07-28T08:11:04.717Z"
+    },
+    {
+      "id": "UF-P0C-ux06-salary-cancel-reopen",
+      "ok": true,
+      "detail": "reopen={\"open\":true,\"inputs\":[\"\",\"\",\"taxable\"]}",
+      "at": "2026-07-28T08:11:06.335Z"
+    },
+    {
+      "id": "UF-P0C-clock-in-mustkeep",
+      "ok": true,
+      "detail": "wizardVisible=true crash=false",
+      "at": "2026-07-28T08:11:10.489Z"
+    },
+    {
+      "id": "console-no-t-floating-crash",
+      "ok": true,
+      "detail": "tUndefined=false floatingCrash=false pageErrors=0",
+      "at": "2026-07-28T08:11:10.535Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-p0c-01\\01-payroll-mount.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-p0c-01\\02-tab-switch-tax.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-p0c-01\\03-tax-settlement.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-p0c-01\\04-tax-reopen-empty.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-p0c-01\\04b-advance-reopen-empty.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-p0c-01\\05-components-tab.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-p0c-01\\06-add-dialog.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-p0c-01\\07-empty-submit-zod.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-p0c-01\\08-salary-reopen-empty.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-p0c-01\\09-clock-in.png"
+  ],
+  "finishedAt": "2026-07-28T08:11:10.536Z",
+  "verdict": "PASS",
+  "hardFails": []
+}

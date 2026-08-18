@@ -1,0 +1,250 @@
+{
+  "work_item_id": "W1-B-02-EMP-QA-RET",
+  "layer": "L1-live",
+  "startedAt": "2026-08-03T10:28:46.675Z",
+  "steps": [
+    {
+      "step": "login",
+      "status": 201,
+      "ok": true
+    },
+    {
+      "step": "GET_list",
+      "status": 200,
+      "code": "HRM-EMP-200",
+      "total": 42,
+      "count": 20,
+      "sampleKeys": [
+        "id",
+        "company_id",
+        "company_uuid",
+        "company_display_name",
+        "employee_code",
+        "email",
+        "full_name",
+        "display_name",
+        "job_title_key",
+        "job_title_label",
+        "department",
+        "phone_number",
+        "manager_id",
+        "status",
+        "status_label",
+        "hired_at",
+        "archived_at",
+        "avatar_url",
+        "custom_fields",
+        "created_at",
+        "updated_at"
+      ]
+    }
+  ],
+  "ac1": {
+    "verdict": "PASS",
+    "allHaveKeys": true,
+    "rowCount": 20,
+    "fieldCheck": [
+      {
+        "id": "4315dade-ef5a-4db2-99ee-f724896ffa09",
+        "company_id": "holding",
+        "present": {
+          "status_label": true,
+          "department": true,
+          "job_title_label": true,
+          "display_name": true
+        },
+        "values": {
+          "status_label": "Đang làm việc",
+          "department": null,
+          "job_title_label": null,
+          "display_name": "QA SoftDel SD8EZ1HE"
+        },
+        "snakeLeak": false
+      },
+      {
+        "id": "34ea08a2-4690-4dec-917f-f5386b8ab3e2",
+        "company_id": "holding",
+        "present": {
+          "status_label": true,
+          "department": true,
+          "job_title_label": true,
+          "display_name": true
+        },
+        "values": {
+          "status_label": "Đang làm việc",
+          "department": null,
+          "job_title_label": null,
+          "display_name": "QA SoftDel MD8EMR0V"
+        },
+        "snakeLeak": false
+      },
+      {
+        "id": "7a236024-b48b-425b-9e99-77f71f23f8d0",
+        "company_id": "holding",
+        "present": {
+          "status_label": true,
+          "department": true,
+          "job_title_label": true,
+          "display_name": true
+        },
+        "values": {
+          "status_label": "Đang làm việc",
+          "department": null,
+          "job_title_label": null,
+          "display_name": "QA SoftDel MD8EJJ7J"
+        },
+        "snakeLeak": false
+      },
+      {
+        "id": "d850693c-9958-4c25-8a2c-218adeb4870a",
+        "company_id": "holding",
+        "present": {
+          "status_label": true,
+          "department": true,
+          "job_title_label": true,
+          "display_name": true
+        },
+        "values": {
+          "status_label": "Đang làm việc",
+          "department": null,
+          "job_title_label": null,
+          "display_name": "QA SoftDel MD8EHOOJ"
+        },
+        "snakeLeak": false
+      },
+      {
+        "id": "042ca737-4bf2-4915-b52b-7eb2069058d7",
+        "company_id": "holding",
+        "present": {
+          "status_label": true,
+          "department": true,
+          "job_title_label": true,
+          "display_name": true
+        },
+        "values": {
+          "status_label": "Đang làm việc",
+          "department": null,
+          "job_title_label": null,
+          "display_name": "QA SoftDel MD8EFZK8"
+        },
+        "snakeLeak": false
+      },
+      {
+        "id": "b290188e-c2f7-4b81-8971-8829fde69a83",
+        "company_id": "holding",
+        "present": {
+          "status_label": true,
+          "department": true,
+          "job_title_label": true,
+          "display_name": true
+        },
+        "values": {
+          "status_label": "Đang làm việc",
+          "department": null,
+          "job_title_label": null,
+          "display_name": "QA SoftDel MD8EEBLJ"
+        },
+        "snakeLeak": false
+      },
+      {
+        "id": "1cda2ae3-9344-4bfd-ac55-ccf23c4cbb1d",
+        "company_id": "holding",
+        "present": {
+          "status_label": true,
+          "department": true,
+          "job_title_label": true,
+          "display_name": true
+        },
+        "values": {
+          "status_label": "Đang làm việc",
+          "department": null,
+          "job_title_label": null,
+          "display_name": "QA SoftDel MD8ECL63"
+        },
+        "snakeLeak": false
+      },
+      {
+        "id": "9695108d-1ee8-479b-ab59-c4c20fe77491",
+        "company_id": "holding",
+        "present": {
+          "status_label": true,
+          "department": true,
+          "job_title_label": true,
+          "display_name": true
+        },
+        "values": {
+          "status_label": "Đang làm việc",
+          "department": null,
+          "job_title_label": null,
+          "display_name": "QA SoftDel MD8EA7JL"
+        },
+        "snakeLeak": false
+      },
+      {
+        "id": "4b50a695-624c-4038-9756-5c929050e355",
+        "company_id": "holding",
+        "present": {
+          "status_label": true,
+          "department": true,
+          "job_title_label": true,
+          "display_name": true
+        },
+        "values": {
+          "status_label": "Đang làm việc",
+          "department": null,
+          "job_title_label": null,
+          "display_name": "QA SoftDel MD8E6VZ5"
+        },
+        "snakeLeak": false
+      },
+      {
+        "id": "fad7c9fd-ed46-4c3a-958a-1fb29ef18fd4",
+        "company_id": "holding",
+        "present": {
+          "status_label": true,
+          "department": true,
+          "job_title_label": true,
+          "display_name": true
+        },
+        "values": {
+          "status_label": "Đang làm việc",
+          "department": null,
+          "job_title_label": null,
+          "display_name": "QA SoftDel MD8E3P73"
+        },
+        "snakeLeak": false
+      }
+    ],
+    "snakeLeakCount": 0
+  },
+  "ac2": {
+    "verdict": "PASS",
+    "status": 200,
+    "code": "HRM-EMP-200",
+    "id": "4315dade-ef5a-4db2-99ee-f724896ffa09",
+    "company_id": "holding",
+    "display_name": "QA SoftDel SD8EZ1HE",
+    "department": null,
+    "job_title_label": null,
+    "status_label": "Đang làm việc"
+  },
+  "ac3": {
+    "verdict": "PASS",
+    "status": 200,
+    "code": "HRM-EMP-202",
+    "payloadKeys": [
+      "full_name"
+    ],
+    "displayReady": true,
+    "display_name": "QA SoftDel SD8EZ1HE",
+    "department": null,
+    "job_title_label": null,
+    "status_label": "Đang làm việc",
+    "snakeLeak": false
+  },
+  "ac4_api": {
+    "verdict": "PASS",
+    "snakeLeakCount": 0
+  },
+  "finishedAt": "2026-08-03T10:28:46.925Z"
+}

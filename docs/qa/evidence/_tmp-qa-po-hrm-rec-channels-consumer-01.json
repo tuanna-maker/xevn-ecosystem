@@ -1,0 +1,56 @@
+{
+  "work_item_id": "QA-PO-HRM-REC-CHANNELS-CONSUMER-01",
+  "stamp": "RECCHQA-MSNKIJ5R",
+  "startedAt": "2026-08-10T18:31:34.581Z",
+  "u65": "zero-seed-browser-only",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "honesty": {
+    "settings_catalog_e2e_ready": false,
+    "uf_hrm_10_full": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0 (this run)"
+  },
+  "vitest": {
+    "result": "43/43 pass (pre-run)"
+  },
+  "channels": {
+    "effBefore": 0,
+    "effAfter": 0,
+    "codes": [],
+    "syncUsed": false,
+    "feCreateUsed": false
+  },
+  "ac": {
+    "AC-REC-02": {
+      "verdict": "PASS",
+      "summary": "filter CSO_01 shows row stamp=RECCHQA-MSNK95YR visible=true",
+      "optionTestId": "hdsd-candidate-filter-source-option-CSO_01",
+      "at": "2026-08-10T18:31:42.731Z"
+    }
+  },
+  "network": [],
+  "consoleErrors": [],
+  "ids": {
+    "selectedSourceCode": null,
+    "selectedSourceLabel": null,
+    "candidateId": null
+  },
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "pm_dispatch_hint": "qc — PO-HRM-REC-CHANNELS-CONSUMER-QC-01 narrow slice AC-REC-02; deny settings_catalog_e2e_ready flip",
+  "endedAt": "2026-08-10T18:31:42.731Z",
+  "mode": "AC-REC-02-only",
+  "existingRowStamp": "RECCHQA-MSNK95YR",
+  "filterSourceCode": "CSO_01"
+}

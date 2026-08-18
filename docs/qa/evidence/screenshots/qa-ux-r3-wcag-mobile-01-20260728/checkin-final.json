@@ -1,0 +1,67 @@
+{
+  "submit": {
+    "id": "check-in-submit",
+    "text": "",
+    "desc": "Chấm công vào",
+    "clickable": true,
+    "x1": 42,
+    "y1": 1778,
+    "x2": 1038,
+    "y2": 1904,
+    "w": 996,
+    "h": 126
+  },
+  "footer": {
+    "id": "check-in-sticky-footer",
+    "text": "",
+    "desc": "",
+    "clickable": false,
+    "x1": 0,
+    "y1": 1756,
+    "x2": 1080,
+    "y2": 2114,
+    "w": 1080,
+    "h": 358
+  },
+  "history": {
+    "id": "check-in-history",
+    "text": "",
+    "desc": "Lịch sử chấm công",
+    "clickable": true,
+    "x1": 42,
+    "y1": 1925,
+    "x2": 1038,
+    "y2": 2051,
+    "w": 996,
+    "h": 126
+  },
+  "nav": {
+    "id": "android:id/navigationBarBackground",
+    "text": "",
+    "desc": "",
+    "clickable": false,
+    "x1": 0,
+    "y1": 2337,
+    "x2": 1080,
+    "y2": 2400,
+    "w": 1080,
+    "h": 63
+  },
+  "safe": {
+    "id": "tab-bar-safe-zone",
+    "text": "",
+    "desc": "",
+    "clickable": false,
+    "x1": 0,
+    "y1": 2274,
+    "x2": 1080,
+    "y2": 2337,
+    "w": 1080,
+    "h": 63
+  },
+  "tabTop": 2148,
+  "submitClearsTab": true,
+  "historyClearsTab": true,
+  "submitTouchOk": true,
+  "gapSubmitToTab": 244
+}

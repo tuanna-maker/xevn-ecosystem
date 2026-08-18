@@ -1,0 +1,833 @@
+﻿{
+  "work_item_id": "QA-HDSD-MUTATE-RET-03-HRM-R9",
+  "program": "P-HDSD-QA-SRS-01",
+  "prior": "d-hdsd-mutate-fe-11-20260801.md + d-hdsd-mutate-be-02-20260801.md",
+  "postBodies": [
+    {
+      "method": "POST",
+      "url": "/api/xbos/auth/login",
+      "body": {
+        "email": "ceo@xe.vn",
+        "password": "Xevn@2026"
+      },
+      "at": "2026-07-30T18:10:29.024Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/employees",
+      "body": {
+        "company_id": "main",
+        "employee_code": "QAHDSDTWZH0",
+        "full_name": "NV HDSDTWZH0",
+        "email": "qahdsdtwzh0@xevn.local",
+        "hired_at": "2026-07-30",
+        "avatar_url": null,
+        "custom_fields": {}
+      },
+      "at": "2026-07-30T18:10:47.643Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "body": {
+        "company_id": "main",
+        "employee_id": "8ef5ef5d-ac43-4714-bd66-e6abbd9640b5",
+        "contract_code": "HD-TXP9Y",
+        "contract_type": "HDHV",
+        "start_date": "2026-07-31",
+        "end_date": "2027-07-31",
+        "position_key": "CEO",
+        "position": "Tá»•ng GiĂ¡m Ä‘á»‘c"
+      },
+      "at": "2026-07-30T18:11:01.722Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "body": {
+        "company_id": "holding",
+        "employee_id": "139ee909-df32-4467-81e1-dfb1281f604d",
+        "employee_code": "PORTAL-GCEO",
+        "employee_name": "CEO Táº­p Ä‘oĂ n",
+        "department": "CEO",
+        "position": "CEO",
+        "leave_type": "LVT_01",
+        "start_date": "2027-12-05",
+        "end_date": "2027-12-07",
+        "total_days": 3,
+        "reason": "QA-LEAVE-HDSDTWZH0"
+      },
+      "at": "2026-07-30T18:13:58.624Z"
+    }
+  ],
+  "startedAt": "2026-07-30T18:10:26.580Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed",
+    "stamp": "HDSDTWZH0",
+    "hrmEmbed": "http://127.0.0.1:8080/hr/"
+  },
+  "l0": {
+    "skipped": true,
+    "note": "pre-verified portal+hrm up"
+  },
+  "tc": [
+    {
+      "id": "TC-HDSD-04-02-01",
+      "verdict": "đŸŸ¢",
+      "detail": "workflow_designer dots=true text=true net=200",
+      "uf": "UF-XBOS-10",
+      "at": "2026-07-30T18:10:40.088Z",
+      "clickPath": "?settings=workflow_designer â†’ Canvas"
+    },
+    {
+      "id": "TC-HDSD-05-03-01",
+      "verdict": "đŸŸ¢",
+      "detail": "regression POST=201 F5=true",
+      "uf": "UF-HRM-02",
+      "at": "2026-07-30T18:10:54.830Z",
+      "clickPath": "#hdsd-employees-create-btn â†’ submit â†’ F5"
+    },
+    {
+      "id": "TC-HDSD-06-02-01",
+      "verdict": "đŸŸ¢",
+      "detail": "dialog=true formReady=true formReadyMs=3 POST=POST 201 position_key=true contract_code=true",
+      "uf": "UF-HRM-05",
+      "at": "2026-07-30T18:11:09.008Z",
+      "clickPath": "create â†’ wait hdsd-contracts-form-ready â†’ LÆ°u â†’ F5",
+      "formReadyMs": 3,
+      "postBody": {
+        "position_key": "CEO",
+        "contract_code": "HD-TXP9Y",
+        "employee_id": "8ef5ef5d-ac43-4714-bd66-e6abbd9640b5"
+      }
+    },
+    {
+      "id": "TC-HDSD-07-02-01",
+      "verdict": "đŸŸ¡",
+      "detail": "jdEnsure={\"ok\":true,\"via\":\"existing\",\"count\":1} formOpen=true formReady=false jobTemplatesGets=1 storm=false POST=none",
+      "uf": "UF-HRM-07",
+      "at": "2026-07-30T18:12:45.129Z",
+      "clickPath": "create â†’ wait hdsd-requisition-form-ready â†’ LÆ°u â†’ F5",
+      "jobTemplatesGets": 1,
+      "storm": false
+    },
+    {
+      "id": "TC-HDSD-10-04-01",
+      "verdict": "đŸŸ¢",
+      "detail": "url=http://127.0.0.1:5173/hr/internal-services GET=n/a console404=false",
+      "uf": "UF-HRM-MENU-05",
+      "at": "2026-07-30T18:12:48.409Z",
+      "clickPath": "/hr/internal_services embed redirect"
+    },
+    {
+      "id": "TC-HDSD-08-02-01",
+      "verdict": "đŸŸ¢",
+      "detail": "POST=201 overviewPanel=true F5overview=true marker=QA-LEAVE-HDSDTWZH0",
+      "uf": "UF-HRM-09",
+      "at": "2026-07-30T18:14:04.875Z",
+      "clickPath": "Leave POST â†’ F5 /hr/attendance overview â†’ hdsd-leave-overview-recent"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:10:27.200Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:10:28.008Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-07-30T18:10:29.041Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:10:29.339Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:10:29.342Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:10:29.343Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:10:29.344Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:10:29.351Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:10:29.352Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-07-30T18:10:29.352Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:10:29.359Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:10:29.359Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:10:29.370Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-07-30T18:10:29.382Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:10:31.507Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:10:31.554Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T18:10:31.872Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-30T18:10:31.925Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:10:31.947Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:10:31.998Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:10:35.514Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T18:10:35.515Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T18:10:35.518Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:10:35.700Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:10:35.700Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:10:35.701Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:10:35.702Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-07-30T18:10:35.702Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:10:35.702Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:10:35.706Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:10:35.707Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-07-30T18:10:35.717Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:10:35.719Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:10:35.719Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-07-30T18:10:35.743Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:10:36.275Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:10:36.275Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:10:43.366Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:10:43.423Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T18:10:43.547Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-30T18:10:43.547Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:10:43.600Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:10:43.661Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:10:45.414Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees",
+      "at": "2026-07-30T18:10:47.653Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T18:10:47.688Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:10:51.875Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:10:51.912Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T18:10:51.999Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-30T18:10:52.000Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:10:52.058Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:10:52.128Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:10:58.036Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:10:58.071Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:10:58.290Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-07-30T18:10:58.317Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": "2026-07-30T18:11:00.057Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:11:00.114Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "at": "2026-07-30T18:11:02.124Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-07-30T18:11:02.224Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:11:06.001Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:11:06.016Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:11:06.150Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-07-30T18:11:06.180Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:11:09.221Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:11:09.254Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-07-30T18:11:09.798Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-07-30T18:11:09.804Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:11:09.811Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-07-30T18:11:09.817Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-07-30T18:11:09.817Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-07-30T18:11:09.817Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-07-30T18:11:09.850Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:11:12.392Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:11:12.429Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-07-30T18:11:12.665Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:11:12.673Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-07-30T18:11:12.681Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-07-30T18:11:12.681Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-07-30T18:11:12.681Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-07-30T18:11:12.686Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-07-30T18:11:12.734Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:11:12.737Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-07-30T18:11:12.766Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-07-30T18:12:15.300Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:12:43.116Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:12:43.181Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-07-30T18:12:43.362Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-07-30T18:12:43.367Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-07-30T18:12:43.384Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-07-30T18:12:43.385Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-07-30T18:12:43.390Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:12:43.412Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-07-30T18:12:43.430Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-07-30T18:12:43.471Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:12:43.482Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:12:45.408Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:12:45.446Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operations/service-requests?company_id=main",
+      "at": "2026-07-30T18:12:45.508Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:13:49.410Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:13:49.442Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-07-30T18:13:49.788Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-07-30T18:13:49.881Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-07-30T18:13:51.418Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "at": "2026-07-30T18:13:51.486Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:13:51.486Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&keyword=PORTAL-GCEO&include_archived=false&page=1&page_size=50",
+      "at": "2026-07-30T18:13:53.677Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/leave-requests",
+      "at": "2026-07-30T18:13:58.914Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-07-30T18:13:58.973Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:14:02.350Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:14:02.415Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-07-30T18:14:02.563Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-07-30T18:14:02.642Z"
+    }
+  ],
+  "consoleErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-mutate-ret-03-HRM-R6-20260801/04-02-wf-canvas.png",
+    "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-mutate-ret-03-HRM-R6-20260801/06-02-create-form.png",
+    "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-mutate-ret-03-HRM-R6-20260801/06-02-form-ready.png",
+    "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-mutate-ret-03-HRM-R6-20260801/06-02-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-mutate-ret-03-HRM-R6-20260801/06-02-after-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-mutate-ret-03-HRM-R6-20260801/07-02-create-form.png",
+    "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-mutate-ret-03-HRM-R6-20260801/07-02-form-ready.png",
+    "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-mutate-ret-03-HRM-R6-20260801/07-02-after-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-mutate-ret-03-HRM-R6-20260801/10-04-internal-services.png",
+    "C:/Users/ADMIN/OneDrive/Tà€i liĂª̀£u/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-mutate-ret-03-HRM-R6-20260801/08-02-leave-overview-f5.png"
+  ],
+  "finishedAt": "2026-07-30T18:14:04.876Z",
+  "summary": {
+    "green": 5,
+    "yellow": 1,
+    "red": 0
+  },
+  "ack_status": "FAIL_TO_PM"
+}

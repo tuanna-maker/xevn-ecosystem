@@ -1,0 +1,437 @@
+{
+  "work_item_id": "QA-ERP-E1A-01-R2",
+  "startedAt": "2026-07-28T16:39:43.169Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM_API": "http://127.0.0.1:28001",
+    "XBOS_API": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "HOLD_DEPLOY": true,
+    "R2": true
+  },
+  "steps": [
+    {
+      "id": "L0-portal",
+      "ok": true,
+      "detail": "HTTP 200",
+      "at": "2026-07-28T16:39:43.190Z"
+    },
+    {
+      "id": "L0-hrm",
+      "ok": true,
+      "detail": "HTTP 200",
+      "at": "2026-07-28T16:39:43.190Z"
+    },
+    {
+      "id": "L0-login",
+      "ok": true,
+      "detail": "via http://127.0.0.1:28002/api/xbos/auth/login",
+      "at": "2026-07-28T16:39:43.215Z"
+    },
+    {
+      "id": "L0-catalog-job_titles",
+      "ok": true,
+      "detail": "count=42 sample=CEO:Tổng Giám đốc",
+      "at": "2026-07-28T16:39:43.310Z"
+    },
+    {
+      "id": "L0-employee",
+      "ok": true,
+      "detail": "HTTP 200 id=dbdbece0-6572-401a-b4eb-56781493a75f company=holding total=1109",
+      "at": "2026-07-28T16:39:43.327Z"
+    },
+    {
+      "id": "API-A2-WH-unknown",
+      "ok": true,
+      "detail": "HTTP 400 code=HRM-WH-POS-KEY expect=HRM-WH-POS-KEY",
+      "at": "2026-07-28T16:39:43.512Z"
+    },
+    {
+      "id": "API-A3-DEC-unknown",
+      "ok": true,
+      "detail": "HTTP 400 code=HRM-DEC-POS-KEY expect=HRM-DEC-POS-KEY",
+      "at": "2026-07-28T16:39:43.851Z"
+    },
+    {
+      "id": "API-A5-JP-unknown",
+      "ok": true,
+      "detail": "HTTP 400 code=HRM-JP-POS-KEY expect=HRM-JP-POS-KEY",
+      "at": "2026-07-28T16:39:44.029Z"
+    },
+    {
+      "id": "API-A6-HCP-unknown",
+      "ok": true,
+      "detail": "HTTP 400 code=HRM-HCP-POS-KEY expect=HRM-HCP-POS-KEY",
+      "at": "2026-07-28T16:39:44.211Z"
+    },
+    {
+      "id": "API-A7-CI-unknown",
+      "ok": true,
+      "detail": "HTTP 400 code=HRM-CON-POS-KEY expect=HRM-CON-POS-KEY",
+      "at": "2026-07-28T16:39:44.417Z"
+    },
+    {
+      "id": "A2-WH-picker",
+      "ok": true,
+      "detail": "hasPicker=true freeTextSot=false trigger=VD: Trưởng phòng",
+      "at": "2026-07-28T16:39:52.185Z"
+    },
+    {
+      "id": "A2-WH-create",
+      "ok": true,
+      "detail": "saved={\"ok\":true,\"text\":\"Thêm mới\"} position_key=CEO HTTP=201 pick=CEOTổng Giám đốc",
+      "at": "2026-07-28T16:39:56.041Z"
+    },
+    {
+      "id": "A2-WH-F5-label",
+      "ok": true,
+      "detail": "url=http://127.0.0.1:5173/hr/employees/dbdbece0-6572-401a-b4eb-56781493a75f?portal=1&tenantId=xevn&companyId=main code=CEO label=Tổng Giám đốc",
+      "at": "2026-07-28T16:39:59.309Z"
+    },
+    {
+      "id": "A7-CI-picker",
+      "ok": true,
+      "detail": "hasPicker=true freeTextSot=false",
+      "at": "2026-07-28T16:40:05.414Z"
+    },
+    {
+      "id": "A8-CI-TYPE",
+      "ok": true,
+      "residual": true,
+      "detail": "deferred R-E1A-A8-CTYPE; probe={\"found\":true,\"hasControl\":true,\"optionSample\":[\"Hợp đồng thử việc\",\"Hợp đồng 1 năm\",\"Hợp đồng 2 năm\",\"Hợp đồng 3 năm\",\"Hợp đồng không thời hạn\"],\"htmlHint\":\"<label class=\\\"text-sm font-medium leading-none peer-disabled:cursor-not-allowed p",
+      "at": "2026-07-28T16:40:05.414Z"
+    },
+    {
+      "id": "A7-CI-create",
+      "ok": true,
+      "detail": "saved={\"ok\":true,\"text\":\"Thêm mới\"} position_key=CEO HTTP=201",
+      "at": "2026-07-28T16:40:10.943Z"
+    },
+    {
+      "id": "A7-CI-F5",
+      "ok": true,
+      "detail": "reloaded profile contracts tab",
+      "at": "2026-07-28T16:40:12.755Z"
+    },
+    {
+      "id": "A3-DEC-picker",
+      "ok": true,
+      "detail": "hasPicker=true freeTextSot=false snip=",
+      "at": "2026-07-28T16:40:18.112Z"
+    },
+    {
+      "id": "A4-DEC-type-picker",
+      "ok": true,
+      "detail": "hasPicker=true freeTextSot=false",
+      "at": "2026-07-28T16:40:18.112Z"
+    },
+    {
+      "id": "A3-DEC-create",
+      "ok": true,
+      "detail": "saved={\"ok\":true,\"text\":\"Thêm mới\"} position_key=CEO HTTP=201 decision_type=HRD_01",
+      "at": "2026-07-28T16:40:23.160Z"
+    },
+    {
+      "id": "A3-DEC-F5-label",
+      "ok": true,
+      "detail": "label=Tổng Giám đốc",
+      "at": "2026-07-28T16:40:24.998Z"
+    },
+    {
+      "id": "A5-JP-tab",
+      "ok": true,
+      "detail": "trigger={\"ok\":true,\"via\":\"testid\",\"trigger\":\"Tin Tuyển dụng\"} menu={\"ok\":false,\"count\":0,\"raw\":[]}",
+      "at": "2026-07-28T16:40:30.748Z",
+      "soft": true
+    },
+    {
+      "id": "A5-JP-picker",
+      "ok": true,
+      "detail": "jobsMounted=true dialog=true hasPicker=true freeTextSot=false snip=",
+      "at": "2026-07-28T16:40:33.316Z"
+    },
+    {
+      "id": "A5-JP-dept-picker",
+      "ok": true,
+      "detail": "hasPicker=true",
+      "at": "2026-07-28T16:40:33.317Z"
+    },
+    {
+      "id": "A5-JP-create",
+      "ok": true,
+      "detail": "saved={\"ok\":true,\"text\":\"Tạo tin\"} position_key=CEO dept=DEPT_01 HTTP=201",
+      "at": "2026-07-28T16:40:37.526Z"
+    },
+    {
+      "id": "A5-JP-F5",
+      "ok": true,
+      "detail": "bodyLen=1038",
+      "at": "2026-07-28T16:40:40.493Z"
+    },
+    {
+      "id": "A6-HCP-picker",
+      "ok": true,
+      "detail": "hasPicker=true freeTextSot=false snip=",
+      "at": "2026-07-28T16:40:46.614Z"
+    },
+    {
+      "id": "A6-HCP-create",
+      "ok": true,
+      "detail": "saved={\"ok\":true,\"text\":\"Tạo đề xuất\"} position_key=CEO HTTP=201 bodyKeys=company_id,title,department_key,department,position_key,position_name,current_headcount,requested_headcount,proposal_type,priority,justification,expected_start_date,salary_budget_min,salary_budget_max,job_description,requirements,requested_by,notes,status requested_by=CEO Tập đoàn",
+      "at": "2026-07-28T16:40:50.855Z"
+    },
+    {
+      "id": "REG-EmployeeForm-JT",
+      "ok": true,
+      "detail": "hasPicker=true combosInDialog=4 free=false",
+      "at": "2026-07-28T16:40:55.961Z"
+    },
+    {
+      "id": "REG-EmployeeForm-dept",
+      "ok": true,
+      "detail": "hasPicker=true combosInDialog=4",
+      "at": "2026-07-28T16:40:55.961Z"
+    },
+    {
+      "id": "REG-Leave-type",
+      "ok": true,
+      "detail": "leaveTab=true dialog=true hasPicker=true combos=3 snip=",
+      "at": "2026-07-28T16:41:02.962Z"
+    },
+    {
+      "id": "REG-JobTemplates-position",
+      "ok": true,
+      "detail": "hasPicker=true",
+      "at": "2026-07-28T16:41:08.897Z"
+    },
+    {
+      "id": "A9-CAND",
+      "ok": true,
+      "skip": true,
+      "detail": "R-E1A-A9-CAND deferred by SA/FE/BE",
+      "at": "2026-07-28T16:41:08.971Z"
+    }
+  ],
+  "verdicts": {
+    "L0-portal": "PASS",
+    "L0-hrm": "PASS",
+    "L0-login": "PASS",
+    "L0-catalog-job_titles": "PASS",
+    "L0-employee": "PASS",
+    "API-A2-WH-unknown": "PASS",
+    "API-A3-DEC-unknown": "PASS",
+    "API-A5-JP-unknown": "PASS",
+    "API-A6-HCP-unknown": "PASS",
+    "API-A7-CI-unknown": "PASS",
+    "A2-WH-picker": "PASS",
+    "A2-WH-create": "PASS",
+    "A2-WH-F5-label": "PASS",
+    "A7-CI-picker": "PASS",
+    "A8-CI-TYPE": "RESIDUAL_E2",
+    "A7-CI-create": "PASS",
+    "A7-CI-F5": "PASS",
+    "A3-DEC-picker": "PASS",
+    "A4-DEC-type-picker": "PASS",
+    "A3-DEC-create": "PASS",
+    "A3-DEC-F5-label": "PASS",
+    "A5-JP-tab": "PASS",
+    "A5-JP-picker": "PASS",
+    "A5-JP-dept-picker": "PASS",
+    "A5-JP-create": "PASS",
+    "A5-JP-F5": "PASS",
+    "A6-HCP-picker": "PASS",
+    "A6-HCP-create": "PASS",
+    "REG-EmployeeForm-JT": "PASS",
+    "REG-EmployeeForm-dept": "PASS",
+    "REG-Leave-type": "PASS",
+    "REG-JobTemplates-position": "PASS",
+    "A9-CAND": "SKIP"
+  },
+  "netMutates": [
+    {
+      "phase": "request",
+      "method": "POST",
+      "url": "/api/hrm/employees/dbdbece0-6572-401a-b4eb-56781493a75f/work-timeline?company_id=main",
+      "body": {
+        "event_date": "2026-07-28",
+        "title": "QA E1A WH 92185",
+        "description": null,
+        "event_type": "position",
+        "status": "current",
+        "contract_code": null,
+        "notes": null,
+        "position_key": "CEO",
+        "position": "Tổng Giám đốc",
+        "department_key": null,
+        "department": null
+      },
+      "hasPositionKey": true,
+      "position_key": "CEO",
+      "department_key": null,
+      "signer_position_key": null
+    },
+    {
+      "phase": "response",
+      "method": "POST",
+      "url": "/api/hrm/employees/dbdbece0-6572-401a-b4eb-56781493a75f/work-timeline?company_id=main",
+      "status": 201
+    },
+    {
+      "phase": "request",
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "body": {
+        "company_id": "main",
+        "employee_id": "dbdbece0-6572-401a-b4eb-56781493a75f",
+        "contract_type": "Hợp đồng không thời hạn",
+        "start_date": "2026-07-01",
+        "position_key": "CEO",
+        "position": "Tổng Giám đốc"
+      },
+      "hasPositionKey": true,
+      "position_key": "CEO",
+      "department_key": null,
+      "signer_position_key": null
+    },
+    {
+      "phase": "response",
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": 201
+    },
+    {
+      "phase": "request",
+      "method": "POST",
+      "url": "/api/hrm/decisions",
+      "body": {
+        "company_id": "main",
+        "decision_code": "QD-E1A-18112",
+        "decision_type": "HRD_01",
+        "title": "QA E1A DEC 18163",
+        "employee_name": "QA E1A NV",
+        "position": "Tổng Giám đốc",
+        "position_key": "CEO",
+        "status": "draft"
+      },
+      "hasPositionKey": true,
+      "position_key": "CEO",
+      "department_key": null,
+      "signer_position_key": null
+    },
+    {
+      "phase": "response",
+      "method": "POST",
+      "url": "/api/hrm/decisions",
+      "status": 201
+    },
+    {
+      "phase": "request",
+      "method": "POST",
+      "url": "/api/hrm/recruitment/job-postings",
+      "body": {
+        "company_id": "main",
+        "title": "QA E1A JP 33317",
+        "position_key": "CEO",
+        "position": "Tổng Giám đốc",
+        "department_key": "DEPT_01",
+        "department": "Nhân sự",
+        "employment_type": "full-time",
+        "is_salary_visible": true,
+        "headcount": 1,
+        "priority": "medium",
+        "status": "draft"
+      },
+      "hasPositionKey": true,
+      "position_key": "CEO",
+      "department_key": "DEPT_01",
+      "signer_position_key": null
+    },
+    {
+      "phase": "response",
+      "method": "POST",
+      "url": "/api/hrm/recruitment/job-postings",
+      "status": 201
+    },
+    {
+      "phase": "request",
+      "method": "POST",
+      "url": "/api/hrm/recruitment/headcount-proposals",
+      "body": {
+        "company_id": "main",
+        "title": "QA E1A HCP 46614",
+        "department_key": "DEPT_01",
+        "department": "Nhân sự",
+        "position_key": "CEO",
+        "position_name": "Tổng Giám đốc",
+        "current_headcount": 0,
+        "requested_headcount": 1,
+        "proposal_type": "new",
+        "priority": "medium",
+        "justification": "QA E1A HCP probe",
+        "expected_start_date": null,
+        "salary_budget_min": null,
+        "salary_budget_max": null,
+        "job_description": null,
+        "requirements": null,
+        "requested_by": "CEO Tập đoàn",
+        "notes": null,
+        "status": "pending"
+      },
+      "hasPositionKey": true,
+      "position_key": "CEO",
+      "department_key": "DEPT_01",
+      "signer_position_key": null
+    },
+    {
+      "phase": "response",
+      "method": "POST",
+      "url": "/api/hrm/recruitment/headcount-proposals",
+      "status": 201
+    }
+  ],
+  "apiProbes": [
+    {
+      "id": "API-A2-WH-unknown",
+      "status": 400,
+      "code": "HRM-WH-POS-KEY",
+      "expectCode": "HRM-WH-POS-KEY",
+      "validCodeSample": "CEO"
+    },
+    {
+      "id": "API-A3-DEC-unknown",
+      "status": 400,
+      "code": "HRM-DEC-POS-KEY",
+      "expectCode": "HRM-DEC-POS-KEY",
+      "validCodeSample": "CEO"
+    },
+    {
+      "id": "API-A5-JP-unknown",
+      "status": 400,
+      "code": "HRM-JP-POS-KEY",
+      "expectCode": "HRM-JP-POS-KEY",
+      "validCodeSample": "CEO"
+    },
+    {
+      "id": "API-A6-HCP-unknown",
+      "status": 400,
+      "code": "HRM-HCP-POS-KEY",
+      "expectCode": "HRM-HCP-POS-KEY",
+      "validCodeSample": "CEO"
+    },
+    {
+      "id": "API-A7-CI-unknown",
+      "status": 400,
+      "code": "HRM-CON-POS-KEY",
+      "expectCode": "HRM-CON-POS-KEY",
+      "validCodeSample": "CEO"
+    }
+  ],
+  "hardFails": [],
+  "posPick": {
+    "code": "CEO",
+    "label": "Tổng Giám đốc"
+  },
+  "finishedAt": "2026-07-28T16:41:09.249Z",
+  "verdict": "PASS"
+}

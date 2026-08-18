@@ -1,0 +1,955 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-ATT-08-CLUSTER-QA-01",
+  "program": "PO-HRM-MVP-GD1-CONTINUOUS",
+  "uc_ids": [
+    "UC-BP-ATT-08",
+    "FR-UC-BP-ATT-08"
+  ],
+  "stamp": "ATT08QA1-MSLSGUJF",
+  "startedAt": "2026-08-09T12:38:40.600Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "attendance_uat_ready": false,
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "contracts_printable_ready": false,
+    "hrm_personnel_uat_ready": false,
+    "client_days_ne_att08_done": true,
+    "ne_att09": true,
+    "ne_att03b": true,
+    "ne_att_module_uat": true,
+    "cfg_ne_att02_done": true,
+    "pay_out": true,
+    "nest_core_deny": true,
+    "soft_ne_core06_done": true,
+    "plt_core_retain": true,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "residual_preview_fe_closed": true
+  },
+  "must_keep": [
+    "ATT02QC1-MSLQZUK7",
+    "PLT01QC1-MSLPUQIU",
+    "CORE10QC1-MSLP0EJB",
+    "CORE09QC1-MSLNBA89",
+    "CORE07QC1-KZJTSHNT"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    },
+    "nest_core_leave_preview": {
+      "status": 404,
+      "ok": true
+    }
+  },
+  "network": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/core/attendance/leave-requests/preview-deduction",
+      "status": 404,
+      "at": "2026-08-09T12:38:40.694Z",
+      "nest_core": true,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2026?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:38:40.715Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2030?company_id=main",
+      "status": 404,
+      "at": "2026-08-09T12:38:40.727Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?page=1&page_size=30&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:38:40.867Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:38:40.937Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T12:38:41.136Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T12:38:41.894Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:38:41.965Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:38:42.250Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:38:42.259Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T12:38:42.308Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:38:42.420Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:38:43.514Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T12:38:43.552Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T12:38:43.582Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "at": "2026-08-09T12:38:44.981Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294&year=2026",
+      "status": 200,
+      "at": "2026-08-09T12:38:46.457Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294&leave_type=hr_custom_09&year=2026",
+      "status": 200,
+      "at": "2026-08-09T12:38:47.594Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:38:47.773Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:38:48.279Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T12:38:48.625Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:38:52.061Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:38:52.375Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:39:56.468Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T12:39:56.675Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T12:39:59.913Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T12:40:00.169Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:40:00.232Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:40:00.486Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:40:00.494Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T12:40:00.539Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:40:00.635Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T12:40:02.360Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:40:02.430Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:40:02.628Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:40:02.632Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T12:40:02.667Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:40:02.770Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T12:40:03.993Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T12:40:04.021Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T12:40:04.063Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "at": "2026-08-09T12:40:05.412Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294&year=2026",
+      "status": 200,
+      "at": "2026-08-09T12:40:06.864Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294&leave_type=hr_custom_09&year=2026",
+      "status": 200,
+      "at": "2026-08-09T12:40:07.963Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:40:08.141Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:40:08.661Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T12:40:08.991Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 409,
+      "at": "2026-08-09T12:40:12.435Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 400,
+      "at": "2026-08-09T12:40:13.722Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": true
+    }
+  ],
+  "nest_core_hits": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/core/attendance/leave-requests/preview-deduction",
+      "status": 404,
+      "at": "2026-08-09T12:38:40.694Z",
+      "nest_core": true,
+      "preview": true,
+      "leaveCreate": false
+    }
+  ],
+  "nest_core_leave_non404": [],
+  "preview_hits": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/core/attendance/leave-requests/preview-deduction",
+      "status": 404,
+      "at": "2026-08-09T12:38:40.694Z",
+      "nest_core": true,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T12:38:41.136Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:38:47.773Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:38:48.279Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T12:38:48.625Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:38:52.061Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:38:52.375Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:39:56.468Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T12:39:56.675Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T12:39:59.913Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:40:08.141Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T12:40:08.661Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T12:40:08.991Z",
+      "nest_core": false,
+      "preview": true,
+      "leaveCreate": false
+    }
+  ],
+  "leave_create_hits": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 409,
+      "at": "2026-08-09T12:40:12.435Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 400,
+      "at": "2026-08-09T12:40:13.722Z",
+      "nest_core": false,
+      "preview": false,
+      "leaveCreate": true
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Error creating leave request: ApiClientError: Leave request overlaps an existing pending or approved leave\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786278522086:69:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786278522086:122:26)\n    at async createRequest (http://127.0.0.1:5173/hr/src"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-08-cluster-qa-01/01-leave-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-08-cluster-qa-01/02-j01-preview-gold.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-08-cluster-qa-01/03-j02-cal-vs-fund.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-08-cluster-qa-01/04-j03-hol-miss.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-08-cluster-qa-01/05-j04-unit-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-08-cluster-qa-01/06-j05-align.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-08-cluster-qa-01/07-j06-honesty.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-09T12:38:40.656Z",
+      "msg": "login ok",
+      "via": "http://127.0.0.1:28002/api/xbos/auth/login"
+    },
+    {
+      "at": "2026-08-09T12:38:43.496Z",
+      "msg": "open Nghỉ phép tab (role)"
+    },
+    {
+      "at": "2026-08-09T12:38:44.873Z",
+      "msg": "open create leave dialog"
+    },
+    {
+      "at": "2026-08-09T12:38:46.447Z",
+      "msg": "select employee",
+      "label": "QA CORE07 PENDING msljspgo — qa_c07p_msljspgo"
+    },
+    {
+      "at": "2026-08-09T12:38:47.591Z",
+      "msg": "select leave type",
+      "label": "hr_custom_09\nQA hr_custom_09 ATTPLATQA-MSISVY4L"
+    },
+    {
+      "at": "2026-08-09T12:38:48.439Z",
+      "msg": "fill dates",
+      "startVi": "14/08/2026",
+      "endVi": "17/08/2026"
+    },
+    {
+      "at": "2026-08-09T12:38:52.198Z",
+      "msg": "fill dates",
+      "startVi": "03/01/2030",
+      "endVi": "06/01/2030"
+    },
+    {
+      "at": "2026-08-09T12:39:56.478Z",
+      "msg": "fill dates",
+      "startVi": "14/08/2026",
+      "endVi": "17/08/2026"
+    },
+    {
+      "at": "2026-08-09T12:40:03.965Z",
+      "msg": "open Nghỉ phép tab (role)"
+    },
+    {
+      "at": "2026-08-09T12:40:05.295Z",
+      "msg": "open create leave dialog"
+    },
+    {
+      "at": "2026-08-09T12:40:06.852Z",
+      "msg": "select employee",
+      "label": "QA CORE07 PENDING msljspgo — qa_c07p_msljspgo"
+    },
+    {
+      "at": "2026-08-09T12:40:07.951Z",
+      "msg": "select leave type",
+      "label": "hr_custom_09\nQA hr_custom_09 ATTPLATQA-MSISVY4L"
+    },
+    {
+      "at": "2026-08-09T12:40:08.795Z",
+      "msg": "fill dates",
+      "startVi": "14/08/2026",
+      "endVi": "17/08/2026"
+    }
+  ],
+  "journeys": {
+    "J-HRM-ATT-08-01": {
+      "verdict": "PASS",
+      "at": "2026-08-09T12:38:51.720Z",
+      "summary": "preview status=201 code=HRM-LEAVE-PREVIEW-200 working_days=2 calendar_days=4 live=true nest_core_non404=0",
+      "click_path": "Login → /hr/attendance → Nghỉ phép → Tạo yêu cầu → NV + loại + T6→T2",
+      "network": {
+        "status": 201,
+        "code": "HRM-LEAVE-PREVIEW-200",
+        "data": {
+          "employeeId": "3ad58ec2-d480-47e8-b781-91904c561294",
+          "leaveType": "hr_custom_09",
+          "unit": "day",
+          "startDate": "2026-08-14",
+          "endDate": "2026-08-17",
+          "companyId": "holding",
+          "calendar_days": 4,
+          "working_days": 2,
+          "deductible_units": 2,
+          "excluded_days": [
+            {
+              "date": "2026-08-15",
+              "reason": "weekend",
+              "labelVi": "Thứ Bảy"
+            },
+            {
+              "date": "2026-08-16",
+              "reason": "weekend",
+              "labelVi": "Chủ nhật"
+            }
+          ],
+          "warnings": [],
+          "labelsVi": {
+            "calendar_days": "Ngày calendar",
+            "working_days": "Ngày trừ quỹ",
+            "excluded_days": "Ngày loại (T7/CN/Lễ)"
+          }
+        },
+        "at": "2026-08-09T12:38:48.664Z"
+      },
+      "panel": {
+        "visible": true,
+        "live": true,
+        "holMiss": false,
+        "displayText": "Ngày calendar 4 ≠ trừ quỹ (DENY SoT) Ngày trừ quỹ 2 working_days Đơn vị trừ 2 (ngày) deductible_units Unit (Q-LEAVE-UNIT) day · ngày",
+        "honesty": "Honesty: contracts_printable_ready=false · client total_days / calendar expand ≠ ATT-08 DONE · ≠ FR-08 DONE · ≠ ATT-09 hold DONE · ≠ ATT-03b admin DONE · ≠ ATT module UAT · attendance_uat_ready=false · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · PLT/CORE RETAIN (≠ DONE) · soft ≠ CORE-06 DONE · PAY OUT invent DONE · R-ATT-08-PREVIEW-FE CLOSED · LIVE preview-deduction bound · DENY fake T6→T2=4 · engine SoT = BE BR-BP-LV-05",
+        "excluded": "Ngày loại (T7/CN/Lễ) 2026-08-15 — Thứ Bảy (weekend) 2026-08-16 — Chủ nhật (weekend)"
+      },
+      "nest_core_leave_non404": 0
+    },
+    "J-HRM-ATT-08-02": {
+      "verdict": "PASS",
+      "at": "2026-08-09T12:38:51.774Z",
+      "summary": "cal=true fund=true denySot=true honestyClientNe=true",
+      "panel": {
+        "visible": true,
+        "live": true,
+        "holMiss": false,
+        "displayText": "Ngày calendar 4 ≠ trừ quỹ (DENY SoT) Ngày trừ quỹ 2 working_days Đơn vị trừ 2 (ngày) deductible_units Unit (Q-LEAVE-UNIT) day · ngày",
+        "honesty": "Honesty: contracts_printable_ready=false · client total_days / calendar expand ≠ ATT-08 DONE · ≠ FR-08 DONE · ≠ ATT-09 hold DONE · ≠ ATT-03b admin DONE · ≠ ATT module UAT · attendance_uat_ready=false · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · PLT/CORE RETAIN (≠ DONE) · soft ≠ CORE-06 DONE · PAY OUT invent DONE · R-ATT-08-PREVIEW-FE CLOSED · LIVE preview-deduction bound · DENY fake T6→T2=4 · engine SoT = BE BR-BP-LV-05",
+        "excluded": "Ngày loại (T7/CN/Lễ) 2026-08-15 — Thứ Bảy (weekend) 2026-08-16 — Chủ nhật (weekend)"
+      }
+    },
+    "J-HRM-ATT-08-03": {
+      "verdict": "PASS",
+      "at": "2026-08-09T12:39:56.020Z",
+      "summary": "holMissUI=true previewCode=HRM-LEAVE-HOL-MISSING holTextOk=true submitDisabled=true silentCreate=false",
+      "panel": {
+        "visible": true,
+        "live": false,
+        "holMiss": true,
+        "displayText": "",
+        "honesty": "Honesty: contracts_printable_ready=false · client total_days / calendar expand ≠ ATT-08 DONE · ≠ FR-08 DONE · ≠ ATT-09 hold DONE · ≠ ATT-03b admin DONE · ≠ ATT module UAT · attendance_uat_ready=false · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · PLT/CORE RETAIN (≠ DONE) · soft ≠ CORE-06 DONE · PAY OUT invent DONE · R-ATT-08-PREVIEW-FE CLOSED · LIVE preview-deduction bound · DENY fake T6→T2=4 · engine SoT = BE BR-BP-LV-05",
+        "excluded": ""
+      },
+      "holPreview": {
+        "status": 400,
+        "code": "HRM-LEAVE-HOL-MISSING",
+        "at": "2026-08-09T12:38:52.411Z"
+      },
+      "holMissText": "Chặn nộp — thiếu lịch lễ\nThiếu lịch lễ năm — không thể nộp đơn nghỉ. Cập nhật lịch lễ đơn vị rồi thử lại (HRM-LEAVE-HOL-MISSING).",
+      "holSliceCodes": [
+        "400:HRM-VAL-400",
+        "400:HRM-LEAVE-HOL-MISSING"
+      ]
+    },
+    "J-HRM-ATT-08-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T12:40:12.065Z",
+      "summary": "unitDayShown=true f5Ok=true hourPath={\"status\":\"OBS\",\"note\":\"hour leave_type ABSENT in EFF — day unit path proven; BE jest hour cited\",\"day_unit\":\"day\",\"day_deductible\":2,\"pass\":true}",
+      "panel4": {
+        "visible": true,
+        "live": true,
+        "holMiss": false,
+        "displayText": "Ngày calendar 4 ≠ trừ quỹ (DENY SoT) Ngày trừ quỹ 2 working_days Đơn vị trừ 2 (ngày) deductible_units Unit (Q-LEAVE-UNIT) day · ngày",
+        "honesty": "Honesty: contracts_printable_ready=false · client total_days / calendar expand ≠ ATT-08 DONE · ≠ FR-08 DONE · ≠ ATT-09 hold DONE · ≠ ATT-03b admin DONE · ≠ ATT module UAT · attendance_uat_ready=false · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · PLT/CORE RETAIN (≠ DONE) · soft ≠ CORE-06 DONE · PAY OUT invent DONE · R-ATT-08-PREVIEW-FE CLOSED · LIVE preview-deduction bound · DENY fake T6→T2=4 · engine SoT = BE BR-BP-LV-05",
+        "excluded": "Ngày loại (T7/CN/Lễ) 2026-08-15 — Thứ Bảy (weekend) 2026-08-16 — Chủ nhật (weekend)"
+      },
+      "panelF5": {
+        "visible": true,
+        "live": true,
+        "holMiss": false,
+        "displayText": "Ngày calendar 4 ≠ trừ quỹ (DENY SoT) Ngày trừ quỹ 2 working_days Đơn vị trừ 2 (ngày) deductible_units Unit (Q-LEAVE-UNIT) day · ngày",
+        "honesty": "Honesty: contracts_printable_ready=false · client total_days / calendar expand ≠ ATT-08 DONE · ≠ FR-08 DONE · ≠ ATT-09 hold DONE · ≠ ATT-03b admin DONE · ≠ ATT module UAT · attendance_uat_ready=false · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · PLT/CORE RETAIN (≠ DONE) · soft ≠ CORE-06 DONE · PAY OUT invent DONE · R-ATT-08-PREVIEW-FE CLOSED · LIVE preview-deduction bound · DENY fake T6→T2=4 · engine SoT = BE BR-BP-LV-05",
+        "excluded": "Ngày loại (T7/CN/Lễ) 2026-08-15 — Thứ Bảy (weekend) 2026-08-16 — Chủ nhật (weekend)"
+      },
+      "hourPath": {
+        "status": "OBS",
+        "note": "hour leave_type ABSENT in EFF — day unit path proven; BE jest hour cited",
+        "day_unit": "day",
+        "day_deductible": 2,
+        "pass": true
+      }
+    },
+    "J-HRM-ATT-08-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T12:40:13.774Z",
+      "summary": "submitTotal=2 createStatus=409 canSubmit=true inflate=400/HRM-VAL-400 nest0=true",
+      "createBody": {
+        "at": "2026-08-09T12:40:12.174Z",
+        "body": {
+          "company_id": "holding",
+          "employee_id": "3ad58ec2-d480-47e8-b781-91904c561294",
+          "employee_code": "qa_c07p_msljspgo",
+          "employee_name": "QA CORE07 PENDING msljspgo",
+          "leave_type": "hr_custom_09",
+          "start_date": "2026-08-14",
+          "end_date": "2026-08-17",
+          "total_days": 2,
+          "reason": "QA ATT-08 ALIGN U65 — trừ quỹ engine"
+        },
+        "url": "/api/hrm/attendance/leave-requests"
+      },
+      "inflate": {
+        "status": 400,
+        "code": "HRM-VAL-400",
+        "summary": "{\"success\":false,\"code\":\"HRM-VAL-400\",\"message\":\"total_days 4 does not match engine deductible_units 2 (BR-BP-LV-05 — calendar inflate rejected)\",\"details\":{\"total_days\":4,\"deductible_units\":2,\"working_days\":2,\"calendar_days\":4,\"unit\":\"day\"},\"timestamp\":\"2026-08-09T12:40:13.720Z\"}"
+      },
+      "note": "≠ ATT-09 DONE · ALIGN thin · FE total_days=deductible_units · L1 inflate reject"
+    },
+    "J-HRM-ATT-08-06": {
+      "verdict": "PASS",
+      "at": "2026-08-09T12:40:13.829Z",
+      "summary": "printable_false=true · client_ne_done=true · ne_09=true · ne_03b=true · ne_uat=true · cfg_ne_02=true · pay_out=true · residual_closed=true · nest_deny=true · seals_retain=true",
+      "honestyText": "Honesty: contracts_printable_ready=false · client total_days / calendar expand ≠ ATT-08 DONE · ≠ FR-08 DONE · ≠ ATT-09 hold DONE · ≠ ATT-03b admin DONE · ≠ ATT module UAT · attendance_uat_ready=false · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · PLT/CORE RETAIN (≠ DONE) · soft ≠ CORE-06 DONE · PAY OUT invent DONE · R-ATT-08-PREVIEW-FE CLOSED · LIVE preview-deduction bound · DENY fake T6→T2=4 · engine SoT = BE BR-BP-LV-05",
+      "checks": {
+        "printable_false": true,
+        "client_ne_done": true,
+        "ne_09": true,
+        "ne_03b": true,
+        "ne_uat": true,
+        "cfg_ne_02": true,
+        "pay_out": true,
+        "residual_closed": true,
+        "nest_deny": true,
+        "seals_retain": true
+      },
+      "must_keep": [
+        "ATT02QC1-MSLQZUK7",
+        "PLT01QC1-MSLPUQIU",
+        "CORE10QC1-MSLP0EJB",
+        "CORE09QC1-MSLNBA89",
+        "CORE07QC1-KZJTSHNT"
+      ]
+    }
+  },
+  "residuals": [],
+  "defects": [],
+  "setup": {
+    "holiday_2026": {
+      "status": "present",
+      "via": "GET",
+      "code": "HRM-ATT-HOL-200"
+    },
+    "holiday_2030_probe": {
+      "status": 404,
+      "code": "HRM-ATT-HOL-404",
+      "expect_absent": true
+    },
+    "employee": {
+      "id": "1fd00442-d574-46a7-83b9-bcf4898d7ba8",
+      "code": "QA-C07-260809153135",
+      "name": "QA CORE07 260809153135",
+      "company_id": "holding"
+    },
+    "leaveType": {
+      "key": "hr_custom_09",
+      "unit": "day",
+      "name": "QA hr_custom_09 ATTPLATQA-MSISVY4L"
+    },
+    "hourLeaveType": null,
+    "l1_gold_preview": {
+      "status": 201,
+      "code": "HRM-LEAVE-PREVIEW-200",
+      "working_days": 2,
+      "calendar_days": 4,
+      "deductible_units": 2,
+      "unit": "day",
+      "summary": "{\"success\":true,\"code\":\"HRM-LEAVE-PREVIEW-200\",\"message\":\"Leave deduction preview\",\"data\":{\"employeeId\":\"1fd00442-d574-46a7-83b9-bcf4898d7ba8\",\"leaveType\":\"hr_custom_09\",\"unit\":\"day\",\"startDate\":\"2026-08-14\",\"endDate\":\"2026-08-17\",\"companyId\":\"holding\",\"calendar_days\":4,\"working_days\":2,\"deductible_units\":2,\"excluded_days\":[{\"date\":\"2026-08-15\",\"reason\":\"weekend\",\"labelVi\":\"Thứ Bảy\"},{\"date\":\"2026-08-16\",\"reason\":\"weekend\",\"labelVi\":\"Chủ nhật\"}],\"warnings\":[],\"labelsVi\":{\"calendar_days\":\"Ngày calendar\",\"working_days\":\"Ngày trừ quỹ\",\"excluded_days\":\"Ngày loại (T7/CN/Lễ)\"}},\"timestamp\":\"2026-08-09T12:38:41.134Z\"}"
+    }
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T12:40:14.040Z",
+  "_previewMark": "2026-08-09T12:39:56.021Z",
+  "nest_core_leave_non404_count": 0,
+  "preview_hit_count": 13
+}

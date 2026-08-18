@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useXbosStore } from '@/store/useXbosStore';
 import { syncXbosCatalogs, XbosApiError } from '@/integrations/xbosApi';
 
-const DEFAULT_TENANT = 'tenant-xevn-holding';
+const DEFAULT_TENANT = 'xevn';
+const DEFAULT_COMPANY = 'xevn'; // holding company; matches /api/xbos/config-sync/catalogs BE requirement
 
 export function XbosApiSyncBanner() {
   const hydrateCatalogsFromApi = useXbosStore((s) => s.hydrateCatalogsFromApi);
@@ -14,7 +15,7 @@ export function XbosApiSyncBanner() {
     try {
       setStatus('loading');
       setMessage('Đang đồng bộ danh mục từ XBOS API...');
-      const catalogs = await syncXbosCatalogs('xbos');
+      const catalogs = await syncXbosCatalogs('xbos', { tenantId: DEFAULT_TENANT, companyId: DEFAULT_COMPANY });
       hydrateCatalogsFromApi(catalogs, DEFAULT_TENANT);
       setStatus('ok');
       setLastSyncedAt(new Date().toISOString());

@@ -1,0 +1,55 @@
+{
+  "ready": false,
+  "btn": "Lưu",
+  "toastText": [],
+  "postReqs": [],
+  "postResps": [],
+  "reqs": [
+    {
+      "method": "GET",
+      "url": "/hr/contracts?portal=1&tenantId=xevn&companyId=main",
+      "at": 1785811524085
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": 1785811530000
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": 1785811536676
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": 1785811542705
+    }
+  ],
+  "resps": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/hr/contracts?portal=1&tenantId=xevn&companyId=main",
+      "at": 1785811524095
+    },
+    {
+      "method": "GET",
+      "status": 401,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": 1785811530030
+    },
+    {
+      "method": "GET",
+      "status": 401,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": 1785811536691
+    },
+    {
+      "method": "GET",
+      "status": 401,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": 1785811542712
+    }
+  ]
+}

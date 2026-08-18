@@ -1,0 +1,775 @@
+{
+  "work_item_id": "PO-HRM-CONTRACT-LEGAL-PRINT-QA-05",
+  "parent": "PO-HRM-CONTRACT-LEGAL-PRINT-FE-05",
+  "startedAt": "2026-08-07T02:43:40.268Z",
+  "u65": "zero-seed · browser-only",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "holding": "main",
+    "member": "trsport",
+    "memberNeg": "finance"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "STAMP": "CTR5-ICBYP8"
+  },
+  "honesty": {
+    "contracts_printable_ready": false,
+    "contracts_printable_ready_claimed": false,
+    "seed_used": false,
+    "api_only_pass": false
+  },
+  "denied": [
+    "contracts_printable_ready=true",
+    "seed",
+    "api_only_pass",
+    "invent_printable_uat",
+    "synced_catalogs"
+  ],
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "beProbe": {
+    "/api/hrm/contracts-insurance/contract-library/publishes?company_id=main": {
+      "status": 200,
+      "code": "HRM-CTR-PUB-200",
+      "message": "Contract library publishes listed",
+      "count": 3
+    },
+    "/api/hrm/contracts-insurance/contract-clauses?company_id=main": {
+      "status": 200,
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "count": 12
+    },
+    "/api/hrm/contracts-insurance/contract-templates?company_id=main": {
+      "status": 200,
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "count": 6
+    }
+  },
+  "beUp": true,
+  "ids": {
+    "publish_version": 4,
+    "memberPartition": {
+      "holdingStill": false,
+      "memberZone": true,
+      "ou": "trsport"
+    },
+    "negApplyPosts": [
+      {
+        "method": "POST",
+        "status": 400,
+        "url": "/api/hrm/contracts-insurance/contract-library/apply?company_id=finance",
+        "at": "2026-08-07T02:44:23.198Z",
+        "qsHasCompanyId": true,
+        "contentType": "application/json; charset=utf-8",
+        "code": "HRM-CTR-PUB-NOTHING-TO-APPLY",
+        "message": "Nothing to apply for publish_version 4"
+      }
+    ],
+    "contractCode": "HD-CD191",
+    "contractId": "343f7d35-ddf1-4095-a20c-d7430d4844a0"
+  },
+  "uf": {
+    "UF-HRM-02": {
+      "summary": "formReady=true save=true code=HD-CD191 spineChrome=true",
+      "verdict": "PASS",
+      "at": "2026-08-07T02:44:42.031Z"
+    }
+  },
+  "ac": {
+    "AC-SETTINGS-CHROME": {
+      "summary": "holding=true publishBtn=true clause=true tpl=true honesty=true",
+      "verdict": "PASS",
+      "at": "2026-08-07T02:43:47.205Z"
+    },
+    "AC-HOLDING-PUBLISH": {
+      "summary": "POST=201:HRM-CTR-PUB-201:v4 row=true bodyClean=true ver=4",
+      "posts": [
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=main",
+          "at": "2026-08-07T02:43:47.300Z",
+          "qsHasCompanyId": true,
+          "contentType": "application/json; charset=utf-8",
+          "code": "HRM-CTR-PUB-201",
+          "message": "Contract library published",
+          "dataId": "276f915d-b101-4ffb-bc5c-d47e08889dee",
+          "publish_version": 4
+        }
+      ],
+      "bodies": [
+        {
+          "at": "2026-08-07T02:43:47.251Z",
+          "method": "POST",
+          "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=main",
+          "qsHasCompanyId": true,
+          "bodyHasCompanyId": false,
+          "bodyKeys": [
+            "label_vi"
+          ],
+          "bodySnippet": "{\"label_vi\":\"QA-05 FE phát hành CTR5-ICBYP8\"}"
+        }
+      ],
+      "verdict": "PASS",
+      "at": "2026-08-07T02:43:56.727Z"
+    },
+    "AC-MEMBER-PULL-APPLY": {
+      "summary": "zone=true holdingStill=false pull=201:HRM-CTR-PULL-200 apply=201:HRM-CTR-APPLY-200 bodyClean pull=true/apply=true summary=Kết quả kéo: v4 · đã kéo 6 originCL=4:Tập đoàn · v4 originTPL=2:Tập đoàn · v4",
+      "pullPosts": [
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "/api/hrm/contracts-insurance/contract-library/pull?company_id=trsport",
+          "at": "2026-08-07T02:44:01.667Z",
+          "qsHasCompanyId": true,
+          "contentType": "application/json; charset=utf-8",
+          "code": "HRM-CTR-PULL-200",
+          "message": "Contract library pulled",
+          "publish_version": 4,
+          "upsertedCount": 6,
+          "skipped_override": [],
+          "conflicts": []
+        }
+      ],
+      "applyPosts": [
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "/api/hrm/contracts-insurance/contract-library/apply?company_id=trsport",
+          "at": "2026-08-07T02:44:06.204Z",
+          "qsHasCompanyId": true,
+          "contentType": "application/json; charset=utf-8",
+          "code": "HRM-CTR-APPLY-200",
+          "message": "Contract library applied",
+          "publish_version": 4
+        }
+      ],
+      "originOk": true,
+      "verdict": "PASS",
+      "at": "2026-08-07T02:44:18.079Z"
+    },
+    "AC-ORIGIN-BADGE": {
+      "summary": "clauseOrigins=4 tplOrigins=2 samples={\"originSample\":\"Tập đoàn · v4\",\"tplOriginSample\":\"Tập đoàn · v4\"}",
+      "verdict": "PASS",
+      "at": "2026-08-07T02:44:18.080Z"
+    },
+    "AC-COMPANY-ID-QUERY-ONLY": {
+      "summary": "n=3 allQueryOnly=true",
+      "bodies": [
+        {
+          "at": "2026-08-07T02:43:47.251Z",
+          "method": "POST",
+          "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=main",
+          "qsHasCompanyId": true,
+          "bodyHasCompanyId": false,
+          "bodyKeys": [
+            "label_vi"
+          ],
+          "bodySnippet": "{\"label_vi\":\"QA-05 FE phát hành CTR5-ICBYP8\"}"
+        },
+        {
+          "at": "2026-08-07T02:44:01.471Z",
+          "method": "POST",
+          "url": "/api/hrm/contracts-insurance/contract-library/pull?company_id=trsport",
+          "qsHasCompanyId": true,
+          "bodyHasCompanyId": false,
+          "bodyKeys": [
+            "publish_version"
+          ],
+          "bodySnippet": "{\"publish_version\":4}"
+        },
+        {
+          "at": "2026-08-07T02:44:06.077Z",
+          "method": "POST",
+          "url": "/api/hrm/contracts-insurance/contract-library/apply?company_id=trsport",
+          "qsHasCompanyId": true,
+          "bodyHasCompanyId": false,
+          "bodyKeys": [
+            "publish_version"
+          ],
+          "bodySnippet": "{\"publish_version\":4}"
+        }
+      ],
+      "verdict": "PASS",
+      "at": "2026-08-07T02:44:18.081Z"
+    },
+    "AC-NEG-NOTHING-TO-APPLY": {
+      "summary": "ou=finance code=HRM-CTR-PUB-NOTHING-TO-APPLY toastHint=true — CODE-CONFLICT requires member-local collide without seed invent → OBS",
+      "verdict": "PASS",
+      "at": "2026-08-07T02:44:26.777Z"
+    },
+    "AC-NEG-CODE-CONFLICT": {
+      "summary": "Not reproducible without inventing member-local colliding codes (U65 forbid seed invent)",
+      "verdict": "OBS",
+      "at": "2026-08-07T02:44:26.778Z"
+    },
+    "AC-MUSTKEEP-PRINT-SPINE": {
+      "summary": "spineVisible=true uf02=true",
+      "verdict": "PASS",
+      "at": "2026-08-07T02:44:42.032Z"
+    },
+    "AC-PROCESS-CLEAN": {
+      "summary": "dndStorm=0 uncaught=0 mojibake=false",
+      "verdict": "PASS",
+      "at": "2026-08-07T02:44:42.046Z"
+    }
+  },
+  "process": {
+    "pageErrors": 0,
+    "consoleErrors": 1,
+    "dndStorm": 0,
+    "uncaught": 0,
+    "samplePageErrors": [],
+    "sampleConsole": [
+      "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    ]
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:43:45.153Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 12
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:43:45.242Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 6
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=main",
+      "at": "2026-08-07T02:43:45.299Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PUB-200",
+      "message": "Contract library publishes listed",
+      "listCount": 3
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=main",
+      "at": "2026-08-07T02:43:47.300Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PUB-201",
+      "message": "Contract library published",
+      "dataId": "276f915d-b101-4ffb-bc5c-d47e08889dee",
+      "publish_version": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=main",
+      "at": "2026-08-07T02:43:47.330Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PUB-200",
+      "message": "Contract library publishes listed",
+      "listCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:43:53.129Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 13
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:43:53.162Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 6
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=main",
+      "at": "2026-08-07T02:43:53.187Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PUB-200",
+      "message": "Contract library publishes listed",
+      "listCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=trsport",
+      "at": "2026-08-07T02:43:59.157Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=trsport",
+      "at": "2026-08-07T02:43:59.159Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=trsport",
+      "at": "2026-08-07T02:43:59.192Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PUB-200",
+      "message": "Contract library publishes listed",
+      "listCount": 4
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-library/pull?company_id=trsport",
+      "at": "2026-08-07T02:44:01.667Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PULL-200",
+      "message": "Contract library pulled",
+      "publish_version": 4,
+      "upsertedCount": 6,
+      "skipped_override": [],
+      "conflicts": []
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=trsport",
+      "at": "2026-08-07T02:44:01.690Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=trsport",
+      "at": "2026-08-07T02:44:01.701Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=trsport",
+      "at": "2026-08-07T02:44:01.733Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PUB-200",
+      "message": "Contract library publishes listed",
+      "listCount": 4
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-library/apply?company_id=trsport",
+      "at": "2026-08-07T02:44:06.204Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-APPLY-200",
+      "message": "Contract library applied",
+      "publish_version": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=trsport",
+      "at": "2026-08-07T02:44:06.225Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=trsport",
+      "at": "2026-08-07T02:44:06.243Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=trsport",
+      "at": "2026-08-07T02:44:06.259Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PUB-200",
+      "message": "Contract library publishes listed",
+      "listCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=trsport",
+      "at": "2026-08-07T02:44:12.304Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=trsport",
+      "at": "2026-08-07T02:44:12.308Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=trsport",
+      "at": "2026-08-07T02:44:12.336Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PUB-200",
+      "message": "Contract library publishes listed",
+      "listCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=finance",
+      "at": "2026-08-07T02:44:20.425Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=finance",
+      "at": "2026-08-07T02:44:20.427Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=finance",
+      "at": "2026-08-07T02:44:20.457Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PUB-200",
+      "message": "Contract library publishes listed",
+      "listCount": 4
+    },
+    {
+      "method": "POST",
+      "status": 400,
+      "url": "/api/hrm/contracts-insurance/contract-library/apply?company_id=finance",
+      "at": "2026-08-07T02:44:23.198Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PUB-NOTHING-TO-APPLY",
+      "message": "Nothing to apply for publish_version 4"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:44:28.206Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 19
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "at": "2026-08-07T02:44:30.432Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 10
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-07T02:44:30.433Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 5
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T02:44:30.507Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "at": "2026-08-07T02:44:32.985Z",
+      "qsHasCompanyId": false,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-201",
+      "message": "Contract created",
+      "dataId": "343f7d35-ddf1-4095-a20c-d7430d4844a0"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:44:33.272Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 20
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:44:36.842Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 20
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "at": "2026-08-07T02:44:39.964Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 10
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T02:44:39.969Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/343f7d35-ddf1-4095-a20c-d7430d4844a0/print-versions?company_id=main",
+      "at": "2026-08-07T02:44:39.975Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-VER-200",
+      "message": "Print versions listed",
+      "listCount": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-07T02:44:39.995Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 5
+    }
+  ],
+  "postBodies": [
+    {
+      "at": "2026-08-07T02:43:47.251Z",
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contract-library/publishes?company_id=main",
+      "qsHasCompanyId": true,
+      "bodyHasCompanyId": false,
+      "bodyKeys": [
+        "label_vi"
+      ],
+      "bodySnippet": "{\"label_vi\":\"QA-05 FE phát hành CTR5-ICBYP8\"}"
+    },
+    {
+      "at": "2026-08-07T02:44:01.471Z",
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contract-library/pull?company_id=trsport",
+      "qsHasCompanyId": true,
+      "bodyHasCompanyId": false,
+      "bodyKeys": [
+        "publish_version"
+      ],
+      "bodySnippet": "{\"publish_version\":4}"
+    },
+    {
+      "at": "2026-08-07T02:44:06.077Z",
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contract-library/apply?company_id=trsport",
+      "qsHasCompanyId": true,
+      "bodyHasCompanyId": false,
+      "bodyKeys": [
+        "publish_version"
+      ],
+      "bodySnippet": "{\"publish_version\":4}"
+    },
+    {
+      "at": "2026-08-07T02:44:23.168Z",
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contract-library/apply?company_id=finance",
+      "qsHasCompanyId": true,
+      "bodyHasCompanyId": false,
+      "bodyKeys": [
+        "publish_version"
+      ],
+      "bodySnippet": "{\"publish_version\":4}"
+    },
+    {
+      "at": "2026-08-07T02:44:31.982Z",
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "qsHasCompanyId": false,
+      "bodyHasCompanyId": true,
+      "bodyKeys": [
+        "company_id",
+        "employee_id",
+        "contract_code",
+        "contract_type",
+        "start_date",
+        "end_date",
+        "position_key",
+        "position",
+        "department",
+        "pack_code",
+        "work_location"
+      ],
+      "bodySnippet": "{\"company_id\":\"main\",\"employee_id\":\"0500220b-f289-40df-b07e-86316285439b\",\"contract_code\":\"HD-CD191\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-07\",\"end_date\":\"2027-08-07\",\"position_key\":\"CEO\",\"position\":\"Tổng Giám đốc\",\"department\":\"STAFF\",\"pack_code\":\"GENERAL\",\"work_location\":\"Hà Nội — QA must_keep CTR5-ICBYP8\"}"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/00-holding-settings.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/01-after-publish.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/02-publish-row-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/03-member-settings.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/04-after-pull.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/05-after-apply.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/06-origin-badges.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/07-nothing-to-apply.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/08-contracts-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/09-uf02-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-05/10-print-spine-chrome.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T02:43:40.502Z",
+      "msg": "BE_PROBE",
+      "note": "beUp=true"
+    },
+    {
+      "at": "2026-08-07T02:43:47.252Z",
+      "msg": "CLICK_PUBLISH",
+      "note": "QA-05 FE phát hành CTR5-ICBYP8"
+    },
+    {
+      "at": "2026-08-07T02:44:01.473Z",
+      "msg": "CLICK_PULL",
+      "note": "trsport"
+    },
+    {
+      "at": "2026-08-07T02:44:06.077Z",
+      "msg": "CLICK_APPLY",
+      "note": "trsport"
+    },
+    {
+      "at": "2026-08-07T02:44:23.170Z",
+      "msg": "CLICK_APPLY_NEG_NOTHING",
+      "note": "finance"
+    },
+    {
+      "at": "2026-08-07T02:44:31.986Z",
+      "msg": "UF02_SAVE",
+      "note": "HD-CD191"
+    }
+  ],
+  "residuals": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T02:44:42.047Z"
+}

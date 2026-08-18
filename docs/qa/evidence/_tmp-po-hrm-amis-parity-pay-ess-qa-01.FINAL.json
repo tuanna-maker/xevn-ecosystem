@@ -1,0 +1,78 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-ESS-QA-01",
+  "stamp": "PAYESS-MSIRE93Q",
+  "startedAt": "2026-08-07T09:45:21.303Z",
+  "finishedAt": "2026-08-07T09:45:23.687Z",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed": false,
+    "module_uat": false,
+    "j_hrm_07": false,
+    "amis_parity_done": false
+  },
+  "personas": {
+    "ess": {
+      "email": "uat.nv0001@xe.vn",
+      "claims": {
+        "tenantId": "xevn",
+        "companyId": "holding",
+        "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+        "sub": "uat.nv0001@xe.vn",
+        "roleCode": null
+      },
+      "data": {
+        "employee_id": null,
+        "company_id": null,
+        "memberships_count": 1
+      }
+    },
+    "ceo": {
+      "email": "ceo@xe.vn",
+      "claims": {
+        "tenantId": "xevn",
+        "companyId": "main",
+        "employee_id": null,
+        "sub": "ceo@xe.vn",
+        "roleCode": "group_ceo"
+      }
+    }
+  },
+  "picks": {
+    "listCompany": "holding",
+    "payslipId": "7c78b34e-046a-48ef-89bc-be389cb7156b",
+    "payslipStatus": "processed",
+    "payslipEmployeeId": "3796d949-4513-45c0-88fa-33030a062b17"
+  },
+  "cases": {
+    "L0_HRM": {
+      "ok": true,
+      "detail": "GET /api/hrm → 200"
+    },
+    "AC1_MOBILE_LOGIN": {
+      "ok": true,
+      "detail": "status=201 code=HRM-AUTH-200 claims.employee_id=3796d949-4513-45c0-88fa-33030a062b17 companyId=holding body="
+    },
+    "AC2_LIST_OWN": {
+      "ok": true,
+      "detail": "status=200 code=HRM-PAY-200 total=2 rows=2 ownOnly=true sampleEmp=3796d949-4513-45c0-88fa-33030a062b17 status0=draft"
+    },
+    "AC3_GET_BY_ID": {
+      "ok": true,
+      "detail": "status=200 code=HRM-PAY-200 components=0 lines=0 ess_confirmed=true employee_confirmed_at=2026-08-07 09:44:14.86603+00"
+    },
+    "AC4_CONFIRM_F5": {
+      "ok": true,
+      "detail": "before=true confirm status=201 code=HRM-PAY-204-ESS ess=true F5 status=200 ess=true confirmed_at=2026-08-07 09:44:14.86603+00 http_obs=NEST_POST_201_vs_paper_200"
+    },
+    "AC5_CEO_NO_EMP": {
+      "ok": true,
+      "detail": "ceo.employee_id=null status=403 code=HRM-PAY-403-ESS msg=ESS phiếu lương yêu cầu token gắn nhân viên"
+    },
+    "AC6_CROSS_EMP": {
+      "ok": true,
+      "detail": "foreign.id=8ca0679c-49de-4097-8c01-3a74900df3bf foreign.emp=22222222-2222-4222-8222-222222222222 foreign.co=holding ess.emp=3796d949-4513-45c0-88fa-33030a062b17 status=403 code=HRM-PAY-403-ESS msg=ESS chỉ được xem hoặc xác nhận phiếu lương của chính mình"
+    }
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM"
+}

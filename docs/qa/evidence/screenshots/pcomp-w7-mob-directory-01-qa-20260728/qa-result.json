@@ -1,0 +1,37 @@
+﻿{
+  "work_item_id": "PCOMP-W7-MOB-DIRECTORY-01-QA",
+  "date": "2026-07-28",
+  "device": "emulator-5554",
+  "avd": "xevn_api34",
+  "account": "uat.nv0001@xe.vn",
+  "api_base": "https://14-225-217-232.nip.io",
+  "apk_sha256": "5908260E5AF95E4CDD5904EB8CFE2D7AB9D49239D7DBA06049BDCC63341A8D7D",
+  "installed_apk_sha256_match": true,
+  "home_reached": true,
+  "J_MOB_16": {
+    "baseline_chip": "Tất cả (215)",
+    "search_nguyen_chip": "Tất cả (18)",
+    "search_nguyen_rows": 16,
+    "r2_empty_testID": true,
+    "r2_copy": "Không tìm thấy nhân viên",
+    "r2_chip": "Tất cả (0)",
+    "verdict": "PASS"
+  },
+  "J_MOB_30": {
+    "row": "HLD-0091 / Bùi Quốc An",
+    "detail_screen": true,
+    "detail_email": "uat.nv0091@xe.vn",
+    "back_to_directory": true,
+    "verdict": "PASS"
+  },
+  "network": {
+    "session_company_id": "holding",
+    "session_company_uuid": "6efaa5d6-a4a8-4bfd-805a-3c4f003e4013",
+    "probe_GET_directory_slug": "200 HRM-EMP-DIR-200 company_id=holding page_size=30",
+    "device_list_no_scope_error": true,
+    "note": "Release APK no OkHttp URL logcat; Plane B via session slug + API probe + resolveDirectoryQueryCompanyId; LE UUID not used as directory query identity"
+  },
+  "ack_status": "PASS_TO_PM",
+  "u65_zero_seed": true,
+  "hold_deploy": true
+}

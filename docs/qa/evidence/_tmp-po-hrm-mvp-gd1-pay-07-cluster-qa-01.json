@@ -1,0 +1,154 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-PAY-07-CLUSTER-QA-01",
+  "stamp": "PAY07QA1-MSMEY7K3",
+  "be_handoff": "docs/qa/evidence/po-hrm-mvp-gd1-pay-07-cluster-be-01.md",
+  "startedAt": "2026-08-09T23:08:02.175Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-api-primary",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "ne_pay07_done": true,
+    "ne_pay_module_uat": true,
+    "c_slice": true,
+    "seed_used": false
+  },
+  "must_keep": [
+    "PAY01QC1-MSMBGWC1",
+    "PAY02QC1-MSMC4GWC1",
+    "PAY03QC1-MSMDDGWC1",
+    "PAY04QC1-MSMCR4GWC1",
+    "PAY05QC1-MSMDU2GWC1",
+    "PAY06QC1-MSMECGWC1"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "PASS"
+  },
+  "l1": {
+    "be_jest_pay07": "PASS (54)",
+    "be_jest_regression": "cite BE-01 bundle · delegate PAY06QA1-MSMECGBI PAY06 smoke · PAY01..05 in bundle"
+  },
+  "nest_core_pay": [],
+  "setup": {
+    "login": "ok",
+    "periodId": "37416d10-ec81-4ce6-9f47-75b752f43319",
+    "sampleEmployeeId": "3ad58ec2-d480-47e8-b781-91904c561294"
+  },
+  "journeys": {
+    "J-HRM-PAY-07-01": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:08.837Z",
+      "summary": "GET preview employee_id=3ad58ec2… → 200 HRM-PAY-200",
+      "ac": "AC-PAY-TERM-ASSET/SI/LEAVE READ · SOFT-CASE"
+    },
+    "J-HRM-PAY-07-02": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:09.111Z",
+      "summary": "POST process fresh period → 412 HRM-PAY-ATT-412",
+      "ac": "AC-PAY-TERM-CLOSED-SHEET · PAY01QC1"
+    },
+    "J-HRM-PAY-07-03": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T23:08:09.112Z",
+      "summary": "FE settle after 2xx+F5 HOLD until PO-HRM-MVP-GD1-PAY-07-CLUSTER-FE-01 · API POST termination-settle RETAIN cite",
+      "ac": "AC-PAY-TERM-SOT · LIFECYCLE"
+    },
+    "J-HRM-PAY-07-04": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T23:08:09.113Z",
+      "summary": "Final process is_final_pay HOLD U65 (no resigned employee + posted settlement) · jest process order cite BE-01",
+      "ac": "AC-PAY-TERM-FINAL-PAYSLIP · TNCN-ONCE"
+    },
+    "J-HRM-PAY-07-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:09.155Z",
+      "summary": "(b) settle severance → 400 HRM-VAL-001 · process leave_cashout → 403 HRM-PAY-TERM-403 · include_terminations → 400 HRM-PAY-TERM-400-USE-DEDICATED-SETTLE",
+      "ac": "AC-PAY-TERM-409/DENY-MANUAL · dual SoT DENY"
+    },
+    "J-HRM-PAY-07-05-409": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:09.156Z",
+      "summary": "L1 pay-term-guard 403/400 contract · live 409 on posted path HOLD U65 (no soft TERM employee without FE workflow)",
+      "ac": "AC-PAY-TERM-409"
+    },
+    "J-HRM-PAY-07-06": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:14.650Z",
+      "summary": "L2.5 list 200 → GET 3a5333f7-237e-4157-bade-39c4b98a3fa9 200 · isFinalPay/settlementId keys on DTO",
+      "ac": "AC-PAY-TERM-DISPLAY"
+    },
+    "J-HRM-PAY-07-07": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T23:08:14.651Z",
+      "summary": "Mid-month SPLIT static-once HOLD U65 (cite PAY04QC1 + jest payroll.service.spec split regression)",
+      "ac": "AC-PAY-TERM-MID-MONTH · PAY04QC1",
+      "must_keep": "PAY04QC1-MSMCR4GWC1"
+    },
+    "J-HRM-PAY-07-08": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:14.651Z",
+      "summary": "honesty payroll_e2e_ready=false · nest /core hits=0 · must_keep PAY01..06QC1 · ≠ process alone DONE",
+      "ac": "AC-PAY-TERM-H · MK-PEERS"
+    },
+    "J-HRM-PAY-06-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:14.655Z",
+      "summary": "regression PAY06 POST process tax → 403 HRM-PAY-TAX-403",
+      "must_keep": "PAY06QC1-MSMECGWC1"
+    },
+    "J-HRM-PAY-05-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:14.662Z",
+      "summary": "regression PAY05 si_* → 403 HRM-PAY-SI-403",
+      "must_keep": "PAY05QC1-MSMDU2GWC1"
+    },
+    "J-HRM-PAY-03-03": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:14.677Z",
+      "summary": "regression PAY03 gtgc → 403 HRM-PAY-GTCG-403",
+      "must_keep": "PAY03QC1-MSMDDGWC1"
+    },
+    "J-HRM-PAY-01-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:14.678Z",
+      "summary": "regression PAY01 ATT-412 → 412 HRM-PAY-ATT-412",
+      "must_keep": "PAY01QC1-MSMBGWC1"
+    },
+    "J-HRM-PAY-04-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T23:08:14.678Z",
+      "summary": "L1 bundle split/gtgc regression (PAY03/04)",
+      "must_keep": "PAY04QC1-MSMCR4GWC1"
+    },
+    "J-HRM-PAY-02-05": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T23:08:14.679Z",
+      "summary": "regression FORMULA-412 cite PAY02QC1 + jest — live HOLD U65",
+      "must_keep": "PAY02QC1-MSMC4GWC1"
+    }
+  },
+  "payslip_scan": {
+    "list_status": 200,
+    "scanned": 120,
+    "sampleId": "3a5333f7-237e-4157-bade-39c4b98a3fa9",
+    "finalPayFieldProbe": {
+      "isFinalPay": false,
+      "terminationSettlementId": null,
+      "settlementStatus": null
+    },
+    "l25_final_dto_keys": true
+  },
+  "defects": [],
+  "overall": null,
+  "ack_status": null,
+  "endedAt": null
+}

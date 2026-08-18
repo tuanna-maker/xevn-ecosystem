@@ -1,0 +1,595 @@
+{
+  "work_item_id": "PO-UAT-REC-01",
+  "program": "PO-UAT-MODULES-PARALLEL-01",
+  "module": "Tuyển dụng",
+  "startedAt": "2026-08-07T02:47:55.081Z",
+  "u65": "zero-seed-browser-only",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "STAMP": "UATREC-ICHFBD"
+  },
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "process_nogo_history_retained": true,
+    "prior": "po-hrm-rec-ux-qc-process-01 NO-GO awareness"
+  },
+  "denied": [
+    "seed",
+    "recruitment_uat_ready=true",
+    "partial_slice_as_module_pass"
+  ],
+  "l0": {
+    "portal": 200,
+    "hrm": 200,
+    "xbos": 200
+  },
+  "pack": {
+    "P1_UV_CREATE_LIST_F5": {
+      "summary": "POST=201/HRM-REC-202 · row=true yctd=\"YCTD UAT REC UATREC-ICEHPX\" pos=\"Tổng Giám đốc\" · F5 row=true yctd=\"YCTD UAT REC UATREC-ICEHPX\" pos=\"Tổng Giám đốc\" · formPos=\"Tổng Giám đốc\"",
+      "journey": "J-HRM-REC-UV-01",
+      "create": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/recruitment/candidates",
+        "at": "2026-08-07T02:48:06.842Z",
+        "requestBody": {
+          "company_id": "main",
+          "full_name": "UV UAT REC UATREC-ICHFBD",
+          "email": "uv.uat.rec.uatrec-ichfbd@xe.vn",
+          "phone": null,
+          "source": null,
+          "stage": "applied",
+          "rating": 0,
+          "applied_date": "2026-08-07",
+          "expected_start_date": null,
+          "nationality": "Việt Nam",
+          "hometown": null,
+          "marital_status": null,
+          "notes": null,
+          "requisition_id": "e1c8c160-e136-40c1-a0e4-cc510182030e",
+          "position_key": "CEO"
+        },
+        "code": "HRM-REC-202",
+        "createdId": "11a5906f-6736-4a89-afe4-bf623d1be1ac",
+        "yctd_title": "YCTD UAT REC UATREC-ICEHPX",
+        "position_name": "Tổng Giám đốc"
+      },
+      "listOk": true,
+      "f5Ok": true,
+      "verdict": "PASS",
+      "at": "2026-08-07T02:48:15.588Z"
+    },
+    "P2_COMPARE_YCTD": {
+      "summary": "dialog=true picker=YCTD UAT REC UATREC-ICEHPX\nDEPT_01 uvRows=1 matrix=true compareNet=[]",
+      "journey": "J-HRM-REC-CMP-01",
+      "job_postings_sot_obs": true,
+      "verdict": "PASS",
+      "at": "2026-08-07T02:48:25.301Z"
+    },
+    "P3_YCTD_JD_BIND": {
+      "summary": "POST=201 job_template_id=b284e4cd-63df-4723-9f31-755d8ea2ae96 · jdRef=true · titleOnList=true · jd=\"JD-QA-QAH1BVIR\nQA JD Dynamic QAH1BVIR\"",
+      "journey": "J-HRM-JD-YCTD-01",
+      "create": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/recruitment/requisitions",
+        "at": "2026-08-07T02:48:36.227Z",
+        "code": "HRM-REC-201",
+        "requisitionId": "4ab3d804-1d8c-4cb5-8765-031215203281",
+        "job_template_id": "b284e4cd-63df-4723-9f31-755d8ea2ae96"
+      },
+      "verdict": "PASS",
+      "at": "2026-08-07T02:48:44.339Z"
+    },
+    "P4_INTERVIEW_SCHEDULE": {
+      "summary": "target=Tuấn utfOk=true posts=[{\"s\":409,\"c\":\"HRM-REC-IV-409-ACTIVE\"}] badge=true",
+      "journey": "REC-IV one-active",
+      "verdict": "PASS",
+      "at": "2026-08-07T02:48:53.235Z"
+    },
+    "P5_PLAN_CANDIDATES_CHROME": {
+      "summary": "plans row=true detail=true · createBtn=true · shell brand=1 dup=0 · ΔpageErr=0 Δdnd=0 Δunc=0",
+      "shell": {
+        "brandMarkCount": 1,
+        "duplicateStrips": [],
+        "bodyHasMojibake": false
+      },
+      "planPath": {
+        "pageErrors": 0,
+        "consoleErrors": 0,
+        "dnd": 0,
+        "uncaught": 0
+      },
+      "verdict": "PASS",
+      "at": "2026-08-07T02:49:05.965Z"
+    }
+  },
+  "process_gates": {
+    "dndStormHits": [],
+    "mojibakeHits": [],
+    "pageErrors": [],
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 409 (Conflict)",
+      "Error scheduling interview: ApiClientError: Ứng viên đã có lịch phỏng vấn đang hiệu lực\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786068682361:67:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786068682361:120"
+    ],
+    "uncaughtHits": [],
+    "duplicateShell": {
+      "brandMarkCount": 1,
+      "duplicateStrips": [],
+      "bodyHasMojibake": false
+    },
+    "verdict": "PASS",
+    "summary": {
+      "dndHits": 0,
+      "dndStorm": false,
+      "mojibakeHits": 0,
+      "uncaughtHits": 0,
+      "referenceErrors": 0,
+      "duplicateShell": false
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-07T02:47:59.329Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:47:59.355Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T02:47:59.369Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-07T02:47:59.388Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:47:59.550Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "at": "2026-08-07T02:47:59.720Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100&receivable=true",
+      "at": "2026-08-07T02:48:03.721Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/candidates",
+      "at": "2026-08-07T02:48:06.842Z",
+      "requestBody": {
+        "company_id": "main",
+        "full_name": "UV UAT REC UATREC-ICHFBD",
+        "email": "uv.uat.rec.uatrec-ichfbd@xe.vn",
+        "phone": null,
+        "source": null,
+        "stage": "applied",
+        "rating": 0,
+        "applied_date": "2026-08-07",
+        "expected_start_date": null,
+        "nationality": "Việt Nam",
+        "hometown": null,
+        "marital_status": null,
+        "notes": null,
+        "requisition_id": "e1c8c160-e136-40c1-a0e4-cc510182030e",
+        "position_key": "CEO"
+      },
+      "code": "HRM-REC-202",
+      "createdId": "11a5906f-6736-4a89-afe4-bf623d1be1ac",
+      "yctd_title": "YCTD UAT REC UATREC-ICEHPX",
+      "position_name": "Tổng Giám đốc"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:48:07.024Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "at": "2026-08-07T02:48:07.171Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T02:48:11.631Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-07T02:48:11.645Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:48:11.646Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-07T02:48:11.647Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:48:11.807Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "at": "2026-08-07T02:48:11.969Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T02:48:16.178Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-07T02:48:16.179Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-07T02:48:16.193Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:48:16.193Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page_size=100&receivable=true",
+      "at": "2026-08-07T02:48:20.195Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/applications?company_id=main&requisition_id=e1c8c160-e136-40c1-a0e4-cc510182030e&include=evals",
+      "at": "2026-08-07T02:48:22.912Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:48:25.981Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T02:48:25.981Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-07T02:48:25.995Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-07T02:48:26.012Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:48:26.240Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main&bindable=true",
+      "at": "2026-08-07T02:48:29.966Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates/b284e4cd-63df-4723-9f31-755d8ea2ae96?company_id=main&preview=yctd",
+      "at": "2026-08-07T02:48:30.209Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions",
+      "at": "2026-08-07T02:48:36.227Z",
+      "code": "HRM-REC-201",
+      "requisitionId": "4ab3d804-1d8c-4cb5-8765-031215203281",
+      "job_template_id": "b284e4cd-63df-4723-9f31-755d8ea2ae96"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:48:36.515Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:48:40.732Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T02:48:40.745Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-07T02:48:40.746Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-07T02:48:40.758Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:48:41.257Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:48:45.208Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-07T02:48:45.224Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-07T02:48:45.238Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T02:48:45.238Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:48:45.475Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "at": "2026-08-07T02:48:45.719Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "at": "2026-08-07T02:48:50.538Z"
+    },
+    {
+      "method": "POST",
+      "status": 409,
+      "url": "/api/hrm/recruitment/interviews",
+      "at": "2026-08-07T02:48:51.335Z",
+      "code": "HRM-REC-IV-409-ACTIVE",
+      "message": "Ứng viên đã có lịch phỏng vấn đang hiệu lực"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T02:48:54.992Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-07T02:48:55.005Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:48:55.005Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-07T02:48:55.051Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T02:49:02.840Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-07T02:49:02.850Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:49:02.855Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-07T02:49:02.879Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T02:49:03.042Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "at": "2026-08-07T02:49:03.187Z"
+    }
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/01-candidates.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/01b-uv-form.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/01c-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/01d-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/02-evaluations.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/02b-compare-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/02c-compare-yctd.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/03-requisitions.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/03b-yctd-form.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/03c-after-yctd-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/03d-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/04-interview-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/04b-after-schedule.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/05-plans.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/05b-plan-detail.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-rec-01/05c-candidates-chrome.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T02:47:57.683Z",
+      "msg": "PACK1_UV_start"
+    },
+    {
+      "at": "2026-08-07T02:48:15.589Z",
+      "msg": "PACK2_COMPARE_start"
+    },
+    {
+      "at": "2026-08-07T02:48:25.302Z",
+      "msg": "PACK3_JD_BIND_start"
+    },
+    {
+      "at": "2026-08-07T02:48:44.340Z",
+      "msg": "PACK4_INTERVIEW_start"
+    },
+    {
+      "at": "2026-08-07T02:48:53.236Z",
+      "msg": "PACK5_PLAN_CHROME_start"
+    }
+  ],
+  "ids": {
+    "selectedYctd": {
+      "text": "JD-QA-QAH1BVIR — YCTD UAT REC UATREC-ICEHPX · Tổng Giám đốc",
+      "value": "",
+      "count": 12
+    },
+    "candidateId": "11a5906f-6736-4a89-afe4-bf623d1be1ac",
+    "selectedJd": {
+      "text": "JD-QA-QAH1BVIR\nQA JD Dynamic QAH1BVIR",
+      "value": "b284e4cd-63df-4723-9f31-755d8ea2ae96",
+      "count": 7
+    },
+    "requisitionId": "4ab3d804-1d8c-4cb5-8765-031215203281"
+  },
+  "residuals": [],
+  "gaps": [],
+  "overall": "PASS_TO_PM",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T02:49:05.967Z",
+  "lastCreate": {
+    "method": "POST",
+    "status": 201,
+    "url": "/api/hrm/recruitment/candidates",
+    "at": "2026-08-07T02:48:06.842Z",
+    "requestBody": {
+      "company_id": "main",
+      "full_name": "UV UAT REC UATREC-ICHFBD",
+      "email": "uv.uat.rec.uatrec-ichfbd@xe.vn",
+      "phone": null,
+      "source": null,
+      "stage": "applied",
+      "rating": 0,
+      "applied_date": "2026-08-07",
+      "expected_start_date": null,
+      "nationality": "Việt Nam",
+      "hometown": null,
+      "marital_status": null,
+      "notes": null,
+      "requisition_id": "e1c8c160-e136-40c1-a0e4-cc510182030e",
+      "position_key": "CEO"
+    },
+    "code": "HRM-REC-202",
+    "createdId": "11a5906f-6736-4a89-afe4-bf623d1be1ac",
+    "yctd_title": "YCTD UAT REC UATREC-ICEHPX",
+    "position_name": "Tổng Giám đốc"
+  },
+  "lastReqCreate": {
+    "method": "POST",
+    "status": 201,
+    "url": "/api/hrm/recruitment/requisitions",
+    "at": "2026-08-07T02:48:36.227Z",
+    "code": "HRM-REC-201",
+    "requisitionId": "4ab3d804-1d8c-4cb5-8765-031215203281",
+    "job_template_id": "b284e4cd-63df-4723-9f31-755d8ea2ae96"
+  },
+  "lastInterviewPost": {
+    "method": "POST",
+    "status": 409,
+    "url": "/api/hrm/recruitment/interviews",
+    "at": "2026-08-07T02:48:51.335Z",
+    "code": "HRM-REC-IV-409-ACTIVE",
+    "message": "Ứng viên đã có lịch phỏng vấn đang hiệu lực"
+  },
+  "module_uat_pass": true
+}

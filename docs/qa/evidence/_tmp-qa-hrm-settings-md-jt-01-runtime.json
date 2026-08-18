@@ -1,0 +1,199 @@
+{
+  "work_item_id": "QA-HRM-SETTINGS-MD-JT-01",
+  "startedAt": "2026-07-25T11:14:28.848Z",
+  "steps": [
+    {
+      "id": "api-login",
+      "ok": true,
+      "detail": "ceo@xe.vn token ok via http://127.0.0.1:5173/api/xbos/auth/login",
+      "at": "2026-07-25T11:14:28.973Z"
+    },
+    {
+      "id": "api-invent-reject",
+      "ok": true,
+      "detail": "HTTP 400 code=HRM-VAL-001 msg=position_code must be shorter than or equal to 64 characters; position_code must be a string",
+      "at": "2026-07-25T11:14:28.987Z"
+    },
+    {
+      "id": "api-invent-fake-code",
+      "ok": true,
+      "detail": "HTTP 400 code=HRM-REC-JD-POS msg=position_code 'ZZZ_INVENT_ONLY_NOT_IN_CATALOG' is not in job_titles catalog (free-text SoT forbidden)",
+      "at": "2026-07-25T11:14:29.811Z"
+    },
+    {
+      "id": "settings-catalogs",
+      "ok": true,
+      "detail": "HTTP 200",
+      "at": "2026-07-25T11:14:30.417Z"
+    },
+    {
+      "id": "job-titles-baseline",
+      "ok": true,
+      "detail": "active=4 pick=CHRO (Giám đốc Nhân sự)",
+      "at": "2026-07-25T11:14:30.417Z"
+    },
+    {
+      "id": "goto-recruitment-create",
+      "ok": true,
+      "detail": "http://127.0.0.1:8080/hr/recruitment?portal=1&tenantId=xevn&companyId=main",
+      "at": "2026-07-25T11:14:32.443Z"
+    },
+    {
+      "id": "form-fill-text",
+      "ok": true,
+      "detail": "{\"fillCode\":{\"ok\":true},\"fillTitle\":{\"ok\":true}}",
+      "at": "2026-07-25T11:14:37.933Z"
+    },
+    {
+      "id": "picker-open",
+      "ok": true,
+      "detail": "{\"ok\":true,\"count\":1,\"text\":\"Chọn chức danh từ Cài đặt\"}",
+      "at": "2026-07-25T11:14:38.016Z"
+    },
+    {
+      "id": "picker-select",
+      "ok": true,
+      "detail": "{\"ok\":true,\"via\":\"data-value\",\"text\":\"CHROGiám đốc Nhân sự\",\"value\":\"CHRO\",\"count\":4}",
+      "at": "2026-07-25T11:14:38.742Z"
+    },
+    {
+      "id": "picker-trigger",
+      "ok": true,
+      "detail": "{\"text\":\"CHROGiám đốc Nhân sự\",\"hasCode\":true}",
+      "at": "2026-07-25T11:14:39.358Z"
+    },
+    {
+      "id": "save-enabled",
+      "ok": true,
+      "detail": "{\"found\":true,\"disabled\":false,\"text\":\"Lưu JD\"}",
+      "at": "2026-07-25T11:14:39.359Z"
+    },
+    {
+      "id": "create-post-position-code",
+      "ok": true,
+      "detail": "HTTP 201 position_code=CHRO code=JD-QA-JT-09UTU9",
+      "at": "2026-07-25T11:14:41.503Z"
+    },
+    {
+      "id": "f5-row-persists",
+      "ok": true,
+      "detail": "code=true title=true posCodeVisible=false",
+      "at": "2026-07-25T11:14:44.045Z"
+    },
+    {
+      "id": "api-row-position-code",
+      "ok": true,
+      "detail": "id=eda5cabc-a221-42df-a535-4dfa31b25b77 position_code=CHRO position_name=Giám đốc Nhân sự",
+      "at": "2026-07-25T11:14:44.200Z"
+    },
+    {
+      "id": "goto-recruitment-empty",
+      "ok": true,
+      "detail": "fresh page + intercept",
+      "at": "2026-07-25T11:14:44.929Z"
+    },
+    {
+      "id": "empty-job-titles-cta",
+      "ok": true,
+      "detail": "amber=true cta=true saveDisabled=true dialog=true",
+      "at": "2026-07-25T11:14:49.194Z"
+    }
+  ],
+  "verdicts": {
+    "inventReject": "PASS",
+    "inventFakeCode": "PASS",
+    "createWithPositionCode": "PASS",
+    "f5Persist": "PASS",
+    "apiRowPositionCode": "PASS",
+    "emptyCatalogCta": "PASS"
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/job-templates",
+      "requestBody": {
+        "company_id": "main",
+        "code": "JD-QA-JT-09UTU9",
+        "title": "QA JT catalog QA-JT-09UTU9",
+        "position_code": "CHRO",
+        "position_name": "Giám đốc Nhân sự"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main"
+    }
+  ],
+  "catalogNet": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:8080/api/hrm/recruitment/job-templates?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "http://127.0.0.1:8080/api/hrm/recruitment/job-templates"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:8080/api/hrm/recruitment/job-templates?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:8080/api/hrm/recruitment/job-templates?company_id=main"
+    }
+  ],
+  "createPayload": {
+    "company_id": "main",
+    "code": "JD-QA-JT-09UTU9",
+    "title": "QA JT catalog QA-JT-09UTU9",
+    "position_code": "CHRO",
+    "position_name": "Giám đốc Nhân sự"
+  },
+  "createdRow": {
+    "id": "eda5cabc-a221-42df-a535-4dfa31b25b77",
+    "company_id": "holding",
+    "code": "JD-QA-JT-09UTU9",
+    "title": "QA JT catalog QA-JT-09UTU9",
+    "position_name": "Giám đốc Nhân sự",
+    "position_code": "CHRO",
+    "job_description": null,
+    "requirements": null,
+    "notes": null,
+    "is_active": true,
+    "created_at": "2026-07-25T11:14:45.443Z",
+    "updated_at": "2026-07-25T11:14:45.443Z"
+  },
+  "overall": "PASS",
+  "finishedAt": "2026-07-25T11:14:50.031Z"
+}

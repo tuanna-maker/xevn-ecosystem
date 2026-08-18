@@ -1,0 +1,247 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-TEMPLATE-QA-01",
+  "stamp": "CTRTPLQA-MSK7U4CG",
+  "startedAt": "2026-08-08T10:13:21.666Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "headerCompany": "main",
+    "tenant": "xevn"
+  },
+  "u65": "zero-seed",
+  "honesty": {
+    "contracts_printable_ready": false,
+    "payroll_e2e_ready": false,
+    "c_slice_neq_module": true,
+    "flipped_printable": false,
+    "seed_used": false,
+    "module_ctr_uat_claimed": false,
+    "invent_fe_lvrule_01g": false,
+    "reopen_clause_att": false
+  },
+  "retain": [
+    "CTR-CLAUSE body_vi Option B",
+    "ATT leave-balance CNS-WIRE CLOSED",
+    "FE LVRULE 01g HOLD",
+    "ATT seals"
+  ],
+  "gitHead": "dc930c5",
+  "invent": {
+    "code": "ZZ_INVENT_CTR_TPL_MSK7U4CG",
+    "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+    "badFormat": "1bad-format!",
+    "missId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+  },
+  "dist": {
+    "hasConst": true,
+    "hasKeyThrow": true,
+    "hasReject": true,
+    "wired": true
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "code": "HRM-HEALTH-200"
+    }
+  },
+  "steps": [
+    {
+      "step": "L0_health",
+      "method": "GET",
+      "url": "http://127.0.0.1:28001/api/hrm",
+      "status": 200,
+      "code": "HRM-HEALTH-200",
+      "snippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-08-08T10:13:21.756Z\"}"
+    },
+    {
+      "step": "list_templates",
+      "status": 200,
+      "code": "HRM-CTR-TPL-200",
+      "active": 26
+    },
+    {
+      "step": "preview_invent_code",
+      "status": 400,
+      "code": "HRM-CTR-TPL-KEY",
+      "snippet": "{\"success\":false,\"code\":\"HRM-CTR-TPL-KEY\",\"message\":\"template_code 'ZZ_INVENT_CTR_TPL_MSK7U4CG' is not in Nest hrm_contract_templates active catalog (invent forbidden when active ≠ empty)\",\"details\":{\"field\":\"template_code\",\"key\":\"ZZ_INVENT_CTR_TPL_MSK7U4CG\"},\"timestamp\":\"2026-08-08T10:13:22.722Z\"}"
+    },
+    {
+      "step": "preview_invent_id",
+      "status": 400,
+      "code": "HRM-CTR-TPL-KEY",
+      "snippet": "{\"success\":false,\"code\":\"HRM-CTR-TPL-KEY\",\"message\":\"template_id 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' is not in Nest hrm_contract_templates active catalog (invent forbidden when active ≠ empty)\",\"details\":{\"field\":\"template_id\",\"key\":\"bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb\"},\"timestamp\":\"2026-08-08T10:13:22.771Z\"}"
+    },
+    {
+      "step": "issue_invent_code",
+      "status": 400,
+      "code": "HRM-CTR-TPL-KEY",
+      "snippet": "{\"success\":false,\"code\":\"HRM-CTR-TPL-KEY\",\"message\":\"template_code 'ZZ_INVENT_CTR_TPL_MSK7U4CG' is not in Nest hrm_contract_templates active catalog (invent forbidden when active ≠ empty)\",\"details\":{\"field\":\"template_code\",\"key\":\"ZZ_INVENT_CTR_TPL_MSK7U4CG\"},\"timestamp\":\"2026-08-08T10:13:22.819Z\"}"
+    },
+    {
+      "step": "get_by_id_miss",
+      "status": 404,
+      "code": "HRM-CTR-TPL-404",
+      "snippet": "{\"success\":false,\"code\":\"HRM-CTR-TPL-404\",\"message\":\"Contract template not found\",\"timestamp\":\"2026-08-08T10:13:23.172Z\"}"
+    },
+    {
+      "step": "get_by_id_hit_u19",
+      "status": 200,
+      "code": "HRM-CTR-TPL-200",
+      "id": "e1e8196c-46ea-42c5-a6e0-311d2f0a165e"
+    },
+    {
+      "step": "preview_code_invalid",
+      "status": 400,
+      "code": "HRM-CTR-TPL-CODE-INVALID",
+      "snippet": "{\"success\":false,\"code\":\"HRM-CTR-TPL-CODE-INVALID\",\"message\":\"Invalid template code format '1bad-format!'\",\"timestamp\":\"2026-08-08T10:13:23.228Z\"}"
+    },
+    {
+      "step": "admin_create_code_invalid",
+      "status": 400,
+      "code": "HRM-CTR-TPL-CODE-INVALID",
+      "snippet": "{\"success\":false,\"code\":\"HRM-CTR-TPL-CODE-INVALID\",\"message\":\"Invalid template code format '1bad-format!'\",\"timestamp\":\"2026-08-08T10:13:23.231Z\"}"
+    },
+    {
+      "step": "admin_create_n1",
+      "status": 201,
+      "code": "HRM-CTR-TPL-201",
+      "snippet": "{\"success\":true,\"code\":\"HRM-CTR-TPL-201\",\"message\":\"Contract template created\",\"data\":{\"id\":\"b853f70a-b419-4034-828b-899eba04f35d\",\"company_id\":\"holding\",\"code\":\"QA_CTR_TPL_MSK7U4CG\",\"name_vi\":\"QA mẫu N+1 CTRTPLQA-MSK7U4CG\",\"pack_code\":\"GENERAL\",\"layout_json\":{\"show_driver_license_block\":false},\"keyword_map\":{},\"status\":\"active\",\"version\":1,\"default_term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"title_print_vi\":null,\"matrix_family\":\"LEGACY\",\"origin\":\"member\",\"origin_company_id\":null,\"origin_publish_version\":null,\"lineage_code\":null,\"archived_at\":null,\"created_at\":\"2026-08-08T10:13:33.908Z\",\"updated_at\":\"2026-08-08T10:13:33.908Z\",\"template_code\":\"QA_CTR_TPL_MSK7U4CG\",\"clauses\":[]},\"timestamp\":\"2026-08-08T10:13:23.262Z\"}"
+    }
+  ],
+  "checks": {
+    "eff_gt_0": {
+      "ok": true,
+      "detail": "active=26 (need >0 for invent KEY path)"
+    },
+    "contract_available": {
+      "ok": true,
+      "detail": "1381020f-e9a4-43e7-9f10-f97e6dc05aab"
+    },
+    "invent_code_key": {
+      "ok": true,
+      "detail": "expect 4xx HRM-CTR-TPL-KEY; got 400 HRM-CTR-TPL-KEY"
+    },
+    "invent_id_key": {
+      "ok": true,
+      "detail": "expect 4xx HRM-CTR-TPL-KEY; got 400 HRM-CTR-TPL-KEY"
+    },
+    "invent_issue_key": {
+      "ok": true,
+      "detail": "expect 4xx HRM-CTR-TPL-KEY; got 400 HRM-CTR-TPL-KEY"
+    },
+    "no_persist_invent_code": {
+      "ok": true,
+      "detail": "invent code absent from catalog"
+    },
+    "no_persist_print_version": {
+      "ok": true,
+      "detail": "pv before=0 after=0"
+    },
+    "get_by_id_404": {
+      "ok": true,
+      "detail": "expect 404 HRM-CTR-TPL-404 ≠ KEY; got 404 HRM-CTR-TPL-404"
+    },
+    "u19_get_existing": {
+      "ok": true,
+      "detail": "expect 2xx detail; got 200 HRM-CTR-TPL-200"
+    },
+    "empty_catalog_none": {
+      "ok": true,
+      "detail": "NOTE_BLOCKED — EFF>0 LIVE; isolatable empty catalog requires wipe (FORBIDDEN U65). NONE path covered by jest BE-01; LIVE not forced."
+    },
+    "code_invalid": {
+      "ok": true,
+      "detail": "expect 4xx HRM-CTR-TPL-CODE-INVALID ≠ KEY; got 400 HRM-CTR-TPL-CODE-INVALID"
+    },
+    "admin_code_invalid": {
+      "ok": true,
+      "detail": "expect HRM-CTR-TPL-CODE-INVALID; got 400 HRM-CTR-TPL-CODE-INVALID"
+    },
+    "admin_create_n1": {
+      "ok": true,
+      "detail": "expect 2xx CREATE; got 201 HRM-CTR-TPL-201"
+    },
+    "admin_create_f5": {
+      "ok": true,
+      "detail": "row present after list"
+    },
+    "taxonomy_distinct": {
+      "ok": true,
+      "detail": "KEY=HRM-CTR-TPL-KEY 404=HRM-CTR-TPL-404 NONE=HRM-CTR-TPL-NONE INVALID=HRM-CTR-TPL-CODE-INVALID"
+    },
+    "dist_wire": {
+      "ok": true,
+      "detail": "{\"hasConst\":true,\"hasKeyThrow\":true,\"hasReject\":true,\"wired\":true}"
+    },
+    "honesty_deny": {
+      "ok": true,
+      "detail": "printable=false · no seed · no module UAT · no FE invent · no reopen"
+    }
+  },
+  "network_key_hit": true,
+  "network_404_hit": true,
+  "network_code_invalid_hit": true,
+  "network_none_hit": false,
+  "empty_catalog_none": "NOTE_BLOCKED",
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "residuals": [
+    {
+      "id": "R-PLT-CTR-TPL-NONE-LIVE",
+      "severity": "P3",
+      "note": "VAL-CTR-TPL-04 empty NONE LIVE isolatable without wipe = NOTE_BLOCKED; jest BE-01 covers NONE"
+    }
+  ],
+  "endedAt": "2026-08-08T10:13:23.553Z",
+  "login": {
+    "ok": true,
+    "status": 201,
+    "via": "http://127.0.0.1:5173/api/xbos/auth/login",
+    "claims_sub": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "eff": {
+    "total": 36,
+    "listed": 36,
+    "active": 26,
+    "sample": [
+      {
+        "id": "e1e8196c-46ea-42c5-a6e0-311d2f0a165e",
+        "code": "TPL_CTRQA-HPY05Q",
+        "company_id": "holding",
+        "status": "active"
+      },
+      {
+        "id": "d32906ee-3c54-4cac-b263-ee49b99aac50",
+        "code": "TPL_CTRQA-HPY05Q",
+        "company_id": "trsport",
+        "status": "active"
+      },
+      {
+        "id": "99ddf6c3-fd7b-4145-af0c-0a36425d94f4",
+        "code": "TPL_CTRQA-HQ0R2B",
+        "company_id": "holding",
+        "status": "active"
+      }
+    ]
+  },
+  "contract": {
+    "id": "1381020f-e9a4-43e7-9f10-f97e6dc05aab",
+    "company_id": "holding",
+    "contract_code": "HD-0U66Z"
+  },
+  "print_versions_before": {
+    "status": 200,
+    "code": "HRM-CTR-VER-200",
+    "count": 0
+  },
+  "print_versions_after": {
+    "count": 0,
+    "before": 0
+  },
+  "created_template": {
+    "id": "b853f70a-b419-4034-828b-899eba04f35d",
+    "code": "QA_CTR_TPL_MSK7U4CG",
+    "company_id": "holding"
+  },
+  "failed_checks": []
+}

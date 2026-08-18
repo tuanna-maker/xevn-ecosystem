@@ -1,0 +1,603 @@
+{
+  "work_item_id": "QA-ERP-E1B-01",
+  "startedAt": "2026-07-28T16:16:22.112Z",
+  "origin": "http://127.0.0.1:5173",
+  "locks": {
+    "u65_zero_seed": true,
+    "hold_deploy": true,
+    "seed_used": false
+  },
+  "steps": [
+    {
+      "id": "l0-hrm",
+      "ok": true,
+      "detail": "HTTP 200 http://127.0.0.1:28001/api/hrm",
+      "at": "2026-07-28T16:16:22.135Z"
+    },
+    {
+      "id": "l0-portal",
+      "ok": true,
+      "detail": "HTTP 200 http://127.0.0.1:5173",
+      "at": "2026-07-28T16:16:22.142Z"
+    },
+    {
+      "id": "l0-xbos",
+      "ok": true,
+      "detail": "HTTP 200 http://127.0.0.1:28002/api/xbos",
+      "at": "2026-07-28T16:16:22.146Z"
+    },
+    {
+      "id": "api-login",
+      "ok": true,
+      "detail": "ceo@xe.vn via portal→xbos",
+      "at": "2026-07-28T16:16:22.184Z"
+    },
+    {
+      "id": "api-dec-alias",
+      "ok": true,
+      "detail": {
+        "viaDecisionTypes": {
+          "status": 200,
+          "count": 3,
+          "total": 3,
+          "sample": [
+            "HRD_01",
+            "HRD_02",
+            "HRD_03"
+          ],
+          "aliases": [
+            "hr_decision_types",
+            "decision_types"
+          ],
+          "catalog_key": "hr_decision_types"
+        },
+        "viaHr": {
+          "status": 200,
+          "count": 3,
+          "total": 3,
+          "sample": [
+            "HRD_01",
+            "HRD_02",
+            "HRD_03"
+          ],
+          "aliases": [
+            "hr_decision_types",
+            "decision_types"
+          ],
+          "catalog_key": "hr_decision_types"
+        },
+        "overview": {
+          "status": 200,
+          "decision_types_row": false,
+          "hr_decision_types_items": 3,
+          "decision_types_items": 0,
+          "hr_aliases": [
+            "hr_decision_types",
+            "decision_types"
+          ],
+          "sample_hr": [
+            "HRD_01",
+            "HRD_02",
+            "HRD_03"
+          ]
+        }
+      },
+      "at": "2026-07-28T16:16:22.523Z"
+    },
+    {
+      "id": "api-dec-family-merge",
+      "ok": true,
+      "detail": {
+        "hrCount": 3,
+        "viaDecisionTypes": 3,
+        "catalog_key": "hr_decision_types"
+      },
+      "at": "2026-07-28T16:16:22.524Z"
+    },
+    {
+      "id": "session-inject",
+      "ok": true,
+      "detail": "evaluateOnNewDocument xevn.portal.*",
+      "at": "2026-07-28T16:16:22.890Z"
+    },
+    {
+      "id": "open-md-panel",
+      "ok": true,
+      "detail": {
+        "settingsUrl": "http://127.0.0.1:5173/hr/settings?portal=1&tenantId=xevn&companyId=main",
+        "panelReady": true
+      },
+      "at": "2026-07-28T16:16:27.355Z"
+    },
+    {
+      "id": "ac-set-ui-01-tabs",
+      "ok": true,
+      "detail": {
+        "titles": [
+          "Chức danh",
+          "Phòng ban",
+          "Loại nghỉ",
+          "Loại quyết định",
+          "Loại hợp đồng",
+          "Loại hình lao động",
+          "Ca làm việc",
+          "Ngạch bậc",
+          "Kênh tuyển dụng",
+          "Bản chất / loại TP lương",
+          "Thành phần lương (danh mục)",
+          "Mẫu JD",
+          "Phân hệ lương"
+        ],
+        "mdTabCount": 11,
+        "totalTriggers": 13,
+        "missingFlex": []
+      },
+      "at": "2026-07-28T16:16:27.476Z"
+    },
+    {
+      "id": "ac-set-ui-05-dec-ui",
+      "ok": true,
+      "detail": {
+        "rowCount": 3,
+        "sample": [
+          "HRD_01",
+          "HRD_02",
+          "HRD_03"
+        ],
+        "empty": false,
+        "fr": true,
+        "note": "items visible via DEC alias merge"
+      },
+      "at": "2026-07-28T16:16:28.611Z"
+    },
+    {
+      "id": "ac-set-ui-05-dec-has-items",
+      "ok": true,
+      "detail": {
+        "uiRows": 3,
+        "hrCount": 3,
+        "decCount": 3
+      },
+      "at": "2026-07-28T16:16:28.612Z"
+    },
+    {
+      "id": "create-fill-contractTypes",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "value": "QA_E1B_CT_UYQKH"
+      },
+      "at": "2026-07-28T16:16:29.445Z"
+    },
+    {
+      "id": "create-click-save-contractTypes",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "disabled": false
+      },
+      "at": "2026-07-28T16:16:29.451Z"
+    },
+    {
+      "id": "create-post-contractTypes",
+      "ok": true,
+      "detail": {
+        "posts": [
+          {
+            "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+            "status": 201,
+            "method": "POST",
+            "at": "2026-07-28T16:16:29.543Z"
+          }
+        ],
+        "hint": "ok"
+      },
+      "at": "2026-07-28T16:16:31.962Z"
+    },
+    {
+      "id": "create-list-contractTypes",
+      "ok": true,
+      "detail": {
+        "visible": true,
+        "via": "testid",
+        "text": "QA_E1B_CT_UYQKHQA E1B Loại hợp đồng QA_E1B_CT_UYQKHHRMĐang dùngNgưng",
+        "statusCell": "Đang dùng"
+      },
+      "at": "2026-07-28T16:16:32.971Z"
+    },
+    {
+      "id": "search-contractTypes",
+      "ok": true,
+      "detail": {
+        "searchRes": {
+          "ok": true,
+          "value": "QA_E1B_CT_UYQKH"
+        },
+        "afterSearch": {
+          "visible": true,
+          "via": "testid",
+          "text": "QA_E1B_CT_UYQKHQA E1B Loại hợp đồng QA_E1B_CT_UYQKHHRMĐang dùngNgưng",
+          "statusCell": "Đang dùng"
+        }
+      },
+      "at": "2026-07-28T16:16:33.388Z"
+    },
+    {
+      "id": "f5-contractTypes",
+      "ok": true,
+      "detail": {
+        "visible": true,
+        "via": "testid",
+        "text": "QA_E1B_CT_UYQKHQA E1B Loại hợp đồng QA_E1B_CT_UYQKHHRMĐang dùngNgưng",
+        "statusCell": "Đang dùng"
+      },
+      "at": "2026-07-28T16:16:37.817Z"
+    },
+    {
+      "id": "create-fill-employmentTypes",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "value": "QA_E1B_ET_UYXR1"
+      },
+      "at": "2026-07-28T16:16:38.752Z"
+    },
+    {
+      "id": "create-click-save-employmentTypes",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "disabled": false
+      },
+      "at": "2026-07-28T16:16:38.755Z"
+    },
+    {
+      "id": "create-post-employmentTypes",
+      "ok": true,
+      "detail": {
+        "posts": [
+          {
+            "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+            "status": 201,
+            "method": "POST",
+            "at": "2026-07-28T16:16:38.853Z"
+          }
+        ],
+        "hint": "ok"
+      },
+      "at": "2026-07-28T16:16:41.258Z"
+    },
+    {
+      "id": "create-list-employmentTypes",
+      "ok": true,
+      "detail": {
+        "visible": true,
+        "via": "testid",
+        "text": "QA_E1B_ET_UYXR1QA E1B Loại hình lao động QA_E1B_ET_UYXR1HRMĐang dùngNgưng",
+        "statusCell": "Đang dùng"
+      },
+      "at": "2026-07-28T16:16:42.271Z"
+    },
+    {
+      "id": "search-employmentTypes",
+      "ok": true,
+      "detail": {
+        "searchRes": {
+          "ok": true,
+          "value": "QA_E1B_ET_UYXR1"
+        },
+        "afterSearch": {
+          "visible": true,
+          "via": "testid",
+          "text": "QA_E1B_ET_UYXR1QA E1B Loại hình lao động QA_E1B_ET_UYXR1HRMĐang dùngNgưng",
+          "statusCell": "Đang dùng"
+        }
+      },
+      "at": "2026-07-28T16:16:42.676Z"
+    },
+    {
+      "id": "f5-employmentTypes",
+      "ok": true,
+      "detail": {
+        "visible": true,
+        "via": "testid",
+        "text": "QA_E1B_ET_UYXR1QA E1B Loại hình lao động QA_E1B_ET_UYXR1HRMĐang dùngNgưng",
+        "statusCell": "Đang dùng"
+      },
+      "at": "2026-07-28T16:16:47.173Z"
+    },
+    {
+      "id": "create-fill-jobGrades",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "value": "QA_E1B_JG_UZ4Y5"
+      },
+      "at": "2026-07-28T16:16:48.080Z"
+    },
+    {
+      "id": "create-click-save-jobGrades",
+      "ok": true,
+      "detail": {
+        "ok": true,
+        "disabled": false
+      },
+      "at": "2026-07-28T16:16:48.085Z"
+    },
+    {
+      "id": "create-post-jobGrades",
+      "ok": true,
+      "detail": {
+        "posts": [
+          {
+            "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+            "status": 201,
+            "method": "POST",
+            "at": "2026-07-28T16:16:48.180Z"
+          }
+        ],
+        "hint": "ok"
+      },
+      "at": "2026-07-28T16:16:50.596Z"
+    },
+    {
+      "id": "create-list-jobGrades",
+      "ok": true,
+      "detail": {
+        "visible": true,
+        "via": "testid",
+        "text": "QA_E1B_JG_UZ4Y5QA E1B Ngạch bậc QA_E1B_JG_UZ4Y5HRMĐang dùngNgưng",
+        "statusCell": "Đang dùng"
+      },
+      "at": "2026-07-28T16:16:51.606Z"
+    },
+    {
+      "id": "search-jobGrades",
+      "ok": true,
+      "detail": {
+        "searchRes": {
+          "ok": true,
+          "value": "QA_E1B_JG_UZ4Y5"
+        },
+        "afterSearch": {
+          "visible": true,
+          "via": "testid",
+          "text": "QA_E1B_JG_UZ4Y5QA E1B Ngạch bậc QA_E1B_JG_UZ4Y5HRMĐang dùngNgưng",
+          "statusCell": "Đang dùng"
+        }
+      },
+      "at": "2026-07-28T16:16:52.010Z"
+    },
+    {
+      "id": "f5-jobGrades",
+      "ok": true,
+      "detail": {
+        "visible": true,
+        "via": "testid",
+        "text": "QA_E1B_JG_UZ4Y5QA E1B Ngạch bậc QA_E1B_JG_UZ4Y5HRMĐang dùngNgưng",
+        "statusCell": "Đang dùng"
+      },
+      "at": "2026-07-28T16:16:56.445Z"
+    },
+    {
+      "id": "ac-set-ui-02-create-ge3",
+      "ok": true,
+      "detail": {
+        "createdCount": 3,
+        "codes": [
+          "QA_E1B_CT_UYQKH",
+          "QA_E1B_ET_UYXR1",
+          "QA_E1B_JG_UZ4Y5"
+        ]
+      },
+      "at": "2026-07-28T16:16:56.547Z"
+    },
+    {
+      "id": "ngung-click",
+      "ok": true,
+      "detail": {
+        "ok": true
+      },
+      "at": "2026-07-28T16:16:57.379Z"
+    },
+    {
+      "id": "ac-set-ui-03-soft-stop",
+      "ok": true,
+      "detail": {
+        "stopPosts": [
+          {
+            "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+            "status": 201,
+            "method": "POST",
+            "at": "2026-07-28T16:16:57.443Z"
+          }
+        ],
+        "afterStop": {
+          "visible": true,
+          "via": "testid",
+          "text": "QA_E1B_CT_UYQKHQA E1B Loại hợp đồng QA_E1B_CT_UYQKHHRMNháp—",
+          "statusCell": "Nháp"
+        }
+      },
+      "at": "2026-07-28T16:16:59.895Z"
+    },
+    {
+      "id": "ac-set-ui-06-sync-xbos",
+      "ok": true,
+      "detail": {
+        "syncNet": [],
+        "note": "CTA clicked; 4xx XBOS remote OK to document — no seed invent"
+      },
+      "at": "2026-07-28T16:17:04.457Z"
+    }
+  ],
+  "verdicts": {
+    "tabs": {
+      "titles": [
+        "Chức danh",
+        "Phòng ban",
+        "Loại nghỉ",
+        "Loại quyết định",
+        "Loại hợp đồng",
+        "Loại hình lao động",
+        "Ca làm việc",
+        "Ngạch bậc",
+        "Kênh tuyển dụng",
+        "Bản chất / loại TP lương",
+        "Thành phần lương (danh mục)",
+        "Mẫu JD",
+        "Phân hệ lương"
+      ],
+      "mdTabCount": 11,
+      "totalTriggers": 13,
+      "missingFlex": []
+    },
+    "created": [
+      {
+        "bucket": "contractTypes",
+        "title": "Loại hợp đồng",
+        "codePrefix": "QA_E1B_CT",
+        "code": "QA_E1B_CT_UYQKH",
+        "label": "QA E1B Loại hợp đồng QA_E1B_CT_UYQKH"
+      },
+      {
+        "bucket": "employmentTypes",
+        "title": "Loại hình lao động",
+        "codePrefix": "QA_E1B_ET",
+        "code": "QA_E1B_ET_UYXR1",
+        "label": "QA E1B Loại hình lao động QA_E1B_ET_UYXR1"
+      },
+      {
+        "bucket": "jobGrades",
+        "title": "Ngạch bậc",
+        "codePrefix": "QA_E1B_JG",
+        "code": "QA_E1B_JG_UZ4Y5",
+        "label": "QA E1B Ngạch bậc QA_E1B_JG_UZ4Y5"
+      }
+    ]
+  },
+  "network": [
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+      "status": 200,
+      "method": "GET",
+      "at": "2026-07-28T16:16:25.914Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+      "status": 201,
+      "method": "POST",
+      "at": "2026-07-28T16:16:29.543Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+      "status": 200,
+      "method": "GET",
+      "at": "2026-07-28T16:16:29.636Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+      "status": 200,
+      "method": "GET",
+      "at": "2026-07-28T16:16:36.156Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+      "status": 201,
+      "method": "POST",
+      "at": "2026-07-28T16:16:38.853Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+      "status": 200,
+      "method": "GET",
+      "at": "2026-07-28T16:16:38.936Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+      "status": 200,
+      "method": "GET",
+      "at": "2026-07-28T16:16:45.538Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+      "status": 201,
+      "method": "POST",
+      "at": "2026-07-28T16:16:48.180Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+      "status": 200,
+      "method": "GET",
+      "at": "2026-07-28T16:16:48.274Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+      "status": 200,
+      "method": "GET",
+      "at": "2026-07-28T16:16:54.788Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs/items",
+      "status": 201,
+      "method": "POST",
+      "at": "2026-07-28T16:16:57.443Z"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+      "status": 200,
+      "method": "GET",
+      "at": "2026-07-28T16:16:57.532Z"
+    }
+  ],
+  "hardFails": [],
+  "decisionApi": {
+    "viaDecisionTypes": {
+      "status": 200,
+      "count": 3,
+      "total": 3,
+      "sample": [
+        "HRD_01",
+        "HRD_02",
+        "HRD_03"
+      ],
+      "aliases": [
+        "hr_decision_types",
+        "decision_types"
+      ],
+      "catalog_key": "hr_decision_types"
+    },
+    "viaHr": {
+      "status": 200,
+      "count": 3,
+      "total": 3,
+      "sample": [
+        "HRD_01",
+        "HRD_02",
+        "HRD_03"
+      ],
+      "aliases": [
+        "hr_decision_types",
+        "decision_types"
+      ],
+      "catalog_key": "hr_decision_types"
+    },
+    "overview": {
+      "status": 200,
+      "decision_types_row": false,
+      "hr_decision_types_items": 3,
+      "decision_types_items": 0,
+      "hr_aliases": [
+        "hr_decision_types",
+        "decision_types"
+      ],
+      "sample_hr": [
+        "HRD_01",
+        "HRD_02",
+        "HRD_03"
+      ]
+    }
+  },
+  "overall": "PASS",
+  "finishedAt": "2026-07-28T16:17:04.776Z"
+}

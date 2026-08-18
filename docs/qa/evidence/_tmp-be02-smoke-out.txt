@@ -1,0 +1,79 @@
+{
+  "work_item_id": "PO-HRM-ATT-LEAVE-FUNNEL-BE-02",
+  "layer": "L1-api-smoke",
+  "u65": "zero-seed",
+  "attendance_uat_ready": false,
+  "stamp": "LVFN-BE02-MSHMQTH5",
+  "startedAt": "2026-08-06T14:47:23.322Z",
+  "steps": [
+    {
+      "step": "login",
+      "ok": true,
+      "via": "http://127.0.0.1:5173"
+    },
+    {
+      "step": "employee",
+      "status": 200,
+      "employee_id": "0500220b-f289-40df-b07e-86316285439b",
+      "code": "UAT-0100"
+    },
+    {
+      "step": "create_open_leave",
+      "status": 201,
+      "code": "HRM-LEAVE-201",
+      "message": "Leave request created",
+      "id": "5af580a5-a3ec-4e1a-8d52-8c31877ac803",
+      "dates": [
+        "2026-12-29",
+        "2026-12-29"
+      ]
+    },
+    {
+      "step": "approve_open",
+      "status": 201,
+      "code": "HRM-LEAVE-203",
+      "materialized_days": [
+        "2026-12-29"
+      ],
+      "expect_days": [
+        "2026-12-29"
+      ],
+      "days_match": true,
+      "ok": true
+    },
+    {
+      "step": "get_records_leave",
+      "status": 200,
+      "leave_count": 1,
+      "sample": [
+        {
+          "date": "2026-12-29",
+          "status": "leave",
+          "leave_request_id": "5af580a5-a3ec-4e1a-8d52-8c31877ac803",
+          "leave_type_label": "Phép năm"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "step": "create_lock_leave",
+      "status": 201,
+      "code": "HRM-LEAVE-201",
+      "message": "Leave request created",
+      "id": "07d14634-a790-41e0-bf3f-342feb7518ec",
+      "dates": [
+        "2026-09-25",
+        "2026-09-25"
+      ]
+    },
+    {
+      "step": "approve_lock_overlap",
+      "status": 409,
+      "code": "HRM-ATT-SHEET-LOCKED",
+      "message": "Attendance sheet is closed; cannot materialize leave markers for 2026-09-25",
+      "ok": true
+    }
+  ],
+  "verdict": "PASS",
+  "finishedAt": "2026-08-06T14:47:26.591Z"
+}

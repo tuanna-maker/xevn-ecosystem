@@ -1,0 +1,3 @@
+﻿[xevn-ecosystem] Đã đổi plan: ERP-class toàn dữ liệu (không chỉ Vị trí).
+Cursor: menu đủ · chi tiết dữ liệu CHƯA đủ sức mạnh · Settings↔form nhiều lỗ · XBOS control PARTIAL.
+Chờ Claude merge + bạn chốt cohort waves.

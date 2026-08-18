@@ -1,0 +1,118 @@
+{
+  "work_item_id": "PO-HRM-SETTINGS-JD-MUTATE-QA-01",
+  "stamp": "JDSETMUT-MSNHWI0A",
+  "startedAt": "2026-08-10T17:18:27.428Z",
+  "u65": "zero-seed-browser-only",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0 (pre-run)"
+  },
+  "ac": {
+    "AC-JD-SET-LIST-01": {
+      "verdict": "PASS",
+      "note": "nav lib=\"Thư viện JD\" dyn=\"Cấu hình trường JD\" distinct=true",
+      "at": "2026-08-10T17:18:31.564Z"
+    },
+    "AC-JD-SET-LIST-08": {
+      "verdict": "PASS",
+      "note": "List non-empty at start — empty copy N/A (U65 natural data)",
+      "waived_empty": true,
+      "at": "2026-08-10T17:18:31.641Z"
+    },
+    "AC-JD-SET-LIST-05": {
+      "verdict": "PASS",
+      "note": "1296×810 parent portal",
+      "pass": true,
+      "wRatio": 0.9,
+      "footerVisible": true,
+      "at": "2026-08-10T17:18:32.977Z"
+    },
+    "AC-JD-SET-LIST-03": {
+      "verdict": "PASS",
+      "note": "POST=201 closed=true row=true pos=true",
+      "at": "2026-08-10T17:18:40.429Z"
+    },
+    "AC-JD-SET-LIST-04": {
+      "verdict": "PASS",
+      "note": "F5 row code visible=true",
+      "at": "2026-08-10T17:18:46.300Z"
+    },
+    "AC-JD-SET-LIST-02": {
+      "verdict": "PASS",
+      "note": "edit writer=true pack=true GETdetail=inferred",
+      "at": "2026-08-10T17:18:48.981Z"
+    },
+    "AC-JD-SET-LIST-06": {
+      "verdict": "PASS",
+      "note": "YCTD picker sees new JD code=true stamp=jdnhwi0a",
+      "at": "2026-08-10T17:19:00.844Z"
+    },
+    "AC-JD-SET-LIST-07": {
+      "verdict": "PASS",
+      "note": "jd-dynamic no library DnD canvas=false surface=false",
+      "at": "2026-08-10T17:19:05.741Z"
+    }
+  },
+  "journey": {
+    "J-HRM-JD-05": {
+      "verdict": "PASS",
+      "code": "jdnhwi0a"
+    }
+  },
+  "network": [
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates/7bab3ec0-2990-402a-88ec-08493ede0bdc/publish?company_id=main",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates?company_id=main&bindable=true",
+      "status": 200
+    }
+  ],
+  "badMutateUrls": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-jd-mutate-qa-01/01-nav-tabs.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-jd-mutate-qa-01/02-writer-add.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-jd-mutate-qa-01/03-after-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-jd-mutate-qa-01/04-edit-writer.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-jd-mutate-qa-01/05-yctd-picker.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-jd-mutate-qa-01/06-jd-dynamic-cfg.png"
+  ],
+  "ids": {
+    "templateId": null,
+    "code": "jdnhwi0a",
+    "title": "QA JD master JDSETMUT-MSNHWI0A",
+    "publishNet": {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates/7bab3ec0-2990-402a-88ec-08493ede0bdc/publish?company_id=main",
+      "status": 201
+    },
+    "pickerOptionsSample": [
+      "QA JD master JDSETMUT-MSNHWI0A",
+      "QA JD master JDSETMUT-MSNHUOS6",
+      "QA JD master JDSETMUT-MSNHR546"
+    ],
+    "bindableGets": 1
+  },
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "endedAt": "2026-08-10T17:19:05.805Z",
+  "bad_mutate_policy": "ok"
+}

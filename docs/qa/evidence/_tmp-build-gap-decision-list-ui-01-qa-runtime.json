@@ -1,0 +1,110 @@
+{
+  "work_item_id": "BUILD-GAP-DECISION-LIST-UI-01-QA",
+  "uf_id": "BUILD_GAP-L2-decisions",
+  "spec_ref": "docs/hrm/SRS.md UC-HRM-27 · G-DEC-01 empty copy",
+  "u65": "zero-seed",
+  "startedAt": "2026-08-03T16:25:30.868Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "clicks": [
+    {
+      "at": "2026-08-03T16:25:30.919Z",
+      "action": "login-api",
+      "email": "ceo@xe.vn",
+      "ok": true
+    },
+    {
+      "at": "2026-08-03T16:25:36.124Z",
+      "action": "goto-decisions",
+      "url": "http://127.0.0.1:5173/hr/decisions?portal=1&tenantId=xevn&companyId=main",
+      "target": "http://127.0.0.1:5173/hr/decisions?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T16:25:39.869Z",
+      "action": "f5-reload"
+    }
+  ],
+  "network": [
+    {
+      "at": "2026-08-03T16:25:32.421Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/decisions?company_id=main"
+    },
+    {
+      "at": "2026-08-03T16:25:36.535Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/decisions?company_id=main"
+    }
+  ],
+  "moduleRequests": [
+    {
+      "at": "2026-08-03T16:25:32.219Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/hr/src/pages/Decisions.tsx"
+    },
+    {
+      "at": "2026-08-03T16:25:32.250Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/hr/src/lib/decisionListUi.ts"
+    },
+    {
+      "at": "2026-08-03T16:25:36.438Z",
+      "method": "GET",
+      "status": 304,
+      "url": "/hr/src/pages/Decisions.tsx"
+    },
+    {
+      "at": "2026-08-03T16:25:36.464Z",
+      "method": "GET",
+      "status": 304,
+      "url": "/hr/src/lib/decisionListUi.ts"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "viteOverlay": false,
+  "screens": [
+    {
+      "name": "01-decisions-load",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/build-gap-decision-list-ui-01-qa/01-decisions-load.png"
+    },
+    {
+      "name": "02-decisions-after-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/build-gap-decision-list-ui-01-qa/02-decisions-after-f5.png"
+    }
+  ],
+  "ac": {
+    "initial_load": {
+      "vite1": {
+        "bad": false,
+        "viteText": "",
+        "htmlHit": false
+      },
+      "hasDecisionsShell": true,
+      "hasHonestEmpty": true,
+      "hasForbiddenStub": false,
+      "bodySnippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nThêm quyết định\nTất cả\n0\nBổ nhiệm\n0\nThăng chức\n0\nĐiều chuyển\n0\nĐiều chỉnh lương\n0\nKhen thưởng\n0\nKỷ luật\n0\nChấm dứt HĐLĐ\n0\nGia hạn HĐ\n0\n\tSố QĐ\tLoại\tTiêu đề\tNhân viên\tPhòng ban\tNgày hiệu lực\tTình trạng\tThao tác\n\n\nKhông có quyết định nào\n\nNhấn «Thêm quyết định» để tạo quyết định đầu tiên\n\nThêm quyết định\nHiển thị 0 - 0 trong số 0 bản ghi\nSố hàng:\n10",
+      "decisionGets": 1,
+      "decision5xx": [],
+      "module5xx": []
+    },
+    "f5": {
+      "vite2": {
+        "bad": false,
+        "viteText": "",
+        "htmlHit": false
+      },
+      "hasHonestEmptyF5": true,
+      "bodySnippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nThêm quyết định\nTất cả\n0\nBổ nhiệm\n0\nThăng chức\n0\nĐiều chuyển\n0\nĐiều chỉnh lương\n0\nKhen thưởng\n0\nKỷ luật\n0\nChấm dứt HĐLĐ\n0\nGia hạn HĐ\n0\n\tSố QĐ\tLoại\tTiêu đề\tNhân viên\tPhòng ban\tNgày hiệu lực\tTình trạng\tThao tác\n\n\nKhông có quyết định nào\n\nNhấn «Thêm quyết định» để tạo quyết định đầu tiên\n\nThêm quyết địn"
+    }
+  },
+  "ack_status": "PASS_TO_PM",
+  "finishedAt": "2026-08-03T16:25:39.944Z"
+}

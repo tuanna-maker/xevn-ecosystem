@@ -1,0 +1,31 @@
+{
+  "work_item_id": "PO-HRM-BP-ATT-SIGN-QA-01",
+  "u65_zero_seed": true,
+  "commit": "dc930c5",
+  "startedAt": "2026-08-05T08:10:36.981Z",
+  "network": [
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets?company_id=main",
+      "status": 200,
+      "method": "GET"
+    }
+  ],
+  "pageErrors": [],
+  "findings": {
+    "loginApi": true,
+    "apiSheetsStatus": 200,
+    "apiSheetCount": 0,
+    "apiSubmittedCount": 0,
+    "apiSubmittedIds": [],
+    "sheetsListVisible": true,
+    "sheetsListGet200": true,
+    "sheetRowCount": 2,
+    "submittedRowIndex": -1,
+    "attSignPanelVisible": false,
+    "attSignDraftHoldVisible": true,
+    "weeklyViewVisible": true,
+    "signaturesGet200": 0
+  },
+  "verdictHint": "PANEL_PARTIAL",
+  "finishedAt": "2026-08-05T08:10:46.538Z"
+}

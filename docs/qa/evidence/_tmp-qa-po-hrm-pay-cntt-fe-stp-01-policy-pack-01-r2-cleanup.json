@@ -1,0 +1,154 @@
+{
+  "work_item_id": "QA-PO-HRM-PAY-CNTT-FE-STP-01-POLICY-PACK-01-R2-CLEANUP",
+  "stamp": "PAYPPCLEAN-MSQ36WW7",
+  "startedAt": "2026-08-12T12:49:57.511Z",
+  "targets": [
+    "qar2porxwdp4",
+    "qar2staxwdp4"
+  ],
+  "modes": {
+    "portal": {
+      "mode": "portal",
+      "base": "http://127.0.0.1:5173",
+      "url": "http://127.0.0.1:5173/hr/payroll/setup?portal=1&tenantId=xevn&companyId=main&section=policy-pack",
+      "packs": [
+        {
+          "code": "qar2porxwdp4",
+          "found": true,
+          "archived": true,
+          "archiveStatus": 201,
+          "hiddenAfter": true,
+          "hiddenF5": true,
+          "clickPath": [
+            "click row pay-policy-pack-row-qar2porxwdp4",
+            "click Ngưng áp dụng (pay-policy-pack-archive)",
+            "F5 → hidden=true"
+          ],
+          "network": {
+            "method": "POST",
+            "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs/75ae95fa-b6fd-403c-a58e-1bd1807ecf01/archive?company_id=main",
+            "status": 201
+          }
+        },
+        {
+          "code": "qar2staxwdp4",
+          "found": true,
+          "archived": true,
+          "archiveStatus": 201,
+          "hiddenAfter": true,
+          "hiddenF5": true,
+          "clickPath": [
+            "click row pay-policy-pack-row-qar2staxwdp4",
+            "click Ngưng áp dụng (pay-policy-pack-archive)",
+            "F5 → hidden=true"
+          ],
+          "network": {
+            "method": "POST",
+            "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs/ae0a0113-17d5-42ef-8aa5-0d66860d3bf1/archive?company_id=main",
+            "status": 201
+          }
+        }
+      ],
+      "screens": [
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2-cleanup/portal-01-before.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2-cleanup/portal-a11y-form.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2-cleanup/portal-02-after-f5.png"
+      ],
+      "verdict": "PASS",
+      "remainingAfterF5": []
+    },
+    "standalone": {
+      "mode": "standalone",
+      "base": "http://127.0.0.1:8080",
+      "url": "http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+      "packs": [
+        {
+          "code": "qar2porxwdp4",
+          "found": false,
+          "archived": true,
+          "archiveStatus": null,
+          "hiddenAfter": null,
+          "hiddenF5": true,
+          "clickPath": [
+            "row qar2porxwdp4 NOT in default list"
+          ],
+          "network": null
+        },
+        {
+          "code": "qar2staxwdp4",
+          "found": false,
+          "archived": true,
+          "archiveStatus": null,
+          "hiddenAfter": null,
+          "hiddenF5": true,
+          "clickPath": [
+            "row qar2staxwdp4 NOT in default list"
+          ],
+          "network": null
+        }
+      ],
+      "screens": [
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2-cleanup/standalone-01-before.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2-cleanup/standalone-02-after-f5.png"
+      ],
+      "verdict": "PASS",
+      "remainingAfterF5": []
+    }
+  },
+  "a11y": {
+    "search_input": {
+      "css_selector_candidates": [
+        "input[aria-label=\"Tìm mã hoặc tên gói\"]",
+        "[data-testid=\"pay-policy-pack-list\"] input[placeholder=\"Tìm mã/tên…\"]"
+      ],
+      "observed": {
+        "tag": "input",
+        "id": null,
+        "name": null,
+        "type": null,
+        "placeholder": "Tìm mã/tên…",
+        "ariaLabel": "Tìm kiếm trong danh sách gói",
+        "ariaLabelledby": null,
+        "className": "flex rounded-input border border-xevn-border bg-background px-3 py-2 text-base ring-offset-background file:border-0 file"
+      }
+    },
+    "name_input": {
+      "css_selector_candidates": [
+        "#nameVi",
+        "label[for=\"nameVi\"] + input",
+        "form #nameVi"
+      ],
+      "observed": {
+        "tag": "input",
+        "id": "nameVi",
+        "name": null,
+        "type": null,
+        "placeholder": "VD: Thang bậc QĐ 2A",
+        "ariaLabel": null,
+        "ariaLabelledby": null,
+        "className": "flex h-10 w-full rounded-input border border-xevn-border bg-background px-3 py-2 text-base ring-offset-background file:b"
+      },
+      "associated_label": {
+        "selector": "label[for=\"nameVi\"]",
+        "htmlFor": "nameVi",
+        "textContent": "Tên gói (VI)"
+      }
+    },
+    "playwright_getByLabel_Ten_goi_probe": {
+      "pattern": "/Tên gói/i (exact:false equivalent)",
+      "match_count": 1,
+      "matches": [
+        {
+          "id": "nameVi",
+          "ariaLabel": null,
+          "placeholder": "VD: Thang bậc QĐ 2A",
+          "tag": "input"
+        }
+      ],
+      "note": "Observation only — QC decides if a11y defect; QA does not PASS/FAIL this."
+    }
+  },
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "endedAt": "2026-08-12T12:50:34.801Z"
+}

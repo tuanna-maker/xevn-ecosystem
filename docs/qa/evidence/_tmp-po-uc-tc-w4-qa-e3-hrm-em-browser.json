@@ -1,0 +1,821 @@
+{
+  "work_item_id": "PO-UC-TC-W4-QA-E3-HRM-EM",
+  "startedAt": "2026-08-04T02:42:14.413Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "MEMBER_EMAIL": "du-lich.ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "stamp": {
+    "EMP_CODE": "QA-E3-W4E3E1YKGD",
+    "EMP_NAME": "QA W4E3 W4E3E1YKGD",
+    "STAMP": "W4E3E1YKGD"
+  },
+  "hdsd_inventory": [
+    "Login ceo@xe.vn holding",
+    "HRM → Nhân viên (/hr/employees) — list · Thêm nhân viên · Lưu · row→profile · Sửa",
+    "HRM Cài đặt master data — Đồng bộ XBOS (pull) — ≠ Áp dụng danh mục ≠ Sao chép",
+    "Master data bucket — Thêm mục extension (DM-HRM-03)",
+    "AU optional: member scope on list/detail"
+  ],
+  "must_keep": {
+    "applyPanelNotUsedAsSyncPass": true,
+    "clonePanelNotUsedAsSyncPass": true,
+    "leaveL2Untouched": true,
+    "zeroSeed": true
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "steps": {
+    "L0": {
+      "summary": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:42:14.441Z"
+    },
+    "TC-HRM-EM-02-LIST-HP-001": {
+      "summary": "root=4 rows=50 listStatus=200 total=54 errorBanner=false url=http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:42:23.996Z"
+    },
+    "TC-HRM-EM-02-DETAIL-HP-001": {
+      "summary": "J-HRM-02 row[QA-E3-W4E3E1V7HAUQA W4E3 W4E3E1V7HA UPDqa-e3-w4e3e1v7ha@xevn.localTập đoàn XeVN3/8/2026Đang làm việc] → http://127.0.0.1:5173/hr/employees/cb365ad2-5266-4987-a27e-49271df9241c status=200",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:42:27.665Z"
+    },
+    "TC-HRM-EM-02-DETAIL-HP-002": {
+      "summary": "J-HRM-01/02 profile id=cb365ad2-5266-4987-a27e-49271df9241c parity ok=true",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:42:27.667Z"
+    },
+    "TC-HRM-EM-01-OPEN-HP-001": {
+      "summary": "create dialog open",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:42:33.713Z"
+    },
+    "TC-HRM-EM-01-ACT-FD-001": {
+      "summary": "validationUi=true successPost=0",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:42:35.576Z"
+    },
+    "TC-HRM-EM-01-ACT-HP-001": {
+      "summary": "POST status=201 code=HRM-EMP-201 id=a6be9b40-23b8-41ab-9acd-aa4978e92da8 feHint=true posts=2",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:42:42.758Z"
+    },
+    "TC-HRM-EM-01-RELOAD-HP-001": {
+      "summary": "f5Visible=true stamp=W4E3E1YKGD",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:42:54.273Z"
+    },
+    "TC-HRM-EM-03-OPEN-HP-001": {
+      "summary": "url=http://127.0.0.1:5173/hr/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:43:04.808Z"
+    },
+    "TC-HRM-EM-03-ACT-FD-001": {
+      "summary": "fdVal=true",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:43:06.492Z"
+    },
+    "TC-HRM-EM-03-ACT-HP-001": {
+      "summary": "PATCH status=200 code=HRM-EMP-202",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:43:10.159Z"
+    },
+    "TC-HRM-EM-03-RELOAD-HP-001": {
+      "summary": "f5=true",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:43:13.606Z"
+    },
+    "TC-XBOS-DM-HRM-10-OPEN-HP-001": {
+      "summary": "hasSync=true noCompany=false url=http://127.0.0.1:5173/hr/settings-catalogs?portal=1&tenantId=xevn&companyId=main",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:43:18.092Z"
+    },
+    "TC-UC-HRM-06-OPEN-HP-001": {
+      "summary": "same surface UF-HRM-10 /settings-catalogs",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:43:18.093Z"
+    },
+    "TC-XBOS-DM-HRM-10-ACT-HP-001": {
+      "summary": "pull status=undefined code=undefined pulledKeys=[] applyHits=0 cloneHits=0 disabledWas=false postCount=1",
+      "verdict": "FAIL",
+      "at": "2026-08-04T02:43:37.585Z"
+    },
+    "TC-UC-HRM-06-ACT-HP-001": {
+      "summary": "consumer pull same stack · authFail=false",
+      "verdict": "FAIL",
+      "at": "2026-08-04T02:43:37.586Z"
+    },
+    "TC-XBOS-DM-HRM-10-RELOAD-HP-001": {
+      "summary": "GET after F5 count=14",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:43:41.018Z"
+    },
+    "TC-UC-HRM-06-RELOAD-HP-001": {
+      "summary": "F5 catalogs still load",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:43:41.019Z"
+    },
+    "TC-XBOS-DM-HRM-10-ACT-FD-001": {
+      "summary": "secondPull=0:undefined,500:undefined",
+      "verdict": "FAIL",
+      "at": "2026-08-04T02:43:46.081Z"
+    },
+    "TC-UC-HRM-06-ACT-FD-001": {
+      "summary": "same FD path",
+      "verdict": "FAIL",
+      "at": "2026-08-04T02:43:46.083Z"
+    },
+    "TC-XBOS-DM-HRM-03-OPEN-HP-001": {
+      "summary": "ext form=true url=http://127.0.0.1:5173/hr/settings-catalogs?portal=1&tenantId=xevn&companyId=main",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:43:46.093Z"
+    },
+    "TC-XBOS-DM-HRM-03-ACT-FD-001": {
+      "summary": "empty keeps add disabled=true",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:43:46.509Z"
+    },
+    "TC-XBOS-DM-HRM-03-ACT-HP-001": {
+      "summary": "POST undefined:undefined fe=false badApi=0 posts=0",
+      "verdict": "FAIL",
+      "at": "2026-08-04T02:44:10.134Z"
+    },
+    "TC-XBOS-DM-HRM-03-RELOAD-HP-001": {
+      "summary": "f5=false",
+      "verdict": "FAIL",
+      "at": "2026-08-04T02:44:13.633Z"
+    },
+    "TC-HRM-EM-02-LIST-AU-001": {
+      "summary": "member login fail Error: login failed du-lich.ceo@xe.vn HTTP 500 ",
+      "verdict": "BLOCKED",
+      "at": "2026-08-04T02:44:13.659Z"
+    }
+  },
+  "uc_verdicts": {
+    "HRM-EM-01": {
+      "verdict": "PASS",
+      "steps": {
+        "TC-HRM-EM-01-OPEN-HP-001": "PASS",
+        "TC-HRM-EM-01-ACT-HP-001": "PASS",
+        "TC-HRM-EM-01-ACT-FD-001": "PASS",
+        "TC-HRM-EM-01-RELOAD-HP-001": "PASS"
+      }
+    },
+    "HRM-EM-02": {
+      "verdict": "PARTIAL",
+      "steps": {
+        "TC-HRM-EM-02-LIST-HP-001": "PASS",
+        "TC-HRM-EM-02-DETAIL-HP-001": "PASS",
+        "TC-HRM-EM-02-DETAIL-HP-002": "PASS",
+        "TC-HRM-EM-02-LIST-AU-001": "BLOCKED"
+      }
+    },
+    "HRM-EM-03": {
+      "verdict": "PASS",
+      "steps": {
+        "TC-HRM-EM-03-OPEN-HP-001": "PASS",
+        "TC-HRM-EM-03-ACT-HP-001": "PASS",
+        "TC-HRM-EM-03-ACT-FD-001": "PASS",
+        "TC-HRM-EM-03-RELOAD-HP-001": "PASS"
+      }
+    },
+    "XBOS-DM-HRM-03": {
+      "verdict": "FAIL",
+      "steps": {
+        "TC-XBOS-DM-HRM-03-OPEN-HP-001": "PASS",
+        "TC-XBOS-DM-HRM-03-ACT-HP-001": "FAIL",
+        "TC-XBOS-DM-HRM-03-ACT-FD-001": "PASS",
+        "TC-XBOS-DM-HRM-03-RELOAD-HP-001": "FAIL"
+      }
+    },
+    "XBOS-DM-HRM-10": {
+      "verdict": "FAIL",
+      "steps": {
+        "TC-XBOS-DM-HRM-10-OPEN-HP-001": "PASS",
+        "TC-XBOS-DM-HRM-10-ACT-HP-001": "FAIL",
+        "TC-XBOS-DM-HRM-10-ACT-FD-001": "FAIL",
+        "TC-XBOS-DM-HRM-10-RELOAD-HP-001": "PASS"
+      }
+    },
+    "UC-HRM-06": {
+      "verdict": "FAIL",
+      "steps": {
+        "TC-UC-HRM-06-OPEN-HP-001": "PASS",
+        "TC-UC-HRM-06-ACT-HP-001": "FAIL",
+        "TC-UC-HRM-06-ACT-FD-001": "FAIL",
+        "TC-UC-HRM-06-RELOAD-HP-001": "PASS"
+      }
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-04T02:42:16.918Z",
+      "msg": "LOGIN_API",
+      "note": "http=201 company=main"
+    },
+    {
+      "at": "2026-08-04T02:42:19.026Z",
+      "msg": "UI_LOGIN",
+      "note": "url=http://127.0.0.1:5173/command-center"
+    },
+    {
+      "at": "2026-08-04T02:42:19.088Z",
+      "msg": "NAV_EMPLOYEES",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-04T02:42:24.055Z",
+      "msg": "CLICK_EMP_ROW"
+    },
+    {
+      "at": "2026-08-04T02:42:27.668Z",
+      "msg": "NAV_EMPLOYEES",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-04T02:42:32.119Z",
+      "msg": "CLICK_THEM_NHAN_VIEN"
+    },
+    {
+      "at": "2026-08-04T02:42:33.929Z",
+      "msg": "CLICK_LUU_FD"
+    },
+    {
+      "at": "2026-08-04T02:42:36.318Z",
+      "msg": "CLICK_THEM_NHAN_VIEN"
+    },
+    {
+      "at": "2026-08-04T02:42:38.150Z",
+      "msg": "CLICK_LUU_HP"
+    },
+    {
+      "at": "2026-08-04T02:42:42.759Z",
+      "msg": "NAV_EMPLOYEES",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-04T02:42:55.812Z",
+      "msg": "NAV_EMPLOYEES",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-04T02:43:01.794Z",
+      "msg": "EM03_OPEN_ROW"
+    },
+    {
+      "at": "2026-08-04T02:43:04.907Z",
+      "msg": "CLICK_SUA"
+    },
+    {
+      "at": "2026-08-04T02:43:06.488Z",
+      "msg": "EM03_FD_LUU_MISS"
+    },
+    {
+      "at": "2026-08-04T02:43:06.574Z",
+      "msg": "EM03_HP_LUU"
+    },
+    {
+      "at": "2026-08-04T02:43:13.607Z",
+      "msg": "NAV_HRM_SETTINGS",
+      "url": "http://127.0.0.1:5173/hr/settings-catalogs?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-04T02:43:18.113Z",
+      "msg": "SYNC_BTN_STATE",
+      "note": "disabled=false"
+    },
+    {
+      "at": "2026-08-04T02:43:18.255Z",
+      "msg": "CLICK_DONG_BO_XBOS"
+    },
+    {
+      "at": "2026-08-04T02:43:35.493Z",
+      "msg": "SYNC_WAIT_RESPONSE",
+      "note": "status=500 url=/api/hrm/settings-catalogs/sync-from-xbos"
+    },
+    {
+      "at": "2026-08-04T02:43:41.079Z",
+      "msg": "CLICK_SYNC_AGAIN_FD"
+    },
+    {
+      "at": "2026-08-04T02:43:48.530Z",
+      "msg": "DM03_ADD_STATE",
+      "note": "enabled=false"
+    },
+    {
+      "at": "2026-08-04T02:43:48.530Z",
+      "msg": "DM03_HP_ADD_DISABLED"
+    }
+  ],
+  "network": [
+    {
+      "method": "POST",
+      "status": 201,
+      "phase": "response",
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-04T02:42:18.987Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Đăng nhập thành công"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-04T02:42:20.247Z",
+      "code": "HRM-EMP-200",
+      "message": "Employees listed",
+      "total": 54
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-04T02:42:20.359Z",
+      "code": "HRM-EMP-SUMMARY-200",
+      "message": "Employee summary loaded",
+      "total": 56
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:20.671Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:21.079Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/cb365ad2-5266-4987-a27e-49271df9241c?company_id=main",
+      "at": "2026-08-04T02:42:27.045Z",
+      "code": "HRM-EMP-200",
+      "message": "Employee retrieved",
+      "id": "cb365ad2-5266-4987-a27e-49271df9241c",
+      "employee_code": "QA-E3-W4E3E1V7HA"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:27.644Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/cb365ad2-5266-4987-a27e-49271df9241c/work-timeline?company_id=main",
+      "at": "2026-08-04T02:42:27.650Z",
+      "code": "HRM-EMP-PROFILE-200",
+      "message": "Employee work timeline listed",
+      "total": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-04T02:42:28.309Z",
+      "code": "HRM-EMP-SUMMARY-200",
+      "message": "Employee summary loaded",
+      "total": 56
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-04T02:42:28.331Z",
+      "code": "HRM-EMP-200",
+      "message": "Employees listed",
+      "total": 54
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:29.116Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:29.555Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:32.557Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "POST",
+      "status": 0,
+      "phase": "request",
+      "url": "/api/hrm/employees",
+      "at": "2026-08-04T02:42:38.137Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "phase": "response",
+      "url": "/api/hrm/employees",
+      "at": "2026-08-04T02:42:39.605Z",
+      "code": "HRM-EMP-201",
+      "message": "Employee created",
+      "id": "a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+      "employee_code": "QA-E3-W4E3E1YKGD"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-04T02:42:39.829Z",
+      "code": "HRM-EMP-200",
+      "message": "Employees listed",
+      "total": 55
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-04T02:42:43.203Z",
+      "code": "HRM-EMP-SUMMARY-200",
+      "message": "Employee summary loaded",
+      "total": 57
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-04T02:42:43.207Z",
+      "code": "HRM-EMP-200",
+      "message": "Employees listed",
+      "total": 55
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:43.417Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:43.663Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-04T02:42:49.062Z",
+      "code": "HRM-EMP-SUMMARY-200",
+      "message": "Employee summary loaded",
+      "total": 57
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-04T02:42:49.082Z",
+      "code": "HRM-EMP-200",
+      "message": "Employees listed",
+      "total": 55
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:49.362Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:49.709Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50&keyword=QA-E3-W4E3E1YKGD",
+      "at": "2026-08-04T02:42:52.571Z",
+      "code": "HRM-EMP-200",
+      "message": "Employees listed",
+      "total": 1
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-04T02:42:56.424Z",
+      "code": "HRM-EMP-SUMMARY-200",
+      "message": "Employee summary loaded",
+      "total": 57
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-04T02:42:56.428Z",
+      "code": "HRM-EMP-200",
+      "message": "Employees listed",
+      "total": 55
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:56.726Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:42:57.239Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8?company_id=main",
+      "at": "2026-08-04T02:43:02.156Z",
+      "code": "HRM-EMP-200",
+      "message": "Employee retrieved",
+      "id": "a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+      "employee_code": "QA-E3-W4E3E1YKGD"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8/work-timeline?company_id=main",
+      "at": "2026-08-04T02:43:02.662Z",
+      "code": "HRM-EMP-PROFILE-200",
+      "message": "Employee work timeline listed",
+      "total": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:43:03.395Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "PATCH",
+      "status": 0,
+      "phase": "request",
+      "url": "/api/hrm/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+      "at": "2026-08-04T02:43:06.569Z"
+    },
+    {
+      "method": "PATCH",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+      "at": "2026-08-04T02:43:08.416Z",
+      "code": "HRM-EMP-202",
+      "message": "Employee updated",
+      "id": "a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+      "employee_code": "QA-E3-W4E3E1YKGD"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8?company_id=main",
+      "at": "2026-08-04T02:43:08.435Z",
+      "code": "HRM-EMP-200",
+      "message": "Employee retrieved",
+      "id": "a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+      "employee_code": "QA-E3-W4E3E1YKGD"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8?company_id=main",
+      "at": "2026-08-04T02:43:08.532Z",
+      "code": "HRM-EMP-200",
+      "message": "Employee retrieved",
+      "id": "a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+      "employee_code": "QA-E3-W4E3E1YKGD"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8?company_id=main",
+      "at": "2026-08-04T02:43:10.885Z",
+      "code": "HRM-EMP-200",
+      "message": "Employee retrieved",
+      "id": "a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+      "employee_code": "QA-E3-W4E3E1YKGD"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8/work-timeline?company_id=main",
+      "at": "2026-08-04T02:43:11.288Z",
+      "code": "HRM-EMP-PROFILE-200",
+      "message": "Employee work timeline listed",
+      "total": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:43:11.554Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:43:15.051Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview"
+    },
+    {
+      "method": "POST",
+      "status": 0,
+      "phase": "request",
+      "url": "/api/hrm/settings-catalogs/sync-from-xbos",
+      "at": "2026-08-04T02:43:18.178Z"
+    },
+    {
+      "method": "POST",
+      "status": 500,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs/sync-from-xbos",
+      "at": "2026-08-04T02:43:35.486Z"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:43:38.155Z"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:43:39.174Z"
+    },
+    {
+      "method": "POST",
+      "status": 0,
+      "phase": "request",
+      "url": "/api/hrm/settings-catalogs/sync-from-xbos",
+      "at": "2026-08-04T02:43:41.070Z"
+    },
+    {
+      "method": "POST",
+      "status": 500,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs/sync-from-xbos",
+      "at": "2026-08-04T02:43:41.080Z"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:43:41.187Z"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:43:45.197Z"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:44:10.793Z"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T02:44:11.800Z"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/00-login.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/01-em02-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/02-em02-detail.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/03-create-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/04-em01-fd.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/03-create-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/05-em01-hp.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/06-em01-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/07-em03-hp.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/08-em03-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/09-sync-open.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/10-sync-after.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/11-sync-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/12-dm03-open.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/13-dm03-hp.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e3-hrm-em/14-dm03-f5.png"
+  ],
+  "residuals": [],
+  "ids": {
+    "employeeId": "a6be9b40-23b8-41ab-9acd-aa4978e92da8"
+  },
+  "endedAt": "2026-08-04T02:44:13.663Z",
+  "overall": "PARTIAL_WITH_FAIL"
+}

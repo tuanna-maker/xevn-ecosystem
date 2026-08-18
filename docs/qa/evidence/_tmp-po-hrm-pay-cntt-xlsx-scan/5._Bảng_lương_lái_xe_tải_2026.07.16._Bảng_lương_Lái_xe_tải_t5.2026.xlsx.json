@@ -1,0 +1,1187 @@
+{
+  "sheets": [
+    {
+      "name": "Kangatang",
+      "preview_rows": []
+    },
+    {
+      "name": "DSNV",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "STT",
+            "Công ty",
+            "Mã NV",
+            "Họ và tên",
+            "Giới tính",
+            "Ngày sinh",
+            "Tháng sinh",
+            "SĐT",
+            "Mã bưu cục",
+            "Phòng ban",
+            "Bộ phận",
+            "Bộ phận 3",
+            "Diễn giải 3",
+            "Chú thích",
+            "Mã phòng ban chi tiết",
+            "Địa chỉ làm việc thực tế",
+            "Nơi làm việc thực tế 1",
+            "Nơi làm việc thực tế 2",
+            "Chức danh chi tiết",
+            "Chức danh tắt"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "x",
+            "Tháng",
+            "Năm",
+            "Ngày",
+            "Tháng",
+            "Năm",
+            "Loại hợp đồng",
+            "Số",
+            "Từ ngày",
+            "Đến ngày",
+            "Số",
+            "Từ ngày",
+            "Đến ngày",
+            "Thangs",
+            "Năm",
+            "Số",
+            "Từ ngày",
+            "Đến ngày",
+            "Số",
+            "Từ ngày"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "=IF(C3=\"\",\"\",SUBTOTAL(103,$C$3:C3))",
+            "Công ty TNHH X.E Việt Nam",
+            "TVU00014",
+            "Hoàng Thị Oanh",
+            "Nữ",
+            "1960-10-20 00:00:00",
+            "=IF(F3=\"\",\"\",MONTH(F3))",
+            "228B01",
+            "Phòng VTHK",
+            "Khối chi nhánh",
+            "Chi nhánh Nam Định",
+            "Nam Định",
+            "Nhân viên rửa xe",
+            "Rửa xe",
+            "Mr. Ánh",
+            "L10",
+            "Công nhân",
+            "Không đóng",
+            "Quá tuổi , không muốn đóng",
+            "=IF(AND(TODAY()>EW3,TODAY()<EX3),\"Nghỉ không lương dài ngày\",\n   IF(OR(ER3>TODAY(),ET3>TODAY(),EV3>TODAY()),\"Nghỉ sinh\",\n      IF(OR(AND(AG3<>\"\",AG3<=TODAY()),AND(AK3<>\"\",AK3<=TODAY())),\"Nghỉ việc\",\n         \"Đang làm việc\")))"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=IF(C4=\"\",\"\",SUBTOTAL(103,$C$3:C4))",
+            "Công ty TNHH X.E Việt Nam",
+            "TVU00015",
+            "Hoàng Ngọc Minh",
+            "Nam",
+            "1958-11-19 00:00:00",
+            "=IF(F4=\"\",\"\",MONTH(F4))",
+            "228B01",
+            "Phòng VTHK",
+            "Khối chi nhánh",
+            "Chi nhánh Nam Định",
+            "Nam Định",
+            "Nhân viên rửa xe",
+            "Rửa xe",
+            "Mr. Ánh",
+            "L10",
+            "Công nhân",
+            "Không đóng",
+            "Quá tuổi , không muốn đóng",
+            "=IF(AND(TODAY()>EW4,TODAY()<EX4),\"Nghỉ không lương dài ngày\",\nIF(OR(ER4>TODAY(),ET4>TODAY(),EV4>TODAY()),\"Nghỉ sinh\",\nIF(OR(AND(AG4<>\"\",AG4<=TODAY()),AND(AK4<>\"\",AK4<=TODAY())),\"Nghỉ việc\",\n\"Đang làm việc\")))"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=IF(C5=\"\",\"\",SUBTOTAL(103,$C$3:C5))",
+            "Công ty TNHH X.E Việt Nam",
+            "XE00001",
+            "Lê Ngọc Nam",
+            "Nam",
+            "1984-08-10 00:00:00",
+            "=IF(F5=\"\",\"\",MONTH(F5))",
+            "0913168168",
+            "024A00",
+            "Ban Giám đốc",
+            "Ban Giám đốc",
+            "Ban Giám đốc",
+            "Hà Nội",
+            "Phạm Hùng",
+            "Chủ tịch HĐTV",
+            "Chủ tịch",
+            "Mr. Nam",
+            "L01",
+            "Chủ tịch",
+            "0107002989"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=IF(C6=\"\",\"\",SUBTOTAL(103,$C$3:C6))",
+            "Công ty TNHH Du lịch X.E Việt Nam",
+            "XE00002",
+            "Lê Thị Hải",
+            "Nữ",
+            "1988-06-20 00:00:00",
+            "=IF(F6=\"\",\"\",MONTH(F6))",
+            "0904287766",
+            "024A00",
+            "Phòng HCNS",
+            "Phòng HCNS",
+            "Phòng HCNS",
+            "Hà Nội",
+            "Đại Từ",
+            "Hành chính",
+            "Nhân viên HCNS",
+            "Mrs. Ngọc",
+            "L10",
+            "Nhân viên",
+            "0115109356"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=IF(C7=\"\",\"\",SUBTOTAL(103,$C$3:C7))",
+            "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+            "XE00003",
+            "Phạm Khắc Chung",
+            "Nam",
+            "1990-02-21 00:00:00",
+            "=IF(F7=\"\",\"\",MONTH(F7))",
+            "0984069279",
+            "024A00",
+            "Xưởng dịch vụ",
+            "Xưởng dịch vụ",
+            "Xưởng dịch vụ",
+            "Hà Nội",
+            "Ngọc Hồi",
+            "Tổ trưởng",
+            "Trưởng bộ phận",
+            "Mr. Sơn",
+            "L10",
+            "Trưởng bộ phận",
+            "0115109358"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=IF(C8=\"\",\"\",SUBTOTAL(103,$C$3:C8))",
+            "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+            "XE00004",
+            "Nguyễn Đình Sơn",
+            "Nam",
+            "1983-11-20 00:00:00",
+            "=IF(F8=\"\",\"\",MONTH(F8))",
+            "0942208866",
+            "024A00",
+            "Ban Giám đốc",
+            "Ban Giám đốc",
+            "Ban Giám đốc",
+            "Hà Nội",
+            "Ngọc Hồi",
+            "Phó giám đốc",
+            "Phó Giám đốc",
+            "Giám đốc xưởng",
+            "Mr. Khánh",
+            "L03",
+            "Phó Giám đốc"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=IF(C9=\"\",\"\",SUBTOTAL(103,$C$3:C9))",
+            "Công ty TNHH X.E Việt Nam",
+            "XE00005",
+            "Trương Văn Quỳnh",
+            "Nam",
+            "1979-05-31 00:00:00",
+            "=IF(F9=\"\",\"\",MONTH(F9))",
+            "0915547289",
+            "229B01",
+            "Phòng VTHK",
+            "Khối chi nhánh",
+            "Chi nhánh Ninh Bình",
+            "Ninh Bình",
+            "Lái xe trung chuyển",
+            "Lái xe",
+            "Mr. Quyền",
+            "L10",
+            "Công nhân",
+            "3720024576",
+            "Đang đóng BHXH"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=IF(C10=\"\",\"\",SUBTOTAL(103,$C$3:C10))",
+            "Công ty TNHH Du lịch Visun",
+            "XE00006",
+            "Lê Thị Mai Hương",
+            "Nữ",
+            "1994-06-14 00:00:00",
+            "=IF(F10=\"\",\"\",MONTH(F10))",
+            "0904972499",
+            "024A00",
+            "Tổ Trợ lý - Thư ký",
+            "Tổ Trợ lý - Thư ký",
+            "Giám đốc",
+            "Hà Nội",
+            "Đại Từ",
+            "Trợ lý Giám đốc",
+            "Trợ lý",
+            "Giám đốc Công ty Visun, Quyền Trưởng phòng VTHK",
+            "Mr. Khánh",
+            "L10",
+            "Trợ lý"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=IF(C11=\"\",\"\",SUBTOTAL(103,$C$3:C11))",
+            "Công ty TNHH Du lịch X.E Việt Nam",
+            "XE00007",
+            "Mai Thị Thu Hoài",
+            "Nữ",
+            "1981-01-06 00:00:00",
+            "=IF(F11=\"\",\"\",MONTH(F11))",
+            "0966716858",
+            "024A00",
+            "Phòng VTHK",
+            "Tổng đài",
+            "19001731 ca sáng",
+            "19001731",
+            "Hà Nội",
+            "Đại Từ",
+            "Nhân viên tổng đài",
+            "Tổng đài",
+            "Nhi",
+            "L10",
+            "Công nhân"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=IF(C12=\"\",\"\",SUBTOTAL(103,$C$3:C12))",
+            "Công ty TNHH Du lịch Visun",
+            "XE00008",
+            "Lưu Thị Phương Anh",
+            "Nữ",
+            "1983-01-04 00:00:00",
+            "=IF(F12=\"\",\"\",MONTH(F12))",
+            "0932280699",
+            "024A00",
+            "Phòng TCKT",
+            "Phòng TCKT",
+            "Phòng TCKT",
+            "Hà Nội",
+            "Đại Từ",
+            "Phó phòng TCKT",
+            "Phó phòng",
+            "Kế toán trưởng Công ty du lịch visun",
+            "Mrs. Hiền",
+            "L05",
+            "Phó phòng"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Định mức lương cứng, QLPT,DT",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "Phụ lục 01 QĐ 206C có hiệu lực từ 01/04/2026"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "TT",
+            "Phân loại tải trọng xe",
+            "Lương cứng",
+            "Lương trách nhiệm QLPT",
+            "Mức 1 Doanh thu hỗ trợ (tải dự án)",
+            "Mức 2 Doanh thu mục tiêu (tải dự án)"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "1",
+            "Xe từ 01 tấn đến dưới 02 tấn",
+            "7500000",
+            "2200000",
+            "27000000",
+            "32000000",
+            "2.5",
+            "Xe từ 02 tấn đến dưới 3,5 tấn",
+            "Lưu ý hưởng doanh thu (< 5 T)"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "2",
+            "Xe từ 01 tấn đến dưới 02 tấn (lạnh)",
+            "7500000",
+            "2500000",
+            "30000000",
+            "36000000",
+            "3.5",
+            "Xe từ 3,5 tấn đến dưới 05 tấn",
+            "Lưu ý hưởng doanh thu (< 5 T)"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "3",
+            "Xe từ 02 tấn đến dưới 3,5 tấn",
+            "7800000",
+            "2500000",
+            "35000000",
+            "41000000",
+            "2.5 lạnh",
+            "Xe từ 02 tấn đến dưới 3,5 tấn (lạnh)",
+            "Lưu ý hưởng doanh thu (< 5 T)"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "4",
+            "Xe từ 02 tấn đến dưới 3,5 tấn (lạnh)",
+            "7800000",
+            "2800000",
+            "38000000",
+            "48000000",
+            "2.4 lạnh",
+            "Xe từ 02 tấn đến dưới 3,5 tấn (lạnh)",
+            "Lưu ý hưởng doanh thu (< 5 T)"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "5",
+            "Xe từ 3,5 tấn đến dưới 05 tấn",
+            "8000000",
+            "2800000",
+            "42000000",
+            "52000000",
+            "3.5 lạnh",
+            "Xe từ 3,5 tấn đến dưới 05 tấn (lạnh)",
+            "Lưu ý hưởng doanh thu (< 5 T)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "6",
+            "Xe từ 3,5 tấn đến dưới 05 tấn (lạnh)",
+            "8000000",
+            "3100000",
+            "46000000",
+            "60000000",
+            "6.5",
+            "Xe từ 05 tấn đến 6,5 tấn",
+            "Lưu ý hưởng doanh thu (từ 5T-> 20T)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "7",
+            "Xe từ 05 tấn đến 6,5 tấn",
+            "8500000",
+            "3000000",
+            "50000000",
+            "63000000",
+            "8",
+            "Xe từ 08 tấn đến 10 tấn",
+            "Lưu ý hưởng doanh thu (từ 5T-> 20T)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "8",
+            "Xe từ 05 tấn đến 6,5 tấn (lạnh)",
+            "8500000",
+            "3300000",
+            "55000000",
+            "72000000",
+            "15",
+            "Xe trên 10 tấn đến 15 tấn",
+            "Lưu ý hưởng doanh thu (từ 5T-> 20T)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "9",
+            "Xe trên 6,5 tấn đến dưới 08 tấn",
+            "9000000",
+            "3500000",
+            "55000000",
+            "76000000",
+            "Cont lạnh",
+            "Đầu kéo container (lạnh)"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "10",
+            "Xe trên 6,5 tấn đến dưới 08 tấn (lạnh)",
+            "9000000",
+            "3800000",
+            "60000000",
+            "85000000",
+            "TC",
+            "Xe tải trung chuyển logistic",
+            "Lái xe tải Trung chuyển Logistic không hưởng doanh thu"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPT",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "1) Bổ thêm cột số tiền giảm trừ cố định"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "2) Thêm cột Thu nhập chịu thuế"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5E495B0>",
+            "Họ tên nhân viên",
+            "Chức danh áp dụng PC",
+            "Số người phụ thuộc",
+            "Số tiền giảm trừ NPT",
+            "CÁC PHỤ CẤP",
+            "Thu nhập chịu thuế = tổng TN - Phụ cấp - lương OT- BH trích lương"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "Ăn trưa/tháng",
+            "Điện thoại",
+            "Làm thêm giờ",
+            "3) Thêm cột số thuế phải nộp"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "1",
+            "=VLOOKUP(B5,'[4]05-3BK-TNCN'!D:E,2,0)",
+            "=VLOOKUP(B5,[7]input!$C$3:$T$1201,18,0)",
+            "=VLOOKUP(B5,'[4]05-3BK-TNCN'!D:F,3,0)",
+            "=E5*6200000",
+            "1200000",
+            "2000000",
+            "C&B tự nhặt số tiền",
+            "Các nhân sự bổ sung thông tin NPT cần nộp giấy tờ photo: \n- Bố mẹ: CCCD 2 mặt\n- con: giấy khai sinh có mã định danh hoặc CCCD\nLưu ý phổ biến rõ trước khi nhận giấy tờ: 1 NPT chỉ khai giảm trừ với 1 người nộp thuế"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=A5+1",
+            "=VLOOKUP(B6,'[4]05-3BK-TNCN'!D:E,2,0)",
+            "=VLOOKUP(B6,[7]input!$C$3:$T$1201,18,0)",
+            "=VLOOKUP(B6,'[4]05-3BK-TNCN'!D:F,3,0)",
+            "=E6*6200000",
+            "1200000",
+            "300000"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=A6+1",
+            "=VLOOKUP(B7,'[4]05-3BK-TNCN'!D:E,2,0)",
+            "=VLOOKUP(B7,[7]input!$C$3:$T$1201,18,0)",
+            "=VLOOKUP(B7,'[4]05-3BK-TNCN'!D:F,3,0)",
+            "=E7*6200000",
+            "1200000",
+            "300000"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=A7+1",
+            "=VLOOKUP(B8,'[4]05-3BK-TNCN'!D:E,2,0)",
+            "=VLOOKUP(B8,[7]input!$C$3:$T$1201,18,0)",
+            "=VLOOKUP(B8,'[4]05-3BK-TNCN'!D:F,3,0)",
+            "=E8*6200000",
+            "1200000",
+            "300000"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=A8+1",
+            "=VLOOKUP(B9,'[4]05-3BK-TNCN'!D:E,2,0)",
+            "=VLOOKUP(B9,[7]input!$C$3:$T$1201,18,0)",
+            "=VLOOKUP(B9,'[4]05-3BK-TNCN'!D:F,3,0)",
+            "=E9*6200000",
+            "1200000",
+            "2000000"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=A9+1",
+            "=VLOOKUP(B10,'[4]05-3BK-TNCN'!D:E,2,0)",
+            "=VLOOKUP(B10,[7]input!$C$3:$T$1201,18,0)",
+            "=VLOOKUP(B10,'[4]05-3BK-TNCN'!D:F,3,0)",
+            "=E10*6200000",
+            "1200000",
+            "300000"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=A10+1",
+            "=VLOOKUP(B11,'[4]05-3BK-TNCN'!D:E,2,0)",
+            "=VLOOKUP(B11,[7]input!$C$3:$T$1201,18,0)",
+            "=VLOOKUP(B11,'[4]05-3BK-TNCN'!D:F,3,0)",
+            "=E11*6200000",
+            "1200000",
+            "300000"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=A11+1",
+            "=VLOOKUP(B12,'[4]05-3BK-TNCN'!D:E,2,0)",
+            "=VLOOKUP(B12,[7]input!$C$3:$T$1201,18,0)",
+            "=VLOOKUP(B12,'[4]05-3BK-TNCN'!D:F,3,0)",
+            "=E12*6200000",
+            "1200000",
+            "300000"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phiếu dữ liệu (cont)",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "=I7&\".\"&E5&\".\"&C5",
+            "18"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "25",
+            "CÔNG TY TNHH X.E VIỆT NAM"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "Địa chỉ: Số 21, Đại Từ, Định Công, Hà Nội"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "DỮ LIỆU LƯƠNG THÁNG 5 NĂM 2026"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Họ và tên:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D79841A0>",
+            "Mã nhân viên:",
+            "=_xlfn.XLOOKUP(I7,'Lương doanh thu container'!A:A,'Lương doanh thu container'!B:B)",
+            "Mã NV"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "Trọng tải xe được giao:",
+            "=_xlfn.XLOOKUP($G$7,'Bảng tổng'!$B$9:$B$133,'Bảng tổng'!$K$9:$K$133)",
+            "Ngày vào làm việc:",
+            "=_xlfn.XLOOKUP(E5,'BCC- '!B:B,'BCC- '!D:D)"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "Số ngày công tiêu chuẩn:",
+            "=_xlfn.XLOOKUP($G$7,'Bảng tổng'!$B$9:$B$133,'Bảng tổng'!$O$9:$O$133)",
+            "Công làm lễ",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D7963E30>",
+            "=_xlfn.XLOOKUP(I7,'Lương doanh thu container'!A:A,'Lương doanh thu container'!B:B)",
+            "25"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "Số ngày công thường chính thức:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D4664C50>",
+            "Công nghỉ lễ",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D4665280>"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "Số ngày công thường thử việc",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5D486B0>"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "I. Lương cứng + lương phép + lương ngày lễ:",
+            "=E11+E12+E15+E13+E14",
+            "=VLOOKUP($G$7,'Bảng tổng'!$B$9:$BA$133,25,0)+E13+E14+E15",
+            "=D10=F10"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "Mức lương cứng theo quy định:",
+            "=_xlfn.XLOOKUP($G$7,'Bảng tổng'!$B$9:$B$133,'Bảng tổng'!$M$9:$M$133)",
+            "Lương cứng ngày thường:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D454FCB0>"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "1.2 Mức lương cứng (loại xe 2) ( nếu có)",
+            "1.3  Lương cứng theo ngày công thực tế ( Loại xe 2)( nếu có)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bảng tổng",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "CÔNG TY TNHH X.E VIỆT NAM",
+            "1354396307"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "BẢNG LƯƠNG BỘ PHẬN LÁI TẢI - THÁNG 5/2026"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "STT",
+            "Mã NV",
+            "Họ và Tên",
+            "Trạng thái",
+            "Ngày vào làm việc",
+            "Ngày kết thúc thử việc",
+            "Ngày nghỉ việc",
+            "Phân loại HĐ",
+            "Mức đóng bhxh",
+            "Tiền lương đóng bhxh",
+            "Trọng tải được giao\n(tấn)",
+            "Trọng tải được giao\n(tấn)",
+            "Lương cứng",
+            "Tỷ lệ hưởng TV",
+            "Ngày công chuẩn",
+            "Ngày Công (Công chuẩn tháng 5: 27 công)",
+            "Lương Cơ Bản",
+            "Lương phép",
+            "Lương nghỉ lễ",
+            "Lương cứng theo ngày công thường"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "bc",
+            "TV",
+            "CT",
+            "TV 200%",
+            "CT 200%",
+            "Phép",
+            "Nghỉ lễ hưởng LCB TV",
+            "Nghỉ lễ hưởng LCB CT",
+            "Bảng trừ",
+            "Ký quỹ",
+            "Phí CĐ",
+            "BHXH",
+            "Thẻ NV",
+            "Chế tài sửa chữa",
+            "Vi phạm kỷ luật",
+            "PC cửa khẩu",
+            "Tạm ứng lương",
+            "Thuế TNCN",
+            "Tạm ứng chuyến",
+            "Tạm ứng khác"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "1",
+            "2",
+            "4",
+            "5",
+            "6",
+            "8",
+            "9",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "23"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "Tổng cộng",
+            "=_xlfn.AGGREGATE(9,3,J8:J133)",
+            "=_xlfn.AGGREGATE(9,3,M8:M133)",
+            "=_xlfn.AGGREGATE(9,3,N8:N133)",
+            "=_xlfn.AGGREGATE(9,3,O8:O133)",
+            "=_xlfn.AGGREGATE(9,3,P8:P133)",
+            "=_xlfn.AGGREGATE(9,3,Q8:Q133)",
+            "=_xlfn.AGGREGATE(9,3,R8:R133)",
+            "=_xlfn.AGGREGATE(9,3,S8:S133)",
+            "=_xlfn.AGGREGATE(9,3,T8:T133)",
+            "=_xlfn.AGGREGATE(9,3,U8:U133)",
+            "=_xlfn.AGGREGATE(9,3,V8:V133)",
+            "=_xlfn.AGGREGATE(9,3,W8:W133)",
+            "=_xlfn.AGGREGATE(9,3,X8:X133)",
+            "=_xlfn.AGGREGATE(9,3,Y8:Y133)",
+            "=_xlfn.AGGREGATE(9,3,Z8:Z133)",
+            "=_xlfn.AGGREGATE(9,3,AA8:AA133)",
+            "=_xlfn.AGGREGATE(9,3,AB8:AB133)",
+            "=_xlfn.AGGREGATE(9,3,AC8:AC133)",
+            "=_xlfn.AGGREGATE(9,3,AD8:AD133)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "Lái xe tải dự án",
+            "=_xlfn.AGGREGATE(9,3,J9:J127)",
+            "=_xlfn.AGGREGATE(9,3,K9:K127)",
+            "=_xlfn.AGGREGATE(9,3,L9:L127)",
+            "=_xlfn.AGGREGATE(9,3,M9:M127)",
+            "=_xlfn.AGGREGATE(9,3,N9:N127)",
+            "=_xlfn.AGGREGATE(9,3,O9:O127)",
+            "=_xlfn.AGGREGATE(9,3,P9:P127)",
+            "=_xlfn.AGGREGATE(9,3,Q9:Q127)",
+            "=_xlfn.AGGREGATE(9,3,R9:R127)",
+            "=_xlfn.AGGREGATE(9,3,S9:S127)",
+            "=_xlfn.AGGREGATE(9,3,T9:T127)",
+            "=_xlfn.AGGREGATE(9,3,U9:U127)",
+            "=_xlfn.AGGREGATE(9,3,V9:V127)",
+            "=_xlfn.AGGREGATE(9,3,W9:W127)",
+            "=_xlfn.AGGREGATE(9,3,X9:X127)",
+            "=_xlfn.AGGREGATE(9,3,Y9:Y127)",
+            "=_xlfn.AGGREGATE(9,3,Z9:Z127)",
+            "=_xlfn.AGGREGATE(9,3,AA9:AA127)",
+            "=_xlfn.AGGREGATE(9,3,AB9:AB127)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=+IF(B9=\"\",\"\",SUBTOTAL(103,B9:$B$9))",
+            "XE00499",
+            "=_xlfn.XLOOKUP(B9,'BCC- '!B:B,'BCC- '!C:C)",
+            "=_xlfn.XLOOKUP(B9,DSNV!C:C,DSNV!AC:AC)",
+            "=_xlfn.XLOOKUP(B9,DSNV!C:C,DSNV!AD:AD)",
+            "=_xlfn.XLOOKUP(B9,DSNV!C:C,DSNV!AV:AV)",
+            "=IF(F9<'BCC- '!$V$4,\"CT\",IF(F9>='BCC- '!$X$4,\"TV\",\"TV-CT\"))",
+            "5310000",
+            "=IFERROR(_xlfn.XLOOKUP(B9,BHXH!B:B,BHXH!H:H),0)",
+            "=_xlfn.XLOOKUP(B9,'Trọng tải'!B:B,'Trọng tải'!D:D)",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D78B4050>",
+            "=IF(AND(K9>=1,K9<2),7500000,\nIF(OR(K9=\"1.9 TC EXPRESS\",K9=\"2.5 lạnh\",AND(K9>=2,K9<3.5),K9=\"TC\"),7800000,\nIF(OR(K9=\"3.5 TC EXPRESS\",K9=\"3.5 lạnh\",AND(K9>=3.5,K9<5)),8000000,\nIF(AND(K9>=5,K9<=6.5),8500000,\nIF(AND(K9>6.5,K9<8),9000000,\nIF(AND(K9>=8,K9<=10),9500000,\nIF(AND(K9>10,K9<=15),10000000,\nIF(AND(K9>15,K9<=20),10500000,\nIF(K9=\"DP\",16000000,12500000)))))))))",
+            "0.85",
+            "='BCC- '!$BE$2",
+            "=SUMIF('BCC- '!B:B,B9,'BCC- '!AP:AP)",
+            "=SUMIF('BCC- '!B:B,B9,'BCC- '!AQ:AQ)",
+            "=IFERROR(_xlfn.XLOOKUP(B9,'BCC- '!B:B,'BCC- '!AT:AT),)",
+            "=IFERROR(_xlfn.XLOOKUP(B9,'BCC- '!B:B,'BCC- '!AU:AU),)",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D78B40E0>",
+            "=_xlfn.XLOOKUP(B9,'BCC- '!B:B,'BCC- '!AX:AX)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=+IF(B10=\"\",\"\",SUBTOTAL(103,B$9:$B10))",
+            "XE01281",
+            "=_xlfn.XLOOKUP(B10,'BCC- '!B:B,'BCC- '!C:C)",
+            "=_xlfn.XLOOKUP(B10,DSNV!C:C,DSNV!AC:AC)",
+            "=_xlfn.XLOOKUP(B10,DSNV!C:C,DSNV!AD:AD)",
+            "=_xlfn.XLOOKUP(B10,DSNV!C:C,DSNV!AV:AV)",
+            "=IF(F10<'BCC- '!$V$4,\"CT\",IF(F10>='BCC- '!$X$4,\"TV\",\"TV-CT\"))",
+            "5310000",
+            "=IFERROR(_xlfn.XLOOKUP(B10,BHXH!B:B,BHXH!H:H),0)",
+            "=_xlfn.XLOOKUP(B10,'Trọng tải'!B:B,'Trọng tải'!D:D)",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D78B6C00>",
+            "=IF(AND(K10>=1,K10<2),7500000,\nIF(OR(K10=\"1.9 TC EXPRESS\",K10=\"2.5 lạnh\",AND(K10>=2,K10<3.5),K10=\"TC\"),7800000,\nIF(OR(K10=\"3.5 TC EXPRESS\",K10=\"3.5 lạnh\",AND(K10>=3.5,K10<5)),8000000,\nIF(AND(K10>=5,K10<=6.5),8500000,\nIF(AND(K10>6.5,K10<8),9000000,\nIF(AND(K10>=8,K10<=10),9500000,\nIF(AND(K10>10,K10<=15),10000000,\nIF(AND(K10>15,K10<=20),10500000,\nIF(K10=\"DP\",16000000,12500000)))))))))",
+            "0.85",
+            "='BCC- '!$BE$2",
+            "=SUMIF('BCC- '!B:B,B10,'BCC- '!AP:AP)",
+            "=SUMIF('BCC- '!B:B,B10,'BCC- '!AQ:AQ)",
+            "=IFERROR(_xlfn.XLOOKUP(B10,'BCC- '!B:B,'BCC- '!AT:AT),)",
+            "=IFERROR(_xlfn.XLOOKUP(B10,'BCC- '!B:B,'BCC- '!AU:AU),)",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D78B62D0>",
+            "=_xlfn.XLOOKUP(B10,'BCC- '!B:B,'BCC- '!AX:AX)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=+IF(B11=\"\",\"\",SUBTOTAL(103,B$9:$B11))",
+            "XE01453",
+            "=_xlfn.XLOOKUP(B11,'BCC- '!B:B,'BCC- '!C:C)",
+            "=_xlfn.XLOOKUP(B11,DSNV!C:C,DSNV!AC:AC)",
+            "=_xlfn.XLOOKUP(B11,DSNV!C:C,DSNV!AD:AD)",
+            "=_xlfn.XLOOKUP(B11,DSNV!C:C,DSNV!AV:AV)",
+            "=IF(F11<'BCC- '!$V$4,\"CT\",IF(F11>='BCC- '!$X$4,\"TV\",\"TV-CT\"))",
+            "5310000",
+            "=IFERROR(_xlfn.XLOOKUP(B11,BHXH!B:B,BHXH!H:H),0)",
+            "=_xlfn.XLOOKUP(B11,'Trọng tải'!B:B,'Trọng tải'!D:D)",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5DC5460>",
+            "=IF(AND(K11>=1,K11<2),7500000,\nIF(OR(K11=\"1.9 TC EXPRESS\",K11=\"2.5 lạnh\",AND(K11>=2,K11<3.5),K11=\"TC\"),7800000,\nIF(OR(K11=\"3.5 TC EXPRESS\",K11=\"3.5 lạnh\",AND(K11>=3.5,K11<5)),8000000,\nIF(AND(K11>=5,K11<=6.5),8500000,\nIF(AND(K11>6.5,K11<8),9000000,\nIF(AND(K11>=8,K11<=10),9500000,\nIF(AND(K11>10,K11<=15),10000000,\nIF(AND(K11>15,K11<=20),10500000,\nIF(K11=\"DP\",16000000,12500000)))))))))",
+            "0.85",
+            "='BCC- '!$BE$2",
+            "=SUMIF('BCC- '!B:B,B11,'BCC- '!AP:AP)",
+            "=SUMIF('BCC- '!B:B,B11,'BCC- '!AQ:AQ)",
+            "=IFERROR(_xlfn.XLOOKUP(B11,'BCC- '!B:B,'BCC- '!AT:AT),)",
+            "=IFERROR(_xlfn.XLOOKUP(B11,'BCC- '!B:B,'BCC- '!AU:AU),)",
+            "1",
+            "=_xlfn.XLOOKUP(B11,'BCC- '!B:B,'BCC- '!AX:AX)"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=+IF(B12=\"\",\"\",SUBTOTAL(103,B$9:$B12))",
+            "XE01102",
+            "=_xlfn.XLOOKUP(B12,'BCC- '!B:B,'BCC- '!C:C)",
+            "=_xlfn.XLOOKUP(B12,DSNV!C:C,DSNV!AC:AC)",
+            "=_xlfn.XLOOKUP(B12,DSNV!C:C,DSNV!AD:AD)",
+            "=_xlfn.XLOOKUP(B12,DSNV!C:C,DSNV!AV:AV)",
+            "=IF(F12<'BCC- '!$V$4,\"CT\",IF(F12>='BCC- '!$X$4,\"TV\",\"TV-CT\"))",
+            "5310000",
+            "=IFERROR(_xlfn.XLOOKUP(B12,BHXH!B:B,BHXH!H:H),0)",
+            "=_xlfn.XLOOKUP(B12,'Trọng tải'!B:B,'Trọng tải'!D:D)",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5EBD760>",
+            "=IF(AND(K12>=1,K12<2),7500000,\nIF(OR(K12=\"1.9 TC EXPRESS\",K12=\"2.5 lạnh\",AND(K12>=2,K12<3.5),K12=\"TC\"),7800000,\nIF(OR(K12=\"3.5 TC EXPRESS\",K12=\"3.5 lạnh\",AND(K12>=3.5,K12<5)),8000000,\nIF(AND(K12>=5,K12<=6.5),8500000,\nIF(AND(K12>6.5,K12<8),9000000,\nIF(AND(K12>=8,K12<=10),9500000,\nIF(AND(K12>10,K12<=15),10000000,\nIF(AND(K12>15,K12<=20),10500000,\nIF(K12=\"DP\",16000000,12500000)))))))))",
+            "0.85",
+            "='BCC- '!$BE$2",
+            "=SUMIF('BCC- '!B:B,B12,'BCC- '!AP:AP)",
+            "=SUMIF('BCC- '!B:B,B12,'BCC- '!AQ:AQ)",
+            "=IFERROR(_xlfn.XLOOKUP(B12,'BCC- '!B:B,'BCC- '!AT:AT),)",
+            "=IFERROR(_xlfn.XLOOKUP(B12,'BCC- '!B:B,'BCC- '!AU:AU),)",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5EBEF30>",
+            "=_xlfn.XLOOKUP(B12,'BCC- '!B:B,'BCC- '!AX:AX)"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "=+IF(B13=\"\",\"\",SUBTOTAL(103,B$9:$B13))",
+            "XE00873",
+            "=_xlfn.XLOOKUP(B13,'BCC- '!B:B,'BCC- '!C:C)",
+            "=_xlfn.XLOOKUP(B13,DSNV!C:C,DSNV!AC:AC)",
+            "=_xlfn.XLOOKUP(B13,DSNV!C:C,DSNV!AD:AD)",
+            "=_xlfn.XLOOKUP(B13,DSNV!C:C,DSNV!AV:AV)",
+            "=IF(F13<'BCC- '!$V$4,\"CT\",IF(F13>='BCC- '!$X$4,\"TV\",\"TV-CT\"))",
+            "5310000",
+            "=IFERROR(_xlfn.XLOOKUP(B13,BHXH!B:B,BHXH!H:H),0)",
+            "=_xlfn.XLOOKUP(B13,'Trọng tải'!B:B,'Trọng tải'!D:D)",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B47710>",
+            "=IF(AND(K13>=1,K13<2),7500000,\nIF(OR(K13=\"1.9 TC EXPRESS\",K13=\"2.5 lạnh\",AND(K13>=2,K13<3.5),K13=\"TC\"),7800000,\nIF(OR(K13=\"3.5 TC EXPRESS\",K13=\"3.5 lạnh\",AND(K13>=3.5,K13<5)),8000000,\nIF(AND(K13>=5,K13<=6.5),8500000,\nIF(AND(K13>6.5,K13<8),9000000,\nIF(AND(K13>=8,K13<=10),9500000,\nIF(AND(K13>10,K13<=15),10000000,\nIF(AND(K13>15,K13<=20),10500000,\nIF(K13=\"DP\",16000000,12500000)))))))))",
+            "0.85",
+            "='BCC- '!$BE$2",
+            "=SUMIF('BCC- '!B:B,B13,'BCC- '!AP:AP)",
+            "=SUMIF('BCC- '!B:B,B13,'BCC- '!AQ:AQ)",
+            "=IFERROR(_xlfn.XLOOKUP(B13,'BCC- '!B:B,'BCC- '!AT:AT),)",
+            "=IFERROR(_xlfn.XLOOKUP(B13,'BCC- '!B:B,'BCC- '!AU:AU),)",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B47920>",
+            "=_xlfn.XLOOKUP(B13,'BCC- '!B:B,'BCC- '!AX:AX)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Trọng tải",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "CÔNG TY TNHH X.E VIỆT NAM"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "TRỌNG TẢI BỘ PHẬN LÁI TẢI - THÁNG 4/2026"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "STT",
+            "Mã NV",
+            "Họ và Tên",
+            "Trọng tải được giao\n(tấn)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "Lái xe tải dự án"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=+IF(B9=\"\",\"\",SUBTOTAL(103,B9:$B$9))",
+            "XE00499",
+            "=_xlfn.XLOOKUP(B9,DSNV!C:C,DSNV!D:D)",
+            "15"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=+IF(B10=\"\",\"\",SUBTOTAL(103,B$9:$B10))",
+            "XE01281",
+            "=_xlfn.XLOOKUP(B10,DSNV!C:C,DSNV!D:D)",
+            "15"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=+IF(B11=\"\",\"\",SUBTOTAL(103,B$9:$B11))",
+            "XE01453",
+            "=_xlfn.XLOOKUP(B11,DSNV!C:C,DSNV!D:D)",
+            "15"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=+IF(B12=\"\",\"\",SUBTOTAL(103,B$9:$B12))",
+            "XE01102",
+            "=_xlfn.XLOOKUP(B12,DSNV!C:C,DSNV!D:D)",
+            "15"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "=+IF(B13=\"\",\"\",SUBTOTAL(103,B$9:$B13))",
+            "XE00873",
+            "=_xlfn.XLOOKUP(B13,DSNV!C:C,DSNV!D:D)",
+            "15"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "=+IF(B14=\"\",\"\",SUBTOTAL(103,B$9:$B14))",
+            "XE01335",
+            "=_xlfn.XLOOKUP(B14,DSNV!C:C,DSNV!D:D)",
+            "8"
+          ]
+        },
+        {
+          "row": 15,
+          "cells": [
+            "=+IF(B15=\"\",\"\",SUBTOTAL(103,B$9:$B15))",
+            "XE00701",
+            "=_xlfn.XLOOKUP(B15,DSNV!C:C,DSNV!D:D)",
+            "15"
+          ]
+        },
+        {
+          "row": 16,
+          "cells": [
+            "=+IF(B16=\"\",\"\",SUBTOTAL(103,B$9:$B16))",
+            "XE00934",
+            "=_xlfn.XLOOKUP(B16,DSNV!C:C,DSNV!D:D)",
+            "15"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phiếu lương (cont)",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "=I7&\".\"&E5&\".\"&C5",
+            "18"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "CÔNG TY TNHH X.E VIỆT NAM"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "Địa chỉ: Số 21, Đại Từ, Định Công, Hà Nội"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "PHIẾU LƯƠNG CHI TIẾT THÁNG 5 NĂM 2026"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Họ và tên:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D78B76E0>",
+            "Mã nhân viên:",
+            "=_xlfn.XLOOKUP(I7,'Lương doanh thu container'!A:A,'Lương doanh thu container'!B:B)",
+            "Mã NV"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "Trọng tải xe được giao:",
+            "=_xlfn.XLOOKUP($G$7,'Bảng tổng'!$B$9:$B$133,'Bảng tổng'!$K$9:$K$133)",
+            "Ngày vào làm việc:",
+            "=_xlfn.XLOOKUP(E5,'BCC- '!B:B,'BCC- '!D:D)"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "Số ngày công tiêu chuẩn:",
+            "=_xlfn.XLOOKUP($G$7,'Bảng tổng'!$B$9:$B$133,'Bảng tổng'!$O$9:$O$133)",
+            "Công làm lễ",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D41B17F0>",
+            "=_xlfn.XLOOKUP(I7,'Lương doanh thu container'!A:A,'Lương doanh thu container'!B:B)",
+            "25"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "Số ngày công thường chính thức:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5D7F9B0>",
+            "Số ngày công thường thử việc",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5D7E420>"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "Ngày công lễ (Thử Việc):",
+            "=_xlfn.XLOOKUP($G$7,'Bảng tổng'!$B$9:$B$133,'Bảng tổng'!$R$9:$R$133)",
+            "Số ngày nghỉ Tết:",
+            "=_xlfn.XLOOKUP(E5,'Bảng tổng'!B:B,'Bảng tổng'!U:U)+_xlfn.XLOOKUP(E5,'Bảng tổng'!B:B,'Bảng tổng'!V:V)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "Ngày công lễ (Chính Thức):",
+            "=_xlfn.XLOOKUP($G$7,'Bảng tổng'!$B$9:$B$133,'Bảng tổng'!$S$9:$S$133)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "I. Lương cứng + lương phép + lương ngày lễ:",
+            "=E12+E13+E16+E14+E15+C14",
+            "=VLOOKUP($G$7,'Bảng tổng'!$B$9:$BA$133,25,0)+E14+E15+E16",
+            "=D11=F11"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "Mức lương cứng theo quy định:",
+            "=_xlfn.XLOOKUP($G$7,'Bảng tổng'!$B$9:$B$133,'Bảng tổng'!$M$9:$M$133)",
+            "Lương cứng ngày thường:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5E4B6B0>"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1263 @@
+{
+  "sheets": [
+    {
+      "name": "Kangatang",
+      "preview_rows": []
+    },
+    {
+      "name": "Bảng lương",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "Công ty TNHH Du lịch Visun",
+            "315108358",
+            "=BH7-BP1-BP2"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "BẢNG LƯƠNG VĂN PHÒNG HÀ NỘI- THÁNG 5.2026",
+            "1510450"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "STT",
+            "Mã NV",
+            "Họ và Tên",
+            "Vị Trí LV",
+            "Ngày vào \nlàm việc",
+            "Ngày kết \nthúc TV",
+            "Ngày nghỉ việc",
+            "Phân \nloại HĐ",
+            "Thu nhập",
+            "Tỷ lệ hưởng thử việc",
+            "Mức lương \nthử việc",
+            "Ngày công chuẩn",
+            "Giờ công chuẩn",
+            "Ngày công TV",
+            "Ngày công CT",
+            "Số giờ TV 100%",
+            "Số giờ CT 100%",
+            "Số giờ công online",
+            "Giờ OT 150%",
+            "Giờ OT 200%"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "Tổng lương tháng",
+            "Mức đóng BHXH (P1)",
+            "Thu nhập bổ sung (P2)",
+            "Lương cơ bản\n(P1+P2)",
+            "Lương KPI\n(P3)",
+            "Thưởng Hiệu quả theo năng lực\n(P4)",
+            "Đang đóng BHXH",
+            "Ngày thường",
+            "Thứ 7",
+            "Nghỉ phép LCB",
+            "Ngày lễ LCB",
+            "OT 150%",
+            "OT 200%",
+            "ngày thường",
+            "thứ 7",
+            "BHXH",
+            "Công đoàn",
+            "Vi phạm kỷ luật",
+            "Bảng trừ kế toán",
+            "Ứng lương lần 1"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "TV",
+            "CT",
+            "TV",
+            "CT",
+            "TV",
+            "CT",
+            "TV",
+            "CT",
+            "TV",
+            "CT"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "1",
+            "2",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "TỔNG CỘNG",
+            "=_xlfn.AGGREGATE(9,3,I8:I115)",
+            "746870000",
+            "342730000",
+            "1197230000",
+            "127074800",
+            "98305200",
+            "=_xlfn.AGGREGATE(9,3,P8:P115)",
+            "=_xlfn.AGGREGATE(9,3,R8:R115)",
+            "=_xlfn.AGGREGATE(9,3,S8:S115)",
+            "=_xlfn.AGGREGATE(9,3,T8:T115)",
+            "=_xlfn.AGGREGATE(9,3,U8:U115)",
+            "=_xlfn.AGGREGATE(9,3,W8:W115)",
+            "=_xlfn.AGGREGATE(9,3,X8:X115)",
+            "=_xlfn.AGGREGATE(9,3,Y8:Y115)",
+            "=_xlfn.AGGREGATE(9,3,Z8:Z115)",
+            "=_xlfn.AGGREGATE(9,3,AA8:AA115)",
+            "=_xlfn.AGGREGATE(9,3,AB8:AB115)",
+            "=_xlfn.AGGREGATE(9,3,AC8:AC115)",
+            "=_xlfn.AGGREGATE(9,3,AD8:AD115)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "PHÒNG X",
+            "=_xlfn.AGGREGATE(9,3,I9:I9)",
+            "27700000",
+            "52850000",
+            "80550000",
+            "45500000",
+            "4150000",
+            "=_xlfn.AGGREGATE(9,3,P9:P9)",
+            "=_xlfn.AGGREGATE(9,3,Q9:Q9)",
+            "=_xlfn.AGGREGATE(9,3,R9:R9)",
+            "=_xlfn.AGGREGATE(9,3,S9:S9)",
+            "=_xlfn.AGGREGATE(9,3,T9:T9)",
+            "=_xlfn.AGGREGATE(9,3,U9:U9)",
+            "=_xlfn.AGGREGATE(9,3,W9:W9)",
+            "=_xlfn.AGGREGATE(9,3,X9:X9)",
+            "=_xlfn.AGGREGATE(9,3,Y9:Y9)",
+            "=_xlfn.AGGREGATE(9,3,Z9:Z9)",
+            "=_xlfn.AGGREGATE(9,3,AA9:AA9)",
+            "=_xlfn.AGGREGATE(9,3,AB9:AB9)",
+            "=_xlfn.AGGREGATE(9,3,AC9:AC9)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=+IF(B9=\"\",\"\",SUBTOTAL(103,$B$9:B9))",
+            "XE00001",
+            "X",
+            "X1",
+            "=_xlfn.XLOOKUP(B9,'Bảng công'!B:B,'Bảng công'!E:E)",
+            "=_xlfn.XLOOKUP(B9,'Bảng công'!B:B,'Bảng công'!F:F)",
+            "=_xlfn.XLOOKUP(B9,'Bảng công'!B:B,'Bảng công'!H:H)",
+            "70000000",
+            "15000000",
+            "30050000",
+            "=K9+J9",
+            "24500000",
+            "450000",
+            "=IFERROR(_xlfn.XLOOKUP(B9,BHXH!B:B,BHXH!J:J),\"\")",
+            "1",
+            "=+I9*P9",
+            "=_xlfn.XLOOKUP(B9,'Bảng công'!B:B,'Bảng công'!AS:AS)",
+            "8",
+            "=_xlfn.XLOOKUP(B9,'Bảng công'!B:B,'Bảng công'!AN:AN)",
+            "=_xlfn.XLOOKUP(B9,'Bảng công'!B:B,'Bảng công'!AO:AO)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=+IF(B10=\"\",\"\",SUBTOTAL(103,$B$9:B10))",
+            "Tổ trợ lý - Thư Ký",
+            "=_xlfn.AGGREGATE(9,Q158,I11:I12)",
+            "49800000",
+            "20950000",
+            "97960000",
+            "5000000",
+            "3350000",
+            "=_xlfn.AGGREGATE(9,3,P11:P12)",
+            "=_xlfn.AGGREGATE(9,3,Q11:Q12)",
+            "=_xlfn.AGGREGATE(9,3,R11:R12)",
+            "=_xlfn.AGGREGATE(9,3,S11:S12)",
+            "=_xlfn.AGGREGATE(9,3,T11:T12)",
+            "=_xlfn.AGGREGATE(9,3,U11:U12)",
+            "=_xlfn.AGGREGATE(9,3,W11:W12)",
+            "=_xlfn.AGGREGATE(9,3,X11:X12)",
+            "=_xlfn.AGGREGATE(9,3,Y11:Y12)",
+            "=_xlfn.AGGREGATE(9,3,Z11:Z12)",
+            "=_xlfn.AGGREGATE(9,3,AA11:AA12)",
+            "=_xlfn.AGGREGATE(9,3,AB11:AB12)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=+IF(B11=\"\",\"\",SUBTOTAL(103,$B$9:B11))",
+            "XE00128",
+            "X1",
+            "=_xlfn.XLOOKUP(B11,'Bảng công'!B:B,'Bảng công'!E:E)",
+            "=_xlfn.XLOOKUP(B11,'Bảng công'!B:B,'Bảng công'!F:F)",
+            "=_xlfn.XLOOKUP(B11,'Bảng công'!B:B,'Bảng công'!H:H)",
+            "25000000",
+            "9600000",
+            "8980000",
+            "=K11+J11",
+            "0",
+            "0",
+            "=IFERROR(_xlfn.XLOOKUP(B11,BHXH!B:B,BHXH!J:J),\"\")",
+            "1",
+            "=+I11*P11",
+            "=_xlfn.XLOOKUP(B11,'Bảng công'!B:B,'Bảng công'!AS:AS)",
+            "8",
+            "=_xlfn.XLOOKUP(B11,'Bảng công'!B:B,'Bảng công'!AN:AN)",
+            "=_xlfn.XLOOKUP(B11,'Bảng công'!B:B,'Bảng công'!AO:AO)",
+            "=U11+T11"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=+IF(B12=\"\",\"\",SUBTOTAL(103,$B$9:B12))",
+            "XE00333",
+            "X1",
+            "=_xlfn.XLOOKUP(B12,'Bảng công'!B:B,'Bảng công'!E:E)",
+            "=_xlfn.XLOOKUP(B12,'Bảng công'!B:B,'Bảng công'!F:F)",
+            "=_xlfn.XLOOKUP(B12,'Bảng công'!B:B,'Bảng công'!H:H)",
+            "20000000",
+            "6400000",
+            "5250000",
+            "=K12+J12",
+            "5000000",
+            "3350000",
+            "=IFERROR(_xlfn.XLOOKUP(B12,BHXH!B:B,BHXH!J:J),\"\")",
+            "1",
+            "=+I12*P12",
+            "=_xlfn.XLOOKUP(B12,'Bảng công'!B:B,'Bảng công'!AS:AS)",
+            "8",
+            "=_xlfn.XLOOKUP(B12,'Bảng công'!B:B,'Bảng công'!AN:AN)",
+            "=_xlfn.XLOOKUP(B12,'Bảng công'!B:B,'Bảng công'!AO:AO)",
+            "=U12+T12"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "thưởng tết",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "CÔNG TY TNHH X.E VIỆT NAM"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "BẢNG TÍNH THƯỞNG TẾT NGUYÊN ĐÁN NĂM 2026"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "2025-01-01 00:00:00",
+            "2025-12-31 00:00:00",
+            "Nghỉ thai sản/ không lương",
+            "Lương cơ bản"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "STT",
+            "Tên công ty",
+            "Mã NV",
+            "Họ và tên",
+            "Vị Trí",
+            "Bộ phận",
+            "Nhóm nhân sự",
+            "Column1",
+            "Nơi làm việc thực tế",
+            "Ngày vào \nlàm việc",
+            "Kết thúc thử việc",
+            "Tình trạng HĐ",
+            "Ngày nghỉ việc",
+            "Thâm niên (năm)",
+            "Số ngày làm việc năm 2025",
+            "Nghỉ thai sản/ không lương từ ngày",
+            "Nghỉ thai sản/ không lương đến ngày",
+            "Tháng 1/2025",
+            "Tháng 2/2025",
+            "Tháng 3/2025"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=_xlfn.AGGREGATE(9,3,AD10:AD696)",
+            "=_xlfn.AGGREGATE(9,3,AE10:AE696)",
+            "=_xlfn.AGGREGATE(9,3,AF10:AF696)",
+            "=_xlfn.AGGREGATE(9,3,AG10:AG696)",
+            "=_xlfn.AGGREGATE(9,3,AH10:AH696)",
+            "=_xlfn.AGGREGATE(9,3,AI10:AI696)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=IF(C10=\"\",\"\",SUBTOTAL(103,$C$10:C10))",
+            "Công ty TNHH X.E Việt Nam",
+            "XE00001",
+            "Lê Ngọc Nam",
+            "Chủ tịch HĐTV",
+            "Ban Giám đốc",
+            "CBNV",
+            "Hà Nội",
+            "2008-12-28 00:00:00",
+            "2008-12-28 00:00:00",
+            "=IF(K10<=$K$7,\"CT\",\"TV\")",
+            "=COUNTIFS(#REF!,'thưởng tết'!C10)",
+            "=DATEDIF(J10,$K$7,\"y\")",
+            "=MAX(0,DATE(2025,12,31)-MAX(J10,DATE(2025,1,1))+1)-MAX(0,MIN(IF(Q10=\"\",DATE(2025,1,0),Q10),DATE(2025,12,31))-MAX(IF(P10=\"\",DATE(2025,12,31)+1,P10),DATE(2025,1,1))+1)",
+            "37750000",
+            "37750000",
+            "37750000",
+            "36150000",
+            "36150000",
+            "36150000"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=IF(C11=\"\",\"\",SUBTOTAL(103,$C$10:C11))",
+            "Công ty TNHH X.E Việt Nam",
+            "XE00015",
+            "Nguyễn Trọng Khánh",
+            "Giám đốc",
+            "Ban Giám đốc",
+            "CBNV",
+            "Hà Nội",
+            "2016-08-15 00:00:00",
+            "2016-08-15 00:00:00",
+            "=IF(K11<=$K$7,\"CT\",\"TV\")",
+            "=COUNTIFS(#REF!,'thưởng tết'!C11)",
+            "=DATEDIF(J11,$K$7,\"y\")",
+            "=MAX(0,DATE(2025,12,31)-MAX(J11,DATE(2025,1,1))+1)-MAX(0,MIN(IF(Q11=\"\",DATE(2025,1,0),Q11),DATE(2025,12,31))-MAX(IF(P11=\"\",DATE(2025,12,31)+1,P11),DATE(2025,1,1))+1)",
+            "17040000",
+            "17040000",
+            "17040000",
+            "28975000",
+            "28975000",
+            "28975000"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=IF(C12=\"\",\"\",SUBTOTAL(103,$C$10:C12))",
+            "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+            "XE00004",
+            "Nguyễn Đình Sơn",
+            "Phó giám đốc",
+            "Xưởng dịch vụ",
+            "CBNV",
+            "Hà Nội",
+            "2012-07-30 00:00:00",
+            "2012-07-30 00:00:00",
+            "=IF(K12<=$K$7,\"CT\",\"TV\")",
+            "=COUNTIFS(#REF!,'thưởng tết'!C12)",
+            "=DATEDIF(J12,$K$7,\"y\")",
+            "=MAX(0,DATE(2025,12,31)-MAX(J12,DATE(2025,1,1))+1)-MAX(0,MIN(IF(Q12=\"\",DATE(2025,1,0),Q12),DATE(2025,12,31))-MAX(IF(P12=\"\",DATE(2025,12,31)+1,P12),DATE(2025,1,1))+1)",
+            "12000000",
+            "12000000",
+            "12000000",
+            "20880000",
+            "20880000",
+            "20880000"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "=IF(C13=\"\",\"\",SUBTOTAL(103,$C$10:C13))",
+            "Công ty TNHH Du lịch X.E Việt Nam",
+            "XE00002",
+            "Lê Thị Hải",
+            "Hành chính",
+            "Phòng HCNS",
+            "CBNV",
+            "Hà Nội",
+            "2009-01-01 00:00:00",
+            "2009-01-01 00:00:00",
+            "=IF(K13<=$K$7,\"CT\",\"TV\")",
+            "=COUNTIFS(#REF!,'thưởng tết'!C13)",
+            "=DATEDIF(J13,$K$7,\"y\")",
+            "=MAX(0,DATE(2025,12,31)-MAX(J13,DATE(2025,1,1))+1)-MAX(0,MIN(IF(Q13=\"\",DATE(2025,1,0),Q13),DATE(2025,12,31))-MAX(IF(P13=\"\",DATE(2025,12,31)+1,P13),DATE(2025,1,1))+1)",
+            "6720000",
+            "6720000",
+            "6720000",
+            "9000000",
+            "9000000",
+            "9000000"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "=IF(C14=\"\",\"\",SUBTOTAL(103,$C$10:C14))",
+            "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+            "XE00003",
+            "Phạm Khắc Chung",
+            "Tổ trưởng sửa chữa",
+            "Xưởng dịch vụ",
+            "CBNV",
+            "Hà Nội",
+            "2012-01-04 00:00:00",
+            "2012-01-04 00:00:00",
+            "=IF(K14<=$K$7,\"CT\",\"TV\")",
+            "=COUNTIFS(#REF!,'thưởng tết'!C14)",
+            "=DATEDIF(J14,$K$7,\"y\")",
+            "=MAX(0,DATE(2025,12,31)-MAX(J14,DATE(2025,1,1))+1)-MAX(0,MIN(IF(Q14=\"\",DATE(2025,1,0),Q14),DATE(2025,12,31))-MAX(IF(P14=\"\",DATE(2025,12,31)+1,P14),DATE(2025,1,1))+1)",
+            "7680000",
+            "7680000",
+            "7680000",
+            "10270000",
+            "10270000",
+            "10270000"
+          ]
+        },
+        {
+          "row": 15,
+          "cells": [
+            "=IF(C15=\"\",\"\",SUBTOTAL(103,$C$10:C15))",
+            "Công ty TNHH X.E Việt Nam",
+            "XE00005",
+            "Trương Văn Quỳnh",
+            "Lái xe trung chuyển",
+            "Phòng VTHK",
+            "CBNV",
+            "Ninh Bình",
+            "2016-01-24 00:00:00",
+            "2016-01-24 00:00:00",
+            "=IF(K15<=$K$7,\"CT\",\"TV\")",
+            "=COUNTIFS(#REF!,'thưởng tết'!C15)",
+            "=DATEDIF(J15,$K$7,\"y\")",
+            "=MAX(0,DATE(2025,12,31)-MAX(J15,DATE(2025,1,1))+1)-MAX(0,MIN(IF(Q15=\"\",DATE(2025,1,0),Q15),DATE(2025,12,31))-MAX(IF(P15=\"\",DATE(2025,12,31)+1,P15),DATE(2025,1,1))+1)",
+            "8160000",
+            "8160000",
+            "8160000",
+            "6760000",
+            "6760000",
+            "6760000"
+          ]
+        },
+        {
+          "row": 16,
+          "cells": [
+            "=IF(C16=\"\",\"\",SUBTOTAL(103,$C$10:C16))",
+            "Công ty TNHH Du lịch Visun",
+            "XE00006",
+            "Lê Thị Mai Hương",
+            "Trợ lý Giám đốc",
+            "Tổ Trợ lý - Thư Ký",
+            "CBNV",
+            "Hà Nội",
+            "2016-01-30 00:00:00",
+            "2016-01-30 00:00:00",
+            "=IF(K16<=$K$7,\"CT\",\"TV\")",
+            "=COUNTIFS(#REF!,'thưởng tết'!C16)",
+            "=DATEDIF(J16,$K$7,\"y\")",
+            "=MAX(0,DATE(2025,12,31)-MAX(J16,DATE(2025,1,1))+1)-MAX(0,MIN(IF(Q16=\"\",DATE(2025,1,0),Q16),DATE(2025,12,31))-MAX(IF(P16=\"\",DATE(2025,12,31)+1,P16),DATE(2025,1,1))+1)",
+            "10080000",
+            "10080000",
+            "10080000",
+            "20880000",
+            "20880000",
+            "20880000"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bảng công",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "BẢNG CHẤM CÔNG THÁNG 5.2026"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "2026-05-01 00:00:00",
+            "2026-05-30 00:00:00",
+            "2026-05-01 00:00:00",
+            "2026-05-31 00:00:00"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "STT",
+            "Mã NV",
+            "Họ và tên",
+            "Vị Trí",
+            "Ngày bắt đầu lv",
+            "Ngày kết thúc tv",
+            "Ngày nghỉ việc",
+            "Tình trạng",
+            "NGÀY TRONG THÁNG / THỨ TRONG TUẦN",
+            "TỔNG GIỜ CÔNG",
+            "Tổng giờ công\nTV+CT",
+            "Ngày Công \nchuẩn",
+            "Tiếng công chuẩn",
+            "OT",
+            "OT lễ",
+            "Ngày Online",
+            "Nghỉ lễ (LCB)",
+            "Tổng ngày công",
+            "Được hương phép",
+            "Nghỉ Phép"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=+BE2",
+            "=+I4+1",
+            "=+J4+1",
+            "=+K4+1",
+            "=+L4+1",
+            "=+M4+1",
+            "=+N4+1",
+            "=+O4+1",
+            "=+P4+1",
+            "=+Q4+1",
+            "=+R4+1",
+            "=+S4+1",
+            "=+T4+1",
+            "=+U4+1",
+            "=+V4+1",
+            "=+W4+1",
+            "=+X4+1",
+            "=+Y4+1",
+            "=+Z4+1",
+            "=+AA4+1"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=+CHOOSE(WEEKDAY(I4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(J4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(K4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(L4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(M4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(N4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(O4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(P4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(Q4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(R4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(S4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(T4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(U4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(V4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(W4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(X4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(Y4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(Z4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(AA4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(AB4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "Tổng",
+            "=_xlfn.AGGREGATE(9,3,AN9:AN133)",
+            "=_xlfn.AGGREGATE(9,3,AO9:AO133)",
+            "=_xlfn.AGGREGATE(9,3,AP9:AP826)",
+            "=_xlfn.AGGREGATE(9,3,AQ9:AQ826)",
+            "=_xlfn.AGGREGATE(9,3,AU9:AU826)",
+            "=+SUBTOTAL(9,AV9:AV133)",
+            "=_xlfn.AGGREGATE(9,3,AW9:AW826)",
+            "=_xlfn.AGGREGATE(9,3,AX9:AX826)",
+            "=_xlfn.AGGREGATE(9,3,AY9:AY826)",
+            "=_xlfn.AGGREGATE(9,3,AZ9:AZ826)",
+            "=_xlfn.AGGREGATE(9,3,BA9:BA826)",
+            "=_xlfn.AGGREGATE(9,3,BB9:BB826)",
+            "=_xlfn.AGGREGATE(9,3,BC9:BC826)",
+            "=_xlfn.AGGREGATE(9,3,BD9:BD826)",
+            "=_xlfn.AGGREGATE(9,3,BE9:BE826)",
+            "=_xlfn.AGGREGATE(9,3,BF9:BF826)",
+            "=_xlfn.AGGREGATE(9,3,BG9:BG826)",
+            "=_xlfn.AGGREGATE(9,3,BH9:BH826)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "Ban giám đốc"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=IF(B9=\"\",\"\",SUBTOTAL(103,$B$8:B9))",
+            "XE00001",
+            "Lê Ngọc Nam",
+            "Chủ tịch HĐTV",
+            "2008-12-28 00:00:00",
+            "2008-12-28 00:00:00",
+            "CT",
+            "L",
+            "L",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=IF(B10=\"\",\"\",SUBTOTAL(103,$B$8:B10))",
+            "XE00015",
+            "Nguyễn Trọng Khánh",
+            "Giám đốc",
+            "2016-08-15 00:00:00",
+            "2016-08-15 00:00:00",
+            "CT",
+            "L",
+            "L",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=IF(B11=\"\",\"\",SUBTOTAL(103,$B$8:B11))",
+            "Tổ Trợ lý - Thư Ký",
+            "=AP11/8",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=IF(B12=\"\",\"\",SUBTOTAL(103,$B$8:B12))",
+            "XE00006",
+            "Lê Thị Mai Hương",
+            "Trợ lý Giám đốc",
+            "2016-01-30 00:00:00",
+            "2016-01-30 00:00:00",
+            "CT",
+            "L",
+            "L",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8",
+            "8"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ứng lương lần 1",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "Mã NV",
+            "Họ và tên",
+            "Số tiền tạm ứng"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "TỔNG CỘNG",
+            "=_xlfn.AGGREGATE(9,3,C3:C674)"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "XE01012",
+            "Lương Văn Tùng",
+            "17500000"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "XE00890",
+            "Nguyễn Thị Lan",
+            "12500000"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "XE01218",
+            "Hoàng Thu Nguyệt",
+            "4000000"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "XE00259",
+            "Phạm Văn Hải",
+            "0"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "XE01028",
+            "Nguyễn Mạnh Dũng",
+            "7300000"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "XE01546",
+            "Hoàng Nguyễn Quốc Hưng",
+            "4500000"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "XE01625",
+            "Ngô Minh Chiến",
+            "4500000"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "XE01156",
+            "Vi Trọng Quý",
+            "0"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "XE01483",
+            "Trần Văn Dũng",
+            "4500000"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "XE01512",
+            "Tống Văn Lâm",
+            "4500000"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bảng khấu trừ thuế",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "315108358",
+            "=#REF!-V1-V2"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "BẢNG LƯƠNG VĂN PHÒNG HÀ NỘI- THÁNG 5.2026",
+            "1510450"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "STT",
+            "Mã NV",
+            "Họ và Tên",
+            "Vị Trí LV",
+            "Ngày vào \nlàm việc",
+            "Ngày kết \nthúc TV",
+            "Công tiêu chuẩn",
+            "Công thực tế",
+            "Phân \nloại HĐ",
+            "Tổng thu nhập",
+            "Các khoản khấu trừ",
+            "Thu nhập tính thuế",
+            "Ghi chú"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "Giảm trừ gia cảnh",
+            "Giảm trừ NPT",
+            "pc\nTiền ăn trưa",
+            "PC điện thoại",
+            "BHXH",
+            "Công đoàn",
+            "OT",
+            "Tổng khấu trừ",
+            "Thuế TNCN phải nộp"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Số người phụ thuộc",
+            "Số tiền giảm trừ"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "1",
+            "2",
+            "4",
+            "5",
+            "6",
+            "7",
+            "47",
+            "48",
+            "54",
+            "57"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "Ban giám đốc",
+            "52",
+            "=_xlfn.AGGREGATE(9,3,J8:J9)",
+            "=_xlfn.AGGREGATE(9,3,K8:K9)",
+            "=_xlfn.AGGREGATE(9,3,M8:M9)",
+            "=_xlfn.AGGREGATE(9,3,N8:N9)",
+            "=_xlfn.AGGREGATE(9,3,O8:O9)",
+            "=_xlfn.AGGREGATE(9,3,P8:P9)",
+            "=_xlfn.AGGREGATE(9,3,Q8:Q9)",
+            "=_xlfn.AGGREGATE(9,3,R8:R9)",
+            "=_xlfn.AGGREGATE(9,3,S8:S9)",
+            "=_xlfn.AGGREGATE(9,3,T8:T9)",
+            "=_xlfn.AGGREGATE(9,3,U8:U9)",
+            "5437415.38461538"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=+IF(B8=\"\",\"\",SUBTOTAL(103,$B$8:B8))",
+            "XE00001",
+            "Lê Ngọc Nam",
+            "Chủ tịch HĐTV",
+            "2008-12-28 00:00:00",
+            "2008-12-28 00:00:00",
+            "=_xlfn.XLOOKUP('Bảng khấu trừ thuế'!B8,'Bảng lương'!B:B,'Bảng lương'!R:R)",
+            "=_xlfn.XLOOKUP(B8,'Bảng công'!B:B,'Bảng công'!BH:BH)",
+            "=_xlfn.XLOOKUP(B8,'Bảng công'!B:B,'Bảng công'!H:H)",
+            "=_xlfn.XLOOKUP(B8,'Bảng lương'!B:B,'Bảng lương'!AW:AW)",
+            "15500000",
+            "=_xlfn.XLOOKUP(B8,NPT!B:B,NPT!D:D,0)",
+            "=L8*6200000",
+            "=(1200000/G8)*H8",
+            "=_xlfn.XLOOKUP(B8,NPT!B:B,NPT!G:G,0)",
+            "=_xlfn.XLOOKUP(B8,'Bảng lương'!B:B,'Bảng lương'!AX:AX)",
+            "=_xlfn.XLOOKUP(B8,'Bảng lương'!B:B,'Bảng lương'!AY:AY)",
+            "=_xlfn.XLOOKUP(B8,'Bảng lương'!B:B,'Bảng lương'!AN:AN)",
+            "=K8+M8+N8+O8+P8+Q8+R8",
+            "=J8-S8"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=+IF(B9=\"\",\"\",SUBTOTAL(103,$B$8:B9))",
+            "XE00015",
+            "Nguyễn Trọng Khánh",
+            "Giám đốc",
+            "2016-08-15 00:00:00",
+            "2016-08-15 00:00:00",
+            "=_xlfn.XLOOKUP('Bảng khấu trừ thuế'!B9,'Bảng lương'!B:B,'Bảng lương'!R:R)",
+            "=_xlfn.XLOOKUP(B9,'Bảng công'!B:B,'Bảng công'!BH:BH)",
+            "=_xlfn.XLOOKUP(B9,'Bảng công'!B:B,'Bảng công'!H:H)",
+            "=_xlfn.XLOOKUP(B9,'Bảng lương'!B:B,'Bảng lương'!AW:AW)",
+            "15500000",
+            "=_xlfn.XLOOKUP(B9,NPT!B:B,NPT!D:D,0)",
+            "=L9*6200000",
+            "=(1200000/G9)*H9",
+            "=_xlfn.XLOOKUP(B9,NPT!B:B,NPT!G:G,0)",
+            "=_xlfn.XLOOKUP(B9,'Bảng lương'!B:B,'Bảng lương'!AX:AX)",
+            "=_xlfn.XLOOKUP(B9,'Bảng lương'!B:B,'Bảng lương'!AY:AY)",
+            "=_xlfn.XLOOKUP(B9,'Bảng lương'!B:B,'Bảng lương'!AN:AN)",
+            "=K9+M9+N9+O9+P9+Q9+R9",
+            "=J9-S9"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=+IF(B10=\"\",\"\",SUBTOTAL(103,$B$8:B10))",
+            "Tổ trợ lý - Thư Ký",
+            "129",
+            "=_xlfn.AGGREGATE(9,S175,J11:J15)",
+            "=_xlfn.AGGREGATE(9,T175,K11:K15)",
+            "=_xlfn.AGGREGATE(9,U175,M11:M15)",
+            "=_xlfn.AGGREGATE(9,V175,N11:N15)",
+            "=_xlfn.AGGREGATE(9,W175,O11:O15)",
+            "=_xlfn.AGGREGATE(9,X175,P11:P15)",
+            "=_xlfn.AGGREGATE(9,Y175,Q11:Q15)",
+            "=_xlfn.AGGREGATE(9,Z175,R11:R15)",
+            "=_xlfn.AGGREGATE(9,AA175,S11:S15)",
+            "=_xlfn.AGGREGATE(9,AB175,T11:T15)",
+            "=_xlfn.AGGREGATE(9,Z175,U11:U15)",
+            "1648273.07692308"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=+IF(B11=\"\",\"\",SUBTOTAL(103,$B$8:B11))",
+            "XE00128",
+            "Nguyễn Ngọc Dung",
+            "Thư ký Chủ tịch",
+            "2016-01-30 00:00:00",
+            "2016-01-30 00:00:00",
+            "=_xlfn.XLOOKUP('Bảng khấu trừ thuế'!B11,'Bảng lương'!B:B,'Bảng lương'!R:R)",
+            "=_xlfn.XLOOKUP(B11,'Bảng công'!B:B,'Bảng công'!BH:BH)",
+            "=_xlfn.XLOOKUP(B11,'Bảng công'!B:B,'Bảng công'!H:H)",
+            "=_xlfn.XLOOKUP(B11,'Bảng lương'!B:B,'Bảng lương'!AW:AW)",
+            "15500000",
+            "=_xlfn.XLOOKUP(B11,NPT!B:B,NPT!D:D,0)",
+            "=L11*6200000",
+            "=(1200000/G11)*H11",
+            "1000000",
+            "=_xlfn.XLOOKUP(B11,'Bảng lương'!B:B,'Bảng lương'!AX:AX)",
+            "=_xlfn.XLOOKUP(B11,'Bảng lương'!B:B,'Bảng lương'!AY:AY)",
+            "=_xlfn.XLOOKUP(B11,'Bảng lương'!B:B,'Bảng lương'!AN:AN)",
+            "=K11+M11+N11+O11+P11+Q11+R11",
+            "=J11-S11"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=+IF(B12=\"\",\"\",SUBTOTAL(103,$B$8:B12))",
+            "XE00333",
+            "Đỗ Thị Ngọc Diệp",
+            "Trợ lý Giám đốc",
+            "2022-08-08 00:00:00",
+            "2022-10-06 00:00:00",
+            "=_xlfn.XLOOKUP('Bảng khấu trừ thuế'!B12,'Bảng lương'!B:B,'Bảng lương'!R:R)",
+            "=_xlfn.XLOOKUP(B12,'Bảng công'!B:B,'Bảng công'!BH:BH)",
+            "=_xlfn.XLOOKUP(B12,'Bảng công'!B:B,'Bảng công'!H:H)",
+            "=_xlfn.XLOOKUP(B12,'Bảng lương'!B:B,'Bảng lương'!AW:AW)",
+            "15500000",
+            "=_xlfn.XLOOKUP(B12,NPT!B:B,NPT!D:D,0)",
+            "=L12*6200000",
+            "=(1200000/G12)*H12",
+            "=_xlfn.XLOOKUP(B12,NPT!B:B,NPT!G:G,0)",
+            "=_xlfn.XLOOKUP(B12,'Bảng lương'!B:B,'Bảng lương'!AX:AX)",
+            "=_xlfn.XLOOKUP(B12,'Bảng lương'!B:B,'Bảng lương'!AY:AY)",
+            "=_xlfn.XLOOKUP(B12,'Bảng lương'!B:B,'Bảng lương'!AN:AN)",
+            "=K12+M12+N12+O12+P12+Q12+R12",
+            "=J12-S12"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Email",
+      "preview_rows": [
+        {
+          "row": 3,
+          "cells": [
+            "XE00001",
+            "Lê Ngọc Nam",
+            "0"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "XE00015",
+            "Nguyễn Trọng Khánh",
+            "khanhnt@xevietnam.com"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "XE00128",
+            "Nguyễn Ngọc Dung",
+            "dungnn@xevietnam.com"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "XE00333",
+            "Đỗ Thị Ngọc Diệp",
+            "diepdtn@xevietnam.com"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "XE00355",
+            "Nguyễn Thị Thu",
+            "thunt@xevietnam.com"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "XE01496",
+            "Trần Duy Trinh",
+            "trinhtd@xevietnam.com"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "XE00006",
+            "Lê Thị Mai Hương",
+            "huongltm@xevietnam.com"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "XE01409",
+            "Nguyễn Xuân Quang",
+            "quangnx@gmail.com"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "XE01410",
+            "Nguyễn Hữu Quyết",
+            "nguyenhuuquyet07092001@gmail.com"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "XE01648",
+            "Nguyễn Đức Hoà",
+            "hoand@xevietnam.com"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "XE00008",
+            "Lưu Thị Phương Anh",
+            "anhltp@xevietnam.com"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "XE00065",
+            "Đào Thị Ngọc Loan",
+            "loandtn@xevietnam.com"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phiếu lương",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "=I9&\".\"&D8&\".Phiếu lương tháng 4.2026\""
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "77"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "22"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "22",
+            "CÔNG TY TNHH X.E VIỆT NAM",
+            "Địa chỉ Email:",
+            "=_xlfn.XLOOKUP(I9,'Bảng lương'!B:B,'Bảng lương'!BL:BL)"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Địa chỉ: Số 21, Phường Định Công, Thành Phố Hà Nội",
+            "Tiêu đề thư:",
+            "=\"Phiếu Lương Tháng 5/2026- \"&I9&\"- \"&D8"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "PHIẾU LƯƠNG CHI TIẾT THÁNG 5.2026",
+            "Nội dung thư:",
+            "Dear Anh/Chị, \nTheo quy định bộ phận điều phối được nghỉ 4 ngày/tháng. Tháng 05/2026 có 31 ngày, ngày công tiêu chuẩn là 27 ngày, nhưng trong phiếu lương đã gửi cho anh/chị ngày 19/06/2026 đang tính trên 26 ngày công tiêu chuẩn. Phòng HCNS gửi lại anh/chị phiếu lương tháng 05.2026 sau cập nhật.\nTrong trường hợp Anh/Chị có bất kỳ thắc mắc hoặc cần được giải đáp liên quan đến thông tin trên phiếu lương, vui lòng liên hệ với Nhân viên C&B – Hà Nhung qua số điện thoại: 0353.473.087 để được hỗ trợ.\nAnh/Chị vui lòng phản hồi (nếu có) chậm nhất trước 17h00 ngày 22/06/2026 để Phòng HCNS kịp thời kiểm tra và xử lý.\nTrân trọng./."
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "Họ và tên:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D41912E0>",
+            "Phòng ban",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D4191040>",
+            "STT",
+            "11",
+            "từ 3",
+            "55"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "Ngày vào làm việc:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5C56CC0>",
+            "Ngày kết thúc thử việc:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5C56CF0>",
+            "Mã NV",
+            "=_xlfn.XLOOKUP(I8,'Bảng lương'!A:A,'Bảng lương'!B:B)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "Số ngày công tiêu chuẩn",
+            "=_xlfn.XLOOKUP(I9,'Bảng lương'!B:B,'Bảng lương'!R:R)",
+            "Số giờ công tiêu chuẩn",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5C55F10>"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "Số ngày công thử việc",
+            "=_xlfn.XLOOKUP(I9,'Bảng lương'!B:B,'Bảng lương'!T:T)",
+            "Số giờ công thử việc:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5C56CF0>"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "Số giờ công online chính thức",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5C54560>",
+            "Số giờ công chính thức:",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5C549E0>"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "Số giờ công online thử việc",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5C542C0>",
+            "Số giờ công OT 150%:",
+            "=_xlfn.XLOOKUP(I9,'Bảng lương'!B:B,'Bảng lương'!AC:AC)+_xlfn.XLOOKUP(I9,'Bảng lương'!B:B,'Bảng lương'!AD:AD)"
+          ]
+        }
+      ]
+    }
+  ]
+}

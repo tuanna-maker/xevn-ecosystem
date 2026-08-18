@@ -1,0 +1,264 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-SRC-QA-02",
+  "parent": "PO-HRM-AMIS-PARITY-PAY-SRC-BE-02",
+  "prior_fail": "PO-HRM-AMIS-PARITY-PAY-SRC-QA-01",
+  "defect": "D-PAY-SRC-01",
+  "stamp": "PAYSRCQA2-ISVZ0J",
+  "startedAt": "2026-08-07T10:27:07.651Z",
+  "journey": "J-HRM-07",
+  "u65": "zero-seed · browser UF primary · GET lines verify after process",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "holding"
+  },
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed_used": false,
+    "amis_done": false
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "ac": {
+    "L0": {
+      "verdict": "🟢 PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "at": "2026-08-07T10:27:07.674Z"
+    },
+    "SETUP-TPL": {
+      "verdict": "🟢 PASS",
+      "note": "tpl=c657d193-76bd-48b5-93ac-8494a4347e0c lines=200 base=base",
+      "at": "2026-08-07T10:27:19.801Z"
+    },
+    "AC-PAY-SRC-04": {
+      "verdict": "🟢 PASS",
+      "note": "HTTP 412 code=HRM-PAY-ATT-412 msg=Attendance sheet must be closed before processing payroll",
+      "at": "2026-08-07T10:27:32.264Z"
+    },
+    "AC-PAY-SRC-01": {
+      "verdict": "🟢 PASS",
+      "note": "mode=verify_processed proc=201/HRM-PAY-202 via=verify_processed_closed_sheet tier=emp_cb amt=9500000 cb=9500000 ref=emp_cb:package:084a6c66-d738-4920-953e-add6dad36488:line:87c46658-2eac-4",
+      "at": "2026-08-07T10:27:45.485Z"
+    },
+    "AC-PAY-SRC-06": {
+      "verdict": "🟢 PASS",
+      "note": "lines=2 procOk=true mode=verify_processed",
+      "at": "2026-08-07T10:27:45.485Z"
+    },
+    "AC-PAY-SRC-GET-TIER": {
+      "verdict": "🟢 PASS",
+      "note": "source_tier present on 2/2 lines",
+      "at": "2026-08-07T10:27:45.486Z"
+    },
+    "F5-STABLE": {
+      "verdict": "🟢 PASS",
+      "note": "reload after verify",
+      "at": "2026-08-07T10:27:47.191Z"
+    },
+    "UF-CONSOLE": {
+      "verdict": "🟢 PASS",
+      "note": "pageErrors=0 console=2",
+      "at": "2026-08-07T10:27:47.192Z"
+    },
+    "AC-PAY-SRC-05": {
+      "verdict": "🟢 PASS",
+      "note": "retained QA-01/BE-02 fail-fast (not silent 0); live probe: cand UAT-0100 has C&B — skip · ATT-412 PASS this run",
+      "at": "2026-08-07T10:27:47.982Z"
+    }
+  },
+  "network": {
+    "pay": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+        "code": "HRM-PAY-200"
+      }
+    ],
+    "hrm": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/operating-units",
+        "code": "HRM-OPU-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/company-subscription?company_id=main",
+        "code": "HRM-SUB-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+        "code": "HRM-EMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/operating-units",
+        "code": "HRM-OPU-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/operating-units",
+        "code": "HRM-OPU-200"
+      }
+    ]
+  },
+  "consoleErrors": [
+    "404 Error: User attempted to access non-existent route: /payroll/payslips/8ca0679c-49de-4097-8c01-3a74900df3bf",
+    "404 Error: User attempted to access non-existent route: /payroll/payslips/8ca0679c-49de-4097-8c01-3a74900df3bf"
+  ],
+  "pageErrors": [],
+  "click_log": [
+    {
+      "at": "2026-08-07T10:27:32.885Z",
+      "msg": "browser payroll → verify processed period / payslip"
+    }
+  ],
+  "steps": [
+    {
+      "name": "nv002",
+      "id": "22222222-2222-4222-8222-222222222222",
+      "code": "NV002",
+      "pkgId": "084a6c66-d738-4920-953e-add6dad36488",
+      "cbAmount": 9500000,
+      "baseCc": "base"
+    },
+    {
+      "name": "att_closed",
+      "sheetId": "ae71f0b0-a3cb-43ab-9f5f-f42004add657",
+      "bounds": {
+        "start": "2026-09-01",
+        "end": "2026-09-30",
+        "ymd": "2026-09-01",
+        "year": 2026,
+        "month": 9
+      },
+      "status": "closed"
+    },
+    {
+      "name": "period_pick",
+      "ym": "2026-09",
+      "drafts": 16,
+      "picked": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+      "pickedStatus": "processed",
+      "label": "QA-EVAL-NF PAYFEQ1-MSIHM5A1",
+      "start": "2026-08-31T17:00:00.000Z",
+      "end": "2026-09-29T17:00:00.000Z"
+    },
+    {
+      "name": "base_sc",
+      "id": "4a8b7dc4-cc62-4463-92ca-0c860d05016f",
+      "code": "base"
+    },
+    {
+      "name": "template",
+      "ok": true,
+      "templateId": "c657d193-76bd-48b5-93ac-8494a4347e0c",
+      "baseCode": "base",
+      "createStatus": 201,
+      "linesStatus": 200,
+      "linesCode": "HRM-PAY-TPL-200"
+    },
+    {
+      "name": "create_period",
+      "status": 409,
+      "code": "HRM-PAY-002",
+      "periodId": null,
+      "message": "Payroll period overlaps with existing period"
+    },
+    {
+      "name": "reuse_after_409",
+      "periodId": null
+    },
+    {
+      "name": "use_processed_closed_sheet_period",
+      "periodId": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+      "label": "QA-EVAL-NF PAYFEQ1-MSIHM5A1",
+      "note": "Sep draft already processed after BE-02 — verify NV002 emp_cb lines (no re-process)"
+    },
+    {
+      "name": "ac_src_04",
+      "status": 412,
+      "code": "HRM-PAY-ATT-412",
+      "message": "Attendance sheet must be closed before processing payroll"
+    },
+    {
+      "name": "browser_verify_processed",
+      "periodId": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25"
+    },
+    {
+      "name": "payslip_lines",
+      "payslipId": "8ca0679c-49de-4097-8c01-3a74900df3bf",
+      "slipStatus": "processed",
+      "gross": 17000000,
+      "linesStatus": 200,
+      "linesCode": "HRM-PAY-200",
+      "lines": [
+        {
+          "component_code": "base",
+          "amount": 9500000,
+          "source_tier": "emp_cb",
+          "source_ref": "emp_cb:package:084a6c66-d738-4920-953e-add6dad36488:line:87c46658-2eac-40c5-b1bb-bc30feb8b17f"
+        },
+        {
+          "component_code": "phu_cap_an",
+          "amount": 7500000,
+          "source_tier": "template_override",
+          "source_ref": "const"
+        }
+      ],
+      "expectCb": 9500000,
+      "pkgId": "084a6c66-d738-4920-953e-add6dad36488",
+      "processMode": "verify_processed"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "R-PAY-SRC-FRESH-PROCESS-SLOT",
+      "owner": "qa",
+      "note": "No free draft on closed-sheet month (Sep already processed; Aug ATT submitted not closed). Verified NV002 emp_cb on processed closed-sheet period."
+    },
+    {
+      "id": "R-PAY-SRC-05-PROBE-NARROW",
+      "owner": "qa",
+      "note": "FORMULA-412 live no-CB closed-sheet path narrow; ATT-412 PASS; prior QA-01 SRC-05 PASS retained"
+    }
+  ],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T10:27:48.230Z",
+  "completion_report": "Closed: L0, SETUP-TPL, AC-PAY-SRC-04, AC-PAY-SRC-01, AC-PAY-SRC-06, AC-PAY-SRC-GET-TIER, F5-STABLE, UF-CONSOLE, AC-PAY-SRC-05. Failed: none. Honesty: payroll_e2e_ready=false · seed=false · AMIS DONE DENIED. Residual: R-PAY-SRC-FRESH-PROCESS-SLOT, R-PAY-SRC-05-PROBE-NARROW.",
+  "next_owner": "qc",
+  "next_dispatch_prompt": "work_item_id: PO-HRM-AMIS-PARITY-PAY-SRC-QC-02\nfrom_role: pm\nto_role: qc\nlane: governance\nparent: PO-HRM-AMIS-PARITY-PAY-SRC-QA-02\n\n## Mission\nGate audit AC-PAY-SRC-01/06 retest after D-PAY-SRC-01.\nEvidence: docs/qa/evidence/po-hrm-amis-parity-pay-src-qa-02.md\nConfirm: PROCESS 2xx · source_tier=emp_cb · amount=C&B · ATT-412/FORMULA-412 retained.\nHonesty: payroll_e2e_ready=false · cấm claim AMIS DONE / J-HRM-07 e2e-ready."
+}

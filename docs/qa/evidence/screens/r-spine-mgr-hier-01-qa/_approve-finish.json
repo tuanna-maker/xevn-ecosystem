@@ -1,0 +1,34 @@
+{
+  "hit": {
+    "x": 916,
+    "y": 517
+  },
+  "leave": null,
+  "all": null,
+  "empty": false,
+  "loading": false,
+  "hasDuyet": false,
+  "texts": [
+    "Thông báo",
+    "Đơn nghỉ phép mới",
+    "Chưa đọc",
+    "Đơn nghỉ phép mới",
+    "Chưa đọc",
+    "Đơn nghỉ phép mới",
+    "Chưa đọc",
+    "Đơn nghỉ phép mới",
+    "Chưa đọc",
+    "Đơn nghỉ phép mới",
+    "Chưa đọc",
+    "Đơn nghỉ phép mới",
+    "Chưa đọc",
+    "Đơn nghỉ phép mới",
+    "Chưa đọc",
+    "Trang chủ",
+    "Đội nhóm",
+    "Phiếu lương",
+    "Hồ sơ"
+  ],
+  "company_uuid": "10000000-0000-4000-8000-000000000001",
+  "employee_id": "3796d949-4513-45c0-88fa-33030a062b17"
+}

@@ -1,0 +1,187 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-W1B-01-QA-LEAVE-LIVE-R1-20260803",
+  "work_item_id": "W1-B-01-QA-LEAVE-LIVE-R1",
+  "tester": {
+    "role": "qa",
+    "agent": "W1-B-01-QA-LEAVE-LIVE-R1-browser"
+  },
+  "started_at": "2026-08-03T14:30:05.347Z",
+  "ended_at": "2026-08-03T14:30:36.813Z",
+  "environment": {
+    "portal_url": "http://127.0.0.1:5173",
+    "hrm_vite": "http://127.0.0.1:8080/hr/",
+    "hrm_api": "http://127.0.0.1:28001/api/hrm",
+    "xbos_api": "http://127.0.0.1:28002/api/xbos",
+    "persona": "ceo@xe.vn",
+    "company_id": "main",
+    "notes": "U65 zero-seed · retest after FE LeaveOverviewRecentPanel restore · prior FAIL mount"
+  },
+  "spec_ref": "FR-UC-H03 · FR-UC-M03 · API_CONTRACT_NEW.md §4 · J-HRM-06 · w1b-01-fe-leave-attendance-mount",
+  "hdsd_sot": "HDSD Chấm công → Nghỉ phép — tạo / danh sách / F5",
+  "hdsd_align": true,
+  "u65_zero_seed": true,
+  "evidence_narrative": "docs/qa/evidence/w1b-01-qa-leave-live-r1.md",
+  "raw_harness": "docs/qa/evidence/_tmp-w1b-01-qa-leave-live-r1-browser.json",
+  "verdict": "pass",
+  "ack_status": "PASS_TO_PM",
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-03T14:29:50.000Z",
+      "action": "L0_QC_DEV_STACK",
+      "expected": "hrm-api + xbos-api + portal 200",
+      "actual": "hrm 200 · xbos 200 · portal 200",
+      "network": { "method": "GET", "url": "/api/hrm", "status": 200 },
+      "result": "pass"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-03T14:29:55.000Z",
+      "action": "VITE_LEAVE_OVERVIEW_RESOLVE",
+      "expected": "LeaveOverviewRecentPanel + Attendance.tsx resolve without Failed to resolve",
+      "actual": "LeaveOverview 200 · Attendance proxy 200 · resolve_fail=false",
+      "result": "pass"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-03T14:30:05.348Z",
+      "action": "API_LOGIN_POST",
+      "expected": "Login 2xx + accessToken",
+      "actual": "HTTP 201",
+      "network": { "method": "POST", "url": "/api/xbos/auth/login", "status": 201 },
+      "result": "pass"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-03T14:30:05.907Z",
+      "action": "OPEN_PORTAL_SHELL",
+      "expected": "portal shell loads",
+      "actual": "navigated :5173/",
+      "network": { "method": "GET", "url": "/api/xbos/auth/me", "status": 200 },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/00-shell.png"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-03T14:30:08.687Z",
+      "action": "NAV_ATTENDANCE_MOUNT",
+      "expected": "/hr/attendance #root>0 · no Vite resolve error",
+      "actual": "#root=4 · viteResolveFail=false",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/attendance/leave-requests?company_id=main",
+        "status": 200,
+        "code": "HRM-LEAVE-200"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/01-attendance.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-03T14:30:13.065Z",
+      "action": "CLICK_TAB_NGHI_PHEP",
+      "expected": "Leave tab visible + title",
+      "actual": "clicked Nghỉ phép · hasLeaveTitle=true · leaveTabVisible=true",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/02-leave-tab.png"
+    },
+    {
+      "seq": 7,
+      "at": "2026-08-03T14:30:16.778Z",
+      "action": "CASE_A_OPEN_CREATE",
+      "expected": "Create leave dialog",
+      "actual": "Tạo yêu cầu nghỉ dialog open",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/03-create-dialog.png"
+    },
+    {
+      "seq": 8,
+      "at": "2026-08-03T14:30:23.836Z",
+      "action": "CASE_A_FAIL_DEEP_SICK_NO_ATTACH",
+      "expected": "UI validation or API toast; no silent 2xx create",
+      "actual": "sick/ốm picked · submit · validationUi=true · postAfter=[] · noSuccessCreate",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/04-case-a-fail.png"
+    },
+    {
+      "seq": 9,
+      "at": "2026-08-03T14:30:27.851Z",
+      "action": "CASE_B_LIST_LABELS",
+      "expected": "status_label / leave_type_label / employee_display_name bind",
+      "actual": "28 rows · status_label=Chờ duyệt · employee_display_name=CEO Tập đoàn · leave_type_label=LVT_01 (P2 depth)",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/attendance/leave-requests?company_id=main",
+        "status": 200,
+        "code": "HRM-LEAVE-200"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/05-case-b-list.png"
+    },
+    {
+      "seq": 10,
+      "at": "2026-08-03T14:30:29.978Z",
+      "action": "J_HRM_06_ROW_CLICK",
+      "expected": "list → row interaction on leave surface",
+      "actual": "row clicked · CEO Tập đoàn · Chờ duyệt",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/06-case-b-detail.png"
+    },
+    {
+      "seq": 11,
+      "at": "2026-08-03T14:30:32.253Z",
+      "action": "CASE_C_F5",
+      "expected": "F5 persist · no whitescreen · leave GET 2xx",
+      "actual": "#root=4 · hasLeave · whitescreen=false · GET leave 200",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/attendance/leave-requests?company_id=main",
+        "status": 200
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/07-case-c-f5.png"
+    },
+    {
+      "seq": 12,
+      "at": "2026-08-03T14:30:36.813Z",
+      "action": "IDLE_GUARD",
+      "expected": "≥6 real clicks",
+      "actual": "28 click_log entries",
+      "result": "pass"
+    }
+  ],
+  "case_matrix": [
+    { "id": "mount", "name": "Attendance + Nghỉ phép mount", "status": "pass" },
+    { "id": "A_fail", "name": "fail_deep sick≥3 no attach", "status": "pass" },
+    { "id": "B_happy", "name": "list/labels bind HDSD", "status": "pass" },
+    { "id": "C_f5", "name": "F5 persist", "status": "pass" },
+    { "id": "J-HRM-06", "name": "leave list surface journey", "status": "pass" }
+  ],
+  "incidents": [
+    {
+      "id": "R-LEAVE-TYPE-LABEL-DEPTH",
+      "severity": "P2",
+      "expected": "leave_type_label catalog VI name",
+      "actual": "often echoes LVT_01 (field bound)",
+      "residual_wi": "defer"
+    }
+  ],
+  "summary": {
+    "passed": 12,
+    "failed": 0,
+    "blocked": 0,
+    "skipped": 0,
+    "click_count": 28
+  },
+  "attachments": [
+    "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/00-shell.png",
+    "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/01-attendance.png",
+    "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/02-leave-tab.png",
+    "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/03-create-dialog.png",
+    "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/04-case-a-fail.png",
+    "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/05-case-b-list.png",
+    "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/06-case-b-detail.png",
+    "docs/qa/evidence/screens/w1b-01-qa-leave-live-r1-20260803/07-case-c-f5.png"
+  ]
+}

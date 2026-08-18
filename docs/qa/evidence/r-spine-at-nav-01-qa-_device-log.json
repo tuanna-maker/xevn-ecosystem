@@ -1,0 +1,156 @@
+{
+  "work_item_id": "R-SPINE-AT-NAV-01-QA",
+  "pass": false,
+  "paths": {
+    "fab": {
+      "pass": false,
+      "leaveOk": false,
+      "updateVisible": false,
+      "form": false
+    },
+    "hub_late": {
+      "pass": false,
+      "form": false
+    },
+    "settings": {
+      "pass": true,
+      "form": true
+    }
+  },
+  "log": [
+    {
+      "t": "2026-08-03T15:26:06.887Z",
+      "msg": "PATH1 start FAB → Tạo đơn công"
+    },
+    {
+      "t": "2026-08-03T15:26:27.924Z",
+      "msg": "fab-sheet",
+      "leave": false,
+      "update": false,
+      "texts": [
+        "Calendar",
+        "Camera",
+        "Chrome",
+        "Clock",
+        "Contacts",
+        "Drive",
+        "Expo Go",
+        "Files",
+        "Gmail",
+        "Google",
+        "Maps",
+        "Messages",
+        "Phone",
+        "Photos",
+        "Settings",
+        "TMoble",
+        "XeVN HRM",
+        "YouTube",
+        "YT Music",
+        "Gmail",
+        "YouTube",
+        "Photos",
+        "Clock",
+        "Search apps, web and more"
+      ]
+    },
+    {
+      "t": "2026-08-03T15:26:27.924Z",
+      "msg": "PATH1 FAIL no Tạo đơn công in sheet"
+    },
+    {
+      "t": "2026-08-03T15:26:27.925Z",
+      "msg": "PATH2 start hub Đi muộn"
+    },
+    {
+      "t": "2026-08-03T15:26:30.443Z",
+      "msg": "relaunch app"
+    },
+    {
+      "t": "2026-08-03T15:27:02.576Z",
+      "msg": "PATH2 result",
+      "form": false,
+      "texts": [
+        "Thao tác nhanh",
+        "",
+        "Chấm công",
+        "Ghi nhận giờ vào / ra",
+        "",
+        "",
+        "Tạo đơn nghỉ",
+        "Gửi yêu cầu nghỉ phép mới",
+        "",
+        "",
+        "Tạo đơn công",
+        "Xin đi muộn hoặc điều chỉnh chấm công",
+        "",
+        "Đóng"
+      ]
+    },
+    {
+      "t": "2026-08-03T15:27:19.800Z",
+      "msg": "PATH3 start Settings Đơn công"
+    },
+    {
+      "t": "2026-08-03T15:27:48.457Z",
+      "msg": "settings scroll",
+      "texts": [
+        "Cài đặt",
+        "Mã nhân viên",
+        "3796d949-4513-45c0-88fa-33030a062b17",
+        "Lưu vào SecureStore",
+        "Bật mở khóa sinh trắc học",
+        "Đăng xuất",
+        "Điều hướng nhanh",
+        "Phạm vi công ty",
+        "Đơn công",
+        "Lương",
+        "Hợp đồng",
+        "Hồ sơ",
+        "Thông báo",
+        "",
+        "Trang chủ",
+        "",
+        "Đội nhóm",
+        "",
+        "Phiếu lương",
+        "",
+        "Hồ sơ",
+        ""
+      ]
+    },
+    {
+      "t": "2026-08-03T15:27:53.074Z",
+      "msg": "PATH3 result",
+      "form": true,
+      "texts": [
+        "Tạo đơn",
+        "Đơn công",
+        "Yêu cầu điều chỉnh chấm công — dữ liệu nhân viên từ GET /employees",
+        "Thông tin nhân viên",
+        "Mã nhân viên",
+        "HLD-0001",
+        "Họ tên",
+        "Nguyễn Văn An",
+        "Phòng ban (tuỳ chọn)",
+        "STAFF",
+        "Nội dung đơn",
+        "Loại điều chỉnh",
+        "adjust_check_in",
+        "Lý do",
+        "Điều chỉnh giờ vào (mobile)",
+        "Gửi đơn",
+        "",
+        "Trang chủ",
+        "",
+        "Đội nhóm",
+        "",
+        "Phiếu lương",
+        "",
+        "Hồ sơ",
+        ""
+      ]
+    }
+  ],
+  "out": "docs/qa/evidence/screens/r-spine-at-nav-01-qa"
+}

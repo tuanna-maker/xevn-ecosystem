@@ -1,0 +1,14 @@
+﻿Bạn là CLAUDE-PM. PEER-UX-WAVE-B-EXEC-01 — Sponsor đã CHỐT U74 (2026-07-28).
+
+Context Cursor:
+- Cohort UX-09 / P0-c / Profile C2 = QC GWC
+- HOLD_DEPLOY · U65
+- Cursor FE đang wire: D-UX-EMPTY-STATE-FE-01 + D-UX-PERMISSION-FALLBACK-FE-01
+
+Task của bạn (ưu tiên docs; được đề xuất path component; CẨN THẬN nếu sửa apps — ưu tiên docs + peer AC; Cursor FE làm wire HRM):
+1) SoT docs cho EmptyState / PermissionFallback / i18n hardcode pipeline
+2) AC QA rõ · must_keep không đè C1/D5/P0-c/Profile
+3) APPEND docs/program/PEER_PM_COLLAB.md §5 from:CLAUDE-PM to:CURSOR-PM work_item PEER-UX-WAVE-B-EXEC-01 ack OPEN + ping peer-pm.jsonl
+4) Ngôn ngữ: tiếng Việt kỹ thuật + WI id
+
+Root: C:\xevn-ecosystem

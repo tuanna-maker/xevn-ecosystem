@@ -1,0 +1,543 @@
+{
+  "work_item_id": "PO-HRM-SETTINGS-DEFAULTS-QA-02",
+  "stamp": "SETDEF2ISS23I",
+  "siId": "d79f049b-8e98-4914-8217-35ccad5b021b",
+  "typeKey": "BHXH_QA_SETDEF2ISS23I",
+  "knownPc": "PC_DIEU_XE_6A75AC29",
+  "payroll_e2e_ready": false,
+  "src02": {
+    "resolveHasEmployeePackageIdKey": false,
+    "employeePackageId": null,
+    "warnings": [
+      "NO_POLICY"
+    ],
+    "policyId": null,
+    "keys": [
+      "companyId",
+      "ouId",
+      "positionKey",
+      "asOf",
+      "policyId",
+      "policyStatus",
+      "lines",
+      "warnings"
+    ],
+    "src02_no_emp_write": true
+  },
+  "verdicts": {
+    "TAX_PUT_OK": true,
+    "TAX_PUT_BAD_SHAPE": true,
+    "SI_PATCH_YYYY_MM_DD": true,
+    "SI_OVERLAP": true,
+    "SI_DELETE_409": true,
+    "SI_RETIRE": true,
+    "POS_ORPHAN": true,
+    "POS_CREATE": false,
+    "SRC02": true
+  },
+  "overall": "FAIL",
+  "steps": [
+    {
+      "name": "L0_HRM",
+      "method": "GET",
+      "url": "",
+      "status": 200,
+      "code": "HRM-HEALTH-200",
+      "message": "HRM service is healthy",
+      "data": {
+        "service": "hrm-api",
+        "status": "ok"
+      }
+    },
+    {
+      "name": "TAX_GET_PREFIX",
+      "method": "GET",
+      "url": "/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "message": "Company tax settings",
+      "data": {
+        "items": []
+      }
+    },
+    {
+      "name": "TAX_GET_KEY_NULL",
+      "method": "GET",
+      "url": "/settings/company-settings?company_id=main&key=pay_tax_personal_deduction_vnd",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "message": "Company tax settings",
+      "data": {
+        "id": null,
+        "companyId": "holding",
+        "settingKey": "pay_tax_personal_deduction_vnd",
+        "value": null,
+        "archivedAt": null,
+        "updatedAt": null,
+        "updatedBy": null,
+        "meta": {
+          "cta": "Cấu hình pay_tax_personal_deduction_vnd trong Cài đặt → Lương → Thông số thuế"
+        }
+      }
+    },
+    {
+      "name": "TAX_PUT_OK",
+      "method": "PUT",
+      "url": "/settings/company-settings",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "message": "Company tax setting saved",
+      "data": {
+        "id": "5e60bd88-6e95-46fa-8c17-bcd8d1773967",
+        "companyId": "holding",
+        "settingKey": "pay_tax_personal_deduction_vnd",
+        "value": {
+          "amount": 11000000,
+          "currency": "VND"
+        },
+        "archivedAt": null,
+        "updatedAt": "2026-08-07T10:24:15.866Z",
+        "updatedBy": null
+      }
+    },
+    {
+      "name": "TAX_GET_AFTER_PUT",
+      "method": "GET",
+      "url": "/settings/company-settings?company_id=main&key=pay_tax_personal_deduction_vnd",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "message": "Company tax settings",
+      "data": {
+        "id": "5e60bd88-6e95-46fa-8c17-bcd8d1773967",
+        "companyId": "holding",
+        "settingKey": "pay_tax_personal_deduction_vnd",
+        "value": {
+          "amount": 11000000,
+          "currency": "VND"
+        },
+        "archivedAt": null,
+        "updatedAt": "2026-08-07T10:24:15.866Z",
+        "updatedBy": null
+      }
+    },
+    {
+      "name": "TAX_PUT_BAD_SHAPE",
+      "method": "PUT",
+      "url": "/settings/company-settings",
+      "status": 400,
+      "code": "HRM-SET-TAX-400-SHAPE",
+      "message": "amount must be finite number ≥ 0",
+      "data": null
+    },
+    {
+      "name": "TAX_PUT_REGIME",
+      "method": "PUT",
+      "url": "/settings/company-settings",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "message": "Company tax setting saved",
+      "data": {
+        "id": "0b67b828-2f6c-466e-971e-8b2d281a9d62",
+        "companyId": "holding",
+        "settingKey": "pay_tax_regime",
+        "value": {
+          "code": "progressive_vn"
+        },
+        "archivedAt": null,
+        "updatedAt": "2026-08-07T10:24:15.944Z",
+        "updatedBy": null
+      }
+    },
+    {
+      "name": "SI_CREATE",
+      "method": "POST",
+      "url": "/settings/insurance-rate-cfg",
+      "status": 201,
+      "code": "HRM-SET-SI-201",
+      "message": "Insurance rate cfg created",
+      "data": {
+        "id": "d79f049b-8e98-4914-8217-35ccad5b021b",
+        "companyId": "holding",
+        "ouId": null,
+        "insuranceTypeKey": "BHXH_QA_SETDEF2ISS23I",
+        "employeeRatePct": 8,
+        "employerRatePct": 17.5,
+        "ceilingAmount": null,
+        "currency": "VND",
+        "effectiveFrom": "2026-01-01",
+        "effectiveTo": null,
+        "status": "active",
+        "version": 1,
+        "supersedesId": null,
+        "notes": "qa SETDEF2ISS23I",
+        "archivedAt": null,
+        "createdAt": "2026-08-07T10:24:16.052Z",
+        "updatedAt": "2026-08-07T10:24:16.052Z",
+        "createdBy": null,
+        "updatedBy": null
+      }
+    },
+    {
+      "name": "SI_GET",
+      "method": "GET",
+      "url": "/settings/insurance-rate-cfg/d79f049b-8e98-4914-8217-35ccad5b021b?company_id=main",
+      "status": 200,
+      "code": "HRM-SET-SI-200",
+      "message": "Insurance rate cfg",
+      "data": {
+        "id": "d79f049b-8e98-4914-8217-35ccad5b021b",
+        "companyId": "holding",
+        "ouId": null,
+        "insuranceTypeKey": "BHXH_QA_SETDEF2ISS23I",
+        "employeeRatePct": 8,
+        "employerRatePct": 17.5,
+        "ceilingAmount": null,
+        "currency": "VND",
+        "effectiveFrom": "2026-01-01",
+        "effectiveTo": null,
+        "status": "active",
+        "version": 1,
+        "supersedesId": null,
+        "notes": "qa SETDEF2ISS23I",
+        "archivedAt": null,
+        "createdAt": "2026-08-07T10:24:16.052Z",
+        "updatedAt": "2026-08-07T10:24:16.052Z",
+        "createdBy": null,
+        "updatedBy": null
+      }
+    },
+    {
+      "name": "SI_LIST",
+      "method": "GET",
+      "url": "/settings/insurance-rate-cfg?company_id=main&insurance_type_key=BHXH_QA_SETDEF2ISS23I",
+      "status": 200,
+      "code": "HRM-SET-SI-200",
+      "message": "Insurance rate cfg list",
+      "data": {
+        "items": [
+          {
+            "id": "d79f049b-8e98-4914-8217-35ccad5b021b",
+            "companyId": "holding",
+            "ouId": null,
+            "insuranceTypeKey": "BHXH_QA_SETDEF2ISS23I",
+            "employeeRatePct": 8,
+            "employerRatePct": 17.5,
+            "ceilingAmount": null,
+            "currency": "VND",
+            "effectiveFrom": "2026-01-01",
+            "effectiveTo": null,
+            "status": "active",
+            "version": 1,
+            "supersedesId": null,
+            "notes": "qa SETDEF2ISS23I",
+            "archivedAt": null,
+            "createdAt": "2026-08-07T10:24:16.052Z",
+            "updatedAt": "2026-08-07T10:24:16.052Z",
+            "createdBy": null,
+            "updatedBy": null
+          }
+        ],
+        "total": 1
+      }
+    },
+    {
+      "name": "SI_PATCH",
+      "method": "PATCH",
+      "url": "/settings/insurance-rate-cfg/d79f049b-8e98-4914-8217-35ccad5b021b?company_id=main",
+      "status": 200,
+      "code": "HRM-SET-SI-200",
+      "message": "Insurance rate cfg updated",
+      "data": {
+        "id": "d79f049b-8e98-4914-8217-35ccad5b021b",
+        "companyId": "holding",
+        "ouId": null,
+        "insuranceTypeKey": "BHXH_QA_SETDEF2ISS23I",
+        "employeeRatePct": 8,
+        "employerRatePct": 18,
+        "ceilingAmount": null,
+        "currency": "VND",
+        "effectiveFrom": "2026-01-01",
+        "effectiveTo": null,
+        "status": "active",
+        "version": 1,
+        "supersedesId": null,
+        "notes": "patched",
+        "archivedAt": null,
+        "createdAt": "2026-08-07T10:24:16.052Z",
+        "updatedAt": "2026-08-07T10:24:16.161Z",
+        "createdBy": null,
+        "updatedBy": null
+      }
+    },
+    {
+      "name": "SI_OVERLAP",
+      "method": "POST",
+      "url": "/settings/insurance-rate-cfg",
+      "status": 409,
+      "code": "HRM-SET-SI-409-OVERLAP",
+      "message": "Active insurance rate window overlaps existing version",
+      "data": null
+    },
+    {
+      "name": "SI_DELETE",
+      "method": "DELETE",
+      "url": "/settings/insurance-rate-cfg/d79f049b-8e98-4914-8217-35ccad5b021b?company_id=main",
+      "status": 409,
+      "code": "HRM-SET-SI-409-HARD-DELETE",
+      "message": "Hard DELETE forbidden — use POST …/retire",
+      "data": null
+    },
+    {
+      "name": "SI_RETIRE",
+      "method": "POST",
+      "url": "/settings/insurance-rate-cfg/d79f049b-8e98-4914-8217-35ccad5b021b/retire?company_id=main",
+      "status": 201,
+      "code": "HRM-SET-SI-200",
+      "message": "Insurance rate cfg retired",
+      "data": {
+        "id": "d79f049b-8e98-4914-8217-35ccad5b021b",
+        "status": "retired"
+      }
+    },
+    {
+      "name": "SI_GET_AFTER_RETIRE",
+      "method": "GET",
+      "url": "/settings/insurance-rate-cfg/d79f049b-8e98-4914-8217-35ccad5b021b?company_id=main",
+      "status": 200,
+      "code": "HRM-SET-SI-200",
+      "message": "Insurance rate cfg",
+      "data": {
+        "id": "d79f049b-8e98-4914-8217-35ccad5b021b",
+        "companyId": "holding",
+        "ouId": null,
+        "insuranceTypeKey": "BHXH_QA_SETDEF2ISS23I",
+        "employeeRatePct": 8,
+        "employerRatePct": 18,
+        "ceilingAmount": null,
+        "currency": "VND",
+        "effectiveFrom": "2026-01-01",
+        "effectiveTo": null,
+        "status": "retired",
+        "version": 1,
+        "supersedesId": null,
+        "notes": "patched",
+        "archivedAt": "2026-08-07T10:24:16.304Z",
+        "createdAt": "2026-08-07T10:24:16.052Z",
+        "updatedAt": "2026-08-07T10:24:16.304Z",
+        "createdBy": null,
+        "updatedBy": null
+      }
+    },
+    {
+      "name": "POS_RESOLVE_UNKNOWN",
+      "method": "GET",
+      "url": "/settings/position-compensation-policies/resolve?company_id=main&positionKey=NOT_A_TITLE&asOf=2026-08-07",
+      "status": 400,
+      "code": "HRM-SET-POS-400-KEY",
+      "message": "positionKey 'NOT_A_TITLE' not in job_titles catalog",
+      "data": null
+    },
+    {
+      "name": "POS_RESOLVE_NO_POLICY",
+      "method": "GET",
+      "url": "/settings/position-compensation-policies/resolve?company_id=main&positionKey=CEO&asOf=2026-08-07",
+      "status": 200,
+      "code": "HRM-SET-POS-200",
+      "message": "Position compensation prefill draft",
+      "data": {
+        "companyId": "holding",
+        "ouId": null,
+        "positionKey": "CEO",
+        "asOf": "2026-08-07",
+        "policyId": null,
+        "policyStatus": null,
+        "lines": [],
+        "warnings": [
+          "NO_POLICY"
+        ]
+      }
+    },
+    {
+      "name": "POS_CREATE_ORPHAN",
+      "method": "POST",
+      "url": "/settings/position-compensation-policies",
+      "status": 400,
+      "code": "HRM-ALLOW-CAT-ORPHAN-CODE",
+      "message": "component_code 'ORPHAN_CODE_SETDEF2ISS23I' not in active PC/SC catalog",
+      "data": null
+    },
+    {
+      "name": "POS_CREATE",
+      "method": "POST",
+      "url": "/settings/position-compensation-policies",
+      "status": 400,
+      "code": "HRM-VAL-001",
+      "message": "property positionLabelSnapshot should not exist",
+      "data": null
+    }
+  ],
+  "posFollowUp": {
+    "stamp": "SETDEF2CSU3JM",
+    "knownPc": "PC_RET_AC81",
+    "posId": "60bd4067-80ef-4c6e-a41f-a9954862a22b",
+    "steps": [
+      {
+        "name": "POS_ORPHAN",
+        "status": 400,
+        "code": "HRM-ALLOW-CAT-ORPHAN-CODE",
+        "message": "component_code 'ORPHAN_SETDEF2CSU3JM' not in active PC/SC catalog"
+      },
+      {
+        "name": "POS_CREATE",
+        "status": 201,
+        "code": "HRM-SET-POS-201",
+        "message": "Position compensation policy created",
+        "data": {
+          "id": "60bd4067-80ef-4c6e-a41f-a9954862a22b",
+          "companyId": "holding",
+          "ouId": null,
+          "positionKey": "CEO",
+          "positionLabelSnapshot": "Tổng Giám đốc",
+          "nameVi": "QA policy SETDEF2CSU3JM",
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "status": "active",
+          "archivedAt": null,
+          "lines": [
+            {
+              "id": "f6aa4587-9570-4c66-8fc1-ac6f1fb55bde",
+              "policyId": "60bd4067-80ef-4c6e-a41f-a9954862a22b",
+              "componentCode": "PC_RET_AC81",
+              "salaryComponentId": "9e8a8b0d-00be-41b1-b70d-73a2b3913e59",
+              "allowanceTypeId": "e535aae1-bdcd-47af-be75-2729e17045a2",
+              "amount": 500000,
+              "calcMode": "fixed",
+              "currency": "VND",
+              "sortOrder": 1,
+              "archivedAt": null,
+              "componentNameVi": "Retire probe PC_RET_AC81"
+            }
+          ],
+          "createdAt": "2026-08-07T10:25:51.315Z",
+          "updatedAt": "2026-08-07T10:25:51.315Z",
+          "createdBy": null,
+          "updatedBy": null
+        }
+      },
+      {
+        "name": "POS_GET",
+        "status": 200,
+        "code": "HRM-SET-POS-200",
+        "message": "Position compensation policy",
+        "data": {
+          "id": "60bd4067-80ef-4c6e-a41f-a9954862a22b",
+          "companyId": "holding",
+          "ouId": null,
+          "positionKey": "CEO",
+          "positionLabelSnapshot": "Tổng Giám đốc",
+          "nameVi": "QA policy SETDEF2CSU3JM",
+          "effectiveFrom": "2026-01-01",
+          "effectiveTo": null,
+          "status": "active",
+          "archivedAt": null,
+          "lines": [
+            {
+              "id": "f6aa4587-9570-4c66-8fc1-ac6f1fb55bde",
+              "policyId": "60bd4067-80ef-4c6e-a41f-a9954862a22b",
+              "componentCode": "PC_RET_AC81",
+              "salaryComponentId": "9e8a8b0d-00be-41b1-b70d-73a2b3913e59",
+              "allowanceTypeId": "e535aae1-bdcd-47af-be75-2729e17045a2",
+              "amount": 500000,
+              "calcMode": "fixed",
+              "currency": "VND",
+              "sortOrder": 1,
+              "archivedAt": null,
+              "componentNameVi": "Retire probe PC_RET_AC81"
+            }
+          ],
+          "createdAt": "2026-08-07T10:25:51.315Z",
+          "updatedAt": "2026-08-07T10:25:51.315Z",
+          "createdBy": null,
+          "updatedBy": null
+        }
+      },
+      {
+        "name": "POS_RESOLVE_HIT",
+        "status": 200,
+        "code": "HRM-SET-POS-200",
+        "message": "Position compensation prefill draft",
+        "data": {
+          "companyId": "holding",
+          "ouId": null,
+          "positionKey": "CEO",
+          "asOf": "2026-08-07",
+          "policyId": "60bd4067-80ef-4c6e-a41f-a9954862a22b",
+          "policyStatus": "active",
+          "lines": [
+            {
+              "componentCode": "PC_RET_AC81",
+              "amount": 500000,
+              "calcMode": "fixed",
+              "currency": "VND",
+              "salaryComponentId": "9e8a8b0d-00be-41b1-b70d-73a2b3913e59",
+              "allowanceTypeId": "e535aae1-bdcd-47af-be75-2729e17045a2",
+              "source": "position_policy"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      {
+        "name": "POS_DUP",
+        "status": 409,
+        "code": "HRM-SET-POS-409-ACTIVE",
+        "message": "Active position compensation policy already exists for this scope"
+      },
+      {
+        "name": "POS_RETIRE",
+        "status": 201,
+        "code": "HRM-SET-POS-200",
+        "message": "Position compensation policy retired",
+        "data": {
+          "id": "60bd4067-80ef-4c6e-a41f-a9954862a22b",
+          "status": "retired"
+        }
+      },
+      {
+        "name": "POS_RESOLVE_AFTER",
+        "status": 200,
+        "code": "HRM-SET-POS-200",
+        "message": "Position compensation prefill draft",
+        "data": {
+          "companyId": "holding",
+          "ouId": null,
+          "positionKey": "CEO",
+          "asOf": "2026-08-07",
+          "policyId": null,
+          "policyStatus": null,
+          "lines": [],
+          "warnings": [
+            "NO_POLICY"
+          ]
+        }
+      }
+    ]
+  },
+  "verdictsFinal": {
+    "TAX_PUT_OK": true,
+    "TAX_PUT_BAD_SHAPE": true,
+    "SI_PATCH_YYYY_MM_DD": true,
+    "SI_OVERLAP": true,
+    "SI_DELETE_409": true,
+    "SI_RETIRE": true,
+    "POS_ORPHAN": true,
+    "POS_CREATE": true,
+    "POS_DUP": true,
+    "POS_RETIRE": true,
+    "SRC02_HIT": true,
+    "SRC02_AFTER": true
+  },
+  "overallFinal": "PASS",
+  "knownPcUsed": "PC_RET_AC81",
+  "posIdFinal": "60bd4067-80ef-4c6e-a41f-a9954862a22b"
+}

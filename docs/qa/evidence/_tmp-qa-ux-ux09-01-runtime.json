@@ -1,0 +1,216 @@
+{
+  "work_item_id": "QA-UX-UX09-01",
+  "startedAt": "2026-07-28T07:53:37.763Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "hold_deploy": true
+  },
+  "steps": [
+    {
+      "id": "L0-portal",
+      "ok": true,
+      "detail": "http://127.0.0.1:5173",
+      "at": "2026-07-28T07:53:37.763Z"
+    },
+    {
+      "id": "login",
+      "ok": true,
+      "detail": "token ok · company main",
+      "at": "2026-07-28T07:53:37.888Z"
+    },
+    {
+      "id": "UF-UX09-open-tab",
+      "ok": true,
+      "detail": "button Ca làm việc",
+      "at": "2026-07-28T07:53:43.103Z"
+    },
+    {
+      "id": "UF-UX09-menu-list",
+      "ok": true,
+      "detail": "menuitem Danh sách ca",
+      "at": "2026-07-28T07:53:43.211Z"
+    },
+    {
+      "id": "UF-UX09-baseline-rows",
+      "ok": true,
+      "detail": "count=0 sample=[]",
+      "at": "2026-07-28T07:53:45.820Z"
+    },
+    {
+      "id": "UF-UX09-add-UX9D08650",
+      "ok": true,
+      "detail": "rowPresent=true count=1 creates=[{\"status\":201,\"url\":\"http://127.0.0.1:5173/api/hrm/attendance/work-shifts\"}]",
+      "at": "2026-07-28T07:53:51.147Z"
+    },
+    {
+      "id": "UF-UX09-add-UX9D08651",
+      "ok": true,
+      "detail": "rowPresent=true count=2 creates=[{\"status\":201,\"url\":\"http://127.0.0.1:5173/api/hrm/attendance/work-shifts\"},{\"status\":201,\"url\":\"http://127.0.0.1:5173/api/hrm/attendance/work-shifts\"}]",
+      "at": "2026-07-28T07:54:02.329Z"
+    },
+    {
+      "id": "UF-UX09-fe-seed-rows",
+      "ok": true,
+      "detail": "count=2 after FE Add",
+      "at": "2026-07-28T07:54:03.144Z"
+    },
+    {
+      "id": "UF-UX09-toolbar-hidden-idle",
+      "ok": true,
+      "detail": "{\"countVisible\":false,\"countText\":\"\",\"deleteVisible\":false,\"deleteText\":\"\",\"hasCountText\":false,\"hasClear\":false,\"hasDelete\":false}",
+      "at": "2026-07-28T07:54:03.293Z"
+    },
+    {
+      "id": "UF-UX09-checkbox-select",
+      "ok": true,
+      "detail": "clicked=2 want=2",
+      "at": "2026-07-28T07:54:03.828Z"
+    },
+    {
+      "id": "UF-UX09-toolbar-visible",
+      "ok": true,
+      "detail": "{\"countVisible\":true,\"countText\":\"Đã chọn 2 ca\",\"deleteVisible\":true,\"deleteText\":\"Xóa (2)\",\"hasCountText\":true,\"hasClear\":true,\"hasDelete\":true}",
+      "at": "2026-07-28T07:54:03.949Z"
+    },
+    {
+      "id": "UF-UX09-clear-hides-toolbar",
+      "ok": true,
+      "detail": "{\"countVisible\":false,\"countText\":\"\",\"deleteVisible\":false,\"deleteText\":\"\",\"hasCountText\":false,\"hasClear\":false,\"hasDelete\":false}",
+      "at": "2026-07-28T07:54:04.421Z"
+    },
+    {
+      "id": "UF-UX09-reselect",
+      "ok": true,
+      "detail": "clicked=2",
+      "at": "2026-07-28T07:54:04.987Z"
+    },
+    {
+      "id": "UF-UX09-confirm-dialog",
+      "ok": true,
+      "detail": "AlertDialog bulk confirm",
+      "at": "2026-07-28T07:54:05.656Z"
+    },
+    {
+      "id": "UF-UX09-delete-network",
+      "ok": true,
+      "detail": "2xxDeletes=2 all=[{\"status\":200,\"url\":\"http://127.0.0.1:5173/api/hrm/attendance/work-shifts/980b0f12-6d76-48ee-9ce0-ae9687813bf7?company_id=main\"},{\"status\":200,\"url\":\"http://127.0.0.1:5173/api/hrm/attendance/work-shifts/8dc4b39b-074d-48f4-a25f-ad59a4989084?company_id=main\"}]",
+      "at": "2026-07-28T07:54:08.790Z"
+    },
+    {
+      "id": "UF-UX09-fe-after-2xx",
+      "ok": true,
+      "detail": "before=2 after=0 wantRemoved=2",
+      "at": "2026-07-28T07:54:08.794Z"
+    },
+    {
+      "id": "UF-UX09-open-tab",
+      "ok": true,
+      "detail": "button Ca làm việc",
+      "at": "2026-07-28T07:54:13.047Z"
+    },
+    {
+      "id": "UF-UX09-menu-list",
+      "ok": true,
+      "detail": "menuitem Danh sách ca",
+      "at": "2026-07-28T07:54:13.136Z"
+    },
+    {
+      "id": "UF-UX09-f5-consistent",
+      "ok": true,
+      "detail": "fe=0 f5=0",
+      "at": "2026-07-28T07:54:17.157Z"
+    },
+    {
+      "id": "UF-UX09-overall",
+      "ok": true,
+      "detail": "bulk toolbar+delete+F5 OK",
+      "at": "2026-07-28T07:54:17.239Z"
+    },
+    {
+      "id": "must_keep-UX03-input-immediate",
+      "ok": true,
+      "detail": "value=UX09Debounce",
+      "at": "2026-07-28T07:54:17.327Z"
+    },
+    {
+      "id": "must_keep-UX03-clear",
+      "ok": true,
+      "detail": "empty=true",
+      "at": "2026-07-28T07:54:17.816Z"
+    },
+    {
+      "id": "must_keep-C1-clock-in",
+      "ok": true,
+      "detail": "wizard=true methodOrManual=true",
+      "at": "2026-07-28T07:54:44.235Z"
+    },
+    {
+      "id": "must_keep-payroll-mount",
+      "ok": true,
+      "detail": "root=3017290",
+      "at": "2026-07-28T07:54:48.128Z"
+    },
+    {
+      "id": "must_keep-payroll-tax",
+      "ok": true,
+      "detail": "via=menuitem onTax=true root=3017290 banner=false typeErrors=0",
+      "at": "2026-07-28T07:54:51.974Z"
+    },
+    {
+      "id": "must_keep-D5-zod-add",
+      "ok": true,
+      "detail": "msgs=[\"Mã thành phần không được để trống\",\"Tên thành phần không được để trống\",\"Vui lòng chọn loại thành phần\"]",
+      "at": "2026-07-28T07:54:57.213Z"
+    },
+    {
+      "id": "console-no-TypeError",
+      "ok": true,
+      "detail": "count=0",
+      "at": "2026-07-28T07:54:57.309Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "network": {
+    "deletes": [
+      {
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/attendance/work-shifts/980b0f12-6d76-48ee-9ce0-ae9687813bf7?company_id=main"
+      },
+      {
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/attendance/work-shifts/8dc4b39b-074d-48f4-a25f-ad59a4989084?company_id=main"
+      }
+    ],
+    "creates": [
+      {
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/attendance/work-shifts"
+      },
+      {
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/attendance/work-shifts"
+      }
+    ]
+  },
+  "screens": [
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\01-attendance-landing.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\02-shifts-list.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\03-after-fe-add.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\04-selected-toolbar.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\05-after-clear.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\06-confirm-dialog.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\07-after-bulk-delete.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\08-after-f5.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\09-clock-in-wizard.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\10-payroll-tax.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-ux09-01\\11-payroll-d5.png"
+  ],
+  "finishedAt": "2026-07-28T07:54:57.310Z",
+  "failedCount": 0,
+  "criticalFailCount": 0,
+  "verdict": "PASS",
+  "blocked_data": []
+}

@@ -1,0 +1,230 @@
+{
+  "work_item_id": "PO-HRM-E2E-LINK-PAY-ATT-CLOSE-QA-03",
+  "parent": "PO-HRM-E2E-LINK-PAY-ATT-CLOSE-FE-02 READY_FOR_QA",
+  "supersedes": "PO-HRM-E2E-LINK-PAY-ATT-CLOSE-QA-02",
+  "u65": "zero-seed · browser-only",
+  "hdsd_align": "Tiền lương → Tính lương → Tháng 1/2026 draft → Thêm nhân viên → F5",
+  "honesty": {
+    "payroll_e2e_ready": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5",
+    "targetPeriodId": "dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "clicks": [
+    {
+      "step": "PathA",
+      "detail": "deep-link month=1 year=2026 batch=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8",
+      "at": "2026-08-06T12:58:38.199Z"
+    },
+    {
+      "step": "AC04",
+      "detail": "Thêm nhân viên → select eligible → enroll POST",
+      "at": "2026-08-06T12:59:13.219Z"
+    },
+    {
+      "step": "AC05",
+      "detail": "F5 persistence",
+      "at": "2026-08-06T12:59:51.250Z"
+    }
+  ],
+  "path": {
+    "used": "A",
+    "A": {
+      "url": {
+        "href": "http://127.0.0.1:5173/hr/payroll?pay_period_month=1&pay_period_year=2026&pay_batch_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8&portal=1&tenantId=xevn&companyId=main",
+        "pay_period_month": "1",
+        "pay_period_year": "2026",
+        "pay_batch_id": "dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+      },
+      "addEmpVisible": true,
+      "filterText": "",
+      "monthOk": true
+    },
+    "B": {}
+  },
+  "pay": {
+    "eligibilityApi": {
+      "status": 200,
+      "eligible_count": 53,
+      "ineligible_count": 0,
+      "code": "HRM-PAY-200"
+    },
+    "detailOpen": true,
+    "enabledCheckboxCount": 53,
+    "selectedRowSnippet": "",
+    "enrollPosts": [
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/enroll"
+      }
+    ],
+    "enrollBody": {
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/enroll",
+      "keys": [
+        "employee_ids",
+        "mode"
+      ],
+      "hasCompanyId": false,
+      "mode": "explicit",
+      "employee_ids_len": 1,
+      "bodySnippet": "{\"mode\":\"explicit\",\"employee_ids\":[\"0500220b-f289-40df-b07e-86316285439b\"]}",
+      "parseErr": null
+    },
+    "bodyWhitelistOk": true,
+    "feAfter2xx": {
+      "emptyRowGone": true,
+      "empCountSnippet": "Số nhân viên\n\n1"
+    },
+    "enroll": {
+      "enrolled": true,
+      "bodyOk": true,
+      "enrollPosts": [
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/enroll"
+        }
+      ],
+      "enrollBody": {
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/enroll",
+        "keys": [
+          "employee_ids",
+          "mode"
+        ],
+        "hasCompanyId": false,
+        "mode": "explicit",
+        "employee_ids_len": 1,
+        "bodySnippet": "{\"mode\":\"explicit\",\"employee_ids\":[\"0500220b-f289-40df-b07e-86316285439b\"]}",
+        "parseErr": null
+      },
+      "f5Persist": true,
+      "emptyF5": false,
+      "rowCount": 1
+    }
+  },
+  "network": {
+    "pay": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/salary-templates?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/eligibility"
+      },
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/enroll"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/salary-templates?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+      }
+    ],
+    "enroll": [
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/enroll"
+      }
+    ],
+    "enrollBodies": [
+      {
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/enroll",
+        "keys": [
+          "employee_ids",
+          "mode"
+        ],
+        "hasCompanyId": false,
+        "mode": "explicit",
+        "employee_ids_len": 1,
+        "bodySnippet": "{\"mode\":\"explicit\",\"employee_ids\":[\"0500220b-f289-40df-b07e-86316285439b\"]}",
+        "parseErr": null
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "criteria": {
+    "l0": "PASS",
+    "eligible": "PASS",
+    "pathNav": "PASS",
+    "ac04": "PASS",
+    "ac05": "PASS",
+    "uf": "PASS"
+  },
+  "residuals": [],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "startedAt": "2026-08-06T12:58:37.357Z",
+  "endedAt": "2026-08-06T12:59:55.164Z",
+  "next_owner": "qc",
+  "next_dispatch_prompt": "work_item_id: PO-HRM-E2E-LINK-PAY-ATT-CLOSE-QC-01\nfrom_role: pm\nto_role: qc\nlane: governance\nparent: PO-HRM-E2E-LINK-PAY-ATT-CLOSE-QA-03 PASS_TO_PM\nread_first: docs/qa/evidence/po-hrm-e2e-link-pay-att-close-qa-03.md\nentry: Path A + AC-PAY-HIRE-04/05 PASS · eligible_count=53 · U65 zero-seed\nexit: GO/GWC — slice only; cấm claim module UAT; verify honesty payroll_e2e_ready=true with AC-04∧AC-05 evidence\nevidence_path: docs/qa/evidence/po-hrm-e2e-link-pay-att-close-qc-01.md",
+  "executive": "U65 browser QA-03 after FE-02 (R-PAY-PERIOD-ROW-NAV). Portal http://127.0.0.1:5173. Path used=A; pathNav=PASS; eligible=53; AC-04=PASS; AC-05=PASS. Honesty payroll_e2e_ready=true. Module UAT DENIED.",
+  "completion_report": "- **Closed:** L0 PASS; Path A nav PASS; eligibility API PASS (count=53).\n- **AC-PAY-HIRE-04:** PASS; **AC-PAY-HIRE-05:** PASS.\n- **Not closed / residual:** none.\n- **Honesty:** payroll_e2e_ready=true (true only if AC-04∧AC-05).\n- **Denied:** module UAT / production GO."
+}

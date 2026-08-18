@@ -1,0 +1,139 @@
+{
+  "work_item_id": "QA-HDSD-MOB-BF03-DEPTH-01",
+  "date": "2026-08-01",
+  "device": "emulator-5554",
+  "api_base": "http://14.225.217.232:3001",
+  "apk_path": "C:\\xevn-apk\\hrm-mobile-qa-device.apk",
+  "persona": "uat.nv0001@xe.vn",
+  "u65_zero_seed": true,
+  "must_keep": [
+    "J-MOB-04",
+    "TC-MOB-011",
+    "TC-MOB-027",
+    "TC-MOB-028"
+  ],
+  "probe": {
+    "payslips": {
+      "status": 200,
+      "total": 1,
+      "code": "HRM-PAY-200"
+    },
+    "periods": {
+      "status": 200,
+      "total": 1,
+      "code": "HRM-PAY-200"
+    },
+    "contracts": {
+      "status": 200,
+      "total": 8,
+      "code": "HRM-CON-200"
+    },
+    "company": "holding",
+    "uuid": "10000000-0000-4000-8000-000000000001"
+  },
+  "tc": {
+    "TC-MOB-020": {
+      "verdict": "🟢",
+      "ok": true,
+      "note": "PayslipList → PayslipDetail · Thực lĩnh visible",
+      "detailOk": true,
+      "noNet": true,
+      "header": {
+        "hrmMobCount": 44,
+        "sample": [
+          "07-31 10:39:15.284 27472 27499 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/attendance/records?company_id=10000000-0000-4000-8000-000000000001&from_date=2026-07-31&to_date=2026-07-31&page=1&page_size=500&employee_id=3796d949-4513-45c0-88fa-33030a062b17 x-company-id=holding Authorization=Bearer …\r",
+          "07-31 10:39:15.290 27472 27499 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/payroll/payslips?company_id=holding&employee_id=3796d949-4513-45c0-88fa-33030a062b17 x-company-id=holding Authorization=Bearer …\r",
+          "07-31 10:39:15.431 27472 27499 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/employees/3796d949-4513-45c0-88fa-33030a062b17?company_id=holding x-company-id=holding Authorization=Bearer …\r",
+          "07-31 10:39:15.435 27472 27499 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/attendance/records?company_id=10000000-0000-4000-8000-000000000001&from_date=2026-07-31&to_date=2026-07-31&page=1&page_size=200&employee_id=3796d949-4513-45c0-88fa-33030a062b17 x-company-id=holding Authorization=Bearer …\r",
+          "07-31 10:39:15.462 27472 27499 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/employees?company_id=holding&page=2&page_size=30&status=active&view=directory x-company-id=holding Authorization=Bearer …\r",
+          "07-31 10:39:18.905 27472 27499 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/payroll/payslips?company_id=holding&employee_id=3796d949-4513-45c0-88fa-33030a062b17 x-company-id=holding Authorization=Bearer …\r"
+        ],
+        "companyIds": [
+          "holding"
+        ],
+        "hasMain": false
+      },
+      "jmob04": "PASS"
+    },
+    "TC-MOB-021": {
+      "verdict": "🟢",
+      "ok": true,
+      "note": "PayrollSummary via Settings→Lương (scrolls=1)",
+      "label": "Lương",
+      "summaryMarkers": true,
+      "noNet": true,
+      "hasLuongTap": true
+    },
+    "TC-MOB-022": {
+      "verdict": "🟢",
+      "ok": true,
+      "note": "Online → offline(svc-wifi) error/recovery PASS",
+      "onlineOk": true,
+      "offlineSignal": true,
+      "recovered": true,
+      "offlineToggle": "svc-wifi"
+    },
+    "TC-MOB-030": {
+      "verdict": "🟢",
+      "ok": true,
+      "note": "ContractsScreen via Settings→Hợp đồng (scrolls=0)",
+      "screenOk": true,
+      "noNet": true,
+      "hasHopDongTap": true
+    }
+  },
+  "regression": {
+    "TC-MOB-011": {
+      "verdict": "🟢",
+      "note": "must_keep — home shell reachable (not re-airplane this wave)",
+      "homeOk": true
+    },
+    "TC-MOB-027": {
+      "verdict": "🟢",
+      "note": "profile-employee-hero / profile-screen intact",
+      "ok": true
+    },
+    "TC-MOB-028": {
+      "verdict": "🟢",
+      "note": "dynamic-profile-form intact",
+      "ok": true
+    }
+  },
+  "promote": [
+    "TC-MOB-020",
+    "TC-MOB-021",
+    "TC-MOB-022",
+    "TC-MOB-030"
+  ],
+  "remain_yellow": [],
+  "apk_sha256": "24CDF95FD1F295200BE1D622FC8AE1BC26F90E1D4F732A0E3C8B50F50CD6C55F",
+  "login": {
+    "home": true,
+    "code": "HRM-AUTH-200",
+    "company": "holding",
+    "uuid": "10000000-0000-4000-8000-000000000001"
+  },
+  "jmob04_spine": "🟢 PASS",
+  "must_keep_regression_ok": true,
+  "ack_status": "PASS_TO_PM",
+  "summary": "4/4 depth TC 🟢 · remain 🟡: none · J-MOB-04 🟢 PASS",
+  "retry_021_030": {
+    "TC-MOB-021": {
+      "verdict": "🟢",
+      "ok": true,
+      "note": "PayrollSummary via Settings→Lương (scrolls=1)",
+      "label": "Lương",
+      "summaryMarkers": true,
+      "noNet": true,
+      "hasLuongTap": true
+    },
+    "TC-MOB-030": {
+      "verdict": "🟢",
+      "ok": true,
+      "note": "ContractsScreen via Settings→Hợp đồng (scrolls=0)",
+      "screenOk": true,
+      "noNet": true,
+      "hasHopDongTap": true
+    }
+  }
+}

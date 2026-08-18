@@ -1,0 +1,3118 @@
+{
+  "work_item_id": "PO-HRM-PAYROLL-FORMULA-RUN-GAP-QA-CB-BAG-01",
+  "stamp": "PAYFECB-MSIRETG1",
+  "lane": "L1_API_R-PAY-F-CB-BAG",
+  "portal_url": "http://127.0.0.1:5173",
+  "u65": "zero-seed · product-path C&B POST allowed (≠ pnpm seed) · cấm claim formula LIVE",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "formula_live": false,
+    "browser_uf": false
+  },
+  "author": "ceo@xe.vn",
+  "publisher": "admin@xe.vn",
+  "company_id": "main",
+  "startedAt": "2026-08-07T09:45:47.665Z",
+  "dist_rebuild": true,
+  "checks": {
+    "dist_formulas_live": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 200 code=HRM-PAY-FORMULA-200"
+    },
+    "eval_formula_publish": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "id=ff6ce2fa-8ad9-48c5-9162-f2f852087bd0 active=true publish=201/HRM-PAY-FORMULA-200"
+    },
+    "period_ready": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "periodId=d92d3bbb-f53a-4151-9b12-0ebe9dd27d25 create=409/HRM-PAY-002"
+    },
+    "ac_cb3_att_412": {
+      "ok": false,
+      "verdict": "FAIL",
+      "note": "HTTP 0 code=null msg=no open period"
+    },
+    "enroll_with_cb": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 201 code=HRM-PAY-ENROLL-200 enrolled=1"
+    },
+    "ac_cb1_process_with_cb": {
+      "ok": false,
+      "verdict": "FAIL",
+      "note": "Expected 2xx with C&B (live_active_package) but got HTTP 412 code=HRM-PAY-FORMULA-412 msg=No SRC amount for component BASE — refuse silent zero (BR-AMIS-PAY-SRC-05)"
+    }
+  },
+  "steps": [
+    {
+      "name": "probe_formulas_live",
+      "method": "GET",
+      "path": "/api/hrm/payroll/formulas?company_id=main",
+      "status": 200,
+      "code": "HRM-PAY-FORMULA-200",
+      "message": "Pay formulas listed",
+      "dataSummary": "{\"items\":[{\"id\":\"da5e17fc-9a21-4664-a30b-c56b40d4e21d\",\"companyId\":\"holding\",\"code\":\"qa_att_hrs_msijdlon\",\"version\":1,\"status\":\"active\",\"expressionJson\":{\"form\":\"gd1_eval_v1\",\"lines\":[{\"expr\":{\"op\":\"mul\",\"left\":\"base_salary\",\"right\":\"payable_hours\"},\"sign\":\"earning\",\"source\":\"expr\",\"component_code\":\"BASE_HRS\"}]},\"requiredVarsJson\":{\"keys\":[\"base_salary\",\"payable_hours\"]},\"label\":\"QA-ATT-LINE hours PAYFEATT-MSIJDKME\",\"authoredBy\":\"ceo@xe.vn\",\"authoredAt\":\"2026-08-07 06:01:04.480497+00\",\"publishedBy\":\"admin@xe.vn\",\"publishedAt\":\"2026-08-07 06:01:04.727069+00\",\"effectiveFrom\":null,\"effectiveTo\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 06:01:04.480497+00\",\"updatedAt\":\"2026-08-07 06:01:04.7…",
+      "data": {
+        "items": [
+          {
+            "id": "da5e17fc-9a21-4664-a30b-c56b40d4e21d",
+            "companyId": "holding",
+            "code": "qa_att_hrs_msijdlon",
+            "version": 1,
+            "status": "active",
+            "expressionJson": {
+              "form": "gd1_eval_v1",
+              "lines": [
+                {
+                  "expr": {
+                    "op": "mul",
+                    "left": "base_salary",
+                    "right": "payable_hours"
+                  },
+                  "sign": "earning",
+                  "source": "expr",
+                  "component_code": "BASE_HRS"
+                }
+              ]
+            },
+            "requiredVarsJson": {
+              "keys": [
+                "base_salary",
+                "payable_hours"
+              ]
+            },
+            "label": "QA-ATT-LINE hours PAYFEATT-MSIJDKME",
+            "authoredBy": "ceo@xe.vn",
+            "authoredAt": "2026-08-07 06:01:04.480497+00",
+            "publishedBy": "admin@xe.vn",
+            "publishedAt": "2026-08-07 06:01:04.727069+00",
+            "effectiveFrom": null,
+            "effectiveTo": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 06:01:04.480497+00",
+            "updatedAt": "2026-08-07 06:01:04.727069+00"
+          },
+          {
+            "id": "55fe7efb-4216-47b0-9da5-f1397f61a072",
+            "companyId": "holding",
+            "code": "qa_att_hrs_msijg64m",
+            "version": 1,
+            "status": "active",
+            "expressionJson": {
+              "form": "gd1_eval_v1",
+              "lines": [
+                {
+                  "expr": {
+                    "op": "mul",
+                    "left": "base_salary",
+                    "right": "payable_hours"
+                  },
+                  "sign": "earning",
+                  "source": "expr",
+                  "component_code": "BASE_HRS"
+                }
+              ]
+            },
+            "requiredVarsJson": {
+              "keys": [
+                "base_salary",
+                "payable_hours"
+              ]
+            },
+            "label": "QA-ATT-LINE hours PAYFEATT-MSIJG55H",
+            "authoredBy": "ceo@xe.vn",
+            "authoredAt": "2026-08-07 06:03:04.270351+00",
+            "publishedBy": "admin@xe.vn",
+            "publishedAt": "2026-08-07 06:03:04.496508+00",
+            "effectiveFrom": null,
+            "effectiveTo": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 06:03:04.270351+00",
+            "updatedAt": "2026-08-07 06:03:04.496508+00"
+          },
+          {
+            "id": "3b0bcbf4-81c8-4899-bef8-eac96507c29a",
+            "companyId": "holding",
+            "code": "qa_att_hrs_msijhaje",
+            "version": 1,
+            "status": "active",
+            "expressionJson": {
+              "form": "gd1_eval_v1",
+              "lines": [
+                {
+                  "expr": {
+                    "op": "mul",
+                    "left": "base_salary",
+                    "right": "payable_hours"
+                  },
+                  "sign": "earning",
+                  "source": "expr",
+                  "component_code": "BASE_HRS"
+                }
+              ]
+            },
+            "requiredVarsJson": {
+              "keys": [
+                "base_salary",
+                "payable_hours"
+              ]
+            },
+            "label": "QA-ATT-LINE hours PAYFEATT-MSIJH9MT",
+            "authoredBy": "ceo@xe.vn",
+            "authoredAt": "2026-08-07 06:03:56.657813+00",
+            "publishedBy": "admin@xe.vn",
+            "publishedAt": "2026-08-07 06:03:56.879854+00",
+            "effectiveFrom": null,
+            "effectiveTo": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 06:03:56.657813+00",
+            "updatedAt": "2026-08-07 06:03:56.879854+00"
+          },
+          {
+            "id": "76bf7055-5ba6-4ce7-b19d-4b9aefc874da",
+            "companyId": "holding",
+            "code": "qa_att_hrs_msijrz11",
+            "version": 1,
+            "status": "active",
+            "expressionJson": {
+              "form": "gd1_eval_v1",
+              "lines": [
+                {
+                  "expr": {
+                    "op": "mul",
+                    "left": "base_salary",
+                    "right": "payable_hours"
+                  },
+                  "sign": "earning",
+                  "source": "expr",
+                  "component_code": "BASE_HRS"
+                }
+              ]
+            },
+            "requiredVarsJson": {
+              "keys": [
+                "base_salary",
+                "payable_hours"
+              ]
+            },
+            "label": "QA-ATT-LINE hours PAYFEATT-MSIJRXT4",
+            "authoredBy": "ceo@xe.vn",
+            "authoredAt": "2026-08-07 06:12:14.928624+00",
+            "publishedBy": "admin@xe.vn",
+            "publishedAt": "2026-08-07 06:12:15.15298+00",
+            "effectiveFrom": null,
+            "effectiveTo": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 06:12:14.928624+00",
+            "updatedAt": "2026-08-07 06:12:15.15298+00"
+          },
+          {
+            "id": "16476159-0193-4be0-9dc0-d08c4adf0c20",
+            "companyId": "holding",
+            "code": "qa_att_hrs_msikcnq9",
+            "version": 1,
+            "status": "active",
+            "expressionJson": {
+              "form": "gd1_eval_v1",
+              "lines": [
+                {
+                  "expr": {
+                    "op": "mul",
+                    "left": "base_salary",
+                    "right": "payable_hours"
+                  },
+                  "sign": "earning",
+                  "source": "expr",
+                  "component_code": "BASE_HRS"
+                }
+              ]
+            },
+            "requiredVarsJson": {
+              "keys": [
+                "base_salary",
+                "payable_hours"
+              ]
+            },
+            "label": "QA-ATT-LINE-03 hours PAYFEATT-MSIKCMFF",
+            "authoredBy": "ceo@xe.vn",
+            "authoredAt": "2026-08-07 06:28:20.015937+00",
+            "publishedBy": "admin@xe.vn",
+            "publishedAt": "2026-08-07 06:28:20.235685+00",
+            "effectiveFrom": null,
+            "effectiveTo": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 06:28:20.015937+00",
+            "updatedAt": "2026-08-07 06:28:20.235685+00"
+          },
+          {
+            "id": "c37ea22a-c859-41f2-a56f-d529c0c9a0bf",
+            "companyId": "holding",
+            "code": "qa_feval_payfeval_msii5nc4",
+            "version": 1,
+            "status": "pending_publish",
+            "expressionJson": {
+              "form": "gd1_eval_v1",
+              "note": "U65 FE-EVAL gd1_eval_v1 PAYFEVAL-MSII5NC4",
+              "lines": [
+                {
+                  "var": "base_salary",
+                  "sign": "earning",
+                  "source": "var",
+                  "component_code": "BASE"
+                },
+                {
+                  "expr": {
+                    "op": "mul",
+                    "left": "base_salary",
+                    "right": 0.1
+                  },
+                  "sign": "deduction",
+                  "source": "expr",
+                  "component_code": "DED_TAX"
+                }
+              ],
+              "staged": true,
+              "dialect": "gd1_eval_v1"
+            },
+            "requiredVarsJson": {
+              "keys": [
+                "payable_hours",
+                "base_salary"
+              ]
+            },
+            "label": "Công thức FE-EVAL browser PAYFEVAL-MSII5NC4",
+            "authoredBy": "ceo@xe.vn",
+            "authoredAt": "2026-08-07 05:27:12.623911+00",
+            "publishedBy": null,
+            "publishedAt": null,
+            "effectiveFrom": null,
+            "effectiveTo": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 05:27:01.762101+00",
+            "updatedAt": "2026-08-07 05:27:12.693838+00"
+          },
+          {
+            "id": "51511dd9-de8f-4615-8627-582ce6fd90d0",
+            "companyId": "holding",
+            "code": "qa_formula_payfq3_msigur4c",
+            "version": 1,
+            "status": "pending_publish",
+            "expressionJson": {
+              "ops": [
+                {
+                  "op": "opaque",
+                  "text": "opaque:base_salary*payable_hours // not FE eval"
+                }
+              ],
+              "form": "gd1",
+              "note": "U65 browser smoke PAYFQ3-MSIGUR4C"
+            },
+            "requiredVarsJson": {
+              "keys": [
+                "payable_hours",
+                "base_salary"
+              ]
+            },
+            "label": "Công thức QA browser PAYFQ3-MSIGUR4C",
+            "authoredBy": "ceo@xe.vn",
+            "authoredAt": "2026-08-07 04:50:40.378702+00",
+            "publishedBy": null,
+            "publishedAt": null,
+            "effectiveFrom": null,
+            "effectiveTo": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 04:50:31.760584+00",
+            "updatedAt": "2026-08-07 04:50:40.4366+00"
+          }
+        ]
+      },
+      "details": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-FORMULA-200",
+        "message": "Pay formulas listed",
+        "data": {
+          "items": [
+            {
+              "id": "da5e17fc-9a21-4664-a30b-c56b40d4e21d",
+              "companyId": "holding",
+              "code": "qa_att_hrs_msijdlon",
+              "version": 1,
+              "status": "active",
+              "expressionJson": {
+                "form": "gd1_eval_v1",
+                "lines": [
+                  {
+                    "expr": {
+                      "op": "mul",
+                      "left": "base_salary",
+                      "right": "payable_hours"
+                    },
+                    "sign": "earning",
+                    "source": "expr",
+                    "component_code": "BASE_HRS"
+                  }
+                ]
+              },
+              "requiredVarsJson": {
+                "keys": [
+                  "base_salary",
+                  "payable_hours"
+                ]
+              },
+              "label": "QA-ATT-LINE hours PAYFEATT-MSIJDKME",
+              "authoredBy": "ceo@xe.vn",
+              "authoredAt": "2026-08-07 06:01:04.480497+00",
+              "publishedBy": "admin@xe.vn",
+              "publishedAt": "2026-08-07 06:01:04.727069+00",
+              "effectiveFrom": null,
+              "effectiveTo": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 06:01:04.480497+00",
+              "updatedAt": "2026-08-07 06:01:04.727069+00"
+            },
+            {
+              "id": "55fe7efb-4216-47b0-9da5-f1397f61a072",
+              "companyId": "holding",
+              "code": "qa_att_hrs_msijg64m",
+              "version": 1,
+              "status": "active",
+              "expressionJson": {
+                "form": "gd1_eval_v1",
+                "lines": [
+                  {
+                    "expr": {
+                      "op": "mul",
+                      "left": "base_salary",
+                      "right": "payable_hours"
+                    },
+                    "sign": "earning",
+                    "source": "expr",
+                    "component_code": "BASE_HRS"
+                  }
+                ]
+              },
+              "requiredVarsJson": {
+                "keys": [
+                  "base_salary",
+                  "payable_hours"
+                ]
+              },
+              "label": "QA-ATT-LINE hours PAYFEATT-MSIJG55H",
+              "authoredBy": "ceo@xe.vn",
+              "authoredAt": "2026-08-07 06:03:04.270351+00",
+              "publishedBy": "admin@xe.vn",
+              "publishedAt": "2026-08-07 06:03:04.496508+00",
+              "effectiveFrom": null,
+              "effectiveTo": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 06:03:04.270351+00",
+              "updatedAt": "2026-08-07 06:03:04.496508+00"
+            },
+            {
+              "id": "3b0bcbf4-81c8-4899-bef8-eac96507c29a",
+              "companyId": "holding",
+              "code": "qa_att_hrs_msijhaje",
+              "version": 1,
+              "status": "active",
+              "expressionJson": {
+                "form": "gd1_eval_v1",
+                "lines": [
+                  {
+                    "expr": {
+                      "op": "mul",
+                      "left": "base_salary",
+                      "right": "payable_hours"
+                    },
+                    "sign": "earning",
+                    "source": "expr",
+                    "component_code": "BASE_HRS"
+                  }
+                ]
+              },
+              "requiredVarsJson": {
+                "keys": [
+                  "base_salary",
+                  "payable_hours"
+                ]
+              },
+              "label": "QA-ATT-LINE hours PAYFEATT-MSIJH9MT",
+              "authoredBy": "ceo@xe.vn",
+              "authoredAt": "2026-08-07 06:03:56.657813+00",
+              "publishedBy": "admin@xe.vn",
+              "publishedAt": "2026-08-07 06:03:56.879854+00",
+              "effectiveFrom": null,
+              "effectiveTo": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 06:03:56.657813+00",
+              "updatedAt": "2026-08-07 06:03:56.879854+00"
+            },
+            {
+              "id": "76bf7055-5ba6-4ce7-b19d-4b9aefc874da",
+              "companyId": "holding",
+              "code": "qa_att_hrs_msijrz11",
+              "version": 1,
+              "status": "active",
+              "expressionJson": {
+                "form": "gd1_eval_v1",
+                "lines": [
+                  {
+                    "expr": {
+                      "op": "mul",
+                      "left": "base_salary",
+                      "right": "payable_hours"
+                    },
+                    "sign": "earning",
+                    "source": "expr",
+                    "component_code": "BASE_HRS"
+                  }
+                ]
+              },
+              "requiredVarsJson": {
+                "keys": [
+                  "base_salary",
+                  "payable_hours"
+                ]
+              },
+              "label": "QA-ATT-LINE hours PAYFEATT-MSIJRXT4",
+              "authoredBy": "ceo@xe.vn",
+              "authoredAt": "2026-08-07 06:12:14.928624+00",
+              "publishedBy": "admin@xe.vn",
+              "publishedAt": "2026-08-07 06:12:15.15298+00",
+              "effectiveFrom": null,
+              "effectiveTo": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 06:12:14.928624+00",
+              "updatedAt": "2026-08-07 06:12:15.15298+00"
+            },
+            {
+              "id": "16476159-0193-4be0-9dc0-d08c4adf0c20",
+              "companyId": "holding",
+              "code": "qa_att_hrs_msikcnq9",
+              "version": 1,
+              "status": "active",
+              "expressionJson": {
+                "form": "gd1_eval_v1",
+                "lines": [
+                  {
+                    "expr": {
+                      "op": "mul",
+                      "left": "base_salary",
+                      "right": "payable_hours"
+                    },
+                    "sign": "earning",
+                    "source": "expr",
+                    "component_code": "BASE_HRS"
+                  }
+                ]
+              },
+              "requiredVarsJson": {
+                "keys": [
+                  "base_salary",
+                  "payable_hours"
+                ]
+              },
+              "label": "QA-ATT-LINE-03 hours PAYFEATT-MSIKCMFF",
+              "authoredBy": "ceo@xe.vn",
+              "authoredAt": "2026-08-07 06:28:20.015937+00",
+              "publishedBy": "admin@xe.vn",
+              "publishedAt": "2026-08-07 06:28:20.235685+00",
+              "effectiveFrom": null,
+              "effectiveTo": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 06:28:20.015937+00",
+              "updatedAt": "2026-08-07 06:28:20.235685+00"
+            },
+            {
+              "id": "c37ea22a-c859-41f2-a56f-d529c0c9a0bf",
+              "companyId": "holding",
+              "code": "qa_feval_payfeval_msii5nc4",
+              "version": 1,
+              "status": "pending_publish",
+              "expressionJson": {
+                "form": "gd1_eval_v1",
+                "note": "U65 FE-EVAL gd1_eval_v1 PAYFEVAL-MSII5NC4",
+                "lines": [
+                  {
+                    "var": "base_salary",
+                    "sign": "earning",
+                    "source": "var",
+                    "component_code": "BASE"
+                  },
+                  {
+                    "expr": {
+                      "op": "mul",
+                      "left": "base_salary",
+                      "right": 0.1
+                    },
+                    "sign": "deduction",
+                    "source": "expr",
+                    "component_code": "DED_TAX"
+                  }
+                ],
+                "staged": true,
+                "dialect": "gd1_eval_v1"
+              },
+              "requiredVarsJson": {
+                "keys": [
+                  "payable_hours",
+                  "base_salary"
+                ]
+              },
+              "label": "Công thức FE-EVAL browser PAYFEVAL-MSII5NC4",
+              "authoredBy": "ceo@xe.vn",
+              "authoredAt": "2026-08-07 05:27:12.623911+00",
+              "publishedBy": null,
+              "publishedAt": null,
+              "effectiveFrom": null,
+              "effectiveTo": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 05:27:01.762101+00",
+              "updatedAt": "2026-08-07 05:27:12.693838+00"
+            },
+            {
+              "id": "51511dd9-de8f-4615-8627-582ce6fd90d0",
+              "companyId": "holding",
+              "code": "qa_formula_payfq3_msigur4c",
+              "version": 1,
+              "status": "pending_publish",
+              "expressionJson": {
+                "ops": [
+                  {
+                    "op": "opaque",
+                    "text": "opaque:base_salary*payable_hours // not FE eval"
+                  }
+                ],
+                "form": "gd1",
+                "note": "U65 browser smoke PAYFQ3-MSIGUR4C"
+              },
+              "requiredVarsJson": {
+                "keys": [
+                  "payable_hours",
+                  "base_salary"
+                ]
+              },
+              "label": "Công thức QA browser PAYFQ3-MSIGUR4C",
+              "authoredBy": "ceo@xe.vn",
+              "authoredAt": "2026-08-07 04:50:40.378702+00",
+              "publishedBy": null,
+              "publishedAt": null,
+              "effectiveFrom": null,
+              "effectiveTo": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 04:50:31.760584+00",
+              "updatedAt": "2026-08-07 04:50:40.4366+00"
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T09:45:47.946Z"
+      }
+    },
+    {
+      "name": "list_comp_packages_main",
+      "method": "GET",
+      "path": "/api/hrm/contracts-insurance/compensation-packages?company_id=main",
+      "status": 200,
+      "code": "HRM-COMP-200",
+      "message": "Compensation packages listed",
+      "dataSummary": "{\"total\":3,\"page\":1,\"page_size\":20,\"data\":[{\"id\":\"dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d\",\"company_id\":\"holding\",\"employee_id\":\"3796d949-4513-45c0-88fa-33030a062b17\",\"contract_id\":null,\"version\":1,\"supersedes_package_id\":null,\"effective_from\":\"2026-09-01\",\"effective_to\":null,\"currency\":\"VND\",\"change_reason\":\"QA-CB-BAG product-path PAYFECB-MSII9VYY\",\"created_at\":\"2026-08-07T05:30:14.127Z\",\"updated_at\":\"2026-08-07T05:30:14.127Z\",\"lines\":[{\"id\":\"b312f494-864d-4aa1-9b88-57d64458d317\",\"package_id\":\"dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d\",\"line_type\":\"base\",\"amount\":12000000,\"currency\":\"VND\",\"allowance_code\":null,\"component_code\":\"base\",\"taxable\":true,\"note\":null,\"sort_order\":1,\"created_at\":\"2026-08-0…",
+      "data": {
+        "total": 3,
+        "page": 1,
+        "page_size": 20,
+        "data": [
+          {
+            "id": "dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d",
+            "company_id": "holding",
+            "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+            "contract_id": null,
+            "version": 1,
+            "supersedes_package_id": null,
+            "effective_from": "2026-09-01",
+            "effective_to": null,
+            "currency": "VND",
+            "change_reason": "QA-CB-BAG product-path PAYFECB-MSII9VYY",
+            "created_at": "2026-08-07T05:30:14.127Z",
+            "updated_at": "2026-08-07T05:30:14.127Z",
+            "lines": [
+              {
+                "id": "b312f494-864d-4aa1-9b88-57d64458d317",
+                "package_id": "dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d",
+                "line_type": "base",
+                "amount": 12000000,
+                "currency": "VND",
+                "allowance_code": null,
+                "component_code": "base",
+                "taxable": true,
+                "note": null,
+                "sort_order": 1,
+                "created_at": "2026-08-07T05:30:14.135Z"
+              }
+            ]
+          },
+          {
+            "id": "084a6c66-d738-4920-953e-add6dad36488",
+            "company_id": "holding",
+            "employee_id": "22222222-2222-4222-8222-222222222222",
+            "contract_id": null,
+            "version": 1,
+            "supersedes_package_id": null,
+            "effective_from": "2026-06-01",
+            "effective_to": null,
+            "currency": "VND",
+            "change_reason": "QA-CB PROCESS PAYFECB-RETRY3",
+            "created_at": "2026-08-07T05:32:54.596Z",
+            "updated_at": "2026-08-07T05:32:54.596Z",
+            "lines": [
+              {
+                "id": "87c46658-2eac-40c5-b1bb-bc30feb8b17f",
+                "package_id": "084a6c66-d738-4920-953e-add6dad36488",
+                "line_type": "base",
+                "amount": 9500000,
+                "currency": "VND",
+                "allowance_code": null,
+                "component_code": "base",
+                "taxable": true,
+                "note": null,
+                "sort_order": 1,
+                "created_at": "2026-08-07T05:32:54.603Z"
+              }
+            ]
+          },
+          {
+            "id": "49e79114-0a9a-4fcc-803f-4d768ad2a3d9",
+            "company_id": "holding",
+            "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+            "contract_id": null,
+            "version": 1,
+            "supersedes_package_id": null,
+            "effective_from": "2026-01-01",
+            "effective_to": null,
+            "currency": "VND",
+            "change_reason": "QA-CB-BAG retry PAYFECB-RETRY1",
+            "created_at": "2026-08-07T05:31:15.991Z",
+            "updated_at": "2026-08-07T05:31:15.991Z",
+            "lines": [
+              {
+                "id": "cf0059ca-32fe-42ca-a41a-7e061d296b2c",
+                "package_id": "49e79114-0a9a-4fcc-803f-4d768ad2a3d9",
+                "line_type": "base",
+                "amount": 12000000,
+                "currency": "VND",
+                "allowance_code": null,
+                "component_code": "base",
+                "taxable": true,
+                "note": null,
+                "sort_order": 1,
+                "created_at": "2026-08-07T05:31:16.001Z"
+              }
+            ]
+          }
+        ]
+      },
+      "details": null,
+      "json": {
+        "success": true,
+        "code": "HRM-COMP-200",
+        "message": "Compensation packages listed",
+        "data": {
+          "total": 3,
+          "page": 1,
+          "page_size": 20,
+          "data": [
+            {
+              "id": "dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d",
+              "company_id": "holding",
+              "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+              "contract_id": null,
+              "version": 1,
+              "supersedes_package_id": null,
+              "effective_from": "2026-09-01",
+              "effective_to": null,
+              "currency": "VND",
+              "change_reason": "QA-CB-BAG product-path PAYFECB-MSII9VYY",
+              "created_at": "2026-08-07T05:30:14.127Z",
+              "updated_at": "2026-08-07T05:30:14.127Z",
+              "lines": [
+                {
+                  "id": "b312f494-864d-4aa1-9b88-57d64458d317",
+                  "package_id": "dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d",
+                  "line_type": "base",
+                  "amount": 12000000,
+                  "currency": "VND",
+                  "allowance_code": null,
+                  "component_code": "base",
+                  "taxable": true,
+                  "note": null,
+                  "sort_order": 1,
+                  "created_at": "2026-08-07T05:30:14.135Z"
+                }
+              ]
+            },
+            {
+              "id": "084a6c66-d738-4920-953e-add6dad36488",
+              "company_id": "holding",
+              "employee_id": "22222222-2222-4222-8222-222222222222",
+              "contract_id": null,
+              "version": 1,
+              "supersedes_package_id": null,
+              "effective_from": "2026-06-01",
+              "effective_to": null,
+              "currency": "VND",
+              "change_reason": "QA-CB PROCESS PAYFECB-RETRY3",
+              "created_at": "2026-08-07T05:32:54.596Z",
+              "updated_at": "2026-08-07T05:32:54.596Z",
+              "lines": [
+                {
+                  "id": "87c46658-2eac-40c5-b1bb-bc30feb8b17f",
+                  "package_id": "084a6c66-d738-4920-953e-add6dad36488",
+                  "line_type": "base",
+                  "amount": 9500000,
+                  "currency": "VND",
+                  "allowance_code": null,
+                  "component_code": "base",
+                  "taxable": true,
+                  "note": null,
+                  "sort_order": 1,
+                  "created_at": "2026-08-07T05:32:54.603Z"
+                }
+              ]
+            },
+            {
+              "id": "49e79114-0a9a-4fcc-803f-4d768ad2a3d9",
+              "company_id": "holding",
+              "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+              "contract_id": null,
+              "version": 1,
+              "supersedes_package_id": null,
+              "effective_from": "2026-01-01",
+              "effective_to": null,
+              "currency": "VND",
+              "change_reason": "QA-CB-BAG retry PAYFECB-RETRY1",
+              "created_at": "2026-08-07T05:31:15.991Z",
+              "updated_at": "2026-08-07T05:31:15.991Z",
+              "lines": [
+                {
+                  "id": "cf0059ca-32fe-42ca-a41a-7e061d296b2c",
+                  "package_id": "49e79114-0a9a-4fcc-803f-4d768ad2a3d9",
+                  "line_type": "base",
+                  "amount": 12000000,
+                  "currency": "VND",
+                  "allowance_code": null,
+                  "component_code": "base",
+                  "taxable": true,
+                  "note": null,
+                  "sort_order": 1,
+                  "created_at": "2026-08-07T05:31:16.001Z"
+                }
+              ]
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T09:45:48.106Z"
+      }
+    },
+    {
+      "name": "list_comp_packages_holding",
+      "method": "GET",
+      "path": "/api/hrm/contracts-insurance/compensation-packages?company_id=holding",
+      "status": 200,
+      "code": "HRM-COMP-200",
+      "message": "Compensation packages listed",
+      "dataSummary": "{\"total\":3,\"page\":1,\"page_size\":20,\"data\":[{\"id\":\"dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d\",\"company_id\":\"holding\",\"employee_id\":\"3796d949-4513-45c0-88fa-33030a062b17\",\"contract_id\":null,\"version\":1,\"supersedes_package_id\":null,\"effective_from\":\"2026-09-01\",\"effective_to\":null,\"currency\":\"VND\",\"change_reason\":\"QA-CB-BAG product-path PAYFECB-MSII9VYY\",\"created_at\":\"2026-08-07T05:30:14.127Z\",\"updated_at\":\"2026-08-07T05:30:14.127Z\",\"lines\":[{\"id\":\"b312f494-864d-4aa1-9b88-57d64458d317\",\"package_id\":\"dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d\",\"line_type\":\"base\",\"amount\":12000000,\"currency\":\"VND\",\"allowance_code\":null,\"component_code\":\"base\",\"taxable\":true,\"note\":null,\"sort_order\":1,\"created_at\":\"2026-08-0…",
+      "data": {
+        "total": 3,
+        "page": 1,
+        "page_size": 20,
+        "data": [
+          {
+            "id": "dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d",
+            "company_id": "holding",
+            "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+            "contract_id": null,
+            "version": 1,
+            "supersedes_package_id": null,
+            "effective_from": "2026-09-01",
+            "effective_to": null,
+            "currency": "VND",
+            "change_reason": "QA-CB-BAG product-path PAYFECB-MSII9VYY",
+            "created_at": "2026-08-07T05:30:14.127Z",
+            "updated_at": "2026-08-07T05:30:14.127Z",
+            "lines": [
+              {
+                "id": "b312f494-864d-4aa1-9b88-57d64458d317",
+                "package_id": "dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d",
+                "line_type": "base",
+                "amount": 12000000,
+                "currency": "VND",
+                "allowance_code": null,
+                "component_code": "base",
+                "taxable": true,
+                "note": null,
+                "sort_order": 1,
+                "created_at": "2026-08-07T05:30:14.135Z"
+              }
+            ]
+          },
+          {
+            "id": "084a6c66-d738-4920-953e-add6dad36488",
+            "company_id": "holding",
+            "employee_id": "22222222-2222-4222-8222-222222222222",
+            "contract_id": null,
+            "version": 1,
+            "supersedes_package_id": null,
+            "effective_from": "2026-06-01",
+            "effective_to": null,
+            "currency": "VND",
+            "change_reason": "QA-CB PROCESS PAYFECB-RETRY3",
+            "created_at": "2026-08-07T05:32:54.596Z",
+            "updated_at": "2026-08-07T05:32:54.596Z",
+            "lines": [
+              {
+                "id": "87c46658-2eac-40c5-b1bb-bc30feb8b17f",
+                "package_id": "084a6c66-d738-4920-953e-add6dad36488",
+                "line_type": "base",
+                "amount": 9500000,
+                "currency": "VND",
+                "allowance_code": null,
+                "component_code": "base",
+                "taxable": true,
+                "note": null,
+                "sort_order": 1,
+                "created_at": "2026-08-07T05:32:54.603Z"
+              }
+            ]
+          },
+          {
+            "id": "49e79114-0a9a-4fcc-803f-4d768ad2a3d9",
+            "company_id": "holding",
+            "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+            "contract_id": null,
+            "version": 1,
+            "supersedes_package_id": null,
+            "effective_from": "2026-01-01",
+            "effective_to": null,
+            "currency": "VND",
+            "change_reason": "QA-CB-BAG retry PAYFECB-RETRY1",
+            "created_at": "2026-08-07T05:31:15.991Z",
+            "updated_at": "2026-08-07T05:31:15.991Z",
+            "lines": [
+              {
+                "id": "cf0059ca-32fe-42ca-a41a-7e061d296b2c",
+                "package_id": "49e79114-0a9a-4fcc-803f-4d768ad2a3d9",
+                "line_type": "base",
+                "amount": 12000000,
+                "currency": "VND",
+                "allowance_code": null,
+                "component_code": "base",
+                "taxable": true,
+                "note": null,
+                "sort_order": 1,
+                "created_at": "2026-08-07T05:31:16.001Z"
+              }
+            ]
+          }
+        ]
+      },
+      "details": null,
+      "json": {
+        "success": true,
+        "code": "HRM-COMP-200",
+        "message": "Compensation packages listed",
+        "data": {
+          "total": 3,
+          "page": 1,
+          "page_size": 20,
+          "data": [
+            {
+              "id": "dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d",
+              "company_id": "holding",
+              "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+              "contract_id": null,
+              "version": 1,
+              "supersedes_package_id": null,
+              "effective_from": "2026-09-01",
+              "effective_to": null,
+              "currency": "VND",
+              "change_reason": "QA-CB-BAG product-path PAYFECB-MSII9VYY",
+              "created_at": "2026-08-07T05:30:14.127Z",
+              "updated_at": "2026-08-07T05:30:14.127Z",
+              "lines": [
+                {
+                  "id": "b312f494-864d-4aa1-9b88-57d64458d317",
+                  "package_id": "dc7d3dec-f126-4c16-b3f4-bc6d526b5d3d",
+                  "line_type": "base",
+                  "amount": 12000000,
+                  "currency": "VND",
+                  "allowance_code": null,
+                  "component_code": "base",
+                  "taxable": true,
+                  "note": null,
+                  "sort_order": 1,
+                  "created_at": "2026-08-07T05:30:14.135Z"
+                }
+              ]
+            },
+            {
+              "id": "084a6c66-d738-4920-953e-add6dad36488",
+              "company_id": "holding",
+              "employee_id": "22222222-2222-4222-8222-222222222222",
+              "contract_id": null,
+              "version": 1,
+              "supersedes_package_id": null,
+              "effective_from": "2026-06-01",
+              "effective_to": null,
+              "currency": "VND",
+              "change_reason": "QA-CB PROCESS PAYFECB-RETRY3",
+              "created_at": "2026-08-07T05:32:54.596Z",
+              "updated_at": "2026-08-07T05:32:54.596Z",
+              "lines": [
+                {
+                  "id": "87c46658-2eac-40c5-b1bb-bc30feb8b17f",
+                  "package_id": "084a6c66-d738-4920-953e-add6dad36488",
+                  "line_type": "base",
+                  "amount": 9500000,
+                  "currency": "VND",
+                  "allowance_code": null,
+                  "component_code": "base",
+                  "taxable": true,
+                  "note": null,
+                  "sort_order": 1,
+                  "created_at": "2026-08-07T05:32:54.603Z"
+                }
+              ]
+            },
+            {
+              "id": "49e79114-0a9a-4fcc-803f-4d768ad2a3d9",
+              "company_id": "holding",
+              "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+              "contract_id": null,
+              "version": 1,
+              "supersedes_package_id": null,
+              "effective_from": "2026-01-01",
+              "effective_to": null,
+              "currency": "VND",
+              "change_reason": "QA-CB-BAG retry PAYFECB-RETRY1",
+              "created_at": "2026-08-07T05:31:15.991Z",
+              "updated_at": "2026-08-07T05:31:15.991Z",
+              "lines": [
+                {
+                  "id": "cf0059ca-32fe-42ca-a41a-7e061d296b2c",
+                  "package_id": "49e79114-0a9a-4fcc-803f-4d768ad2a3d9",
+                  "line_type": "base",
+                  "amount": 12000000,
+                  "currency": "VND",
+                  "allowance_code": null,
+                  "component_code": "base",
+                  "taxable": true,
+                  "note": null,
+                  "sort_order": 1,
+                  "created_at": "2026-08-07T05:31:16.001Z"
+                }
+              ]
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T09:45:48.134Z"
+      }
+    },
+    {
+      "name": "create_qa_cb_bag_msirett3",
+      "method": "POST",
+      "path": "/api/hrm/payroll/formulas",
+      "status": 201,
+      "code": "HRM-PAY-FORMULA-201",
+      "message": "Pay formula draft created",
+      "dataSummary": "{\"id\":\"ff6ce2fa-8ad9-48c5-9162-f2f852087bd0\",\"companyId\":\"holding\",\"code\":\"qa_cb_bag_msirett3\",\"version\":1,\"status\":\"draft\",\"expressionJson\":{\"form\":\"gd1_eval_v1\",\"lines\":[{\"var\":\"base_salary\",\"sign\":\"earning\",\"source\":\"var\",\"component_code\":\"BASE\"},{\"expr\":{\"op\":\"mul\",\"left\":\"base_salary\",\"right\":0.1},\"sign\":\"deduction\",\"source\":\"expr\",\"component_code\":\"DED_SAMPLE\"}]},\"requiredVarsJson\":{\"keys\":[\"base_salary\"]},\"label\":\"QA-CB-BAG gd1_eval_v1 PAYFECB-MSIRETG1\",\"authoredBy\":\"ceo@xe.vn\",\"authoredAt\":\"2026-08-07 09:45:58.138839+00\",\"publishedBy\":null,\"publishedAt\":null,\"effectiveFrom\":null,\"effectiveTo\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 09:45:58.138839+00\",\"updatedAt\":\"2026-08-07 0…",
+      "data": {
+        "id": "ff6ce2fa-8ad9-48c5-9162-f2f852087bd0",
+        "companyId": "holding",
+        "code": "qa_cb_bag_msirett3",
+        "version": 1,
+        "status": "draft",
+        "expressionJson": {
+          "form": "gd1_eval_v1",
+          "lines": [
+            {
+              "var": "base_salary",
+              "sign": "earning",
+              "source": "var",
+              "component_code": "BASE"
+            },
+            {
+              "expr": {
+                "op": "mul",
+                "left": "base_salary",
+                "right": 0.1
+              },
+              "sign": "deduction",
+              "source": "expr",
+              "component_code": "DED_SAMPLE"
+            }
+          ]
+        },
+        "requiredVarsJson": {
+          "keys": [
+            "base_salary"
+          ]
+        },
+        "label": "QA-CB-BAG gd1_eval_v1 PAYFECB-MSIRETG1",
+        "authoredBy": "ceo@xe.vn",
+        "authoredAt": "2026-08-07 09:45:58.138839+00",
+        "publishedBy": null,
+        "publishedAt": null,
+        "effectiveFrom": null,
+        "effectiveTo": null,
+        "archivedAt": null,
+        "createdAt": "2026-08-07 09:45:58.138839+00",
+        "updatedAt": "2026-08-07 09:45:58.138839+00"
+      },
+      "details": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-FORMULA-201",
+        "message": "Pay formula draft created",
+        "data": {
+          "id": "ff6ce2fa-8ad9-48c5-9162-f2f852087bd0",
+          "companyId": "holding",
+          "code": "qa_cb_bag_msirett3",
+          "version": 1,
+          "status": "draft",
+          "expressionJson": {
+            "form": "gd1_eval_v1",
+            "lines": [
+              {
+                "var": "base_salary",
+                "sign": "earning",
+                "source": "var",
+                "component_code": "BASE"
+              },
+              {
+                "expr": {
+                  "op": "mul",
+                  "left": "base_salary",
+                  "right": 0.1
+                },
+                "sign": "deduction",
+                "source": "expr",
+                "component_code": "DED_SAMPLE"
+              }
+            ]
+          },
+          "requiredVarsJson": {
+            "keys": [
+              "base_salary"
+            ]
+          },
+          "label": "QA-CB-BAG gd1_eval_v1 PAYFECB-MSIRETG1",
+          "authoredBy": "ceo@xe.vn",
+          "authoredAt": "2026-08-07 09:45:58.138839+00",
+          "publishedBy": null,
+          "publishedAt": null,
+          "effectiveFrom": null,
+          "effectiveTo": null,
+          "archivedAt": null,
+          "createdAt": "2026-08-07 09:45:58.138839+00",
+          "updatedAt": "2026-08-07 09:45:58.138839+00"
+        },
+        "timestamp": "2026-08-07T09:45:48.275Z"
+      }
+    },
+    {
+      "name": "submit_qa_cb_bag_msirett3",
+      "method": "POST",
+      "path": "/api/hrm/payroll/formulas/ff6ce2fa-8ad9-48c5-9162-f2f852087bd0/submit-publish?company_id=main",
+      "status": 201,
+      "code": "HRM-PAY-FORMULA-200",
+      "message": "Pay formula submitted for publish",
+      "dataSummary": "{\"id\":\"ff6ce2fa-8ad9-48c5-9162-f2f852087bd0\",\"companyId\":\"holding\",\"code\":\"qa_cb_bag_msirett3\",\"version\":1,\"status\":\"pending_publish\",\"expressionJson\":{\"form\":\"gd1_eval_v1\",\"lines\":[{\"var\":\"base_salary\",\"sign\":\"earning\",\"source\":\"var\",\"component_code\":\"BASE\"},{\"expr\":{\"op\":\"mul\",\"left\":\"base_salary\",\"right\":0.1},\"sign\":\"deduction\",\"source\":\"expr\",\"component_code\":\"DED_SAMPLE\"}]},\"requiredVarsJson\":{\"keys\":[\"base_salary\"]},\"label\":\"QA-CB-BAG gd1_eval_v1 PAYFECB-MSIRETG1\",\"authoredBy\":\"ceo@xe.vn\",\"authoredAt\":\"2026-08-07 09:45:58.138839+00\",\"publishedBy\":null,\"publishedAt\":null,\"effectiveFrom\":null,\"effectiveTo\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 09:45:58.138839+00\",\"updatedAt\":\"20…",
+      "data": {
+        "id": "ff6ce2fa-8ad9-48c5-9162-f2f852087bd0",
+        "companyId": "holding",
+        "code": "qa_cb_bag_msirett3",
+        "version": 1,
+        "status": "pending_publish",
+        "expressionJson": {
+          "form": "gd1_eval_v1",
+          "lines": [
+            {
+              "var": "base_salary",
+              "sign": "earning",
+              "source": "var",
+              "component_code": "BASE"
+            },
+            {
+              "expr": {
+                "op": "mul",
+                "left": "base_salary",
+                "right": 0.1
+              },
+              "sign": "deduction",
+              "source": "expr",
+              "component_code": "DED_SAMPLE"
+            }
+          ]
+        },
+        "requiredVarsJson": {
+          "keys": [
+            "base_salary"
+          ]
+        },
+        "label": "QA-CB-BAG gd1_eval_v1 PAYFECB-MSIRETG1",
+        "authoredBy": "ceo@xe.vn",
+        "authoredAt": "2026-08-07 09:45:58.138839+00",
+        "publishedBy": null,
+        "publishedAt": null,
+        "effectiveFrom": null,
+        "effectiveTo": null,
+        "archivedAt": null,
+        "createdAt": "2026-08-07 09:45:58.138839+00",
+        "updatedAt": "2026-08-07 09:45:58.29845+00"
+      },
+      "details": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-FORMULA-200",
+        "message": "Pay formula submitted for publish",
+        "data": {
+          "id": "ff6ce2fa-8ad9-48c5-9162-f2f852087bd0",
+          "companyId": "holding",
+          "code": "qa_cb_bag_msirett3",
+          "version": 1,
+          "status": "pending_publish",
+          "expressionJson": {
+            "form": "gd1_eval_v1",
+            "lines": [
+              {
+                "var": "base_salary",
+                "sign": "earning",
+                "source": "var",
+                "component_code": "BASE"
+              },
+              {
+                "expr": {
+                  "op": "mul",
+                  "left": "base_salary",
+                  "right": 0.1
+                },
+                "sign": "deduction",
+                "source": "expr",
+                "component_code": "DED_SAMPLE"
+              }
+            ]
+          },
+          "requiredVarsJson": {
+            "keys": [
+              "base_salary"
+            ]
+          },
+          "label": "QA-CB-BAG gd1_eval_v1 PAYFECB-MSIRETG1",
+          "authoredBy": "ceo@xe.vn",
+          "authoredAt": "2026-08-07 09:45:58.138839+00",
+          "publishedBy": null,
+          "publishedAt": null,
+          "effectiveFrom": null,
+          "effectiveTo": null,
+          "archivedAt": null,
+          "createdAt": "2026-08-07 09:45:58.138839+00",
+          "updatedAt": "2026-08-07 09:45:58.29845+00"
+        },
+        "timestamp": "2026-08-07T09:45:48.434Z"
+      }
+    },
+    {
+      "name": "publish_qa_cb_bag_msirett3",
+      "method": "POST",
+      "path": "/api/hrm/payroll/formulas/ff6ce2fa-8ad9-48c5-9162-f2f852087bd0/publish?company_id=main",
+      "status": 201,
+      "code": "HRM-PAY-FORMULA-200",
+      "message": "Pay formula published",
+      "dataSummary": "{\"id\":\"ff6ce2fa-8ad9-48c5-9162-f2f852087bd0\",\"companyId\":\"holding\",\"code\":\"qa_cb_bag_msirett3\",\"version\":1,\"status\":\"active\",\"expressionJson\":{\"form\":\"gd1_eval_v1\",\"lines\":[{\"var\":\"base_salary\",\"sign\":\"earning\",\"source\":\"var\",\"component_code\":\"BASE\"},{\"expr\":{\"op\":\"mul\",\"left\":\"base_salary\",\"right\":0.1},\"sign\":\"deduction\",\"source\":\"expr\",\"component_code\":\"DED_SAMPLE\"}]},\"requiredVarsJson\":{\"keys\":[\"base_salary\"]},\"label\":\"QA-CB-BAG gd1_eval_v1 PAYFECB-MSIRETG1\",\"authoredBy\":\"ceo@xe.vn\",\"authoredAt\":\"2026-08-07 09:45:58.138839+00\",\"publishedBy\":\"admin@xe.vn\",\"publishedAt\":\"2026-08-07 09:45:58.443226+00\",\"effectiveFrom\":null,\"effectiveTo\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 09:45:58…",
+      "data": {
+        "id": "ff6ce2fa-8ad9-48c5-9162-f2f852087bd0",
+        "companyId": "holding",
+        "code": "qa_cb_bag_msirett3",
+        "version": 1,
+        "status": "active",
+        "expressionJson": {
+          "form": "gd1_eval_v1",
+          "lines": [
+            {
+              "var": "base_salary",
+              "sign": "earning",
+              "source": "var",
+              "component_code": "BASE"
+            },
+            {
+              "expr": {
+                "op": "mul",
+                "left": "base_salary",
+                "right": 0.1
+              },
+              "sign": "deduction",
+              "source": "expr",
+              "component_code": "DED_SAMPLE"
+            }
+          ]
+        },
+        "requiredVarsJson": {
+          "keys": [
+            "base_salary"
+          ]
+        },
+        "label": "QA-CB-BAG gd1_eval_v1 PAYFECB-MSIRETG1",
+        "authoredBy": "ceo@xe.vn",
+        "authoredAt": "2026-08-07 09:45:58.138839+00",
+        "publishedBy": "admin@xe.vn",
+        "publishedAt": "2026-08-07 09:45:58.443226+00",
+        "effectiveFrom": null,
+        "effectiveTo": null,
+        "archivedAt": null,
+        "createdAt": "2026-08-07 09:45:58.138839+00",
+        "updatedAt": "2026-08-07 09:45:58.443226+00"
+      },
+      "details": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-FORMULA-200",
+        "message": "Pay formula published",
+        "data": {
+          "id": "ff6ce2fa-8ad9-48c5-9162-f2f852087bd0",
+          "companyId": "holding",
+          "code": "qa_cb_bag_msirett3",
+          "version": 1,
+          "status": "active",
+          "expressionJson": {
+            "form": "gd1_eval_v1",
+            "lines": [
+              {
+                "var": "base_salary",
+                "sign": "earning",
+                "source": "var",
+                "component_code": "BASE"
+              },
+              {
+                "expr": {
+                  "op": "mul",
+                  "left": "base_salary",
+                  "right": 0.1
+                },
+                "sign": "deduction",
+                "source": "expr",
+                "component_code": "DED_SAMPLE"
+              }
+            ]
+          },
+          "requiredVarsJson": {
+            "keys": [
+              "base_salary"
+            ]
+          },
+          "label": "QA-CB-BAG gd1_eval_v1 PAYFECB-MSIRETG1",
+          "authoredBy": "ceo@xe.vn",
+          "authoredAt": "2026-08-07 09:45:58.138839+00",
+          "publishedBy": "admin@xe.vn",
+          "publishedAt": "2026-08-07 09:45:58.443226+00",
+          "effectiveFrom": null,
+          "effectiveTo": null,
+          "archivedAt": null,
+          "createdAt": "2026-08-07 09:45:58.138839+00",
+          "updatedAt": "2026-08-07 09:45:58.443226+00"
+        },
+        "timestamp": "2026-08-07T09:45:48.580Z"
+      }
+    },
+    {
+      "name": "list_att_sheets",
+      "method": "GET",
+      "path": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "status": 200,
+      "code": "HRM-AS-200",
+      "message": "Attendance sheets listed",
+      "dataSummary": "{\"total\":5,\"data\":[{\"id\":\"ae71f0b0-a3cb-43ab-9f5f-f42004add657\",\"company_id\":\"holding\",\"name\":\"QA-BP-ATT-SIGN-DRAFT-SUBMIT-01\",\"start_date\":\"2026-08-31T17:00:00.000Z\",\"end_date\":\"2026-09-29T17:00:00.000Z\",\"attendance_type\":\"daily\",\"standard_type\":\"fixed\",\"department\":null,\"positions\":null,\"status\":\"closed\",\"created_by\":null,\"notes\":null,\"created_at\":\"2026-08-05T08:51:00.352Z\",\"updated_at\":\"2026-08-07T06:13:34.121Z\",\"closed_at\":\"2026-08-07T06:13:34.121Z\",\"closed_by\":\"ceo@xe.vn\"},{\"id\":\"74aba4d4-9c75-4707-9d01-7690516e95c7\",\"company_id\":\"holding\",\"name\":\"QA-ATT-LINE-03 2026-08 PAYFEATT-MSIKCMFF\",\"start_date\":\"2026-07-31T17:00:00.000Z\",\"end_date\":\"2026-08-30T17:00:00.000Z\",\"attendance_type\":\"da…",
+      "data": {
+        "total": 5,
+        "data": [
+          {
+            "id": "ae71f0b0-a3cb-43ab-9f5f-f42004add657",
+            "company_id": "holding",
+            "name": "QA-BP-ATT-SIGN-DRAFT-SUBMIT-01",
+            "start_date": "2026-08-31T17:00:00.000Z",
+            "end_date": "2026-09-29T17:00:00.000Z",
+            "attendance_type": "daily",
+            "standard_type": "fixed",
+            "department": null,
+            "positions": null,
+            "status": "closed",
+            "created_by": null,
+            "notes": null,
+            "created_at": "2026-08-05T08:51:00.352Z",
+            "updated_at": "2026-08-07T06:13:34.121Z",
+            "closed_at": "2026-08-07T06:13:34.121Z",
+            "closed_by": "ceo@xe.vn"
+          },
+          {
+            "id": "74aba4d4-9c75-4707-9d01-7690516e95c7",
+            "company_id": "holding",
+            "name": "QA-ATT-LINE-03 2026-08 PAYFEATT-MSIKCMFF",
+            "start_date": "2026-07-31T17:00:00.000Z",
+            "end_date": "2026-08-30T17:00:00.000Z",
+            "attendance_type": "daily",
+            "standard_type": "standard",
+            "department": null,
+            "positions": null,
+            "status": "submitted",
+            "created_by": null,
+            "notes": null,
+            "created_at": "2026-08-07T06:28:18.877Z",
+            "updated_at": "2026-08-07T06:28:20.542Z",
+            "closed_at": null,
+            "closed_by": null
+          },
+          {
+            "id": "642a4713-b0ee-4802-a1d9-2fe650cbc17f",
+            "company_id": "holding",
+            "name": "QA-SHEET-MFD-M2 01/07/2026–31/07/2026",
+            "start_date": "2026-06-30T17:00:00.000Z",
+            "end_date": "2026-07-30T17:00:00.000Z",
+            "attendance_type": "daily",
+            "standard_type": "monthly",
+            "department": null,
+            "positions": null,
+            "status": "closed",
+            "created_by": null,
+            "notes": null,
+            "created_at": "2026-08-04T06:10:22.576Z",
+            "updated_at": "2026-08-05T08:44:11.482Z",
+            "closed_at": "2026-08-05T08:44:11.482Z",
+            "closed_by": "ceo@xe.vn"
+          },
+          {
+            "id": "3934591a-50ec-452b-940f-7f29ede50272",
+            "company_id": "holding",
+            "name": "QA-SHEET-MFD-M2 01/07/2026-31/07/2026",
+            "start_date": "2026-06-30T17:00:00.000Z",
+            "end_date": "2026-07-30T17:00:00.000Z",
+            "attendance_type": "daily",
+            "standard_type": "monthly",
+            "department": null,
+            "positions": null,
+            "status": "closed",
+            "created_by": null,
+            "notes": null,
+            "created_at": "2026-08-04T06:14:39.741Z",
+            "updated_at": "2026-08-07T03:18:49.644Z",
+            "closed_at": "2026-08-07T03:18:49.644Z",
+            "closed_by": "ceo@xe.vn"
+          },
+          {
+            "id": "a5c698e5-221a-4d29-a5ac-ab81f35a3996",
+            "company_id": "holding",
+            "name": "QA-ATT-CLOSE-PAY-1786013003378",
+            "start_date": "2025-12-31T17:00:00.000Z",
+            "end_date": "2026-01-27T17:00:00.000Z",
+            "attendance_type": "daily",
+            "standard_type": "fixed",
+            "department": null,
+            "positions": null,
+            "status": "closed",
+            "created_by": null,
+            "notes": null,
+            "created_at": "2026-08-06T10:43:38.774Z",
+            "updated_at": "2026-08-07T06:13:34.682Z",
+            "closed_at": "2026-08-07T06:13:34.682Z",
+            "closed_by": "ceo@xe.vn"
+          }
+        ]
+      },
+      "details": null,
+      "json": {
+        "success": true,
+        "code": "HRM-AS-200",
+        "message": "Attendance sheets listed",
+        "data": {
+          "total": 5,
+          "data": [
+            {
+              "id": "ae71f0b0-a3cb-43ab-9f5f-f42004add657",
+              "company_id": "holding",
+              "name": "QA-BP-ATT-SIGN-DRAFT-SUBMIT-01",
+              "start_date": "2026-08-31T17:00:00.000Z",
+              "end_date": "2026-09-29T17:00:00.000Z",
+              "attendance_type": "daily",
+              "standard_type": "fixed",
+              "department": null,
+              "positions": null,
+              "status": "closed",
+              "created_by": null,
+              "notes": null,
+              "created_at": "2026-08-05T08:51:00.352Z",
+              "updated_at": "2026-08-07T06:13:34.121Z",
+              "closed_at": "2026-08-07T06:13:34.121Z",
+              "closed_by": "ceo@xe.vn"
+            },
+            {
+              "id": "74aba4d4-9c75-4707-9d01-7690516e95c7",
+              "company_id": "holding",
+              "name": "QA-ATT-LINE-03 2026-08 PAYFEATT-MSIKCMFF",
+              "start_date": "2026-07-31T17:00:00.000Z",
+              "end_date": "2026-08-30T17:00:00.000Z",
+              "attendance_type": "daily",
+              "standard_type": "standard",
+              "department": null,
+              "positions": null,
+              "status": "submitted",
+              "created_by": null,
+              "notes": null,
+              "created_at": "2026-08-07T06:28:18.877Z",
+              "updated_at": "2026-08-07T06:28:20.542Z",
+              "closed_at": null,
+              "closed_by": null
+            },
+            {
+              "id": "642a4713-b0ee-4802-a1d9-2fe650cbc17f",
+              "company_id": "holding",
+              "name": "QA-SHEET-MFD-M2 01/07/2026–31/07/2026",
+              "start_date": "2026-06-30T17:00:00.000Z",
+              "end_date": "2026-07-30T17:00:00.000Z",
+              "attendance_type": "daily",
+              "standard_type": "monthly",
+              "department": null,
+              "positions": null,
+              "status": "closed",
+              "created_by": null,
+              "notes": null,
+              "created_at": "2026-08-04T06:10:22.576Z",
+              "updated_at": "2026-08-05T08:44:11.482Z",
+              "closed_at": "2026-08-05T08:44:11.482Z",
+              "closed_by": "ceo@xe.vn"
+            },
+            {
+              "id": "3934591a-50ec-452b-940f-7f29ede50272",
+              "company_id": "holding",
+              "name": "QA-SHEET-MFD-M2 01/07/2026-31/07/2026",
+              "start_date": "2026-06-30T17:00:00.000Z",
+              "end_date": "2026-07-30T17:00:00.000Z",
+              "attendance_type": "daily",
+              "standard_type": "monthly",
+              "department": null,
+              "positions": null,
+              "status": "closed",
+              "created_by": null,
+              "notes": null,
+              "created_at": "2026-08-04T06:14:39.741Z",
+              "updated_at": "2026-08-07T03:18:49.644Z",
+              "closed_at": "2026-08-07T03:18:49.644Z",
+              "closed_by": "ceo@xe.vn"
+            },
+            {
+              "id": "a5c698e5-221a-4d29-a5ac-ab81f35a3996",
+              "company_id": "holding",
+              "name": "QA-ATT-CLOSE-PAY-1786013003378",
+              "start_date": "2025-12-31T17:00:00.000Z",
+              "end_date": "2026-01-27T17:00:00.000Z",
+              "attendance_type": "daily",
+              "standard_type": "fixed",
+              "department": null,
+              "positions": null,
+              "status": "closed",
+              "created_by": null,
+              "notes": null,
+              "created_at": "2026-08-06T10:43:38.774Z",
+              "updated_at": "2026-08-07T06:13:34.682Z",
+              "closed_at": "2026-08-07T06:13:34.682Z",
+              "closed_by": "ceo@xe.vn"
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T09:45:48.614Z"
+      }
+    },
+    {
+      "name": "create_period_closed_month",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods",
+      "status": 409,
+      "code": "HRM-PAY-002",
+      "message": "Payroll period overlaps with existing period",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-002\",\"message\":\"Payroll period overlaps with existing period\",\"timestamp\":\"2026-08-07T09:45:48.908Z\"}",
+      "data": null,
+      "details": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-002",
+        "message": "Payroll period overlaps with existing period",
+        "timestamp": "2026-08-07T09:45:48.908Z"
+      }
+    },
+    {
+      "name": "list_periods_after_overlap",
+      "method": "GET",
+      "path": "/api/hrm/payroll/periods?company_id=holding",
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "dataSummary": "{\"total\":14,\"data\":[{\"id\":\"5f739175-d08a-4939-9d10-eb6e19024bd5\",\"company_id\":\"holding\",\"period_label\":\"QA-ATT-LINE open PAYFEATT-MSIJH9MT\",\"start_date\":\"2036-01-31T17:00:00.000Z\",\"end_date\":\"2036-02-28T17:00:00.000Z\",\"status\":\"draft\",\"created_by\":null,\"processed_at\":null,\"closed_at\":null,\"created_at\":\"2026-08-07T06:03:58.025Z\",\"updated_at\":\"2026-08-07T06:03:58.025Z\",\"employee_count\":0,\"formula_definition_id\":null},{\"id\":\"daffe3ee-f1f6-4a9e-866d-4641e8b50822\",\"company_id\":\"holding\",\"period_label\":\"QA-ATT-LINE open PAYFEATT-MSIJDKME\",\"start_date\":\"2035-10-31T17:00:00.000Z\",\"end_date\":\"2035-11-29T17:00:00.000Z\",\"status\":\"draft\",\"created_by\":null,\"processed_at\":null,\"closed_at\":null,\"created_at…",
+      "data": {
+        "total": 14,
+        "data": [
+          {
+            "id": "5f739175-d08a-4939-9d10-eb6e19024bd5",
+            "company_id": "holding",
+            "period_label": "QA-ATT-LINE open PAYFEATT-MSIJH9MT",
+            "start_date": "2036-01-31T17:00:00.000Z",
+            "end_date": "2036-02-28T17:00:00.000Z",
+            "status": "draft",
+            "created_by": null,
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-07T06:03:58.025Z",
+            "updated_at": "2026-08-07T06:03:58.025Z",
+            "employee_count": 0,
+            "formula_definition_id": null
+          },
+          {
+            "id": "daffe3ee-f1f6-4a9e-866d-4641e8b50822",
+            "company_id": "holding",
+            "period_label": "QA-ATT-LINE open PAYFEATT-MSIJDKME",
+            "start_date": "2035-10-31T17:00:00.000Z",
+            "end_date": "2035-11-29T17:00:00.000Z",
+            "status": "draft",
+            "created_by": null,
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-07T06:01:05.267Z",
+            "updated_at": "2026-08-07T06:01:05.267Z",
+            "employee_count": 0,
+            "formula_definition_id": null
+          },
+          {
+            "id": "9d59e9b5-970e-4cd5-a6f5-088e6d95066e",
+            "company_id": "holding",
+            "period_label": "QA-CB-ATT PAYFECB-MSIIFNL",
+            "start_date": "2033-03-31T17:00:00.000Z",
+            "end_date": "2033-04-29T17:00:00.000Z",
+            "status": "draft",
+            "created_by": "ceo@xe.vn",
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-07T05:34:06.889Z",
+            "updated_at": "2026-08-07T05:34:06.889Z",
+            "employee_count": 0,
+            "formula_definition_id": null
+          },
+          {
+            "id": "e9abe592-cebe-4b1b-9cfc-6f9b278e40e6",
+            "company_id": "holding",
+            "period_label": "QA-CB-BAG-ATT PAYFECB-MSII9VYY",
+            "start_date": "2032-02-29T17:00:00.000Z",
+            "end_date": "2032-03-30T17:00:00.000Z",
+            "status": "draft",
+            "created_by": "ceo@xe.vn",
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-07T05:30:14.307Z",
+            "updated_at": "2026-08-07T05:30:14.307Z",
+            "employee_count": 0,
+            "formula_definition_id": null
+          },
+          {
+            "id": "677e30ef-3325-42ef-850e-0afaeb466f8f",
+            "company_id": "holding",
+            "period_label": "QA-EVAL-NF PAYFEQ1-MSIHIV1M",
+            "start_date": "2031-11-30T17:00:00.000Z",
+            "end_date": "2031-12-27T17:00:00.000Z",
+            "status": "draft",
+            "created_by": "ceo@xe.vn",
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-07T05:09:16.219Z",
+            "updated_at": "2026-08-07T05:09:16.219Z",
+            "employee_count": 0,
+            "formula_definition_id": null
+          },
+          {
+            "id": "f5579fc5-431e-45c1-abc8-26119613a3f3",
+            "company_id": "holding",
+            "period_label": "QA-EVAL PAYFEQ1-MSIHM5A1",
+            "start_date": "2031-08-31T17:00:00.000Z",
+            "end_date": "2031-09-27T17:00:00.000Z",
+            "status": "draft",
+            "created_by": "ceo@xe.vn",
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-07T05:11:46.585Z",
+            "updated_at": "2026-08-07T05:11:46.585Z",
+            "employee_count": 0,
+            "formula_definition_id": null
+          },
+          {
+            "id": "91f037a7-5bf8-4f03-a53a-5765d161fdf8",
+            "company_id": "holding",
+            "period_label": "QA-EVAL PAYFEQ1-MSIHIV1M",
+            "start_date": "2031-06-30T17:00:00.000Z",
+            "end_date": "2031-07-27T17:00:00.000Z",
+            "status": "draft",
+            "created_by": "ceo@xe.vn",
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-07T05:09:14.469Z",
+            "updated_at": "2026-08-07T05:09:14.469Z",
+            "employee_count": 0,
+            "formula_definition_id": null
+          },
+          {
+            "id": "8af75b83-c9eb-4fb3-ae44-27e3fba60d71",
+            "company_id": "holding",
+            "period_label": "Bảng lương QA PAYBINDQA1-IRABN0",
+            "start_date": "2027-02-28T17:00:00.000Z",
+            "end_date": "2027-03-30T17:00:00.000Z",
+            "status": "draft",
+            "created_by": null,
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-07T09:42:53.702Z",
+            "updated_at": "2026-08-07T09:42:53.828Z",
+            "employee_count": 0,
+            "formula_definition_id": null
+          },
+          {
+            "id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+            "company_id": "holding",
+            "period_label": "QA-EVAL-NF PAYFEQ1-MSIHM5A1",
+            "start_date": "2026-08-31T17:00:00.000Z",
+            "end_date": "2026-09-29T17:00:00.000Z",
+            "status": "draft",
+            "created_by": "ceo@xe.vn",
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-07T05:11:48.091Z",
+            "updated_at": "2026-08-07T05:11:48.091Z",
+            "employee_count": 53,
+            "formula_definition_id": null
+          },
+          {
+            "id": "bb194e52-54e2-4292-bb54-37d392ddcaf6",
+            "company_id": "holding",
+            "period_label": "QA-TPL-PAYTPLQA-MSIGIKB1",
+            "start_date": "2026-07-31T17:00:00.000Z",
+            "end_date": "2026-08-30T17:00:00.000Z",
+            "status": "draft",
+            "created_by": "ceo@xe.vn",
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-07T04:40:58.828Z",
+            "updated_at": "2026-08-07T04:40:58.932Z",
+            "employee_count": 0,
+            "formula_definition_id": null
+          },
+          {
+            "id": "38674cc1-2e7e-43a7-a244-8d30e069208b",
+            "company_id": "holding",
+            "period_label": "QA-CB-BAG-VARS2 PAYFECB-MSII9VYY",
+            "start_date": "2026-06-30T17:00:00.000Z",
+            "end_date": "2026-07-30T17:00:00.000Z",
+            "status": "processed",
+            "created_by": "ceo@xe.vn",
+            "processed_at": "2026-08-07T05:32:56.106Z",
+            "closed_at": null,
+            "created_at": "2026-08-07T05:30:15.448Z",
+            "updated_at": "2026-08-07T05:32:56.106Z",
+            "employee_count": 1,
+            "formula_definition_id": null
+          },
+          {
+            "id": "d8a3c74f-9678-4529-8f63-65f1d39e1385",
+            "company_id": "holding",
+            "period_label": "05/2026 (UAT-MOB-PILOT)",
+            "start_date": "2026-04-30T17:00:00.000Z",
+            "end_date": "2026-05-30T17:00:00.000Z",
+            "status": "processed",
+            "created_by": "product-uat-mob-pilot",
+            "processed_at": "2026-07-30T16:24:53.786Z",
+            "closed_at": null,
+            "created_at": "2026-07-30T16:24:53.786Z",
+            "updated_at": "2026-07-30T16:24:53.786Z",
+            "employee_count": 1,
+            "formula_definition_id": null
+          },
+          {
+            "id": "f3866096-b5db-4cc6-9070-e2a5ea6d25b7",
+            "company_id": "holding",
+            "period_label": "QA-PAY-FE05-1786012680812",
+            "start_date": "2026-01-31T17:00:00.000Z",
+            "end_date": "2026-02-27T17:00:00.000Z",
+            "status": "draft",
+            "created_by": null,
+            "processed_at": null,
+            "closed_at": null,
+            "created_at": "2026-08-06T10:38:26.213Z",
+            "updated_at": "2026-08-06T10:38:26.213Z",
+            "employee_count": 0,
+            "formula_definition_id": null
+          },
+          {
+            "id": "dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8",
+            "company_id": "holding",
+            "period_label": "QA-PAY-HIRE-05-1786012354925",
+            "start_date": "2025-12-31T17:00:00.000Z",
+            "end_date": "2026-01-30T17:00:00.000Z",
+            "status": "closed",
+            "created_by": null,
+            "processed_at": "2026-08-06T13:09:37.125Z",
+            "closed_at": "2026-08-06T13:09:37.173Z",
+            "created_at": "2026-08-06T10:32:52.906Z",
+            "updated_at": "2026-08-06T13:09:37.173Z",
+            "employee_count": 1,
+            "formula_definition_id": null
+          }
+        ]
+      },
+      "details": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-200",
+        "message": "Payroll periods listed",
+        "data": {
+          "total": 14,
+          "data": [
+            {
+              "id": "5f739175-d08a-4939-9d10-eb6e19024bd5",
+              "company_id": "holding",
+              "period_label": "QA-ATT-LINE open PAYFEATT-MSIJH9MT",
+              "start_date": "2036-01-31T17:00:00.000Z",
+              "end_date": "2036-02-28T17:00:00.000Z",
+              "status": "draft",
+              "created_by": null,
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-07T06:03:58.025Z",
+              "updated_at": "2026-08-07T06:03:58.025Z",
+              "employee_count": 0,
+              "formula_definition_id": null
+            },
+            {
+              "id": "daffe3ee-f1f6-4a9e-866d-4641e8b50822",
+              "company_id": "holding",
+              "period_label": "QA-ATT-LINE open PAYFEATT-MSIJDKME",
+              "start_date": "2035-10-31T17:00:00.000Z",
+              "end_date": "2035-11-29T17:00:00.000Z",
+              "status": "draft",
+              "created_by": null,
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-07T06:01:05.267Z",
+              "updated_at": "2026-08-07T06:01:05.267Z",
+              "employee_count": 0,
+              "formula_definition_id": null
+            },
+            {
+              "id": "9d59e9b5-970e-4cd5-a6f5-088e6d95066e",
+              "company_id": "holding",
+              "period_label": "QA-CB-ATT PAYFECB-MSIIFNL",
+              "start_date": "2033-03-31T17:00:00.000Z",
+              "end_date": "2033-04-29T17:00:00.000Z",
+              "status": "draft",
+              "created_by": "ceo@xe.vn",
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-07T05:34:06.889Z",
+              "updated_at": "2026-08-07T05:34:06.889Z",
+              "employee_count": 0,
+              "formula_definition_id": null
+            },
+            {
+              "id": "e9abe592-cebe-4b1b-9cfc-6f9b278e40e6",
+              "company_id": "holding",
+              "period_label": "QA-CB-BAG-ATT PAYFECB-MSII9VYY",
+              "start_date": "2032-02-29T17:00:00.000Z",
+              "end_date": "2032-03-30T17:00:00.000Z",
+              "status": "draft",
+              "created_by": "ceo@xe.vn",
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-07T05:30:14.307Z",
+              "updated_at": "2026-08-07T05:30:14.307Z",
+              "employee_count": 0,
+              "formula_definition_id": null
+            },
+            {
+              "id": "677e30ef-3325-42ef-850e-0afaeb466f8f",
+              "company_id": "holding",
+              "period_label": "QA-EVAL-NF PAYFEQ1-MSIHIV1M",
+              "start_date": "2031-11-30T17:00:00.000Z",
+              "end_date": "2031-12-27T17:00:00.000Z",
+              "status": "draft",
+              "created_by": "ceo@xe.vn",
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-07T05:09:16.219Z",
+              "updated_at": "2026-08-07T05:09:16.219Z",
+              "employee_count": 0,
+              "formula_definition_id": null
+            },
+            {
+              "id": "f5579fc5-431e-45c1-abc8-26119613a3f3",
+              "company_id": "holding",
+              "period_label": "QA-EVAL PAYFEQ1-MSIHM5A1",
+              "start_date": "2031-08-31T17:00:00.000Z",
+              "end_date": "2031-09-27T17:00:00.000Z",
+              "status": "draft",
+              "created_by": "ceo@xe.vn",
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-07T05:11:46.585Z",
+              "updated_at": "2026-08-07T05:11:46.585Z",
+              "employee_count": 0,
+              "formula_definition_id": null
+            },
+            {
+              "id": "91f037a7-5bf8-4f03-a53a-5765d161fdf8",
+              "company_id": "holding",
+              "period_label": "QA-EVAL PAYFEQ1-MSIHIV1M",
+              "start_date": "2031-06-30T17:00:00.000Z",
+              "end_date": "2031-07-27T17:00:00.000Z",
+              "status": "draft",
+              "created_by": "ceo@xe.vn",
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-07T05:09:14.469Z",
+              "updated_at": "2026-08-07T05:09:14.469Z",
+              "employee_count": 0,
+              "formula_definition_id": null
+            },
+            {
+              "id": "8af75b83-c9eb-4fb3-ae44-27e3fba60d71",
+              "company_id": "holding",
+              "period_label": "Bảng lương QA PAYBINDQA1-IRABN0",
+              "start_date": "2027-02-28T17:00:00.000Z",
+              "end_date": "2027-03-30T17:00:00.000Z",
+              "status": "draft",
+              "created_by": null,
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-07T09:42:53.702Z",
+              "updated_at": "2026-08-07T09:42:53.828Z",
+              "employee_count": 0,
+              "formula_definition_id": null
+            },
+            {
+              "id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+              "company_id": "holding",
+              "period_label": "QA-EVAL-NF PAYFEQ1-MSIHM5A1",
+              "start_date": "2026-08-31T17:00:00.000Z",
+              "end_date": "2026-09-29T17:00:00.000Z",
+              "status": "draft",
+              "created_by": "ceo@xe.vn",
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-07T05:11:48.091Z",
+              "updated_at": "2026-08-07T05:11:48.091Z",
+              "employee_count": 53,
+              "formula_definition_id": null
+            },
+            {
+              "id": "bb194e52-54e2-4292-bb54-37d392ddcaf6",
+              "company_id": "holding",
+              "period_label": "QA-TPL-PAYTPLQA-MSIGIKB1",
+              "start_date": "2026-07-31T17:00:00.000Z",
+              "end_date": "2026-08-30T17:00:00.000Z",
+              "status": "draft",
+              "created_by": "ceo@xe.vn",
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-07T04:40:58.828Z",
+              "updated_at": "2026-08-07T04:40:58.932Z",
+              "employee_count": 0,
+              "formula_definition_id": null
+            },
+            {
+              "id": "38674cc1-2e7e-43a7-a244-8d30e069208b",
+              "company_id": "holding",
+              "period_label": "QA-CB-BAG-VARS2 PAYFECB-MSII9VYY",
+              "start_date": "2026-06-30T17:00:00.000Z",
+              "end_date": "2026-07-30T17:00:00.000Z",
+              "status": "processed",
+              "created_by": "ceo@xe.vn",
+              "processed_at": "2026-08-07T05:32:56.106Z",
+              "closed_at": null,
+              "created_at": "2026-08-07T05:30:15.448Z",
+              "updated_at": "2026-08-07T05:32:56.106Z",
+              "employee_count": 1,
+              "formula_definition_id": null
+            },
+            {
+              "id": "d8a3c74f-9678-4529-8f63-65f1d39e1385",
+              "company_id": "holding",
+              "period_label": "05/2026 (UAT-MOB-PILOT)",
+              "start_date": "2026-04-30T17:00:00.000Z",
+              "end_date": "2026-05-30T17:00:00.000Z",
+              "status": "processed",
+              "created_by": "product-uat-mob-pilot",
+              "processed_at": "2026-07-30T16:24:53.786Z",
+              "closed_at": null,
+              "created_at": "2026-07-30T16:24:53.786Z",
+              "updated_at": "2026-07-30T16:24:53.786Z",
+              "employee_count": 1,
+              "formula_definition_id": null
+            },
+            {
+              "id": "f3866096-b5db-4cc6-9070-e2a5ea6d25b7",
+              "company_id": "holding",
+              "period_label": "QA-PAY-FE05-1786012680812",
+              "start_date": "2026-01-31T17:00:00.000Z",
+              "end_date": "2026-02-27T17:00:00.000Z",
+              "status": "draft",
+              "created_by": null,
+              "processed_at": null,
+              "closed_at": null,
+              "created_at": "2026-08-06T10:38:26.213Z",
+              "updated_at": "2026-08-06T10:38:26.213Z",
+              "employee_count": 0,
+              "formula_definition_id": null
+            },
+            {
+              "id": "dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8",
+              "company_id": "holding",
+              "period_label": "QA-PAY-HIRE-05-1786012354925",
+              "start_date": "2025-12-31T17:00:00.000Z",
+              "end_date": "2026-01-30T17:00:00.000Z",
+              "status": "closed",
+              "created_by": null,
+              "processed_at": "2026-08-06T13:09:37.125Z",
+              "closed_at": "2026-08-06T13:09:37.173Z",
+              "created_at": "2026-08-06T10:32:52.906Z",
+              "updated_at": "2026-08-06T13:09:37.173Z",
+              "employee_count": 1,
+              "formula_definition_id": null
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T09:45:49.222Z"
+      }
+    },
+    {
+      "name": "eligibility",
+      "method": "GET",
+      "path": "/api/hrm/payroll/periods/d92d3bbb-f53a-4151-9b12-0ebe9dd27d25/eligibility?company_id=main",
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "message": "Payroll eligibility listed",
+      "dataSummary": "{\"period_id\":\"d92d3bbb-f53a-4151-9b12-0ebe9dd27d25\",\"require_closed_timesheet\":true,\"eligible_count\":53,\"ineligible_count\":0,\"items\":[{\"employee_id\":\"3796d949-4513-45c0-88fa-33030a062b17\",\"employee_code\":\"HLD-0001\",\"employee_name\":\"Nguyễn Văn An\",\"hire_date\":\"2026-07-30\",\"eligible\":true,\"reasons\":[]},{\"employee_id\":\"22222222-2222-4222-8222-222222222222\",\"employee_code\":\"NV002\",\"employee_name\":\"Tran Thi B\",\"hire_date\":\"2025-10-23\",\"eligible\":true,\"reasons\":[]},{\"employee_id\":\"48e5c207-e712-44a0-9b23-20aabfba1047\",\"employee_code\":\"NVN7L5J\",\"employee_name\":\"NV HDSDN6M8T\",\"hire_date\":\"2026-07-30\",\"eligible\":true,\"reasons\":[]},{\"employee_id\":\"139ee909-df32-4467-81e1-dfb1281f604d\",\"employee_code\":…",
+      "data": {
+        "period_id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+        "require_closed_timesheet": true,
+        "eligible_count": 53,
+        "ineligible_count": 0,
+        "items": [
+          {
+            "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+            "employee_code": "HLD-0001",
+            "employee_name": "Nguyễn Văn An",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "22222222-2222-4222-8222-222222222222",
+            "employee_code": "NV002",
+            "employee_name": "Tran Thi B",
+            "hire_date": "2025-10-23",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "48e5c207-e712-44a0-9b23-20aabfba1047",
+            "employee_code": "NVN7L5J",
+            "employee_name": "NV HDSDN6M8T",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "139ee909-df32-4467-81e1-dfb1281f604d",
+            "employee_code": "PORTAL-GCEO",
+            "employee_name": "CEO Tập đoàn",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "5d870a30-a3df-4a43-b342-9b0ef99791ab",
+            "employee_code": "QA-E3-W4E3E0Z51J",
+            "employee_name": "QA W4E3 W4E3E0Z51J UPD",
+            "hire_date": "2026-08-03",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "cb365ad2-5266-4987-a27e-49271df9241c",
+            "employee_code": "QA-E3-W4E3E1V7HA",
+            "employee_name": "QA W4E3 W4E3E1V7HA UPD",
+            "hire_date": "2026-08-03",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+            "employee_code": "QA-E3-W4E3E1YKGD",
+            "employee_name": "QA W4E3 W4E3E1YKGD UPD",
+            "hire_date": "2026-08-03",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "646306df-f4a6-4199-bf99-9ea8a3ff8584",
+            "employee_code": "QA-IM-W4B1E63RYV",
+            "employee_name": "QA Import W4B1E63RYV",
+            "hire_date": "2024-06-01",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+            "employee_code": "QA-M3-987275",
+            "employee_name": "Nguyễn Văn QA M3 987275",
+            "hire_date": "2026-08-04",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "4315dade-ef5a-4db2-99ee-f724896ffa09",
+            "employee_code": "QA-SD-SD8EZ1HE",
+            "employee_name": "QA SoftDel SD8EZ1HE ·RET4",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "b06990eb-d1b0-4304-a43d-3e38ac99d214",
+            "employee_code": "QABE02UH5F",
+            "employee_name": "NV QABE02UH5F",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "6b7b6eb5-8245-4f89-b0fb-125e41d7b173",
+            "employee_code": "QABE02V2ZY",
+            "employee_name": "NV QABE02V2ZY",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "904f0221-46a8-487b-b964-9d4c9042d531",
+            "employee_code": "QAHDSDQ2ASY",
+            "employee_name": "NV HDSDQ2ASY",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "ddbba013-a531-4559-803e-6f006f0681c5",
+            "employee_code": "QAHDSDQG3HJ",
+            "employee_name": "NV HDSDQG3HJ",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "7e8b25fb-7c41-4c65-86d8-82f7f3b2149b",
+            "employee_code": "QAHDSDQX29C",
+            "employee_name": "NV HDSDQX29C",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "e2ac9ac2-b5d1-434c-a1f1-567bb269e8e5",
+            "employee_code": "QAHDSDR3XKW",
+            "employee_name": "NV HDSDR3XKW",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "cc966b63-52b9-4e9c-ad47-4bd1b4036511",
+            "employee_code": "QAHDSDRKQJZ",
+            "employee_name": "NV HDSDRKQJZ",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "57d905b8-7ab6-4a0d-985a-e1512111f01f",
+            "employee_code": "QAHDSDROYR7",
+            "employee_name": "NV HDSDROYR7",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "dafaa8c3-1833-433f-928e-086569cb3da8",
+            "employee_code": "QAHDSDS17KQ",
+            "employee_name": "NV HDSDS17KQ",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "59477dbc-bc63-46d0-a7eb-6daeb2458d1c",
+            "employee_code": "QAHDSDS57D1",
+            "employee_name": "NV HDSDS57D1",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "bbc97176-895c-4576-9962-fa300bab10d1",
+            "employee_code": "QAHDSDS7KRR",
+            "employee_name": "NV HDSDS7KRR",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "c00837a9-32b1-42f5-917e-c71ae0aa70cc",
+            "employee_code": "QAHDSDSJTI6",
+            "employee_name": "NV HDSDSJTI6",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "975c323b-cb81-4cb4-8dc8-04a79409f359",
+            "employee_code": "QAHDSDSOU98",
+            "employee_name": "NV HDSDSOU98",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "5c173442-4360-45f5-b636-4b4425914f21",
+            "employee_code": "QAHDSDSRAN7",
+            "employee_name": "NV HDSDSRAN7",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "18ffb772-6797-4345-b7b8-ebbbfc0c1ca5",
+            "employee_code": "QAHDSDST8G8",
+            "employee_name": "NV HDSDST8G8",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "90bb36fc-2a6b-4f3a-b73b-a3187f246c55",
+            "employee_code": "QAHDSDT4IGV",
+            "employee_name": "NV HDSDT4IGV",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "0d90c059-7c4e-427c-8727-3684151c77bc",
+            "employee_code": "QAHDSDT7USW",
+            "employee_name": "NV HDSDT7USW",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "0113dca8-ce0d-4bff-9eef-4169c1ecfbed",
+            "employee_code": "QAHDSDTA1G6",
+            "employee_name": "NV HDSDTA1G6",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "20c6f74e-179b-4eec-973c-df8df3cabde6",
+            "employee_code": "QAHDSDTLAAV",
+            "employee_name": "NV HDSDTLAAV",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "8ef5ef5d-ac43-4714-bd66-e6abbd9640b5",
+            "employee_code": "QAHDSDTWZH0",
+            "employee_name": "NV HDSDTWZH0",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "654d5856-6ce0-4b65-a92b-393c615d8d72",
+            "employee_code": "QAHDSDUGH5T",
+            "employee_name": "NV HDSDUGH5T",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "5d3f09a4-eac9-4aba-887e-afbdbe20bed5",
+            "employee_code": "QAHDSDUS0BK",
+            "employee_name": "NV HDSDUS0BK",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "8f8d0059-459f-4071-9d95-c564e5b0e1f0",
+            "employee_code": "QAHDSDV4RNH",
+            "employee_name": "NV HDSDV4RNH",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "108afd34-2a97-418d-98d7-48e51e227a37",
+            "employee_code": "QAHDSDVGW2T",
+            "employee_name": "NV HDSDVGW2T",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "36e2b988-8188-426d-b111-eb799f697c5b",
+            "employee_code": "QAHDSDVS7BL",
+            "employee_name": "NV HDSDVS7BL",
+            "hire_date": "2026-07-30",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "fad7c9fd-ed46-4c3a-958a-1fb29ef18fd4",
+            "employee_code": "QAMD8E3P73",
+            "employee_name": "QA SoftDel MD8E3P73",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "4b50a695-624c-4038-9756-5c929050e355",
+            "employee_code": "QAMD8E6VZ5",
+            "employee_name": "QA SoftDel MD8E6VZ5",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "9695108d-1ee8-479b-ab59-c4c20fe77491",
+            "employee_code": "QAMD8EA7JL",
+            "employee_name": "QA SoftDel MD8EA7JL",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "1cda2ae3-9344-4bfd-ac55-ccf23c4cbb1d",
+            "employee_code": "QAMD8ECL63",
+            "employee_name": "QA SoftDel MD8ECL63",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "b290188e-c2f7-4b81-8971-8829fde69a83",
+            "employee_code": "QAMD8EEBLJ",
+            "employee_name": "QA SoftDel MD8EEBLJ",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "042ca737-4bf2-4915-b52b-7eb2069058d7",
+            "employee_code": "QAMD8EFZK8",
+            "employee_name": "QA SoftDel MD8EFZK8",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "d850693c-9958-4c25-8a2c-218adeb4870a",
+            "employee_code": "QAMD8EHOOJ",
+            "employee_name": "QA SoftDel MD8EHOOJ",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "7a236024-b48b-425b-9e99-77f71f23f8d0",
+            "employee_code": "QAMD8EJJ7J",
+            "employee_name": "QA SoftDel MD8EJJ7J",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "34ea08a2-4690-4dec-917f-f5386b8ab3e2",
+            "employee_code": "QAMD8EMR0V",
+            "employee_name": "QA SoftDel MD8EMR0V",
+            "hire_date": "2026-07-31",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "2680f15f-02b6-44e1-8b42-92a6aaeb7bfb",
+            "employee_code": "UAT-0003",
+            "employee_name": "UAT NV 0003",
+            "hire_date": "2026-08-02",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "c4e2de18-aa97-4150-b8b3-a3795e28a85b",
+            "employee_code": "UAT-0004",
+            "employee_name": "UAT NV 0004",
+            "hire_date": "2026-08-03",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "3f40ee4c-4874-4e94-940d-9d64f7d08603",
+            "employee_code": "UAT-0005",
+            "employee_name": "UAT NV 0005",
+            "hire_date": "2026-08-02",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "fc55b3cb-b651-4b90-9c86-037cca26adf6",
+            "employee_code": "UAT-0008",
+            "employee_name": "UAT NV 0008",
+            "hire_date": "2026-08-04",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "92ea4177-ff8a-40f4-873e-fb9214a1f997",
+            "employee_code": "UAT-0010",
+            "employee_name": "UAT NV 0010",
+            "hire_date": "2026-08-03",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "80d66820-185d-430d-85a8-3a2645c45916",
+            "employee_code": "UAT-0016",
+            "employee_name": "UAT NV 0016",
+            "hire_date": "2026-08-04",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "5c3ea407-02cb-4cfa-a36c-9ada56908010",
+            "employee_code": "UAT-0020",
+            "employee_name": "UAT NV 0020",
+            "hire_date": "2026-08-03",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "0772bd42-48fb-48f5-ae0f-e074246712cb",
+            "employee_code": "UAT-0021",
+            "employee_name": "UAT NV 0021",
+            "hire_date": "2026-08-04",
+            "eligible": true,
+            "reasons": []
+          },
+          {
+            "employee_id": "0500220b-f289-40df-b07e-86316285439b",
+            "employee_code": "UAT-0100",
+            "employee_name": "UAT NV 0100",
+            "hire_date": "2026-08-04",
+            "eligible": true,
+            "reasons": []
+          }
+        ]
+      },
+      "details": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-200",
+        "message": "Payroll eligibility listed",
+        "data": {
+          "period_id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+          "require_closed_timesheet": true,
+          "eligible_count": 53,
+          "ineligible_count": 0,
+          "items": [
+            {
+              "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+              "employee_code": "HLD-0001",
+              "employee_name": "Nguyễn Văn An",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "22222222-2222-4222-8222-222222222222",
+              "employee_code": "NV002",
+              "employee_name": "Tran Thi B",
+              "hire_date": "2025-10-23",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "48e5c207-e712-44a0-9b23-20aabfba1047",
+              "employee_code": "NVN7L5J",
+              "employee_name": "NV HDSDN6M8T",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "139ee909-df32-4467-81e1-dfb1281f604d",
+              "employee_code": "PORTAL-GCEO",
+              "employee_name": "CEO Tập đoàn",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "5d870a30-a3df-4a43-b342-9b0ef99791ab",
+              "employee_code": "QA-E3-W4E3E0Z51J",
+              "employee_name": "QA W4E3 W4E3E0Z51J UPD",
+              "hire_date": "2026-08-03",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "cb365ad2-5266-4987-a27e-49271df9241c",
+              "employee_code": "QA-E3-W4E3E1V7HA",
+              "employee_name": "QA W4E3 W4E3E1V7HA UPD",
+              "hire_date": "2026-08-03",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "a6be9b40-23b8-41ab-9acd-aa4978e92da8",
+              "employee_code": "QA-E3-W4E3E1YKGD",
+              "employee_name": "QA W4E3 W4E3E1YKGD UPD",
+              "hire_date": "2026-08-03",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "646306df-f4a6-4199-bf99-9ea8a3ff8584",
+              "employee_code": "QA-IM-W4B1E63RYV",
+              "employee_name": "QA Import W4B1E63RYV",
+              "hire_date": "2024-06-01",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+              "employee_code": "QA-M3-987275",
+              "employee_name": "Nguyễn Văn QA M3 987275",
+              "hire_date": "2026-08-04",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "4315dade-ef5a-4db2-99ee-f724896ffa09",
+              "employee_code": "QA-SD-SD8EZ1HE",
+              "employee_name": "QA SoftDel SD8EZ1HE ·RET4",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "b06990eb-d1b0-4304-a43d-3e38ac99d214",
+              "employee_code": "QABE02UH5F",
+              "employee_name": "NV QABE02UH5F",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "6b7b6eb5-8245-4f89-b0fb-125e41d7b173",
+              "employee_code": "QABE02V2ZY",
+              "employee_name": "NV QABE02V2ZY",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "904f0221-46a8-487b-b964-9d4c9042d531",
+              "employee_code": "QAHDSDQ2ASY",
+              "employee_name": "NV HDSDQ2ASY",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "ddbba013-a531-4559-803e-6f006f0681c5",
+              "employee_code": "QAHDSDQG3HJ",
+              "employee_name": "NV HDSDQG3HJ",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "7e8b25fb-7c41-4c65-86d8-82f7f3b2149b",
+              "employee_code": "QAHDSDQX29C",
+              "employee_name": "NV HDSDQX29C",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "e2ac9ac2-b5d1-434c-a1f1-567bb269e8e5",
+              "employee_code": "QAHDSDR3XKW",
+              "employee_name": "NV HDSDR3XKW",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "cc966b63-52b9-4e9c-ad47-4bd1b4036511",
+              "employee_code": "QAHDSDRKQJZ",
+              "employee_name": "NV HDSDRKQJZ",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "57d905b8-7ab6-4a0d-985a-e1512111f01f",
+              "employee_code": "QAHDSDROYR7",
+              "employee_name": "NV HDSDROYR7",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "dafaa8c3-1833-433f-928e-086569cb3da8",
+              "employee_code": "QAHDSDS17KQ",
+              "employee_name": "NV HDSDS17KQ",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "59477dbc-bc63-46d0-a7eb-6daeb2458d1c",
+              "employee_code": "QAHDSDS57D1",
+              "employee_name": "NV HDSDS57D1",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "bbc97176-895c-4576-9962-fa300bab10d1",
+              "employee_code": "QAHDSDS7KRR",
+              "employee_name": "NV HDSDS7KRR",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "c00837a9-32b1-42f5-917e-c71ae0aa70cc",
+              "employee_code": "QAHDSDSJTI6",
+              "employee_name": "NV HDSDSJTI6",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "975c323b-cb81-4cb4-8dc8-04a79409f359",
+              "employee_code": "QAHDSDSOU98",
+              "employee_name": "NV HDSDSOU98",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "5c173442-4360-45f5-b636-4b4425914f21",
+              "employee_code": "QAHDSDSRAN7",
+              "employee_name": "NV HDSDSRAN7",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "18ffb772-6797-4345-b7b8-ebbbfc0c1ca5",
+              "employee_code": "QAHDSDST8G8",
+              "employee_name": "NV HDSDST8G8",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "90bb36fc-2a6b-4f3a-b73b-a3187f246c55",
+              "employee_code": "QAHDSDT4IGV",
+              "employee_name": "NV HDSDT4IGV",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "0d90c059-7c4e-427c-8727-3684151c77bc",
+              "employee_code": "QAHDSDT7USW",
+              "employee_name": "NV HDSDT7USW",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "0113dca8-ce0d-4bff-9eef-4169c1ecfbed",
+              "employee_code": "QAHDSDTA1G6",
+              "employee_name": "NV HDSDTA1G6",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "20c6f74e-179b-4eec-973c-df8df3cabde6",
+              "employee_code": "QAHDSDTLAAV",
+              "employee_name": "NV HDSDTLAAV",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "8ef5ef5d-ac43-4714-bd66-e6abbd9640b5",
+              "employee_code": "QAHDSDTWZH0",
+              "employee_name": "NV HDSDTWZH0",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "654d5856-6ce0-4b65-a92b-393c615d8d72",
+              "employee_code": "QAHDSDUGH5T",
+              "employee_name": "NV HDSDUGH5T",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "5d3f09a4-eac9-4aba-887e-afbdbe20bed5",
+              "employee_code": "QAHDSDUS0BK",
+              "employee_name": "NV HDSDUS0BK",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "8f8d0059-459f-4071-9d95-c564e5b0e1f0",
+              "employee_code": "QAHDSDV4RNH",
+              "employee_name": "NV HDSDV4RNH",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "108afd34-2a97-418d-98d7-48e51e227a37",
+              "employee_code": "QAHDSDVGW2T",
+              "employee_name": "NV HDSDVGW2T",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "36e2b988-8188-426d-b111-eb799f697c5b",
+              "employee_code": "QAHDSDVS7BL",
+              "employee_name": "NV HDSDVS7BL",
+              "hire_date": "2026-07-30",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "fad7c9fd-ed46-4c3a-958a-1fb29ef18fd4",
+              "employee_code": "QAMD8E3P73",
+              "employee_name": "QA SoftDel MD8E3P73",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "4b50a695-624c-4038-9756-5c929050e355",
+              "employee_code": "QAMD8E6VZ5",
+              "employee_name": "QA SoftDel MD8E6VZ5",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "9695108d-1ee8-479b-ab59-c4c20fe77491",
+              "employee_code": "QAMD8EA7JL",
+              "employee_name": "QA SoftDel MD8EA7JL",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "1cda2ae3-9344-4bfd-ac55-ccf23c4cbb1d",
+              "employee_code": "QAMD8ECL63",
+              "employee_name": "QA SoftDel MD8ECL63",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "b290188e-c2f7-4b81-8971-8829fde69a83",
+              "employee_code": "QAMD8EEBLJ",
+              "employee_name": "QA SoftDel MD8EEBLJ",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "042ca737-4bf2-4915-b52b-7eb2069058d7",
+              "employee_code": "QAMD8EFZK8",
+              "employee_name": "QA SoftDel MD8EFZK8",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "d850693c-9958-4c25-8a2c-218adeb4870a",
+              "employee_code": "QAMD8EHOOJ",
+              "employee_name": "QA SoftDel MD8EHOOJ",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "7a236024-b48b-425b-9e99-77f71f23f8d0",
+              "employee_code": "QAMD8EJJ7J",
+              "employee_name": "QA SoftDel MD8EJJ7J",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "34ea08a2-4690-4dec-917f-f5386b8ab3e2",
+              "employee_code": "QAMD8EMR0V",
+              "employee_name": "QA SoftDel MD8EMR0V",
+              "hire_date": "2026-07-31",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "2680f15f-02b6-44e1-8b42-92a6aaeb7bfb",
+              "employee_code": "UAT-0003",
+              "employee_name": "UAT NV 0003",
+              "hire_date": "2026-08-02",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "c4e2de18-aa97-4150-b8b3-a3795e28a85b",
+              "employee_code": "UAT-0004",
+              "employee_name": "UAT NV 0004",
+              "hire_date": "2026-08-03",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "3f40ee4c-4874-4e94-940d-9d64f7d08603",
+              "employee_code": "UAT-0005",
+              "employee_name": "UAT NV 0005",
+              "hire_date": "2026-08-02",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "fc55b3cb-b651-4b90-9c86-037cca26adf6",
+              "employee_code": "UAT-0008",
+              "employee_name": "UAT NV 0008",
+              "hire_date": "2026-08-04",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "92ea4177-ff8a-40f4-873e-fb9214a1f997",
+              "employee_code": "UAT-0010",
+              "employee_name": "UAT NV 0010",
+              "hire_date": "2026-08-03",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "80d66820-185d-430d-85a8-3a2645c45916",
+              "employee_code": "UAT-0016",
+              "employee_name": "UAT NV 0016",
+              "hire_date": "2026-08-04",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "5c3ea407-02cb-4cfa-a36c-9ada56908010",
+              "employee_code": "UAT-0020",
+              "employee_name": "UAT NV 0020",
+              "hire_date": "2026-08-03",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "0772bd42-48fb-48f5-ae0f-e074246712cb",
+              "employee_code": "UAT-0021",
+              "employee_name": "UAT NV 0021",
+              "hire_date": "2026-08-04",
+              "eligible": true,
+              "reasons": []
+            },
+            {
+              "employee_id": "0500220b-f289-40df-b07e-86316285439b",
+              "employee_code": "UAT-0100",
+              "employee_name": "UAT NV 0100",
+              "hire_date": "2026-08-04",
+              "eligible": true,
+              "reasons": []
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T09:45:49.643Z"
+      }
+    },
+    {
+      "name": "active_cb_HLD-0001",
+      "status": 200,
+      "code": "HRM-COMP-200",
+      "has": true
+    },
+    {
+      "name": "create_period_att_open",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods",
+      "status": 409,
+      "code": "HRM-PAY-002",
+      "message": "Payroll period overlaps with existing period",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-002\",\"message\":\"Payroll period overlaps with existing period\",\"timestamp\":\"2026-08-07T09:45:49.959Z\"}",
+      "data": null,
+      "details": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-002",
+        "message": "Payroll period overlaps with existing period",
+        "timestamp": "2026-08-07T09:45:49.959Z"
+      }
+    },
+    {
+      "name": "ac_cb3_process_att_open",
+      "status": 0,
+      "code": null,
+      "message": "no open period"
+    },
+    {
+      "name": "get_period_before_enroll",
+      "method": "GET",
+      "path": "/api/hrm/payroll/periods/d92d3bbb-f53a-4151-9b12-0ebe9dd27d25?company_id=main",
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "message": "Cannot GET /api/hrm/payroll/periods/d92d3bbb-f53a-4151-9b12-0ebe9dd27d25?company_id=main",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot GET /api/hrm/payroll/periods/d92d3bbb-f53a-4151-9b12-0ebe9dd27d25?company_id=main\",\"timestamp\":\"2026-08-07T09:45:49.972Z\"}",
+      "data": null,
+      "details": null,
+      "json": {
+        "success": false,
+        "code": "HRM-DATA-404",
+        "message": "Cannot GET /api/hrm/payroll/periods/d92d3bbb-f53a-4151-9b12-0ebe9dd27d25?company_id=main",
+        "timestamp": "2026-08-07T09:45:49.972Z"
+      }
+    },
+    {
+      "name": "enroll_with_cb",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/d92d3bbb-f53a-4151-9b12-0ebe9dd27d25/enroll?company_id=main",
+      "status": 201,
+      "code": "HRM-PAY-ENROLL-200",
+      "message": "Payroll period enrolled",
+      "dataSummary": "{\"period_id\":\"d92d3bbb-f53a-4151-9b12-0ebe9dd27d25\",\"require_closed_timesheet\":true,\"enrolled\":[{\"payslip_id\":\"e1ac365a-473a-4f9b-bc00-15acc4cccf05\",\"employee_id\":\"3796d949-4513-45c0-88fa-33030a062b17\",\"employee_code\":\"HLD-0001\",\"employee_name\":\"Nguyễn Văn An\",\"status\":\"draft\"}],\"rejected\":[],\"employee_count\":1}",
+      "data": {
+        "period_id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+        "require_closed_timesheet": true,
+        "enrolled": [
+          {
+            "payslip_id": "e1ac365a-473a-4f9b-bc00-15acc4cccf05",
+            "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+            "employee_code": "HLD-0001",
+            "employee_name": "Nguyễn Văn An",
+            "status": "draft"
+          }
+        ],
+        "rejected": [],
+        "employee_count": 1
+      },
+      "details": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-ENROLL-200",
+        "message": "Payroll period enrolled",
+        "data": {
+          "period_id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+          "require_closed_timesheet": true,
+          "enrolled": [
+            {
+              "payslip_id": "e1ac365a-473a-4f9b-bc00-15acc4cccf05",
+              "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+              "employee_code": "HLD-0001",
+              "employee_name": "Nguyễn Văn An",
+              "status": "draft"
+            }
+          ],
+          "rejected": [],
+          "employee_count": 1
+        },
+        "timestamp": "2026-08-07T09:45:50.840Z"
+      }
+    },
+    {
+      "name": "ac_cb1_process_with_cb",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/d92d3bbb-f53a-4151-9b12-0ebe9dd27d25/process?company_id=main",
+      "status": 412,
+      "code": "HRM-PAY-FORMULA-412",
+      "message": "No SRC amount for component BASE — refuse silent zero (BR-AMIS-PAY-SRC-05)",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-FORMULA-412\",\"message\":\"No SRC amount for component BASE — refuse silent zero (BR-AMIS-PAY-SRC-05)\",\"details\":{\"componentCode\":\"BASE\",\"warnings\":[\"NO_EMP_CB\",\"NO_PERIOD_INPUT\",\"NO_TEMPLATE_OVERRIDE\",\"NO_CATALOG_FORMULA\",\"CATALOG_FORMULA_TEXT_FORBIDDEN\"],\"payroll_e2e_ready\":false,\"periodId\":\"d92d3bbb-f53a-4151-9b12-0ebe9dd27d25\",\"employeeId\":\"48e5c207-e712-44a0-9b23-20aabfba1047\",\"formulaSource\":\"company_active\"},\"timestamp\":\"2026-08-07T09:45:51.960Z\"}",
+      "data": null,
+      "details": {
+        "componentCode": "BASE",
+        "warnings": [
+          "NO_EMP_CB",
+          "NO_PERIOD_INPUT",
+          "NO_TEMPLATE_OVERRIDE",
+          "NO_CATALOG_FORMULA",
+          "CATALOG_FORMULA_TEXT_FORBIDDEN"
+        ],
+        "payroll_e2e_ready": false,
+        "periodId": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+        "employeeId": "48e5c207-e712-44a0-9b23-20aabfba1047",
+        "formulaSource": "company_active"
+      },
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-FORMULA-412",
+        "message": "No SRC amount for component BASE — refuse silent zero (BR-AMIS-PAY-SRC-05)",
+        "details": {
+          "componentCode": "BASE",
+          "warnings": [
+            "NO_EMP_CB",
+            "NO_PERIOD_INPUT",
+            "NO_TEMPLATE_OVERRIDE",
+            "NO_CATALOG_FORMULA",
+            "CATALOG_FORMULA_TEXT_FORBIDDEN"
+          ],
+          "payroll_e2e_ready": false,
+          "periodId": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+          "employeeId": "48e5c207-e712-44a0-9b23-20aabfba1047",
+          "formulaSource": "company_active"
+        },
+        "timestamp": "2026-08-07T09:45:51.960Z"
+      }
+    },
+    {
+      "name": "create_period_no_cb",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods",
+      "status": 409,
+      "code": "HRM-PAY-002",
+      "message": "Payroll period overlaps with existing period",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-002\",\"message\":\"Payroll period overlaps with existing period\",\"timestamp\":\"2026-08-07T09:45:52.292Z\"}",
+      "data": null,
+      "details": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-002",
+        "message": "Payroll period overlaps with existing period",
+        "timestamp": "2026-08-07T09:45:52.292Z"
+      }
+    },
+    {
+      "name": "create_period_no_cb_alt_month",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods",
+      "status": 409,
+      "code": "HRM-PAY-002",
+      "message": "Payroll period overlaps with existing period",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-002\",\"message\":\"Payroll period overlaps with existing period\",\"timestamp\":\"2026-08-07T09:45:52.588Z\"}",
+      "data": null,
+      "details": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-002",
+        "message": "Payroll period overlaps with existing period",
+        "timestamp": "2026-08-07T09:45:52.588Z"
+      }
+    }
+  ],
+  "author_login": {
+    "ok": true,
+    "status": 201,
+    "sub": "ceo@xe.vn",
+    "err": null
+  },
+  "publisher_login": {
+    "ok": true,
+    "status": 201,
+    "sub": "admin@xe.vn",
+    "err": null
+  },
+  "live_cb_package_count": 6,
+  "eval_formula_id": "ff6ce2fa-8ad9-48c5-9162-f2f852087bd0",
+  "closed_sheet": {
+    "id": "ae71f0b0-a3cb-43ab-9f5f-f42004add657",
+    "status": "closed",
+    "start": "2026-08-31T17:00:00.000Z",
+    "company": "holding"
+  },
+  "process_period_bounds": {
+    "start": "2026-09-01",
+    "end": "2026-09-30",
+    "ymd": "2026-09-01"
+  },
+  "period_reuse": true,
+  "period_id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+  "eligible_count": 53,
+  "eligible_sample": [
+    {
+      "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+      "employee_code": "HLD-0001"
+    },
+    {
+      "employee_id": "22222222-2222-4222-8222-222222222222",
+      "employee_code": "NV002"
+    },
+    {
+      "employee_id": "48e5c207-e712-44a0-9b23-20aabfba1047",
+      "employee_code": "NVN7L5J"
+    },
+    {
+      "employee_id": "139ee909-df32-4467-81e1-dfb1281f604d",
+      "employee_code": "PORTAL-GCEO"
+    },
+    {
+      "employee_id": "5d870a30-a3df-4a43-b342-9b0ef99791ab",
+      "employee_code": "QA-E3-W4E3E0Z51J"
+    }
+  ],
+  "emp_with_cb": {
+    "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+    "employee_code": "HLD-0001",
+    "cbSource": "live_active_package",
+    "createdPackageId": null
+  },
+  "emp_without_cb": {
+    "employee_id": "22222222-2222-4222-8222-222222222222",
+    "employee_code": "NV002"
+  },
+  "period_id_with_cb": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+  "no_cb_period_bounds": {
+    "start": "2026-07-01",
+    "end": "2026-07-31",
+    "ymd": "2026-07-01"
+  },
+  "period_id_no_cb": null,
+  "fatal": "TypeError: Cannot read properties of undefined (reading 'length')\n    at summarizeBody (file:///C:/Users/ADMIN/OneDrive/Ta%CC%80i%20li%C3%AA%CC%A3u/Vibe%20Coding/projects/xevn-ecosystem/scripts/qa/_tmp-po-hrm-payroll-formula-run-gap-qa-cb-bag-01.mjs:30:12)\n    at file:///C:/Users/ADMIN/OneDrive/Ta%CC%80i%20li%C3%AA%CC%A3u/Vibe%20Coding/projects/xevn-ecosystem/scripts/qa/_tmp-po-hrm-payroll-formula-run-gap-qa-cb-bag-01.mjs:683:125\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+  "verdict": "FAIL",
+  "finishedAt": "2026-08-07T09:45:52.589Z"
+}

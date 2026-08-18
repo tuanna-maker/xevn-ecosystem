@@ -1,0 +1,631 @@
+{
+  "work_item_id": "PO-UAT-EMP-SOFT-OBS-QA-01",
+  "parent": "PO-UAT-EMP-SOFT-OBS-FE-01",
+  "startedAt": "2026-08-07T03:33:13.382Z",
+  "u65": "zero-seed",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "STAMP": "EMPOBS-IE3ORQ"
+  },
+  "denied": [
+    "hrm_personnel_uat_ready",
+    "employees_e2e_linkage_ready",
+    "seed",
+    "api_only_pass",
+    "module_uat",
+    "reopen_D1",
+    "reopen_D5",
+    "reopen_J03"
+  ],
+  "honesty": {
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "note": "QA does not invent personnel UAT flag — QC decides clean GO"
+  },
+  "sealed": {
+    "R-EMP-DEC-WH-NEO-CATALOG": "SEALED_must_keep",
+    "R-EMP-SI-ACTION-COMPANY-ID-BODY": "SEALED_must_keep",
+    "R-J03-DIALOG": "SEALED_not_reopened"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/xbos"
+    },
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    }
+  },
+  "uf": {
+    "L0": {
+      "summary": "{\"hrm\":{\"status\":200,\"url\":\"http://127.0.0.1:28001/api/hrm\"},\"xbos\":{\"status\":200,\"url\":\"http://127.0.0.1:5173/api/xbos\"},\"portal\":{\"status\":200,\"url\":\"http://127.0.0.1:5173\"}}",
+      "verdict": "PASS",
+      "at": "2026-08-07T03:33:13.414Z"
+    },
+    "OBS-D1-HINT": {
+      "summary": "hint=true type=HRD_01Bổ nhiệm save=201 whId=68a6480a-4520-4783-b9e6-4201b27323bd neo=true badge=7",
+      "hintVisible": true,
+      "typeLabel": "HRD_01Bổ nhiệm",
+      "statusEffective": true,
+      "employeePicked": true,
+      "saveStatus": 201,
+      "work_history_id": "68a6480a-4520-4783-b9e6-4201b27323bd",
+      "hasDecisionNeo": true,
+      "badgeCount": 7,
+      "badgeText": "QSĐ QD-EMPOBS-IE3ORQ",
+      "typePicked": true,
+      "employeeLabel": "UAT NV 0100 - UAT-0100",
+      "posPicked": true,
+      "posLabel": "CEOTổng Giám đốc",
+      "hintText": "Khi lưu trạng thái Hiệu lực, dòng lịch sử công tác gắn decision_id sẽ cập nhật — F5 tab Quá trình công tác trên hồ sơ NV.",
+      "saveCode": "HRM-DEC-201",
+      "decisionId": "31f95c2b-19a2-4468-a72e-9bc9979f55b9",
+      "decisionType": "HRD_01",
+      "decisionEmployeeId": "0500220b-f289-40df-b07e-86316285439b",
+      "d1NeoSealed": "PASS",
+      "verdict": "PASS",
+      "at": "2026-08-07T03:33:33.780Z"
+    },
+    "D1_NEO_SEALED": {
+      "summary": "whId=68a6480a-4520-4783-b9e6-4201b27323bd neo=true badge=QSĐ QD-EMPOBS-IE3ORQ",
+      "work_history_id": "68a6480a-4520-4783-b9e6-4201b27323bd",
+      "hasDecisionNeo": true,
+      "badgeCount": 7,
+      "badgeText": "QSĐ QD-EMPOBS-IE3ORQ",
+      "verdict": "PASS",
+      "at": "2026-08-07T03:33:33.780Z"
+    },
+    "OBS-D1-HINT-HRD03-ABSENT": {
+      "summary": "type=HRD_03Kỷ luật hintVisible=false (expect false)",
+      "hintVisible": false,
+      "typeLabel": "HRD_03Kỷ luật",
+      "statusEffective": true,
+      "employeePicked": true,
+      "typePicked": true,
+      "verdict": "PASS",
+      "at": "2026-08-07T03:33:42.799Z"
+    },
+    "OBS-SI-DATE-ISO": {
+      "summary": "periodsIsoLeak=false cardIsoLeak=false viP=false viC=true periodsVisible=true (stopped enrollment after prior stop/F5)",
+      "employeeId": "22222222-2222-4222-8222-222222222222",
+      "source": "post_prior_uat_stop_periods",
+      "periodsVisible": true,
+      "periodsScan": {
+        "hasIsoLeak": false,
+        "hasViDate": false,
+        "isoMatches": [],
+        "viMatches": [],
+        "sample": "suspended06/08/2026 → 06/08/2026NV: 0DN: 0stopped07/08/2026 → …NV: 0DN: 0"
+      },
+      "cardScan": {
+        "hasIsoLeak": false,
+        "hasViDate": true,
+        "isoMatches": [],
+        "viMatches": [
+          "30/07/2026"
+        ],
+        "sample": "Đóng BH (NV)0 ₫Đóng BH (CTy)0 ₫Phúc lợi/tháng0 ₫Tổng phúc lợi0 khoảnBảo hiểmThêm bảo hiểmBảo hiểm xã hộistoppedPVISố thẻ: PVI-2026-0002NV đóng: 0 ₫CTy đóng: 0 ₫30/07/2026 - 28/09/2026suspended06/08/2026 → 06/08/2026NV: 0DN: 0stopped07/08/2026 → …NV: 0DN: 0Phúc lợiThêm phúc lợiChưa có thông tin phúc lợiThêm phúc lợi"
+      },
+      "displayClean": true,
+      "enrollmentsRoot": true,
+      "timelineRoot": true,
+      "verdict": "PASS",
+      "at": "2026-08-07T03:34:00.491Z"
+    },
+    "D5_BODY_COMPANY_ID": {
+      "summary": "post=201 bodyHasCompanyId=true company_id=main wire=2026-08-07",
+      "bodyHasCompanyId": true,
+      "bodyCompanyId": "main",
+      "requestBody": {
+        "company_id": "main",
+        "action": "stop",
+        "effective_from": "2026-08-07"
+      },
+      "postStatus": 201,
+      "postCode": "HRM-EINS-200",
+      "wireEffectiveFrom": "2026-08-07",
+      "wireYyyyMmDd": true,
+      "postActionDisplayClean": true,
+      "verdict": "PASS",
+      "at": "2026-08-07T03:34:18.086Z"
+    },
+    "J03_NOT_REOPENED": {
+      "summary": "R-J03-DIALOG sealed — soft-obs wave did not touch contracts Eye/dialog paths",
+      "note": "out_of_scope_soft_obs",
+      "verdict": "PASS",
+      "at": "2026-08-07T03:34:18.087Z"
+    },
+    "HONESTY_PERSONNEL_FLAG": {
+      "summary": "hrm_personnel_uat_ready remains false — QA does not invent; handoff QC for clean GO",
+      "hrm_personnel_uat_ready": false,
+      "verdict": "PASS",
+      "at": "2026-08-07T03:34:18.088Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/decisions?company_id=main",
+      "at": "2026-08-07T03:33:15.126Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/decisions",
+      "at": "2026-08-07T03:33:23.978Z",
+      "code": "HRM-DEC-201",
+      "message": "Decision created",
+      "id": "31f95c2b-19a2-4468-a72e-9bc9979f55b9",
+      "work_history_id": "68a6480a-4520-4783-b9e6-4201b27323bd",
+      "enrollment_id": "31f95c2b-19a2-4468-a72e-9bc9979f55b9"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/decisions?company_id=main",
+      "at": "2026-08-07T03:33:24.093Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-07T03:33:27.576Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-07T03:33:27.671Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=main",
+      "at": "2026-08-07T03:33:27.765Z",
+      "count": 15,
+      "sample": [
+        {
+          "id": "68a6480a-4520-4783-b9e6-4201b27323bd",
+          "position_key": "CEO",
+          "decision_id": "31f95c2b-19a2-4468-a72e-9bc9979f55b9",
+          "decision_code": "QD-EMPOBS-IE3ORQ",
+          "source_module": "decision"
+        },
+        {
+          "id": "cc6795a9-839e-4f26-b8aa-4f395d35998d",
+          "position_key": "CEO",
+          "decision_id": "97a64840-e8b2-49c9-bab0-f20b7cdd0be2",
+          "decision_code": "QD-EMPOBS-IDYYWC",
+          "source_module": "decision"
+        },
+        {
+          "id": "10c8dee6-864d-49ed-bc92-4e66a3d2ba46",
+          "position_key": "CEO",
+          "decision_id": "a5a89703-f974-4151-adb5-f0d1bcec1b90",
+          "decision_code": "QD-EMPOBS-IDWKIE",
+          "source_module": "decision"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-07T03:33:30.473Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-07T03:33:30.532Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=main",
+      "at": "2026-08-07T03:33:30.645Z",
+      "count": 15,
+      "sample": [
+        {
+          "id": "68a6480a-4520-4783-b9e6-4201b27323bd",
+          "position_key": "CEO",
+          "decision_id": "31f95c2b-19a2-4468-a72e-9bc9979f55b9",
+          "decision_code": "QD-EMPOBS-IE3ORQ",
+          "source_module": "decision"
+        },
+        {
+          "id": "cc6795a9-839e-4f26-b8aa-4f395d35998d",
+          "position_key": "CEO",
+          "decision_id": "97a64840-e8b2-49c9-bab0-f20b7cdd0be2",
+          "decision_code": "QD-EMPOBS-IDYYWC",
+          "source_module": "decision"
+        },
+        {
+          "id": "10c8dee6-864d-49ed-bc92-4e66a3d2ba46",
+          "position_key": "CEO",
+          "decision_id": "a5a89703-f974-4151-adb5-f0d1bcec1b90",
+          "decision_code": "QD-EMPOBS-IDWKIE",
+          "source_module": "decision"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/decisions?company_id=main",
+      "at": "2026-08-07T03:33:34.606Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-07T03:33:43.507Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-07T03:33:43.552Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T03:33:43.757Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employee-insurances",
+      "at": "2026-08-07T03:33:49.269Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T03:33:49.441Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T03:33:49.621Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/22222222-2222-4222-8222-222222222222?company_id=main",
+      "at": "2026-08-07T03:33:53.437Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=22222222-2222-4222-8222-222222222222",
+      "at": "2026-08-07T03:33:53.851Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2?company_id=main",
+      "at": "2026-08-07T03:33:54.058Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/22222222-2222-4222-8222-222222222222?company_id=main",
+      "at": "2026-08-07T03:33:58.142Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=22222222-2222-4222-8222-222222222222",
+      "at": "2026-08-07T03:33:58.338Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2?company_id=main",
+      "at": "2026-08-07T03:33:58.515Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-07T03:34:00.947Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-07T03:34:00.978Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T03:34:01.154Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T03:34:01.317Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-07T03:34:03.582Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-07T03:34:03.614Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T03:34:03.817Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T03:34:03.994Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5/actions?company_id=main",
+      "at": "2026-08-07T03:34:07.666Z",
+      "code": "HRM-EINS-200",
+      "message": "Employee insurance action applied",
+      "id": "0e9472ba-808c-4d25-9ada-cc983122e9c5",
+      "work_history_id": null,
+      "enrollment_id": "0e9472ba-808c-4d25-9ada-cc983122e9c5",
+      "requestBody": {
+        "company_id": "main",
+        "action": "stop",
+        "effective_from": "2026-08-07"
+      },
+      "bodyCompanyId": "main",
+      "bodyHasCompanyId": true,
+      "wireEffectiveFrom": "2026-08-07"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T03:34:07.934Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T03:34:08.132Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-07T03:34:10.494Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-07T03:34:10.531Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T03:34:10.738Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T03:34:10.905Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-07T03:34:15.787Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-07T03:34:15.817Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T03:34:15.998Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T03:34:16.159Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/01-d1-hrd01-hint.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/02-d1-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/03-d1-wh-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/04-d1-hrd03-no-hint.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/05a-si-create-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/05b-si-after-fe-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/05-si-date-surface.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/05-si-before-action.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/06-si-action-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/07-si-after-post.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-emp-soft-obs-qa-01/08-si-f5-periods.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T03:33:14.205Z",
+      "msg": "OBS_D1_HINT_HRD01"
+    },
+    {
+      "at": "2026-08-07T03:33:26.692Z",
+      "msg": "GOTO_EMPLOYEE_PROFILE",
+      "url": "http://127.0.0.1:5173/hr/employees/0500220b-f289-40df-b07e-86316285439b?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-07T03:33:33.781Z",
+      "msg": "OBS_D1_HINT_HRD03_NEG"
+    },
+    {
+      "at": "2026-08-07T03:33:42.800Z",
+      "msg": "OBS_SI_DATE_ISO"
+    },
+    {
+      "at": "2026-08-07T03:33:42.996Z",
+      "msg": "GOTO_INSURANCE",
+      "url": "http://127.0.0.1:5173/hr/employees/0500220b-f289-40df-b07e-86316285439b?portal=1&tenantId=xevn&companyId=main&tab=insurance"
+    },
+    {
+      "at": "2026-08-07T03:33:52.935Z",
+      "msg": "GOTO_INSURANCE",
+      "url": "http://127.0.0.1:5173/hr/employees/22222222-2222-4222-8222-222222222222?portal=1&tenantId=xevn&companyId=main&tab=insurance"
+    },
+    {
+      "at": "2026-08-07T03:34:00.492Z",
+      "msg": "GOTO_INSURANCE",
+      "url": "http://127.0.0.1:5173/hr/employees/0500220b-f289-40df-b07e-86316285439b?portal=1&tenantId=xevn&companyId=main&tab=insurance"
+    },
+    {
+      "at": "2026-08-07T03:34:09.975Z",
+      "msg": "GOTO_INSURANCE",
+      "url": "http://127.0.0.1:5173/hr/employees/0500220b-f289-40df-b07e-86316285439b?portal=1&tenantId=xevn&companyId=main&tab=insurance"
+    }
+  ],
+  "ids": {
+    "tokenOk": true,
+    "employeeId": "0500220b-f289-40df-b07e-86316285439b",
+    "employeeName": "UAT NV 0100",
+    "insuranceId": "0e9472ba-808c-4d25-9ada-cc983122e9c5",
+    "insuranceEmpId": "0500220b-f289-40df-b07e-86316285439b"
+  },
+  "residuals": [],
+  "overall": "PASS",
+  "endedAt": "2026-08-07T03:34:18.088Z",
+  "api_corroborate": {
+    "employeeInsurancesCount": 2,
+    "profileOk": {
+      "11111111-1111-4111-8111-111111111111": false,
+      "22222222-2222-4222-8222-222222222222": true
+    },
+    "pickedStatus": "stopped",
+    "pickedVisible": true
+  },
+  "lastDecisionMutate": {
+    "method": "POST",
+    "status": 201,
+    "url": "/api/hrm/decisions",
+    "at": "2026-08-07T03:33:23.978Z",
+    "code": "HRM-DEC-201",
+    "message": "Decision created",
+    "id": "31f95c2b-19a2-4468-a72e-9bc9979f55b9",
+    "work_history_id": "68a6480a-4520-4783-b9e6-4201b27323bd",
+    "enrollment_id": "31f95c2b-19a2-4468-a72e-9bc9979f55b9",
+    "body": {
+      "id": "31f95c2b-19a2-4468-a72e-9bc9979f55b9",
+      "company_id": "holding",
+      "decision_code": "QD-EMPOBS-IE3ORQ",
+      "decision_type": "HRD_01",
+      "title": "QA OBS hint EMPOBS-IE3ORQ",
+      "content": null,
+      "employee_id": "0500220b-f289-40df-b07e-86316285439b",
+      "employee_name": "UAT NV 0100",
+      "employee_code": "UAT-0100",
+      "department": null,
+      "department_key": null,
+      "position": "Tổng Giám đốc",
+      "position_key": "CEO",
+      "effective_date": null,
+      "expiry_date": null,
+      "signer_name": null,
+      "signer_position": null,
+      "signer_position_key": null,
+      "signing_date": null,
+      "file_url": null,
+      "status": "effective",
+      "notes": null,
+      "created_at": "2026-08-07T03:33:34.651Z",
+      "updated_at": "2026-08-07T03:33:34.651Z",
+      "work_history_id": "68a6480a-4520-4783-b9e6-4201b27323bd"
+    }
+  },
+  "lastWhList": {
+    "method": "GET",
+    "status": 200,
+    "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=main",
+    "at": "2026-08-07T03:33:30.645Z",
+    "count": 15,
+    "sample": [
+      {
+        "id": "68a6480a-4520-4783-b9e6-4201b27323bd",
+        "position_key": "CEO",
+        "decision_id": "31f95c2b-19a2-4468-a72e-9bc9979f55b9",
+        "decision_code": "QD-EMPOBS-IE3ORQ",
+        "source_module": "decision"
+      },
+      {
+        "id": "cc6795a9-839e-4f26-b8aa-4f395d35998d",
+        "position_key": "CEO",
+        "decision_id": "97a64840-e8b2-49c9-bab0-f20b7cdd0be2",
+        "decision_code": "QD-EMPOBS-IDYYWC",
+        "source_module": "decision"
+      },
+      {
+        "id": "10c8dee6-864d-49ed-bc92-4e66a3d2ba46",
+        "position_key": "CEO",
+        "decision_id": "a5a89703-f974-4151-adb5-f0d1bcec1b90",
+        "decision_code": "QD-EMPOBS-IDWKIE",
+        "source_module": "decision"
+      }
+    ]
+  },
+  "lastSiAction": {
+    "method": "POST",
+    "status": 201,
+    "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5/actions?company_id=main",
+    "at": "2026-08-07T03:34:07.666Z",
+    "code": "HRM-EINS-200",
+    "message": "Employee insurance action applied",
+    "id": "0e9472ba-808c-4d25-9ada-cc983122e9c5",
+    "work_history_id": null,
+    "enrollment_id": "0e9472ba-808c-4d25-9ada-cc983122e9c5",
+    "requestBody": {
+      "company_id": "main",
+      "action": "stop",
+      "effective_from": "2026-08-07"
+    },
+    "bodyCompanyId": "main",
+    "bodyHasCompanyId": true,
+    "wireEffectiveFrom": "2026-08-07"
+  },
+  "processOk": true
+}

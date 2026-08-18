@@ -1,0 +1,1450 @@
+{
+  "sheets": [
+    {
+      "name": "DT Tỉnh (dữ liệu gốc)",
+      "preview_rows": [
+        {
+          "row": 2,
+          "cells": [
+            "=_xlfn.AGGREGATE(9,3,G4:G9699)",
+            "=_xlfn.AGGREGATE(9,3,H4:H9699)",
+            "=_xlfn.AGGREGATE(9,3,I4:I9699)",
+            "=_xlfn.AGGREGATE(9,3,J4:J9699)",
+            "=_xlfn.AGGREGATE(9,3,K4:K9699)",
+            "=_xlfn.AGGREGATE(9,3,L4:L9699)",
+            "=_xlfn.AGGREGATE(9,3,M4:M9699)",
+            "=_xlfn.AGGREGATE(9,3,N4:N9699)",
+            "=_xlfn.AGGREGATE(9,3,O4:O9699)",
+            "=_xlfn.AGGREGATE(9,3,P4:P9699)",
+            "=_xlfn.AGGREGATE(9,3,Q4:Q9699)",
+            "=_xlfn.AGGREGATE(9,3,R4:R9699)",
+            "Ninh Bình",
+            "Thái Bình",
+            "VT - HĐ",
+            "HĐ - VT",
+            "VT - GA",
+            "GA - VT",
+            "Nam Định",
+            "GA - YB"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "STT",
+            "Tỉnh",
+            "MÃ NV",
+            "Ngày",
+            "Tên lái xe",
+            "BKS",
+            "Số lượt",
+            "Số khách",
+            "Số vé nội bộ",
+            "Khách hủy",
+            "Doanh thu chọn vé",
+            "DT khách hủy",
+            "Doanh thu thực tế",
+            "tiền KM",
+            "Tiền tích điểm",
+            "Doanh thu sau KM và tích điểm",
+            "Phần trăm",
+            "Doanh thu sau thay đổi giá",
+            "Số khách nguyên chuyến",
+            "Doanh thu HĐ nguyên chuyến"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "1",
+            "Ninh Bình",
+            "XE00887",
+            "2026-06-01 00:00:00",
+            "Cù Xuân Duy",
+            "29K06897",
+            "6",
+            "41",
+            "0",
+            "1",
+            "7205000",
+            "165000",
+            "7040000",
+            "170000",
+            "0",
+            "6870000",
+            "0.89",
+            "6114300",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "2",
+            "Ninh Bình",
+            "XE01385",
+            "2026-06-01 00:00:00",
+            "Đặng Hồng Thuỷ",
+            "29H84971",
+            "6",
+            "41",
+            "0",
+            "0",
+            "7235000",
+            "0",
+            "7235000",
+            "40000",
+            "0",
+            "7195000",
+            "0.89",
+            "6403550",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "3",
+            "Ninh Bình",
+            "XE00138",
+            "2026-06-01 00:00:00",
+            "Đặng Ngọc Toàn",
+            "29E09618",
+            "6",
+            "43",
+            "0",
+            "0",
+            "7670000",
+            "0",
+            "7670000",
+            "160000",
+            "0",
+            "7510000",
+            "0.89",
+            "6683900",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "4",
+            "Ninh Bình",
+            "XE01009",
+            "2026-06-01 00:00:00",
+            "Đoàn Văn Kiều",
+            "29H73849",
+            "2",
+            "22",
+            "0",
+            "0",
+            "3910000",
+            "0",
+            "3910000",
+            "30000",
+            "0",
+            "3880000",
+            "0.89",
+            "3453200",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "5",
+            "Ninh Bình",
+            "XE00282",
+            "2026-06-01 00:00:00",
+            "Dương Văn Thọ",
+            "29E09655",
+            "6",
+            "49",
+            "0",
+            "0",
+            "8710000",
+            "0",
+            "8710000",
+            "60000",
+            "0",
+            "8650000",
+            "0.89",
+            "7698500",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "6",
+            "Ninh Bình",
+            "XE00703",
+            "2026-06-01 00:00:00",
+            "Hoàng Ngọc Cường",
+            "29G02338",
+            "1",
+            "11",
+            "0",
+            "0",
+            "2005000",
+            "0",
+            "2005000",
+            "0",
+            "0",
+            "2005000",
+            "0.89",
+            "1784450",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "7",
+            "Ninh Bình",
+            "XE00020",
+            "2026-06-01 00:00:00",
+            "Lê Trọng Giáp",
+            "29E32490",
+            "4",
+            "38",
+            "0",
+            "0",
+            "6790000",
+            "0",
+            "6790000",
+            "90000",
+            "0",
+            "6700000",
+            "0.89",
+            "5963000",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "8",
+            "Ninh Bình",
+            "XE00098",
+            "2026-06-01 00:00:00",
+            "Lê Văn Diện",
+            "29E32852",
+            "6",
+            "50",
+            "0",
+            "0",
+            "8820000",
+            "0",
+            "8820000",
+            "210000",
+            "0",
+            "8610000",
+            "0.89",
+            "7662900",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "9",
+            "Ninh Bình",
+            "XE00024",
+            "2026-06-01 00:00:00",
+            "Ngô Quốc Hùng",
+            "29E32412",
+            "6",
+            "46",
+            "0",
+            "0",
+            "8460000",
+            "0",
+            "8460000",
+            "130000",
+            "0",
+            "8330000",
+            "0.89",
+            "7413700",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "10",
+            "Ninh Bình",
+            "XE00627",
+            "2026-06-01 00:00:00",
+            "Nguyễn Đức Thanh",
+            "29K06548",
+            "6",
+            "37",
+            "0",
+            "0",
+            "6520000",
+            "0",
+            "6520000",
+            "60000",
+            "0",
+            "6460000",
+            "0.89",
+            "5749400",
+            "0",
+            "0"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tổng hợp",
+      "preview_rows": [
+        {
+          "row": 2,
+          "cells": [
+            "Ninh Bình",
+            "Thái Bình",
+            "Nam Định",
+            "VTGA",
+            "VTBC",
+            "PTGA",
+            "PTBC",
+            "Yên Bái"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "STT",
+            "Mã NV",
+            "Họ Và Tên",
+            "Tỉnh nơi làm việc",
+            "Tổng lượt trên Misa",
+            "Tổng lượt tính lương",
+            "Tổng doanh thu sau KM",
+            "Tổng doanh thu được tính lương",
+            "Quỹ lương doanh thu",
+            "Thang điểm đánh giá CLDV",
+            "Hệ số hưởng lương CLDV",
+            "LƯƠNG DOANH THU",
+            "Doanh thu CPN",
+            "LƯƠNG CHUYỂN PHÁT NHANH",
+            "Doanh thu hợp đồng",
+            "LƯƠNG HỢP ĐỒNG",
+            "Lương khăn nước",
+            "CP sửa chữa",
+            "Đón/ Trả Hà Đông",
+            "Tiền ăn CN"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "Ninh Bình",
+            "Thái Bình",
+            "Nam Định",
+            "VTGA",
+            "VTBC",
+            "PTGA",
+            "PTBC",
+            "Yên Bái",
+            "Ninh Bình",
+            "Thái Bình",
+            "Nam Định",
+            "Việt Trì",
+            "Phú Thọ",
+            "Yên Bái",
+            "Khác tỉnh",
+            "HĐNG",
+            "Trong tỉnh( Nội Bài)",
+            "Khăn",
+            "Nước"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Trong ngày",
+            "Trên 2 ngày",
+            "Nửa ngày"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "Số ngày",
+            "Doanh thu",
+            "Số ngày",
+            "Doanh thu",
+            "Số ngày",
+            "Số lượt",
+            "Doanh thu",
+            "Thưởng 30/04-01/05 (lượt vượt)",
+            "Thưởng lượt rỗng",
+            "Tổng"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "TỔNG CỘNG",
+            "=_xlfn.AGGREGATE(9,3,E9:E809)",
+            "=_xlfn.AGGREGATE(9,3,F9:F809)",
+            "=_xlfn.AGGREGATE(9,3,G9:G809)",
+            "=_xlfn.AGGREGATE(9,3,H9:H809)",
+            "=_xlfn.AGGREGATE(9,3,I9:I809)",
+            "=_xlfn.AGGREGATE(9,3,J9:J809)",
+            "=_xlfn.AGGREGATE(9,3,K9:K809)",
+            "=_xlfn.AGGREGATE(9,3,L9:L809)",
+            "=_xlfn.AGGREGATE(9,3,M9:M809)",
+            "=_xlfn.AGGREGATE(9,3,N9:N809)",
+            "=_xlfn.AGGREGATE(9,3,O9:O809)",
+            "=_xlfn.AGGREGATE(9,3,P9:P809)",
+            "=_xlfn.AGGREGATE(9,3,Q9:Q809)",
+            "=_xlfn.AGGREGATE(9,3,R9:R809)",
+            "=_xlfn.AGGREGATE(9,3,S9:S809)",
+            "=_xlfn.AGGREGATE(9,3,T9:T809)",
+            "=_xlfn.AGGREGATE(9,3,U9:U809)",
+            "=_xlfn.AGGREGATE(9,3,V9:V809)",
+            "=_xlfn.AGGREGATE(9,3,W9:W809)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "MNV"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "Lái tuyến Ninh Bình",
+            "=_xlfn.AGGREGATE(9,3,E10:E51)",
+            "=_xlfn.AGGREGATE(9,3,F10:F51)",
+            "=_xlfn.AGGREGATE(9,3,G10:G51)",
+            "=_xlfn.AGGREGATE(9,3,H10:H51)",
+            "=_xlfn.AGGREGATE(9,3,I10:I51)",
+            "=_xlfn.AGGREGATE(9,3,J10:J51)",
+            "=_xlfn.AGGREGATE(9,3,K10:K51)",
+            "=_xlfn.AGGREGATE(9,3,L10:L51)",
+            "=_xlfn.AGGREGATE(9,3,M10:M51)",
+            "=_xlfn.AGGREGATE(9,3,N10:N51)",
+            "=_xlfn.AGGREGATE(9,3,O10:O51)",
+            "=_xlfn.AGGREGATE(9,3,P10:P51)",
+            "=_xlfn.AGGREGATE(9,3,Q10:Q51)",
+            "=_xlfn.AGGREGATE(9,3,R10:R51)",
+            "=_xlfn.AGGREGATE(9,3,S10:S51)",
+            "=_xlfn.AGGREGATE(9,3,T10:T51)",
+            "=_xlfn.AGGREGATE(9,3,U10:U51)",
+            "=_xlfn.AGGREGATE(9,3,V10:V51)",
+            "=_xlfn.AGGREGATE(9,3,W10:W51)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=+IF(B10=\"\",\"\",SUBTOTAL(103,$B$10:B10))",
+            "XE00627",
+            "Nguyễn Đức Thanh",
+            "NB",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B10,'DT Tỉnh'!$B:$B,'Tổng hợp'!$E$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B10,'DT Tỉnh'!$B:$B,$F$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B10,'DT Tỉnh'!$B:$B,$G$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B10,'DT Tỉnh'!$U:$U,$H$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B10,'DT Tỉnh'!$U:$U,$I$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B10,'DT Tỉnh'!$U:$U,$J$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B10,'DT Tỉnh'!$U:$U,$K$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B10,'DT Tỉnh'!$U:$U,$L$2)",
+            "=IF(D10=\"NB\",E10-COUNTIFS('DT Hợp đồng'!$N$4:$N$36,\"x\",'DT Hợp đồng'!$D$4:$D$36,'Tổng hợp'!B10),E10)",
+            "=IF($D10<>\"TB\",$F10,$F10-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B10))",
+            "=IF($D10<>\"NĐ\",$G10,$G10-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B10))",
+            "=IF(D10<>\"VT\",H10+I10,H10+I10-COUNTIFS('DT Hợp đồng'!$N$4:$N$44,\"x\",'DT Hợp đồng'!$D$4:$D$44,'Tổng hợp'!B10))",
+            "=IF(D10<>\"TXPT\",J10+K10,J10+K10-COUNTIFS('DT Hợp đồng'!$N$4:$N$44,\"X\",'DT Hợp đồng'!$D$4:$D$44,'Tổng hợp'!B10))",
+            "=IF($D10<>\"YB\",$L10,$L10-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B10))",
+            "=IF(AW10=\"x\",0,SUMIFS('DT Tỉnh'!$R:$R,'DT Tỉnh'!$C:$C,$B10))",
+            "=IF(S10-SUMIFS('DT Hợp đồng'!$J:$J,'DT Hợp đồng'!$D:$D,'Tổng hợp'!B10)<0,0,S10-SUMIFS('DT Hợp đồng'!$J:$J,'DT Hợp đồng'!$D:$D,'Tổng hợp'!B10))"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=+IF(B11=\"\",\"\",SUBTOTAL(103,$B$10:B11))",
+            "XE00559",
+            "Nguyễn Ngọc Hưng",
+            "NB",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B11,'DT Tỉnh'!$B:$B,'Tổng hợp'!$E$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B11,'DT Tỉnh'!$B:$B,$F$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B11,'DT Tỉnh'!$B:$B,$G$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B11,'DT Tỉnh'!$U:$U,$H$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B11,'DT Tỉnh'!$U:$U,$I$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B11,'DT Tỉnh'!$U:$U,$J$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B11,'DT Tỉnh'!$U:$U,$K$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B11,'DT Tỉnh'!$U:$U,$L$2)",
+            "=IF(D11=\"NB\",E11-COUNTIFS('DT Hợp đồng'!$N$4:$N$36,\"x\",'DT Hợp đồng'!$D$4:$D$36,'Tổng hợp'!B11),E11)",
+            "=IF($D11<>\"TB\",$F11,$F11-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B11))",
+            "=IF($D11<>\"NĐ\",$G11,$G11-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B11))",
+            "=IF(D11<>\"VT\",H11+I11,H11+I11-COUNTIFS('DT Hợp đồng'!$N$4:$N$44,\"x\",'DT Hợp đồng'!$D$4:$D$44,'Tổng hợp'!B11))",
+            "=IF(D11<>\"TXPT\",J11+K11,J11+K11-COUNTIFS('DT Hợp đồng'!$N$4:$N$44,\"X\",'DT Hợp đồng'!$D$4:$D$44,'Tổng hợp'!B11))",
+            "=IF($D11<>\"YB\",$L11,$L11-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B11))",
+            "=IF(AW11=\"x\",0,SUMIFS('DT Tỉnh'!$R:$R,'DT Tỉnh'!$C:$C,$B11))",
+            "=IF(S11-SUMIFS('DT Hợp đồng'!$J:$J,'DT Hợp đồng'!$D:$D,'Tổng hợp'!B11)<0,0,S11-SUMIFS('DT Hợp đồng'!$J:$J,'DT Hợp đồng'!$D:$D,'Tổng hợp'!B11))"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=+IF(B12=\"\",\"\",SUBTOTAL(103,$B$10:B12))",
+            "XE00019",
+            "Tống Văn Nam",
+            "NB",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B12,'DT Tỉnh'!$B:$B,'Tổng hợp'!$E$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B12,'DT Tỉnh'!$B:$B,$F$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B12,'DT Tỉnh'!$B:$B,$G$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B12,'DT Tỉnh'!$U:$U,$H$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B12,'DT Tỉnh'!$U:$U,$I$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B12,'DT Tỉnh'!$U:$U,$J$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B12,'DT Tỉnh'!$U:$U,$K$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B12,'DT Tỉnh'!$U:$U,$L$2)",
+            "=IF(D12=\"NB\",E12-COUNTIFS('DT Hợp đồng'!$N$4:$N$36,\"x\",'DT Hợp đồng'!$D$4:$D$36,'Tổng hợp'!B12),E12)",
+            "=IF($D12<>\"TB\",$F12,$F12-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B12))",
+            "=IF($D12<>\"NĐ\",$G12,$G12-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B12))",
+            "=IF(D12<>\"VT\",H12+I12,H12+I12-COUNTIFS('DT Hợp đồng'!$N$4:$N$44,\"x\",'DT Hợp đồng'!$D$4:$D$44,'Tổng hợp'!B12))",
+            "=IF(D12<>\"TXPT\",J12+K12,J12+K12-COUNTIFS('DT Hợp đồng'!$N$4:$N$44,\"X\",'DT Hợp đồng'!$D$4:$D$44,'Tổng hợp'!B12))",
+            "=IF($D12<>\"YB\",$L12,$L12-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B12))",
+            "=IF(AW12=\"x\",0,SUMIFS('DT Tỉnh'!$R:$R,'DT Tỉnh'!$C:$C,$B12))",
+            "=IF(S12-SUMIFS('DT Hợp đồng'!$J:$J,'DT Hợp đồng'!$D:$D,'Tổng hợp'!B12)<0,0,S12-SUMIFS('DT Hợp đồng'!$J:$J,'DT Hợp đồng'!$D:$D,'Tổng hợp'!B12))"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "=+IF(B13=\"\",\"\",SUBTOTAL(103,$B$10:B13))",
+            "XE00020",
+            "Lê Trọng Giáp",
+            "NB",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B13,'DT Tỉnh'!$B:$B,'Tổng hợp'!$E$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B13,'DT Tỉnh'!$B:$B,$F$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B13,'DT Tỉnh'!$B:$B,$G$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B13,'DT Tỉnh'!$U:$U,$H$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B13,'DT Tỉnh'!$U:$U,$I$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B13,'DT Tỉnh'!$U:$U,$J$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B13,'DT Tỉnh'!$U:$U,$K$2)",
+            "=SUMIFS('DT Tỉnh'!$G:$G,'DT Tỉnh'!$C:$C,'Tổng hợp'!$B13,'DT Tỉnh'!$U:$U,$L$2)",
+            "=IF(D13=\"NB\",E13-COUNTIFS('DT Hợp đồng'!$N$4:$N$36,\"x\",'DT Hợp đồng'!$D$4:$D$36,'Tổng hợp'!B13),E13)",
+            "=IF($D13<>\"TB\",$F13,$F13-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B13))",
+            "=IF($D13<>\"NĐ\",$G13,$G13-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B13))",
+            "=IF(D13<>\"VT\",H13+I13,H13+I13-COUNTIFS('DT Hợp đồng'!$N$4:$N$44,\"x\",'DT Hợp đồng'!$D$4:$D$44,'Tổng hợp'!B13))",
+            "=IF(D13<>\"TXPT\",J13+K13,J13+K13-COUNTIFS('DT Hợp đồng'!$N$4:$N$44,\"X\",'DT Hợp đồng'!$D$4:$D$44,'Tổng hợp'!B13))",
+            "=IF($D13<>\"YB\",$L13,$L13-COUNTIFS('DT Hợp đồng'!$N:$N,\"X\",'DT Hợp đồng'!$D:$D,'Tổng hợp'!$B13))",
+            "=IF(AW13=\"x\",0,SUMIFS('DT Tỉnh'!$R:$R,'DT Tỉnh'!$C:$C,$B13))",
+            "=IF(S13-SUMIFS('DT Hợp đồng'!$J:$J,'DT Hợp đồng'!$D:$D,'Tổng hợp'!B13)<0,0,S13-SUMIFS('DT Hợp đồng'!$J:$J,'DT Hợp đồng'!$D:$D,'Tổng hợp'!B13))"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Check DL",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "DỮ LIỆU LƯƠNG LÁI XE TUYẾN THÁNG 6 - 2026"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "Lx check và phản hồi lại sai lệch (nếu có) trước 17h ngày 03/08/2026, không có phản hồi coi như dữ liệu đã đúng"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "Họ tên lái xe",
+            "=INDEX('Tổng hợp'!C:C,MATCH('Check DL'!I4,'Tổng hợp'!B:B,0),)",
+            "Mã NV",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B41490>",
+            "Nơi làm việc",
+            "=INDEX('Tổng hợp'!D:D,MATCH(I4,'Tổng hợp'!B:B,0),)"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Số lượt / tháng",
+            "Tổng lượt trên misa",
+            "Tổng lượt tính lương",
+            "31"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "NB",
+            "TB",
+            "NĐ",
+            "VTGA",
+            "VTBC",
+            "PTGA",
+            "PTBC",
+            "YB",
+            "NB",
+            "TB",
+            "NĐ",
+            "VT",
+            "TXPT",
+            "YB"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B214C0>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21520>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21460>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21730>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21550>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21EB0>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21F10>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21490>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21DC0>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21D90>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21E50>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21E20>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21D30>",
+            "<openpyxl.worksheet.formula.ArrayFormula object at 0x000001A7D5B21D60>"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "Doanh thu được tính lương",
+            "=INDEX('Tổng hợp'!T:T,MATCH(I4,'Tổng hợp'!B:B,0),)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "Điểm đánh giá CLDV",
+            "=INDEX('Tổng hợp'!V:V,MATCH(I4,'Tổng hợp'!B:B,0),)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "Lương doanh thu",
+            "=INDEX('Tổng hợp'!X:X,MATCH(I4,'Tổng hợp'!B:B,0),)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "Doanh thu CPN",
+            "=INDEX('Tổng hợp'!Y:Y,MATCH(I4,'Tổng hợp'!B:B,0),)",
+            "Tăng cường  trái tuyến",
+            "=INDEX('Tổng hợp'!AO:AO,MATCH(I4,'Tổng hợp'!B:B,0),)",
+            "Học lộ/ Đào tạo",
+            "=INDEX('Tổng hợp'!AU:AU,MATCH(I4,'Tổng hợp'!B:B,0),)"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "Doanh thu hợp đồng",
+            "Hợp đồng chạy dưới 2 ngày",
+            "Hợp đồng chạy từ 2 ngày",
+            "HĐNG",
+            "Lượt Nội bài"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "Số ngày",
+            "DT",
+            "Số lượt/ngày",
+            "DT",
+            "Số ngày",
+            "Số lượt",
+            "DT"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DT Tỉnh",
+      "preview_rows": [
+        {
+          "row": 2,
+          "cells": [
+            "=_xlfn.AGGREGATE(9,3,G4:G8930)",
+            "=_xlfn.AGGREGATE(9,3,H4:H8930)",
+            "=_xlfn.AGGREGATE(9,3,I4:I8930)",
+            "=_xlfn.AGGREGATE(9,3,J4:J8930)",
+            "=_xlfn.AGGREGATE(9,3,K4:K8930)",
+            "=_xlfn.AGGREGATE(9,3,L4:L8930)",
+            "=_xlfn.AGGREGATE(9,3,M4:M8930)",
+            "=_xlfn.AGGREGATE(9,3,N4:N8930)",
+            "=_xlfn.AGGREGATE(9,3,O4:O8930)",
+            "=_xlfn.AGGREGATE(9,3,P4:P8930)",
+            "=_xlfn.AGGREGATE(9,3,Q4:Q8930)",
+            "=_xlfn.AGGREGATE(9,3,R4:R8930)",
+            "Ninh Bình",
+            "Thái Bình",
+            "VT - HĐ",
+            "HĐ - VT",
+            "VT - GA",
+            "GA - VT",
+            "Nam Định",
+            "GA - YB"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "STT",
+            "Tỉnh",
+            "MÃ NV",
+            "Ngày",
+            "Tên lái xe",
+            "BKS",
+            "Số lượt",
+            "Số khách",
+            "Số vé nội bộ",
+            "Khách hủy",
+            "Doanh thu chọn vé",
+            "DT khách hủy",
+            "Doanh thu thực tế",
+            "tiền KM",
+            "Tiền tích điểm",
+            "Doanh thu sau KM và tích điểm",
+            "Phần trăm",
+            "Doanh thu sau thay đổi giá",
+            "Số khách nguyên chuyến",
+            "Doanh thu HĐ nguyên chuyến"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "1",
+            "Ninh Bình",
+            "XE00887",
+            "2026-06-01 00:00:00",
+            "Cù Xuân Duy",
+            "29K06897",
+            "6",
+            "41",
+            "0",
+            "1",
+            "7205000",
+            "165000",
+            "7040000",
+            "170000",
+            "0",
+            "6870000",
+            "0.89",
+            "6114300",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "2",
+            "Ninh Bình",
+            "XE01385",
+            "2026-06-01 00:00:00",
+            "Đặng Hồng Thuỷ",
+            "29H84971",
+            "6",
+            "41",
+            "0",
+            "0",
+            "7235000",
+            "0",
+            "7235000",
+            "40000",
+            "0",
+            "7195000",
+            "0.89",
+            "6403550",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "3",
+            "Ninh Bình",
+            "XE00138",
+            "2026-06-01 00:00:00",
+            "Đặng Ngọc Toàn",
+            "29E09618",
+            "6",
+            "43",
+            "0",
+            "0",
+            "7670000",
+            "0",
+            "7670000",
+            "160000",
+            "0",
+            "7510000",
+            "0.89",
+            "6683900",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "4",
+            "Ninh Bình",
+            "XE01009",
+            "2026-06-01 00:00:00",
+            "Đoàn Văn Kiều",
+            "29H73849",
+            "2",
+            "22",
+            "0",
+            "0",
+            "3910000",
+            "0",
+            "3910000",
+            "30000",
+            "0",
+            "3880000",
+            "0.89",
+            "3453200",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "5",
+            "Ninh Bình",
+            "XE00282",
+            "2026-06-01 00:00:00",
+            "Dương Văn Thọ",
+            "29E09655",
+            "6",
+            "49",
+            "0",
+            "0",
+            "8710000",
+            "0",
+            "8710000",
+            "60000",
+            "0",
+            "8650000",
+            "0.89",
+            "7698500",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "6",
+            "Ninh Bình",
+            "XE00703",
+            "2026-06-01 00:00:00",
+            "Hoàng Ngọc Cường",
+            "29G02338",
+            "1",
+            "11",
+            "0",
+            "0",
+            "2005000",
+            "0",
+            "2005000",
+            "0",
+            "0",
+            "2005000",
+            "0.89",
+            "1784450",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "7",
+            "Ninh Bình",
+            "XE00020",
+            "2026-06-01 00:00:00",
+            "Lê Trọng Giáp",
+            "29E32490",
+            "4",
+            "38",
+            "0",
+            "0",
+            "6790000",
+            "0",
+            "6790000",
+            "90000",
+            "0",
+            "6700000",
+            "0.89",
+            "5963000",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "8",
+            "Ninh Bình",
+            "XE00098",
+            "2026-06-01 00:00:00",
+            "Lê Văn Diện",
+            "29E32852",
+            "6",
+            "50",
+            "0",
+            "0",
+            "8820000",
+            "0",
+            "8820000",
+            "210000",
+            "0",
+            "8610000",
+            "0.89",
+            "7662900",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "9",
+            "Ninh Bình",
+            "XE00024",
+            "2026-06-01 00:00:00",
+            "Ngô Quốc Hùng",
+            "29E32412",
+            "6",
+            "46",
+            "0",
+            "0",
+            "8460000",
+            "0",
+            "8460000",
+            "130000",
+            "0",
+            "8330000",
+            "0.89",
+            "7413700",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "10",
+            "Ninh Bình",
+            "XE00627",
+            "2026-06-01 00:00:00",
+            "Nguyễn Đức Thanh",
+            "29K06548",
+            "6",
+            "37",
+            "0",
+            "0",
+            "6520000",
+            "0",
+            "6520000",
+            "60000",
+            "0",
+            "6460000",
+            "0.89",
+            "5749400",
+            "0",
+            "0"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ghi chú",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "DỮ LIỆU LƯƠNG LÁI TUYẾN THÁNG 6"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "Ghi",
+            "Nội dung",
+            "Chi tiết",
+            "Trạng thái"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "1",
+            "Doanh thu",
+            "Thêm doanh thu tháng mới, xỏa bỏ doanh thu những ng hưởng lương lượt, những ngày chạy trái tuyến tăng cường",
+            "Hoàn thành"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "2",
+            "CPN",
+            "Doanh thu CPN: xóa doanh thu những người hưởng lương lượt, những ngày chạy tăng cường trái tuyến",
+            "Hoàn thành"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "3",
+            "Thưởng",
+            "tháng 6 ko thấy phòng gửi dữ liệu",
+            "Hoàn thành"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "4",
+            "Doanh thu hợp đồng",
+            "tách đón trả NB và doanh thu hợp đồng",
+            "Hoàn thành"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "5",
+            "ăn",
+            "Tiền ăn chủ nhật",
+            "Hoàn thành"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "6",
+            "Khăn, nước",
+            "Khăn nước",
+            "Hoàn thành"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "7",
+            "HĐ",
+            "Đón trả Hà Đông",
+            "Hoàn thành"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "8",
+            "trừ lương",
+            "Tháng 6 tính bổ sung 2 người phòng kế toán báo tính bổ sung của t5",
+            "Hoàn thành"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "9",
+            "CPSC",
+            "Thêm CPSC của tháng",
+            "Hoàn thành"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "10",
+            "Điểm CLDV",
+            "Thêm điểm CLDV của tháng",
+            "Hoàn thành"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Lượt tăng cường trái tuyến",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "DANH SÁCH LÁI XE TĂNG CƯỜNG TUYẾN, TRÁI TUYẾN"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "THÁNG 6 NĂM 2026"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "STT",
+            "Mã nhân viên",
+            "Họ tên lái xe",
+            "Chức vụ",
+            "Tỉnh",
+            "Nội dung, công việc điều động",
+            "Ngày",
+            "Số công/ số lượt",
+            "Đơn giá",
+            "Thành tiền"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "1",
+            "XE00326",
+            "Hà Văn Dũng",
+            "LXT",
+            "PT",
+            "Tăng cuờng YB",
+            "2026-06-02 00:00:00",
+            "1",
+            "190000",
+            "190000",
+            "Lái xe tuyến"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "2",
+            "XE00366",
+            "Đào Trung Đức",
+            "LXT",
+            "PT",
+            "Tăng cuờng YB",
+            "8, 15, 20/6/2026",
+            "5",
+            "190000",
+            "950000",
+            "Lái xe tuyến"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "3",
+            "XE00250",
+            "Lê Trung Kiên",
+            "QLPT",
+            "HN",
+            "Tăng cuờng YB",
+            "12, 24/6/2026",
+            "3",
+            "190000",
+            "570000",
+            "Chuyên viên quản lý phương tiện"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "4",
+            "XE00600",
+            "Nguyễn Văn Thế",
+            "LXT",
+            "NB",
+            "Tăng cuờng YB",
+            "4, 16, 21/6/2026",
+            "6",
+            "190000",
+            "1140000",
+            "Lái xe tuyến"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "5",
+            "XE01168",
+            "Nguyễn Ngọc Lâm",
+            "LXT",
+            "VT",
+            "Tăng cuờng YB",
+            "13, 14, 30/6/2026",
+            "6",
+            "190000",
+            "1140000",
+            "Lái xe tuyến"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "6",
+            "XE01188",
+            "Nguyễn Minh Quang",
+            "LXT",
+            "VT",
+            "Tăng cuờng YB",
+            "2026-06-06 00:00:00",
+            "2",
+            "190000",
+            "380000",
+            "Lái xe tuyến"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "7",
+            "XE01242",
+            "Phùng Kim Tiến",
+            "LXT",
+            "PT",
+            "Tăng cuờng YB",
+            "2026-06-28 00:00:00",
+            "2",
+            "190000",
+            "380000",
+            "Lái xe tuyến"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "8",
+            "XE01437",
+            "Tạ Văn Nam",
+            "LXT",
+            "VT",
+            "Tăng cuờng YB",
+            "2026-06-01 00:00:00",
+            "1",
+            "190000",
+            "190000",
+            "Lái xe tuyến"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "9",
+            "XE00313",
+            "Hán Duy Long",
+            "ĐHT",
+            "YB",
+            "Tăng cuờng YB",
+            "7, 8, 12, 21/6/2026",
+            "14",
+            "190000",
+            "2660000",
+            "Điều hành tỉnh"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Thưởng lượt rỗng -30.04-01.05",
+      "preview_rows": []
+    },
+    {
+      "name": "Đón trả HĐ",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "BẢNG KÊ LƯỢT HÀ ĐÔNG THÁNG 06/2026",
+            "Đón",
+            "30000"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "Mã NV",
+            "Tỉnh",
+            "Tên lái xe",
+            "HĐ -  NB",
+            "HĐ - NĐ",
+            "HĐ - TB",
+            "NB-HĐ",
+            "NĐ - HĐ",
+            "TB - HĐ",
+            "Tổng tiền",
+            "Trả",
+            "25000"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "=_xlfn.AGGREGATE(9,3,J4:J200)"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "XE00887",
+            "Ninh Bình",
+            "Cù Xuân Duy",
+            "17",
+            "0",
+            "0",
+            "16",
+            "0",
+            "0",
+            "=SUM(D4:F4)*$L$1+SUM(G4:I4)*$L$2"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "XE01385",
+            "Ninh Bình",
+            "Đặng Hồng Thuỷ",
+            "12",
+            "0",
+            "0",
+            "11",
+            "0",
+            "0",
+            "=SUM(D5:F5)*$L$1+SUM(G5:I5)*$L$2"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "XE00138",
+            "Ninh Bình",
+            "Đặng Ngọc Toàn",
+            "14",
+            "0",
+            "3",
+            "18",
+            "0",
+            "2",
+            "=SUM(D6:F6)*$L$1+SUM(G6:I6)*$L$2"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "XE00282",
+            "Ninh Bình",
+            "Dương Văn Thọ",
+            "15",
+            "0",
+            "0",
+            "17",
+            "0",
+            "0",
+            "=SUM(D7:F7)*$L$1+SUM(G7:I7)*$L$2"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "XE00703",
+            "Ninh Bình",
+            "Hoàng Ngọc Cường",
+            "7",
+            "0",
+            "0",
+            "6",
+            "0",
+            "0",
+            "=SUM(D8:F8)*$L$1+SUM(G8:I8)*$L$2"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "XE01743",
+            "Ninh Bình",
+            "Lã Văn Chinh",
+            "11",
+            "0",
+            "0",
+            "8",
+            "0",
+            "0",
+            "=SUM(D9:F9)*$L$1+SUM(G9:I9)*$L$2"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "XE01746",
+            "Ninh Bình",
+            "Lã Văn Dương",
+            "10",
+            "0",
+            "0",
+            "9",
+            "0",
+            "0",
+            "=SUM(D10:F10)*$L$1+SUM(G10:I10)*$L$2"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "XE00050",
+            "Ninh Bình",
+            "Lê Hữu Bích",
+            "12",
+            "0",
+            "0",
+            "13",
+            "0",
+            "0",
+            "=SUM(D11:F11)*$L$1+SUM(G11:I11)*$L$2"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "XE00020",
+            "Ninh Bình",
+            "Lê Trọng Giáp",
+            "14",
+            "0",
+            "0",
+            "15",
+            "0",
+            "0",
+            "=SUM(D12:F12)*$L$1+SUM(G12:I12)*$L$2"
+          ]
+        }
+      ]
+    }
+  ]
+}

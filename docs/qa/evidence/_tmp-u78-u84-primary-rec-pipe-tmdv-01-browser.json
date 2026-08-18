@@ -1,0 +1,386 @@
+{
+  "work_item_id": "U78-U84-PRIMARY-REC-PIPE-TMDV-01",
+  "prior_req_stamp": "TMDV-REQ-R1-DINI2P",
+  "startedAt": "2026-08-03T17:53:43.052Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "COMPANY": "trsport",
+    "TENANT": "xevn",
+    "STAMP": "TMDV-PIPE-DJ2VT8",
+    "commit": "dc930c5"
+  },
+  "persona_note": "Group CEO ceo@xe.vn embed companyId=trsport (CO-TMDV) · OU TM-DV · reuse open YCTD TMDV-REQ-R1-DINI2P",
+  "api_probes": {
+    "wf_pipe_def": null,
+    "prior_req": {
+      "id": "46c0fff1-ad3e-412e-81df-a7680f3f2801",
+      "status": "open",
+      "title": "JD Lái xe Vận hành logistics TMDV-REQ-R1-DINI2P"
+    },
+    "candidates_before": {
+      "total": 0
+    },
+    "defs_total": 3,
+    "defs_codes": [
+      "TDIT",
+      "hrm_recruitment_plan_approval",
+      "hrm_requisition_approval"
+    ],
+    "wf_pipe_def_after": {
+      "id": "b952ea1d-0217-466d-a267-8dde1e7cd8ad",
+      "status": "active",
+      "code": "hrm_candidate_pipeline"
+    }
+  },
+  "steps": {
+    "l0_probe": {
+      "summary": "priorReq=open pipeDef=MISSING candTotal=0",
+      "verdict": "PASS",
+      "at": "2026-08-03T17:53:43.265Z"
+    },
+    "wf_precond": {
+      "summary": "presetSave=true codes=201:hrm_candidate_pipeline def=b952ea1d-0217-466d-a267-8dde1e7cd8ad status=active onList=true",
+      "verdict": "PASS",
+      "at": "2026-08-03T17:53:58.499Z"
+    },
+    "fd_cand_empty": {
+      "summary": "empty candidate submit kept dialog",
+      "verdict": "PASS",
+      "at": "2026-08-03T17:54:08.550Z"
+    },
+    "cand_create": {
+      "summary": "posts=201:HRM-REC-CP-201 id=c7ade28a-b25b-4e16-9d6d-d86b5775a8cf name=Nguyễn Văn Tài xế TMDV-PIPE-DJ2VT8",
+      "verdict": "PASS",
+      "at": "2026-08-03T17:54:12.320Z"
+    },
+    "cand_f5": {
+      "summary": "stampOnList=true id=c7ade28a-b25b-4e16-9d6d-d86b5775a8cf",
+      "verdict": "PASS",
+      "at": "2026-08-03T17:54:18.476Z"
+    },
+    "fd_gplx_offer": {
+      "summary": "No GPLX / kinh nghiệm tuyến field on candidate create/edit dialog — Offer gate NOT enforced in FE (document SPEC_GAP / FD not product-blocked)",
+      "verdict": "SKIP",
+      "at": "2026-08-03T17:54:20.135Z"
+    },
+    "start_pipeline": {
+      "summary": "clicked=true posts=201:HRM-REC-CP-WF-200 wi=15bc3761-a21a-4de4-afe2-9f7099f85248 spawnMissing=false",
+      "startPipeline": {
+        "status": 201,
+        "code": "HRM-REC-CP-WF-200",
+        "spawnMissing": false,
+        "workflowInstanceId": "15bc3761-a21a-4de4-afe2-9f7099f85248",
+        "message": "Candidate pipeline started",
+        "stage": "new"
+      },
+      "verdict": "PASS",
+      "at": "2026-08-03T17:54:24.806Z"
+    },
+    "f5_pipeline": {
+      "summary": "cand=true wi=15bc3761-a21a-4de4-afe2-9f7099f85248 lockedHint=true startBtnLikelyGone=true",
+      "verdict": "PASS",
+      "at": "2026-08-03T17:54:30.915Z"
+    },
+    "ap_inbox": {
+      "summary": "clicked=true completes=1 cardGone=false stage=new codes=XBOS-WF-200 matchingWi=true",
+      "verdict": "PASS",
+      "at": "2026-08-03T17:54:41.921Z"
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T17:53:43.629Z",
+      "msg": "GOTO_CC_WF",
+      "url": "http://127.0.0.1:5173/command-center?settings=workflow"
+    },
+    {
+      "at": "2026-08-03T17:53:58.500Z",
+      "msg": "GOTO_CANDIDATES",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=trsport&tab=candidates"
+    },
+    {
+      "at": "2026-08-03T17:54:06.356Z",
+      "msg": "OU_FILTER_TMDV",
+      "note": "option not found — URL companyId=trsport"
+    },
+    {
+      "at": "2026-08-03T17:54:18.417Z",
+      "msg": "OU_FILTER_TMDV",
+      "note": "selected member OU option"
+    },
+    {
+      "at": "2026-08-03T17:54:30.864Z",
+      "msg": "OU_FILTER_TMDV",
+      "note": "selected member OU option"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:53:44.999Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-03T17:53:44.999Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-08-03T17:53:45.031Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:53:45.032Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-08-03T17:53:51.319Z",
+      "code": "XBOS-WF-201",
+      "wfCode": "hrm_candidate_pipeline",
+      "defId": "b952ea1d-0217-466d-a267-8dde1e7cd8ad"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:53:55.596Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-03T17:53:55.602Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-08-03T17:53:55.615Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:53:55.622Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=trsport",
+      "at": "2026-08-03T17:53:59.382Z",
+      "hasStamp": false,
+      "hitStage": null,
+      "hitWi": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=trsport",
+      "at": "2026-08-03T17:53:59.442Z",
+      "hasStamp": false,
+      "hitStage": null,
+      "hitWi": null
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/candidates",
+      "at": "2026-08-03T17:54:08.852Z",
+      "createdId": "c7ade28a-b25b-4e16-9d6d-d86b5775a8cf",
+      "code": "HRM-REC-CP-201",
+      "full_name": "Nguyễn Văn Tài xế TMDV-PIPE-DJ2VT8"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=trsport",
+      "at": "2026-08-03T17:54:08.911Z",
+      "hasStamp": true,
+      "hitStage": "applied",
+      "hitWi": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=trsport",
+      "at": "2026-08-03T17:54:12.780Z",
+      "hasStamp": true,
+      "hitStage": "applied",
+      "hitWi": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=trsport",
+      "at": "2026-08-03T17:54:12.838Z",
+      "hasStamp": true,
+      "hitStage": "applied",
+      "hitWi": null
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/candidates-pool/c7ade28a-b25b-4e16-9d6d-d86b5775a8cf/start-pipeline?company_id=trsport",
+      "at": "2026-08-03T17:54:20.492Z",
+      "code": "HRM-REC-CP-WF-200",
+      "spawnMissing": false,
+      "workflowInstanceId": "15bc3761-a21a-4de4-afe2-9f7099f85248"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=trsport",
+      "at": "2026-08-03T17:54:20.548Z",
+      "hasStamp": true,
+      "hitStage": "new",
+      "hitWi": "15bc3761-a21a-4de4-afe2-9f7099f85248"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=trsport",
+      "at": "2026-08-03T17:54:25.205Z",
+      "hasStamp": true,
+      "hitStage": "new",
+      "hitWi": "15bc3761-a21a-4de4-afe2-9f7099f85248"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=trsport",
+      "at": "2026-08-03T17:54:25.258Z",
+      "hasStamp": true,
+      "hitStage": "new",
+      "hitWi": "15bc3761-a21a-4de4-afe2-9f7099f85248"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:54:31.117Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/workflow-engine/tasks/6b2f104b-b459-4bb2-bd1c-d305a57f7463/complete",
+      "at": "2026-08-03T17:54:36.757Z",
+      "code": "XBOS-WF-200",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-200\",\"message\":\"Task completed\",\"data\":{\"task\":{\"id\":\"6b2f104b-b459-4bb2-bd1c-d305a57f7463\",\"instance_id\":\"15bc3761-a21a-4de4-afe2-9f7099f85248\",\"step_key\":\"intake\",\"hat_key\":\"group_ceo\",\"assignee_user_id\":\"ceo@xe.vn\",\"assignment_id\":null,\"status\":",
+      "instanceId": null,
+      "stepKey": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:54:36.773Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:54:38.393Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/00-wf-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/00b-wf-preset-open.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/00c-wf-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/00d-wf-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/01-candidates.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/02-cand-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/03-cand-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/04-cand-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/05-cand-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/09-fd-gplx-observe.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/06-before-start-qt.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/07-after-start-qt.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/08-f5-after-pipeline.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/10-inbox-before.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/11-ap-after-click.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-pipe-tmdv-01/12-ap-inbox-f5.png"
+  ],
+  "ids": {
+    "wfDefId": "b952ea1d-0217-466d-a267-8dde1e7cd8ad",
+    "candidateId": "c7ade28a-b25b-4e16-9d6d-d86b5775a8cf",
+    "workflowInstanceId": "15bc3761-a21a-4de4-afe2-9f7099f85248",
+    "requisitionId": "46c0fff1-ad3e-412e-81df-a7680f3f2801"
+  },
+  "startPipeline": {
+    "status": 201,
+    "code": "HRM-REC-CP-WF-200",
+    "spawnMissing": false,
+    "workflowInstanceId": "15bc3761-a21a-4de4-afe2-9f7099f85248",
+    "message": "Candidate pipeline started",
+    "stage": "new"
+  },
+  "approve": {
+    "cardVisible": true,
+    "stampHit": true,
+    "wiHit": false,
+    "clicked": true,
+    "completePosts": [
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/xbos/workflow-engine/tasks/6b2f104b-b459-4bb2-bd1c-d305a57f7463/complete",
+        "at": "2026-08-03T17:54:36.757Z",
+        "code": "XBOS-WF-200",
+        "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-200\",\"message\":\"Task completed\",\"data\":{\"task\":{\"id\":\"6b2f104b-b459-4bb2-bd1c-d305a57f7463\",\"instance_id\":\"15bc3761-a21a-4de4-afe2-9f7099f85248\",\"step_key\":\"intake\",\"hat_key\":\"group_ceo\",\"assignee_user_id\":\"ceo@xe.vn\",\"assignment_id\":null,\"status\":",
+        "instanceId": null,
+        "stepKey": null
+      }
+    ],
+    "cardGoneAfterF5": false,
+    "cand_after": {
+      "id": "c7ade28a-b25b-4e16-9d6d-d86b5775a8cf",
+      "stage": "new",
+      "workflow_instance_id": "15bc3761-a21a-4de4-afe2-9f7099f85248",
+      "full_name": "Nguyễn Văn Tài xế TMDV-PIPE-DJ2VT8"
+    },
+    "verdict": "PASS"
+  },
+  "fd_gplx": {
+    "formHasGplxField": false,
+    "notesDocumentMissingGplx": true,
+    "expected_br": "BR-PO-REC-LGX-01 — block offer without GPLX/route experience",
+    "actual": "No GPLX / kinh nghiệm tuyến field on candidate create/edit dialog — Offer gate NOT enforced in FE (document SPEC_GAP / FD not product-blocked)"
+  },
+  "residuals": [
+    {
+      "id": "R-U84-REC-PIPE-LGX-GPLX-GATE",
+      "severity": "P2",
+      "note": "BR-PO-REC-LGX-01 Offer GPLX gate not present on FE candidate form — SPEC_GAP / not silent-hire in this WI (no hire attempted)"
+    }
+  ],
+  "endedAt": "2026-08-03T17:54:41.979Z",
+  "final_candidate": {
+    "id": "c7ade28a-b25b-4e16-9d6d-d86b5775a8cf",
+    "stage": "new",
+    "workflow_instance_id": "15bc3761-a21a-4de4-afe2-9f7099f85248",
+    "full_name": "Nguyễn Văn Tài xế TMDV-PIPE-DJ2VT8",
+    "position": "Lái xe / Vận hành logistics"
+  },
+  "verdict": {
+    "hp": "PASS",
+    "ap": "PASS",
+    "wf_precond": "PASS",
+    "cand": "PASS"
+  }
+}

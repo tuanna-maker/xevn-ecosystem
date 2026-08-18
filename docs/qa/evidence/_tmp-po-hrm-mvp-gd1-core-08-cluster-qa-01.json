@@ -1,0 +1,2047 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-CORE-08-CLUSTER-QA-01",
+  "stamp": "CORE08QA-MSL980WO",
+  "startedAt": "2026-08-09T03:39:56.246Z",
+  "depends_on": "BE-01 READY · docs/qa/evidence/po-hrm-mvp-gd1-core-08-cluster-be-01.md · FE-01 READY · docs/qa/evidence/po-hrm-mvp-gd1-core-08-cluster-fe-01.md",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "personnel_core_uat": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "core02_ne_pillar_done": true,
+    "note_crud_ne_fr08_done": true,
+    "reopen_j_core_02_01": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:8080",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "ops": {
+    "rebuild_restart": true,
+    "note": "stale dist at entry missing RD service + payroll_period_id cols → rebuild+restart seal BE-01 LIVE"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal_try_http://127.0.0.1:5173": "TypeError: fetch failed",
+    "portal": 200,
+    "portal_url": "http://127.0.0.1:8080"
+  },
+  "l1": {
+    "probes": [
+      {
+        "method": "GET",
+        "path": "/api/hrm/employees?company_id=main&page=1&page_size=5",
+        "status": 200,
+        "code": "HRM-EMP-200",
+        "message": "Employees listed",
+        "snippet": "{\"success\":true,\"code\":\"HRM-EMP-200\",\"message\":\"Employees listed\",\"data\":{\"total\":64,\"page\":1,\"page_size\":5,\"next_cursor\":\"MjAyNi0wOC0wNFQwOToxNjo0NS45MjIwNjZaCjBmNmUxMzY5LTQxNzAtNDJlMy1hZDZiLTNkMDRiM2VjMmVkZA\",\"data\":[{\"id\":\"2b4cbc90-fb74-4a2d-9fef-d188d4e48d61\",\"company_id\":\"holding\",\"company_uuid\":\"10000000-0000-4000-8000-000000000001\",\"company_display_name\":\"Tập đoàn XeVN\",\"employee_code\":\"HIRE-HOLDIN-MSL5T540DDDE8E\",\"email\":\"uv.uat.rec.uatrec-ichfbd@xe.vn\",\"full_name\":\"UV UAT REC UATREC-ICHFBD\",\"display_name\":\"UV UAT REC UATREC-ICHFBD\",\"job_title_key\":null,\"job_title_label\":null,\"departme",
+        "cannot": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+        "status": 200,
+        "code": "HRM-EMP-PROFILE-200",
+        "message": "Employee rewards listed",
+        "snippet": "{\"success\":true,\"code\":\"HRM-EMP-PROFILE-200\",\"message\":\"Employee rewards listed\",\"data\":{\"total\":2,\"data\":[{\"id\":\"545f3346-1d83-44de-ab93-e04a20ee90a9\",\"employee_id\":\"2b4cbc90-fb74-4a2d-9fef-d188d4e48d61\",\"company_id\":\"holding\",\"kind\":\"reward\",\"title\":\"QA CORE08 note-only\",\"description\":null,\"decision_number\":null,\"issued_by\":null,\"notes\":null,\"status\":\"in_force\",\"status_raw\":\"in_force\",\"status_label\":\"Đang thi hành\",\"payroll_link_status\":\"none\",\"payroll_link_status_label\":\"Không gắn kỳ\",\"payroll_period_id\":null,\"payroll_period_ref\":null,\"payslip_id\":null,\"archived_at\":null,\"enforced_at\":\"2026",
+        "cannot": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+        "status": 200,
+        "code": "HRM-EMP-PROFILE-200",
+        "message": "Employee discipline listed",
+        "snippet": "{\"success\":true,\"code\":\"HRM-EMP-PROFILE-200\",\"message\":\"Employee discipline listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T03:39:57.763Z\"}",
+        "cannot": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/payroll/periods?company_id=main",
+        "status": 200,
+        "code": "HRM-PAY-200",
+        "message": "Payroll periods listed",
+        "snippet": "{\"success\":true,\"code\":\"HRM-PAY-200\",\"message\":\"Payroll periods listed\",\"data\":{\"total\":33,\"data\":[{\"id\":\"28875e75-4c5f-49f4-8725-121e22654100\",\"company_id\":\"holding\",\"period_label\":\"QA-SRC-BE02-EMP-CB\",\"start_date\":\"2041-01-31T17:00:00.000Z\",\"end_date\":\"2041-02-27T17:00:00.000Z\",\"status\":\"processed\",\"created_by\":null,\"processed_at\":\"2026-08-07T10:11:26.299Z\",\"closed_at\":null,\"created_at\":\"2026-08-07T10:11:22.104Z\",\"updated_at\":\"2026-08-07T10:11:26.299Z\",\"employee_count\":1,\"total_gross\":9500000,\"total_deduction\":0,\"total_net\":9500000,\"payslip_summary\":{\"total_gross\":9500000,\"total_deduction\":0",
+        "cannot": false
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/core/reward-discipline",
+        "status": 404,
+        "code": "HRM-DATA-404",
+        "message": "Cannot GET /api/hrm/core/reward-discipline",
+        "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot GET /api/hrm/core/reward-discipline\",\"timestamp\":\"2026-08-09T03:39:58.175Z\"}",
+        "cannot": true
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+        "status": 403,
+        "code": "HRM-CORE-CB-403",
+        "message": "Không được gửi hoặc sửa trường mật (lương / tài khoản ngân hàng / MST / BHXH) trên hồ sơ vòng công khai.",
+        "snippet": "{\"success\":false,\"code\":\"HRM-CORE-CB-403\",\"message\":\"Không được gửi hoặc sửa trường mật (lương / tài khoản ngân hàng / MST / BHXH) trên hồ sơ vòng công khai.\",\"details\":{\"denied_keys\":[\"custom_fields.salary\"]},\"timestamp\":\"2026-08-09T03:39:58.193Z\"}",
+        "cannot": false
+      },
+      {
+        "method": "POST",
+        "path": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+        "status": 400,
+        "code": "HRM-CORE-RD-VAL-400",
+        "message": "Có số tiền phải gắn kỳ lương (payroll_period_id)",
+        "snippet": "{\"success\":false,\"code\":\"HRM-CORE-RD-VAL-400\",\"message\":\"Có số tiền phải gắn kỳ lương (payroll_period_id)\",\"timestamp\":\"2026-08-09T03:39:58.690Z\"}",
+        "cannot": false
+      },
+      {
+        "method": "POST",
+        "path": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards/00000000-0000-4000-8000-000000000099/enforce?company_id=main",
+        "status": 404,
+        "code": "HRM-CORE-RD-404",
+        "message": "Không tìm thấy bản ghi KT/KL",
+        "snippet": "{\"success\":false,\"code\":\"HRM-CORE-RD-404\",\"message\":\"Không tìm thấy bản ghi KT/KL\",\"timestamp\":\"2026-08-09T03:39:59.201Z\"}",
+        "cannot": false
+      }
+    ],
+    "empId": "2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+    "empName": "UV UAT REC UATREC-ICHFBD",
+    "rewards_live": true,
+    "discipline_live": true,
+    "periods_live": true,
+    "open_period_id": "4d2111d7-c8cd-4dcf-a7a0-acb713f93581",
+    "open_period_label": "QA-SRC-BE02-NV002-ONLY",
+    "nest_core_deny": true,
+    "cb_cf_403": true,
+    "val_400": true,
+    "enforce_route_mapped": true,
+    "stamp": "CORE08L1-MSL9838J"
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T03:40:03.418Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:03.454Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T03:40:03.508Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:03.623Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:03.838Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:04.168Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T03:40:04.194Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:04.215Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:04.215Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:04.216Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T03:40:04.416Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:04.583Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:04.651Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:04.658Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:08.050Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T03:40:08.469Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:08.470Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:08.470Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:08.471Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:08.813Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:08.882Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:08.889Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T03:40:11.072Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:11.114Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T03:40:11.145Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:11.247Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:11.290Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:11.611Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T03:40:11.624Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:11.636Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:11.636Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:11.637Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T03:40:11.821Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:11.967Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:12.035Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:12.058Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T03:40:18.255Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:18.293Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T03:40:18.327Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:18.420Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:18.423Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:18.779Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T03:40:18.792Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:18.806Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:18.806Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:18.806Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T03:40:18.984Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:19.138Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:19.225Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:19.233Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards/8610828c-41b7-412f-84a6-e2fc5522a343/enforce?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:20.257Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards/8610828c-41b7-412f-84a6-e2fc5522a343/enforce?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T03:40:20.711Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:20.712Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:20.712Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:20.712Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:21.035Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:21.121Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:21.128Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T03:40:22.952Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:22.968Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T03:40:23.019Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:23.079Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:23.096Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:23.411Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T03:40:23.424Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:23.435Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:23.435Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:23.435Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T03:40:23.645Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:23.782Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:23.852Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:23.876Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T03:40:30.153Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:30.169Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T03:40:30.226Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:30.299Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:30.305Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:30.651Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T03:40:30.664Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:30.674Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:30.674Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:30.674Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T03:40:30.863Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:31.022Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:31.115Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:31.115Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards/8610828c-41b7-412f-84a6-e2fc5522a343/cancel-enforce?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:32.124Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards/8610828c-41b7-412f-84a6-e2fc5522a343/cancel-enforce?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T03:40:32.562Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:32.563Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:32.563Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:32.563Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:32.891Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:32.976Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:32.985Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:35.586Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T03:40:36.033Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:36.034Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:36.034Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:36.034Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:36.384Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:36.454Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:36.462Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T03:40:38.290Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:38.307Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T03:40:38.371Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:38.434Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:38.440Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:38.771Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T03:40:38.784Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:38.797Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:38.797Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:38.798Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T03:40:38.982Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:39.111Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:39.201Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:39.218Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T03:40:45.468Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:45.506Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T03:40:45.555Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:45.637Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:45.640Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:45.981Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T03:40:45.995Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:46.009Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:46.009Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:46.009Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T03:40:46.195Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:46.348Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:46.434Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:46.439Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    }
+  ],
+  "nest_core_hits": [],
+  "rewards_hits": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:04.215Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:04.651Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:08.050Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T03:40:08.469Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:08.470Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:08.882Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:11.636Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:12.035Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:18.806Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:19.233Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards/8610828c-41b7-412f-84a6-e2fc5522a343/enforce?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:20.257Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards/8610828c-41b7-412f-84a6-e2fc5522a343/enforce?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T03:40:20.711Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:20.712Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:21.121Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:23.435Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:23.876Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:30.674Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:31.115Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards/8610828c-41b7-412f-84a6-e2fc5522a343/cancel-enforce?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:32.124Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards/8610828c-41b7-412f-84a6-e2fc5522a343/cancel-enforce?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T03:40:32.562Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:32.563Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:32.976Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:35.586Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T03:40:36.033Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:36.034Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:36.454Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:38.797Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:39.218Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:46.009Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:46.434Z",
+      "nest_core": false,
+      "rewards": true,
+      "discipline": false,
+      "decisions": false
+    }
+  ],
+  "discipline_hits": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:04.215Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:04.658Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:08.470Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:08.889Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:11.636Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:12.058Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:18.806Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:19.225Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:20.712Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:21.128Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:23.435Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:23.852Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:30.674Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:31.115Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:32.563Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:32.985Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:36.034Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:36.462Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:38.797Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:39.201Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": null,
+      "at": "2026-08-09T03:40:46.009Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/discipline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T03:40:46.439Z",
+      "nest_core": false,
+      "rewards": false,
+      "discipline": true,
+      "decisions": false
+    }
+  ],
+  "decisions_hits": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-core-08-cluster-qa-01\\01-rd-tab-open.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-core-08-cluster-qa-01\\02-reward-form-filled.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-core-08-cluster-qa-01\\03-after-create.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-core-08-cluster-qa-01\\04-f5-after-create.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-core-08-cluster-qa-01\\05-after-enforce.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-core-08-cluster-qa-01\\06-f5-after-enforce.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-core-08-cluster-qa-01\\07-after-cancel.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-core-08-cluster-qa-01\\08-note-only-created.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-core-08-cluster-qa-01\\09-f5-note-cancel.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-core-08-cluster-qa-01\\10-j04-done.png"
+  ],
+  "click_log": [
+    "goto profile rewards 2b4cbc90-fb74-4a2d-9fef-d188d4e48d61 via http://127.0.0.1:8080",
+    "click add reward",
+    "period=QA-SRC-BE02-NV002-ONLY (draft)",
+    "click save reward",
+    "goto profile rewards 2b4cbc90-fb74-4a2d-9fef-d188d4e48d61 via http://127.0.0.1:8080",
+    "click Thi hành",
+    "goto profile rewards 2b4cbc90-fb74-4a2d-9fef-d188d4e48d61 via http://127.0.0.1:8080",
+    "click Hủy thi hành",
+    "save note-only",
+    "goto profile rewards 2b4cbc90-fb74-4a2d-9fef-d188d4e48d61 via http://127.0.0.1:8080"
+  ],
+  "journeys": {
+    "j01": {
+      "id": "J-HRM-CORE-08-01",
+      "verdict": "PASS",
+      "notes": [
+        "period_picker_visible=true",
+        "period_picked=true label=QA-SRC-BE02-NV002-ONLY (draft)",
+        "post_create=201 url=0/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/rewards?company_id=main",
+        "f5_row=true status=Chờ link=Chờ kỳ lương period=Kỳ: QA-SRC-BE02-NV002-ONLY"
+      ]
+    },
+    "j02": {
+      "id": "J-HRM-CORE-08-02",
+      "verdict": "PASS",
+      "notes": [
+        "enforce_btn=true",
+        "enforce_status=201 url=a2d-9fef-d188d4e48d61/rewards/8610828c-41b7-412f-84a6-e2fc5522a343/enforce?company_id=main",
+        "f5 status=Đang thi hành link=Đã gắn kỳ period=Kỳ: QA-SRC-BE02-NV002-ONLY"
+      ]
+    },
+    "j03": {
+      "id": "J-HRM-CORE-08-03",
+      "verdict": "PASS",
+      "notes": [
+        "cancel_btn=true",
+        "cancel_status=201",
+        "note_period_picker=false",
+        "note_row=true link=Không gắn kỳ"
+      ]
+    },
+    "j04": {
+      "id": "J-HRM-CORE-08-04",
+      "verdict": "PASS",
+      "notes": [
+        "nest_core=0 decisions=0 physical=52 toast={\"val\":true,\"cb403\":true,\"nest_deny\":true}"
+      ]
+    }
+  },
+  "residuals": [],
+  "defects": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T03:40:47.502Z",
+  "summary": {
+    "nest_core_hits": 0,
+    "rewards_hits": 30,
+    "discipline_hits": 22,
+    "decisions_hits": 0,
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "pageErrors": []
+  }
+}

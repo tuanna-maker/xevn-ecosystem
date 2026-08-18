@@ -1,0 +1,29 @@
+{
+  "catalogSummary": [],
+  "jobTitles": null,
+  "diag": {
+    "labels": [
+      "Mã NV *",
+      "Họ và tên *",
+      "Quản lý trực tiếp",
+      "Trạng thái",
+      "Mã NV",
+      "Họ tên",
+      "Bộ phận",
+      "Chức vụ",
+      "QA-DL-CAT-DJCH4Y-phu-cap-tour",
+      "QA-DL-CAT-DJFXEV-tour-xe-du-lich",
+      "QA EMP CF msk101up"
+    ],
+    "combos": [
+      "Chọn quản lý trực tiếp…",
+      "Đang làm việc"
+    ],
+    "empty": [],
+    "statuses": [],
+    "hasViTri": false,
+    "hasPhongBan": false,
+    "hasEmptyHint": false,
+    "snippet": "Chỉnh sửa nhân viênThông tin cơ bảnCá nhânCông việcNVQA-M3-987275Mã NV *Họ và tên *Quản lý trực tiếpChọn quản lý trực tiếp…Trạng tháiĐang làm việcĐang làm việcNgừng làm việcThử việcQA EMP status EMPSTQA-MSK20G7HMã NVHọ tênBộ phậnChức vụQA-DL-CAT-DJCH4Y-phu-cap-tourQA-DL-CAT-DJFXEV-tour-xe-du-lichQA EMP CF msk101upHủyCập nhậtClose"
+  }
+}

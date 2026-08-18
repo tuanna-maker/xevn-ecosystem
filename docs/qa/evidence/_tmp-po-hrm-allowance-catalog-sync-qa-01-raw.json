@@ -1,0 +1,18 @@
+﻿{
+    "createCode":  "HRM-PAY-TYPE-KEY",
+    "tokenSample":  {
+
+                    },
+    "pcId":  null,
+    "createRaw":  "{\"success\":false,\"code\":\"HRM-PAY-TYPE-KEY\",\"message\":\"componentType \u0027phu_cap\u0027 is not in pay_types catalog\",\"timestamp\":\"2026-08-07T09:56:06.227Z\"}",
+    "code":  "PC_DIEU_XE_6A75ABB5",
+    "payDualRaw":  "{\"success\":false,\"code\":\"HRM-VAL-001\",\"message\":\"property nameVi should not exist; property companyId should not exist; property componentType should not exist\",\"timestamp\":\"2026-08-07T09:56:06.290Z\"}",
+    "createStatus":  400,
+    "payDualStatus":  400,
+    "tokenCount":  0,
+    "retireRaw":  "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/settings/allowance-deduction-types//retire?company_id=main\",\"timestamp\":\"2026-08-07T09:56:07.136Z\"}",
+    "scId":  null,
+    "stamp":  "ALLOWCAT-6A75ABB5",
+    "payDualCode":  "HRM-VAL-001",
+    "retireStatus":  404
+}

@@ -1,0 +1,573 @@
+{
+  "work_item_id": "QA-HDSD-BF-03-BH-POL-DTO-RET-01",
+  "program": "P-HDSD-ECOSYSTEM-03 · R-INS-POL-CREATE-LABEL-01 + R-INS-POL-SM-COMPANYID-01",
+  "startedAt": "2026-07-31T04:40:53.787Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed",
+    "stamp": "DTO8GFR4R",
+    "companyId": "main"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "preflight": {
+    "policies": {
+      "http": 200,
+      "code": "HRM-INS-POL-200",
+      "total": 7,
+      "rows": 7,
+      "active": 3,
+      "draft": 4,
+      "sample": [
+        {
+          "id": "71efb104-468b-4bcf-855c-562920cca8f9",
+          "status": "active",
+          "policy_code": "QA-DTO-DTO8GFR4R"
+        },
+        {
+          "id": "8cdd7567-194a-4a77-a01b-d53d5aeab995",
+          "status": "active",
+          "policy_code": "QA-PORTAL-1"
+        },
+        {
+          "id": "40f433e1-2c16-4328-8289-584440557f53",
+          "status": "active",
+          "policy_code": "QA-BH2-BH28FTQJ0"
+        },
+        {
+          "id": "bcbc8a8c-67ee-4dcc-9070-88e6d682ed60",
+          "status": "draft",
+          "policy_code": "QA-FE-MIX3"
+        },
+        {
+          "id": "5094b95b-495a-4609-9586-e6e38c9a2b09",
+          "status": "draft",
+          "policy_code": "QA-FE-MIX2"
+        }
+      ]
+    }
+  },
+  "postflight": {
+    "policies": {
+      "http": 200,
+      "code": "HRM-INS-POL-200",
+      "total": 7,
+      "rows": 7,
+      "active": 3,
+      "draft": 4,
+      "sample": [
+        {
+          "id": "71efb104-468b-4bcf-855c-562920cca8f9",
+          "status": "active",
+          "policy_code": "QA-DTO-DTO8GFR4R"
+        },
+        {
+          "id": "8cdd7567-194a-4a77-a01b-d53d5aeab995",
+          "status": "active",
+          "policy_code": "QA-PORTAL-1"
+        },
+        {
+          "id": "40f433e1-2c16-4328-8289-584440557f53",
+          "status": "active",
+          "policy_code": "QA-BH2-BH28FTQJ0"
+        },
+        {
+          "id": "bcbc8a8c-67ee-4dcc-9070-88e6d682ed60",
+          "status": "draft",
+          "policy_code": "QA-FE-MIX3"
+        },
+        {
+          "id": "5094b95b-495a-4609-9586-e6e38c9a2b09",
+          "status": "draft",
+          "policy_code": "QA-FE-MIX2"
+        }
+      ]
+    }
+  },
+  "tc": [
+    {
+      "id": "R-INS-POL-CREATE-LABEL-01",
+      "verdict": "🟢",
+      "detail": "POST status=201 code=HRM-INS-POL-201 has_insurer_label=false bodyKeys=[\"company_id\",\"policy_code\",\"policy_name\",\"insurer_key\",\"insurance_type\",\"effective_date\"]",
+      "at": "2026-07-31T04:41:31.221Z",
+      "createReq": {
+        "method": "POST",
+        "url": "/api/hrm/contracts-insurance/insurance-policies",
+        "bodyPreview": {
+          "company_id": "main",
+          "policy_code": "QA-DTO-DTO8GFR4R",
+          "policy_name": "Chính sách QA DTO DTO8GFR4R",
+          "insurer_key": "bv_dto8gfr4r",
+          "insurance_type": "bhxh_dto8gcijv",
+          "effective_date": "2026-01-01"
+        },
+        "has_insurer_label": false,
+        "at": "2026-07-31T04:41:22.957Z"
+      },
+      "createBody": {
+        "status": 201,
+        "code": "HRM-INS-POL-201",
+        "message": "Insurance policy created",
+        "id": "71efb104-468b-4bcf-855c-562920cca8f9"
+      }
+    },
+    {
+      "id": "R-INS-POL-SM-COMPANYID-01",
+      "verdict": "🟢",
+      "detail": "PATCH status=200 code=HRM-INS-POL-200 status_only=true company_id_query=main bodyKeys=[\"status\"] has_company_id_body=false",
+      "at": "2026-07-31T04:41:31.223Z",
+      "patchReq": {
+        "method": "PATCH",
+        "url": "/api/hrm/contracts-insurance/insurance-policies/71efb104-468b-4bcf-855c-562920cca8f9?company_id=main",
+        "bodyPreview": {
+          "status": "active"
+        },
+        "bodyKeys": [
+          "status"
+        ],
+        "has_company_id_in_body": false,
+        "company_id_query": "main",
+        "status_only": true,
+        "at": "2026-07-31T04:41:27.605Z"
+      },
+      "patchBody": {
+        "status": 200,
+        "code": "HRM-INS-POL-200",
+        "message": "Insurance policy updated",
+        "statusField": "active"
+      }
+    },
+    {
+      "id": "TC-HRM-HDSD-049-SMOKE",
+      "verdict": "🟢",
+      "detail": "dialog=true picker=true empty=false enroll201=false post=n/a code=n/a ",
+      "at": "2026-07-31T04:41:54.181Z",
+      "smoke": {
+        "dialogOpen": true,
+        "pickerVisible": true,
+        "stillEmpty": false,
+        "enroll": {
+          "saveDisabled": false,
+          "body": null,
+          "stillOpen": true,
+          "f5Clean": true,
+          "ok": false
+        },
+        "reason": null
+      }
+    },
+    {
+      "id": "MUST-KEEP-SOFTDEL-041",
+      "verdict": "🟢",
+      "detail": "archivePosts=0 contractDeletes=0",
+      "at": "2026-07-31T04:41:54.182Z"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "J-HRM-04",
+      "verdict": "🟢",
+      "detail": "master create→SM→dialog picker/enroll"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T04:40:55.650Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page_size=100",
+      "at": "2026-07-31T04:40:55.952Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T04:40:56.062Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/insurance-policy-participants?company_id=main",
+      "at": "2026-07-31T04:40:56.372Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T04:40:56.643Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T04:40:57.574Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-07-31T04:40:57.710Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T04:40:59.894Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T04:41:00.139Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T04:41:07.253Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/settings-catalogs/items",
+      "at": "2026-07-31T04:41:08.516Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T04:41:09.371Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T04:41:14.602Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T04:41:14.684Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page_size=100",
+      "at": "2026-07-31T04:41:14.820Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/insurance-policy-participants?company_id=main",
+      "at": "2026-07-31T04:41:14.937Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T04:41:14.983Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T04:41:15.208Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-07-31T04:41:15.232Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/insurance-policies",
+      "at": "2026-07-31T04:41:24.308Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-07-31T04:41:24.547Z"
+    },
+    {
+      "method": "PATCH",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies/71efb104-468b-4bcf-855c-562920cca8f9?company_id=main",
+      "at": "2026-07-31T04:41:28.276Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-07-31T04:41:28.698Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "at": "2026-07-31T04:41:31.328Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-07-31T04:41:31.633Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&keyword=a&include_archived=false&page=1&page_size=50",
+      "at": "2026-07-31T04:41:36.362Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page_size=100",
+      "at": "2026-07-31T04:41:50.880Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T04:41:51.244Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T04:41:51.326Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page_size=100",
+      "at": "2026-07-31T04:41:51.461Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/insurance-policy-participants?company_id=main",
+      "at": "2026-07-31T04:41:51.632Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T04:41:51.639Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-07-31T04:41:51.697Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T04:41:51.720Z"
+    }
+  ],
+  "policyCreateRequests": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/insurance-policies",
+      "bodyPreview": {
+        "company_id": "main",
+        "policy_code": "QA-DTO-DTO8GFR4R",
+        "policy_name": "Chính sách QA DTO DTO8GFR4R",
+        "insurer_key": "bv_dto8gfr4r",
+        "insurance_type": "bhxh_dto8gcijv",
+        "effective_date": "2026-01-01"
+      },
+      "has_insurer_label": false,
+      "at": "2026-07-31T04:41:22.957Z"
+    }
+  ],
+  "policyCreateBodies": [
+    {
+      "status": 201,
+      "code": "HRM-INS-POL-201",
+      "message": "Insurance policy created",
+      "id": "71efb104-468b-4bcf-855c-562920cca8f9"
+    }
+  ],
+  "policyPatchRequests": [
+    {
+      "method": "PATCH",
+      "url": "/api/hrm/contracts-insurance/insurance-policies/71efb104-468b-4bcf-855c-562920cca8f9?company_id=main",
+      "bodyPreview": {
+        "status": "active"
+      },
+      "bodyKeys": [
+        "status"
+      ],
+      "has_company_id_in_body": false,
+      "company_id_query": "main",
+      "status_only": true,
+      "at": "2026-07-31T04:41:27.605Z"
+    }
+  ],
+  "policyPatchBodies": [
+    {
+      "status": 200,
+      "code": "HRM-INS-POL-200",
+      "message": "Insurance policy updated",
+      "statusField": "active"
+    }
+  ],
+  "postRequests": [],
+  "postBodies": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bh-pol-dto-ret-01-20260801/00-insurance-mount.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bh-pol-dto-ret-01-20260801/01-settings-md.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bh-pol-dto-ret-01-20260801/02-policy-master.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bh-pol-dto-ret-01-20260801/03-policy-created.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bh-pol-dto-ret-01-20260801/04-policy-sm-active.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bh-pol-dto-ret-01-20260801/05-enroll-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bh-pol-dto-ret-01-20260801/06-enroll-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-bh-pol-dto-ret-01-20260801/07-enroll-f5.png"
+  ],
+  "checks": {
+    "catalog": {
+      "insurerCode": "bv_dto8gfr4r",
+      "typeCode": "bhxh_dto8gfr4r",
+      "ok": false,
+      "insurerHttp": 201,
+      "typeHttp": null
+    },
+    "createForm": {
+      "insurerPick": {
+        "ok": true,
+        "picked": "stamp"
+      },
+      "typePick": {
+        "ok": true,
+        "picked": "first"
+      },
+      "formBefore": "Chính sách bảo hiểm (master)\nMã chính sách *\nTên chính sách *\nNhà bảo hiểm *\nbv_dto8gfr4rBảo Việt QA DTO8GFR4R\nLoại bảo hiểm *\nbhxh_dto8gcijvBHXH QA DTO8GCIJV\nHiệu lực từ *\nĐến ngày\nGhi chú\nTạo chính sách\nDanh sách chính sách (6)\nt (QA-PORTAL-1)\nBao Viet QA · BHXH QA · Đang hiệu lực\n01/01/2026\nSửa\n→ Hết hạn\n→ Đã hủy\ndup (QA-BH2-BH28FTQJ0)\nBao Viet QA · BHXH QA BH28FTQJ0 · Đang hiệu lực\n01/01/2026\n",
+      "formAfter": "Chính sách bảo hiểm (master)\nMã chính sách *\nTên chính sách *\nNhà bảo hiểm *\nChọn nhà BH…\nLoại bảo hiểm *\nChọn loại BH…\nHiệu lực từ *\nĐến ngày\nGhi chú\nTạo chính sách\nDanh sách chính sách (7)\nChính sách QA DTO DTO8GFR4R (QA-DTO-DTO8GFR4R)\nBảo Việt QA DTO8GFR4R · BHXH QA DTO8GCIJV · Nháp\n01/01/2026\nSửa\nXóa\n→ Đang hiệu lực\n→ Đã hủy\nt (QA-PORTAL-1)\nBao Viet QA · BHXH QA · Đang hiệu lực\n01/01/2026\nSửa\n",
+      "validationHint": true
+    },
+    "createSm": {
+      "code": "QA-DTO-DTO8GFR4R",
+      "name": "Chính sách QA DTO DTO8GFR4R",
+      "catalog": {
+        "insurerCode": "bv_dto8gfr4r",
+        "typeCode": "bhxh_dto8gfr4r",
+        "ok": false,
+        "insurerHttp": 201,
+        "typeHttp": null
+      },
+      "createReq": {
+        "method": "POST",
+        "url": "/api/hrm/contracts-insurance/insurance-policies",
+        "bodyPreview": {
+          "company_id": "main",
+          "policy_code": "QA-DTO-DTO8GFR4R",
+          "policy_name": "Chính sách QA DTO DTO8GFR4R",
+          "insurer_key": "bv_dto8gfr4r",
+          "insurance_type": "bhxh_dto8gcijv",
+          "effective_date": "2026-01-01"
+        },
+        "has_insurer_label": false,
+        "at": "2026-07-31T04:41:22.957Z"
+      },
+      "createRes": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/contracts-insurance/insurance-policies",
+        "at": "2026-07-31T04:41:24.308Z"
+      },
+      "createBody": {
+        "status": 201,
+        "code": "HRM-INS-POL-201",
+        "message": "Insurance policy created",
+        "id": "71efb104-468b-4bcf-855c-562920cca8f9"
+      },
+      "smClicked": true,
+      "patchReq": {
+        "method": "PATCH",
+        "url": "/api/hrm/contracts-insurance/insurance-policies/71efb104-468b-4bcf-855c-562920cca8f9?company_id=main",
+        "bodyPreview": {
+          "status": "active"
+        },
+        "bodyKeys": [
+          "status"
+        ],
+        "has_company_id_in_body": false,
+        "company_id_query": "main",
+        "status_only": true,
+        "at": "2026-07-31T04:41:27.605Z"
+      },
+      "smRes": {
+        "method": "PATCH",
+        "status": 200,
+        "url": "/api/hrm/contracts-insurance/insurance-policies/71efb104-468b-4bcf-855c-562920cca8f9?company_id=main",
+        "at": "2026-07-31T04:41:28.276Z"
+      },
+      "patchBody": {
+        "status": 200,
+        "code": "HRM-INS-POL-200",
+        "message": "Insurance policy updated",
+        "statusField": "active"
+      },
+      "rowVisible": true,
+      "createOk": true,
+      "noInsurerLabel": true,
+      "smOk": true,
+      "statusOnly": true,
+      "companyIdOnQuery": true,
+      "noCompanyIdInBody": true
+    },
+    "tc049": {
+      "dialogOpen": true,
+      "pickerVisible": true,
+      "stillEmpty": false,
+      "enroll": {
+        "saveDisabled": false,
+        "body": null,
+        "stillOpen": true,
+        "f5Clean": true,
+        "ok": false
+      },
+      "reason": null
+    },
+    "mustKeep": {
+      "archivePosts": 0,
+      "contractDeletes": 0,
+      "softDelUntouched": true,
+      "tc041Untouched": true
+    }
+  },
+  "must_keep": {
+    "preserved": [
+      "TC-HRM-HDSD-025",
+      "TC-HRM-HDSD-041",
+      "TC-HRM-HDSD-049",
+      "SoftDel"
+    ],
+    "note": "No SoftDel / HĐ delete mutate this wave"
+  },
+  "verdict": "PASS",
+  "residuals_closed": [
+    "R-INS-POL-CREATE-LABEL-01",
+    "R-INS-POL-SM-COMPANYID-01"
+  ],
+  "finishedAt": "2026-07-31T04:41:54.381Z",
+  "consoleErrorCount": 0
+}

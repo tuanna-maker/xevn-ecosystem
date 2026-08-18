@@ -1,0 +1,552 @@
+{
+  "work_item_id": "QA-HDSD-BF-XBOS-WF-01",
+  "program": "P-HDSD-ECOSYSTEM-03 · BF-01",
+  "startedAt": "2026-07-30T18:25:15.313Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed"
+  },
+  "l0": {
+    "qc:dev-stack": {
+      "exit": 0,
+      "snippet": "qc:dev-stack — xevn-ecosystem (HRM + XBOS + portal)\n\n✓ hrm-api: HTTP 200 ← http://127.0.0.1:28001/api/hrm\n✓ xbos-api: HTTP 200 ← http://127.0.0.1:28002/api/xbos\n✓ web-portal (optional): HTTP 200 ← http://127.0.0.1:5173\n\nHRM + XBOS healthy — có thể chấp nhận bước QC dev (chạy thêm `pnpm run qc:fe-be-health` trước UAT).\n"
+    },
+    "qc:fe-be-health": {
+      "exit": 0,
+      "snippet": "xbos\nPASS  web-portal  HTTP 200  http://127.0.0.1:5173\nPASS  portal-login  token ok\nPASS  hrm-employees-direct  HTTP 200  http://127.0.0.1:28001/api/hrm/employees?page_size=5&company_id=main\nPASS  hrm-catalog-sync-direct  HTTP 200  http://127.0.0.1:28001/api/hrm/catalog-sync\nPASS  portal-proxy-hrm-employees  HTTP 200  http://127.0.0.1:5173/api/hrm/employees?page_size=5&company_id=main\nPASS  portal-proxy-hrm-catalog  HTTP 200  http://127.0.0.1:5173/api/hrm/catalog-sync\n\n=== Summary: ALL PASS ===\n"
+    }
+  },
+  "spots": [
+    {
+      "id": "UF-XBOS-10",
+      "verdict": "🟢",
+      "detail": "load-only dots=true resolver=false text=true net=200 409=false",
+      "at": "2026-07-30T18:25:25.118Z",
+      "uf": "UF-XBOS-10",
+      "tc": "TC-HDSD-04-02-01",
+      "clickPath": "?settings=workflow_designer → Canvas (no save)",
+      "must_keep": true
+    },
+    {
+      "id": "CC-INBOX-ACTION-CARDS",
+      "verdict": "🟢",
+      "detail": "cards=22 actionBtns=22 tasksNet=200 banner=false",
+      "at": "2026-07-30T18:25:28.777Z",
+      "hdssd": "§4.1 Hộp thư Workflow",
+      "clickPath": "/command-center/inbox",
+      "cards": [
+        {
+          "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+          "hasAction": true
+        },
+        {
+          "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+          "hasAction": true
+        },
+        {
+          "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+          "hasAction": true
+        },
+        {
+          "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+          "hasAction": true
+        },
+        {
+          "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+          "hasAction": true
+        }
+      ]
+    },
+    {
+      "id": "RACI-MATRIX-NO-409",
+      "verdict": "🟢",
+      "detail": "entity=XE_DU_LICH opened=true tab=true matrixGET=200 409count=0 ui=true banner=false",
+      "at": "2026-07-30T18:25:39.549Z",
+      "hdssd": "§4.3 Ma trận RACI",
+      "clickPath": "Đơn vị thành viên → XE_DU_LICH → Chỉnh sửa → Nhiệm vụ & RACI",
+      "raciUrls": [
+        "GET 200 /api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+        "GET 200 /api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+        "GET 200 /api/xbos/raci-governance/catalog",
+        "GET 200 /api/xbos/raci-governance/catalog",
+        "GET 200 /api/xbos/raci-governance/capabilities",
+        "GET 200 /api/xbos/raci-governance/capabilities",
+        "GET 200 /api/xbos/raci-governance/catalog",
+        "GET 200 /api/xbos/raci-governance/capabilities"
+      ]
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:16.648Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:17.522Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-07-30T18:25:18.437Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:25:18.697Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:18.697Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:18.697Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:25:18.698Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:25:18.699Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-07-30T18:25:18.699Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:25:18.703Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:18.703Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:25:18.712Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:25:18.717Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-07-30T18:25:18.731Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:20.525Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T18:25:20.527Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T18:25:20.545Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:20.719Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:25:20.720Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:20.720Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:25:20.720Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:25:20.720Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-07-30T18:25:20.720Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:20.721Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:25:20.721Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:25:20.723Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-07-30T18:25:20.737Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:25:20.738Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-07-30T18:25:20.756Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:21.311Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:21.324Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:25.182Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T18:25:25.184Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T18:25:25.196Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:25:25.257Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:28.860Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T18:25:28.863Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T18:25:28.923Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:25:29.030Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:29.030Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:29.030Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:25:29.038Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-07-30T18:25:29.045Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:25:29.045Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:25:29.045Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:29.045Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:25:29.057Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:25:29.058Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-07-30T18:25:29.067Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:29.552Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:29.552Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "at": "2026-07-30T18:25:32.941Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "at": "2026-07-30T18:25:32.958Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/3f379019-dc02-427e-83d0-2bc7871e90f9/documents",
+      "at": "2026-07-30T18:25:32.959Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "at": "2026-07-30T18:25:32.968Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/3f379019-dc02-427e-83d0-2bc7871e90f9/documents",
+      "at": "2026-07-30T18:25:32.979Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "at": "2026-07-30T18:25:32.979Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/3f379019-dc02-427e-83d0-2bc7871e90f9/shareholders",
+      "at": "2026-07-30T18:25:32.993Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "at": "2026-07-30T18:25:32.998Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/3f379019-dc02-427e-83d0-2bc7871e90f9/documents",
+      "at": "2026-07-30T18:25:33.002Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "at": "2026-07-30T18:25:33.009Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/3f379019-dc02-427e-83d0-2bc7871e90f9/shareholders",
+      "at": "2026-07-30T18:25:33.022Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/3f379019-dc02-427e-83d0-2bc7871e90f9/shareholders",
+      "at": "2026-07-30T18:25:33.036Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/3f379019-dc02-427e-83d0-2bc7871e90f9/shareholders",
+      "at": "2026-07-30T18:25:33.050Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/catalog",
+      "at": "2026-07-30T18:25:35.488Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/catalog",
+      "at": "2026-07-30T18:25:35.507Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/capabilities",
+      "at": "2026-07-30T18:25:35.512Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/capabilities",
+      "at": "2026-07-30T18:25:35.523Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/catalog",
+      "at": "2026-07-30T18:25:35.525Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/capabilities",
+      "at": "2026-07-30T18:25:35.537Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/companies/3f379019-dc02-427e-83d0-2bc7871e90f9/coverage",
+      "at": "2026-07-30T18:25:35.564Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/companies/3f379019-dc02-427e-83d0-2bc7871e90f9/matrix?domain=ban_dieu_hanh",
+      "at": "2026-07-30T18:25:35.583Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/companies/3f379019-dc02-427e-83d0-2bc7871e90f9/coverage",
+      "at": "2026-07-30T18:25:35.656Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/companies/3f379019-dc02-427e-83d0-2bc7871e90f9/coverage",
+      "at": "2026-07-30T18:25:35.674Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/companies/3f379019-dc02-427e-83d0-2bc7871e90f9/matrix?domain=ban_dieu_hanh",
+      "at": "2026-07-30T18:25:35.705Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/companies/3f379019-dc02-427e-83d0-2bc7871e90f9/matrix?domain=ban_dieu_hanh",
+      "at": "2026-07-30T18:25:35.739Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/raci-governance/companies/3f379019-dc02-427e-83d0-2bc7871e90f9/matrix?domain=ban_dieu_hanh",
+      "at": "2026-07-30T18:25:35.767Z"
+    }
+  ],
+  "consoleErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-xbos-wf-01-20260801/01-wf-canvas.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-xbos-wf-01-20260801/02-inbox.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-xbos-wf-01-20260801/03-raci-matrix.png"
+  ],
+  "ack_status": "PASS_TO_PM",
+  "finishedAt": "2026-07-30T18:25:39.550Z"
+}

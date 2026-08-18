@@ -1,0 +1,16 @@
+﻿ts=2026-08-04T09:36:03.7302666+07:00
+docker_engine=READY
+docker_ps_count=0
+local_5432=False
+remote_db_6432=True
+GET http://127.0.0.1:28001/api/hrm -> 200
+GET http://127.0.0.1:28002/api/xbos -> 200
+GET http://127.0.0.1:5173/ -> 200
+GET http://127.0.0.1:5173/api/xbos -> 200
+POST portal/login -> 201 (not 500)
+xbos_dist_main=True
+hrm_dist_main=True
+listen_28001=True
+listen_28002=True
+listen_5173=True
+listen_5175=False

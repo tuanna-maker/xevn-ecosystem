@@ -1,0 +1,357 @@
+{
+  "work_item_id": "PO-HRM-E2E-LINK-PAY-CFG-QA-02",
+  "parent": "PO-HRM-E2E-LINK-PAY-CFG-QA-01",
+  "startedAt": "2026-08-07T09:56:57.278Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser-only · FE after 2xx + F5",
+  "hdsd_align": "Lương → Thành phần lương → Thêm · Cài đặt danh mục · CC apply (spot)",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm-api": 200,
+    "xbos-api": 200,
+    "portal": 200
+  },
+  "probes": {
+    "overviewStatus": 200,
+    "overviewCatalogCount": 78,
+    "settingsHasSalaryComponentsKey": false,
+    "settingsHasPayTypesKey": true,
+    "settingsSalaryComponentsEff": 0,
+    "settingsPayTypesEff": 7,
+    "settingsSalaryComponentsPickerTotal": 0,
+    "settingsPayTypesPickerTotal": 7,
+    "payrollSalaryComponentsTotal": 11,
+    "payrollStarterCodes": [
+      {
+        "code": "LUONG_CO_BAN",
+        "name": "Lương cơ bản",
+        "is_system": true
+      },
+      {
+        "code": "THUE_TNCN_HT",
+        "name": "Thuế TNCN",
+        "is_system": true
+      },
+      {
+        "code": "SO_NGAY_NGHI_BU",
+        "name": "Số ngày nghỉ bù",
+        "is_system": true
+      }
+    ],
+    "xbosPayTypes": {
+      "status": 404,
+      "code": "XBOS-CFG-001",
+      "message": "Catalog 'pay_types' not found"
+    },
+    "xbosSalaryComponents": {
+      "status": 404,
+      "code": "XBOS-CFG-001",
+      "message": "Catalog 'salary_components' not found"
+    }
+  },
+  "ac": {
+    "PROBE-STARTER-ROWS": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:57:00.277Z",
+      "summary": "PAY-CATALOG-BE starter rows present: LUONG_CO_BAN,THUE_TNCN_HT,SO_NGAY_NGHI_BU",
+      "codes": [
+        {
+          "code": "LUONG_CO_BAN",
+          "name": "Lương cơ bản",
+          "is_system": true
+        },
+        {
+          "code": "THUE_TNCN_HT",
+          "name": "Thuế TNCN",
+          "is_system": true
+        },
+        {
+          "code": "SO_NGAY_NGHI_BU",
+          "name": "Số ngày nghỉ bù",
+          "is_system": true
+        }
+      ]
+    },
+    "PROBE-SETTINGS-DENSITY": {
+      "verdict": "BLOCKED",
+      "at": "2026-08-07T09:57:00.278Z",
+      "summary": "Settings salary_components eff=0 pay_types eff=4; keys present sc=false pt=true"
+    },
+    "PROBE-XBOS-PAY-TYPES": {
+      "verdict": "BLOCKED",
+      "at": "2026-08-07T09:57:00.279Z",
+      "summary": "XBOS config-sync pay_types → HTTP 404 XBOS-CFG-001 Catalog 'pay_types' not found"
+    },
+    "UF-SETTINGS-FE-CREATE-PAY-TYPES-KEY": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:57:18.391Z",
+      "summary": "Settings Select exposes pay_types (Bản chất / loại TP lương)"
+    },
+    "UF-SETTINGS-FE-CREATE-SALARY-COMPONENTS-KEY": {
+      "verdict": "BLOCKED",
+      "at": "2026-08-07T09:57:18.393Z",
+      "summary": "Settings Select missing salary_components — AC-PAY-COMP-01 picker density cannot be FE-bootstrapped (XBOS P2 HOLD + no synced key)",
+      "sample": [
+        "Ánh xạ hoạt động ↔ chức năng phân hệ",
+        "Loại phụ cấp",
+        "Loại đơn chỉnh sửa chấm công",
+        "Danh mục giá / chính sách phúc lợi",
+        "Chi nhánh / điểm làm việc",
+        "Nguồn ứng viên",
+        "Trạng thái ứng viên",
+        "Preset biểu mẫu hồ sơ theo công ty",
+        "Chức danh áp dụng theo công ty",
+        "Loại hợp đồng lao động",
+        "Trung tâm chi phí",
+        "Loại khấu trừ"
+      ]
+    },
+    "UF-SETTINGS-CREATE-PAY-TYPES": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:57:21.352Z",
+      "summary": "Created pay_types item via Settings FE"
+    },
+    "UF-SETTINGS-CREATE-SALARY-COMPONENTS": {
+      "verdict": "BLOCKED",
+      "at": "2026-08-07T09:57:21.353Z",
+      "summary": "Cannot FE-create salary_components catalog item — key absent from Settings Select (chicken-egg vs XBOS P2 HOLD)"
+    },
+    "SPOT-CC-APPLY-PAY-TYPES-UI": {
+      "verdict": "BLOCKED",
+      "at": "2026-08-07T09:57:23.119Z",
+      "summary": "Could not open Apply catalog panel from CC — probe already shows XBOS pay_types 404"
+    },
+    "L2-PAYROLL-LOAD": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:20.088Z",
+      "summary": "Payroll components tab reachable"
+    },
+    "UF-STARTER-ROWS-LIST": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:20.091Z",
+      "summary": "Starter/system rows visible on Thành phần lương list (payroll SoT)",
+      "tableSnippet": "#MÃ THÀNH PHẦNTÊN THÀNH PHẦNLOẠITÍNH CHẤTKIỂU GIÁ TRỊCHỊU THUẾTRẠNG THÁI01Dcơ bảnLươngThu nhậpTiền tệHoạt động02PC_DIEU_XE_6A75AC29Phu cap dieu xe QA ALLOWCAT-6A75AC29Phu capThu nhậpTiền tệHoạt động03"
+    },
+    "AC-PAY-COMP-01-EMPTY-FALLBACK": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:21.451Z",
+      "summary": "Empty Settings catalog → free-text Mã Input (honest)"
+    },
+    "AC-PAY-COMP-01-EMPTY-CTA": {
+      "verdict": "BLOCKED",
+      "at": "2026-08-07T09:58:21.455Z",
+      "summary": "CTA not found"
+    },
+    "UF-PICK-PAY-TYPES": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:22.106Z",
+      "summary": "Selected pay_types option in Add dialog"
+    },
+    "UF-EMPTY-CREATE-INSTANCE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:23.674Z",
+      "summary": "Free-text create POST 201 code=QA_TP_IRUZ2O",
+      "postStatus": 201,
+      "savedCode": "QA_TP_IRUZ2O"
+    },
+    "UF-F5-PERSIST": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:28.739Z",
+      "summary": "Row QA_TP_IRUZ2O after F5"
+    },
+    "AC-PAY-COMP-01-PICKER": {
+      "verdict": "BLOCKED",
+      "at": "2026-08-07T09:58:33.389Z",
+      "summary": "Payroll instance create succeeded but Settings salary_components still 0 — CatalogSearchPicker not claimed (starters ≠ Settings SoT)",
+      "payrollStarters": [
+        {
+          "code": "LUONG_CO_BAN",
+          "name": "Lương cơ bản",
+          "is_system": true
+        },
+        {
+          "code": "THUE_TNCN_HT",
+          "name": "Thuế TNCN",
+          "is_system": true
+        },
+        {
+          "code": "SO_NGAY_NGHI_BU",
+          "name": "Số ngày nghỉ bù",
+          "is_system": true
+        }
+      ]
+    },
+    "AC-PAY-COMP-01-INVENT-BLOCKED": {
+      "verdict": "BLOCKED",
+      "at": "2026-08-07T09:58:33.468Z",
+      "summary": "Invent-code negative requires catalogBound Settings >0 — still blocked"
+    },
+    "UF-MUTATE-POST": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:33.469Z",
+      "summary": "Instance create POST 201 (free-text path; not catalog-bound)"
+    },
+    "CONSOLE-GATE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:33.470Z",
+      "summary": "No uncaught",
+      "sample": []
+    },
+    "TDZ-SUPERSEDED": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:33.470Z",
+      "summary": "D-PAY-BATCHES-TDZ-01 not re-dispatched — superseded by SHOWADD-TDZ wave (per PM)"
+    },
+    "HONESTY-NO-E2E-READY": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:33.471Z",
+      "summary": "payroll_e2e_ready remains false — not claimed"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T09:57:01.888Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/settings-catalogs/sync-from-xbos",
+      "at": "2026-08-07T09:57:14.955Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T09:57:15.155Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/settings-catalogs/items",
+      "at": "2026-08-07T09:57:20.150Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T09:57:20.565Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T09:57:28.178Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T09:57:29.029Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T09:57:29.321Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T09:58:13.809Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T09:58:19.032Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T09:58:19.525Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/salary-components",
+      "at": "2026-08-07T09:58:22.591Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T09:58:25.510Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T09:58:26.331Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T09:58:27.598Z"
+    }
+  ],
+  "consoleErrors": [
+    "WebSocket connection to 'ws://127.0.0.1:5173/hr/?token=w7cDUiqqArfw' failed: Error during WebSocket handshake: net::ERR_CONNECTION_RESET",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-pay-cfg-qa-02/01-settings-catalogs.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-pay-cfg-qa-02/02-settings-sync.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-pay-cfg-qa-02/03-settings-after-attempt.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-pay-cfg-qa-02/05-components-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-pay-cfg-qa-02/06-add-dialog-1.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-pay-cfg-qa-02/07-empty-save-attempt.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-pay-cfg-qa-02/08-f5-free-text.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-pay-cfg-qa-02/09-add-again.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T09:57:00.763Z",
+      "msg": "goto /hr/settings-catalogs"
+    },
+    {
+      "at": "2026-08-07T09:57:21.424Z",
+      "msg": "spot CC apply catalog"
+    },
+    {
+      "at": "2026-08-07T09:57:26.340Z",
+      "msg": "goto /hr/payroll components"
+    }
+  ],
+  "overall": "PASS_WITH_BLOCKED",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T09:58:33.808Z"
+}

@@ -1,0 +1,59 @@
+{
+  "work_item_id": "PO-HRM-CONTRACT-LEGAL-PRINT-FE-04",
+  "defect": "D-CTR-FE-HRMAPI-COMMENT-SWC",
+  "startedAt": "2026-08-07T14:03:58.219Z",
+  "honesty": {
+    "contracts_printable_ready": false,
+    "seed_used": false
+  },
+  "vite": {
+    "url": "http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts",
+    "status": 200,
+    "len": 682512,
+    "hasSwcSyntaxError": false,
+    "hasOriginStarSlashPublish": false
+  },
+  "mount": {
+    "url": "http://127.0.0.1:5173/hr/settings?portal=1&tenantId=xevn&companyId=main&tab=contract-legal",
+    "rootChildCount": 4,
+    "textLen": 4919,
+    "hasPanel": true,
+    "hasSettingsPrint": true,
+    "hasTab": true,
+    "snippet": "Tập đoàn XeVN · Tổng giám đốc tập đoàn Cài đặt Tùy chỉnh hệ thống theo nhu cầu của bạn Tài khoản Thương hiệu Thông báo Bảo mật Phân quyền Hệ thống Gói dịch vụ Danh mục (XBOS + HRM) Danh mục nghiệp vụ Cấu hình JD Điều khoản HĐ Mẫu bảng lương Loại phép ATT Loại giấy tờ EMP Loại hình thuê EMP Giai đoạn REC Mặc định thuế/BH/PC Thư viện điều khoản & mẫu hợp đồng "
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "network": [
+    {
+      "status": 200,
+      "url": "/hr/settings?portal=1&tenantId=xevn&companyId=main&tab=contract-legal"
+    },
+    {
+      "status": 200,
+      "url": "/hr/src/integrations/hrmApi.ts?t=1786111328021"
+    },
+    {
+      "status": 200,
+      "url": "/hr/src/pages/Settings.tsx?t=1786111328021"
+    },
+    {
+      "status": 200,
+      "url": "/hr/src/components/settings/BrandingSettings.tsx"
+    },
+    {
+      "status": 200,
+      "url": "/hr/src/components/settings/ContractLegalPrintSettingsPanel.tsx?t=1786111328021"
+    }
+  ],
+  "loginStatus": 201,
+  "screen": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-fe-04/settings-contract-legal.png",
+  "hrmApiNetwork": [
+    {
+      "status": 200,
+      "url": "/hr/src/integrations/hrmApi.ts?t=1786111328021"
+    }
+  ],
+  "verdict": "PASS_MOUNT",
+  "finishedAt": "2026-08-07T14:04:03.440Z"
+}

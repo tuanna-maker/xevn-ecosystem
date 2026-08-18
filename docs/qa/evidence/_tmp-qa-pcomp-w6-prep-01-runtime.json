@@ -1,0 +1,1351 @@
+{
+  "work_item_id": "QA-PCOMP-W6-PREP-01",
+  "startedAt": "2026-07-30T09:58:49.367Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "hold_deploy": true,
+    "reset_ref": "d-dev-reset-tenant-master-01-20260730.md"
+  },
+  "baseline": {
+    "employees": {
+      "status": 200,
+      "total": 0
+    },
+    "groupMemberUnits": {
+      "status": 200,
+      "count": null
+    }
+  },
+  "steps": [
+    {
+      "id": "login-api",
+      "ok": true,
+      "detail": "HTTP 201 token ok",
+      "at": "2026-07-30T09:58:49.700Z"
+    },
+    {
+      "id": "cc-load",
+      "ok": true,
+      "detail": "url=http://127.0.0.1:5173/command-center banner=false",
+      "at": "2026-07-30T09:58:54.618Z"
+    },
+    {
+      "id": "hrm-tab-employees",
+      "ok": true,
+      "detail": "P-CC-03 banner=false url=http://127.0.0.1:5173/command-center/hrm/employees",
+      "at": "2026-07-30T09:59:03.769Z"
+    },
+    {
+      "id": "hrm-tab-contracts",
+      "ok": true,
+      "detail": "P-CC-04 banner=false url=http://127.0.0.1:5173/command-center/hrm/contracts",
+      "at": "2026-07-30T09:59:09.385Z"
+    },
+    {
+      "id": "hrm-tab-insurance",
+      "ok": true,
+      "detail": "P-CC-05 banner=false url=http://127.0.0.1:5173/command-center/hrm/insurance",
+      "at": "2026-07-30T09:59:14.565Z"
+    },
+    {
+      "id": "hrm-tab-recruitment",
+      "ok": true,
+      "detail": "P-CC-06 banner=false url=http://127.0.0.1:5173/command-center/hrm/recruitment",
+      "at": "2026-07-30T09:59:20.708Z"
+    },
+    {
+      "id": "hrm-tab-attendance",
+      "ok": true,
+      "detail": "P-CC-07 banner=false url=http://127.0.0.1:5173/command-center/hrm/attendance",
+      "at": "2026-07-30T09:59:25.928Z"
+    },
+    {
+      "id": "hrm-tab-payroll",
+      "ok": true,
+      "detail": "P-CC-08 banner=false url=http://127.0.0.1:5173/command-center/hrm/payroll",
+      "at": "2026-07-30T09:59:31.906Z"
+    },
+    {
+      "id": "hrm-tab-company",
+      "ok": true,
+      "detail": "P-CC-CO banner=false url=http://127.0.0.1:5173/command-center/hrm/company",
+      "at": "2026-07-30T09:59:37.105Z"
+    },
+    {
+      "id": "j-cc-org-gmu",
+      "ok": true,
+      "detail": "SKIP empty (valid U65)",
+      "at": "2026-07-30T09:59:42.511Z"
+    },
+    {
+      "id": "j-hrm-co-01-baseline",
+      "ok": true,
+      "detail": "employees.total=0 (post-reset expect 0)",
+      "at": "2026-07-30T09:59:42.514Z"
+    },
+    {
+      "id": "j-hrm-l25-spot",
+      "ok": true,
+      "detail": "list→detail BLOCKED (no employee rows) — tabs load PASS",
+      "at": "2026-07-30T09:59:42.517Z"
+    },
+    {
+      "id": "no-econnrefused-28002",
+      "ok": true,
+      "detail": "failures=0",
+      "at": "2026-07-30T09:59:42.519Z"
+    },
+    {
+      "id": "no-409-scope",
+      "ok": true,
+      "detail": "409 count=0",
+      "at": "2026-07-30T09:59:42.521Z"
+    },
+    {
+      "id": "no-5xx-load",
+      "ok": false,
+      "detail": "5xx count=1",
+      "at": "2026-07-30T09:59:42.523Z"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:58:51.197Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:58:51.301Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Accessible tenants loaded\",\"data\":{\"userId\":\"ceo@xe.vn\",\"items\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName\":\"Tập đoàn\",\"tenantKind\":\"mast",
+      "at": "2026-07-30T09:58:51.301Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-202\",\"message\":\"KPI rollup loaded\",\"data\":{\"tenantId\":\"xevn\",\"companyId\":\"main\",\"rollupMode\":\"single\",\"companyIds\":[\"main\"],\"from\":\"2026-01-31\",\"to\":\"2026-07-30\",\"seri",
+      "at": "2026-07-30T09:58:53.881Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:58:53.893Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:58:53.905Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:58:53.906Z\"}",
+      "at": "2026-07-30T09:58:53.920Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:58:53.907Z\"}",
+      "at": "2026-07-30T09:58:53.920Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:58:53.908Z\"}",
+      "at": "2026-07-30T09:58:53.920Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:58:53.929Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:58:53.929Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:58:53.927Z\"}",
+      "at": "2026-07-30T09:58:53.938Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CAT-212\",\"message\":\"Catalog approval inbox\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:58:53.935Z\"}",
+      "at": "2026-07-30T09:58:53.941Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-203\",\"message\":\"Portal alerts loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:58:53.971Z\"}",
+      "at": "2026-07-30T09:58:53.975Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Accessible tenants loaded\",\"data\":{\"userId\":\"ceo@xe.vn\",\"items\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName\":\"Tập đoàn\",\"tenantKind\":\"mast",
+      "at": "2026-07-30T09:58:54.830Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:58:54.869Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:58:54.910Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:58:55.273Z\"}",
+      "at": "2026-07-30T09:58:55.333Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:58:55.334Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:58:55.282Z\"}",
+      "at": "2026-07-30T09:58:55.334Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:58:55.282Z\"}",
+      "at": "2026-07-30T09:58:55.334Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-202\",\"message\":\"KPI rollup loaded\",\"data\":{\"tenantId\":\"xevn\",\"companyId\":\"main\",\"rollupMode\":\"single\",\"companyIds\":[\"main\"],\"from\":\"2026-01-31\",\"to\":\"2026-07-30\",\"seri",
+      "at": "2026-07-30T09:58:55.334Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:58:55.356Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:58:55.356Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:58:55.304Z\"}",
+      "at": "2026-07-30T09:58:55.356Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CAT-212\",\"message\":\"Catalog approval inbox\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:58:55.325Z\"}",
+      "at": "2026-07-30T09:58:55.356Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:58:55.392Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-203\",\"message\":\"Portal alerts loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:58:55.607Z\"}",
+      "at": "2026-07-30T09:58:55.627Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:58:55.937Z\"}",
+      "at": "2026-07-30T09:58:56.009Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:58:55.942Z\"}",
+      "at": "2026-07-30T09:58:56.012Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-OPU-200\",\"message\":\"Operating units listed\",\"data\":[{\"operating_slug\":\"holding\",\"display_name_vi\":\"Tập đoàn XeVN\",\"rollup_order\":1},{\"operating_slug\":\"trsport\",\"display_nam",
+      "at": "2026-07-30T09:58:59.720Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SUB-200\",\"message\":\"Subscription loaded\",\"data\":{\"id\":\"582da683-eb3e-424a-b1ca-e499a26493ca\",\"company_id\":\"holding\",\"plan_code\":\"trial\",\"status\":\"trial\",\"trial_start_date\":",
+      "at": "2026-07-30T09:58:59.926Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-EMP-200\",\"message\":\"Employees listed\",\"data\":{\"total\":0,\"page\":1,\"page_size\":50,\"next_cursor\":null,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:00.990Z\"}",
+      "at": "2026-07-30T09:59:01.046Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-EMP-SUMMARY-200\",\"message\":\"Employee summary loaded\",\"data\":{\"company_id\":\"main\",\"total\":0,\"active_count\":0,\"inactive_count\":0,\"archived_count\":0,\"payroll\":{\"total\":0,\"empl",
+      "at": "2026-07-30T09:59:01.079Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-200\",\"message\":\"Settings catalogs overview\",\"data\":{\"catalogs\":[]},\"timestamp\":\"2026-07-30T09:59:01.204Z\"}",
+      "at": "2026-07-30T09:59:01.217Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-200\",\"message\":\"Settings catalogs overview\",\"data\":{\"catalogs\":[]},\"timestamp\":\"2026-07-30T09:59:01.650Z\"}",
+      "at": "2026-07-30T09:59:01.684Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Accessible tenants loaded\",\"data\":{\"userId\":\"ceo@xe.vn\",\"items\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName\":\"Tập đoàn\",\"tenantKind\":\"mast",
+      "at": "2026-07-30T09:59:03.973Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:03.989Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:04.038Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:04.331Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:04.326Z\"}",
+      "at": "2026-07-30T09:59:04.357Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:04.331Z\"}",
+      "at": "2026-07-30T09:59:04.358Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:04.332Z\"}",
+      "at": "2026-07-30T09:59:04.401Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-202\",\"message\":\"KPI rollup loaded\",\"data\":{\"tenantId\":\"xevn\",\"companyId\":\"main\",\"rollupMode\":\"single\",\"companyIds\":[\"main\"],\"from\":\"2026-01-31\",\"to\":\"2026-07-30\",\"seri",
+      "at": "2026-07-30T09:59:04.401Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:04.401Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:04.401Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:04.355Z\"}",
+      "at": "2026-07-30T09:59:04.401Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CAT-212\",\"message\":\"Catalog approval inbox\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:04.401Z\"}",
+      "at": "2026-07-30T09:59:04.418Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:04.436Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-203\",\"message\":\"Portal alerts loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:04.441Z\"}",
+      "at": "2026-07-30T09:59:04.462Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:04.857Z\"}",
+      "at": "2026-07-30T09:59:04.924Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:04.870Z\"}",
+      "at": "2026-07-30T09:59:04.940Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-OPU-200\",\"message\":\"Operating units listed\",\"data\":[{\"operating_slug\":\"holding\",\"display_name_vi\":\"Tập đoàn XeVN\",\"rollup_order\":1},{\"operating_slug\":\"trsport\",\"display_nam",
+      "at": "2026-07-30T09:59:05.416Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SUB-200\",\"message\":\"Subscription loaded\",\"data\":{\"id\":\"582da683-eb3e-424a-b1ca-e499a26493ca\",\"company_id\":\"holding\",\"plan_code\":\"trial\",\"status\":\"trial\",\"trial_start_date\":",
+      "at": "2026-07-30T09:59:05.796Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-200\",\"message\":\"Settings catalogs overview\",\"data\":{\"catalogs\":[]},\"timestamp\":\"2026-07-30T09:59:06.504Z\"}",
+      "at": "2026-07-30T09:59:06.533Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":0,\"page\":1,\"page_size\":100,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:06.635Z\"}",
+      "at": "2026-07-30T09:59:06.662Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Accessible tenants loaded\",\"data\":{\"userId\":\"ceo@xe.vn\",\"items\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName\":\"Tập đoàn\",\"tenantKind\":\"mast",
+      "at": "2026-07-30T09:59:09.604Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:09.681Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:09.845Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:10.007Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:09.964Z\"}",
+      "at": "2026-07-30T09:59:10.007Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:09.967Z\"}",
+      "at": "2026-07-30T09:59:10.007Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-202\",\"message\":\"KPI rollup loaded\",\"data\":{\"tenantId\":\"xevn\",\"companyId\":\"main\",\"rollupMode\":\"single\",\"companyIds\":[\"main\"],\"from\":\"2026-01-31\",\"to\":\"2026-07-30\",\"seri",
+      "at": "2026-07-30T09:59:10.008Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:10.009Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:10.029Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:10.001Z\"}",
+      "at": "2026-07-30T09:59:10.058Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:10.072Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:10.191Z\"}",
+      "at": "2026-07-30T09:59:10.203Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CAT-212\",\"message\":\"Catalog approval inbox\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:10.214Z\"}",
+      "at": "2026-07-30T09:59:10.220Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-203\",\"message\":\"Portal alerts loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:10.243Z\"}",
+      "at": "2026-07-30T09:59:10.264Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:10.516Z\"}",
+      "at": "2026-07-30T09:59:10.590Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:10.525Z\"}",
+      "at": "2026-07-30T09:59:10.599Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-OPU-200\",\"message\":\"Operating units listed\",\"data\":[{\"operating_slug\":\"holding\",\"display_name_vi\":\"Tập đoàn XeVN\",\"rollup_order\":1},{\"operating_slug\":\"trsport\",\"display_nam",
+      "at": "2026-07-30T09:59:11.061Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SUB-200\",\"message\":\"Subscription loaded\",\"data\":{\"id\":\"582da683-eb3e-424a-b1ca-e499a26493ca\",\"company_id\":\"holding\",\"plan_code\":\"trial\",\"status\":\"trial\",\"trial_start_date\":",
+      "at": "2026-07-30T09:59:11.156Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page_size=100",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-EMP-200\",\"message\":\"Employees listed\",\"data\":{\"total\":0,\"page\":1,\"page_size\":100,\"next_cursor\":null,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:11.604Z\"}",
+      "at": "2026-07-30T09:59:11.625Z"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "bodySnippet": "{\"success\":false,\"code\":\"HRM-SYS-001\",\"message\":\"constraint \\\"chk_contract_date_range\\\" for relation \\\"employee_contracts\\\" already exists\",\"timestamp\":\"2026-07-30T09:59:11.811Z\"}",
+      "at": "2026-07-30T09:59:11.818Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/insurance-policy-participants?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-INS-P-200\",\"message\":\"Insurance participants listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:11.847Z\"}",
+      "at": "2026-07-30T09:59:11.855Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-200\",\"message\":\"Settings catalogs overview\",\"data\":{\"catalogs\":[]},\"timestamp\":\"2026-07-30T09:59:11.917Z\"}",
+      "at": "2026-07-30T09:59:11.940Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance?company_id=main&page=1&page_size=100",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Insurance listed\",\"data\":{\"total\":0,\"page\":1,\"page_size\":100,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:11.930Z\"}",
+      "at": "2026-07-30T09:59:11.993Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-INS-POL-200\",\"message\":\"Insurance policies listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:13.273Z\"}",
+      "at": "2026-07-30T09:59:13.287Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Accessible tenants loaded\",\"data\":{\"userId\":\"ceo@xe.vn\",\"items\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName\":\"Tập đoàn\",\"tenantKind\":\"mast",
+      "at": "2026-07-30T09:59:14.764Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:14.764Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:14.785Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:15.049Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:15.008Z\"}",
+      "at": "2026-07-30T09:59:15.050Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:15.009Z\"}",
+      "at": "2026-07-30T09:59:15.050Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:15.023Z\"}",
+      "at": "2026-07-30T09:59:15.050Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-202\",\"message\":\"KPI rollup loaded\",\"data\":{\"tenantId\":\"xevn\",\"companyId\":\"main\",\"rollupMode\":\"single\",\"companyIds\":[\"main\"],\"from\":\"2026-01-31\",\"to\":\"2026-07-30\",\"seri",
+      "at": "2026-07-30T09:59:15.050Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:15.085Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:15.041Z\"}",
+      "at": "2026-07-30T09:59:15.085Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:15.085Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CAT-212\",\"message\":\"Catalog approval inbox\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:15.070Z\"}",
+      "at": "2026-07-30T09:59:15.119Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:15.137Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-203\",\"message\":\"Portal alerts loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:15.147Z\"}",
+      "at": "2026-07-30T09:59:15.173Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:15.565Z\"}",
+      "at": "2026-07-30T09:59:15.632Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:15.575Z\"}",
+      "at": "2026-07-30T09:59:15.644Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-OPU-200\",\"message\":\"Operating units listed\",\"data\":[{\"operating_slug\":\"holding\",\"display_name_vi\":\"Tập đoàn XeVN\",\"rollup_order\":1},{\"operating_slug\":\"trsport\",\"display_nam",
+      "at": "2026-07-30T09:59:16.099Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SUB-200\",\"message\":\"Subscription loaded\",\"data\":{\"id\":\"582da683-eb3e-424a-b1ca-e499a26493ca\",\"company_id\":\"holding\",\"plan_code\":\"trial\",\"status\":\"trial\",\"trial_start_date\":",
+      "at": "2026-07-30T09:59:16.199Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-REC-CA-200\",\"message\":\"Candidate applications listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:17.472Z\"}",
+      "at": "2026-07-30T09:59:17.480Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-REC-JP-200\",\"message\":\"Job postings listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:17.473Z\"}",
+      "at": "2026-07-30T09:59:17.535Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-REC-CP-200\",\"message\":\"Candidates pool listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:17.476Z\"}",
+      "at": "2026-07-30T09:59:17.535Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-200\",\"message\":\"Settings catalogs overview\",\"data\":{\"catalogs\":[]},\"timestamp\":\"2026-07-30T09:59:17.541Z\"}",
+      "at": "2026-07-30T09:59:17.565Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-REC-PLAN-200\",\"message\":\"Recruitment plans listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:17.542Z\"}",
+      "at": "2026-07-30T09:59:17.565Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Accessible tenants loaded\",\"data\":{\"userId\":\"ceo@xe.vn\",\"items\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName\":\"Tập đoàn\",\"tenantKind\":\"mast",
+      "at": "2026-07-30T09:59:20.845Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:20.853Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:21.009Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:21.158Z\"}",
+      "at": "2026-07-30T09:59:21.191Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:21.166Z\"}",
+      "at": "2026-07-30T09:59:21.196Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:21.169Z\"}",
+      "at": "2026-07-30T09:59:21.196Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:21.197Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-202\",\"message\":\"KPI rollup loaded\",\"data\":{\"tenantId\":\"xevn\",\"companyId\":\"main\",\"rollupMode\":\"single\",\"companyIds\":[\"main\"],\"from\":\"2026-01-31\",\"to\":\"2026-07-30\",\"seri",
+      "at": "2026-07-30T09:59:21.197Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:21.237Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:21.191Z\"}",
+      "at": "2026-07-30T09:59:21.238Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:21.274Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CAT-212\",\"message\":\"Catalog approval inbox\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:21.228Z\"}",
+      "at": "2026-07-30T09:59:21.274Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:21.274Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-203\",\"message\":\"Portal alerts loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:21.302Z\"}",
+      "at": "2026-07-30T09:59:21.326Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:21.676Z\"}",
+      "at": "2026-07-30T09:59:21.753Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:21.683Z\"}",
+      "at": "2026-07-30T09:59:21.753Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-OPU-200\",\"message\":\"Operating units listed\",\"data\":[{\"operating_slug\":\"holding\",\"display_name_vi\":\"Tập đoàn XeVN\",\"rollup_order\":1},{\"operating_slug\":\"trsport\",\"display_nam",
+      "at": "2026-07-30T09:59:22.178Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SUB-200\",\"message\":\"Subscription loaded\",\"data\":{\"id\":\"582da683-eb3e-424a-b1ca-e499a26493ca\",\"company_id\":\"holding\",\"plan_code\":\"trial\",\"status\":\"trial\",\"trial_start_date\":",
+      "at": "2026-07-30T09:59:22.307Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-ATT-OVERVIEW-200\",\"message\":\"Attendance overview\",\"data\":{\"stats\":{\"lateEarlyToday\":0,\"lateEarlyChange\":0,\"actualLeaveThisWeek\":0,\"actualLeaveChange\":0,\"plannedLeaveNextWee",
+      "at": "2026-07-30T09:59:23.212Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Accessible tenants loaded\",\"data\":{\"userId\":\"ceo@xe.vn\",\"items\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName\":\"Tập đoàn\",\"tenantKind\":\"mast",
+      "at": "2026-07-30T09:59:26.135Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:26.164Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:26.199Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:26.488Z\"}",
+      "at": "2026-07-30T09:59:26.526Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:26.546Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:26.490Z\"}",
+      "at": "2026-07-30T09:59:26.546Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:26.490Z\"}",
+      "at": "2026-07-30T09:59:26.546Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-202\",\"message\":\"KPI rollup loaded\",\"data\":{\"tenantId\":\"xevn\",\"companyId\":\"main\",\"rollupMode\":\"single\",\"companyIds\":[\"main\"],\"from\":\"2026-01-31\",\"to\":\"2026-07-30\",\"seri",
+      "at": "2026-07-30T09:59:26.546Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:26.515Z\"}",
+      "at": "2026-07-30T09:59:26.562Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:26.562Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:26.578Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CAT-212\",\"message\":\"Catalog approval inbox\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:26.563Z\"}",
+      "at": "2026-07-30T09:59:26.600Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:26.613Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-203\",\"message\":\"Portal alerts loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:26.640Z\"}",
+      "at": "2026-07-30T09:59:26.670Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:27.061Z\"}",
+      "at": "2026-07-30T09:59:27.154Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:27.118Z\"}",
+      "at": "2026-07-30T09:59:27.210Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-OPU-200\",\"message\":\"Operating units listed\",\"data\":[{\"operating_slug\":\"holding\",\"display_name_vi\":\"Tập đoàn XeVN\",\"rollup_order\":1},{\"operating_slug\":\"trsport\",\"display_nam",
+      "at": "2026-07-30T09:59:27.713Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SUB-200\",\"message\":\"Subscription loaded\",\"data\":{\"id\":\"582da683-eb3e-424a-b1ca-e499a26493ca\",\"company_id\":\"holding\",\"plan_code\":\"trial\",\"status\":\"trial\",\"trial_start_date\":",
+      "at": "2026-07-30T09:59:27.870Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-PAY-200\",\"message\":\"Payroll payslips listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-07-30T09:59:29.096Z\"}",
+      "at": "2026-07-30T09:59:29.194Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Accessible tenants loaded\",\"data\":{\"userId\":\"ceo@xe.vn\",\"items\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName\":\"Tập đoàn\",\"tenantKind\":\"mast",
+      "at": "2026-07-30T09:59:32.104Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:32.132Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:32.145Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:32.596Z\"}",
+      "at": "2026-07-30T09:59:32.658Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:32.659Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:32.597Z\"}",
+      "at": "2026-07-30T09:59:32.659Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-203\",\"message\":\"Tasks loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:32.598Z\"}",
+      "at": "2026-07-30T09:59:32.659Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-202\",\"message\":\"KPI rollup loaded\",\"data\":{\"tenantId\":\"xevn\",\"companyId\":\"main\",\"rollupMode\":\"single\",\"companyIds\":[\"main\"],\"from\":\"2026-01-31\",\"to\":\"2026-07-30\",\"seri",
+      "at": "2026-07-30T09:59:32.661Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:32.680Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:08.443Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T09:59:32.641Z\"}",
+      "at": "2026-07-30T09:59:32.680Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-POS-200\",\"message\":\"Permission matrix loaded\",\"data\":{\"roleId\":\"raci_hdqt\",\"rows\":[{\"rowId\":\"pm-org-1\",\"view\":true,\"write\":true,\"delete\":true,\"approve\":true,\"dataScope\":\"g",
+      "at": "2026-07-30T09:59:32.680Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-CAT-212\",\"message\":\"Catalog approval inbox\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:32.662Z\"}",
+      "at": "2026-07-30T09:59:32.727Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:32.727Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-KPI-203\",\"message\":\"Portal alerts loaded\",\"data\":{\"items\":[]},\"timestamp\":\"2026-07-30T09:59:32.746Z\"}",
+      "at": "2026-07-30T09:59:32.802Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:33.213Z\"}",
+      "at": "2026-07-30T09:59:33.294Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-07-30T09:59:33.219Z\"}",
+      "at": "2026-07-30T09:59:33.296Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-OPU-200\",\"message\":\"Operating units listed\",\"data\":[{\"operating_slug\":\"holding\",\"display_name_vi\":\"Tập đoàn XeVN\",\"rollup_order\":1},{\"operating_slug\":\"trsport\",\"display_nam",
+      "at": "2026-07-30T09:59:33.731Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SUB-200\",\"message\":\"Subscription loaded\",\"data\":{\"id\":\"582da683-eb3e-424a-b1ca-e499a26493ca\",\"company_id\":\"holding\",\"plan_code\":\"trial\",\"status\":\"trial\",\"trial_start_date\":",
+      "at": "2026-07-30T09:59:33.819Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"",
+      "at": "2026-07-30T09:59:34.451Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-ORG-200\",\"message\":\"Legal entities loaded\",\"data\":{\"items\":[{\"id\":\"5abd9a32-bd8c-41e9-bc4a-eb61dc3a98bb\",\"tenant_id\":\"xevn\",\"company_id\":\"holding\",\"code\":\"xevn-holding\",\"n",
+      "at": "2026-07-30T09:59:34.492Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-ORG-200\",\"message\":\"Legal entities loaded\",\"data\":{\"items\":[{\"id\":\"5abd9a32-bd8c-41e9-bc4a-eb61dc3a98bb\",\"tenant_id\":\"xevn\",\"company_id\":\"holding\",\"code\":\"xevn-holding\",\"n",
+      "at": "2026-07-30T09:59:34.539Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-OPU-200\",\"message\":\"Operating units listed\",\"data\":[{\"operating_slug\":\"holding\",\"display_name_vi\":\"Tập đoàn XeVN\",\"rollup_order\":1},{\"operating_slug\":\"trsport\",\"display_nam",
+      "at": "2026-07-30T09:59:34.615Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-EMP-SUMMARY-200\",\"message\":\"Employee summary loaded\",\"data\":{\"company_id\":\"main\",\"total\":0,\"active_count\":0,\"inactive_count\":0,\"archived_count\":0,\"payroll\":{\"total\":0,\"empl",
+      "at": "2026-07-30T09:59:34.712Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Accessible tenants loaded\",\"data\":{\"userId\":\"ceo@xe.vn\",\"items\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName\":\"Tập đoàn\",\"tenantKind\":\"mast",
+      "at": "2026-07-30T09:59:37.301Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:37.309Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-AUTH-200\",\"message\":\"Session loaded\",\"data\":{\"user\":{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"},\"memberships\":[{\"tenantId\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"shortName",
+      "at": "2026-07-30T09:59:37.335Z"
+    }
+  ],
+  "screens": [
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-pcomp-w6-prep-01\\01-command-center.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-pcomp-w6-prep-01\\hrm-employees.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-pcomp-w6-prep-01\\hrm-contracts.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-pcomp-w6-prep-01\\hrm-insurance.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-pcomp-w6-prep-01\\hrm-recruitment.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-pcomp-w6-prep-01\\hrm-attendance.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-pcomp-w6-prep-01\\hrm-payroll.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-pcomp-w6-prep-01\\hrm-company.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-pcomp-w6-prep-01\\j-cc-org-gmu-list.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-pcomp-w6-prep-01\\j-cc-org-gmu-after-click.png"
+  ],
+  "journeys": {
+    "J-CC-ORG-GMU": {
+      "ok": true,
+      "skipped": true,
+      "reason": "empty list valid post-reset"
+    },
+    "J-HRM-CO-01": {
+      "baseline_total": 0,
+      "summaryCalls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/company-subscription?company_id=main",
+          "bodySnippet": "{\"success\":true,\"code\":\"HRM-SUB-200\",\"message\":\"Subscription loaded\",\"data\":{\"id\":\"582da683-eb3e-424a-b1ca-e499a26493ca\",\"company_id\":\"holding\",\"plan_code\":\"trial\",\"status\":\"trial\",\"trial_start_date\":",
+          "at": "2026-07-30T09:59:27.870Z"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/company-subscription?company_id=main",
+          "bodySnippet": "{\"success\":true,\"code\":\"HRM-SUB-200\",\"message\":\"Subscription loaded\",\"data\":{\"id\":\"582da683-eb3e-424a-b1ca-e499a26493ca\",\"company_id\":\"holding\",\"plan_code\":\"trial\",\"status\":\"trial\",\"trial_start_date\":",
+          "at": "2026-07-30T09:59:33.819Z"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees/summary?company_id=main",
+          "bodySnippet": "{\"success\":true,\"code\":\"HRM-EMP-SUMMARY-200\",\"message\":\"Employee summary loaded\",\"data\":{\"company_id\":\"main\",\"total\":0,\"active_count\":0,\"inactive_count\":0,\"archived_count\":0,\"payroll\":{\"total\":0,\"empl",
+          "at": "2026-07-30T09:59:34.712Z"
+        }
+      ],
+      "verdict": "EMPTY_VALID"
+    },
+    "J-HRM-01..07": {
+      "status": "BLOCKED_NO_DATA",
+      "reason": "employees=0 post-reset; list→detail deferred to sponsor FE mutate (U65)",
+      "hrm_tabs_loaded": [
+        "P-CC-03",
+        "P-CC-04",
+        "P-CC-05",
+        "P-CC-06",
+        "P-CC-07",
+        "P-CC-08",
+        "P-CC-CO"
+      ]
+    }
+  },
+  "hardFails": [
+    {
+      "id": "no-5xx-load",
+      "detail": "5xx count=1"
+    }
+  ],
+  "verdict": "BLOCKED",
+  "finishedAt": "2026-07-30T09:59:42.525Z"
+}

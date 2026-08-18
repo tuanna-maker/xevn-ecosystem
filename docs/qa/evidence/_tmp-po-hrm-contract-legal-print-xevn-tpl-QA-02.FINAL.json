@@ -1,0 +1,715 @@
+{
+  "work_item_id": "PO-HRM-CONTRACT-LEGAL-PRINT-XEVN-TPL-QA-02",
+  "startedAt": "2026-08-07T04:05:21.050Z",
+  "u65": "zero-seed · browser-only",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "STAMP": "XEVN9-IF9062",
+    "TPL_CODE": "XEVN_CUSTOM_XEVN9-IF9062"
+  },
+  "honesty": {
+    "contracts_printable_ready": false,
+    "contracts_printable_ready_claimed": false,
+    "seed_used": false,
+    "api_only_pass": false
+  },
+  "denied": [
+    "contracts_printable_ready=true",
+    "seed",
+    "api_only_pass",
+    "hardcode_assert_exactly_8_only",
+    "reopen_Q-CTR"
+  ],
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "ids": {
+    "tplCode": "XEVN_CUSTOM_XEVN9-IF9062",
+    "tplActivate": true,
+    "pickerPicked": true,
+    "pickerTriggerText": "Mẫu tùy chỉnh QA XEVN9-IF9062 (XEVN_CUSTOM_XEVN9-IF9062) · HĐLĐ CUSTOM XEVN9-IF9062",
+    "contractId": "43f42772-d3a6-46f7-8b05-5d674d70d316",
+    "contractCode": "HD-F9V16"
+  },
+  "ac": {
+    "AC-CTR-XEVN-11-CREATE": {
+      "summary": "POST2xx=true rowBefore=true F5=true codeInvalidEnum=false activate=true",
+      "tplPosts": [
+        {
+          "method": "POST",
+          "status": 201,
+          "code": "HRM-CTR-TPL-201",
+          "dataCode": "XEVN_CUSTOM_XEVN9-IF9062"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "code": "HRM-CTR-TPL-200"
+        }
+      ],
+      "createBody": {
+        "method": "POST",
+        "url": "/api/hrm/contracts-insurance/contract-templates",
+        "body": {
+          "code": "XEVN_CUSTOM_XEVN9-IF9062",
+          "pack_code": "GENERAL",
+          "company_id": "main",
+          "keys": [
+            "company_id",
+            "code",
+            "name_vi",
+            "pack_code",
+            "layout_json",
+            "keyword_map",
+            "status",
+            "default_term_type",
+            "default_duration_days",
+            "default_duration_months",
+            "title_print_vi",
+            "matrix_family"
+          ]
+        },
+        "at": "2026-08-07T04:05:39.388Z"
+      },
+      "verdict": "PASS",
+      "at": "2026-08-07T04:05:53.096Z"
+    },
+    "AC-CTR-XEVN-11-PICKER": {
+      "summary": "spine=true pickerHas#9=true trigger=Mẫu tùy chỉnh QA XEVN9-IF9062 (XEVN_CUSTOM_XEVN9-IF9062) · HĐLĐ CUSTOM XEVN9-IF9 code=XEVN_CUSTOM_XEVN9-IF9062",
+      "verdict": "PASS",
+      "at": "2026-08-07T04:06:07.501Z"
+    },
+    "AC-CTR-XEVN-11-PREVIEW-BIND": {
+      "summary": "bindOk=true createBound=true detail={\"createBoundTpl\":true,\"createBoundCode\":\"XEVN_CUSTOM_XEVN9-IF9062\",\"editHasTplBeforePreview\":true,\"obs_f5\":\"R-CTR-XEVN-TPL-FE-EDIT-RESTORE — handleOpenEdit clears printTemplate*; F5/edit UI blank\",\"prevOk\":true,\"bodyHasTpl\":true,\"bodyHasCompanyId\":false,\"previewBody\":true,\"previewErr\":\"\",\"f5Trig\":\"— Chưa chọn —\",\"f5Ke",
+      "createBoundTpl": true,
+      "createBoundCode": "XEVN_CUSTOM_XEVN9-IF9062",
+      "editHasTplBeforePreview": true,
+      "obs_f5": "R-CTR-XEVN-TPL-FE-EDIT-RESTORE — handleOpenEdit clears printTemplate*; F5/edit UI blank",
+      "prevOk": true,
+      "bodyHasTpl": true,
+      "bodyHasCompanyId": false,
+      "previewBody": true,
+      "previewErr": "",
+      "f5Trig": "— Chưa chọn —",
+      "f5KeepsTpl": false,
+      "prevRes": [
+        {
+          "status": 201,
+          "code": "HRM-CTR-PREV-200",
+          "template_code": "XEVN_CUSTOM_XEVN9-IF9062"
+        }
+      ],
+      "prevReq": {
+        "method": "POST",
+        "url": "/api/hrm/contracts-insurance/contracts/43f42772-d3a6-46f7-8b05-5d674d70d316/preview?company_id=main",
+        "body": {
+          "template_code": "XEVN_CUSTOM_XEVN9-IF9062",
+          "template_id": "d00c52a3-b99c-41bf-a387-ab912e4979b4",
+          "pack_code": "GENERAL",
+          "keys": [
+            "pack_code",
+            "template_id",
+            "template_code",
+            "field_overrides"
+          ]
+        },
+        "at": "2026-08-07T04:06:20.879Z"
+      },
+      "verdict": "PASS",
+      "at": "2026-08-07T04:07:01.787Z"
+    },
+    "PROCESS-HYGIENE": {
+      "summary": "dndStorm=0 uncaught=0 mojibake=false",
+      "verdict": "PASS",
+      "at": "2026-08-07T04:07:01.790Z"
+    },
+    "AC-CTR-XEVN-11": {
+      "summary": "create=PASS picker=PASS preview=PASS process=PASS uf=PASS spine=PASS",
+      "verdict": "PASS",
+      "at": "2026-08-07T04:07:01.791Z"
+    }
+  },
+  "optional": {
+    "CFG-ORG-SUFFIX-F5": {
+      "summary": "save2xx=true F5value=XE-9062 expect=XE-9062",
+      "cfgPosts": [
+        {
+          "status": 200,
+          "method": "PUT"
+        },
+        {
+          "status": 200,
+          "method": "PUT"
+        },
+        {
+          "status": 200,
+          "method": "GET"
+        },
+        {
+          "status": 200,
+          "method": "GET"
+        }
+      ],
+      "verdict": "PASS",
+      "at": "2026-08-07T04:05:34.688Z"
+    },
+    "STARTER-8-LIST": {
+      "summary": "present=8/8 (soft; not ceiling) listCount=Mẫu đã lưu (23) — open catalog từ API",
+      "starterHits": [
+        "XEVN_PROBATION_OFFICE",
+        "XEVN_FT_12M_OFFICE",
+        "XEVN_FT_24M_OFFICE",
+        "XEVN_INDEF_OFFICE",
+        "XEVN_PROBATION_DRIVER",
+        "XEVN_FT_12M_DRIVER",
+        "XEVN_FT_24M_DRIVER",
+        "XEVN_INDEF_DRIVER"
+      ],
+      "note": "PASS if any starters visible; empty catalog OK if create #9 works",
+      "verdict": "PASS",
+      "at": "2026-08-07T04:05:36.261Z"
+    }
+  },
+  "must_keep": {
+    "print-spine": {
+      "verdict": "PASS",
+      "summary": "ctr-print-spine visible=true"
+    },
+    "UF-HRM-02": {
+      "verdict": "PASS",
+      "summary": "save2xx=true F5list=true id=43f42772-d3a6-46f7-8b05-5d674d70d316 createBoundTpl=true bound=XEVN_CUSTOM_XEVN9-IF9062",
+      "createReq": {
+        "method": "POST",
+        "url": "/api/hrm/contracts-insurance/contracts",
+        "body": {
+          "template_code": "XEVN_CUSTOM_XEVN9-IF9062",
+          "template_id": "d00c52a3-b99c-41bf-a387-ab912e4979b4",
+          "pack_code": "GENERAL",
+          "company_id": "main",
+          "keys": [
+            "company_id",
+            "employee_id",
+            "contract_code",
+            "contract_type",
+            "start_date",
+            "end_date",
+            "position_key",
+            "position",
+            "department",
+            "pack_code",
+            "template_id",
+            "template_code"
+          ]
+        },
+        "at": "2026-08-07T04:06:07.549Z"
+      }
+    },
+    "Q-CTR": {
+      "verdict": "PASS",
+      "summary": "not reopened — wave AC-11 only; prior Q-CTR CLOSED retained"
+    },
+    "honesty": {
+      "verdict": "PASS",
+      "summary": "contracts_printable_ready=false retained; no printable UAT claim"
+    }
+  },
+  "process": {
+    "pageErrors": 0,
+    "consoleErrors": 0,
+    "dndStorm": 0,
+    "uncaught": 0,
+    "mojibake": false,
+    "samplePageErrors": [],
+    "sampleConsole": [],
+    "sampleDnd": []
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T04:05:24.736Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 23,
+      "total": 23
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_pattern",
+      "at": "2026-08-07T04:05:24.770Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_org_suffix",
+      "at": "2026-08-07T04:05:24.771Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings",
+      "at": "2026-08-07T04:05:25.940Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting saved"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings",
+      "at": "2026-08-07T04:05:25.941Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting saved"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_org_suffix",
+      "at": "2026-08-07T04:05:25.955Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_pattern",
+      "at": "2026-08-07T04:05:25.956Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T04:05:33.737Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 23,
+      "total": 23
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_org_suffix",
+      "at": "2026-08-07T04:05:33.759Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_pattern",
+      "at": "2026-08-07T04:05:33.760Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-templates",
+      "at": "2026-08-07T04:05:39.509Z",
+      "code": "HRM-CTR-TPL-201",
+      "message": "Contract template created",
+      "dataId": "d00c52a3-b99c-41bf-a387-ab912e4979b4",
+      "dataCode": "XEVN_CUSTOM_XEVN9-IF9062",
+      "template_code": "XEVN_CUSTOM_XEVN9-IF9062"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T04:05:40.603Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 24,
+      "total": 24
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_org_suffix",
+      "at": "2026-08-07T04:05:40.625Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_pattern",
+      "at": "2026-08-07T04:05:40.631Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-templates/d00c52a3-b99c-41bf-a387-ab912e4979b4/activate?company_id=main",
+      "at": "2026-08-07T04:05:42.459Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract template activated",
+      "dataId": "d00c52a3-b99c-41bf-a387-ab912e4979b4",
+      "dataCode": "XEVN_CUSTOM_XEVN9-IF9062",
+      "template_code": "XEVN_CUSTOM_XEVN9-IF9062"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T04:05:42.646Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 24,
+      "total": 24
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_org_suffix",
+      "at": "2026-08-07T04:05:42.663Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_pattern",
+      "at": "2026-08-07T04:05:42.663Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T04:05:50.361Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 24,
+      "total": 24
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_org_suffix",
+      "at": "2026-08-07T04:05:50.386Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/company-settings?company_id=main&key=contract_number_pattern",
+      "at": "2026-08-07T04:05:50.387Z",
+      "code": "HRM-CTR-CFG-200",
+      "message": "Contract company setting"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T04:05:53.855Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 27,
+      "total": 27
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T04:05:56.545Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 27,
+      "total": 27
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-07T04:06:01.223Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 14,
+      "total": 14
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T04:06:01.492Z",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "at": "2026-08-07T04:06:08.924Z",
+      "code": "HRM-CON-201",
+      "message": "Contract created",
+      "dataId": "43f42772-d3a6-46f7-8b05-5d674d70d316",
+      "template_code": "XEVN_CUSTOM_XEVN9-IF9062"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T04:06:09.311Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 28,
+      "total": 28
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T04:06:12.688Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 28,
+      "total": 28
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T04:06:17.001Z",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/43f42772-d3a6-46f7-8b05-5d674d70d316/print-versions?company_id=main",
+      "at": "2026-08-07T04:06:17.044Z",
+      "code": "HRM-CTR-VER-200",
+      "message": "Print versions listed",
+      "listCount": 0,
+      "total": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-07T04:06:17.386Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 14,
+      "total": 14
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts/43f42772-d3a6-46f7-8b05-5d674d70d316/preview?company_id=main",
+      "at": "2026-08-07T04:06:21.028Z",
+      "code": "HRM-CTR-PREV-200",
+      "message": "Contract merge preview",
+      "template_code": "XEVN_CUSTOM_XEVN9-IF9062"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T04:06:55.934Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 28,
+      "total": 28
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T04:06:59.720Z",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/43f42772-d3a6-46f7-8b05-5d674d70d316/print-versions?company_id=main",
+      "at": "2026-08-07T04:06:59.769Z",
+      "code": "HRM-CTR-VER-200",
+      "message": "Print versions listed",
+      "listCount": 0,
+      "total": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-07T04:06:59.906Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 14,
+      "total": 14
+    }
+  ],
+  "requestBodies": [
+    {
+      "method": "PUT",
+      "url": "/api/hrm/contracts-insurance/company-settings",
+      "body": {
+        "company_id": "main",
+        "keys": [
+          "company_id",
+          "setting_key",
+          "value"
+        ]
+      },
+      "at": "2026-08-07T04:05:25.911Z"
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/contracts-insurance/company-settings",
+      "body": {
+        "company_id": "main",
+        "keys": [
+          "company_id",
+          "setting_key",
+          "value"
+        ]
+      },
+      "at": "2026-08-07T04:05:25.911Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contract-templates",
+      "body": {
+        "code": "XEVN_CUSTOM_XEVN9-IF9062",
+        "pack_code": "GENERAL",
+        "company_id": "main",
+        "keys": [
+          "company_id",
+          "code",
+          "name_vi",
+          "pack_code",
+          "layout_json",
+          "keyword_map",
+          "status",
+          "default_term_type",
+          "default_duration_days",
+          "default_duration_months",
+          "title_print_vi",
+          "matrix_family"
+        ]
+      },
+      "at": "2026-08-07T04:05:39.388Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contract-templates/d00c52a3-b99c-41bf-a387-ab912e4979b4/activate?company_id=main",
+      "body": {
+        "keys": []
+      },
+      "at": "2026-08-07T04:05:42.414Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "body": {
+        "template_code": "XEVN_CUSTOM_XEVN9-IF9062",
+        "template_id": "d00c52a3-b99c-41bf-a387-ab912e4979b4",
+        "pack_code": "GENERAL",
+        "company_id": "main",
+        "keys": [
+          "company_id",
+          "employee_id",
+          "contract_code",
+          "contract_type",
+          "start_date",
+          "end_date",
+          "position_key",
+          "position",
+          "department",
+          "pack_code",
+          "template_id",
+          "template_code"
+        ]
+      },
+      "at": "2026-08-07T04:06:07.549Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/43f42772-d3a6-46f7-8b05-5d674d70d316/preview?company_id=main",
+      "body": {
+        "template_code": "XEVN_CUSTOM_XEVN9-IF9062",
+        "template_id": "d00c52a3-b99c-41bf-a387-ab912e4979b4",
+        "pack_code": "GENERAL",
+        "keys": [
+          "pack_code",
+          "template_id",
+          "template_code",
+          "field_overrides"
+        ]
+      },
+      "at": "2026-08-07T04:06:20.879Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-xevn-tpl-QA-02/00-settings-legal.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-xevn-tpl-QA-02/01-cfg-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-xevn-tpl-QA-02/02-tpl-form-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-xevn-tpl-QA-02/03-tpl-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-xevn-tpl-QA-02/04-tpl-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-xevn-tpl-QA-02/05-contracts-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-xevn-tpl-QA-02/06-create-picker.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-xevn-tpl-QA-02/07-after-create-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-xevn-tpl-QA-02/08-preview.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T04:05:39.391Z",
+      "msg": "CLICK_TPL_SAVE",
+      "note": "XEVN_CUSTOM_XEVN9-IF9062"
+    },
+    {
+      "at": "2026-08-07T04:06:07.552Z",
+      "msg": "CLICK_LUU",
+      "note": "HD-F9V16"
+    },
+    {
+      "at": "2026-08-07T04:06:20.882Z",
+      "msg": "CLICK_PREVIEW",
+      "note": "XEVN_CUSTOM_XEVN9-IF9062"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "R-CTR-XEVN-TPL-FE-EDIT-RESTORE",
+      "severity": "P1",
+      "owner": "dev-fe",
+      "note": "Contracts.tsx handleOpenEdit clears printTemplateId/Code — AC F5 keep on edit UI"
+    }
+  ],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T04:07:01.792Z"
+}

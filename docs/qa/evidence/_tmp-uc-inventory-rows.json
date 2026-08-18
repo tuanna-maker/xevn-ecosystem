@@ -1,0 +1,545 @@
+{
+  "n": 54,
+  "rows": [
+    {
+      "id": "UC-BP-REC-00",
+      "cols": [
+        "Thư viện mô tả công việc (JD master) — **MVP**",
+        "WBS-REC-00",
+        "**EXPAND**",
+        "REQ_REC_003",
+        "4"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-01",
+      "cols": [
+        "Quản trị định biên vị trí × 12 tháng (phòng ban trình; HCNS tổng hợp)",
+        "WBS-REC-01",
+        "**Ưu tiên**",
+        "REQ_REC_003; REQ_REC_005",
+        "4"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-01b",
+      "cols": [
+        "Auto sinh YCTD theo tháng «Cần tuyển»",
+        "WBS-REC-01b",
+        "**Ưu tiên**",
+        "REQ_REC_003",
+        "4"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-02",
+      "cols": [
+        "Yêu cầu tuyển **trong** định biên (luồng rút gọn)",
+        "WBS-REC-02",
+        "**Ưu tiên**",
+        "REQ_REC_001",
+        "4"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-02b",
+      "cols": [
+        "Yêu cầu tuyển **ngoài** định biên (có BOD)",
+        "WBS-REC-02b",
+        "**Ưu tiên**",
+        "REQ_REC_001",
+        "4"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-03",
+      "cols": [
+        "Gom yêu cầu vào chiến dịch / hub đa kênh — **OUT**",
+        "WBS-REC-02c",
+        "**OUT**",
+        "REQ_REC_002; REQ_REC_005",
+        "4"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-04",
+      "cols": [
+        "Quét kho CV nội bộ trước kênh ngoài",
+        "WBS-REC-03",
+        "**EXPAND**",
+        "REQ_REC_002",
+        "5"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-05",
+      "cols": [
+        "Lịch sử trạng thái ứng viên gắn YCTD (N–N; PV trong pipeline)",
+        "WBS-REC-03",
+        "**EXPAND**",
+        "REQ_REC_002",
+        "5"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-06",
+      "cols": [
+        "Gửi thư tuyển + đánh giá PV trong pipeline ứng viên",
+        "WBS-REC-04",
+        "**EXPAND**",
+        "REQ_REC_004",
+        "5"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-06a",
+      "cols": [
+        "Xếp / hủy / đổi lịch PV — tối đa một lịch đang hiệu lực / ứng viên × pháp nhân; badge danh sách",
+        "WBS-REC-04",
+        "**ADD**",
+        "REQ_REC_004",
+        "5"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-07",
+      "cols": [
+        "Chấp nhận offer → tạo hồ sơ nhân sự (không nhập lại)",
+        "WBS-REC-05",
+        "**EXPAND**",
+        "REQ_REC_004",
+        "13"
+      ]
+    },
+    {
+      "id": "UC-BP-REC-08",
+      "cols": [
+        "Báo cáo & bảng điều khiển tuyển dụng («bao giờ đủ người»)",
+        "WBS-REC-06",
+        "**Ưu tiên**",
+        "REQ_REC_005",
+        "4"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-01",
+      "cols": [
+        "Hồ sơ vòng công khai (hành chính / phúc lợi)",
+        "WBS-CORE-01",
+        "**Ưu tiên**",
+        "REQ_HR_001; HR-001",
+        "6"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-02",
+      "cols": [
+        "Hồ sơ vòng C&B (lương, BH, thuế, ngân hàng)",
+        "WBS-CORE-01",
+        "**Ưu tiên**",
+        "HR-001; PAY-001",
+        "6"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-02b",
+      "cols": [
+        "Cấu hình nhóm field hồ sơ (metadata)",
+        "WBS-CORE-01",
+        "**EXPAND**",
+        "REQ_HR_001",
+        "6"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-03",
+      "cols": [
+        "Checklist giấy tờ động (bắt buộc / tùy chọn)",
+        "WBS-CORE-03",
+        "**EXPAND**",
+        "HR-003",
+        "7"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-04",
+      "cols": [
+        "OCR giấy tờ — prefill — **OUT**",
+        "WBS-CORE-03",
+        "**OUT**",
+        "HR-003",
+        "7"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-05",
+      "cols": [
+        "Cấp phát tài sản & biên bản bàn giao",
+        "WBS-CORE-04",
+        "**EXPAND**",
+        "HR-006",
+        "7"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-06",
+      "cols": [
+        "Thu hồi tài sản khi kích hoạt nghỉ việc",
+        "WBS-CORE-04",
+        "**EXPAND**",
+        "HR-006",
+        "13"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-07",
+      "cols": [
+        "Kích hoạt hồ sơ Hoạt động khi checklist đủ",
+        "WBS-CORE-05",
+        "**EXPAND**",
+        "HR-003",
+        "13"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-08",
+      "cols": [
+        "Khen thưởng & kỷ luật — thi hành → bảng lương",
+        "WBS-CORE-06",
+        "**Ưu tiên**",
+        "HR-005",
+        "7 · 11"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-09",
+      "cols": [
+        "Hợp đồng LĐ — mẫu Word keyword fill",
+        "WBS-CORE-02",
+        "**EXPAND**",
+        "HR-002",
+        "—"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-09a",
+      "cols": [
+        "Thư viện điều khoản HĐ (Cài đặt) — **ADD**",
+        "WBS-CORE-02",
+        "**ADD**",
+        "HR-002",
+        "—"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-09b",
+      "cols": [
+        "Chọn gói nghề và xem trước HĐLĐ — **ADD**",
+        "WBS-CORE-02",
+        "**ADD**",
+        "HR-002",
+        "—"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-09c",
+      "cols": [
+        "Lưu phiên bản và in / PDF hợp đồng — **ADD**",
+        "WBS-CORE-02",
+        "**ADD**",
+        "HR-002",
+        "—"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-09d",
+      "cols": [
+        "Chọn mẫu HĐ theo catalog mở (ví dụ khởi tạo loại × khối · không trần 8) — **ADD**",
+        "WBS-CORE-02",
+        "**ADD**",
+        "HR-002",
+        "—"
+      ]
+    },
+    {
+      "id": "UC-BP-PLT-01",
+      "cols": [
+        "Nền tảng cấu hình động (danh mục · schema · trường trộn) — **ADD**",
+        "WBS-CORE-02",
+        "**ADD**",
+        "HR-002",
+        "—"
+      ]
+    },
+    {
+      "id": "UC-BP-CORE-10",
+      "cols": [
+        "BHXH lifecycle (Hoạt động / Ngừng / Tạm hoãn)",
+        "WBS-CORE-07",
+        "**EXPAND**",
+        "HR-004",
+        "—"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-01",
+      "cols": [
+        "Thiết lập quy tắc ca theo bộ phận / nhóm",
+        "WBS-ATT-01",
+        "**EXPAND**",
+        "TIME-001",
+        "8"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-02",
+      "cols": [
+        "Phạt muộn / về sớm (phút / block / bậc + nguồn hợp lệ)",
+        "WBS-ATT-01",
+        "**Ưu tiên**",
+        "TIME-002",
+        "8"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-03",
+      "cols": [
+        "Thu nhận điểm danh đa nguồn → giờ công thô",
+        "WBS-ATT-02",
+        "**GĐ2**",
+        "TIME-002; REQ_CC_002",
+        "8"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-03b",
+      "cols": [
+        "Lịch lễ / Tết (dương + âm cấu hình năm)",
+        "WBS-ATT-03",
+        "**EXPAND**",
+        "REQ_CC_001",
+        "8 · 9"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-03d",
+      "cols": [
+        "Danh mục điểm GPS chấm công (vùng hợp lệ) — **ADD MVP**",
+        "WBS-ATT-02b",
+        "**EXPAND**",
+        "REQ_CC_002",
+        "8"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-03e",
+      "cols": [
+        "Thẻ QR nhân viên — **OUT**",
+        "—",
+        "**OUT**",
+        "—",
+        "—"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-04",
+      "cols": [
+        "Cấp phát phép năm + danh mục loại phép (năm · thâm niên · …)",
+        "WBS-ATT-04",
+        "**EXPAND**",
+        "REQ_NP_001",
+        "9"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-04b",
+      "cols": [
+        "Ứng phép & thời điểm cấp / không lương bù trừ",
+        "WBS-ATT-04",
+        "**EXPAND**",
+        "REQ_NP_002",
+        "9"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-05",
+      "cols": [
+        "Phép chuyển kỳ (bảo lưu theo FY tenant)",
+        "WBS-ATT-04",
+        "**EXPAND**",
+        "REQ_NP_005",
+        "9"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-05b",
+      "cols": [
+        "Panel quỹ phép khi nộp đơn — **ADD MVP**",
+        "WBS-ATT-05b",
+        "**EXPAND**",
+        "REQ_NP_003",
+        "9"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-06",
+      "cols": [
+        "Phép bù OT khi công ty bật chế độ",
+        "WBS-ATT-04",
+        "**EXPAND**",
+        "REQ_NP_004",
+        "9"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-07",
+      "cols": [
+        "Nghỉ ốm — chế độ BH + hỗ trợ CTY (nếu có)",
+        "WBS-ATT-04",
+        "**EXPAND**",
+        "HR-004",
+        "9"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-08",
+      "cols": [
+        "Tính ngày trừ phép xuyên cuối tuần và lễ (0,5 ngày / 1 giờ)",
+        "WBS-ATT-05",
+        "**Ưu tiên**",
+        "REQ_NP_006",
+        "9"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-09",
+      "cols": [
+        "Nộp & duyệt phép — **hold quỹ** khi submit",
+        "WBS-ATT-05",
+        "**Ưu tiên**",
+        "REQ_NP_003; REQ_NP_006",
+        "9"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-10",
+      "cols": [
+        "Tổng hợp bảng công (phễu giờ công tính lương)",
+        "WBS-ATT-06",
+        "**Ưu tiên**",
+        "REQ_L_001",
+        "10"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-11",
+      "cols": [
+        "Ký chốt bảng công trước khi tính lương (workflow XBOS)",
+        "WBS-ATT-06",
+        "**Ưu tiên**",
+        "REQ_L_001",
+        "10"
+      ]
+    },
+    {
+      "id": "UC-BP-ATT-12",
+      "cols": [
+        "Mở quỹ phép & ca mặc định khi hồ sơ Hoạt động",
+        "WBS-CORE-05",
+        "**EXPAND**",
+        "REQ_NP_001; TIME-001",
+        "13"
+      ]
+    },
+    {
+      "id": "UC-BP-PAY-01",
+      "cols": [
+        "Ranh giới: lương chỉ đọc bảng công đã chốt",
+        "WBS-ATT-06",
+        "**Ưu tiên**",
+        "REQ_L_001",
+        "10"
+      ]
+    },
+    {
+      "id": "UC-BP-PAY-02",
+      "cols": [
+        "Lắp ráp và chạy động cơ công thức lương",
+        "WBS-PAY-01",
+        "**Ưu tiên**",
+        "REQ_L_002; PAY-001",
+        "11"
+      ]
+    },
+    {
+      "id": "UC-BP-PAY-03",
+      "cols": [
+        "Giảm trừ gia cảnh từ hồ sơ (đủ quyền)",
+        "WBS-PAY-02",
+        "**EXPAND**",
+        "REQ_L_003",
+        "11"
+      ]
+    },
+    {
+      "id": "UC-BP-PAY-04",
+      "cols": [
+        "Gộp lương khi đổi điều kiện giữa kỳ (không GTCG kép)",
+        "WBS-PAY-03",
+        "**Ưu tiên**",
+        "REQ_L_004",
+        "12"
+      ]
+    },
+    {
+      "id": "UC-BP-PAY-05",
+      "cols": [
+        "Trần bảo hiểm trên tổng hợp kỳ (kể cả split)",
+        "WBS-PAY-02",
+        "**EXPAND**",
+        "REQ_L_003; REQ_L_004",
+        "12"
+      ]
+    },
+    {
+      "id": "UC-BP-PAY-06",
+      "cols": [
+        "Tính lương kỳ khi đã Hoạt động + bảng công chốt",
+        "WBS-PAY-04",
+        "**EXPAND**",
+        "REQ_L_001",
+        "11"
+      ]
+    },
+    {
+      "id": "UC-BP-PAY-07",
+      "cols": [
+        "Lệnh nghỉ việc — cắt BH, tất toán phép, thu hồi, KT/KL kỳ cuối",
+        "WBS-PAY-04",
+        "**EXPAND**",
+        "REQ_NP_005; HR-006; HR-004; HR-005",
+        "13"
+      ]
+    },
+    {
+      "id": "UC-BP-PAY-08",
+      "cols": [
+        "Phiếu lương — preview, bảo mật, trạng thái TT",
+        "WBS-PAY-05",
+        "**EXPAND**",
+        "REQ_L_005",
+        "11"
+      ]
+    },
+    {
+      "id": "UC-BP-PAY-09",
+      "cols": [
+        "Phân nhóm bảng lương (VP / KD / tài xế / vận hành)",
+        "WBS-PAY-05",
+        "**EXPAND**",
+        "REQ_L_006",
+        "11"
+      ]
+    }
+  ]
+}

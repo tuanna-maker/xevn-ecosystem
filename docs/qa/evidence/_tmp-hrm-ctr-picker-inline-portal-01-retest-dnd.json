@@ -1,0 +1,16 @@
+{
+  "work_item_id": "HRM-CTR-PICKER-INLINE-PORTAL-01-RETEST-DND",
+  "timestamp": "2026-08-17T14:38:58.897Z",
+  "persona": "ceo@xe.vn",
+  "company_id": "main",
+  "url_base": "http://localhost:5173/command-center/hrm/settings",
+  "tests": [],
+  "screenshots": [
+    {
+      "name": "01-login-page",
+      "path": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\hrm-ctr-picker-inline-portal-01-retest-dnd\\01-login-page.png"
+    }
+  ],
+  "network_logs": [],
+  "error": "page.waitForTimeout: Target page, context or browser has been closed"
+}

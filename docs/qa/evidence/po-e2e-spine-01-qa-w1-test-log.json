@@ -1,0 +1,229 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-PO-E2E-SPINE-01-QA-W1-20260803",
+  "work_item_id": "PO-E2E-SPINE-01-QA-W1",
+  "tester": {
+    "role": "qa",
+    "agent": "po-e2e-spine-01-qa-w1-browser"
+  },
+  "started_at": "2026-08-03T14:48:34.415Z",
+  "ended_at": "2026-08-03T14:50:20.763Z",
+  "environment": {
+    "portal_url": "http://127.0.0.1:5173",
+    "hrm_vite": "http://127.0.0.1:8080/hr/",
+    "hrm_api": "http://127.0.0.1:28001/api/hrm",
+    "xbos_api": "http://127.0.0.1:28002/api/xbos",
+    "persona": "ceo@xe.vn",
+    "member_persona": "du-lich.ceo@xe.vn",
+    "company_id": "main",
+    "stamp": "SP1SDCGSBZ",
+    "notes": "U65 zero-seed · E2E-SPINE-01 hire-to-pay · BA HP-01..06"
+  },
+  "spec_ref": "PO_E2E_BUSINESS_SPINE_PROGRAM.md §E2E-SPINE-01 · HP-01..06 · J-REC-WF-01..04 · J-HRM-01/02/03/05/07 · UF-HRM-12 · UF-XBOS-08",
+  "hdsd_sot": "HDSD CH07 · CC Workflow · Inbox · Tuyển dụng · Nhân sự · Lương",
+  "hdsd_align": true,
+  "u65_zero_seed": true,
+  "evidence_narrative": "docs/qa/evidence/po-e2e-spine-01-qa-w1.md",
+  "raw_harness": "docs/qa/evidence/_tmp-po-e2e-spine-01-qa-w1-browser.json",
+  "verdict": "fail",
+  "ack_status": "FAIL_TO_PM",
+  "case_matrix": {
+    "A_fail_deep": "warn",
+    "B_success_hdsd": "fail",
+    "C_logic_br": "warn"
+  },
+  "summary": {
+    "clicks": 24,
+    "idle_guard": "PASS",
+    "seed_used": false,
+    "steps_pass": 5,
+    "steps_warn": 4,
+    "steps_fail": 5
+  },
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-03T14:48:34.415Z",
+      "action": "L0_PROBES",
+      "expected": "hrm-api + xbos-api + portal 200",
+      "actual": "hrm 200 · xbos 200 · portal 200 · hrm_vite 200",
+      "network": { "method": "GET", "url": "/api/hrm", "status": 200 },
+      "result": "pass"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-03T14:48:35.666Z",
+      "action": "OPEN_PORTAL",
+      "expected": "portal shell loads",
+      "actual": "navigated http://127.0.0.1:5173",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/00-shell.png"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-03T14:48:38.758Z",
+      "action": "HP01_WF_OPEN_SAVE",
+      "expected": "hrm_recruitment_* definition visible; save/active 2xx optional",
+      "actual": "opened=true saved=true stillHasRec after F5",
+      "network": {
+        "method": "PUT",
+        "url": "/api/xbos/workflow-engine/definitions/befaec7a-2609-44a8-a327-cb84c7dbb149",
+        "status": 200
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/01-wf-detail.png"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-03T14:48:47.360Z",
+      "action": "HP01_F5",
+      "expected": "definition persists",
+      "actual": "stillHasRec=true",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/01-wf-f5.png"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-03T14:48:52.431Z",
+      "action": "HP02_NAV_RECRUITMENT",
+      "expected": "Tuyển dụng tabs render",
+      "actual": "whitescreen · Failed to fetch dynamically imported module Recruitment.tsx",
+      "network": { "method": "GET", "url": "/hr/src/pages/Recruitment.tsx", "status": 500 },
+      "result": "fail",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/02-req-list.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-03T14:49:14.109Z",
+      "action": "HP02_CREATE_REQUISITION",
+      "expected": "POST requisitions 2xx + F5 stamp",
+      "actual": "create=false id=null POST=none f5=false",
+      "result": "fail",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/02-f5-create.png"
+    },
+    {
+      "seq": 7,
+      "at": "2026-08-03T14:49:22.539Z",
+      "action": "HP03_INBOX_OPEN",
+      "expected": "task from this FE chain OR empty → BLOCKED U65",
+      "actual": "pre-existing tuyển dụng / kế hoạch tasks present (not this stamp)",
+      "network": {
+        "method": "GET",
+        "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+        "status": 200
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/03-inbox.png"
+    },
+    {
+      "seq": 8,
+      "at": "2026-08-03T14:49:27.496Z",
+      "action": "HP03_APPROVE_COMPLETE",
+      "expected": "POST complete/approve 2xx for chain task",
+      "actual": "POST complete 201 on prior task 2179537e-… — NOT spine-chain from SP2",
+      "network": {
+        "method": "POST",
+        "url": "/api/xbos/workflow-engine/tasks/2179537e-7a9a-4866-88e2-d802c36a4359/complete",
+        "status": 201
+      },
+      "result": "warn",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/03-inbox-after.png"
+    },
+    {
+      "seq": 9,
+      "at": "2026-08-03T14:49:36.154Z",
+      "action": "HP04_CANDIDATES_HIRE",
+      "expected": "create UV / hire link 2xx",
+      "actual": "open=false · same Recruitment mount fail",
+      "result": "fail",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/04-candidates.png"
+    },
+    {
+      "seq": 10,
+      "at": "2026-08-03T14:49:52.998Z",
+      "action": "HP05_EMPLOYEES_LIST",
+      "expected": "employee list loads",
+      "actual": "43 rows · no Sync ERROR",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/05-employees.png"
+    },
+    {
+      "seq": 11,
+      "at": "2026-08-03T14:49:56.779Z",
+      "action": "HP05_EMPLOYEE_DETAIL_JHRM02",
+      "expected": "GET by id 200 · not 404 scope",
+      "actual": "detail 200 · url /hr/employees/84df5edb-77b1-4069-b5e5-2d2abc7ff2f9",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/employees/84df5edb-77b1-4069-b5e5-2d2abc7ff2f9?company_id=main",
+        "status": 200
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/05-employee-detail.png"
+    },
+    {
+      "seq": 12,
+      "at": "2026-08-03T14:50:00.147Z",
+      "action": "HP05_CONTRACTS",
+      "expected": "contracts list or empty honest",
+      "actual": "hasContracts=false · stamp absent (hire incomplete)",
+      "result": "warn",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/05-contracts.png"
+    },
+    {
+      "seq": 13,
+      "at": "2026-08-03T14:50:10.322Z",
+      "action": "HP06_PAYROLL_SURFACE",
+      "expected": "payroll shows NV or honest empty reason",
+      "actual": "CC /command-center/hrm/payroll blank content pane · stamp=false",
+      "result": "warn",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/06-payroll.png"
+    },
+    {
+      "seq": 14,
+      "at": "2026-08-03T14:50:17.062Z",
+      "action": "MEM_RECRUITMENT_SCOPE",
+      "expected": "member company recruitment surface",
+      "actual": "ok=false · same JobTemplatesTab mount fail",
+      "result": "warn",
+      "attachment": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w1-20260803/07-member-rec.png"
+    },
+    {
+      "seq": 15,
+      "at": "2026-08-03T14:50:20.000Z",
+      "action": "VITE_ROOTCAUSE_PROBE",
+      "expected": "Recruitment.tsx resolves 200",
+      "actual": "500 Failed to resolve import @/components/recruitment/JobTemplatesTab",
+      "network": { "method": "GET", "url": "/hr/src/pages/Recruitment.tsx", "status": 500 },
+      "result": "fail"
+    }
+  ],
+  "incidents": [
+    {
+      "severity": "P0",
+      "id": "R-PO-SPINE01-REC-MOUNT",
+      "expected": "Recruitment.tsx + JobTemplatesTab resolve",
+      "actual": "Vite: Failed to resolve import \"@/components/recruitment/JobTemplatesTab\" from \"src/pages/Recruitment.tsx\"",
+      "residual_work_item": "PO-E2E-SPINE-01-FE-REC-MOUNT-01"
+    },
+    {
+      "severity": "P1",
+      "id": "R-PO-SPINE01-PAYROLL-BLANK",
+      "expected": "payroll content or honest empty",
+      "actual": "blank main pane on command-center/hrm/payroll",
+      "residual_work_item": "defer-after-mount"
+    },
+    {
+      "severity": "P2",
+      "id": "R-PO-XBOS-DIST-MAIN",
+      "expected": "dev:xbos-api starts clean",
+      "actual": "Cannot find module apps/api/xbos-api/dist/main on watch restart",
+      "residual_work_item": "devops-optional"
+    }
+  ]
+}

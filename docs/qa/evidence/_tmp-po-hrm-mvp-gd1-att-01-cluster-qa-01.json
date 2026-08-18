@@ -1,0 +1,2517 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-ATT-01-CLUSTER-QA-01",
+  "program": "PO-HRM-MVP-GD1-CONTINUOUS",
+  "uc_ids": [
+    "UC-BP-ATT-01",
+    "FR-UC-BP-ATT-01"
+  ],
+  "stamp": "ATT01QA1-MSLYZKGN",
+  "fe01": "docs/qa/evidence/po-hrm-mvp-gd1-att-01-cluster-fe-01.md",
+  "startedAt": "2026-08-09T15:41:11.701Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "attendance_uat_ready": false,
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "contracts_printable_ready": false,
+    "hrm_personnel_uat_ready": false,
+    "catalog_ne_att01_done": true,
+    "ne_live_eq_att11_done": true,
+    "ne_agg_eq_att10_done": true,
+    "ne_soft_att08_eq_att09": true,
+    "ne_att_module_uat": true,
+    "cfg_ne_att02_done": true,
+    "pay_out": true,
+    "nest_core_deny": true,
+    "deny_att_leave_hold": true,
+    "soft_ne_core06_done": true,
+    "plt_core_retain": true,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "printable_false": true,
+    "r_att_01_assign_open": true
+  },
+  "must_keep": [
+    "ATT11QC1-MSLXTH9P",
+    "ATT10QC1-MSLWGUYH",
+    "ATT09QC1-MSLUTL9D",
+    "ATT08QC1-MSLSL36C",
+    "ATT02QC1-MSLQZUK7",
+    "PLT01QC1-MSLPUQIU",
+    "CORE10QC1-MSLP0EJB",
+    "CORE09QC1-MSLNBA89",
+    "CORE07QC1-KZJTSHNT"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    },
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "nest_core_att": {
+      "status": 404,
+      "url": "/api/hrm/core/attendance/work-shifts"
+    },
+    "shift_assignments": {
+      "status": 404,
+      "url": "/api/hrm/attendance/shift-assignments"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T15:41:12.613Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:12.646Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T15:41:12.681Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:12.750Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:12.999Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:12.999Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": null,
+      "at": "2026-08-09T15:41:12.999Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:13.046Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:13.050Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T15:41:13.103Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:13.135Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:13.217Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T15:41:16.156Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:16.156Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:16.173Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T15:41:16.324Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/work-shifts",
+      "status": null,
+      "at": "2026-08-09T15:41:18.038Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/work-shifts",
+      "status": 201,
+      "at": "2026-08-09T15:41:18.063Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:18.064Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:18.084Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T15:41:20.747Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:20.791Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T15:41:20.796Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:20.883Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:21.064Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:21.064Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": null,
+      "at": "2026-08-09T15:41:21.064Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:21.098Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:21.103Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T15:41:21.145Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:21.163Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:21.242Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T15:41:23.435Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:23.453Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T15:41:23.486Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:23.537Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:23.700Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:23.700Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": null,
+      "at": "2026-08-09T15:41:23.700Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:23.738Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:23.738Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T15:41:23.774Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:23.794Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:23.905Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T15:41:26.961Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:26.961Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:26.975Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T15:41:27.098Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T15:41:28.768Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:28.786Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T15:41:28.800Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:28.854Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:29.021Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:29.022Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": null,
+      "at": "2026-08-09T15:41:29.022Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:29.054Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:29.060Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T15:41:29.100Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:29.118Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:29.193Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T15:41:32.109Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:32.109Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:32.109Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:32.125Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:32.131Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T15:41:32.247Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/shift-change-requests",
+      "status": null,
+      "at": "2026-08-09T15:41:36.534Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/shift-change-requests",
+      "status": 400,
+      "at": "2026-08-09T15:41:36.562Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T15:41:36.750Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:36.768Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T15:41:36.791Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:36.855Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:37.021Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:37.021Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": null,
+      "at": "2026-08-09T15:41:37.021Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:37.053Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:37.062Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T15:41:37.092Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:37.111Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:37.190Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T15:41:39.013Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:39.030Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T15:41:39.063Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:39.147Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:39.290Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:39.290Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": null,
+      "at": "2026-08-09T15:41:39.290Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:39.323Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:39.328Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T15:41:39.366Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:39.384Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:39.463Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T15:41:42.328Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:42.328Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:42.328Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:42.341Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:42.348Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T15:41:42.462Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T15:41:44.460Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:44.478Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T15:41:44.540Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:44.568Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:44.728Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:44.728Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": null,
+      "at": "2026-08-09T15:41:44.728Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:44.767Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:44.774Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T15:41:44.805Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:44.824Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:44.897Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T15:41:47.798Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:47.798Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:47.798Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:47.811Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:47.816Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T15:41:47.930Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T15:42:16.492Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:16.512Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T15:42:16.534Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:16.574Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:16.781Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:16.781Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": null,
+      "at": "2026-08-09T15:42:16.781Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:16.815Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:16.822Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T15:42:16.863Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:16.882Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:16.959Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T15:42:19.990Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:19.990Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:20.005Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T15:42:20.128Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T15:42:21.762Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:21.778Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T15:42:21.807Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:21.849Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:22.045Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:22.045Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": null,
+      "at": "2026-08-09T15:42:22.045Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:22.080Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:22.084Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T15:42:22.121Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:22.139Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:22.220Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T15:42:25.105Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:25.105Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:25.105Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:25.117Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:25.124Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T15:42:25.236Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T15:42:27.175Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:27.190Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T15:42:27.234Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:27.265Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:27.439Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:27.439Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": null,
+      "at": "2026-08-09T15:42:27.439Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:27.474Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:27.479Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T15:42:27.516Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:27.534Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:27.619Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T15:42:30.387Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:30.388Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:30.398Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T15:42:30.518Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    }
+  ],
+  "nest_core_hits": [],
+  "nest_core_att_non404": [],
+  "work_shifts_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:16.156Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:16.173Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/work-shifts",
+      "status": null,
+      "at": "2026-08-09T15:41:18.038Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/work-shifts",
+      "status": 201,
+      "at": "2026-08-09T15:41:18.063Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:18.064Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:18.084Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:26.961Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:26.975Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:19.990Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:20.005Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:30.388Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:30.398Z",
+      "nest_core": false,
+      "ws": true,
+      "eff": false,
+      "cns": false,
+      "assign": false
+    }
+  ],
+  "work_shifts_eff_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:32.109Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:32.125Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:42.328Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:42.341Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:47.798Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:47.811Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:25.105Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:25.117Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": true,
+      "cns": false,
+      "assign": false
+    }
+  ],
+  "shift_change_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:32.109Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:32.131Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/shift-change-requests",
+      "status": null,
+      "at": "2026-08-09T15:41:36.534Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/shift-change-requests",
+      "status": 400,
+      "at": "2026-08-09T15:41:36.562Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:42.328Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:42.348Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:41:47.798Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:41:47.816Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": null,
+      "at": "2026-08-09T15:42:25.105Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T15:42:25.124Z",
+      "nest_core": false,
+      "ws": false,
+      "eff": false,
+      "cns": true,
+      "assign": false
+    }
+  ],
+  "shift_assignments_hits": [],
+  "capture": {
+    "inventProbe": {
+      "at": "2026-08-09T15:41:36.562Z",
+      "inventCode": "GHOST-MSLYZKGN",
+      "status": 400,
+      "code": "HRM-ATT-SHIFT-KEY",
+      "bodyPreview": "{\"success\":false,\"code\":\"HRM-ATT-SHIFT-KEY\",\"message\":\"requested_shift 'GHOST-MSLYZKGN' is not in Nest work_shifts active catalog (invent forbidden when active ≠ empty)\",\"details\":{\"field\":\"requested_shift\",\"key\":\"GHOST-MSLYZKGN\"},\"timestamp\":\"2026-08-09T15:41:36.559Z\"}"
+    },
+    "softRetire": {
+      "id": "d10473bd-a1a9-4443-a76e-67f9391793fd",
+      "code": "QA01LYZKGN",
+      "patchStatus": 200,
+      "codeApi": "HRM-WS-200"
+    },
+    "emptyCta": {
+      "visible": true,
+      "text": "Chưa có ca hiệu lực — mở Chấm công → Ca làm việc → Danh sách ca để tạo ca (không seed).\n\nAC-ATT-01-EMPTY · U65 zero-seed · không dùng bootstrap mã ca giả.\n\nMở Chấm công → Ca làm việc → Danh sách ca để tạo ca Nest."
+    },
+    "honestyTexts": [
+      {
+        "at": "2026-08-09T15:41:17.740Z",
+        "text": "Honesty: contracts_printable_ready=false · catalog alone ≠ ATT-01 DONE · ≠ FR-UC-BP-ATT-01 DONE · R-ATT-01-ASSIGN open · Nest shift-assignments ABSENT · ≠ invent DONE · Lịch phân ca GĐ2-HOLD · ≠ invent full roster GĐ1 DONE · ≠ LIVE=ATT-11 · ≠ AGG=ATT-10 · ≠ soft/ATT-08=ATT-09 · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · ≠ ATT module UAT · attendance_uat_ready=false · PLT/CORE RETAIN (≠ DONE) · PAY OUT invent DONE · HRM-ATT-SHIFT-KEY when active>0 · empty CTA · no bootstrap seed"
+      },
+      {
+        "at": "2026-08-09T15:41:33.989Z",
+        "text": "Honesty: contracts_printable_ready=false · catalog alone ≠ ATT-01 DONE · ≠ FR-UC-BP-ATT-01 DONE · R-ATT-01-ASSIGN open · Nest shift-assignments ABSENT · ≠ invent DONE · Lịch phân ca GĐ2-HOLD · ≠ invent full roster GĐ1 DONE · ≠ LIVE=ATT-11 · ≠ AGG=ATT-10 · ≠ soft/ATT-08=ATT-09 · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · ≠ ATT module UAT · attendance_uat_ready=false · PLT/CORE RETAIN (≠ DONE) · PAY OUT invent DONE · HRM-ATT-SHIFT-KEY when active>0 · empty CTA · no bootstrap seed · HRM-ATT-SHIFT-KEY when active>0"
+      },
+      {
+        "at": "2026-08-09T15:42:21.522Z",
+        "text": "Honesty: contracts_printable_ready=false · catalog alone ≠ ATT-01 DONE · ≠ FR-UC-BP-ATT-01 DONE · R-ATT-01-ASSIGN open · Nest shift-assignments ABSENT · ≠ invent DONE · Lịch phân ca GĐ2-HOLD · ≠ invent full roster GĐ1 DONE · ≠ LIVE=ATT-11 · ≠ AGG=ATT-10 · ≠ soft/ATT-08=ATT-09 · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · ≠ ATT module UAT · attendance_uat_ready=false · PLT/CORE RETAIN (≠ DONE) · PAY OUT invent DONE · HRM-ATT-SHIFT-KEY when active>0 · empty CTA · no bootstrap seed"
+      },
+      {
+        "at": "2026-08-09T15:42:26.925Z",
+        "text": "Honesty: contracts_printable_ready=false · catalog alone ≠ ATT-01 DONE · ≠ FR-UC-BP-ATT-01 DONE · R-ATT-01-ASSIGN open · Nest shift-assignments ABSENT · ≠ invent DONE · Lịch phân ca GĐ2-HOLD · ≠ invent full roster GĐ1 DONE · ≠ LIVE=ATT-11 · ≠ AGG=ATT-10 · ≠ soft/ATT-08=ATT-09 · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · ≠ ATT module UAT · attendance_uat_ready=false · PLT/CORE RETAIN (≠ DONE) · PAY OUT invent DONE · HRM-ATT-SHIFT-KEY when active>0 · empty CTA · no bootstrap seed · HRM-ATT-SHIFT-KEY when active>0"
+      }
+    ],
+    "restoreShifts": [
+      {
+        "id": "d10473bd-a1a9-4443-a76e-67f9391793fd",
+        "code": "QA01LYZKGN",
+        "prev": "active"
+      },
+      {
+        "id": "67886c9f-5ed4-41db-838c-c789ae229ed4",
+        "code": "QA01LYR6HE",
+        "prev": "active",
+        "patchStatus": 200
+      },
+      {
+        "id": "4f0d23fc-8184-4e25-b5cc-6dd8a3d0467a",
+        "code": "qa_fe_shift_b_msk66y",
+        "prev": "active",
+        "patchStatus": 200
+      },
+      {
+        "id": "69f5ae25-e00d-46e1-8c66-f647435439d6",
+        "code": "qa_fe_shift_msk64coh",
+        "prev": "active",
+        "patchStatus": 200
+      }
+    ],
+    "createdShift": {
+      "id": "d10473bd-a1a9-4443-a76e-67f9391793fd",
+      "code": "QA01LYZKGN",
+      "status": "active"
+    }
+  },
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-01-cluster-qa-01/01-shifts-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-01-cluster-qa-01/01-shift-form.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-01-cluster-qa-01/01-after-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-01-cluster-qa-01/04-change-shift.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-01-cluster-qa-01/05-empty-cta.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-01-cluster-qa-01/06-honesty-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-01-cluster-qa-01/06-honesty-cns.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-01-cluster-qa-01/02-schedule-hold.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-09T15:41:11.773Z",
+      "msg": "L0 PASS",
+      "hrm": {
+        "status": 200,
+        "url": "http://127.0.0.1:28001/api/hrm"
+      },
+      "xbos": {
+        "status": 200,
+        "url": "http://127.0.0.1:28002/api/xbos"
+      },
+      "portal": {
+        "status": 200,
+        "url": "http://127.0.0.1:5173"
+      },
+      "nest_core_att": {
+        "status": 404,
+        "url": "/api/hrm/core/attendance/work-shifts"
+      },
+      "shift_assignments": {
+        "status": 404,
+        "url": "/api/hrm/attendance/shift-assignments"
+      }
+    },
+    {
+      "at": "2026-08-09T15:41:11.841Z",
+      "msg": "login ok"
+    },
+    {
+      "at": "2026-08-09T15:42:16.289Z",
+      "msg": "restored shifts",
+      "n": 4
+    }
+  ],
+  "journeys": {
+    "J-HRM-ATT-01-01": {
+      "verdict": "PASS",
+      "at": "2026-08-09T15:41:28.571Z",
+      "summary": "POST work-shifts 201 · F5=true · Nest/core=0 · cat≠DONE=true · code=QA01LYZKGN",
+      "post": {
+        "method": "POST",
+        "url": "/api/hrm/attendance/work-shifts",
+        "status": 201,
+        "at": "2026-08-09T15:41:18.063Z",
+        "nest_core": false,
+        "ws": true,
+        "eff": false,
+        "cns": false,
+        "assign": false
+      },
+      "afterF5": true,
+      "created": {
+        "id": "d10473bd-a1a9-4443-a76e-67f9391793fd",
+        "code": "QA01LYZKGN",
+        "status": "active"
+      },
+      "statusLabel": "Đang dùng",
+      "pathOk": true,
+      "nestCoreNon404": 0
+    },
+    "J-HRM-ATT-01-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T15:41:44.146Z",
+      "summary": "active=4 invent=GHOST-MSLYZKGN KEY=true emptyCta=false emptyCorrect=true Nest/core=0",
+      "activeCount": 4,
+      "emptyCtaVisible": false,
+      "emptyCorrect": true,
+      "inventOk": true,
+      "pathOk": true,
+      "inventInPicker": 0,
+      "probe": {
+        "status": 400,
+        "code": "HRM-ATT-SHIFT-KEY",
+        "bodyPreview": "{\"success\":false,\"code\":\"HRM-ATT-SHIFT-KEY\",\"message\":\"requested_shift 'GHOST-MSLYZKGN' is not in Nest work_shifts active catalog (invent forbidden when active ≠ empty)\",\"details\":{\"field\":\"requested_shift\",\"key\":\"GHOST-MSLYZKGN\"},\"timestamp\":\"2026-08-09T15:41:36.559Z\"}"
+      },
+      "inventPersisted": 0
+    },
+    "J-HRM-ATT-01-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T15:42:16.226Z",
+      "summary": "softOk=true emptyCta=true effCount=0 Nest/core=0",
+      "softOk": true,
+      "emptyCta": true,
+      "effCount": 0,
+      "pathOk": true,
+      "restoreCount": 4
+    },
+    "J-HRM-ATT-01-06": {
+      "verdict": "PASS",
+      "at": "2026-08-09T15:42:26.975Z",
+      "summary": "honesty list/cns · Nest/core=0 · assignAbsent=true · seals=true · ≠ATT-01/UAT/printable",
+      "h1": {
+        "ok": true,
+        "checks": {
+          "printable_false": true,
+          "cat_ne_done": true,
+          "assign_open": true,
+          "gd2_hold": true,
+          "ne_live11": true,
+          "ne_agg10": true,
+          "ne_soft09": true,
+          "cfg_ne02": true,
+          "ne_uat": true,
+          "pay_out": true
+        },
+        "failKeys": [],
+        "text": "Honesty: contracts_printable_ready=false · catalog alone ≠ ATT-01 DONE · ≠ FR-UC-BP-ATT-01 DONE · R-ATT-01-ASSIGN open · Nest shift-assignments ABSENT · ≠ invent DONE · Lịch phân ca GĐ2-HOLD · ≠ invent full roster GĐ1 DONE · ≠ LIVE=ATT-11 · ≠ AGG=ATT-10 · ≠ soft/ATT-08=ATT-09 · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · ≠ ATT module UAT · attendance_uat_ready=false · PLT/CORE RETAIN (≠ DONE) · PAY OUT invent DONE · HRM-ATT-SHIFT-KEY when active>0 · empty CTA · no bootstrap seed"
+      },
+      "h2": {
+        "ok": true,
+        "checks": {
+          "printable_false": true,
+          "cat_ne_done": true,
+          "assign_open": true,
+          "gd2_hold": true,
+          "ne_live11": true,
+          "ne_agg10": true,
+          "ne_soft09": true,
+          "cfg_ne02": true,
+          "ne_uat": true,
+          "pay_out": true
+        },
+        "failKeys": [],
+        "text": "Honesty: contracts_printable_ready=false · catalog alone ≠ ATT-01 DONE · ≠ FR-UC-BP-ATT-01 DONE · R-ATT-01-ASSIGN open · Nest shift-assignments ABSENT · ≠ invent DONE · Lịch phân ca GĐ2-HOLD · ≠ invent full roster GĐ1 DONE · ≠ LIVE=ATT-11 · ≠ AGG=ATT-10 · ≠ soft/ATT-08=ATT-09 · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · ≠ ATT module UAT · attendance_uat_ready=false · PLT/CORE RETAIN (≠ DONE) · PAY OUT invent DONE · HRM-ATT-SHIFT-KEY when active>0 · empty CTA · no bootstrap seed · HRM-ATT-SHIFT-KEY when active>0"
+      },
+      "assignAbsent": true,
+      "sealsRetain": true,
+      "nestCoreNon404": 0,
+      "must_keep": [
+        "ATT11QC1-MSLXTH9P",
+        "ATT10QC1-MSLWGUYH",
+        "ATT09QC1-MSLUTL9D",
+        "ATT08QC1-MSLSL36C",
+        "ATT02QC1-MSLQZUK7",
+        "PLT01QC1-MSLPUQIU",
+        "CORE10QC1-MSLP0EJB",
+        "CORE09QC1-MSLNBA89",
+        "CORE07QC1-KZJTSHNT"
+      ]
+    },
+    "J-HRM-ATT-01-02": {
+      "verdict": "HOLD",
+      "at": "2026-08-09T15:42:31.951Z",
+      "summary": "ASSIGN ABSENT probe=404 holdUI=true gd2=true · residual R-ATT-01-ASSIGN · ≠ invent DONE",
+      "holdVisible": true,
+      "gd2Badge": true,
+      "assignAbsent": true,
+      "assignLive2xx": 0
+    },
+    "J-HRM-ATT-01-03": {
+      "verdict": "BLOCKED",
+      "at": "2026-08-09T15:42:31.952Z",
+      "summary": "RESOLVE residual BLOCKED — depends R-ATT-01-ASSIGN · DENY invent company-hardcode DONE"
+    }
+  },
+  "residuals": [
+    {
+      "id": "R-ATT-01-ASSIGN",
+      "status": "HOLD",
+      "note": "Nest shift-assignments* ABSENT · FE Lịch GĐ2-HOLD · DENY invent ASSIGN DONE",
+      "owner": "dev-be"
+    },
+    {
+      "id": "R-ATT-01-SCHED",
+      "status": "HOLD",
+      "note": "Full grid OUT GĐ2 · FE HOLD RETAIN",
+      "owner": "pm/ba"
+    },
+    {
+      "id": "R-ATT-01-RESOLVE",
+      "status": "BLOCKED",
+      "note": "Resolve ca đang gán after ASSIGN wire · cannot execute without F-ATT-SHIFT-02",
+      "owner": "dev-be"
+    }
+  ],
+  "defects": [],
+  "setup": {
+    "shiftsMenuOpen": true,
+    "changeShiftMenu": true
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T15:42:32.153Z",
+  "network_summary": {
+    "work_shifts": 12,
+    "effective": 8,
+    "shift_change": 10,
+    "shift_assignments_2xx": 0,
+    "nest_core_att_non404": 0
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "gps_submit_enabled": null,
+  "submit_tapped": false,
+  "hrm_mob_lines": [],
+  "attendance_lines": [],
+  "proxy_post_lines": [],
+  "http_status_hint": null,
+  "blocked_reason": "check-in-submit missing or disabled on GPS channel"
+}

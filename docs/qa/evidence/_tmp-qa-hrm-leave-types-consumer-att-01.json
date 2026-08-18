@@ -1,0 +1,116 @@
+{
+  "work_item_id": "QA-HRM-LEAVE-TYPES-CONSUMER-ATT-01",
+  "stamp": "ATTLVTCON1-MSNO8B9F",
+  "startedAt": "2026-08-10T20:15:36.251Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "settings_catalog_e2e_ready": false,
+    "deny_flip": true,
+    "attlvtsotqc1_retain": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0 (pre-run)"
+  },
+  "vitest": {
+    "file": "po-hrm-leave-types-consumer-att-fe-01.test.ts",
+    "result": "2/2 pass (pre-run)"
+  },
+  "effective": {
+    "status": 200,
+    "total": 12,
+    "codeToLabel": {
+      "hr_lvt_fe_msngj8t2": "QA LVT FE msngj8t2",
+      "hr_lvt_sot_msng6byg": "QA LVT SoT msng6byg",
+      "hr_lvt_sot_msng88nh": "QA LVT SoT msng88nh",
+      "lvt_01": "Phép năm",
+      "lvt_02": "Ốm",
+      "lvt_03": "Thai sản",
+      "lvt_04": "Không lương",
+      "ot_comp_leave": "Nghỉ bù OT",
+      "phep_nam": "phép năm",
+      "qmy0tlsatt": "QA W3 SETW3QA-MSMY0TLS att-leave-types",
+      "qmy9e1aatt": "QA W3 SETW3QA-MSMY9E1A att-leave-types",
+      "qn2uwxcatt": "QA W3 SETW3QA-MSN2UWXC att-leave-types"
+    },
+    "url": "http://127.0.0.1:28001/api/hrm/attendance/leave-types/effective?company_id=main"
+  },
+  "ac": {
+    "picker": {
+      "ac": "AC-SET-CONSUMER-LV-ATT-01-picker",
+      "ok": true,
+      "clickPath": "Chấm công → Nghỉ phép → Tạo yêu cầu → Loại nghỉ picker",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+      "effGetStatus": 200,
+      "pickerCodes": [
+        "hr_lvt_fe_msngj8t2",
+        "hr_lvt_sot_msng6byg",
+        "hr_lvt_sot_msng88nh",
+        "lvt_01",
+        "lvt_02",
+        "lvt_03",
+        "lvt_04",
+        "ot_comp_leave",
+        "phep_nam",
+        "qmy0tlsatt",
+        "qmy9e1aatt",
+        "qn2uwxcatt"
+      ],
+      "effParity": {
+        "ok": true,
+        "note": "picker=12 eff=12 bad=0",
+        "badSample": [],
+        "pickerSample": [
+          "hr_lvt_fe_msngj8t2",
+          "hr_lvt_sot_msng6byg",
+          "hr_lvt_sot_msng88nh",
+          "lvt_01",
+          "lvt_02",
+          "lvt_03",
+          "lvt_04",
+          "ot_comp_leave"
+        ]
+      },
+      "screenshot": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-hrm-leave-types-consumer-att-01/leave-tab-picker.png"
+    },
+    "attLvtRetain": {
+      "ac": "ATTLVTSOTQC1-retain-smoke",
+      "ok": true,
+      "effStatus": null,
+      "shell": true,
+      "note": "RETAIN sealed UF-ATT-LVT-SMOKE — no catalog mutate"
+    },
+    "optionalMutate": {
+      "attempted": true,
+      "ok": false,
+      "postStatus": null,
+      "pickCode": "lvt_01",
+      "expectedLabel": "Phép năm",
+      "marker": "QA-LV-ATT-ATTLVTCON1-MSNO8B9F",
+      "note": "submit disabled"
+    },
+    "reminderParity": {
+      "ac": "AC-SET-CONSUMER-LV-ATT-01-reminder-parity",
+      "ok": false,
+      "skipped": true,
+      "note": "mutate not 2xx: null"
+    }
+  },
+  "network": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "verdict_note": "Narrow AC: picker+vitest+ATTLVTSOT retain PASS; reminder live row carry (0 pending)",
+  "endedAt": "2026-08-10T20:17:20.757Z"
+}

@@ -1,0 +1,1613 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-ATT-03B-CLUSTER-QA-01",
+  "program": "PO-HRM-MVP-GD1-CONTINUOUS",
+  "uc_ids": [
+    "UC-BP-ATT-03b",
+    "FR-UC-BP-ATT-03b"
+  ],
+  "stamp": "ATT03BQA1-MSM0524Y",
+  "startedAt": "2026-08-09T16:13:27.505Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "attendance_uat_ready": false,
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "contracts_printable_ready": false,
+    "hrm_personnel_uat_ready": false,
+    "residual_alone_ne_att03b_done": true,
+    "thin_ne_att03b_done": true,
+    "ne_catalog_att01_done": true,
+    "ne_live_att11_done": true,
+    "ne_agg_att10_done": true,
+    "ne_att_module_uat": true,
+    "cfg_ne_att02_done": true,
+    "pay_out": true,
+    "nest_core_deny": true,
+    "soft_ne_core06_done": true,
+    "r_att_01_assign_open": true,
+    "deny_att_leave_hold": true,
+    "seed_used": false,
+    "c_slice_ne_module": true
+  },
+  "must_keep": [
+    "ATT01QC1-MSLZ3KIM",
+    "ATT11QC1-MSLXTH9P",
+    "ATT10QC1-MSLWGUYH",
+    "ATT09QC1-MSLUTL9D",
+    "ATT08QC1-MSLSL36C",
+    "ATT02QC1-MSLQZUK7",
+    "PLT01QC1-MSLPUQIU",
+    "CORE10QC1-MSLP0EJB",
+    "CORE09QC1-MSLNBA89",
+    "CORE07QC1-KZJTSHNT"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "CRUD_YEAR": 2096,
+    "HOL_MISS_YEAR": 2030
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    },
+    "nest_core_holiday": {
+      "status": 404,
+      "ok": true
+    },
+    "crud_year_absent": {
+      "status": 200,
+      "code": "HRM-ATT-HOL-200",
+      "ok": false
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/att/holiday-calendars/2096",
+      "status": 404,
+      "at": "2026-08-09T16:13:27.597Z",
+      "nest_core": true,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:27.609Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T16:13:28.386Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:28.486Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:28.777Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:28.782Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T16:13:28.839Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:28.961Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:29.930Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T16:13:29.998Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T16:13:30.055Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2026?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:30.798Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:31.879Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:32.314Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "at": "2026-08-09T16:13:35.248Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "at": "2026-08-09T16:13:37.901Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "at": "2026-08-09T16:13:40.859Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "at": "2026-08-09T16:13:42.629Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T16:13:44.417Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:44.468Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:44.697Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:44.704Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T16:13:44.746Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:44.843Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T16:13:46.107Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:46.146Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:46.363Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:46.370Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T16:13:46.401Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:46.496Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:47.647Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T16:13:47.716Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T16:13:47.763Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2026?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:48.509Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:49.542Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:49.973Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2030?company_id=main",
+      "status": 404,
+      "at": "2026-08-09T16:13:51.559Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T16:13:51.782Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:51.828Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:52.022Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:52.031Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T16:13:52.062Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:52.160Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:53.131Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T16:13:53.157Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T16:13:53.201Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "at": "2026-08-09T16:13:54.382Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294&year=2026",
+      "status": 200,
+      "at": "2026-08-09T16:13:55.855Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294&leave_type=hr_custom_09&year=2026",
+      "status": 200,
+      "at": "2026-08-09T16:13:56.877Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T16:13:57.070Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T16:13:57.587Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T16:13:57.921Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T16:14:00.816Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:00.853Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:01.039Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:01.043Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T16:14:01.079Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:01.174Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:02.328Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T16:14:02.398Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T16:14:02.453Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2026?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:03.190Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:04.209Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:04.632Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    }
+  ],
+  "nest_core_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/att/holiday-calendars/2096",
+      "status": 404,
+      "at": "2026-08-09T16:13:27.597Z",
+      "nest_core": true,
+      "holiday": false,
+      "preview": false
+    }
+  ],
+  "nest_core_holiday_non404": [],
+  "holiday_get_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:27.609Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2026?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:30.798Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:31.879Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:32.314Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2026?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:48.509Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:49.542Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:13:49.973Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2030?company_id=main",
+      "status": 404,
+      "at": "2026-08-09T16:13:51.559Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2026?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:03.190Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:04.209Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T16:14:04.632Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    }
+  ],
+  "holiday_put_hits": [
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "at": "2026-08-09T16:13:35.248Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "at": "2026-08-09T16:13:37.901Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "at": "2026-08-09T16:13:40.859Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "at": "2026-08-09T16:13:42.629Z",
+      "nest_core": false,
+      "holiday": true,
+      "preview": false
+    }
+  ],
+  "preview_hits": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T16:13:57.070Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T16:13:57.587Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T16:13:57.921Z",
+      "nest_core": false,
+      "holiday": false,
+      "preview": true
+    }
+  ],
+  "put_bodies": [
+    {
+      "at": "2026-08-09T16:13:35.263Z",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "body": {
+        "companyId": "main",
+        "status": "effective",
+        "calendarType": "solar",
+        "days": [
+          {
+            "date": "2096-01-01",
+            "nameVi": "QA Tết Dương ATT03B",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": true,
+            "dayType": "nghi"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-09T16:13:37.915Z",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "body": {
+        "companyId": "main",
+        "status": "effective",
+        "calendarType": "solar",
+        "days": [
+          {
+            "date": "2096-02-17",
+            "nameVi": "QA Tết Âm ATT03B",
+            "lunarFlag": true,
+            "calendarType": "lunar",
+            "isPaid": true,
+            "dayType": "nghi"
+          },
+          {
+            "date": "2096-01-01",
+            "nameVi": "QA Tết Dương ATT03B",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": true,
+            "dayType": "nghi"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-09T16:13:40.861Z",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "body": {
+        "companyId": "main",
+        "status": "effective",
+        "calendarType": "solar",
+        "days": [
+          {
+            "date": "2096-04-30",
+            "nameVi": "QA 30/4 Nghỉ lễ",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": true,
+            "dayType": "nghi"
+          },
+          {
+            "date": "2096-05-01",
+            "nameVi": "QA 1/5 Trực lễ",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": false,
+            "dayType": "truc"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-09T16:13:42.641Z",
+      "url": "/api/hrm/attendance/holiday-calendars/2096",
+      "status": 200,
+      "body": {
+        "companyId": "main",
+        "status": "effective",
+        "calendarType": "solar",
+        "days": [
+          {
+            "date": "2096-04-30",
+            "nameVi": "QA 30/4 Nghỉ lễ",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": true,
+            "dayType": "nghi"
+          },
+          {
+            "date": "2096-05-01",
+            "nameVi": "QA 1/5 Trực lễ",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": false,
+            "dayType": "truc"
+          },
+          {
+            "date": "2096-09-02",
+            "nameVi": "QA Quốc khánh midYear",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": true,
+            "dayType": "nghi"
+          }
+        ]
+      }
+    }
+  ],
+  "put_responses": [
+    {
+      "at": "2026-08-09T16:13:35.263Z",
+      "status": 200,
+      "code": "HRM-ATT-HOL-201",
+      "data": {
+        "year": 2096,
+        "status": "effective",
+        "statusLabelVi": "Đã phát hành",
+        "dayCount": 1,
+        "midYearPendingLeaveRecalcRequired": true,
+        "publishMode": "replace_in_place_gd1",
+        "days": [
+          {
+            "date": "2096-01-01",
+            "nameVi": "QA Tết Dương ATT03B",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": true,
+            "dayType": "nghi",
+            "dayTypeLabelVi": "Nghỉ lễ"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-09T16:13:37.916Z",
+      "status": 200,
+      "code": "HRM-ATT-HOL-201",
+      "data": {
+        "year": 2096,
+        "status": "effective",
+        "statusLabelVi": "Đã phát hành",
+        "dayCount": 2,
+        "midYearPendingLeaveRecalcRequired": true,
+        "publishMode": "replace_in_place_gd1",
+        "days": [
+          {
+            "date": "2096-01-01",
+            "nameVi": "QA Tết Dương ATT03B",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": true,
+            "dayType": "nghi",
+            "dayTypeLabelVi": "Nghỉ lễ"
+          },
+          {
+            "date": "2096-02-17",
+            "nameVi": "QA Tết Âm ATT03B",
+            "lunarFlag": true,
+            "calendarType": "lunar",
+            "isPaid": true,
+            "dayType": "nghi",
+            "dayTypeLabelVi": "Nghỉ lễ"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-09T16:13:40.861Z",
+      "status": 200,
+      "code": "HRM-ATT-HOL-201",
+      "data": {
+        "year": 2096,
+        "status": "effective",
+        "statusLabelVi": "Đã phát hành",
+        "dayCount": 2,
+        "midYearPendingLeaveRecalcRequired": true,
+        "publishMode": "replace_in_place_gd1",
+        "days": [
+          {
+            "date": "2096-04-30",
+            "nameVi": "QA 30/4 Nghỉ lễ",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": true,
+            "dayType": "nghi",
+            "dayTypeLabelVi": "Nghỉ lễ"
+          },
+          {
+            "date": "2096-05-01",
+            "nameVi": "QA 1/5 Trực lễ",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": false,
+            "dayType": "truc",
+            "dayTypeLabelVi": "Trực lễ"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-08-09T16:13:42.641Z",
+      "status": 200,
+      "code": "HRM-ATT-HOL-201",
+      "data": {
+        "year": 2096,
+        "status": "effective",
+        "statusLabelVi": "Đã phát hành",
+        "dayCount": 3,
+        "midYearPendingLeaveRecalcRequired": true,
+        "publishMode": "replace_in_place_gd1",
+        "days": [
+          {
+            "date": "2096-04-30",
+            "nameVi": "QA 30/4 Nghỉ lễ",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": true,
+            "dayType": "nghi",
+            "dayTypeLabelVi": "Nghỉ lễ"
+          },
+          {
+            "date": "2096-05-01",
+            "nameVi": "QA 1/5 Trực lễ",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": false,
+            "dayType": "truc",
+            "dayTypeLabelVi": "Trực lễ"
+          },
+          {
+            "date": "2096-09-02",
+            "nameVi": "QA Quốc khánh midYear",
+            "lunarFlag": false,
+            "calendarType": "solar",
+            "isPaid": true,
+            "dayType": "nghi",
+            "dayTypeLabelVi": "Nghỉ lễ"
+          }
+        ]
+      }
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-03b-cluster-qa-01/01-holiday-admin.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-03b-cluster-qa-01/02-year-load.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-03b-cluster-qa-01/03-j01-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-03b-cluster-qa-01/04-j02-lunar.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-03b-cluster-qa-01/05-j03-type.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-03b-cluster-qa-01/06-j04-midyear.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-03b-cluster-qa-01/07-f5-reload.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-03b-cluster-qa-01/08-leave-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-03b-cluster-qa-01/09-j05-hol-miss.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-03b-cluster-qa-01/10-j06-honesty.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-09T16:13:29.931Z",
+      "msg": "open Thiết lập / Cài đặt tab"
+    },
+    {
+      "at": "2026-08-09T16:13:30.797Z",
+      "msg": "open Lịch lễ / Tết sidebar"
+    },
+    {
+      "at": "2026-08-09T16:13:32.304Z",
+      "msg": "reload year",
+      "year": 2096
+    },
+    {
+      "at": "2026-08-09T16:13:34.996Z",
+      "msg": "add day",
+      "idx": 0,
+      "date": "2096-01-01",
+      "nameVi": "QA Tết Dương ATT03B",
+      "lunar": false,
+      "calType": "solar",
+      "dayType": "nghi",
+      "isPaid": true
+    },
+    {
+      "at": "2026-08-09T16:13:35.222Z",
+      "msg": "click Lưu"
+    },
+    {
+      "at": "2026-08-09T16:13:36.987Z",
+      "msg": "add day",
+      "idx": 0,
+      "date": "2096-02-17",
+      "nameVi": "QA Tết Âm ATT03B",
+      "lunar": true,
+      "calType": "lunar",
+      "dayType": "nghi",
+      "isPaid": true
+    },
+    {
+      "at": "2026-08-09T16:13:37.651Z",
+      "msg": "add day",
+      "idx": 1,
+      "date": "2096-01-01",
+      "nameVi": "QA Tết Dương ATT03B",
+      "lunar": false,
+      "calType": "solar",
+      "dayType": "nghi",
+      "isPaid": true
+    },
+    {
+      "at": "2026-08-09T16:13:37.872Z",
+      "msg": "click Lưu"
+    },
+    {
+      "at": "2026-08-09T16:13:39.871Z",
+      "msg": "add day",
+      "idx": 0,
+      "date": "2096-04-30",
+      "nameVi": "QA 30/4 Nghỉ lễ",
+      "lunar": false,
+      "calType": "solar",
+      "dayType": "nghi",
+      "isPaid": true
+    },
+    {
+      "at": "2026-08-09T16:13:40.609Z",
+      "msg": "add day",
+      "idx": 1,
+      "date": "2096-05-01",
+      "nameVi": "QA 1/5 Trực lễ",
+      "lunar": false,
+      "calType": "solar",
+      "dayType": "truc",
+      "isPaid": false
+    },
+    {
+      "at": "2026-08-09T16:13:40.827Z",
+      "msg": "click Lưu"
+    },
+    {
+      "at": "2026-08-09T16:13:42.378Z",
+      "msg": "add day",
+      "idx": 2,
+      "date": "2096-09-02",
+      "nameVi": "QA Quốc khánh midYear",
+      "lunar": false,
+      "calType": "solar",
+      "dayType": "nghi",
+      "isPaid": true
+    },
+    {
+      "at": "2026-08-09T16:13:42.594Z",
+      "msg": "click Lưu"
+    },
+    {
+      "at": "2026-08-09T16:13:47.647Z",
+      "msg": "open Thiết lập / Cài đặt tab"
+    },
+    {
+      "at": "2026-08-09T16:13:48.503Z",
+      "msg": "open Lịch lễ / Tết sidebar"
+    },
+    {
+      "at": "2026-08-09T16:13:49.963Z",
+      "msg": "reload year",
+      "year": 2096
+    },
+    {
+      "at": "2026-08-09T16:13:53.102Z",
+      "msg": "open Nghỉ phép"
+    },
+    {
+      "at": "2026-08-09T16:13:54.266Z",
+      "msg": "open create leave dialog"
+    },
+    {
+      "at": "2026-08-09T16:13:55.844Z",
+      "msg": "select employee",
+      "label": "QA CORE07 PENDING msljspgo — qa_c07p_msljspgo"
+    },
+    {
+      "at": "2026-08-09T16:13:56.869Z",
+      "msg": "select leave type",
+      "label": "hr_custom_09\nQA hr_custom_09 ATTPLATQA-MSISVY4L"
+    },
+    {
+      "at": "2026-08-09T16:13:57.723Z",
+      "msg": "fill dates",
+      "startVi": "03/01/2030",
+      "endVi": "06/01/2030"
+    },
+    {
+      "at": "2026-08-09T16:14:02.339Z",
+      "msg": "open Thiết lập / Cài đặt tab"
+    },
+    {
+      "at": "2026-08-09T16:14:03.185Z",
+      "msg": "open Lịch lễ / Tết sidebar"
+    },
+    {
+      "at": "2026-08-09T16:14:04.622Z",
+      "msg": "reload year",
+      "year": 2096
+    }
+  ],
+  "journeys": {
+    "J-HRM-ATT-03B-01": {
+      "verdict": "PASS",
+      "at": "2026-08-09T16:13:36.304Z",
+      "summary": "GET year 200,200,200 · emptyCta=false · PUT 200/HRM-ATT-HOL-201 dayCount=1 · statusLabel=Đã phát hành · NestCoreNon404=0",
+      "getHits": [
+        {
+          "method": "GET",
+          "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+          "status": 200,
+          "at": "2026-08-09T16:13:27.609Z",
+          "nest_core": false,
+          "holiday": true,
+          "preview": false
+        },
+        {
+          "method": "GET",
+          "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+          "status": 200,
+          "at": "2026-08-09T16:13:31.879Z",
+          "nest_core": false,
+          "holiday": true,
+          "preview": false
+        },
+        {
+          "method": "GET",
+          "url": "/api/hrm/attendance/holiday-calendars/2096?company_id=main",
+          "status": 200,
+          "at": "2026-08-09T16:13:32.314Z",
+          "nest_core": false,
+          "holiday": true,
+          "preview": false
+        }
+      ],
+      "put": {
+        "at": "2026-08-09T16:13:35.263Z",
+        "status": 200,
+        "code": "HRM-ATT-HOL-201",
+        "data": {
+          "year": 2096,
+          "status": "effective",
+          "statusLabelVi": "Đã phát hành",
+          "dayCount": 1,
+          "midYearPendingLeaveRecalcRequired": true,
+          "publishMode": "replace_in_place_gd1",
+          "days": [
+            {
+              "date": "2096-01-01",
+              "nameVi": "QA Tết Dương ATT03B",
+              "lunarFlag": false,
+              "calendarType": "solar",
+              "isPaid": true,
+              "dayType": "nghi",
+              "dayTypeLabelVi": "Nghỉ lễ"
+            }
+          ]
+        }
+      },
+      "putBodyKeys": [
+        "companyId",
+        "status",
+        "calendarType",
+        "days"
+      ],
+      "fe": {
+        "statusLabel": "Đã phát hành",
+        "dayCountTxt": "1",
+        "typeLabel0": "Nghỉ lễ"
+      },
+      "nest_core_0": true,
+      "seed_used": false,
+      "ne_thin_done": true
+    },
+    "J-HRM-ATT-03B-02": {
+      "verdict": "PASS",
+      "at": "2026-08-09T16:13:38.951Z",
+      "summary": "PUT lunarFlag=true calendarType=lunar · resp lunar=true/lunar · FE lunar0=false · Nest0",
+      "put": {
+        "at": "2026-08-09T16:13:37.916Z",
+        "status": 200,
+        "code": "HRM-ATT-HOL-201",
+        "data": {
+          "year": 2096,
+          "status": "effective",
+          "statusLabelVi": "Đã phát hành",
+          "dayCount": 2,
+          "midYearPendingLeaveRecalcRequired": true,
+          "publishMode": "replace_in_place_gd1",
+          "days": [
+            {
+              "date": "2096-01-01",
+              "nameVi": "QA Tết Dương ATT03B",
+              "lunarFlag": false,
+              "calendarType": "solar",
+              "isPaid": true,
+              "dayType": "nghi",
+              "dayTypeLabelVi": "Nghỉ lễ"
+            },
+            {
+              "date": "2096-02-17",
+              "nameVi": "QA Tết Âm ATT03B",
+              "lunarFlag": true,
+              "calendarType": "lunar",
+              "isPaid": true,
+              "dayType": "nghi",
+              "dayTypeLabelVi": "Nghỉ lễ"
+            }
+          ]
+        }
+      },
+      "lunarReq": {
+        "date": "2096-02-17",
+        "nameVi": "QA Tết Âm ATT03B",
+        "lunarFlag": true,
+        "calendarType": "lunar",
+        "isPaid": true,
+        "dayType": "nghi"
+      },
+      "lunarDay": {
+        "date": "2096-02-17",
+        "nameVi": "QA Tết Âm ATT03B",
+        "lunarFlag": true,
+        "calendarType": "lunar",
+        "isPaid": true,
+        "dayType": "nghi",
+        "dayTypeLabelVi": "Nghỉ lễ"
+      },
+      "nest_core_0": true,
+      "ne_solar_hardcode_only": true
+    },
+    "J-HRM-ATT-03B-03": {
+      "verdict": "PASS",
+      "at": "2026-08-09T16:13:41.908Z",
+      "summary": "labels FE nghi=Nghỉ lễ truc=Trực lễ · BE dayTypeLabelVi nghi=Nghỉ lễ truc=Trực lễ · isPaid false in PUT=true · ≠ PAY DONE",
+      "put": {
+        "at": "2026-08-09T16:13:40.861Z",
+        "status": 200,
+        "code": "HRM-ATT-HOL-201",
+        "data": {
+          "year": 2096,
+          "status": "effective",
+          "statusLabelVi": "Đã phát hành",
+          "dayCount": 2,
+          "midYearPendingLeaveRecalcRequired": true,
+          "publishMode": "replace_in_place_gd1",
+          "days": [
+            {
+              "date": "2096-04-30",
+              "nameVi": "QA 30/4 Nghỉ lễ",
+              "lunarFlag": false,
+              "calendarType": "solar",
+              "isPaid": true,
+              "dayType": "nghi",
+              "dayTypeLabelVi": "Nghỉ lễ"
+            },
+            {
+              "date": "2096-05-01",
+              "nameVi": "QA 1/5 Trực lễ",
+              "lunarFlag": false,
+              "calendarType": "solar",
+              "isPaid": false,
+              "dayType": "truc",
+              "dayTypeLabelVi": "Trực lễ"
+            }
+          ]
+        }
+      },
+      "labels": {
+        "labelNghi": "Nghỉ lễ",
+        "labelTruc": "Trực lễ"
+      },
+      "nest_core_0": true,
+      "pay_out": true
+    },
+    "J-HRM-ATT-03B-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T16:13:44.187Z",
+      "summary": "PUT midYear=true banner=true status=effective/Đã phát hành publishMode=replace_in_place_gd1 · DENY silent",
+      "put": {
+        "at": "2026-08-09T16:13:42.641Z",
+        "status": 200,
+        "code": "HRM-ATT-HOL-201",
+        "data": {
+          "year": 2096,
+          "status": "effective",
+          "statusLabelVi": "Đã phát hành",
+          "dayCount": 3,
+          "midYearPendingLeaveRecalcRequired": true,
+          "publishMode": "replace_in_place_gd1",
+          "days": [
+            {
+              "date": "2096-04-30",
+              "nameVi": "QA 30/4 Nghỉ lễ",
+              "lunarFlag": false,
+              "calendarType": "solar",
+              "isPaid": true,
+              "dayType": "nghi",
+              "dayTypeLabelVi": "Nghỉ lễ"
+            },
+            {
+              "date": "2096-05-01",
+              "nameVi": "QA 1/5 Trực lễ",
+              "lunarFlag": false,
+              "calendarType": "solar",
+              "isPaid": false,
+              "dayType": "truc",
+              "dayTypeLabelVi": "Trực lễ"
+            },
+            {
+              "date": "2096-09-02",
+              "nameVi": "QA Quốc khánh midYear",
+              "lunarFlag": false,
+              "calendarType": "solar",
+              "isPaid": true,
+              "dayType": "nghi",
+              "dayTypeLabelVi": "Nghỉ lễ"
+            }
+          ]
+        }
+      },
+      "midBanner": true,
+      "midText": "Đã thay lịch năm tại chỗ (GĐ1) — cần tính lại đơn nghỉ đang chờ (midYearPendingLeaveRecalcRequired) · ≠ ATT-03b DONE alone.",
+      "nest_core_0": true,
+      "ne_att03b_done_alone": true
+    },
+    "J-HRM-ATT-03B-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T16:14:00.103Z",
+      "summary": "year 2030 GET 404/HRM-ATT-HOL-404 · holMissUi=true · CTA=Mở Chấm công → Cài đặt → Lịch lễ / Tết để khai năm (thin ≠ ATT-03b DONE). · submitDisabled=true · previewHits=400,400 · Nest0 · ≠ ATT-03b DONE alone · ≠ AGG=ATT-10",
+      "holProbe": {
+        "status": 404,
+        "code": "HRM-ATT-HOL-404"
+      },
+      "holMissUi": true,
+      "holMissCta": "Mở Chấm công → Cài đặt → Lịch lễ / Tết để khai năm (thin ≠ ATT-03b DONE).",
+      "previewAny": [
+        {
+          "method": "POST",
+          "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+          "status": 400,
+          "at": "2026-08-09T16:13:57.587Z",
+          "nest_core": false,
+          "holiday": false,
+          "preview": true
+        },
+        {
+          "method": "POST",
+          "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+          "status": 400,
+          "at": "2026-08-09T16:13:57.921Z",
+          "nest_core": false,
+          "holiday": false,
+          "preview": true
+        }
+      ],
+      "previewHol": [
+        {
+          "method": "POST",
+          "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+          "status": 400,
+          "at": "2026-08-09T16:13:57.587Z",
+          "nest_core": false,
+          "holiday": false,
+          "preview": true
+        },
+        {
+          "method": "POST",
+          "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+          "status": 400,
+          "at": "2026-08-09T16:13:57.921Z",
+          "nest_core": false,
+          "holiday": false,
+          "preview": true
+        }
+      ],
+      "nest_core_0": true,
+      "ne_att03b_done_alone": true,
+      "ne_agg10": true,
+      "sheet_hol_out": true
+    },
+    "J-HRM-ATT-03B-06": {
+      "verdict": "PASS",
+      "at": "2026-08-09T16:14:06.186Z",
+      "summary": "honesty footer + F5 dayCount=3 rows=3 · seals RETAIN · C-SLICE · Nest0",
+      "honesty": "Honesty: contracts_printable_ready=false · thin year GET/PUT ≠ ATT-03b DONE · ≠ FR-03b DONE · residual lunar/type/publish FE bind ≠ ATT-03b DONE alone · ≠ catalog=ATT-01 DONE · ATT01QC1-MSLZ3KIM · R-ATT-01-ASSIGN open · ≠ LIVE=ATT-11 DONE · ATT11QC1-MSLXTH9P · ≠ AGG=ATT-10 DONE · HOL/MEAL OUT · ATT10QC1-MSLWGUYH · ≠ ATT module UAT · attendance_uat_ready=false · CFG ≠ ATT-02 DONE · ATT02QC1-MSLQZUK7 · PLT/CORE RETAIN (≠ DONE) · PAY OUT invent DONE · R-ATT-03B-LUNAR/TYPE/PUB FE-02 bound · ≠ residu",
+      "residualBanner": "Residual lunar / type / publish (LIVE) R-ATT-03B-LUNAR · R-ATT-03B-TYPE · R-ATT-03B-PUB: LIVE residual wire bound · ≠ residual alone=ATT-03b DONE · C-SLICE. · BE đã trả residual fields — vẫn ≠ ATT-03b DONE.",
+      "honestyChecks": {
+        "printable_false": true,
+        "residual_ne_done": true,
+        "thin_ne_done": true,
+        "ne_catalog": true,
+        "ne_live": true,
+        "ne_agg": true,
+        "ne_uat": true,
+        "pay_out": true,
+        "nest_deny": true,
+        "residual_banner": true,
+        "f5_persisted": true,
+        "nest_core_0": true,
+        "zero_seed": true
+      },
+      "f5": {
+        "f5DayCount": "3",
+        "f5Status": "Đã phát hành",
+        "f5Rows": 3,
+        "f5LunarAny": false
+      },
+      "must_keep": {
+        "ATT01": "ATT01QC1-MSLZ3KIM",
+        "ATT11": "ATT11QC1-MSLXTH9P",
+        "ATT10": "ATT10QC1-MSLWGUYH",
+        "ATT09": "ATT09QC1-MSLUTL9D",
+        "ATT08": "ATT08QC1-MSLSL36C",
+        "ATT02": "ATT02QC1-MSLQZUK7",
+        "PLT01": "PLT01QC1-MSLPUQIU",
+        "CORE10": "CORE10QC1-MSLP0EJB",
+        "CORE09": "CORE09QC1-MSLNBA89",
+        "CORE07": "CORE07QC1-KZJTSHNT"
+      }
+    }
+  },
+  "residuals": [
+    {
+      "id": "C-SLICE",
+      "note": "residual FE/BE bind ≠ ATT-03b / FR-03b module DONE · ≠ ATT module UAT"
+    },
+    {
+      "id": "R-ATT-01-ASSIGN",
+      "note": "open · DENY invent ASSIGN DONE · seal ATT01QC1-MSLZ3KIM"
+    },
+    {
+      "id": "PAY-OUT",
+      "note": "isPaid UI ≠ invent PAY DONE · printable false RETAIN"
+    },
+    {
+      "id": "SEALS",
+      "note": "ATT01/11/10/09/08/02/PLT/CORE RETAIN · Nest /core DENY · DENY att_leave_hold"
+    }
+  ],
+  "defects": [],
+  "setup": {
+    "login": {
+      "via": "http://127.0.0.1:28002/api/xbos/auth/login",
+      "ok": true
+    },
+    "crud_year_probe": "{\"success\":true,\"code\":\"HRM-ATT-HOL-200\",\"message\":\"Holiday calendar loaded\",\"data\":{\"id\":\"5feedc69-084e-4813-ae55-5e3287c81431\",\"companyId\":\"holding\",\"year\":2096,\"status\":\"effective\",\"statusLabelVi\":\"Đã phát hành\",\"calendarType\":\"solar\",\"days\":[{\"date\":\"2096-04-30\",\"nameVi\":\"QA 30/4 Nghỉ lễ\",\"lunarFlag\":false,\"calendarType\":\"solar\",\"isPaid\":true,\"dayType\":\"nghi\",\"dayTypeLabelVi\":\"Nghỉ lễ\"},{\"date\":\"2096-05-01\",\"nameVi\":\"QA 1/5 Trực lễ\",\"lunarFlag\":false,\"calendarType\":\"solar\",\"isPaid\":false,\"dayType\":\"truc\",\"dayTypeLabelVi\":\"Trực lễ\"},{\"date\":\"2096-09-02\",\"nameVi\":\"QA Quốc khánh midYear\",\"lunarFlag\":false,\"calendarType\":\"solar\",\"isPaid\":true,\"dayType\":\"nghi\",\"dayTypeLabelVi\":\"Nghỉ lễ\"}],\"da…",
+    "f5": {
+      "f5DayCount": "3",
+      "f5Status": "Đã phát hành",
+      "f5Rows": 3,
+      "f5LunarAny": false
+    },
+    "hol_miss_probe": {
+      "status": 404,
+      "code": "HRM-ATT-HOL-404"
+    }
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T16:14:06.187Z",
+  "_putMark": "2026-08-09T16:13:42.578Z",
+  "_previewMark": "2026-08-09T16:13:57.282Z"
+}

@@ -1,0 +1,74 @@
+{
+  "empLabel": "Phan Văn An\n(VTH-0007)",
+  "optionCount": 4,
+  "ctaEnabled": true,
+  "posts": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&page=1&page_size=100",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&page=1&page_size=100",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=b06422c0-f640-45d1-8cab-cb4a609848d6&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=b06422c0-f640-45d1-8cab-cb4a609848d6&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=b06422c0-f640-45d1-8cab-cb4a609848d6&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=b06422c0-f640-45d1-8cab-cb4a609848d6&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=b06422c0-f640-45d1-8cab-cb4a609848d6&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=b06422c0-f640-45d1-8cab-cb4a609848d6&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=b06422c0-f640-45d1-8cab-cb4a609848d6&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=trsport&employee_id=b06422c0-f640-45d1-8cab-cb4a609848d6&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=1",
+      "xCompanyId": "main"
+    }
+  ],
+  "gpsText": "Chấm công GPS\n13:17:46\nThứ Ba, 04/08/2026\nVĩ độ (Latitude)\n10.000000°\nKinh độ (Longitude)\n10.000000°\nĐộ chính xác\n12m\nĐộ cao\nN/A\nHướng\nN/A\nChất lượng tín hiệu:\nChính xác (<50m)\nMun-Munsal, Bauchi, Nigeria\nCập nhật vị trí\nChọn nhân viên\nPhan Văn An\n(VTH-0007)\nP\nPhan Văn An\nVTH-0007\nChấm công GPS\nHướng dẫn chấm công GPS\n• Cho phép trình duyệt truy cập vị trí GPS\n• Hệ thống sẽ xác định vị trí hiện tại của bạn\n• Chọn nhân viên cần chấm công từ danh sách\n• Nhấn Chấm công GPS để mở dialog xác nhận\n• X"
+}

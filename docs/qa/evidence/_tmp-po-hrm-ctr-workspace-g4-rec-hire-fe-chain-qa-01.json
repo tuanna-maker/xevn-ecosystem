@@ -1,0 +1,144 @@
+{
+  "work_item_id": "PO-HRM-CTR-WORKSPACE-G4-REC-HIRE-FE-CHAIN-QA-01",
+  "stamp": "CTRG4HIRE-MSO71G8B",
+  "startedAt": "2026-08-11T05:02:09.994Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "contracts_printable_ready": false,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:8080",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "prereq": {
+    "candidates": {
+      "status": 200,
+      "count": 5,
+      "with_employee_id": 0,
+      "hired_outcome_key": null,
+      "sample": [
+        {
+          "id": "9120c6c1-1bf3-42d9-8c1f-7150f7cfc624",
+          "full_name": "UV Kênh QA RECCHQA-MSNK95YR",
+          "status": "offer",
+          "employee_id": null,
+          "requisition_id": "cc266a29-9d08-4caa-8086-6f8ce940cc7e"
+        },
+        {
+          "id": "9ed4a5f2-a4dd-4589-95dc-663a61da7c07",
+          "full_name": "UV RECCHQA-DEBUG7BZY",
+          "status": "new",
+          "employee_id": null,
+          "requisition_id": "cc266a29-9d08-4caa-8086-6f8ce940cc7e"
+        },
+        {
+          "id": "36d51e97-4702-46b6-afeb-d44732f47860",
+          "full_name": "UV Kênh QA RECCHQA-MSNK53HP",
+          "status": "new",
+          "employee_id": null,
+          "requisition_id": "cc266a29-9d08-4caa-8086-6f8ce940cc7e"
+        }
+      ]
+    },
+    "requisitions_receivable": {
+      "status": 200,
+      "count": 2,
+      "with_employee_id": 0,
+      "hired_outcome_key": null,
+      "sample": [
+        {
+          "id": "cc266a29-9d08-4caa-8086-6f8ce940cc7e",
+          "status": "open_for_hire",
+          "employee_id": null,
+          "requisition_id": "cc266a29-9d08-4caa-8086-6f8ce940cc7e"
+        },
+        {
+          "id": "87a237e7-8779-41a4-93fc-a539128cfce8",
+          "status": "approved",
+          "employee_id": null,
+          "requisition_id": "87a237e7-8779-41a4-93fc-a539128cfce8"
+        }
+      ]
+    },
+    "pipeline_eff": {
+      "status": 200,
+      "count": 15,
+      "with_employee_id": 0,
+      "hired_outcome_key": null,
+      "sample": [
+        {
+          "id": "9627b951-bb6a-4869-ad24-ec638d61d304",
+          "status": "active",
+          "employee_id": null,
+          "requisition_id": null
+        },
+        {
+          "id": "5fcd5ea3-5d91-4177-9f05-49e32c340e22",
+          "status": "active",
+          "employee_id": null,
+          "requisition_id": null
+        },
+        {
+          "id": "65121bc4-cfff-4c32-aa8d-564ed65fc6fb",
+          "status": "active",
+          "employee_id": null,
+          "requisition_id": null
+        }
+      ]
+    },
+    "accept_target": {
+      "id": "9120c6c1-1bf3-42d9-8c1f-7150f7cfc624",
+      "name": "UV Kênh QA RECCHQA-MSNK95YR",
+      "status": "offer",
+      "employee_id": null
+    }
+  },
+  "rows": {
+    "WS-G4-13": {
+      "verdict": "BLOCKED",
+      "reason": "Chấp nhận offer CTA missing — offer-ready gate or FE projection",
+      "candidate": "9120c6c1-1bf3-42d9-8c1f-7150f7cfc624",
+      "status": "offer"
+    },
+    "WS-G4-14": {
+      "verdict": "BLOCKED",
+      "reason": "depends accept-offer"
+    }
+  },
+  "journeys": {
+    "J-HRM-CTR-HIRE-01": {
+      "verdict": "BLOCKED",
+      "step": "accept-offer CTA missing"
+    },
+    "J-HRM-REC-07-03": {
+      "verdict": "BLOCKED"
+    }
+  },
+  "network": [],
+  "steps_attempted": [
+    "Open REC candidate detail 9120c6c1-1bf3-42d9-8c1f-7150f7cfc624"
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-rec-hire-fe-chain-01/01-rec-detail-entry.png"
+  ],
+  "defects": [
+    {
+      "id": "DEF-REC-ACCEPT-OFFER-CTA-MISS",
+      "severity": "P0",
+      "owner": "dev-fe",
+      "note": "rec-accept-offer-open-detail not visible after offer transition"
+    }
+  ],
+  "click_log": [],
+  "ack_status": "BLOCKED",
+  "overall": "BLOCKED",
+  "endedAt": "2026-08-11T05:02:35.119Z"
+}

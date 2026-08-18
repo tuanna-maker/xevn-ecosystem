@@ -1,0 +1,7 @@
+qc:dev-stack — xevn-ecosystem (HRM + XBOS + portal)
+
+✓ hrm-api: HTTP 200 ← http://127.0.0.1:28001/api/hrm
+✓ xbos-api: HTTP 200 ← http://127.0.0.1:28002/api/xbos
+✓ web-portal (optional): HTTP 200 ← http://127.0.0.1:5173
+
+HRM + XBOS healthy — có thể chấp nhận bước QC dev (chạy thêm `pnpm run qc:fe-be-health` trước UAT).

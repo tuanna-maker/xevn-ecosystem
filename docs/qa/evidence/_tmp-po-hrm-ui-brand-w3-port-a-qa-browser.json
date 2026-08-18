@@ -1,0 +1,353 @@
+{
+  "work_item_id": "PO-HRM-UI-BRAND-W3-PORT-A-QA",
+  "fe_work_item": "PO-HRM-UI-BRAND-W3-PORT-A",
+  "startedAt": "2026-08-05T03:24:12.171Z",
+  "u65": "zero-seed",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM_STANDALONE": "http://127.0.0.1:8080",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200,
+    "hrm_fe": 200
+  },
+  "surfaces": {
+    "PORT-01": {
+      "url": "http://127.0.0.1:5173/login",
+      "title": "XeVN OS | Command Center",
+      "tokens": {
+        "primary": "#1e40af",
+        "text": "#111827",
+        "secondary": "#4b5563"
+      },
+      "bodyColor": "rgb(17, 24, 39)",
+      "bodyBg": "rgb(249, 250, 251)",
+      "brandShell": true,
+      "dialogSurface": true,
+      "marketingChips": false,
+      "paleBodySuspect": false,
+      "honestySample": [],
+      "sidebarActiveColor": null,
+      "membershipSignal": true,
+      "hasSlate50Frame": false,
+      "surfaceHint": "PORT-01",
+      "textLen": 114,
+      "checks": [
+        {
+          "ok": true,
+          "msg": "missing .xevn-brand-shell"
+        },
+        {
+          "ok": true,
+          "msg": "missing .xevn-dialog-surface"
+        },
+        {
+          "ok": true,
+          "msg": "login form not rendered"
+        },
+        {
+          "ok": true,
+          "msg": "pale body text suspect"
+        },
+        {
+          "ok": true,
+          "msg": "primary token #1e40af"
+        }
+      ],
+      "pass": true,
+      "fails": []
+    },
+    "PORT-02": {
+      "url": "http://127.0.0.1:5173/",
+      "title": "XeVN OS | Command Center",
+      "tokens": {
+        "primary": "#1e40af",
+        "text": "#111827",
+        "secondary": "#4b5563"
+      },
+      "bodyColor": "rgb(17, 24, 39)",
+      "bodyBg": "rgb(249, 250, 251)",
+      "brandShell": false,
+      "dialogSurface": false,
+      "marketingChips": false,
+      "paleBodySuspect": false,
+      "honestySample": [],
+      "sidebarActiveColor": null,
+      "membershipSignal": true,
+      "hasSlate50Frame": false,
+      "surfaceHint": "PORT-02",
+      "textLen": 321,
+      "checks": [
+        {
+          "ok": true,
+          "msg": "shell empty"
+        },
+        {
+          "ok": true,
+          "msg": "pale body"
+        },
+        {
+          "ok": true,
+          "msg": "unexpected dark brand shell on ops home (dual-surface)"
+        }
+      ],
+      "pass": true,
+      "fails": []
+    },
+    "PORT-03": {
+      "url": "http://127.0.0.1:5173/command-center",
+      "title": "XeVN OS | Command Center",
+      "tokens": {
+        "primary": "#1e40af",
+        "text": "#111827",
+        "secondary": "#4b5563"
+      },
+      "bodyColor": "rgb(17, 24, 39)",
+      "bodyBg": "rgb(249, 250, 251)",
+      "brandShell": false,
+      "dialogSurface": false,
+      "marketingChips": false,
+      "paleBodySuspect": false,
+      "honestySample": [],
+      "sidebarActiveColor": null,
+      "membershipSignal": true,
+      "hasSlate50Frame": true,
+      "surfaceHint": "PORT-03",
+      "textLen": 6776,
+      "checks": [
+        {
+          "ok": true,
+          "msg": "CC chrome not visible"
+        },
+        {
+          "ok": true,
+          "msg": "pale body on CC"
+        },
+        {
+          "ok": true,
+          "msg": "dark brand shell on light ops CC (dual-surface break)"
+        }
+      ],
+      "pass": true,
+      "fails": []
+    },
+    "PORT-06": {
+      "url": "http://127.0.0.1:5173/command-center",
+      "title": "XeVN OS | Command Center",
+      "tokens": {
+        "primary": "#1e40af",
+        "text": "#111827",
+        "secondary": "#4b5563"
+      },
+      "bodyColor": "rgb(17, 24, 39)",
+      "bodyBg": "rgb(249, 250, 251)",
+      "brandShell": false,
+      "dialogSurface": false,
+      "marketingChips": false,
+      "paleBodySuspect": false,
+      "honestySample": [],
+      "sidebarActiveColor": null,
+      "membershipSignal": true,
+      "hasSlate50Frame": true,
+      "surfaceHint": "PORT-03",
+      "textLen": 6776,
+      "note": "TopHeader/membership co-located on CC layout",
+      "pass": true,
+      "fails": []
+    },
+    "PORT-04": {
+      "url": "http://127.0.0.1:5173/command-center/inbox",
+      "title": "XeVN OS | Command Center — Hộp thư",
+      "tokens": {
+        "primary": "#1e40af",
+        "text": "#111827",
+        "secondary": "#4b5563"
+      },
+      "bodyColor": "rgb(17, 24, 39)",
+      "bodyBg": "rgb(249, 250, 251)",
+      "brandShell": false,
+      "dialogSurface": false,
+      "marketingChips": false,
+      "paleBodySuspect": false,
+      "honestySample": [],
+      "sidebarActiveColor": null,
+      "membershipSignal": true,
+      "hasSlate50Frame": false,
+      "surfaceHint": "PORT-04",
+      "textLen": 6069,
+      "checks": [
+        {
+          "ok": true,
+          "msg": "inbox shell not recognizable"
+        },
+        {
+          "ok": true,
+          "msg": "pale body inbox"
+        }
+      ],
+      "pass": true,
+      "fails": []
+    },
+    "PORT-05": {
+      "url": "http://127.0.0.1:5173/command-center/hrm/employees",
+      "title": "XeVN OS | Command Center",
+      "tokens": {
+        "primary": "#1e40af",
+        "text": "#111827",
+        "secondary": "#4b5563"
+      },
+      "bodyColor": "rgb(17, 24, 39)",
+      "bodyBg": "rgb(249, 250, 251)",
+      "brandShell": false,
+      "dialogSurface": false,
+      "marketingChips": false,
+      "paleBodySuspect": false,
+      "honestySample": [],
+      "sidebarActiveColor": null,
+      "membershipSignal": true,
+      "hasSlate50Frame": false,
+      "surfaceHint": "PORT-05",
+      "textLen": 500,
+      "iframeSidebar": false,
+      "iframeHonesty": [],
+      "iframeTextLen": 500,
+      "checks": [
+        {
+          "ok": true,
+          "msg": "HRM embed content not visible"
+        },
+        {
+          "ok": true,
+          "msg": "pale body on embed chrome"
+        },
+        {
+          "ok": true,
+          "msg": "dark brand shell wrapping light embed ops"
+        }
+      ],
+      "pass": true,
+      "fails": [],
+      "honestyNote": []
+    },
+    "_PORT-07-url": "http://127.0.0.1:5173/hr/login",
+    "PORT-07": {
+      "url": "http://127.0.0.1:5173/hr/login",
+      "title": "UNICOM HRM - Hệ thống quản lý nhân sự",
+      "tokens": {
+        "primary": "#1e40af",
+        "text": "#111827",
+        "secondary": "#4b5563"
+      },
+      "bodyColor": "rgb(17, 24, 39)",
+      "bodyBg": "rgb(249, 250, 251)",
+      "brandShell": true,
+      "dialogSurface": true,
+      "marketingChips": false,
+      "paleBodySuspect": false,
+      "honestySample": [],
+      "sidebarActiveColor": null,
+      "membershipSignal": true,
+      "hasSlate50Frame": false,
+      "surfaceHint": "PORT-07",
+      "textLen": 211,
+      "checks": [
+        {
+          "ok": true,
+          "msg": "HRM login URL failed to load"
+        },
+        {
+          "ok": true,
+          "msg": "missing brandShell/dialogSurface parity"
+        },
+        {
+          "ok": true,
+          "msg": "marketing left panel / feature chips still present"
+        },
+        {
+          "ok": true,
+          "msg": "pale body on HRM login"
+        },
+        {
+          "ok": true,
+          "msg": "marketing hero residual"
+        }
+      ],
+      "pass": true,
+      "fails": []
+    },
+    "_PORT-08-url": "http://127.0.0.1:8080/hr/employees",
+    "PORT-08": {
+      "url": "http://127.0.0.1:8080/hr/employees",
+      "title": "UNICOM HRM - Hệ thống quản lý nhân sự",
+      "tokens": {
+        "primary": "#1e40af",
+        "text": "#111827",
+        "secondary": "#4b5563"
+      },
+      "bodyColor": "rgb(17, 24, 39)",
+      "bodyBg": "rgb(249, 250, 251)",
+      "brandShell": false,
+      "dialogSurface": false,
+      "marketingChips": false,
+      "paleBodySuspect": false,
+      "honestySample": [],
+      "sidebarActiveColor": "rgb(255, 255, 255)",
+      "membershipSignal": true,
+      "hasSlate50Frame": false,
+      "surfaceHint": "PORT-08",
+      "textLen": 5901,
+      "linkCount": 16,
+      "asideLinks": 15,
+      "sidebarUrl": "http://127.0.0.1:8080/hr/employees",
+      "checks": [
+        {
+          "ok": true,
+          "msg": "sidebar nav not visible (standalone expected)"
+        },
+        {
+          "ok": true,
+          "msg": "pale body on HRM shell"
+        }
+      ],
+      "pass": true,
+      "fails": []
+    }
+  },
+  "screenshots": [
+    "screens/po-hrm-ui-brand-w3-port-a-qa/PORT-01-portal-login.png",
+    "screens/po-hrm-ui-brand-w3-port-a-qa/PORT-02-unified-shell.png",
+    "screens/po-hrm-ui-brand-w3-port-a-qa/PORT-03-command-center.png",
+    "screens/po-hrm-ui-brand-w3-port-a-qa/PORT-06-topheader-membership.png",
+    "screens/po-hrm-ui-brand-w3-port-a-qa/PORT-04-inbox.png",
+    "screens/po-hrm-ui-brand-w3-port-a-qa/PORT-05-hrm-embed.png",
+    "screens/po-hrm-ui-brand-w3-port-a-qa/PORT-07-hrm-login.png",
+    "screens/po-hrm-ui-brand-w3-port-a-qa/PORT-08-hrm-sidebar.png",
+    "screens/po-hrm-ui-brand-w3-port-a-qa/PORT-08-honesty-spot-attendance.png"
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": [],
+  "failReasons": [],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-05T03:24:36.503Z",
+  "login": {
+    "http": 201,
+    "persona": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "honestySpot": {
+    "sample": [],
+    "count": 0
+  }
+}

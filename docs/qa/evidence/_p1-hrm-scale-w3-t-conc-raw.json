@@ -1,0 +1,248 @@
+{
+  "work_item_id": "P1-HRM-SCALE-W3-T-CONC",
+  "generatedAt": "2026-07-17T16:49:47.001Z",
+  "target": "http://127.0.0.1:8088",
+  "hrm_base": "http://127.0.0.1:3101/api/hrm",
+  "adr_targets": {
+    "T_CONC": "1000 VU × 5min, error <1%, list p95 <2s",
+    "T_P95_LIST_ms": 2000,
+    "T_P95_SUM_ms": 1000
+  },
+  "stages": [
+    {
+      "vus": 400,
+      "hold_ms": 45000,
+      "aborted": false,
+      "overall": {
+        "total": 16083,
+        "ok": 16083,
+        "failed": 0,
+        "errorRate": 0,
+        "rate429": 0,
+        "rate5xx": 0,
+        "statusCounts": {
+          "200": 16083
+        },
+        "p50_ms": 67,
+        "p95_ms": 450,
+        "p99_ms": 603,
+        "max_ms": 799,
+        "min_ms": 27,
+        "throughput_rps": 348.4562885927852,
+        "duration_sec": 46.16
+      },
+      "list": {
+        "n": 10501,
+        "p50_ms": 81,
+        "p95_ms": 450,
+        "p99_ms": 629
+      },
+      "summary": {
+        "n": 5582,
+        "p50_ms": 40,
+        "p95_ms": 449,
+        "p99_ms": 564
+      },
+      "gates": {
+        "error_budget_ok": true,
+        "p95_list_ok": true,
+        "abort_triggered": false
+      },
+      "post_health": [
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/",
+          "status": 200,
+          "ms": 3,
+          "ok": true
+        },
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main",
+          "status": 200,
+          "ms": 32,
+          "ok": true
+        }
+      ]
+    },
+    {
+      "vus": 600,
+      "hold_ms": 45000,
+      "aborted": false,
+      "overall": {
+        "total": 21809,
+        "ok": 21809,
+        "failed": 0,
+        "errorRate": 0,
+        "rate429": 0,
+        "rate5xx": 0,
+        "statusCounts": {
+          "200": 21809
+        },
+        "p50_ms": 153,
+        "p95_ms": 677,
+        "p99_ms": 949,
+        "max_ms": 1506,
+        "min_ms": 28,
+        "throughput_rps": 473.6453469432077,
+        "duration_sec": 46.05
+      },
+      "list": {
+        "n": 14336,
+        "p50_ms": 176,
+        "p95_ms": 739,
+        "p99_ms": 998
+      },
+      "summary": {
+        "n": 7473,
+        "p50_ms": 111,
+        "p95_ms": 511,
+        "p99_ms": 721
+      },
+      "gates": {
+        "error_budget_ok": true,
+        "p95_list_ok": true,
+        "abort_triggered": false
+      },
+      "post_health": [
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/",
+          "status": 200,
+          "ms": 4,
+          "ok": true
+        },
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main",
+          "status": 200,
+          "ms": 33,
+          "ok": true
+        }
+      ]
+    },
+    {
+      "vus": 800,
+      "hold_ms": 45000,
+      "aborted": false,
+      "overall": {
+        "total": 26528,
+        "ok": 26528,
+        "failed": 0,
+        "errorRate": 0,
+        "rate429": 0,
+        "rate5xx": 0,
+        "statusCounts": {
+          "200": 26528
+        },
+        "p50_ms": 241,
+        "p95_ms": 900,
+        "p99_ms": 1254,
+        "max_ms": 2333,
+        "min_ms": 28,
+        "throughput_rps": 575.4821354968869,
+        "duration_sec": 46.1
+      },
+      "list": {
+        "n": 17443,
+        "p50_ms": 257,
+        "p95_ms": 923,
+        "p99_ms": 1301
+      },
+      "summary": {
+        "n": 9085,
+        "p50_ms": 209,
+        "p95_ms": 785,
+        "p99_ms": 971
+      },
+      "gates": {
+        "error_budget_ok": true,
+        "p95_list_ok": true,
+        "abort_triggered": false
+      },
+      "post_health": [
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/",
+          "status": 200,
+          "ms": 4,
+          "ok": true
+        },
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main",
+          "status": 200,
+          "ms": 30,
+          "ok": true
+        }
+      ]
+    },
+    {
+      "vus": 1000,
+      "hold_ms": 45000,
+      "aborted": false,
+      "overall": {
+        "total": 28880,
+        "ok": 28880,
+        "failed": 0,
+        "errorRate": 0,
+        "rate429": 0,
+        "rate5xx": 0,
+        "statusCounts": {
+          "200": 28880
+        },
+        "p50_ms": 429,
+        "p95_ms": 1380,
+        "p99_ms": 2477,
+        "max_ms": 3205,
+        "min_ms": 45,
+        "throughput_rps": 622.9373827139191,
+        "duration_sec": 46.36
+      },
+      "list": {
+        "n": 18918,
+        "p50_ms": 444,
+        "p95_ms": 1481,
+        "p99_ms": 2648
+      },
+      "summary": {
+        "n": 9962,
+        "p50_ms": 410,
+        "p95_ms": 1183,
+        "p99_ms": 2079
+      },
+      "gates": {
+        "error_budget_ok": true,
+        "p95_list_ok": true,
+        "abort_triggered": false
+      },
+      "post_health": [
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/",
+          "status": 200,
+          "ms": 2,
+          "ok": true
+        },
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main",
+          "status": 200,
+          "ms": 36,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "measured_ceiling_vu": 1000,
+  "max_passing_vu": 1000,
+  "blocked_reason": null,
+  "t_conc_met": true,
+  "post_test_health": [
+    {
+      "url": "http://127.0.0.1:3101/api/hrm/",
+      "status": 200,
+      "ms": 2,
+      "ok": true
+    },
+    {
+      "url": "http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main",
+      "status": 200,
+      "ms": 30,
+      "ok": true
+    }
+  ],
+  "u65_note": "NFR probe only — not UF browser acceptance"
+}

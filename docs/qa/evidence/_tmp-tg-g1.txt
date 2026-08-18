@@ -1,0 +1,2 @@
+﻿[xevn-ecosystem] Update: «Chốt P0+P1» đã vào pipeline.
+BE allow-list P0+P1 DONE → đang chạy FE mirror + QA G1.

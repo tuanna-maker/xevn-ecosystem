@@ -1,0 +1,73 @@
+{
+  "optCount": 60,
+  "attempts": [
+    {
+      "i": 0,
+      "label": "Nguyễn Văn QA M3 987275\n(QA-M3-987275)",
+      "openEnabled": true,
+      "dialog": true,
+      "btnTexts": [
+        "Làm việc tại văn phòng",
+        "Hủy",
+        "gpsAttendance.checkIn",
+        "Close"
+      ],
+      "clicked": true,
+      "postsAfter": [
+        {
+          "status": 400,
+          "code": "HRM-ATT-GEO-001",
+          "hasLatLon": true,
+          "latitude": 21.028511,
+          "longitude": 105.804817
+        }
+      ],
+      "requestsAfter": [
+        {
+          "url": "/api/hrm/attendance/records",
+          "hasLatLon": true,
+          "latitude": 21.028511,
+          "longitude": 105.804817,
+          "bodyKeys": [
+            "company_id",
+            "employee_id",
+            "attendance_date",
+            "check_in_at",
+            "status",
+            "created_by",
+            "latitude",
+            "longitude"
+          ]
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "url": "/api/hrm/attendance/records",
+      "hasLatLon": true,
+      "latitude": 21.028511,
+      "longitude": 105.804817,
+      "bodyKeys": [
+        "company_id",
+        "employee_id",
+        "attendance_date",
+        "check_in_at",
+        "status",
+        "created_by",
+        "latitude",
+        "longitude"
+      ]
+    }
+  ],
+  "posts": [
+    {
+      "status": 400,
+      "code": "HRM-ATT-GEO-001",
+      "hasLatLon": true,
+      "latitude": 21.028511,
+      "longitude": 105.804817
+    }
+  ],
+  "pass": true
+}

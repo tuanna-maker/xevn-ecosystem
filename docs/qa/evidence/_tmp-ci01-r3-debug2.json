@@ -1,0 +1,79 @@
+{
+  "dialogs": [],
+  "testids": [
+    "hrm-embed-role-chip",
+    "hdsd-contracts-create-btn",
+    "contracts-list-empty-error",
+    "contracts-list-empty-error-cta"
+  ],
+  "body": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nThêm hợp đồng\n\nLỗi tải dữ liệu\n\nPhiên đăng nhập không hợp lệ hoặc đã hết hạn.\n\nThử lại\nTất cả\nKhông tải được\n\tMã HĐ\tTên nhân sự\tPhòng ban\tLoại hợp đồng\tNgày hiệu lực\tNgày hết hạn\tTình trạng\tThao tác\n\n\nKhông tải được danh sách hợp đồng\n\nPhiên đăng nhập không hợp lệ hoặc đã hết hạn.\n\nThử lại\nHiển thị 0 - 0 trong số Không tải được bản ghi\nSố hàng:\n10",
+  "url": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main&_v=1785811093355",
+  "createCount": 1,
+  "btnTexts": [
+    {
+      "text": "Tất cả đơn vị (rollup)",
+      "testid": null,
+      "aria": "Lọc đơn vị thành viên"
+    },
+    {
+      "text": "Thêm hợp đồng",
+      "testid": "hdsd-contracts-create-btn",
+      "aria": "Thêm hợp đồng"
+    },
+    {
+      "text": "",
+      "testid": null,
+      "aria": null
+    },
+    {
+      "text": "",
+      "testid": null,
+      "aria": null
+    },
+    {
+      "text": "",
+      "testid": null,
+      "aria": null
+    },
+    {
+      "text": "",
+      "testid": null,
+      "aria": null
+    },
+    {
+      "text": "Thử lại",
+      "testid": null,
+      "aria": null
+    },
+    {
+      "text": "Tất cả\nKhông tải được",
+      "testid": null,
+      "aria": null
+    },
+    {
+      "text": "",
+      "testid": null,
+      "aria": null
+    },
+    {
+      "text": "Thử lại",
+      "testid": "contracts-list-empty-error-cta",
+      "aria": null
+    },
+    {
+      "text": "10",
+      "testid": null,
+      "aria": null
+    },
+    {
+      "text": "",
+      "testid": null,
+      "aria": null
+    },
+    {
+      "text": "",
+      "testid": null,
+      "aria": null
+    }
+  ]
+}

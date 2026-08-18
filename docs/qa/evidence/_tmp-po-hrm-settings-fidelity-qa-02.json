@@ -1,0 +1,127 @@
+{
+  "work_item_id": "PO-HRM-SETTINGS-FIDELITY-QA-02",
+  "stamp": "SETFID02-MSMZGC71",
+  "startedAt": "2026-08-10T08:42:00.327Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0"
+  },
+  "ufs": {
+    "UF-SET-W3-A01": {
+      "tab": "att-attendance-codes",
+      "fr": "FR-HRM-SC-ATT · F-ATT-CAT-CODE",
+      "slug": "fidmzgc71att",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/attendance/attendance-codes → **200**",
+      "feAfter": "row pre-F5",
+      "f5": "row after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B01": {
+      "tab": "emp-document-types",
+      "fr": "FR-HRM-SC-EMP-DOC",
+      "slug": "fidmzgc71emp",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/employees/document-types → **200**",
+      "feAfter": "row pre-F5",
+      "f5": "row after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B02": {
+      "tab": "emp-employment-types",
+      "fr": "FR-HRM-SC-ET",
+      "slug": "fidmzgc71emp",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/employees/employment-types → **200**",
+      "feAfter": "row pre-F5",
+      "f5": "row after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B07": {
+      "tab": "rec-pipeline-stages",
+      "fr": "F-REC-CAT-STG · AC-PLT-REC-02",
+      "slug": "fidmzgc71rec",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/recruitment/pipeline-stages → **200**",
+      "feAfter": "row pre-F5",
+      "f5": "row after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-C03": {
+      "tab": "contract-templates",
+      "fr": "FR-UC-BP-CORE-09d · PAT-CTR-TEMPLATE-COMPOSER-01",
+      "slug": "",
+      "action": "Thêm mẫu → ctr-tpl-canvas in dialog (CTR-TPL-DIALOG-COMPOSER-FE-01)",
+      "network": "",
+      "feAfter": "canvas visible",
+      "f5": "",
+      "verdict": "🟢"
+    }
+  },
+  "smokes": {
+    "UF-JD-MASTER-LIBRARY": {
+      "fr": "FR-UC-BP-REC-00 · AC-JD-SET-LIST-01..08",
+      "path": "?tab=jd-master-library",
+      "note": "empty state honest (shell+table)",
+      "verdict": "🟢"
+    },
+    "UF-CTR-DEPT-CATALOG-PICKER": {
+      "fr": "UF-HRM-10 · C-SPINE-BREAK consumer · departments catalog",
+      "path": "/command-center/hrm/contracts → create step1",
+      "note": "department field not rendered — likely hrm_contract_form_fields catalog hides `department` (spec_gap vs consumer audit)",
+      "verdict": "🔴"
+    }
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "networkMutations": [
+    {
+      "uf": "UF-SET-W3-A01",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes"
+    },
+    {
+      "uf": "UF-SET-W3-B01",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types"
+    },
+    {
+      "uf": "UF-SET-W3-B02",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types"
+    },
+    {
+      "uf": "UF-SET-W3-B07",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages"
+    }
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-fidelity-qa-02/att-attendance-codes.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-fidelity-qa-02/emp-document-types.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-fidelity-qa-02/emp-employment-types.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-fidelity-qa-02/rec-pipeline-stages.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-fidelity-qa-02/contract-templates.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-fidelity-qa-02/jd-master-library.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-fidelity-qa-02/contracts-dept-picker.png"
+  ],
+  "ack_status": "FAIL_TO_PM",
+  "overall": "FAIL",
+  "defects": [
+    {
+      "id": "UF-CTR-DEPT-CATALOG-PICKER",
+      "severity": "P1",
+      "note": "department field not rendered — likely hrm_contract_form_fields catalog hides `department` (spec_gap vs consumer audit)",
+      "owner": "dev-fe"
+    }
+  ],
+  "endedAt": "2026-08-10T08:44:34.901Z"
+}

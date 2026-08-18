@@ -1,0 +1,2 @@
+﻿[xevn-ecosystem] Đã xóa nip.io khỏi source (FE+OPS+Mobile) — QC GWC.
+Chỉ còn local + DEV (14.225.217.232:8088 / :3001). HOLD_DEPLOY — chưa reload nginx / chưa rebuild APK.

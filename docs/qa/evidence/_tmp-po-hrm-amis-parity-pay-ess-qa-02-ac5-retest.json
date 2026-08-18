@@ -1,0 +1,30 @@
+{
+  "stamp": "PAYESSQA2-AC5R-ZLJ9L",
+  "jwtCompanyId": "main",
+  "jwtEmployeeId": null,
+  "listGet": {
+    "method": "GET",
+    "status": 403,
+    "url": "/api/hrm/payroll/me/payslips?company_id=main",
+    "code": "HRM-PAY-403-ESS",
+    "message": "ESS phiếu lương yêu cầu token gắn nhân viên"
+  },
+  "banner403": true,
+  "hintText": "Phiếu lương cá nhân yêu cầu đăng nhập gắn hồ sơ nhân viên (vd. uat.nv0001). Tài khoản CEO/không có employee_id sẽ bị từ chối (403).",
+  "rowCount": 0,
+  "panelVisible": true,
+  "loadingVisible": false,
+  "panelSnippet": "Lỗi tải dữ liệu Phiếu lương cá nhân chỉ dành cho tài khoản gắn hồ sơ nhân viên. Không xem hoặc xác nhận phiếu của người khác. Phiếu lương cá nhân yêu cầu đăng nhập gắn hồ sơ nhân viên (vd. uat.nv0001). Tài khoản CEO/không có employee_id sẽ bị từ chối (403). Thử lại Phiếu lương của tôi 0 bản ghi Tải lại Kỳ lương Thực lĩnh Trạng thái Xác nhận ",
+  "bodySnippet": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn Tổng quan Thành phần lương Công thức lương Chính sách Dữ liệu tính lương Tính lương Chi trả lương Phiếu của tôi Báo cáo Lỗi tải dữ liệu Phiếu lương cá nhân chỉ dành cho tài khoản gắn hồ sơ nhân viên. Không xem hoặc xác nhận phiếu của người khác. Phiếu lương cá nhân yêu cầu đăng nhập gắn hồ sơ nhân viên (vd. uat.nv0001). Tài khoản CEO/không có employee_id sẽ bị từ chối (403). Thử",
+  "honestCopy": true,
+  "net": [
+    {
+      "method": "GET",
+      "status": 403,
+      "url": "/api/hrm/payroll/me/payslips?company_id=main",
+      "code": "HRM-PAY-403-ESS",
+      "message": "ESS phiếu lương yêu cầu token gắn nhân viên"
+    }
+  ],
+  "ac5": "PASS"
+}

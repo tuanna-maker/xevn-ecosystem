@@ -1,0 +1,614 @@
+{
+  "work_item_id": "PO-HRM-E2E-LINK-EMP-QA-01",
+  "startedAt": "2026-08-06T14:29:19.173Z",
+  "u65": "zero-seed",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "STAMP": "EMPQA-HM3KXX"
+  },
+  "denied": [
+    "hrm_personnel_uat_ready",
+    "employees_e2e_linkage_ready",
+    "seed",
+    "api_only_pass",
+    "module_uat"
+  ],
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/xbos"
+    },
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    }
+  },
+  "uf": {
+    "L0": {
+      "summary": "{\"hrm\":{\"status\":200,\"url\":\"http://127.0.0.1:28001/api/hrm\"},\"xbos\":{\"status\":200,\"url\":\"http://127.0.0.1:5173/api/xbos\"},\"portal\":{\"status\":200,\"url\":\"http://127.0.0.1:5173\"}}",
+      "verdict": "PASS",
+      "at": "2026-08-06T14:29:19.221Z"
+    },
+    "D2_WH_PICKER": {
+      "summary": "picker=true freeText=PASS_no_free_text_position_input save=201 posKey=CEO f5=true",
+      "d2PickerOk": true,
+      "d2RejectFreeText": "PASS_no_free_text_position_input",
+      "d2SaveStatus": 201,
+      "d2PositionKey": "CEO",
+      "d2F5Persist": true,
+      "verdict": "PASS",
+      "at": "2026-08-06T14:29:36.767Z"
+    },
+    "D1_DEC_WH": {
+      "summary": "save=null code=null neo=false badge=undefined toast=Vui lòng nhập đầy đủ thông tin bắt buộc",
+      "typePicked": true,
+      "employeeLabel": "UAT NV 0100 - UAT-0100",
+      "posPicked": false,
+      "hintVisible": false,
+      "toast": "Vui lòng nhập đầy đủ thông tin bắt buộc",
+      "saveStatus": null,
+      "saveCode": null,
+      "decisionEmployeeId": null,
+      "hasDecisionNeo": false,
+      "verdict": "FAIL",
+      "at": "2026-08-06T14:29:47.939Z"
+    },
+    "D6_HTP05": {
+      "summary": "banner=true state=blocked net=200/HRM-HTP-200 invent=false",
+      "bannerVisible": true,
+      "htpState": "blocked",
+      "bannerText": "Sẵn sàng Hire-to-Pay bước 5Chưa sẵn sàng payroll bước 6 — HRM-HTP-NO-ACTIVE-CONTRACT",
+      "net": {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/hire-readiness?company_id=main",
+        "at": "2026-08-06T14:29:51.975Z",
+        "code": "HRM-HTP-200",
+        "data": {
+          "employee_id": "0500220b-f289-40df-b07e-86316285439b",
+          "company_id": "holding",
+          "profile_ok": true,
+          "active_contract": null,
+          "ready_for_payroll": false,
+          "blockers": [
+            "HRM-HTP-NO-ACTIVE-CONTRACT"
+          ],
+          "as_of": "2026-08-06"
+        }
+      },
+      "inventReady": false,
+      "verdict": "PASS",
+      "at": "2026-08-06T14:29:56.069Z"
+    },
+    "D5_SI_TIMELINE": {
+      "summary": "No employee-insurances enrollment after FE create attempt; contracts-insurance count=1; dualSot=contracts-insurance has rows; employee-insurances empty — timeline panel SoT gap",
+      "insuranceId": null,
+      "insuranceEmpId": "0500220b-f289-40df-b07e-86316285439b",
+      "contractsInsuranceCount": 1,
+      "dualSot": "contracts-insurance has rows; employee-insurances empty — timeline panel SoT gap",
+      "feCreate": {
+        "ok": false,
+        "insuranceId": null,
+        "employeeId": "22222222-2222-4222-8222-222222222222",
+        "createStatus": 200,
+        "count": 0
+      },
+      "blocked": "NO_EMPLOYEE_INSURANCES_ENROLLMENT",
+      "verdict": "FAIL",
+      "at": "2026-08-06T14:30:03.587Z"
+    }
+  },
+  "journey": {
+    "J-HRM-02": {
+      "summary": "url=http://127.0.0.1:5173/hr/employees/0500220b-f289-40df-b07e-86316285439b get=200",
+      "url": "http://127.0.0.1:5173/hr/employees/0500220b-f289-40df-b07e-86316285439b",
+      "getStatus": 200,
+      "verdict": "PASS",
+      "at": "2026-08-06T14:30:10.215Z"
+    },
+    "J-HRM-01": {
+      "summary": "href=/hr/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8?portal=1&tenantId=xevn&companyId=main url=http://127.0.0.1:5173/hr/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8?portal=1&tenantId=xevn&companyId=main",
+      "href": "/hr/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8?portal=1&tenantId=xevn&companyId=main",
+      "url": "http://127.0.0.1:5173/hr/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8?portal=1&tenantId=xevn&companyId=main",
+      "verdict": "PASS",
+      "at": "2026-08-06T14:30:16.895Z"
+    },
+    "J-HRM-03": {
+      "summary": "dialog=false",
+      "verdict": "PARTIAL",
+      "at": "2026-08-06T14:30:21.477Z"
+    },
+    "J-HRM-04": {
+      "summary": "href=/hr/employees/22222222-2222-4222-8222-222222222222?portal=1&tenantId=xevn&companyId=main url=http://127.0.0.1:5173/hr/employees/22222222-2222-4222-8222-222222222222?portal=1&tenantId=xevn&companyId=main get=200",
+      "href": "/hr/employees/22222222-2222-4222-8222-222222222222?portal=1&tenantId=xevn&companyId=main",
+      "url": "http://127.0.0.1:5173/hr/employees/22222222-2222-4222-8222-222222222222?portal=1&tenantId=xevn&companyId=main",
+      "getStatus": 200,
+      "verdict": "PASS",
+      "at": "2026-08-06T14:30:28.409Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-06T14:29:24.211Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-06T14:29:24.355Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=main",
+      "at": "2026-08-06T14:29:24.454Z",
+      "count": 3,
+      "sample": [
+        {
+          "id": "6cc898a4-ba65-415c-b697-486b774b1218",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        },
+        {
+          "id": "61e7745d-5333-4042-bd95-665f0521ee8c",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        },
+        {
+          "id": "b66c03aa-3588-4ae5-b19e-aeb02ee54d77",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=main",
+      "at": "2026-08-06T14:29:30.463Z",
+      "code": "HRM-EMP-PROFILE-201",
+      "message": "Work timeline item created",
+      "id": "bba400a7-29bb-4eca-b3a4-b5e01a4c08c3",
+      "decision_id": null,
+      "position_key": "CEO"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=main",
+      "at": "2026-08-06T14:29:30.602Z",
+      "count": 4,
+      "sample": [
+        {
+          "id": "bba400a7-29bb-4eca-b3a4-b5e01a4c08c3",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        },
+        {
+          "id": "6cc898a4-ba65-415c-b697-486b774b1218",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        },
+        {
+          "id": "61e7745d-5333-4042-bd95-665f0521ee8c",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-06T14:29:33.677Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-06T14:29:33.879Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=main",
+      "at": "2026-08-06T14:29:34.012Z",
+      "count": 4,
+      "sample": [
+        {
+          "id": "bba400a7-29bb-4eca-b3a4-b5e01a4c08c3",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        },
+        {
+          "id": "6cc898a4-ba65-415c-b697-486b774b1218",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        },
+        {
+          "id": "61e7745d-5333-4042-bd95-665f0521ee8c",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/decisions?company_id=main",
+      "at": "2026-08-06T14:29:37.704Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-06T14:29:48.831Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-06T14:29:48.924Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=main",
+      "at": "2026-08-06T14:29:49.087Z",
+      "count": 4,
+      "sample": [
+        {
+          "id": "bba400a7-29bb-4eca-b3a4-b5e01a4c08c3",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        },
+        {
+          "id": "6cc898a4-ba65-415c-b697-486b774b1218",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        },
+        {
+          "id": "61e7745d-5333-4042-bd95-665f0521ee8c",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/hire-readiness?company_id=main",
+      "at": "2026-08-06T14:29:51.975Z",
+      "code": "HRM-HTP-200",
+      "data": {
+        "employee_id": "0500220b-f289-40df-b07e-86316285439b",
+        "company_id": "holding",
+        "profile_ok": true,
+        "active_contract": null,
+        "ready_for_payroll": false,
+        "blockers": [
+          "HRM-HTP-NO-ACTIVE-CONTRACT"
+        ],
+        "as_of": "2026-08-06"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-06T14:29:52.147Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/22222222-2222-4222-8222-222222222222?company_id=main",
+      "at": "2026-08-06T14:29:57.212Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/22222222-2222-4222-8222-222222222222/work-timeline?company_id=main",
+      "at": "2026-08-06T14:29:57.391Z",
+      "count": 0,
+      "sample": []
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-06T14:30:04.265Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b?company_id=main",
+      "at": "2026-08-06T14:30:07.374Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=main",
+      "at": "2026-08-06T14:30:07.438Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=main",
+      "at": "2026-08-06T14:30:07.555Z",
+      "count": 4,
+      "sample": [
+        {
+          "id": "bba400a7-29bb-4eca-b3a4-b5e01a4c08c3",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        },
+        {
+          "id": "6cc898a4-ba65-415c-b697-486b774b1218",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        },
+        {
+          "id": "61e7745d-5333-4042-bd95-665f0521ee8c",
+          "position_key": "CEO",
+          "decision_id": null,
+          "decision_code": null,
+          "source_module": "manual"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-06T14:30:11.091Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8?company_id=main",
+      "at": "2026-08-06T14:30:14.147Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/a6be9b40-23b8-41ab-9acd-aa4978e92da8/work-timeline?company_id=main",
+      "at": "2026-08-06T14:30:14.309Z",
+      "count": 0,
+      "sample": []
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-06T14:30:17.775Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance?company_id=main&page=1&page_size=100",
+      "at": "2026-08-06T14:30:22.458Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-08-06T14:30:22.486Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/22222222-2222-4222-8222-222222222222?company_id=main",
+      "at": "2026-08-06T14:30:25.793Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/22222222-2222-4222-8222-222222222222/work-timeline?company_id=main",
+      "at": "2026-08-06T14:30:26.039Z",
+      "count": 0,
+      "sample": []
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/01-profile-general.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/02-wh-form.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/03-wh-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/04-wh-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/05-decisions-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/06-decision-form.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/06b-decision-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/07-decision-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/09-contract-tab-htp.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/14-j02-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/15-j02-detail.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/16-j01-contracts.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/17-j01-emp.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/18-j03-detail.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/19-j04-insurance.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-01/20-j04-emp.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-06T14:29:22.251Z",
+      "msg": "D2_START"
+    },
+    {
+      "at": "2026-08-06T14:29:22.252Z",
+      "msg": "GOTO_EMPLOYEE_PROFILE",
+      "url": "http://127.0.0.1:5173/hr/employees/0500220b-f289-40df-b07e-86316285439b?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-06T14:29:29.307Z",
+      "msg": "D2_POSITION_PICK",
+      "ok": true,
+      "label": "CEOTổng Giám đốc"
+    },
+    {
+      "at": "2026-08-06T14:29:36.768Z",
+      "msg": "D1_START"
+    },
+    {
+      "at": "2026-08-06T14:29:47.941Z",
+      "msg": "D6_START"
+    },
+    {
+      "at": "2026-08-06T14:29:47.941Z",
+      "msg": "GOTO_EMPLOYEE_PROFILE",
+      "url": "http://127.0.0.1:5173/hr/employees/0500220b-f289-40df-b07e-86316285439b?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-06T14:29:56.070Z",
+      "msg": "D5_START"
+    },
+    {
+      "at": "2026-08-06T14:29:56.264Z",
+      "msg": "GOTO_EMPLOYEE_PROFILE",
+      "url": "http://127.0.0.1:5173/hr/employees/22222222-2222-4222-8222-222222222222?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-06T14:30:03.588Z",
+      "msg": "J_START"
+    }
+  ],
+  "ids": {
+    "tokenOk": true,
+    "employeeCount": 30,
+    "employeeId": "0500220b-f289-40df-b07e-86316285439b",
+    "employeeName": "UAT NV 0100",
+    "employeeCompany": "holding",
+    "decisionEmployeeId": "0500220b-f289-40df-b07e-86316285439b"
+  },
+  "residuals": [
+    {
+      "id": "R-EMP-SI-DUAL-SOT",
+      "severity": "P0",
+      "note": "Insurance list (contracts-insurance) ≠ profile timeline (employee-insurances); actions CORE-10 cannot run on natural list rows"
+    }
+  ],
+  "overall": "FAIL",
+  "endedAt": "2026-08-06T14:30:28.412Z",
+  "api_corroborate": {
+    "hireReadiness": {
+      "status": 200,
+      "code": "HRM-HTP-200",
+      "ready": false,
+      "blockers": [
+        "HRM-HTP-NO-ACTIVE-CONTRACT"
+      ]
+    },
+    "insuranceList": {
+      "status": 200,
+      "code": "HRM-EINS-200",
+      "count": 0
+    },
+    "contracts": {
+      "status": 200,
+      "code": "HRM-CON-200",
+      "count": 10,
+      "first": {
+        "id": "04191837-2624-46bf-aa52-ced64e1671df",
+        "employee_id": "a6be9b40-23b8-41ab-9acd-aa4978e92da8"
+      }
+    },
+    "contractsInsurance": {
+      "status": 200,
+      "code": "HRM-CON-200",
+      "count": 1,
+      "first": {
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2",
+        "employee_id": "22222222-2222-4222-8222-222222222222",
+        "status": "active"
+      }
+    }
+  },
+  "lastWhList": {
+    "method": "GET",
+    "status": 200,
+    "url": "/api/hrm/employees/22222222-2222-4222-8222-222222222222/work-timeline?company_id=main",
+    "at": "2026-08-06T14:30:26.039Z",
+    "count": 0,
+    "sample": []
+  },
+  "lastWhMutate": {
+    "method": "POST",
+    "status": 201,
+    "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=main",
+    "at": "2026-08-06T14:29:30.463Z",
+    "code": "HRM-EMP-PROFILE-201",
+    "message": "Work timeline item created",
+    "id": "bba400a7-29bb-4eca-b3a4-b5e01a4c08c3",
+    "decision_id": null,
+    "position_key": "CEO"
+  },
+  "lastHireReadiness": {
+    "method": "GET",
+    "status": 200,
+    "url": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/hire-readiness?company_id=main",
+    "at": "2026-08-06T14:29:51.975Z",
+    "code": "HRM-HTP-200",
+    "data": {
+      "employee_id": "0500220b-f289-40df-b07e-86316285439b",
+      "company_id": "holding",
+      "profile_ok": true,
+      "active_contract": null,
+      "ready_for_payroll": false,
+      "blockers": [
+        "HRM-HTP-NO-ACTIVE-CONTRACT"
+      ],
+      "as_of": "2026-08-06"
+    }
+  },
+  "process_gate": {
+    "pageErrors": 0,
+    "consoleErrors": 0,
+    "processOk": true
+  },
+  "honesty": {
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "narrow_slice_only": true
+  }
+}

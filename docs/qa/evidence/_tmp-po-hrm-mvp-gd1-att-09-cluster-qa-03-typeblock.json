@@ -1,0 +1,892 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-ATT-09-CLUSTER-QA-03-TYPEBLOCK",
+  "program": "PO-HRM-MVP-GD1-CONTINUOUS",
+  "uc_ids": [
+    "UC-BP-ATT-09",
+    "J-HRM-ATT-09-05"
+  ],
+  "stamp": "ATT09QA3-MSLV65OX",
+  "prior_qa": "ATT09QA2-MSLUKI9U",
+  "prior_qc": "ATT09QC1-MSLUTL9D",
+  "fe02": "docs/qa/evidence/po-hrm-mvp-gd1-att-09-cluster-fe-02.md",
+  "startedAt": "2026-08-09T13:54:20.685Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only · product PUT tracked-entitlement if needed",
+  "honesty": {
+    "attendance_uat_ready": false,
+    "contracts_printable_ready": false,
+    "soft_ne_att09_done": true,
+    "ne_att08_eq_att09": true,
+    "ne_att_module_uat": true,
+    "cfg_ne_att02_done": true,
+    "pay_out": true,
+    "nest_core_deny": true,
+    "deny_att_leave_hold": true,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "residual_close_ne_module_uat": true,
+    "reopen_att09_done": false
+  },
+  "must_keep": [
+    "ATT09QC1-MSLUTL9D",
+    "ATT08QC1-MSLSL36C",
+    "ATT02QC1-MSLQZUK7",
+    "PLT01QC1-MSLPUQIU",
+    "CORE10QC1-MSLP0EJB",
+    "CORE09QC1-MSLNBA89",
+    "CORE07QC1-KZJTSHNT"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    },
+    "nest_core_leave_create": {
+      "status": 404,
+      "ok": true
+    }
+  },
+  "network": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/core/attendance/leave-requests",
+      "status": 404,
+      "at": "2026-08-09T13:54:20.771Z",
+      "nest_core": true,
+      "leaveCreate": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/holiday-calendars/2026?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:20.793Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:20.867Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?page=1&page_size=100&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:21.001Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&leave_type=hr_custom_09&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:21.029Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?employee_id=646306df-f4a6-4199-bf99-9ea8a3ff8584&leave_type=hr_custom_09&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:21.046Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/leave-balance/tracked-entitlement",
+      "status": 200,
+      "at": "2026-08-09T13:54:21.080Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&leave_type=annual&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:21.109Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/leave-balance/tracked-entitlement",
+      "status": 200,
+      "at": "2026-08-09T13:54:21.145Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&leave_type=hr_custom_09&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:21.170Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T13:54:22.094Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:22.167Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:22.465Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:22.484Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T13:54:22.525Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:22.639Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:23.742Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T13:54:23.770Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T13:54:23.816Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "at": "2026-08-09T13:54:25.250Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&keyword=Nguy%E1%BB%85n+V%C4%83n+QA+M3+987275&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "at": "2026-08-09T13:54:26.482Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&year=2026",
+      "status": 200,
+      "at": "2026-08-09T13:54:27.430Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&leave_type=hr_custom_09&year=2026",
+      "status": 200,
+      "at": "2026-08-09T13:54:28.655Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T13:54:28.831Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T13:54:29.341Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T13:54:29.648Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 201,
+      "at": "2026-08-09T13:54:32.644Z",
+      "nest_core": false,
+      "leaveCreate": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&year=2026",
+      "status": 200,
+      "at": "2026-08-09T13:54:32.682Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&leave_type=hr_custom_09&year=2026",
+      "status": 200,
+      "at": "2026-08-09T13:54:32.682Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:32.722Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&year=2026",
+      "status": 200,
+      "at": "2026-08-09T13:54:32.807Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&leave_type=hr_custom_09&year=2026",
+      "status": 200,
+      "at": "2026-08-09T13:54:32.807Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T13:54:37.588Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:37.646Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:37.888Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:37.894Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T13:54:37.925Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:38.014Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T13:54:39.214Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T13:54:39.252Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T13:54:39.288Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "at": "2026-08-09T13:54:44.253Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&keyword=Nguy%E1%BB%85n+V%C4%83n+QA+M3+987275&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "at": "2026-08-09T13:54:45.502Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&year=2026",
+      "status": 200,
+      "at": "2026-08-09T13:54:46.464Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&leave_type=hr_custom_09&year=2026",
+      "status": 200,
+      "at": "2026-08-09T13:54:47.724Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T13:54:47.955Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 400,
+      "at": "2026-08-09T13:54:48.440Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests/preview-deduction",
+      "status": 201,
+      "at": "2026-08-09T13:54:48.791Z",
+      "nest_core": false,
+      "leaveCreate": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 409,
+      "at": "2026-08-09T13:54:52.349Z",
+      "nest_core": false,
+      "leaveCreate": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 409,
+      "at": "2026-08-09T13:54:58.830Z",
+      "nest_core": false,
+      "leaveCreate": true
+    }
+  ],
+  "nest_core_hits": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/core/attendance/leave-requests",
+      "status": 404,
+      "at": "2026-08-09T13:54:20.771Z",
+      "nest_core": true,
+      "leaveCreate": true
+    }
+  ],
+  "nest_core_leave_non404": [],
+  "leave_create_hits": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/core/attendance/leave-requests",
+      "status": 404,
+      "at": "2026-08-09T13:54:20.771Z",
+      "nest_core": true,
+      "leaveCreate": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 201,
+      "at": "2026-08-09T13:54:32.644Z",
+      "nest_core": false,
+      "leaveCreate": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 409,
+      "at": "2026-08-09T13:54:52.349Z",
+      "nest_core": false,
+      "leaveCreate": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 409,
+      "at": "2026-08-09T13:54:58.830Z",
+      "nest_core": false,
+      "leaveCreate": true
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Error creating leave request: ApiClientError: Leave request overlaps an existing pending or approved leave\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786280435591:69:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786280435591:122:26)\n    at async createRequest (http://127.0.0.1:5173/hr/src"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-09-cluster-qa-03-typeblock/01-leave-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-09-cluster-qa-03-typeblock/02-create-baseline.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-09-cluster-qa-03-typeblock/03-list-hint.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-09-cluster-qa-03-typeblock/04-create-overlap-proactive.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-09-cluster-qa-03-typeblock/05-create-overlap-post409.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-09-cluster-qa-03-typeblock/06-detail-type-lock.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-09T13:54:20.743Z",
+      "msg": "login ok",
+      "via": "http://127.0.0.1:28002/api/xbos/auth/login"
+    },
+    {
+      "at": "2026-08-09T13:54:23.715Z",
+      "msg": "open Nghỉ phép tab (role)"
+    },
+    {
+      "at": "2026-08-09T13:54:25.125Z",
+      "msg": "open create leave dialog"
+    },
+    {
+      "at": "2026-08-09T13:54:27.419Z",
+      "msg": "select employee",
+      "label": "Nguyễn Văn QA M3 987275 — QA-M3-987275 · DEPT_01"
+    },
+    {
+      "at": "2026-08-09T13:54:28.648Z",
+      "msg": "select leave type",
+      "label": "hr_custom_09\nQA hr_custom_09 ATTPLATQA-MSISVY4L",
+      "preferredKey": "annual"
+    },
+    {
+      "at": "2026-08-09T13:54:29.472Z",
+      "msg": "fill dates",
+      "startVi": "28/12/2026",
+      "endVi": "29/12/2026"
+    },
+    {
+      "at": "2026-08-09T13:54:31.016Z",
+      "msg": "fill reason"
+    },
+    {
+      "at": "2026-08-09T13:54:32.271Z",
+      "msg": "submit create"
+    },
+    {
+      "at": "2026-08-09T13:54:37.335Z",
+      "msg": "baseline pending created",
+      "requestIdPending": "26f61fe5-70c8-4e82-9a03-6d22d2a880ac",
+      "effectiveLtKey": "hr_custom_09"
+    },
+    {
+      "at": "2026-08-09T13:54:39.195Z",
+      "msg": "open Nghỉ phép tab (role)"
+    },
+    {
+      "at": "2026-08-09T13:54:41.516Z",
+      "msg": "open list tab (role=tab)"
+    },
+    {
+      "at": "2026-08-09T13:54:43.938Z",
+      "msg": "list hint",
+      "visible": true,
+      "text": "Không đổi loại phép khi đơn đang chờ duyệt — quỹ đã giữ chỗ theo loại hiện tại (AC-ATT-09-TYPE-BLOCK · BR-BP-LV-06).",
+      "hintNearRow": true,
+      "listMode": "tab"
+    },
+    {
+      "at": "2026-08-09T13:54:44.133Z",
+      "msg": "open create leave dialog"
+    },
+    {
+      "at": "2026-08-09T13:54:46.460Z",
+      "msg": "select employee",
+      "label": "Nguyễn Văn QA M3 987275 — QA-M3-987275 · DEPT_01"
+    },
+    {
+      "at": "2026-08-09T13:54:47.710Z",
+      "msg": "select leave type",
+      "label": "hr_custom_09\nQA hr_custom_09 ATTPLATQA-MSISVY4L",
+      "preferredKey": "hr_custom_09"
+    },
+    {
+      "at": "2026-08-09T13:54:48.607Z",
+      "msg": "fill dates",
+      "startVi": "28/12/2026",
+      "endVi": "29/12/2026"
+    },
+    {
+      "at": "2026-08-09T13:54:50.159Z",
+      "msg": "fill reason"
+    },
+    {
+      "at": "2026-08-09T13:54:52.093Z",
+      "msg": "submit create"
+    },
+    {
+      "at": "2026-08-09T13:54:57.204Z",
+      "msg": "create type-block",
+      "before": true,
+      "after": true,
+      "overlapStatus": 409
+    },
+    {
+      "at": "2026-08-09T13:54:58.571Z",
+      "msg": "detail type-lock",
+      "openedVia": "att-09-type-block-open-detail",
+      "detailVisible": true,
+      "typeBlock": {
+        "visible": true,
+        "text": "Loại phép đã khóa Không đổi loại phép khi đơn đang chờ duyệt — quỹ đã giữ chỗ theo loại hiện tại (AC-ATT-09-TYPE-BLOCK · BR-BP-LV-06)."
+      },
+      "typeReadonly": {
+        "visible": true,
+        "text": "QA hr_custom_09 ATTPLATQA-MSISVY4L"
+      }
+    }
+  ],
+  "journeys": {
+    "J-HRM-ATT-09-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T13:54:58.830Z",
+      "summary": "createBannerBefore=true · createBannerAfter=true · listHint=true · detailTypeBlock=true · detailReadonly=true · overlapUi=409:HRM-LEAVE-VAL-OVERLAP · overlapApi=409:HRM-LEAVE-VAL-OVERLAP · silent409Only=false · nest0=true",
+      "click_path": "Nghỉ phép → Tạo pending → list hint → Tạo trùng lịch → att-09-type-block → detail type-lock",
+      "asserts": {
+        "createBaseline": {
+          "status": 201,
+          "code": "HRM-LEAVE-201",
+          "requestId": "26f61fe5-70c8-4e82-9a03-6d22d2a880ac",
+          "leaveType": "hr_custom_09"
+        },
+        "listHint": {
+          "visible": true,
+          "text": "Không đổi loại phép khi đơn đang chờ duyệt — quỹ đã giữ chỗ theo loại hiện tại (AC-ATT-09-TYPE-BLOCK · BR-BP-LV-06).",
+          "hintNearRow": true,
+          "listMode": "tab"
+        },
+        "createBannerBefore409": {
+          "visible": true,
+          "text": "Loại phép đã khóa · trùng lịch Không đổi loại phép khi đơn đang chờ duyệt — quỹ đã giữ chỗ theo loại hiện tại (AC-ATT-09-TYPE-BLOCK · BR-BP-LV-06). Khoảng ngày trùng với đơn đang chờ duyệt — không gửi thêm đơn chồng lịch; mở chi tiết đơn ch"
+        },
+        "overlapSubmit": {
+          "status": 409,
+          "code": "HRM-LEAVE-VAL-OVERLAP",
+          "bannerAfter": {
+            "visible": true,
+            "text": "Loại phép đã khóa · trùng lịch Không đổi loại phép khi đơn đang chờ duyệt — quỹ đã giữ chỗ theo loại hiện tại (AC-ATT-09-TYPE-BLOCK · BR-BP-LV-06). Khoảng ngày trùng với đơn đang chờ duyệt — không gửi thêm đơn chồng lịch; mở chi tiết đơn ch"
+          },
+          "openDetailCta": {
+            "visible": true,
+            "text": "Xem đơn chờ duyệt (loại phép khóa)"
+          }
+        },
+        "detail": {
+          "openedVia": "att-09-type-block-open-detail",
+          "detailVisible": true,
+          "typeBlock": {
+            "visible": true,
+            "text": "Loại phép đã khóa Không đổi loại phép khi đơn đang chờ duyệt — quỹ đã giữ chỗ theo loại hiện tại (AC-ATT-09-TYPE-BLOCK · BR-BP-LV-06)."
+          },
+          "typeReadonly": {
+            "visible": true,
+            "text": "QA hr_custom_09 ATTPLATQA-MSISVY4L"
+          }
+        },
+        "overlapApi": {
+          "status": 409,
+          "code": "HRM-LEAVE-VAL-OVERLAP",
+          "summary": "{\"success\":false,\"code\":\"HRM-LEAVE-VAL-OVERLAP\",\"message\":\"Leave request overlaps an existing pending or approved leave\",\"details\":{\"conflicting_id\":\"26f61fe5-70c8-4e82-9a03-6d22d2a880ac\",\"conflicting_status\":\"pending\"},\"timestamp\":\"2026-08-09T13:54:58.829Z\"}"
+        },
+        "residualClosed": {
+          "id": "R-ATT-09-TYPE-BLOCK-UI",
+          "status": "CLOSED",
+          "note": "FE-02 visible TYPE-BLOCK on create overlap + list hint + detail lock PASS · ≠ ATT-09 module UAT"
+        }
+      },
+      "explicit": "residual CLOSED ≠ ATT-09 module UAT · C-SLICE ATT09QC1-MSLUTL9D stands · ≠ reopen DONE"
+    }
+  },
+  "residuals": [],
+  "defects": [],
+  "setup": {
+    "holiday_2026": {
+      "status": "present",
+      "via": "GET"
+    },
+    "leaveType": {
+      "key": "hr_custom_09",
+      "unit": "day",
+      "name": "QA hr_custom_09 ATTPLATQA-MSISVY4L"
+    },
+    "tracked": {
+      "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "code": "QA-M3-987275",
+      "name": "Nguyễn Văn QA M3 987275",
+      "ltKey": "hr_custom_09"
+    },
+    "soft": {
+      "id": "646306df-f4a6-4199-bf99-9ea8a3ff8584",
+      "code": "QA-IM-W4B1E63RYV",
+      "name": "QA Import W4B1E63RYV",
+      "ltKey": "hr_custom_09"
+    },
+    "grantKeys": [
+      "annual",
+      "hr_custom_09"
+    ],
+    "tracked_grant": {
+      "status": 200,
+      "code": "HRM-LEAVE-BAL-201",
+      "u65": "product-PUT · ≠ seed",
+      "ok": true,
+      "verify": {
+        "status": 200,
+        "entitled": 12,
+        "used": 6,
+        "pending": 0,
+        "available": 6,
+        "source": "employee_leave_balances"
+      }
+    }
+  },
+  "capture": {
+    "createBodies": [
+      {
+        "at": "2026-08-09T13:54:32.269Z",
+        "body": {
+          "company_id": "holding",
+          "employee_id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+          "employee_code": "QA-M3-987275",
+          "employee_name": "Nguyễn Văn QA M3 987275",
+          "department": "DEPT_01",
+          "position": "CEO",
+          "leave_type": "hr_custom_09",
+          "start_date": "2026-12-28",
+          "end_date": "2026-12-29",
+          "total_days": 2,
+          "handover_tasks": "QA ATT-09 typeblock baseline ATT09QA3-MSLV65OX"
+        },
+        "url": "/api/hrm/attendance/leave-requests"
+      },
+      {
+        "at": "2026-08-09T13:54:52.090Z",
+        "body": {
+          "company_id": "holding",
+          "employee_id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+          "employee_code": "QA-M3-987275",
+          "employee_name": "Nguyễn Văn QA M3 987275",
+          "department": "DEPT_01",
+          "position": "CEO",
+          "leave_type": "hr_custom_09",
+          "start_date": "2026-12-28",
+          "end_date": "2026-12-29",
+          "total_days": 2,
+          "handover_tasks": "QA ATT-09 typeblock overlap ATT09QA3-MSLV65OX"
+        },
+        "url": "/api/hrm/attendance/leave-requests"
+      }
+    ],
+    "createResponses": [
+      {
+        "status": 201,
+        "code": "HRM-LEAVE-201",
+        "data": {
+          "id": "26f61fe5-70c8-4e82-9a03-6d22d2a880ac",
+          "company_id": "holding",
+          "employee_id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+          "leave_type": "hr_custom_09",
+          "start_date": "2026-12-27T17:00:00.000Z",
+          "end_date": "2026-12-28T17:00:00.000Z",
+          "reason": null,
+          "status": "pending",
+          "requested_at": "2026-08-09T13:54:36.219Z",
+          "reviewed_at": null,
+          "reviewed_by": null,
+          "employee_code": "QA-M3-987275",
+          "employee_name": "Nguyễn Văn QA M3 987275",
+          "department": "DEPT_01",
+          "position": "CEO",
+          "total_days": "2",
+          "handover_to": null,
+          "handover_tasks": "QA ATT-09 typeblock baseline ATT09QA3-MSLV65OX",
+          "approver_employee_id": null,
+          "rejected_reason": null,
+          "attachment_url": null,
+          "workflow_instance_id": "38121101-0cb2-4a29-8c4f-627daaf35fea",
+          "working_days": "2",
+          "deductible_units": "2",
+          "calendar_days": "2",
+          "unit": "day",
+          "status_label": "Chờ duyệt",
+          "leave_type_label": "hr_custom_09",
+          "employee_display_name": "Nguyễn Văn QA M3 987275",
+          "total_days_number": 2,
+          "working_days_number": 2,
+          "deductible_units_number": 2,
+          "calendar_days_number": 2
+        },
+        "at": "2026-08-09T13:54:32.682Z",
+        "url": "/api/hrm/attendance/leave-requests"
+      },
+      {
+        "status": 409,
+        "code": "HRM-LEAVE-VAL-OVERLAP",
+        "at": "2026-08-09T13:54:52.407Z",
+        "url": "/api/hrm/attendance/leave-requests"
+      }
+    ]
+  },
+  "asserts": {
+    "createBaseline": {
+      "status": 201,
+      "code": "HRM-LEAVE-201",
+      "requestId": "26f61fe5-70c8-4e82-9a03-6d22d2a880ac",
+      "leaveType": "hr_custom_09"
+    },
+    "listHint": {
+      "visible": true,
+      "text": "Không đổi loại phép khi đơn đang chờ duyệt — quỹ đã giữ chỗ theo loại hiện tại (AC-ATT-09-TYPE-BLOCK · BR-BP-LV-06).",
+      "hintNearRow": true,
+      "listMode": "tab"
+    },
+    "createBannerBefore409": {
+      "visible": true,
+      "text": "Loại phép đã khóa · trùng lịch Không đổi loại phép khi đơn đang chờ duyệt — quỹ đã giữ chỗ theo loại hiện tại (AC-ATT-09-TYPE-BLOCK · BR-BP-LV-06). Khoảng ngày trùng với đơn đang chờ duyệt — không gửi thêm đơn chồng lịch; mở chi tiết đơn ch"
+    },
+    "overlapSubmit": {
+      "status": 409,
+      "code": "HRM-LEAVE-VAL-OVERLAP",
+      "bannerAfter": {
+        "visible": true,
+        "text": "Loại phép đã khóa · trùng lịch Không đổi loại phép khi đơn đang chờ duyệt — quỹ đã giữ chỗ theo loại hiện tại (AC-ATT-09-TYPE-BLOCK · BR-BP-LV-06). Khoảng ngày trùng với đơn đang chờ duyệt — không gửi thêm đơn chồng lịch; mở chi tiết đơn ch"
+      },
+      "openDetailCta": {
+        "visible": true,
+        "text": "Xem đơn chờ duyệt (loại phép khóa)"
+      }
+    },
+    "detail": {
+      "openedVia": "att-09-type-block-open-detail",
+      "detailVisible": true,
+      "typeBlock": {
+        "visible": true,
+        "text": "Loại phép đã khóa Không đổi loại phép khi đơn đang chờ duyệt — quỹ đã giữ chỗ theo loại hiện tại (AC-ATT-09-TYPE-BLOCK · BR-BP-LV-06)."
+      },
+      "typeReadonly": {
+        "visible": true,
+        "text": "QA hr_custom_09 ATTPLATQA-MSISVY4L"
+      }
+    },
+    "overlapApi": {
+      "status": 409,
+      "code": "HRM-LEAVE-VAL-OVERLAP",
+      "summary": "{\"success\":false,\"code\":\"HRM-LEAVE-VAL-OVERLAP\",\"message\":\"Leave request overlaps an existing pending or approved leave\",\"details\":{\"conflicting_id\":\"26f61fe5-70c8-4e82-9a03-6d22d2a880ac\",\"conflicting_status\":\"pending\"},\"timestamp\":\"2026-08-09T13:54:58.829Z\"}"
+    },
+    "residualClosed": {
+      "id": "R-ATT-09-TYPE-BLOCK-UI",
+      "status": "CLOSED",
+      "note": "FE-02 visible TYPE-BLOCK on create overlap + list hint + detail lock PASS · ≠ ATT-09 module UAT"
+    }
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T13:54:58.831Z",
+  "network_summary": {
+    "leave_create": 4,
+    "nest_core_leave_non404": 0,
+    "seed": false
+  }
+}

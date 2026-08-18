@@ -1,0 +1,1377 @@
+{
+  "sheets": [
+    {
+      "name": "chi tiết sc",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "TỔNG HỢP 2023+2024+2025"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "tháng /năm",
+            "LỆNH SC",
+            "BKS",
+            "NGÀY SỬA",
+            "NỘI DUNG, HẠNG MỤC",
+            "SỐ\n LƯỢNG",
+            "ĐƠN GIÁ",
+            "=+SUBTOTAL(9,H5:H50000)",
+            "KM THAY THẾ"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "T1.2025",
+            "LSC26004",
+            "29K06532",
+            "24-01-2025",
+            "Lọc dầu solati",
+            "1",
+            "200000",
+            "200000"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "T1.2025",
+            "LSC26004",
+            "29K06532",
+            "24-01-2025",
+            "Dầu Shell HX7 10W-30",
+            "7.5",
+            "135000",
+            "1012500"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "T1.2025",
+            "LSC26003",
+            "29F02494",
+            "24-01-2025",
+            "Lọc dầu solati",
+            "1",
+            "200000",
+            "200000"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "T1.2025",
+            "LSC26003",
+            "29F02494",
+            "24-01-2025",
+            "Dầu Shell HX7 10W-30",
+            "7.5",
+            "135000",
+            "1012500"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "T1.2025",
+            "LSC26002",
+            "29K06429",
+            "24-01-2025",
+            "Nước làm mát",
+            "5",
+            "30000",
+            "150000"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "T1.2025",
+            "LSC26002",
+            "29K06429",
+            "24-01-2025",
+            "Lọc dầu solati",
+            "1",
+            "200000",
+            "200000"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "T1.2025",
+            "LSC26002",
+            "29K06429",
+            "24-01-2025",
+            "Dầu Shell HX7 10W-30",
+            "7.5",
+            "135000",
+            "1012500"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "T1.2025",
+            "LSC26001",
+            "29H88552",
+            "24-01-2025",
+            "Gạt mưa valeo 26-650",
+            "1",
+            "160000",
+            "160000"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "T1.2025",
+            "LSC26001",
+            "29H88552",
+            "24-01-2025",
+            "Gạt mưa valeo24-650",
+            "1",
+            "160000",
+            "160000"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "T1.2025",
+            "LSC26001",
+            "29H88552",
+            "24-01-2025",
+            "Lọc dầu solati",
+            "1",
+            "200000",
+            "200000"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TỔNG HỢP LƯỢT",
+      "preview_rows": [
+        {
+          "row": 3,
+          "cells": [
+            "Column1",
+            "Lái xe",
+            "Mã nhân viên",
+            "Biển số",
+            "Ngày đi",
+            "Lộ trình",
+            "Sum of Số lượt"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "Trương Văn Quỳnh",
+            "XE00005",
+            "29E32490",
+            "2026-06-21 00:00:00",
+            "BC - NB",
+            "2",
+            "Row Labels",
+            "Sum of Sum of Số lượt"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Trương Văn Quỳnh",
+            "XE00005",
+            "29E32490",
+            "2026-06-21 00:00:00",
+            "NB - BC",
+            "2",
+            "29H84952",
+            "119"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "Trương Văn Quỳnh",
+            "XE00005",
+            "29K06897",
+            "2026-06-07 00:00:00",
+            "BC - NB",
+            "2",
+            "Lê Quang Minh",
+            "88",
+            "minh",
+            "88",
+            "=+L6/L13"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "Trương Văn Quỳnh",
+            "XE00005",
+            "29K06897",
+            "2026-06-07 00:00:00",
+            "NB - BC",
+            "2",
+            "Lê Trung Kiên",
+            "2",
+            "kiên",
+            "2",
+            "=+L7/L13"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "Trương Văn Quỳnh",
+            "XE00005",
+            "29K06897",
+            "2026-06-13 00:00:00",
+            "GA - NB",
+            "2",
+            "Nguyễn Quang Thanh",
+            "18",
+            "thanh",
+            "18",
+            "=+L8/L13"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "Trương Văn Quỳnh",
+            "XE00005",
+            "29K06897",
+            "2026-06-13 00:00:00",
+            "NB - GA",
+            "2",
+            "Trần Văn Thiện",
+            "11",
+            "thiện",
+            "11",
+            "=+L9/L13"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "Trương Văn Quỳnh",
+            "XE00005",
+            "29K07846",
+            "2026-06-27 00:00:00",
+            "BC - NB",
+            "2",
+            "Grand Total",
+            "119",
+            "=+L10/L13"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "Trương Văn Quỳnh",
+            "XE00005",
+            "29K07846",
+            "2026-06-27 00:00:00",
+            "NB - BC",
+            "2",
+            "=+L11/L13"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "Trương Văn Quỳnh",
+            "XE00005",
+            "29E81253",
+            "2026-06-28 00:00:00",
+            "BC - NB",
+            "2"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "Trương Văn Quỳnh",
+            "XE00005",
+            "29E81253",
+            "2026-06-28 00:00:00",
+            "NB - BC",
+            "2",
+            "TỔNG",
+            "=SUM(L6:L12)",
+            "=SUM(M6:M12)"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "Nguyễn Anh Hùng",
+            "XE00013",
+            "29H88586",
+            "2026-06-01 00:00:00",
+            "HĐ - NĐ",
+            "3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CPSC",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "BẢNG CHI TIẾT SỬA CHỮA PHƯƠNG TIỆN THÁNG 06.2026 - CHIA CPSC THÁNG 06.2026"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "Lệnh SC",
+            "BKS",
+            "KM",
+            "Tên lái xe",
+            "Mã NV",
+            "Dòng xe",
+            "Biên chế",
+            "Ngày vào",
+            "Hạng mục bảo dưỡng",
+            "SL",
+            "Đơn giá",
+            "Tổng tiền",
+            "%\n CPSC",
+            "Thành tiền \ntheo % CPSC",
+            "Note",
+            "CPSC Lái xe chịu 10%",
+            "CPSC đối tượng khác chịu",
+            "CPSC Công ty chịu"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=+SUBTOTAL(9,L6:L1884)",
+            "=+SUBTOTAL(9,N6:N4989)",
+            "=+L5-N5",
+            "337500",
+            "=+L5-N5",
+            "=+L5-N5"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "VN-PDV2605-0466",
+            "29E03469",
+            "499500",
+            "Tống Văn Hậu",
+            "=+VLOOKUP(D6,'TỔNG HỢP LƯỢT'!$B$4:$C$10337,2,0)",
+            "=+VLOOKUP(B6,'định biên t6'!$B$5:$E$260,2,0)",
+            "=+VLOOKUP(B6,'định biên t6'!$B$5:$E$260,4,0)",
+            "25-05-2026",
+            "Gioăng cổ hút solati",
+            "1",
+            "350000",
+            "350000",
+            "0.03",
+            "=+L6*M6",
+            "=N6*10%",
+            "=N6-AP6-AQ6"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "VN-PDV2605-0466",
+            "29E03469",
+            "499500",
+            "Tống Văn Hậu",
+            "=+VLOOKUP(D7,'TỔNG HỢP LƯỢT'!$B$4:$C$10337,2,0)",
+            "=+VLOOKUP(B7,'định biên t6'!$B$5:$E$260,2,0)",
+            "=+VLOOKUP(B7,'định biên t6'!$B$5:$E$260,4,0)",
+            "25-05-2026",
+            "Công thay chuột cửa",
+            "1",
+            "200000",
+            "200000",
+            "0.03",
+            "=+L7*M7",
+            "=N7*10%",
+            "=N7-AP7-AQ7"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "VN-PDV2605-0466",
+            "29E03469",
+            "499500",
+            "Tống Văn Hậu",
+            "=+VLOOKUP(D8,'TỔNG HỢP LƯỢT'!$B$4:$C$10337,2,0)",
+            "=+VLOOKUP(B8,'định biên t6'!$B$5:$E$260,2,0)",
+            "=+VLOOKUP(B8,'định biên t6'!$B$5:$E$260,4,0)",
+            "25-05-2026",
+            "Công thay bi, phớt bơm trợ lực, tháo lắp máy phát, thay bi tăng tỳ",
+            "1",
+            "300000",
+            "300000",
+            "1",
+            "=+L8*M8",
+            "=N8*10%",
+            "=N8-AP8-AQ8"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "VN-PDV2605-0466",
+            "29E03469",
+            "499500",
+            "Tống Văn Hậu",
+            "=+VLOOKUP(D9,'TỔNG HỢP LƯỢT'!$B$4:$C$10337,2,0)",
+            "=+VLOOKUP(B9,'định biên t6'!$B$5:$E$260,2,0)",
+            "=+VLOOKUP(B9,'định biên t6'!$B$5:$E$260,4,0)",
+            "25-05-2026",
+            "Công thay giàn nóng + nạp ga, dầu lạnh",
+            "1",
+            "400000",
+            "400000",
+            "0.03",
+            "=+L9*M9",
+            "=N9*10%",
+            "=N9-AP9-AQ9"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "VN-PDV2605-0466",
+            "29E03469",
+            "499500",
+            "Tống Văn Hậu",
+            "=+VLOOKUP(D10,'TỔNG HỢP LƯỢT'!$B$4:$C$10337,2,0)",
+            "=+VLOOKUP(B10,'định biên t6'!$B$5:$E$260,2,0)",
+            "=+VLOOKUP(B10,'định biên t6'!$B$5:$E$260,4,0)",
+            "25-05-2026",
+            "Hàn cổ giàn nóng",
+            "1",
+            "0",
+            "0",
+            "0.03",
+            "=+L10*M10",
+            "=N10*10%",
+            "=N10-AP10-AQ10"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "VN-PDV2605-0466",
+            "29E03469",
+            "499500",
+            "Tống Văn Hậu",
+            "=+VLOOKUP(D11,'TỔNG HỢP LƯỢT'!$B$4:$C$10337,2,0)",
+            "=+VLOOKUP(B11,'định biên t6'!$B$5:$E$260,2,0)",
+            "=+VLOOKUP(B11,'định biên t6'!$B$5:$E$260,4,0)",
+            "25-05-2026",
+            "Dầu Lạnh",
+            "0.1",
+            "45000",
+            "45000",
+            "0.03",
+            "=+L11*M11",
+            "499500",
+            "=N11*10%",
+            "=N11-AP11-AQ11"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "VN-PDV2605-0466",
+            "29E03469",
+            "499500",
+            "Tống Văn Hậu",
+            "=+VLOOKUP(D12,'TỔNG HỢP LƯỢT'!$B$4:$C$10337,2,0)",
+            "=+VLOOKUP(B12,'định biên t6'!$B$5:$E$260,2,0)",
+            "=+VLOOKUP(B12,'định biên t6'!$B$5:$E$260,4,0)",
+            "25-05-2026",
+            "Bi đuôi trục máy phát",
+            "1",
+            "100000",
+            "100000",
+            "1",
+            "=+L12*M12",
+            "=N12*10%",
+            "=N12-AP12-AQ12"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "VN-PDV2605-0466",
+            "29E03469",
+            "499500",
+            "Tống Văn Hậu",
+            "=+VLOOKUP(D13,'TỔNG HỢP LƯỢT'!$B$4:$C$10337,2,0)",
+            "=+VLOOKUP(B13,'định biên t6'!$B$5:$E$260,2,0)",
+            "=+VLOOKUP(B13,'định biên t6'!$B$5:$E$260,4,0)",
+            "25-05-2026",
+            "Giàn nóng solati kray",
+            "1",
+            "3000000",
+            "3000000",
+            "0.03",
+            "=+L13*M13",
+            "hậu",
+            "=+'KM BÀN GIAO'!BX576-'KM BÀN GIAO'!BW576",
+            "=+AM13/AM11",
+            "=N13*10%",
+            "=N13-AP13-AQ13"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "VN-PDV2605-0466",
+            "29E03469",
+            "499500",
+            "Tống Văn Hậu",
+            "=+VLOOKUP(D14,'TỔNG HỢP LƯỢT'!$B$4:$C$10337,2,0)",
+            "=+VLOOKUP(B14,'định biên t6'!$B$5:$E$260,2,0)",
+            "=+VLOOKUP(B14,'định biên t6'!$B$5:$E$260,4,0)",
+            "25-05-2026",
+            "Sửa chữa máy phát, thay chổi than cổ bóp + thay bi",
+            "1",
+            "700000",
+            "700000",
+            "1",
+            "=+L14*M14",
+            "vthk",
+            "=+AM11-AM13",
+            "=+AM14/AM11",
+            "=N14*10%",
+            "=N14-AP14-AQ14"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "định biên t6",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "TỔNG HỢP KM, ĐỊNH BIÊN XE # THÁNG 06/2026"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "Thời gian phòng VTHK gửi phòng TCKT chậm nhất ngày 05 tháng tiếp theo"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "TT",
+            "BKS",
+            "Loại xe",
+            "Năm sản xuất",
+            "Định biên",
+            "Đơn vị \nsử dụng cuối tháng 5/2026",
+            "Km đầu tháng",
+            "Km cuối tháng",
+            "Km sử dụng trong tháng",
+            "Km Skysoft/DSS",
+            "Chênh lệch",
+            "Họ và tên",
+            "Xe tuyến/ Xe Trung chuyển",
+            "Ghi chú"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B5)",
+            "29E03207",
+            "Huyndai Solati",
+            "2023",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B5,[2]Odo!B:B,[2]Odo!U:U),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B5,[2]Odo!B:B,[2]Odo!V:V),\"\")",
+            "=H5-G5",
+            "=IFERROR(VLOOKUP(B5,[2]Skysoft!A:B,2,0),\"\")",
+            "=I5-J5",
+            "Phạm Văn Vũ",
+            "Xe tuyến",
+            "=C5&\" \"&D5"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B6)",
+            "29E03463",
+            "Huyndai Solati",
+            "2023",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B6,[2]Odo!B:B,[2]Odo!U:U),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B6,[2]Odo!B:B,[2]Odo!V:V),\"\")",
+            "=H6-G6",
+            "=IFERROR(VLOOKUP(B6,[2]Skysoft!A:B,2,0),\"\")",
+            "=I6-J6",
+            "Trần Đình Thắng",
+            "Xe tuyến",
+            "=C6&\" \"&D6"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B7)",
+            "29E03468",
+            "Huyndai Solati",
+            "2023",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B7,[2]Odo!B:B,[2]Odo!U:U),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B7,[2]Odo!B:B,[2]Odo!V:V),\"\")",
+            "=H7-G7",
+            "=IFERROR(VLOOKUP(B7,[2]Skysoft!A:B,2,0),\"\")",
+            "=I7-J7",
+            "Nguyễn Thế Anh",
+            "Xe tuyến",
+            "=C7&\" \"&D7"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B8)",
+            "29E03480",
+            "Huyndai Solati",
+            "2023",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B8,[2]Odo!B:B,[2]Odo!U:U),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B8,[2]Odo!B:B,[2]Odo!V:V),\"\")",
+            "=H8-G8",
+            "=IFERROR(VLOOKUP(B8,[2]Skysoft!A:B,2,0),\"\")",
+            "=I8-J8",
+            "Phạm Văn Sớm",
+            "Xe tuyến",
+            "=C8&\" \"&D8"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B9)",
+            "29E07842",
+            "Huyndai Solati",
+            "2023",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B9,[2]Odo!B:B,[2]Odo!U:U),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B9,[2]Odo!B:B,[2]Odo!V:V),\"\")",
+            "=H9-G9",
+            "=IFERROR(VLOOKUP(B9,[2]Skysoft!A:B,2,0),\"\")",
+            "=I9-J9",
+            "Nguyễn Văn Chiến",
+            "Xe tuyến",
+            "=C9&\" \"&D9"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B10)",
+            "29F01521",
+            "Huyndai Solati",
+            "2022",
+            "Nam Định",
+            "Ninh Bình",
+            "=IFERROR(_xlfn.XLOOKUP(B10,[2]Odo!B:B,[2]Odo!U:U),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B10,[2]Odo!B:B,[2]Odo!V:V),\"\")",
+            "=H10-G10",
+            "=IFERROR(VLOOKUP(B10,[2]Skysoft!A:B,2,0),\"\")",
+            "=I10-J10",
+            "Nguyễn Văn Thế NĐ",
+            "Xe tuyến",
+            "=C10&\" \"&D10"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B11)",
+            "29E74362",
+            "Huyndai Solati",
+            "2022",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B11,[2]Odo!B:B,[2]Odo!U:U),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B11,[2]Odo!B:B,[2]Odo!V:V),\"\")",
+            "=H11-G11",
+            "=IFERROR(VLOOKUP(B11,[2]Skysoft!A:B,2,0),\"\")",
+            "=I11-J11",
+            "Lê Minh Đức",
+            "Xe tuyến",
+            "xe đổi biển",
+            "=C11&\" \"&D11"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B12)",
+            "29E73314",
+            "Huyndai Solati",
+            "2022",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B12,[2]Odo!B:B,[2]Odo!U:U),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B12,[2]Odo!B:B,[2]Odo!V:V),\"\")",
+            "=H12-G12",
+            "=IFERROR(VLOOKUP(B12,[2]Skysoft!A:B,2,0),\"\")",
+            "=I12-J12",
+            "Trần Quốc Phong",
+            "Xe tuyến",
+            "xe đổi biển",
+            "=C12&\" \"&D12"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B13)",
+            "29E74062",
+            "Huyndai Solati",
+            "2022",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B13,[2]Odo!B:B,[2]Odo!U:U),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B13,[2]Odo!B:B,[2]Odo!V:V),\"\")",
+            "=H13-G13",
+            "=IFERROR(VLOOKUP(B13,[2]Skysoft!A:B,2,0),\"\")",
+            "=I13-J13",
+            "Trần Mạnh Thắng",
+            "Xe tuyến",
+            "xe đổi biển",
+            "=C13&\" \"&D13"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cpsc ngoài 6",
+      "preview_rows": [
+        {
+          "row": 2,
+          "cells": [
+            "Danh Sách Sửa Chi Phí Ngoài"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "Biển số xe",
+            "KM",
+            "Ngày",
+            "Hạng mục sửa chữa",
+            "Tổng Tiền"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "29F05107",
+            "=+VLOOKUP(A5,'định biên t6'!$B$5:$E$260,4,0)",
+            "2026-06-02 00:00:00",
+            "cân chụm",
+            "1",
+            "200000",
+            "200000"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "29F01768",
+            "=+VLOOKUP(A6,'định biên t6'!$B$5:$E$260,4,0)",
+            "2026-06-02 00:00:00",
+            "thay pin chìa tổng",
+            "1",
+            "50000",
+            "50000"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "29E33376",
+            "=+VLOOKUP(A7,'định biên t6'!$B$5:$E$260,4,0)",
+            "2026-06-04 00:00:00",
+            "thay lốp, cân chụm, cân bằng động",
+            "1",
+            "1380000",
+            "1380000"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "29K23947",
+            "74106",
+            "=+VLOOKUP(A8,'định biên t6'!$B$5:$E$260,4,0)",
+            "2026-06-04 00:00:00",
+            "bảo dưỡng hãng",
+            "1",
+            "591300",
+            "591300"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "29H84960",
+            "=+VLOOKUP(A9,'định biên t6'!$B$5:$E$260,4,0)",
+            "2026-06-05 00:00:00",
+            "vá lốp",
+            "1",
+            "30000",
+            "30000"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "29K23961",
+            "80032",
+            "=+VLOOKUP(A10,'định biên t6'!$B$5:$E$260,4,0)",
+            "2026-06-05 00:00:00",
+            "bảo dưỡng hãng",
+            "1",
+            "591300",
+            "591300"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "29F01521",
+            "=+VLOOKUP(A11,'định biên t6'!$B$5:$E$260,4,0)",
+            "2026-06-06 00:00:00",
+            "cân chụm",
+            "1",
+            "200000",
+            "200000"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "30L86952",
+            "90936",
+            "=+VLOOKUP(A12,'định biên t6'!$B$5:$E$260,4,0)",
+            "2026-06-02 00:00:00",
+            "bảo dưỡng hãng",
+            "1",
+            "1050300",
+            "1050300"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "29B30446",
+            "60215",
+            "=+VLOOKUP(A13,'định biên t6'!$B$5:$E$260,4,0)",
+            "2026-06-03 00:00:00",
+            "bảo dưỡng hãng",
+            "1",
+            "553500",
+            "553500"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "29E09655",
+            "=+VLOOKUP(A14,'định biên t6'!$B$5:$E$260,4,0)",
+            "2026-06-07 00:00:00",
+            "thay dây culoa, tăng tổng, bily máy phát",
+            "1",
+            "2300000",
+            "2300000"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ĐỐI SOÁT T5",
+      "preview_rows": [
+        {
+          "row": 3,
+          "cells": [
+            "HƯƠNG",
+            "LỰC+ NGOÀI"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "1",
+            "29K01796",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D4,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D4,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D4,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E4-F4"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "2",
+            "29K00192",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D5,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D5,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D5,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E5-F5"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "3",
+            "29K06830",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D6,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D6,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D6,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E6-F6"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "4",
+            "29E09707",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D7,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D7,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D7,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E7-F7"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "5",
+            "29E32687",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D8,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D8,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D8,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E8-F8"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "6",
+            "29K00927",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D9,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D9,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D9,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E9-F9"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "7",
+            "29G02096",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D10,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D10,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D10,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E10-F10"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "8",
+            "29F01521",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D11,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D11,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D11,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E11-F11"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "9",
+            "29K05187",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D12,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D12,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D12,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E12-F12"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "10",
+            "29K05170",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D13,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D13,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D13,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E13-F13"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "11",
+            "29E74362",
+            "=+SUMIF(CPSC!#REF!,'ĐỐI SOÁT T5'!$D14,CPSC!#REF!)",
+            "=+SUMIF('cp ngoài t5'!$A$3:$A$65,'ĐỐI SOÁT T5'!$D14,'cp ngoài t5'!$K$3:$K$65)+SUMIF('[3]VTHK T052026'!B$3:B$1209,'ĐỐI SOÁT T5'!$D14,'[3]VTHK T052026'!L$3:L$1209)",
+            "=+E14-F14"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tua km 2026",
+      "preview_rows": [
+        {
+          "row": 2,
+          "cells": [
+            "DANH SÁCH TUA KM THÁNG 5.2026"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "STT",
+            "BIỂN SỐ XE",
+            "KM TRƯỚC TUA",
+            "KM SAU TUA",
+            "CHÊNH LỆCH"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "1",
+            "29F01521",
+            "552427",
+            "422427",
+            "=+(D5-E5)"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "2",
+            "29F01729",
+            "625679",
+            "402179",
+            "=+(D6-E6)"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "3",
+            "29F01608",
+            "626388",
+            "421388",
+            "=+(D7-E7)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "4",
+            "29F01751",
+            "592806",
+            "402806",
+            "=+(D8-E8)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "5",
+            "29F01768",
+            "621668",
+            "421668",
+            "=+(D9-E9)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "6",
+            "29F01771",
+            "591380",
+            "411380",
+            "=+(D10-E10)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "7",
+            "29F01796",
+            "599905",
+            "421360",
+            "=+(D11-E11)"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "8",
+            "29F01640",
+            "597963",
+            "401263",
+            "=+(D12-E12)"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "9",
+            "29F01783",
+            "518950",
+            "400250",
+            "=+(D13-E13)"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "10",
+            "29F01606",
+            "581102",
+            "412102",
+            "=+(D14-E14)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "đb tháng 5",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "TỔNG HỢP KM, ĐỊNH BIÊN XE # THÁNG 05/2026"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "Thời gian phòng VTHK gửi phòng TCKT chậm nhất ngày 05 tháng tiếp theo"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "TT",
+            "BKS",
+            "Loại xe",
+            "Năm sản xuất",
+            "Định biên",
+            "Đơn vị \nsử dụng cuối tháng 5/2026",
+            "Km đầu tháng",
+            "Km cuối tháng",
+            "Km sử dụng trong tháng",
+            "Km Skysoft/DSS",
+            "Chênh lệch",
+            "Họ và tên",
+            "Xe tuyến/ Xe Trung chuyển",
+            "Ghi chú"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B5)",
+            "29E03207",
+            "Huyndai Solati",
+            "2023",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B5,[4]Odo!B:B,[4]Odo!T:T),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B5,[4]Odo!B:B,[4]Odo!U:U),\"\")",
+            "=H5-G5",
+            "=IFERROR(VLOOKUP(B5,[4]Skysoft!A:B,2,0),\"\")",
+            "=I5-J5",
+            "Phạm Văn Vũ",
+            "Xe tuyến",
+            "=C5&\" \"&D5"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B6)",
+            "29E03463",
+            "Huyndai Solati",
+            "2023",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B6,[4]Odo!B:B,[4]Odo!T:T),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B6,[4]Odo!B:B,[4]Odo!U:U),\"\")",
+            "=H6-G6",
+            "=IFERROR(VLOOKUP(B6,[4]Skysoft!A:B,2,0),\"\")",
+            "=I6-J6",
+            "Trần Đình Thắng",
+            "Xe tuyến",
+            "=C6&\" \"&D6"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B7)",
+            "29E03468",
+            "Huyndai Solati",
+            "2023",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B7,[4]Odo!B:B,[4]Odo!T:T),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B7,[4]Odo!B:B,[4]Odo!U:U),\"\")",
+            "=H7-G7",
+            "=IFERROR(VLOOKUP(B7,[4]Skysoft!A:B,2,0),\"\")",
+            "=I7-J7",
+            "Đỗ Tuấn Anh (NĐ)",
+            "Xe tuyến",
+            "=C7&\" \"&D7"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B8)",
+            "29E03480",
+            "Huyndai Solati",
+            "2023",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B8,[4]Odo!B:B,[4]Odo!T:T),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B8,[4]Odo!B:B,[4]Odo!U:U),\"\")",
+            "=H8-G8",
+            "=IFERROR(VLOOKUP(B8,[4]Skysoft!A:B,2,0),\"\")",
+            "=I8-J8",
+            "Phạm Văn Sớm",
+            "Xe tuyến",
+            "=C8&\" \"&D8"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B9)",
+            "29E07842",
+            "Huyndai Solati",
+            "2023",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B9,[4]Odo!B:B,[4]Odo!T:T),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B9,[4]Odo!B:B,[4]Odo!U:U),\"\")",
+            "=H9-G9",
+            "=IFERROR(VLOOKUP(B9,[4]Skysoft!A:B,2,0),\"\")",
+            "=I9-J9",
+            "Nguyễn Văn Chiến",
+            "Xe tuyến",
+            "=C9&\" \"&D9"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B10)",
+            "29F01521",
+            "Huyndai Solati",
+            "2022",
+            "Nam Định",
+            "Ninh Bình",
+            "=IFERROR(_xlfn.XLOOKUP(B10,[4]Odo!B:B,[4]Odo!T:T),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B10,[4]Odo!B:B,[4]Odo!U:U),\"\")",
+            "=H10-G10",
+            "=IFERROR(VLOOKUP(B10,[4]Skysoft!A:B,2,0),\"\")",
+            "=I10-J10",
+            "Nguyễn Văn Thế NĐ",
+            "Xe tuyến",
+            "=C10&\" \"&D10"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B11)",
+            "29E74362",
+            "Huyndai Solati",
+            "2022",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B11,[4]Odo!B:B,[4]Odo!T:T),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B11,[4]Odo!B:B,[4]Odo!U:U),\"\")",
+            "=H11-G11",
+            "=IFERROR(VLOOKUP(B11,[4]Skysoft!A:B,2,0),\"\")",
+            "=I11-J11",
+            "Lê Minh Đức",
+            "Xe tuyến",
+            "xe đổi biển",
+            "=C11&\" \"&D11"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B12)",
+            "29E73314",
+            "Huyndai Solati",
+            "2022",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B12,[4]Odo!B:B,[4]Odo!T:T),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B12,[4]Odo!B:B,[4]Odo!U:U),\"\")",
+            "=H12-G12",
+            "=IFERROR(VLOOKUP(B12,[4]Skysoft!A:B,2,0),\"\")",
+            "=I12-J12",
+            "Trần Quốc Phong",
+            "Xe tuyến",
+            "xe đổi biển",
+            "=C12&\" \"&D12"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "=SUBTOTAL(3,$B$5:B13)",
+            "29E74062",
+            "Huyndai Solati",
+            "2022",
+            "Nam Định",
+            "Nam Định",
+            "=IFERROR(_xlfn.XLOOKUP(B13,[4]Odo!B:B,[4]Odo!T:T),\"\")",
+            "=IFERROR(_xlfn.XLOOKUP(B13,[4]Odo!B:B,[4]Odo!U:U),\"\")",
+            "=H13-G13",
+            "=IFERROR(VLOOKUP(B13,[4]Skysoft!A:B,2,0),\"\")",
+            "=I13-J13",
+            "Trần Mạnh Thắng",
+            "Xe tuyến",
+            "xe đổi biển",
+            "=C13&\" \"&D13"
+          ]
+        }
+      ]
+    }
+  ]
+}

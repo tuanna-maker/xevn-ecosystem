@@ -1,0 +1,73 @@
+=== HOLD-STAB 1000 VU x 300s START 2026-07-17T17:30:34Z ===
+pre :3101/api/hrm/ -> 200
+pre :3001/api/hrm/ -> 200
+pre :3011/api/hrm/ -> 200
+{
+  "work_item_id": "P1-HRM-SCALE-W3-T-CONC",
+  "portal": "http://127.0.0.1:8088",
+  "hrm_base": "http://127.0.0.1:3101/api/hrm",
+  "stages": [
+    1000
+  ],
+  "stage_hold_ms": 300000,
+  "think_ms": 1000,
+  "targets": {
+    "error_rate": 0.01,
+    "p95_list_ms": 2000
+  },
+  "abort_error_rate": 0.05
+}
+login: OK
+pre_health: [{"url":"http://127.0.0.1:3101/api/hrm/","status":200,"ms":8,"ok":true},{"url":"http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main","status":200,"ms":45,"ok":true}]
+
+=== STAGE 1000 VU × 300000ms ===
+{
+  "vus": 1000,
+  "errorRate": 0.0118,
+  "rate429": 0,
+  "rate5xx": 0,
+  "p50": 413,
+  "p95": 1412,
+  "p99": 2163,
+  "rps": 620.24,
+  "list_p95": 1427,
+  "summary_p95": 1382,
+  "gates": {
+    "error_budget_ok": false,
+    "p95_list_ok": true,
+    "abort_triggered": false
+  },
+  "statusCounts": {
+    "0": 2217,
+    "200": 186372,
+    "502": 1
+  }
+}
+
+Wrote /opt/xevn-ecosystem/docs/qa/evidence/_p1-hrm-scale-w3-t-conc-raw.json
+{
+  "t_conc_met": false,
+  "max_passing_vu": null,
+  "measured_ceiling_vu": null,
+  "blocked_reason": null
+}
+=== END rc=0 2026-07-17T17:35:38Z ===
+post :3101/api/hrm/ -> 200
+post :3001/api/hrm/ -> 200
+post :3011/api/hrm/ -> 200
+post :8088/ -> 200
+post :28002/api/xbos/ -> 200
+=== nginx diagnostics during hold window ===
+no_live_count=1
+conn_reset_count=16
+xevn-hrm-be-dev cpu=1.56% mem=203MiB / 15.61GiB
+xevn-hrm-be-2-dev cpu=0.43% mem=213.2MiB / 15.61GiB
+xevn-hrm-api-lb-dev cpu=0.00% mem=32.79MiB / 15.61GiB
+be1 Restart=0 OOM=false Health=healthy
+be2 Restart=0 OOM=false Health=healthy
+ytexa_frontend_dev
+ytexa_backend_dev
+ytexa_db_dev
+ytexa_cache_dev
+hsbx_web_prod
+hsbx_api_prod

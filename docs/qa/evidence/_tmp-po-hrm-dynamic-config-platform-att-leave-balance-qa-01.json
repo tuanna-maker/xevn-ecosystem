@@ -1,0 +1,310 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE-BALANCE-QA-01",
+  "stamp": "ATTLVRULEQA-MSK6G783",
+  "startedAt": "2026-08-08T09:34:32.596Z",
+  "gitHead": "dc930c5",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "XBOS": "http://127.0.0.1:28002/api/xbos",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "EMAIL": "ceo@xe.vn",
+    "HEADER_COMPANY": "main",
+    "TENANT": "xevn"
+  },
+  "honesty": {
+    "attendance_uat_ready": false,
+    "payroll_e2e_ready": false,
+    "F_ATT_LEAVE_04_engine_LIVE": "HOLD",
+    "C_SLICE_NE_MODULE": true,
+    "U65_zero_seed": true,
+    "seals_retain": {
+      "leave_type_invent": "HRM-LEAVE-TYPE-UNKNOWN",
+      "ATT_CODE": "ATTCODEQA-MSK4T1A5",
+      "ATT_WS": "ATT-WS RETAIN",
+      "ATT_SHIFT": "ATTSHIFTQA-MSK5FXP3",
+      "FE_HOLDS": "ATT-CODE FE · ATT-SHIFT CNS-02 RETAIN do not invent"
+    }
+  },
+  "dist_fe": {
+    "dist_has_lvrule_key": true,
+    "src_has_lvrule_key": true,
+    "dist_has_lvrule_type": true,
+    "controller_has_policies": true,
+    "controller_assert_consumer_wired": false,
+    "leave_balance_mvp_hardcode": true,
+    "mvp_snippet": "5 loại MVP một request.\r",
+    "note": "assertLeaveAccrualPolicyForConsumer LIVE in service+jest; HTTP grant/adjust consumer wire ABSENT (BE residual follow-on)",
+    "service_has_assert": true
+  },
+  "leave_type_key": "lvt_01",
+  "policy_id": "b06ac803-2426-4f0a-a87c-ca3d2d934d03",
+  "steps": [
+    {
+      "id": "DIST_KEY_GATE",
+      "at": "2026-08-08T09:34:32.659Z",
+      "verdict": "PASS",
+      "summary": "{\"dist_has_lvrule_key\":true,\"src_has_lvrule_key\":true,\"dist_has_lvrule_type\":true,\"controller_has_policies\":true,\"controller_assert_consumer_wired\":false,\"leave_balance_mvp_hardcode\":true,\"mvp_snippet\":\"5 loại MVP một request.\\r\",\"note\":\"assertLeaveAccrualPolicyForConsumer LIVE in service+jest; HTTP grant/adjust consumer wire ABSENT (BE residual follow-on)\",\"service_has_assert\":true}"
+    },
+    {
+      "id": "L0_HRM_HEALTH",
+      "at": "2026-08-08T09:34:32.694Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-HEALTH-200"
+    },
+    {
+      "id": "UNAUTH_EFF",
+      "at": "2026-08-08T09:34:32.698Z",
+      "verdict": "PASS",
+      "summary": "401 HRM-AUTH-001"
+    },
+    {
+      "id": "LOGIN",
+      "at": "2026-08-08T09:34:32.770Z",
+      "verdict": "PASS",
+      "summary": "via http://127.0.0.1:5173/api/xbos/auth/login status=201"
+    },
+    {
+      "id": "LEAVE_TYPES_EFF",
+      "at": "2026-08-08T09:34:32.961Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-ATT-LVT-200 count=8 pick=lvt_01"
+    },
+    {
+      "id": "LIST_BASELINE",
+      "at": "2026-08-08T09:34:32.973Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-ATT-LVRULE-200 total=0"
+    },
+    {
+      "id": "EFF_BASELINE",
+      "at": "2026-08-08T09:34:32.992Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-ATT-LVRULE-200 empty=true hadActiveBefore=false"
+    },
+    {
+      "id": "ADMIN_CREATE_N1",
+      "at": "2026-08-08T09:34:33.182Z",
+      "verdict": "PASS",
+      "summary": "201 HRM-ATT-LVRULE-201 id=b06ac803-2426-4f0a-a87c-ca3d2d934d03 {\"id\":\"b06ac803-2426-4f0a-a87c-ca3d2d934d03\",\"companyId\":\"holding\",\"leaveTypeKey\":\"lvt_01\",\"leaveTypeNameVi\":\"ATT override ATTPLATQA-MSISRSCP\",\"version\":1,\"effectiveFrom\":\"2026-08-08\",\"effectiveTo\":\"2027-08-08\",\"accrualMode\":\"year_start_gra…"
+    },
+    {
+      "id": "F5_LIST",
+      "at": "2026-08-08T09:34:33.197Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-ATT-LVRULE-200 hasCreated=true displayReady=true n=1"
+    },
+    {
+      "id": "F5_EFFECTIVE",
+      "at": "2026-08-08T09:34:33.212Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-ATT-LVRULE-200 hit=true id=b06ac803-2426-4f0a-a87c-ca3d2d934d03"
+    },
+    {
+      "id": "PICK_EMPLOYEE",
+      "at": "2026-08-08T09:34:33.527Z",
+      "verdict": "PASS",
+      "summary": "0500220b-f289-40df-b07e-86316285439b company=holding"
+    },
+    {
+      "id": "INVENT_KEY_LIVE",
+      "at": "2026-08-08T09:34:33.606Z",
+      "verdict": "FAIL_GAP_WIRE",
+      "summary": "[{\"surface\":\"POST /attendance/leave-requests + invent policy_* (expect VAL or KEY)\",\"status\":400,\"code\":\"HRM-VAL-001\",\"summary\":\"{\\\"success\\\":false,\\\"code\\\":\\\"HRM-VAL-001\\\",\\\"message\\\":\\\"property policy_id should not exist; property accrual_mode should not exist; property annual_days should not exist\\\",\\\"timestamp\\\":\\\"2026-08-08T09:34:33.545Z\\\"}\"},{\"surface\":\"POST /attendance/leave-balances/grant\",\"status\":404,\"code\":\"HRM-DATA-404\",\"summary\":\"{\\\"success\\\":false,\\\"code\\\":\\\"HRM-DATA-404\\\",\\\"message\\\":\\\"Cannot POST /api/hrm/attendance/leave-balances/grant\\\",\\\"timestamp\\\":\\\"2026-08-08T09:34:33.560…"
+    },
+    {
+      "id": "SOFT_RETIRE",
+      "at": "2026-08-08T09:34:33.643Z",
+      "verdict": "PASS",
+      "summary": "201 HRM-ATT-LVRULE-200 status=retired archived=true"
+    },
+    {
+      "id": "RETIRE_VISIBILITY",
+      "at": "2026-08-08T09:34:33.693Z",
+      "verdict": "PASS",
+      "summary": "hiddenDefault=true includeInactive=true effHides=true"
+    },
+    {
+      "id": "ORPHAN_TYPE",
+      "at": "2026-08-08T09:34:33.853Z",
+      "verdict": "PASS",
+      "summary": "400 HRM-ATT-LVRULE-TYPE"
+    },
+    {
+      "id": "ORPHAN_NO_PERSIST",
+      "at": "2026-08-08T09:34:33.876Z",
+      "verdict": "PASS",
+      "summary": "persisted=false"
+    },
+    {
+      "id": "TYPE_INVENT_RETAIN",
+      "at": "2026-08-08T09:34:34.145Z",
+      "verdict": "PASS",
+      "summary": "400 HRM-LEAVE-TYPE-UNKNOWN"
+    },
+    {
+      "id": "U19_GET_FAKE",
+      "at": "2026-08-08T09:34:34.155Z",
+      "verdict": "PASS",
+      "summary": "404 HRM-ATT-LVRULE-404"
+    },
+    {
+      "id": "U19_MEMBER_OOS_SPOT",
+      "at": "2026-08-08T09:34:34.165Z",
+      "verdict": "PASS",
+      "summary": "409 SCOPE_CONTEXT_MISMATCH"
+    },
+    {
+      "id": "SEAL_ROUTES_SPOT",
+      "at": "2026-08-08T09:34:34.625Z",
+      "verdict": "PASS",
+      "summary": "{\"leave_types_eff\":{\"status\":200,\"code\":\"HRM-ATT-LVT-200\"},\"att_codes_eff\":{\"status\":200,\"code\":\"HRM-ATT-CODE-200\"},\"work_shifts_eff\":{\"status\":200,\"code\":\"HRM-WS-200\"},\"work_sites\":{\"status\":200,\"code\":\"HRM-ATT-SITE-200\"}}"
+    }
+  ],
+  "val": {
+    "unauth_effective": {
+      "expect": "401/403 ≠ 404",
+      "status": 401,
+      "code": "HRM-AUTH-001",
+      "verdict": "PASS"
+    },
+    "AC-PLT-ATT-LEAVE-BAL-01c": {
+      "expect": "empty active soft · invent skip · no seed",
+      "baseline_active_for_type": 0,
+      "verdict": "NOTE_BLOCKED",
+      "note": "Baseline active=0 observed (soft empty OK). Invent Network skip not re-probed after CREATE (would need wipe). Jest CNS-05 cite."
+    },
+    "AC-PLT-ATT-LEAVE-BAL-01d": {
+      "expect": "Admin CREATE N+1 bound EFF · 2xx · F5 list · resolve sees row",
+      "status": 201,
+      "code": "HRM-ATT-LVRULE-201",
+      "id": "b06ac803-2426-4f0a-a87c-ca3d2d934d03",
+      "verdict": "PASS",
+      "f5": "PASS"
+    },
+    "AC-PLT-ATT-LEAVE-BAL-01b": {
+      "expect": "Network 4xx HRM-ATT-LVRULE-KEY when active>0 invent policy_id/mode|days · no persist",
+      "attempts": [
+        {
+          "surface": "POST /attendance/leave-requests + invent policy_* (expect VAL or KEY)",
+          "status": 400,
+          "code": "HRM-VAL-001",
+          "summary": "{\"success\":false,\"code\":\"HRM-VAL-001\",\"message\":\"property policy_id should not exist; property accrual_mode should not exist; property annual_days should not exist\",\"timestamp\":\"2026-08-08T09:34:33.545Z\"}"
+        },
+        {
+          "surface": "POST /attendance/leave-balances/grant",
+          "status": 404,
+          "code": "HRM-DATA-404",
+          "summary": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/attendance/leave-balances/grant\",\"timestamp\":\"2026-08-08T09:34:33.560Z\"}"
+        },
+        {
+          "surface": "POST /attendance/leave-balance/grant",
+          "status": 404,
+          "code": "HRM-DATA-404",
+          "summary": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/attendance/leave-balance/grant\",\"timestamp\":\"2026-08-08T09:34:33.575Z\"}"
+        },
+        {
+          "surface": "POST /attendance/leave-balances/adjust",
+          "status": 404,
+          "code": "HRM-DATA-404",
+          "summary": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/attendance/leave-balances/adjust\",\"timestamp\":\"2026-08-08T09:34:33.578Z\"}"
+        },
+        {
+          "surface": "POST /attendance/leave-balances/accrue",
+          "status": 404,
+          "code": "HRM-DATA-404",
+          "summary": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/attendance/leave-balances/accrue\",\"timestamp\":\"2026-08-08T09:34:33.590Z\"}"
+        },
+        {
+          "surface": "POST /attendance/leave-accrual-policies/assert-consumer",
+          "status": 404,
+          "code": "HRM-DATA-404",
+          "summary": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/attendance/leave-accrual-policies/assert-consumer\",\"timestamp\":\"2026-08-08T09:34:33.606Z\"}"
+        }
+      ],
+      "network_key_hit": false,
+      "controller_assert_wired": false,
+      "helper_in_service": true,
+      "verdict": "FAIL_GAP_WIRE",
+      "note": "No HTTP consumer surface emits HRM-ATT-LVRULE-KEY yet (grant/adjust/assert ABSENT). Helper LIVE service+jest (BE residual: wire when product surface ships). Leave-request invent did not stamp LVRULE-KEY."
+    },
+    "AC-PLT-ATT-LEAVE-BAL-01e": {
+      "expect": "soft-retire · default/resolve hide · include_inactive OK",
+      "retire_status": 201,
+      "retire_code": "HRM-ATT-LVRULE-200",
+      "hiddenDefault": true,
+      "retiredVisible": true,
+      "effHides": true,
+      "verdict": "PASS"
+    },
+    "VAL-ATT-LVRULE-CNS-09": {
+      "expect": "4xx HRM-ATT-LVRULE-TYPE ≠ HRM-LEAVE-TYPE-UNKNOWN",
+      "status": 400,
+      "code": "HRM-ATT-LVRULE-TYPE",
+      "verdict": "PASS"
+    },
+    "AC-PLT-ATT-LEAVE-BAL-01f": {
+      "expect": "leave TXN invent type → HRM-LEAVE-TYPE-UNKNOWN ≠ HRM-ATT-LVRULE-KEY · L1 RETAIN",
+      "status": 400,
+      "code": "HRM-LEAVE-TYPE-UNKNOWN",
+      "verdict": "PASS"
+    },
+    "VAL-ATT-LVRULE-CNS-03_U19": {
+      "fake": {
+        "status": 404,
+        "code": "HRM-ATT-LVRULE-404",
+        "verdict": "PASS"
+      },
+      "member_oos": {
+        "status": 409,
+        "code": "SCOPE_CONTEXT_MISMATCH",
+        "verdict": "PASS"
+      }
+    },
+    "AC-PLT-ATT-LEAVE-BAL-01g": {
+      "expect": "panel types ⊆ EFF/policy-bound when >0 · kill MVP-five sole SoT",
+      "verdict": "HOLD",
+      "note": "FE admin/grant/panel residual for PM — do not invent FE this seat. leave-balance.service still documents MVP panel path.",
+      "mvp_snippet": "5 loại MVP một request.\r"
+    },
+    "AC-PLT-ATT-LEAVE-BAL-01H": {
+      "attendance_uat_ready": false,
+      "payroll_e2e_ready": false,
+      "engine_LIVE": "HOLD",
+      "seals": {
+        "leave_type_invent": "HRM-LEAVE-TYPE-UNKNOWN",
+        "ATT_CODE": "ATTCODEQA-MSK4T1A5",
+        "ATT_WS": "ATT-WS RETAIN",
+        "ATT_SHIFT": "ATTSHIFTQA-MSK5FXP3",
+        "FE_HOLDS": "ATT-CODE FE · ATT-SHIFT CNS-02 RETAIN do not invent"
+      },
+      "C_SLICE_NE_MODULE": true,
+      "U65": true,
+      "verdict": "PASS"
+    }
+  },
+  "residuals": [
+    {
+      "id": "R-PLT-ATT-LVRULE-FE-01g",
+      "owner": "dev-fe",
+      "note": "Admin «Quy tắc quỹ phép» UI + consumer grant bind + panel MVP-five kill (01g) — HOLD this QA seat"
+    },
+    {
+      "id": "R-PLT-ATT-LVRULE-CNS-WIRE",
+      "owner": "dev-be",
+      "note": "Wire assertLeaveAccrualPolicyForConsumer on grant/adjust (or gated leave body) so Network emits HRM-ATT-LVRULE-KEY — BE residual follow-on; helper+jest LIVE"
+    },
+    {
+      "id": "F-ATT-LEAVE-04-ENGINE",
+      "owner": "OUT",
+      "note": "Accrue engine LIVE HOLD — DENIED claim this seat"
+    }
+  ],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "conditions": [
+    "R-PLT-ATT-LVRULE-CNS-WIRE — invent KEY Network not on HTTP yet; helper+jest LIVE; wire grant/adjust follow-on",
+    "R-PLT-ATT-LVRULE-FE-01g — FE admin/grant/panel HOLD",
+    "01c NOTE_BLOCKED — no wipe for empty invent-skip isolate"
+  ],
+  "endedAt": "2026-08-08T09:34:34.625Z"
+}

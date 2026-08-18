@@ -1,0 +1,23 @@
+{
+  "new_phone": "0901831662",
+  "before": {
+    "phone": "0919000111",
+    "code": "HRM-EMP-200",
+    "company_id": "holding"
+  },
+  "after": {
+    "phone": "0901831662",
+    "code": "HRM-EMP-200",
+    "status": 200
+  },
+  "sticks": true,
+  "ui_f5": false,
+  "save": {
+    "t": "",
+    "d": "Lưu thông tin liên hệ",
+    "cls": "android.widget.Button",
+    "cx": 540,
+    "cy": 1184,
+    "y1": 1127
+  }
+}

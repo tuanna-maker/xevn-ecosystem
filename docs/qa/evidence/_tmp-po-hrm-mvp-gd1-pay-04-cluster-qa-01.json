@@ -1,0 +1,126 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-PAY-04-CLUSTER-QA-01",
+  "stamp": "PAY04QA1-MSMCR401",
+  "be_handoff": "docs/qa/evidence/po-hrm-mvp-gd1-pay-04-cluster-be-01.md",
+  "pay02_regression_cite": "docs/qa/evidence/po-hrm-mvp-gd1-pay-02-cluster-qa-01.md (PAY02QA1-MSMCDUNG)",
+  "startedAt": "2026-08-09T22:06:31.743Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-api-primary-fe-04-hold",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "ne_pay04_done": true,
+    "ne_pay_module_uat": true,
+    "c_slice": true,
+    "seed_used": false
+  },
+  "must_keep": [
+    "PAY01QC1-MSMBGWC1",
+    "PAY02QC1-MSMC4GWC1"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "PASS"
+  },
+  "l1": {
+    "be_jest": "PASS (52)"
+  },
+  "nest_core_formula": [],
+  "journeys": {
+    "J-HRM-PAY-04-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:06:36.172Z",
+      "summary": "L1 contract: jest simulateDoubleStatic → blocked HRM-PAY-SPLIT-409 (no U65 FE FAIL scenario)",
+      "ac": "AC-PAY-04-SPLIT-409"
+    },
+    "J-HRM-PAY-01-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:06:36.651Z",
+      "summary": "PAY01QC1: process no bind → 412 HRM-PAY-ATT-412",
+      "must_keep": "PAY01QC1-MSMBGWC1"
+    },
+    "J-HRM-PAY-02-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:06:37.302Z",
+      "summary": "bind 409 · process → 412 HRM-PAY-FORMULA-412",
+      "must_keep": "PAY02QC1-MSMC4GWC1"
+    },
+    "J-HRM-PAY-02-07": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:06:37.503Z",
+      "summary": "list 200 n=27 · OOS 404",
+      "must_keep": "PAY02QC1-MSMC4GWC1"
+    },
+    "J-HRM-PAY-02-06": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:06:37.766Z",
+      "summary": "regression delegate PAY02QA1 COMP BE · catalog=18",
+      "must_keep": "PAY02QC1-MSMC4GWC1"
+    },
+    "J-HRM-PAY-04-06": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:06:41.164Z",
+      "summary": "GET payslip includes segments[] · sample=3a5333f7-237e-4157-bade-39c4b98a3fa9",
+      "ac": "AC-PAY-04-PREVIEW-SEGMENTS"
+    },
+    "J-HRM-PAY-04-01": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:06:41.165Z",
+      "summary": "BLOCKED U65: no mid-period C&B payslip with segment_count≥2 without CORE/FE path (FE-01 HOLD)",
+      "ac": "AC-PAY-04-DETECT-CB"
+    },
+    "J-HRM-PAY-04-02": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:06:41.165Z",
+      "summary": "jest+DDL contract OK · live segments HOLD — BLOCKED U65: no mid-period C&B payslip with segment_count≥2 without CORE/FE path (FE-01 HOLD)",
+      "ac": "AC-PAY-04-SEGMENT-DB"
+    },
+    "J-HRM-PAY-04-03": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:06:41.166Z",
+      "summary": "process order retained in payroll.service.spec · static merge L1 only",
+      "ac": "AC-PAY-04-MERGE-STATIC-ONCE"
+    },
+    "J-HRM-PAY-04-04": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:06:41.167Z",
+      "summary": "BLOCKED U65: no mid-period C&B payslip with segment_count≥2 without CORE/FE path (FE-01 HOLD)",
+      "ac": "AC-PAY-04-ONE-NET"
+    },
+    "J-HRM-PAY-04-07": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:06:41.167Z",
+      "summary": "closed-hour proration covered in pay-payslip-split.service.spec · no leave/OT HTTP probe this seat",
+      "ac": "AC-PAY-04-CLOSED-HOURS"
+    },
+    "J-HRM-PAY-04-08": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:06:41.168Z",
+      "summary": "must_keep PAY01QC1-MSMBGWC1+PAY02QC1-MSMC4GWC1 · nest /core formula hits=0 · honesty C-SLICE",
+      "ac": "AC-PAY-04-H"
+    }
+  },
+  "payslip_scan": {
+    "list_status": 200,
+    "scanned": 25,
+    "dtoSample": {
+      "payslip_id": "3a5333f7-237e-4157-bade-39c4b98a3fa9",
+      "has_segments_array": true,
+      "split": false,
+      "segmentCount": 0
+    },
+    "splitSample": null
+  },
+  "defects": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T22:06:41.168Z"
+}

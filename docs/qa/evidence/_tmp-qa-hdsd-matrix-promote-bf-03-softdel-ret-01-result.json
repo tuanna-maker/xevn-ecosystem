@@ -1,0 +1,37 @@
+{
+  "work_item_id": "QA-HDSD-BF-03-SOFTDEL-RET-01",
+  "before": {
+    "c": {
+      "🟢": 322,
+      "🟡": 42
+    },
+    "total": 364
+  },
+  "after": {
+    "c": {
+      "🟢": 323,
+      "🟡": 41
+    },
+    "total": 364
+  },
+  "applied": [
+    {
+      "id": "TC-HRM-HDSD-025",
+      "from": "🟡",
+      "to": "🟢",
+      "detail": "§5.3 soft-delete createPOST=201 archive=POST 201 f5Gone=true navigatedProfileOnXoa=false "
+    }
+  ],
+  "skipped": [],
+  "regressions": [],
+  "must_keep_untouched": [
+    "TC-HRM-HDSD-041",
+    "TC-HRM-HDSD-049",
+    "TC-HRM-HDSD-096",
+    "TC-HRM-HDSD-097",
+    "TC-HDSD-06-02-01",
+    "TC-HDSD-07-02-01",
+    "TC-HDSD-08-02-01"
+  ],
+  "at": "2026-07-31T04:02:21.101Z"
+}

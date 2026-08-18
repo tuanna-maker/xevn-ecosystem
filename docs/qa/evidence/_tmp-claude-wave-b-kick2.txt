@@ -1,0 +1,8 @@
+I can't complete the automation you asked for without more specific instructions.
+
+What I can do from here:
+- Run the workspace type check or the full build now.
+- Investigate any type-check/build failures that show up.
+- Tell you whether the `defense` module paths and registrations are actually being picked up, based on the command output.
+
+If you want, just reply with which exact command(s)/scope you'd like me to run next.

@@ -1,0 +1,832 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-FE-ADMIN-QA-FE-01",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-FE-ADMIN-BUILD-FE-01",
+  "stamp_ref_l1": "EMPSTQA-MSK20G7H",
+  "startedAt": "2026-08-08T18:01:22.067Z",
+  "stamp": "EMPSTADMQA-MSKOJZ8G",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "ou": "holding"
+  },
+  "u65": "zero-seed · browser-only · FE after 2xx + F5",
+  "hdsd_align": "settings-tab-emp-employment-statuses · settings-emp-status-admin · hdsd-emp-employment-status-* · hdsd-emp-status-reason-*",
+  "honesty": {
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "contracts_printable_ready": false,
+    "seed_used": false,
+    "deny_module_personnel_uat": true,
+    "c_slice_not_module": true
+  },
+  "must_keep": {
+    "l1": "EMPSTQA-MSK20G7H RETAIN",
+    "consumer_fe": "CLOSED RETAIN",
+    "settings_pos_dept_sot": "RETAIN",
+    "nest_pos_dept_admin": "DENY",
+    "lvrule": "HOLD"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "ST_KEY": "hr_st_admin_qa_mskojz8g",
+    "STR_KEY": "resign_personal_qa_mskojz8g"
+  },
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "ac": {
+    "L0-STACK": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:22.107Z",
+      "summary": "portal 200 · hrm 200 · xbos 200"
+    },
+    "UF-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:29.914Z",
+      "summary": "Clicked settings-tab-emp-employment-statuses"
+    },
+    "UF-PANEL": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:30.069Z",
+      "summary": "admin=true stCard=true strCard=true"
+    },
+    "UF-DENY-NEST-POS-DEPT": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:31.638Z",
+      "summary": "denyPos=true denyDept=true jd-dynamic SoT tab visible=true"
+    },
+    "UF-ST-INVALID": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:32.627Z",
+      "summary": "2bad → toast INVALID · inventPuts=0"
+    },
+    "UF-ST-CREATE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:34.447Z",
+      "summary": "PUT → 200 code=HRM-EMP-ST-200 row=true rows 1→2",
+      "network": {
+        "method": "PUT",
+        "status": 200,
+        "url": "/api/hrm/employees/employment-statuses",
+        "code": "HRM-EMP-ST-200",
+        "key": "hr_st_admin_qa_mskojz8g",
+        "id": "742feafe-7bcb-4c6e-a05b-ac66188f55b7"
+      }
+    },
+    "UF-ST-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:42.625Z",
+      "summary": "F5 row hr_st_admin_qa_mskojz8g còn · EFF pick ok=true"
+    },
+    "UF-ST-EFF-PICKER": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:42.626Z",
+      "summary": "EFF picker has hr_st_admin_qa_mskojz8g via option_click"
+    },
+    "UF-ST-EDIT": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:44.635Z",
+      "summary": "PUT → 200 FE has edit label=true nameVi=TT QA EMPST edit mskojz8g",
+      "network": {
+        "method": "PUT",
+        "status": 200,
+        "code": "HRM-EMP-ST-200",
+        "nameVi": "TT QA EMPST edit mskojz8g"
+      }
+    },
+    "UF-ST-EDIT-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:50.802Z",
+      "summary": "F5 still shows «TT QA EMPST edit mskojz8g»"
+    },
+    "UF-STR-CREATE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:52.571Z",
+      "summary": "PUT status-reasons → 200 code=HRM-EMP-STR-200 row=true",
+      "network": {
+        "method": "PUT",
+        "status": 200,
+        "url": "/api/hrm/employees/status-reasons",
+        "code": "HRM-EMP-STR-200",
+        "key": "resign_personal_qa_mskojz8g",
+        "id": "843cf869-3a3f-4888-9943-0082c4b62741"
+      }
+    },
+    "UF-STR-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:01:58.804Z",
+      "summary": "F5 STR row resign_personal_qa_mskojz8g còn"
+    },
+    "UF-STR-RETIRE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:02:00.248Z",
+      "summary": "POST retire → 201 gone=true",
+      "network": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/employees/status-reasons/843cf869-3a3f-4888-9943-0082c4b62741/retire?company_id=main",
+        "code": "HRM-EMP-STR-200"
+      }
+    },
+    "UF-ST-RETIRE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:02:01.622Z",
+      "summary": "POST retire → 201 gone=true",
+      "network": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/employees/employment-statuses/742feafe-7bcb-4c6e-a05b-ac66188f55b7/retire?company_id=main",
+        "code": "HRM-EMP-ST-200"
+      }
+    },
+    "UF-RETIRE-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:02:08.222Z",
+      "summary": "F5 active list ST gone=true STR gone=true"
+    },
+    "UF-CONSUMER-CLOSED": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:02:13.920Z",
+      "summary": "Employees form emp-employment-status-select PRESENT (CLOSED consumer RETAIN)"
+    },
+    "UF-HONESTY-LOCKED": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:02:13.922Z",
+      "summary": "hrm_personnel_uat_ready=false · employees_e2e=false · printable=false · C-SLICE · no module EMP UAT claim"
+    },
+    "UF-L1-RETAIN": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:02:13.924Z",
+      "summary": "L1 Nest KEY stamp EMPSTQA-MSK20G7H RETAIN (no wipe · no new Nest routes)"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:01:27.897Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:01:27.912Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons?company_id=main&status=active",
+      "at": "2026-08-08T18:01:27.959Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:28.207Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:01:30.122Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:30.561Z",
+      "body": null
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses",
+      "at": "2026-08-08T18:01:32.824Z",
+      "body": {
+        "code": "HRM-EMP-ST-200",
+        "id": "742feafe-7bcb-4c6e-a05b-ac66188f55b7",
+        "key": "hr_st_admin_qa_mskojz8g",
+        "nameVi": "TT QA EMPST mskojz8g"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:01:32.827Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:33.169Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:33.512Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:01:37.504Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons?company_id=main&status=active",
+      "at": "2026-08-08T18:01:37.505Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:01:37.505Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:37.842Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:01:39.550Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:39.871Z",
+      "body": null
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses",
+      "at": "2026-08-08T18:01:43.351Z",
+      "body": {
+        "code": "HRM-EMP-ST-200",
+        "id": "742feafe-7bcb-4c6e-a05b-ac66188f55b7",
+        "key": "hr_st_admin_qa_mskojz8g",
+        "nameVi": "TT QA EMPST edit mskojz8g"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:01:43.356Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:43.761Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:44.119Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:01:47.549Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:01:47.549Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons?company_id=main&status=active",
+      "at": "2026-08-08T18:01:47.550Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:47.857Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:01:49.593Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:49.936Z",
+      "body": null
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons",
+      "at": "2026-08-08T18:01:50.968Z",
+      "body": {
+        "code": "HRM-EMP-STR-200",
+        "id": "843cf869-3a3f-4888-9943-0082c4b62741",
+        "key": "resign_personal_qa_mskojz8g",
+        "nameVi": "Lý do QA EMPST mskojz8g"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons?company_id=main&status=active",
+      "at": "2026-08-08T18:01:50.976Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:01:50.995Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:01:51.009Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:01:55.561Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:01:55.565Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons?company_id=main&status=active",
+      "at": "2026-08-08T18:01:55.567Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:01:55.882Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons?company_id=main&status=active",
+      "at": "2026-08-08T18:01:57.614Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:01:57.617Z",
+      "body": null
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees/status-reasons/843cf869-3a3f-4888-9943-0082c4b62741/retire?company_id=main",
+      "at": "2026-08-08T18:01:58.905Z",
+      "body": {
+        "code": "HRM-EMP-STR-200",
+        "id": "843cf869-3a3f-4888-9943-0082c4b62741",
+        "key": "resign_personal_qa_mskojz8g",
+        "nameVi": "Lý do QA EMPST mskojz8g"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons?company_id=main&status=active",
+      "at": "2026-08-08T18:01:58.918Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:01:58.939Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:01:58.954Z",
+      "body": null
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees/employment-statuses/742feafe-7bcb-4c6e-a05b-ac66188f55b7/retire?company_id=main",
+      "at": "2026-08-08T18:02:00.356Z",
+      "body": {
+        "code": "HRM-EMP-ST-200",
+        "id": "742feafe-7bcb-4c6e-a05b-ac66188f55b7",
+        "key": "hr_st_admin_qa_mskojz8g",
+        "nameVi": "TT QA EMPST edit mskojz8g"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:02:00.374Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:02:00.787Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:02:01.134Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:02:04.530Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:02:04.531Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons?company_id=main&status=active",
+      "at": "2026-08-08T18:02:04.531Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:02:04.862Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses?company_id=main&status=active",
+      "at": "2026-08-08T18:02:06.595Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main",
+      "at": "2026-08-08T18:02:06.654Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons?company_id=main&status=active",
+      "at": "2026-08-08T18:02:06.655Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:02:06.926Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-statuses/effective?company_id=main",
+      "at": "2026-08-08T18:02:09.286Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-08T18:02:09.286Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/status-reasons/effective?company_id=main&applies_to_status_key=active",
+      "at": "2026-08-08T18:02:12.324Z",
+      "body": null
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-status-fe-admin-qa-fe-01/01-settings-st-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-status-fe-admin-qa-fe-01/02-invalid-key.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-status-fe-admin-qa-fe-01/03-st-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-status-fe-admin-qa-fe-01/04-st-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-status-fe-admin-qa-fe-01/05-st-edit.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-status-fe-admin-qa-fe-01/06-str-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-status-fe-admin-qa-fe-01/07-str-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-status-fe-admin-qa-fe-01/08-st-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-status-fe-admin-qa-fe-01/09-retire-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-status-fe-admin-qa-fe-01/10-consumer-select.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-08T18:01:22.215Z",
+      "msg": "loginApi ok"
+    },
+    {
+      "at": "2026-08-08T18:01:23.038Z",
+      "msg": "goto Settings Trạng thái NV EMP"
+    },
+    {
+      "at": "2026-08-08T18:01:31.623Z",
+      "msg": "baseline ST rows=1 STR rows=1"
+    },
+    {
+      "at": "2026-08-08T18:01:32.710Z",
+      "msg": "click Tạo trạng thái key=hr_st_admin_qa_mskojz8g"
+    },
+    {
+      "at": "2026-08-08T18:01:43.192Z",
+      "msg": "click Cập nhật ST label=TT QA EMPST edit mskojz8g"
+    },
+    {
+      "at": "2026-08-08T18:01:50.883Z",
+      "msg": "click Tạo lý do key=resign_personal_qa_mskojz8g applies_to=inactive"
+    },
+    {
+      "at": "2026-08-08T18:01:58.806Z",
+      "msg": "click Ngừng STR resign_personal_qa_mskojz8g"
+    },
+    {
+      "at": "2026-08-08T18:02:00.250Z",
+      "msg": "click Ngừng ST hr_st_admin_qa_mskojz8g"
+    }
+  ],
+  "probes": {
+    "baseline": {
+      "stBefore": 1,
+      "strBefore": 1
+    },
+    "invalidKey": {
+      "toast": {
+        "ok": true,
+        "snippet": "Mã trạng thái không hợp lệ"
+      },
+      "inventPuts": []
+    },
+    "stCreate": {
+      "status": 200,
+      "method": "PUT",
+      "url": "/api/hrm/employees/employment-statuses",
+      "body": {
+        "success": true,
+        "code": "HRM-EMP-ST-200",
+        "message": "Employment status upserted",
+        "data": {
+          "id": "742feafe-7bcb-4c6e-a05b-ac66188f55b7",
+          "companyId": "holding",
+          "statusKey": "hr_st_admin_qa_mskojz8g",
+          "nameVi": "TT QA EMPST mskojz8g",
+          "sortOrder": 100,
+          "isWorkforceActive": true,
+          "isTerminal": false,
+          "requiresReason": false,
+          "countsTowardHeadcount": true,
+          "legacyAliasKeys": [],
+          "metadata": null,
+          "status": "active",
+          "source": "emp_native",
+          "catalogKind": "emp_employment_status",
+          "archivedAt": null,
+          "updatedAt": "2026-08-08T18:01:32.563Z",
+          "createdAt": "2026-08-08T18:01:32.563Z"
+        },
+        "timestamp": "2026-08-08T18:01:32.801Z"
+      },
+      "code": "HRM-EMP-ST-200",
+      "id": "742feafe-7bcb-4c6e-a05b-ac66188f55b7",
+      "key": "hr_st_admin_qa_mskojz8g",
+      "nameVi": "TT QA EMPST mskojz8g"
+    },
+    "stF5": {
+      "stAfterF5": true,
+      "effPick": {
+        "ok": true,
+        "via": "option_click"
+      }
+    },
+    "stEdit": {
+      "status": 200,
+      "method": "PUT",
+      "url": "/api/hrm/employees/employment-statuses",
+      "body": {
+        "success": true,
+        "code": "HRM-EMP-ST-200",
+        "message": "Employment status upserted",
+        "data": {
+          "id": "742feafe-7bcb-4c6e-a05b-ac66188f55b7",
+          "companyId": "holding",
+          "statusKey": "hr_st_admin_qa_mskojz8g",
+          "nameVi": "TT QA EMPST edit mskojz8g",
+          "sortOrder": 100,
+          "isWorkforceActive": true,
+          "isTerminal": false,
+          "requiresReason": false,
+          "countsTowardHeadcount": true,
+          "legacyAliasKeys": [],
+          "metadata": null,
+          "status": "active",
+          "source": "emp_native",
+          "catalogKind": "emp_employment_status",
+          "archivedAt": null,
+          "updatedAt": "2026-08-08T18:01:43.093Z",
+          "createdAt": "2026-08-08T18:01:32.563Z"
+        },
+        "timestamp": "2026-08-08T18:01:43.331Z"
+      },
+      "code": "HRM-EMP-ST-200",
+      "id": "742feafe-7bcb-4c6e-a05b-ac66188f55b7",
+      "key": "hr_st_admin_qa_mskojz8g",
+      "nameVi": "TT QA EMPST edit mskojz8g"
+    },
+    "strCreate": {
+      "status": 200,
+      "method": "PUT",
+      "url": "/api/hrm/employees/status-reasons",
+      "body": {
+        "success": true,
+        "code": "HRM-EMP-STR-200",
+        "message": "Status reason upserted",
+        "data": {
+          "id": "843cf869-3a3f-4888-9943-0082c4b62741",
+          "companyId": "holding",
+          "reasonKey": "resign_personal_qa_mskojz8g",
+          "nameVi": "Lý do QA EMPST mskojz8g",
+          "sortOrder": 100,
+          "appliesToStatusKeys": [
+            "inactive"
+          ],
+          "metadata": null,
+          "status": "active",
+          "catalogKind": "emp_status_reason",
+          "archivedAt": null,
+          "updatedAt": "2026-08-08T18:01:50.714Z",
+          "createdAt": "2026-08-08T18:01:50.714Z"
+        },
+        "timestamp": "2026-08-08T18:01:50.951Z"
+      },
+      "code": "HRM-EMP-STR-200",
+      "id": "843cf869-3a3f-4888-9943-0082c4b62741",
+      "key": "resign_personal_qa_mskojz8g",
+      "nameVi": "Lý do QA EMPST mskojz8g"
+    },
+    "lastDialog": "Ngừng trạng thái «TT QA EMPST edit mskojz8g (hr_st_admin_qa_mskojz8g)»? (soft-delete — hồ sơ lịch sử vẫn giữ mã)",
+    "strRetire": {
+      "status": 201,
+      "method": "POST",
+      "url": "/api/hrm/employees/status-reasons/843cf869-3a3f-4888-9943-0082c4b62741/retire?company_id=main",
+      "body": {
+        "success": true,
+        "code": "HRM-EMP-STR-200",
+        "message": "Status reason retired",
+        "data": {
+          "id": "843cf869-3a3f-4888-9943-0082c4b62741",
+          "companyId": "holding",
+          "reasonKey": "resign_personal_qa_mskojz8g",
+          "nameVi": "Lý do QA EMPST mskojz8g",
+          "sortOrder": 100,
+          "appliesToStatusKeys": [
+            "inactive"
+          ],
+          "metadata": null,
+          "status": "retired",
+          "catalogKind": "emp_status_reason",
+          "archivedAt": "2026-08-08T18:01:58.646Z",
+          "updatedAt": "2026-08-08T18:01:58.646Z",
+          "createdAt": "2026-08-08T18:01:50.714Z"
+        },
+        "timestamp": "2026-08-08T18:01:58.884Z"
+      },
+      "code": "HRM-EMP-STR-200",
+      "id": "843cf869-3a3f-4888-9943-0082c4b62741",
+      "key": "resign_personal_qa_mskojz8g",
+      "nameVi": "Lý do QA EMPST mskojz8g"
+    },
+    "stRetire": {
+      "status": 201,
+      "method": "POST",
+      "url": "/api/hrm/employees/employment-statuses/742feafe-7bcb-4c6e-a05b-ac66188f55b7/retire?company_id=main",
+      "body": {
+        "success": true,
+        "code": "HRM-EMP-ST-200",
+        "message": "Employment status retired",
+        "data": {
+          "id": "742feafe-7bcb-4c6e-a05b-ac66188f55b7",
+          "companyId": "holding",
+          "statusKey": "hr_st_admin_qa_mskojz8g",
+          "nameVi": "TT QA EMPST edit mskojz8g",
+          "sortOrder": 100,
+          "isWorkforceActive": true,
+          "isTerminal": false,
+          "requiresReason": false,
+          "countsTowardHeadcount": true,
+          "legacyAliasKeys": [],
+          "metadata": null,
+          "status": "retired",
+          "source": "emp_native",
+          "catalogKind": "emp_employment_status",
+          "archivedAt": "2026-08-08T18:02:00.090Z",
+          "updatedAt": "2026-08-08T18:02:00.090Z",
+          "createdAt": "2026-08-08T18:01:32.563Z"
+        },
+        "timestamp": "2026-08-08T18:02:00.328Z"
+      },
+      "code": "HRM-EMP-ST-200",
+      "id": "742feafe-7bcb-4c6e-a05b-ac66188f55b7",
+      "key": "hr_st_admin_qa_mskojz8g",
+      "nameVi": "TT QA EMPST edit mskojz8g"
+    },
+    "consumer": {
+      "consumerOk": true
+    },
+    "failCount": 0,
+    "noteCount": 0,
+    "passCount": 18
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-08T18:02:13.925Z"
+}

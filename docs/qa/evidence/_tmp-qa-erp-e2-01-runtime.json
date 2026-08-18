@@ -1,0 +1,334 @@
+{
+  "work_item_id": "QA-ERP-E2-01",
+  "startedAt": "2026-07-28T17:19:39.071Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM_API": "http://127.0.0.1:28001",
+    "XBOS_API": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "HOLD_DEPLOY": true,
+    "U65": true
+  },
+  "steps": [
+    {
+      "id": "l0-portal",
+      "ok": true,
+      "detail": "HTTP 200",
+      "at": "2026-07-28T17:19:39.091Z"
+    },
+    {
+      "id": "l0-hrm",
+      "ok": true,
+      "detail": "HTTP 200",
+      "at": "2026-07-28T17:19:39.095Z"
+    },
+    {
+      "id": "l0-xbos",
+      "ok": true,
+      "detail": "HTTP 200",
+      "at": "2026-07-28T17:19:39.098Z"
+    },
+    {
+      "id": "login",
+      "ok": true,
+      "detail": "via http://127.0.0.1:28002/api/xbos/auth/login",
+      "at": "2026-07-28T17:19:39.125Z"
+    },
+    {
+      "id": "CI-catalog-pre",
+      "ok": true,
+      "detail": "contract_types total=6 sample=HDLD_KTH",
+      "at": "2026-07-28T17:19:39.235Z"
+    },
+    {
+      "id": "employee",
+      "ok": true,
+      "detail": "id=dbdbece0-6572-401a-b4eb-56781493a75f total=229",
+      "at": "2026-07-28T17:19:39.418Z"
+    },
+    {
+      "id": "PAY-catalog-pre",
+      "ok": true,
+      "detail": "pay_types total=1 sample=QA_E2_PT_WWDDM",
+      "at": "2026-07-28T17:19:40.193Z"
+    },
+    {
+      "id": "DEF-E2-PAYROLL-CRASH",
+      "ok": true,
+      "detail": "bodyLen=136339 errors=[]",
+      "at": "2026-07-28T17:19:44.754Z"
+    },
+    {
+      "id": "AC-E2-TAX-HIDE",
+      "ok": true,
+      "detail": "{\"taxNav\":{\"ok\":true,\"text\":\"Bảng quyết toán thuế\",\"menuCount\":5},\"taxHide\":{\"hideMsg\":true,\"inventCta\":false,\"mockIsland\":false,\"len\":352,\"sample\":\"Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn Tổng quan Thành phần lương Chính sách Dữ liệu tính lương Tính lương Chi trả lương Báo cáo Bảng quyết toán thuế Quy?t to�n thu? ch?a c� API ? kh�ng t?o d? li?u gi? tr�n m�n h�nh n�y. Khi c� endpoint, s? m? l?i form theo AP\"}}",
+      "at": "2026-07-28T17:19:47.897Z"
+    },
+    {
+      "id": "J-HRM-PAY-E2-01-invent",
+      "ok": true,
+      "detail": "HTTP 400 code=HRM-PAY-TYPE-KEY",
+      "at": "2026-07-28T17:19:49.439Z"
+    },
+    {
+      "id": "PAY-add-dialog",
+      "ok": true,
+      "detail": "open",
+      "at": "2026-07-28T17:19:50.299Z"
+    },
+    {
+      "id": "PAY-nature-picker",
+      "ok": true,
+      "detail": "{\"ok\":true,\"text\":\"Chọn loại thành phần\"}",
+      "at": "2026-07-28T17:19:50.355Z"
+    },
+    {
+      "id": "PAY-nature-pick",
+      "ok": true,
+      "detail": "{\"ok\":true,\"text\":\"QA_E2_PT_WWDDMQA E2 bản chất WWDDM\",\"count\":1,\"code\":\"QA_E2_PT_WWDDM\"}",
+      "at": "2026-07-28T17:19:51.848Z"
+    },
+    {
+      "id": "J-HRM-PAY-E2-01-save",
+      "ok": true,
+      "detail": "saved={\"ok\":true,\"text\":\"Thêm mới\"} component_type=QA_E2_PT_WWDDM HTTP=201 code=HRM-SC-201",
+      "at": "2026-07-28T17:19:55.070Z"
+    },
+    {
+      "id": "J-HRM-PAY-E2-01-F5",
+      "ok": true,
+      "detail": "code=QA_E2_SC_X87BW visible=true natureLabel=true",
+      "at": "2026-07-28T17:19:58.279Z"
+    },
+    {
+      "id": "J-HRM-PAY-E2-01-dup",
+      "ok": true,
+      "detail": "HTTP 409 code=HRM-SC-002",
+      "at": "2026-07-28T17:19:58.734Z"
+    },
+    {
+      "id": "CI-profile-dialog",
+      "ok": true,
+      "detail": "open",
+      "at": "2026-07-28T17:20:02.720Z"
+    },
+    {
+      "id": "CI-profile-type-picker",
+      "ok": true,
+      "detail": "{\"ok\":true,\"text\":\"HDLD_KTHHợp đồng lao động không xác định thời hạn\"}",
+      "at": "2026-07-28T17:20:02.734Z"
+    },
+    {
+      "id": "CI-profile-type-pick",
+      "ok": true,
+      "detail": "{\"ok\":true,\"text\":\"HDLD_KTHHợp đồng lao động không xác định thời hạn\",\"count\":1,\"code\":\"HDLD_KTH\"}",
+      "at": "2026-07-28T17:20:03.935Z"
+    },
+    {
+      "id": "AC-E2-NOREG-picker",
+      "ok": true,
+      "detail": "{\"ok\":true,\"text\":\"Vị trí công việc\"}",
+      "at": "2026-07-28T17:20:03.952Z"
+    },
+    {
+      "id": "AC-E2-NOREG-pick",
+      "ok": true,
+      "detail": "{\"ok\":true,\"text\":\"CEOTổng Giám đốc\",\"count\":1,\"code\":\"CEO\"}",
+      "at": "2026-07-28T17:20:04.923Z"
+    },
+    {
+      "id": "J-HRM-CI-TYPE-E2-01-profile-save",
+      "ok": true,
+      "detail": "saved={\"ok\":true,\"text\":\"Thêm mới\"} contract_type=HDLD_KTH position_key=CEO HTTP=201 code=HRM-CON-201",
+      "at": "2026-07-28T17:20:09.080Z"
+    },
+    {
+      "id": "AC-E2-NOREG-save",
+      "ok": true,
+      "detail": "position_key=CEO HTTP=201",
+      "at": "2026-07-28T17:20:09.081Z"
+    },
+    {
+      "id": "J-HRM-CI-TYPE-E2-01-profile-F5",
+      "ok": true,
+      "detail": "reloaded; labelVisible=true label=Hợp đồng lao động không xác định thời hạn",
+      "at": "2026-07-28T17:20:11.135Z"
+    },
+    {
+      "id": "CI-page-type-picker",
+      "ok": false,
+      "detail": "{\"ok\":true,\"fallback\":true,\"text\":\"Chọn nhân viên từ danh sách...\"}",
+      "at": "2026-07-28T17:20:14.793Z",
+      "soft": true
+    },
+    {
+      "id": "CI-page-type-pick",
+      "ok": false,
+      "detail": "skipped — previous control was not contract type",
+      "at": "2026-07-28T17:20:15.026Z",
+      "soft": true
+    },
+    {
+      "id": "J-HRM-CI-TYPE-E2-01-page-parity",
+      "ok": true,
+      "detail": "profile surface PASS; page form picker probe={\"ok\":true,\"fallback\":true,\"text\":\"Chọn nhân viên từ danh sách...\"} (Profile SoT closed R-E1A-A8)",
+      "at": "2026-07-28T17:20:15.027Z"
+    },
+    {
+      "id": "J-HRM-CI-TYPE-E2-01-invent",
+      "ok": true,
+      "detail": "HTTP 400 code=HRM-CON-TYPE-KEY msg=contract_type '__E2_INVENT_CT_1785259215353__' is not in contract_types catalog (free-text SoT forbidden)",
+      "at": "2026-07-28T17:20:15.558Z"
+    },
+    {
+      "id": "AC-E2-NOREG-invent-pos",
+      "ok": true,
+      "detail": "HTTP 400 code=HRM-CON-POS-KEY",
+      "at": "2026-07-28T17:20:15.811Z"
+    }
+  ],
+  "verdicts": {
+    "l0-portal": "PASS",
+    "l0-hrm": "PASS",
+    "l0-xbos": "PASS",
+    "login": "PASS",
+    "CI-catalog-pre": "PASS",
+    "employee": "PASS",
+    "PAY-catalog-pre": "PASS",
+    "DEF-E2-PAYROLL-CRASH": "PASS",
+    "AC-E2-TAX-HIDE": "PASS",
+    "J-HRM-PAY-E2-01-invent": "PASS",
+    "PAY-add-dialog": "PASS",
+    "PAY-nature-picker": "PASS",
+    "PAY-nature-pick": "PASS",
+    "J-HRM-PAY-E2-01-save": "PASS",
+    "J-HRM-PAY-E2-01-F5": "PASS",
+    "J-HRM-PAY-E2-01-dup": "PASS",
+    "CI-profile-dialog": "PASS",
+    "CI-profile-type-picker": "PASS",
+    "CI-profile-type-pick": "PASS",
+    "AC-E2-NOREG-picker": "PASS",
+    "AC-E2-NOREG-pick": "PASS",
+    "J-HRM-CI-TYPE-E2-01-profile-save": "PASS",
+    "AC-E2-NOREG-save": "PASS",
+    "J-HRM-CI-TYPE-E2-01-profile-F5": "PASS",
+    "CI-page-type-picker": "BLOCKED",
+    "CI-page-type-pick": "BLOCKED",
+    "J-HRM-CI-TYPE-E2-01-page-parity": "PASS",
+    "J-HRM-CI-TYPE-E2-01-invent": "PASS",
+    "AC-E2-NOREG-invent-pos": "PASS"
+  },
+  "netMutates": [
+    {
+      "phase": "request",
+      "method": "POST",
+      "url": "/api/hrm/payroll/salary-components",
+      "body": {
+        "company_id": "main",
+        "code": "QA_E2_SC_X87BW",
+        "name": "QA E2 TP X87BW",
+        "component_type": "QA_E2_PT_WWDDM",
+        "nature": "income",
+        "value_type": "currency",
+        "is_taxable": true,
+        "is_insurance_base": false,
+        "formula": "",
+        "default_value": 0,
+        "applied_to": "all",
+        "is_active": true,
+        "sort_order": 0
+      },
+      "component_type": "QA_E2_PT_WWDDM",
+      "contract_type": null,
+      "position_key": null,
+      "code": "QA_E2_SC_X87BW"
+    },
+    {
+      "phase": "response",
+      "method": "POST",
+      "url": "/api/hrm/payroll/salary-components",
+      "status": 201,
+      "code": "HRM-SC-201"
+    },
+    {
+      "phase": "request",
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "body": {
+        "company_id": "main",
+        "employee_id": "dbdbece0-6572-401a-b4eb-56781493a75f",
+        "contract_type": "HDLD_KTH",
+        "start_date": "2026-07-01",
+        "position_key": "CEO",
+        "position": "Tổng Giám đốc"
+      },
+      "component_type": null,
+      "contract_type": "HDLD_KTH",
+      "position_key": "CEO",
+      "code": null
+    },
+    {
+      "phase": "response",
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": 201,
+      "code": "HRM-CON-201"
+    }
+  ],
+  "apiProbes": [
+    {
+      "id": "PAY-invent-early",
+      "status": 400,
+      "body": {
+        "success": false,
+        "code": "HRM-PAY-TYPE-KEY",
+        "message": "component_type '__E2_INVENT_1785259189255__' is not in pay_types catalog (free-text/HARDCODE SoT forbidden)",
+        "timestamp": "2026-07-28T17:19:49.438Z"
+      },
+      "code": "HRM-PAY-TYPE-KEY"
+    },
+    {
+      "id": "PAY-dup",
+      "status": 409,
+      "body": {
+        "success": false,
+        "code": "HRM-SC-002",
+        "message": "Salary component code 'QA_E2_SC_X87BW' already exists for company",
+        "timestamp": "2026-07-28T17:19:58.733Z"
+      },
+      "code": "HRM-SC-002"
+    },
+    {
+      "id": "CI-invent",
+      "status": 400,
+      "body": {
+        "success": false,
+        "code": "HRM-CON-TYPE-KEY",
+        "message": "contract_type '__E2_INVENT_CT_1785259215353__' is not in contract_types catalog (free-text SoT forbidden)",
+        "timestamp": "2026-07-28T17:20:15.557Z"
+      },
+      "code": "HRM-CON-TYPE-KEY"
+    },
+    {
+      "id": "CI-pos-invent",
+      "status": 400,
+      "body": {
+        "success": false,
+        "code": "HRM-CON-POS-KEY",
+        "message": "position_key '__E2_INVENT_POS_1785259215559__' is not in job_titles catalog (free-text SoT forbidden)",
+        "timestamp": "2026-07-28T17:20:15.810Z"
+      },
+      "code": "HRM-CON-POS-KEY"
+    }
+  ],
+  "hardFails": [],
+  "softBlocks": [
+    "CI-page-type-picker",
+    "CI-page-type-pick"
+  ],
+  "defects": [],
+  "overall": "PASS",
+  "failedCritical": [],
+  "finishedAt": "2026-07-28T17:20:16.112Z"
+}

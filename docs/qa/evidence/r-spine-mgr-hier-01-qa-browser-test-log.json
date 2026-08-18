@@ -1,0 +1,184 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-R-SPINE-MGR-HIER-01-QA-BROWSER-20260803",
+  "work_item_id": "R-SPINE-MGR-HIER-01-QA-BROWSER",
+  "tester": {
+    "role": "qa",
+    "agent": "R-SPINE-MGR-HIER-01-QA-BROWSER-playwright"
+  },
+  "started_at": "2026-08-03T15:39:51.885Z",
+  "ended_at": "2026-08-03T15:40:20.152Z",
+  "environment": {
+    "portal_url": "http://127.0.0.1:5173",
+    "hrm_api": "http://127.0.0.1:28001/api/hrm",
+    "xbos_api": "http://127.0.0.1:28002/api/xbos",
+    "persona": "ceo@xe.vn",
+    "company_id": "main",
+    "notes": "U65 zero-seed · post BE DTO manager_id live after dist restart · Option B FE set hierarchy"
+  },
+  "spec_ref": "FR-UC-H01 · FR-UC-H03 · J-HRM-02 · BA r-spine-mgr-hier-01.md §3 Option B",
+  "hdsd_sot": "HDSD Nhân viên — list / hồ sơ / Chỉnh sửa / Quản lý trực tiếp / Cập nhật",
+  "hdsd_align": true,
+  "u65_zero_seed": true,
+  "evidence_narrative": "docs/qa/evidence/r-spine-mgr-hier-01-qa-browser.md",
+  "runtime_json": "docs/qa/evidence/_tmp-r-spine-mgr-hier-01-qa-browser.json",
+  "verdict": "pass",
+  "ack_status": "PASS_TO_PM",
+  "idle_guard": {
+    "qa_idle_viewport": "PASS",
+    "click_count": 18
+  },
+  "subordinate": {
+    "employee_id": "2680f15f-02b6-44e1-8b42-92a6aaeb7bfb",
+    "employee_code": "UAT-0003",
+    "email": "uat.nv0003@xe.vn",
+    "manager_id": "3796d949-4513-45c0-88fa-33030a062b17",
+    "manager_code": "HLD-0001",
+    "manager_email": "uat.nv0001@xe.vn"
+  },
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-03T15:39:51.886Z",
+      "action": "API_LOGIN_POST",
+      "expected": "Login 2xx + accessToken",
+      "actual": "HTTP 201",
+      "network": { "method": "POST", "url": "/api/xbos/auth/login", "status": 201 },
+      "result": "pass"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-03T15:39:52.416Z",
+      "action": "NAV_EMPLOYEES",
+      "expected": "Reach /hr/employees HDSD list",
+      "actual": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-browser/01-employees-list.png"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-03T15:39:57.403Z",
+      "action": "ASSERT_LIST_RENDER",
+      "expected": "#root not empty · employee table rows",
+      "actual": "rootChild=4 · rowCount=47",
+      "result": "pass"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-03T15:39:57.404Z",
+      "action": "OPEN_SUBORDINATE_DETAIL",
+      "expected": "Holding NV ≠ HLD-0001 with mobile login",
+      "actual": "UAT-0003 uat.nv0003@xe.vn id=2680f15f-02b6-44e1-8b42-92a6aaeb7bfb",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-browser/02-employee-detail.png"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-03T15:40:01.717Z",
+      "action": "CLICK_EDIT",
+      "expected": "Employee form dialog",
+      "actual": "hdsd-employee-form-dialog visible",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-browser/03-edit-dialog.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-03T15:40:04.109Z",
+      "action": "CLICK_MANAGER_PICKER",
+      "expected": "hdsd-employee-form-manager-picker",
+      "actual": "picker opened",
+      "result": "pass"
+    },
+    {
+      "seq": 7,
+      "at": "2026-08-03T15:40:04.979Z",
+      "action": "TYPE_MANAGER_SEARCH",
+      "expected": "Search HLD-0001",
+      "actual": "HLD-0001",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-browser/04-picker-open.png"
+    },
+    {
+      "seq": 8,
+      "at": "2026-08-03T15:40:06.281Z",
+      "action": "SELECT_HLD0001",
+      "expected": "Display-ready manager label",
+      "actual": "HLD-0001 — Nguyễn Văn An · STAFF",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-browser/05-manager-selected.png"
+    },
+    {
+      "seq": 9,
+      "at": "2026-08-03T15:40:07.403Z",
+      "action": "CLICK_LUU",
+      "expected": "PATCH 2xx with manager_id in body",
+      "actual": "PATCH 200 HRM-EMP-202 manager_id=3796d949-4513-45c0-88fa-33030a062b17",
+      "network": {
+        "method": "PATCH",
+        "url": "/api/hrm/employees/2680f15f-02b6-44e1-8b42-92a6aaeb7bfb",
+        "status": 200,
+        "code": "HRM-EMP-202",
+        "request_manager_id": "3796d949-4513-45c0-88fa-33030a062b17"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-browser/06-after-save.png"
+    },
+    {
+      "seq": 10,
+      "at": "2026-08-03T15:40:14.043Z",
+      "action": "FE_AFTER_2XX",
+      "expected": "FE reflects mutate",
+      "actual": "profile refresh after PATCH",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-browser/07-fe-after-2xx.png"
+    },
+    {
+      "seq": 11,
+      "at": "2026-08-03T15:40:14.097Z",
+      "action": "F5_RELOAD",
+      "expected": "GET detail retains manager_id",
+      "actual": "manager_id=3796d949-4513-45c0-88fa-33030a062b17",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/employees/2680f15f-02b6-44e1-8b42-92a6aaeb7bfb?company_id=main",
+        "status": 200,
+        "manager_id": "3796d949-4513-45c0-88fa-33030a062b17"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-browser/08-after-f5.png"
+    },
+    {
+      "seq": 12,
+      "at": "2026-08-03T15:40:18.864Z",
+      "action": "CLICK_TAB_CONG_VIEC",
+      "expected": "Optional UI display-ready QL trực tiếp",
+      "actual": "API retained; UI label residual when manager_label null",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-mgr-hier-01-qa-browser/09-after-f5-work-tab.png",
+      "notes": "P2 residual R-SPINE-MGR-UI-LABEL-F5 — non-blocking for J-MOB-05"
+    }
+  ],
+  "case_matrix": {
+    "A_fail_deep": { "id": "A_fail", "status": "pass", "notes": "Selected HLD-0001 not self" },
+    "B_success_hdsd": { "id": "B_success", "status": "pass", "notes": "FE Lưu PATCH 200 + F5 GET retains manager_id" },
+    "C_logic_br": { "id": "C_logic", "status": "pass", "notes": "Option B; approver uat.nv0001; not CEO-as-L1" }
+  },
+  "incidents": [
+    {
+      "id": "R-SPINE-MGR-RUNTIME-STALE",
+      "severity": "P0",
+      "status": "closed",
+      "notes": "Stale dist rejected manager_id; restarted node dist/main.js; retest PASS"
+    },
+    {
+      "id": "R-SPINE-MGR-UI-LABEL-F5",
+      "severity": "P2",
+      "status": "open",
+      "owner": "dev-fe",
+      "notes": "Profile may show em-dash when manager_label null despite manager_id set"
+    }
+  ],
+  "summary": { "passed": 12, "failed": 0, "blocked": 0, "skipped": 0 },
+  "next_owner": "qa-device",
+  "next_work_item_id": "R-SPINE-MGR-HIER-01-QA-DEVICE-JMOB05"
+}

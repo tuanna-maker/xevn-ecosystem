@@ -1,0 +1,152 @@
+{
+  "log": [
+    {
+      "t": "2026-08-03T15:30:51.236Z",
+      "msg": "home ready",
+      "texts": [
+        "NA",
+        "Nguyễn Văn An",
+        "Nhân viên",
+        "",
+        "Tập đoàn XeVN",
+        "",
+        "Chấm công",
+        "",
+        "Nghỉ phép",
+        "",
+        "Phiếu lương",
+        "",
+        "6",
+        "Việc",
+        "Đồng nghiệp",
+        "0",
+        "",
+        "",
+        "Hoạt động",
+        "Bảng lương, việc cần làm, lịch nghỉ"
+      ]
+    },
+    {
+      "t": "2026-08-03T15:30:51.237Z",
+      "msg": "PATH1"
+    },
+    {
+      "t": "2026-08-03T15:30:55.578Z",
+      "msg": "fab sheet",
+      "leave": true,
+      "update": true
+    },
+    {
+      "t": "2026-08-03T15:31:00.141Z",
+      "msg": "PATH1 form",
+      "pass": true,
+      "leave": true,
+      "update": true,
+      "texts": [
+        "Tạo đơn",
+        "Đơn công",
+        "Yêu cầu điều chỉnh chấm công — dữ liệu nhân viên từ GET /employees",
+        "Thông tin nhân viên",
+        "Mã nhân viên",
+        "HLD-0001",
+        "Họ tên",
+        "Nguyễn Văn An",
+        "Phòng ban (tuỳ chọn)",
+        "STAFF",
+        "Nội dung đơn",
+        "Loại điều chỉnh",
+        "adjust_check_in",
+        "Lý do",
+        "Điều chỉnh giờ vào (mobile)",
+        "Gửi đơn",
+        "",
+        "Trang chủ",
+        "",
+        "Đội nhóm"
+      ]
+    },
+    {
+      "t": "2026-08-03T15:31:10.724Z",
+      "msg": "PATH2"
+    },
+    {
+      "t": "2026-08-03T15:31:19.267Z",
+      "msg": "seek",
+      "i": 0,
+      "late": {
+        "x1": 475,
+        "y1": 2223,
+        "x2": 605,
+        "y2": 2271
+      },
+      "fab": {
+        "x1": 467,
+        "y1": 2136,
+        "x2": 614,
+        "y2": 2283
+      }
+    },
+    {
+      "t": "2026-08-03T15:31:25.882Z",
+      "msg": "seek",
+      "i": 1,
+      "late": {
+        "x1": 475,
+        "y1": 1944,
+        "x2": 605,
+        "y2": 1992
+      },
+      "fab": {
+        "x1": 467,
+        "y1": 2136,
+        "x2": 614,
+        "y2": 2283
+      }
+    },
+    {
+      "t": "2026-08-03T15:31:25.882Z",
+      "msg": "tap late clear",
+      "x": 540,
+      "y": 1968,
+      "target": {
+        "x1": 475,
+        "y1": 1944,
+        "x2": 605,
+        "y2": 1992
+      }
+    },
+    {
+      "t": "2026-08-03T15:31:32.908Z",
+      "msg": "PATH2 form",
+      "pass": false,
+      "isFabSheet": true,
+      "texts": [
+        "Tập đoàn XeVN",
+        "",
+        "Chấm công",
+        "",
+        "Nghỉ phép",
+        "",
+        "Phiếu lương",
+        "",
+        "6",
+        "Việc",
+        "Đồng nghiệp",
+        "0",
+        "",
+        "",
+        "Hoạt động",
+        "Bảng lương, việc cần làm, lịch nghỉ",
+        "8",
+        "",
+        "Hành trình",
+        "Xem tất cả",
+        "",
+        "Đơn nghỉ phép",
+        "03/08/2026",
+        "03/08/2026 22:30",
+        ""
+      ]
+    }
+  ]
+}

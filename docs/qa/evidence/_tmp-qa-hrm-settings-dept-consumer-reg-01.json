@@ -1,0 +1,120 @@
+{
+  "work_item_id": "QA-HRM-SETTINGS-DEPT-CONSUMER-REG-01",
+  "stamp": "DEPTCONREG1-MSNI8GJZ",
+  "startedAt": "2026-08-10T17:27:45.453Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "settings_catalog_e2e_ready": false,
+    "deny_flip": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0 (pre-run)"
+  },
+  "vitest": {
+    "files": [
+      "po-hrm-settings-catalog-consumer-audit-fe-01.test.ts",
+      "contractFormFieldResolver.test.ts"
+    ],
+    "result": "9/9 pass (pre-run)"
+  },
+  "catalogs": {
+    "deptEffCount": 6,
+    "deptCodes": [
+      "DEPT_01",
+      "DEPT_02",
+      "DEPT_03",
+      "DEPT_04",
+      "swpnhpjgrmast",
+      "swpnhwvtomast"
+    ],
+    "settingsCatalogGet": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm/settings-catalogs?company_id=main"
+    }
+  },
+  "screens": {
+    "employee": {
+      "ac": "AC-SET-CONSUMER-DEPT-EMP-01",
+      "ok": true,
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main",
+      "clickPath": "HRM Nhân viên → Thêm → Phòng ban CatalogSearchPicker",
+      "via": "combobox-index-0",
+      "optionCount": 6,
+      "sampleOptionTestId": "catalog-picker-option-DEPT_01",
+      "pickerCodesSample": [
+        "DEPT_01",
+        "DEPT_02",
+        "DEPT_03",
+        "DEPT_04",
+        "swpnhpjgrmast",
+        "swpnhwvtomast"
+      ],
+      "effParity": {
+        "ok": true,
+        "note": "picker=6 eff=6 matched=6",
+        "matchedSample": [
+          "DEPT_01",
+          "DEPT_02",
+          "DEPT_03",
+          "DEPT_04",
+          "swpnhpjgrmast"
+        ]
+      },
+      "screenshot": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-hrm-settings-dept-consumer-reg-01/employee-form-dept-picker.png"
+    },
+    "jobRequisition": {
+      "ac": "AC-SET-CONSUMER-DEPT-REC-01 (matrix leg)",
+      "ok": true,
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions&dash_mode=year&dash_year=2026",
+      "clickPath": "Tuyển dụng → Yêu cầu tuyển dụng → Thêm → Phòng ban picker",
+      "formReady": true,
+      "optionCount": 6,
+      "sampleOptionTestId": "catalog-picker-option-DEPT_01",
+      "pickerCodesSample": [
+        "DEPT_01",
+        "DEPT_02",
+        "DEPT_03",
+        "DEPT_04",
+        "swpnhpjgrmast",
+        "swpnhwvtomast"
+      ],
+      "effParity": {
+        "ok": true,
+        "note": "picker=6 eff=6 matched=6",
+        "matchedSample": [
+          "DEPT_01",
+          "DEPT_02",
+          "DEPT_03",
+          "DEPT_04",
+          "swpnhpjgrmast"
+        ]
+      },
+      "screenshot": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-hrm-settings-dept-consumer-reg-01/job-requisition-dept-picker.png"
+    },
+    "summary": {
+      "BR_SET_CONSUMER_DEPT_REG_01": "PASS",
+      "beyond_contracts_screens": [
+        "EmployeeForm",
+        "JobRequisitions"
+      ],
+      "AC_SET_CONSUMER_DEPT_CTR_01": "CLOSED slice — not re-stamped (QACONPAYSTQC1)",
+      "settings_catalog_e2e_ready": false
+    }
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "endedAt": "2026-08-10T17:28:01.880Z"
+}

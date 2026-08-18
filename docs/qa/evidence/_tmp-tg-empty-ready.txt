@@ -1,0 +1,1 @@
+﻿[xevn-ecosystem] EmptyState FE READY → QA đang retest (song song PermissionFallback QA).

@@ -1,0 +1,364 @@
+{
+  "work_item_id": "PO-UC-TC-W4-QA-E1-P1-L2-SELF",
+  "startedAt": "2026-08-04T02:52:05.180Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "uat_done": false,
+  "leave_l2_invented": false,
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "XBOS": "http://127.0.0.1:28002",
+    "HRM": "http://127.0.0.1:28001",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5",
+    "stamp": "W4E1-E2B8AJ"
+  },
+  "hdsd_inventory": [
+    "Login portal (ceo@xe.vn)",
+    "Cài đặt → Hệ thống quy trình (?settings=workflow) → Chỉnh sửa",
+    "Tab Cấu hình bước & luồng → Thêm nút bước (2-level if UI allows)",
+    "Tab Sơ đồ luồng → quan sát canvas dots → Lưu quy trình → F5",
+    "FE business submit (HRM leave) → inbox → L2 path if present",
+    "Self-approve FD (submitter≠approver BR) — expect reject/block"
+  ],
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "uc": {
+    "UC-XBOS-CC-06": {
+      "execution": "PARTIAL",
+      "tcs": {
+        "TC-DM-CC-06-CV-OPEN-HP-001": "PASS",
+        "TC-DM-CC-06-CV-SAVE-HP-001": "PASS",
+        "TC-DM-CC-06-CV-L2-HP-001": "PASS",
+        "TC-DM-CC-06-CV-L2-FD-001": "BLOCKED",
+        "TC-DM-CC-06-CV-SELF-FD-001": "BLOCKED"
+      },
+      "note": "canvas L2 config=PASS (WF definition UI; NOT Leave L2)",
+      "at": "2026-08-04T02:52:25.586Z"
+    },
+    "UC-CC-P0-06": {
+      "execution": "PARTIAL",
+      "tcs": {
+        "TC-CC-P0-06-INB-LIST-HP-001": "PASS",
+        "TC-CC-P0-06-INB-L2-HP-001": "BLOCKED",
+        "TC-CC-P0-06-INB-SELF-FD-001": "BLOCKED",
+        "TC-DM-CC-06-CV-SELF-FD-001": "BLOCKED"
+      },
+      "note": "L2=BLOCKED self=BLOCKED leaveL2Invented=false",
+      "at": "2026-08-04T02:52:35.572Z"
+    }
+  },
+  "steps": {
+    "L0": {
+      "summary": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:05.202Z"
+    },
+    "LOGIN": {
+      "summary": "POST login 201 XBOS-AUTH-200",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:10.315Z"
+    },
+    "CV-CANVAS-TAB": {
+      "summary": "canvasTabOk=true dots=true stepsGraph=3 addedSecond=true",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:17.735Z"
+    },
+    "CV-SAVE": {
+      "summary": "save=200 code=XBOS-WF-201 steps=3",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:20.812Z"
+    },
+    "CV-L2-STICKY": {
+      "summary": "stickySteps=3 stamp=W4E1-E2B8AJ",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:25.584Z"
+    },
+    "CV-L2": {
+      "summary": "addedSecond=true savedL2=true stepsBefore=3 stepsAfter=3",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:25.585Z"
+    },
+    "FE-SPAWN": {
+      "summary": "Leave form submit control not found — AS-IS FE path incomplete for CEO",
+      "verdict": "BLOCKED",
+      "at": "2026-08-04T02:52:30.385Z"
+    },
+    "INB-LIST": {
+      "summary": "cards=45 spawned=false",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:33.108Z"
+    },
+    "INB-L2": {
+      "summary": "No L2 inbox card (cấp 2 / level=2) after FE path — AS-IS leave ladder separate SPEC_GAP; cấm invent Leave L2 PASS",
+      "verdict": "BLOCKED",
+      "at": "2026-08-04T02:52:33.306Z"
+    },
+    "INB-SELF": {
+      "summary": "submitter=approver not proven — no Duyệt click (avoid false FAIL); BR-WF-04 UI FD OPEN; resolver unit-only; completeStepTask no submitter guard",
+      "verdict": "BLOCKED",
+      "at": "2026-08-04T02:52:35.571Z"
+    },
+    "OVERALL": {
+      "summary": "CV=PARTIAL INB=PARTIAL residual=PARTIAL_OPEN",
+      "verdict": "PARTIAL",
+      "at": "2026-08-04T02:52:35.573Z"
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-04T02:52:06.499Z",
+      "msg": "LOGIN_CEO"
+    },
+    {
+      "at": "2026-08-04T02:52:13.137Z",
+      "msg": "CLICK_CHINH_SUA"
+    },
+    {
+      "at": "2026-08-04T02:52:15.289Z",
+      "msg": "CLICK_TAB_GRAPH"
+    },
+    {
+      "at": "2026-08-04T02:52:16.093Z",
+      "msg": "STEPS_BEFORE",
+      "note": "3"
+    },
+    {
+      "at": "2026-08-04T02:52:16.095Z",
+      "msg": "ALREADY_TWO_STEPS",
+      "note": "3"
+    },
+    {
+      "at": "2026-08-04T02:52:16.440Z",
+      "msg": "CLICK_TAB_SO_DO"
+    },
+    {
+      "at": "2026-08-04T02:52:17.796Z",
+      "msg": "CV_SAVE"
+    },
+    {
+      "at": "2026-08-04T02:52:30.257Z",
+      "msg": "LEAVE_UI",
+      "note": "http://127.0.0.1:5173/hr/attendance?tab=leave"
+    },
+    {
+      "at": "2026-08-04T02:52:33.422Z",
+      "msg": "CLICK_DETAIL_SELF_PROBE"
+    }
+  ],
+  "network": [
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-04T02:52:06.616Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Đăng nhập thành công"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:06.908Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 45
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-04T02:52:06.917Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 70
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:09.403Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 45
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-04T02:52:09.414Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 70
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:10.661Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 45
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-08-04T02:52:10.684Z",
+      "code": "XBOS-WF-200",
+      "message": "Definitions loaded",
+      "itemsCount": 5
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-04T02:52:10.705Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 70
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions/bd5563b4-6cd5-4200-a82a-fc7d046a56b1",
+      "at": "2026-08-04T02:52:17.810Z",
+      "code": "XBOS-WF-201",
+      "message": "Definition saved"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/definitions",
+      "at": "2026-08-04T02:52:21.129Z",
+      "code": "XBOS-WF-200",
+      "message": "Definitions loaded",
+      "itemsCount": 5
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:21.135Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 45
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-04T02:52:21.145Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 70
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T02:52:29.084Z",
+      "code": "HRM-LEAVE-200",
+      "message": "Leave requests listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:30.621Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 45
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/instances/51058756-fbb3-4e7b-879d-04a5e46a0ba2/detail",
+      "at": "2026-08-04T02:52:33.783Z",
+      "code": "XBOS-WF-204",
+      "message": "Instance detail loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:33.812Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 45
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-04T02:52:33.831Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded",
+      "itemsCount": 70
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/instances/51058756-fbb3-4e7b-879d-04a5e46a0ba2/detail",
+      "at": "2026-08-04T02:52:33.836Z",
+      "code": "XBOS-WF-204",
+      "message": "Instance detail loaded"
+    }
+  ],
+  "as_is": {
+    "canvas_tab_is_visual": true,
+    "step_edit_on_graph_tab": true,
+    "leave_uses_fixed_code": "hrm_leave_approval",
+    "leave_l2_spec_gap": true,
+    "canvas_body_hint": true,
+    "self_probe": {
+      "probeIdx": 0,
+      "selfCardIdx": -1,
+      "spawned": false,
+      "submitterHint": false,
+      "provenSelf": false,
+      "bodySlice": "XeVN T Phạm vi làm việc Tập đoàn XeVN Công ty chính · Tập đoàn · CEO Tập đoàn C CEO Tập đoàn CEO Tập đoàn XeVN OS Command Center BOD Quản lý Nhân viên GROUP TÀI CHÍNH KẾ TOÁN NHÂN SỰ KINH DOANH VẬN HÀNH CÀI ĐẶT HỆ THỐNG Mở Việc cần xử lý 45 Việc đang xử lý (đã lọc phạm vi) TÀI CHÍNH: 0 KẾ TOÁN: 0 KINH DOANH: 0 NHÂN SỰ: 37 VẬN HÀNH: 0 Chỉ số KPI tập đoàn — Tổng hợp tập đoàn Cảnh báo hệ thống Phê du"
+    }
+  },
+  "residuals": [
+    {
+      "id": "R-W4E1-INB-L2-ASIS",
+      "owner": "ba-process",
+      "sev": "P1",
+      "note": "Leave uses hrm_leave_approval bridge; canvas 2-step on other defs ≠ Leave L2. SPEC_GAP until leave definition has 2 pending steps from FE spawn."
+    },
+    {
+      "id": "R-W4E1-SELF-FD-EVIDENCE",
+      "owner": "qa",
+      "sev": "P1",
+      "note": "Need FE spawn where submitter userId equals assignee; R1 false-FAIL superseded (stamp L2S-* /L2/ match)"
+    }
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e1-p1-l2-self/01-wf-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e1-p1-l2-self/02-wf-detail-graph.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e1-p1-l2-self/03-wf-two-steps-graph.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e1-p1-l2-self/04-wf-canvas-sodo.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e1-p1-l2-self/05-wf-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e1-p1-l2-self/06-wf-reopen-steps.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e1-p1-l2-self/07-leave-ui.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e1-p1-l2-self/10-inbox.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e1-p1-l2-self/12-self-detail.png"
+  ],
+  "consoleErrors": [
+    "404 Error: User attempted to access non-existent route: /attendance/leave"
+  ],
+  "pageErrors": [],
+  "endedAt": "2026-08-04T02:52:35.574Z",
+  "overall": "PARTIAL",
+  "residual_closed": {
+    "R-W4E1-CV-L2-SELF": "PARTIAL_OPEN",
+    "canvas_l2_sticky": true,
+    "self_fd_evidenced": false,
+    "leave_l2": "SPEC_GAP_NOT_INVENTED",
+    "r1_superseded": "R1 INB-L2/SELF false via stamp L2S-* matching /L2/; R2 strict match"
+  }
+}

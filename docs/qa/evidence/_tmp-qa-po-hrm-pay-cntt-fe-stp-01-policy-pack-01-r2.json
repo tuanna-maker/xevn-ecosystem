@@ -1,0 +1,664 @@
+{
+  "work_item_id": "QA-PO-HRM-PAY-CNTT-FE-STP-01-POLICY-PACK-01-R2",
+  "parent": "PO-HRM-PAY-CNTT-FE-STP-01-POLICY-PACK-01",
+  "stamp": "PAYPPQAR2-MSPXZL1G",
+  "startedAt": "2026-08-12T10:24:17.551Z",
+  "u65": "zero-seed-browser-only",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "formula_evaluator": "HOLD",
+    "uf_hrm_10": false,
+    "rieng_stp_02_05_06": "NOT_CLAIMED"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM_FE": "http://127.0.0.1:8080",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "5ccb26e"
+  },
+  "modes": {
+    "portal": {
+      "mode": "portal",
+      "base": "http://127.0.0.1:5173",
+      "clickPath": [
+        "goto http://127.0.0.1:5173/hr/payroll/setup?portal=1&tenantId=xevn&companyId=main&section=policy-pack",
+        "url=http://127.0.0.1:5173/hr/payroll/setup?portal=1&tenantId=xevn&companyId=main&section=policy-pack",
+        "click + Thêm gói",
+        "click Lưu gói chính sách"
+      ],
+      "network": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:19.067Z"
+        },
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs",
+          "status": 201,
+          "body": {
+            "company_id": "main",
+            "code": "QAR2PORXZL1G",
+            "nameVi": "QA R2 goi portal XZL1G",
+            "scope": "CHUNG",
+            "effectiveFrom": "2026-07-01",
+            "status": "draft",
+            "rateParams": {
+              "kpi_threshold": 70,
+              "bcc_std": 5000000
+            }
+          },
+          "at": "2026-08-12T10:24:23.653Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:23.768Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:25.680Z"
+        },
+        {
+          "method": "PATCH",
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs/0b591923-a17a-46a2-8bb9-9801a10b8e7a",
+          "status": 200,
+          "body": {
+            "company_id": "main",
+            "code": "qar2porxzl1g",
+            "nameVi": "QA R2 goi portal XZL1G",
+            "scope": "CHUNG",
+            "effectiveFrom": "2026-07-01",
+            "status": "draft",
+            "rateParams": {
+              "kpi_threshold": 85,
+              "bcc_std": 5000000
+            }
+          },
+          "at": "2026-08-12T10:24:32.497Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:32.601Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:34.001Z"
+        },
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs/0b591923-a17a-46a2-8bb9-9801a10b8e7a/archive?company_id=main",
+          "status": 201,
+          "body": null,
+          "at": "2026-08-12T10:24:37.892Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:38.007Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:39.510Z"
+        }
+      ],
+      "consoleErrors": [],
+      "screens": [
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/portal-01-hub-list.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/portal-02-create-filled.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/portal-03-after-create.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/portal-04-create-f5.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/portal-05-kpi-150.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/portal-06-date-order.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/portal-07-bcc-patch.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/portal-08-patch-f5.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/portal-09-archive-f5.png"
+      ],
+      "verdict": "PASS",
+      "createdCode": "QAR2PORXZL1G",
+      "storedCode": "qar2porxzl1g"
+    },
+    "standalone": {
+      "mode": "standalone",
+      "base": "http://127.0.0.1:8080",
+      "clickPath": [
+        "goto http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "url=http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "click + Thêm gói",
+        "click Lưu gói chính sách"
+      ],
+      "network": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:42.624Z"
+        },
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs",
+          "status": 201,
+          "body": {
+            "company_id": "main",
+            "code": "QAR2STAXZL1G",
+            "nameVi": "QA R2 goi standalone XZL1G",
+            "scope": "CHUNG",
+            "effectiveFrom": "2026-07-01",
+            "status": "draft",
+            "rateParams": {
+              "kpi_threshold": 70,
+              "bcc_std": 5000000
+            }
+          },
+          "at": "2026-08-12T10:24:47.366Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:47.533Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:48.999Z"
+        },
+        {
+          "method": "PATCH",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs/c85cc7bd-c082-43ce-9d27-f09893254b90",
+          "status": 200,
+          "body": {
+            "company_id": "main",
+            "code": "qar2staxzl1g",
+            "nameVi": "QA R2 goi standalone XZL1G",
+            "scope": "CHUNG",
+            "effectiveFrom": "2026-07-01",
+            "status": "draft",
+            "rateParams": {
+              "kpi_threshold": 85,
+              "bcc_std": 5000000
+            }
+          },
+          "at": "2026-08-12T10:24:55.961Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:56.125Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:24:57.330Z"
+        },
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs/c85cc7bd-c082-43ce-9d27-f09893254b90/archive?company_id=main",
+          "status": 201,
+          "body": null,
+          "at": "2026-08-12T10:25:01.261Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:25:01.576Z"
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+          "status": 200,
+          "body": null,
+          "at": "2026-08-12T10:25:02.733Z"
+        }
+      ],
+      "consoleErrors": [],
+      "screens": [
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/standalone-01-hub-list.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/standalone-02-create-filled.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/standalone-03-after-create.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/standalone-04-create-f5.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/standalone-05-kpi-150.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/standalone-06-date-order.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/standalone-07-bcc-patch.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/standalone-08-patch-f5.png",
+        "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-pay-cntt-fe-stp-01-policy-pack-01-r2/standalone-09-archive-f5.png"
+      ],
+      "verdict": "PASS",
+      "createdCode": "QAR2STAXZL1G",
+      "storedCode": "qar2staxzl1g"
+    }
+  },
+  "ac": {
+    "NAV-portal": {
+      "verdict": "PASS",
+      "summary": "pay-stp-hub + pay-policy-pack-list visible",
+      "url": "http://127.0.0.1:5173/hr/payroll/setup?portal=1&tenantId=xevn&companyId=main&section=policy-pack",
+      "clickPath": [
+        "goto http://127.0.0.1:5173/hr/payroll/setup?portal=1&tenantId=xevn&companyId=main&section=policy-pack",
+        "url=http://127.0.0.1:5173/hr/payroll/setup?portal=1&tenantId=xevn&companyId=main&section=policy-pack"
+      ],
+      "at": "2026-08-12T10:24:22.521Z"
+    },
+    "AC-PAY-STP-01-01": {
+      "verdict": "PASS",
+      "summary": "POST 201 · row pay-policy-pack-row-qar2staxzl1g · F5 retained · body code/name/from/scope=CHUNG",
+      "mode": "standalone",
+      "clickPath": [
+        "goto http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "url=http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "click + Thêm gói",
+        "click Lưu gói chính sách"
+      ],
+      "network": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs",
+        "status": 201,
+        "body": {
+          "company_id": "main",
+          "code": "QAR2STAXZL1G",
+          "nameVi": "QA R2 goi standalone XZL1G",
+          "scope": "CHUNG",
+          "effectiveFrom": "2026-07-01",
+          "status": "draft",
+          "rateParams": {
+            "kpi_threshold": 70,
+            "bcc_std": 5000000
+          }
+        },
+        "at": "2026-08-12T10:24:47.366Z"
+      },
+      "feAfter2xx": "row appears in list",
+      "f5": "row retained",
+      "createBccBody": 5000000,
+      "createBccDisplay": "5.000.000",
+      "okCode": true,
+      "okName": true,
+      "okFrom": true,
+      "saveClicked": true,
+      "at": "2026-08-12T10:24:51.304Z"
+    },
+    "AC-PAY-STP-03-01": {
+      "verdict": "PASS",
+      "summary": "KPI=150 → viền đỏ + message VI + no request",
+      "mode": "standalone",
+      "clickPath": [
+        "goto http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "url=http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "click + Thêm gói",
+        "click Lưu gói chính sách",
+        "edit row → KPI 150 → Lưu"
+      ],
+      "network": "NONE (client blocked)",
+      "feAfter2xx": "redBorder=true, message visible",
+      "f5": "N/A",
+      "at": "2026-08-12T10:24:53.000Z"
+    },
+    "AC-PAY-STP-01-05": {
+      "verdict": "PASS",
+      "summary": "FE chặn ngày đảo; không gửi request",
+      "mode": "standalone",
+      "clickPath": [
+        "goto http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "url=http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "click + Thêm gói",
+        "click Lưu gói chính sách",
+        "edit row → from>to → Lưu"
+      ],
+      "network": "NONE",
+      "feAfter2xx": "message VI",
+      "f5": "N/A",
+      "at": "2026-08-12T10:24:54.712Z"
+    },
+    "AC-PAY-STP-04-01": {
+      "verdict": "PASS",
+      "summary": "display=5.000.000 · PATCH 200 · rateParams.bcc_std=5000000 (number thuần)",
+      "mode": "standalone",
+      "clickPath": [
+        "goto http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "url=http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "click + Thêm gói",
+        "click Lưu gói chính sách",
+        "edit row → BCC 5000000 → Cập nhật"
+      ],
+      "network": {
+        "method": "PATCH",
+        "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs/c85cc7bd-c082-43ce-9d27-f09893254b90",
+        "status": 200,
+        "body": {
+          "company_id": "main",
+          "code": "qar2staxzl1g",
+          "nameVi": "QA R2 goi standalone XZL1G",
+          "scope": "CHUNG",
+          "effectiveFrom": "2026-07-01",
+          "status": "draft",
+          "rateParams": {
+            "kpi_threshold": 85,
+            "bcc_std": 5000000
+          }
+        },
+        "at": "2026-08-12T10:24:55.961Z"
+      },
+      "feAfter2xx": "display 5.000.000",
+      "f5": "verified with 01-02",
+      "at": "2026-08-12T10:24:57.021Z"
+    },
+    "AC-PAY-STP-01-02": {
+      "verdict": "PASS",
+      "summary": "PATCH 200 · KPI F5=85 · BCC F5=5.000.000 · kpi_threshold body=85",
+      "mode": "standalone",
+      "clickPath": [
+        "goto http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "url=http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "click + Thêm gói",
+        "click Lưu gói chính sách",
+        "edit row → KPI 85 + BCC → Cập nhật → F5"
+      ],
+      "network": {
+        "method": "PATCH",
+        "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs/c85cc7bd-c082-43ce-9d27-f09893254b90",
+        "status": 200,
+        "body": {
+          "company_id": "main",
+          "code": "qar2staxzl1g",
+          "nameVi": "QA R2 goi standalone XZL1G",
+          "scope": "CHUNG",
+          "effectiveFrom": "2026-07-01",
+          "status": "draft",
+          "rateParams": {
+            "kpi_threshold": 85,
+            "bcc_std": 5000000
+          }
+        },
+        "at": "2026-08-12T10:24:55.961Z"
+      },
+      "feAfter2xx": "form updated",
+      "f5": "kpi=85 bcc=5.000.000",
+      "at": "2026-08-12T10:25:00.418Z"
+    },
+    "AC-PAY-STP-01-03": {
+      "verdict": "PASS",
+      "summary": "POST archive 201 · row ẩn khỏi list mặc định · F5",
+      "mode": "standalone",
+      "clickPath": [
+        "goto http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "url=http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "click + Thêm gói",
+        "click Lưu gói chính sách",
+        "edit row → Ngưng áp dụng → F5"
+      ],
+      "network": [
+        {
+          "method": "POST",
+          "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs/c85cc7bd-c082-43ce-9d27-f09893254b90/archive?company_id=main",
+          "status": 201,
+          "body": null,
+          "at": "2026-08-12T10:25:01.261Z"
+        }
+      ],
+      "feAfter2xx": "row hidden",
+      "f5": "hidden default list",
+      "at": "2026-08-12T10:25:05.151Z"
+    },
+    "NAV-standalone": {
+      "verdict": "PASS",
+      "summary": "pay-stp-hub + pay-policy-pack-list visible",
+      "url": "http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+      "clickPath": [
+        "goto http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn",
+        "url=http://127.0.0.1:8080/hr/payroll/setup?section=policy-pack&companyId=main&tenantId=xevn"
+      ],
+      "at": "2026-08-12T10:24:46.170Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:19.067Z"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs",
+      "status": 201,
+      "body": {
+        "company_id": "main",
+        "code": "QAR2PORXZL1G",
+        "nameVi": "QA R2 goi portal XZL1G",
+        "scope": "CHUNG",
+        "effectiveFrom": "2026-07-01",
+        "status": "draft",
+        "rateParams": {
+          "kpi_threshold": 70,
+          "bcc_std": 5000000
+        }
+      },
+      "at": "2026-08-12T10:24:23.653Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:23.768Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:25.680Z"
+    },
+    {
+      "method": "PATCH",
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs/0b591923-a17a-46a2-8bb9-9801a10b8e7a",
+      "status": 200,
+      "body": {
+        "company_id": "main",
+        "code": "qar2porxzl1g",
+        "nameVi": "QA R2 goi portal XZL1G",
+        "scope": "CHUNG",
+        "effectiveFrom": "2026-07-01",
+        "status": "draft",
+        "rateParams": {
+          "kpi_threshold": 85,
+          "bcc_std": 5000000
+        }
+      },
+      "at": "2026-08-12T10:24:32.497Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:32.601Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:34.001Z"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs/0b591923-a17a-46a2-8bb9-9801a10b8e7a/archive?company_id=main",
+      "status": 201,
+      "body": null,
+      "at": "2026-08-12T10:24:37.892Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:38.007Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:39.510Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:42.624Z"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs",
+      "status": 201,
+      "body": {
+        "company_id": "main",
+        "code": "QAR2STAXZL1G",
+        "nameVi": "QA R2 goi standalone XZL1G",
+        "scope": "CHUNG",
+        "effectiveFrom": "2026-07-01",
+        "status": "draft",
+        "rateParams": {
+          "kpi_threshold": 70,
+          "bcc_std": 5000000
+        }
+      },
+      "at": "2026-08-12T10:24:47.366Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:47.533Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:48.999Z"
+    },
+    {
+      "method": "PATCH",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs/c85cc7bd-c082-43ce-9d27-f09893254b90",
+      "status": 200,
+      "body": {
+        "company_id": "main",
+        "code": "qar2staxzl1g",
+        "nameVi": "QA R2 goi standalone XZL1G",
+        "scope": "CHUNG",
+        "effectiveFrom": "2026-07-01",
+        "status": "draft",
+        "rateParams": {
+          "kpi_threshold": 85,
+          "bcc_std": 5000000
+        }
+      },
+      "at": "2026-08-12T10:24:55.961Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:56.125Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:24:57.330Z"
+    },
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs/c85cc7bd-c082-43ce-9d27-f09893254b90/archive?company_id=main",
+      "status": 201,
+      "body": null,
+      "at": "2026-08-12T10:25:01.261Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:25:01.576Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:8080/api/hrm/payroll/pay-policy-packs?scope=CHUNG&company_id=main",
+      "status": 200,
+      "body": null,
+      "at": "2026-08-12T10:25:02.733Z"
+    }
+  ],
+  "consoleErrors": [],
+  "defects": [],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "endedAt": "2026-08-12T10:25:05.352Z",
+  "requiredAcSummary": [
+    {
+      "id": "AC-PAY-STP-01-01",
+      "verdict": "PASS"
+    },
+    {
+      "id": "AC-PAY-STP-01-02",
+      "verdict": "PASS"
+    },
+    {
+      "id": "AC-PAY-STP-01-03",
+      "verdict": "PASS"
+    },
+    {
+      "id": "AC-PAY-STP-01-05",
+      "verdict": "PASS"
+    },
+    {
+      "id": "AC-PAY-STP-03-01",
+      "verdict": "PASS"
+    },
+    {
+      "id": "AC-PAY-STP-04-01",
+      "verdict": "PASS"
+    }
+  ]
+}

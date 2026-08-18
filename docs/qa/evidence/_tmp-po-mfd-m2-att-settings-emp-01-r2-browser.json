@@ -1,0 +1,443 @@
+{
+  "work_item_id": "PO-MFD-M2-ATT-SETTINGS-EMP-01-R2-QA",
+  "startedAt": "2026-08-04T07:48:51.564Z",
+  "u65": "zero-seed",
+  "u76_hdsd_align": true,
+  "u87_menu_fidelity": true,
+  "hdsd_align": "CC → HRM → Chấm công → Thiết lập → Nhân viên (matrix #31) · Refresh · Import dialog HRM-IM-01",
+  "portal_url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+  "journey_l25": "matrix #31 Settings→Nhân viên (no dedicated J-* settings-emp; J-HRM-06 prior untouched)",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "hdsd_inventory": [
+    {
+      "surface": "overview",
+      "hdsd_label": "/^Tổng quan$/",
+      "present": "🟢"
+    },
+    {
+      "surface": "clock",
+      "hdsd_label": "/^Chấm công$/",
+      "present": "🟢"
+    },
+    {
+      "surface": "reports",
+      "hdsd_label": "/^Báo cáo$/",
+      "present": "🟢"
+    },
+    {
+      "surface": "leave",
+      "hdsd_label": "/^Nghỉ phép$/",
+      "present": "🟢"
+    },
+    {
+      "surface": "settings",
+      "hdsd_label": "/^Thiết lập$/",
+      "present": "🟢"
+    },
+    {
+      "surface": 31,
+      "hdsd_label": "Thiết lập → Nhân viên · tìm · lọc · refresh · import · bảng NV",
+      "present": "🟢"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T07:48:55.130Z",
+      "xCompanyId": null,
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T07:48:55.261Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T07:48:55.812Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T07:48:55.885Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T07:48:56.111Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T07:48:56.372Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T07:48:57.865Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T07:48:57.857Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 59
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T07:48:58.088Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T07:49:05.426Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 59
+    }
+  ],
+  "employeesGets": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T07:48:57.857Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 59
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T07:49:05.426Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 59
+    }
+  ],
+  "allHrmGets": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T07:48:55.130Z",
+      "xCompanyId": null,
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T07:48:55.261Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T07:48:55.812Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T07:48:55.885Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T07:48:56.111Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T07:48:56.372Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T07:48:57.865Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T07:48:57.857Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 59
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T07:48:58.088Z",
+      "xCompanyId": "main",
+      "code": null,
+      "total": null,
+      "rowCount": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T07:49:05.426Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 59
+    }
+  ],
+  "mutateCalls": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "networkBad": [],
+  "steps": {
+    "l0": {
+      "status": "PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "at": "2026-08-04T07:48:51.591Z"
+    },
+    "login": {
+      "status": "PASS",
+      "note": "ceo@xe.vn company=main",
+      "at": "2026-08-04T07:48:51.693Z"
+    },
+    "nav_settings": {
+      "status": "PASS",
+      "note": "clicked tab Thiết lập",
+      "at": "2026-08-04T07:48:57.855Z"
+    },
+    "nav_employees_sidebar": {
+      "status": "PASS",
+      "note": "clicked sidebar Nhân viên",
+      "at": "2026-08-04T07:48:58.716Z"
+    },
+    "page_load": {
+      "status": "PASS",
+      "note": "errorBanner=false rows=59 empGets=1 idle=0 storm=false refresh=true import=true",
+      "at": "2026-08-04T07:49:05.327Z"
+    },
+    "refresh_cta": {
+      "status": "PASS",
+      "note": "clicked=true wired=true empGets=1 has200=true",
+      "at": "2026-08-04T07:49:07.976Z"
+    },
+    "import_cta": {
+      "status": "PASS",
+      "note": "clicked=true wired=true dialog=true fileChooser=false",
+      "at": "2026-08-04T07:49:10.217Z"
+    },
+    "f5": {
+      "status": "SKIP",
+      "note": "no mutate",
+      "at": "2026-08-04T07:49:10.785Z"
+    }
+  },
+  "load": {
+    "settled": {
+      "titleOk": true,
+      "spinner": false
+    },
+    "bodySnippet": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn Tổng quan Chấm công Ca làm việc Quản lý đơn Nghỉ phép Báo cáo Thiết lập Nhân viên Quy định chấm công Quy định làm thêm Quy định nghỉ Quy định đi muộn - về sớm Quy định làm đơn Người dùng Vai trò Hệ thống Nhân viên Lấy lại dữ liệu Nhập khẩu Đang làm việc Tất cả đơn vị Mã nhân viên Họ và tên Đơn vị cô",
+    "tableRows": 59,
+    "hasTable": true,
+    "refreshVisible": true,
+    "importVisible": true,
+    "searchVisible": true,
+    "totalHint": "4",
+    "errorBanner": false,
+    "featureInDev": false,
+    "getCounts": {
+      "employees": 1,
+      "list2xx": 1,
+      "listFail": []
+    },
+    "idleGets": 0,
+    "idleAllHrmGets": 0,
+    "lastEmployees": {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T07:48:57.857Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 59
+    }
+  },
+  "refresh": {
+    "clicked": true,
+    "employeesGets": 1,
+    "allHrmGets": 1,
+    "mutates": 0,
+    "list2xx": 1,
+    "has200": true,
+    "last": {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T07:49:05.426Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 59
+    },
+    "wired": true
+  },
+  "import": {
+    "clicked": true,
+    "employeesGets": 0,
+    "allHrmGets": 0,
+    "mutates": 0,
+    "fileChooserOpened": false,
+    "dialogVisible": true,
+    "fileInput": true,
+    "importTitle": true,
+    "fileChooserOrDialog": true,
+    "wired": true
+  },
+  "f5": {
+    "performed": false,
+    "reason": "no mutate — F5 not required (dialog open only)"
+  },
+  "honesty": {
+    "list_source": "GET /api/hrm/employees via useEmployees (REF master)",
+    "refresh_wired": true,
+    "import_wired": true,
+    "refresh_proof": "GET employees 1× after click; last={\"method\":\"GET\",\"status\":200,\"url\":\"/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100\",\"at\":\"2026-08-04T07:49:05.426Z\",\"xCompanyId\":\"main\",\"code\":\"HRM-EMP-200\",\"total\":59,\"rowCount\":59}",
+    "import_proof": "dialogVisible=true fileChooser=false fileInput=true",
+    "attendance_code_column": "UI shows employee_code as attendance code (no dedicated mapping API observed)",
+    "leave_days_column": "static em-dash — not leave-balance wired on this panel"
+  },
+  "residuals": [
+    {
+      "id": "R-MFD-M2-ATT-SETTINGS-EMP-MAPPING-SPEC_GAP",
+      "severity": "OBS",
+      "owner": "ba-process",
+      "note": "Matrix #31 mapping mã chấm công / leave days — UNMAPPED OBS. Non-blocking for LIVE upgrade of Refresh+Import."
+    }
+  ],
+  "criteria": {
+    "nav_hdsd": true,
+    "no_error_banner": true,
+    "list_honest": true,
+    "refresh_network_200": true,
+    "import_dialog_or_chooser": true,
+    "no_get_storm": true,
+    "page_errors_empty": true,
+    "screenshot": true
+  },
+  "failReasons": [],
+  "matrix_stamp": {
+    "31": "LIVE"
+  },
+  "screens": [
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-mfd-m2-att-settings-emp-01-r2\\01-attendance-shell.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-mfd-m2-att-settings-emp-01-r2\\03-settings-employees-loaded.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-mfd-m2-att-settings-emp-01-r2\\04-after-refresh-click.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-mfd-m2-att-settings-emp-01-r2\\05-after-import-click.png"
+  ],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "uat_done": false,
+  "attendance_closed": false,
+  "endedAt": "2026-08-04T07:49:10.786Z",
+  "login": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "source": "xbos-portal",
+    "http": 201
+  },
+  "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+}

@@ -1,0 +1,208 @@
+{
+  "work_item_id": "PO-HRM-PAYROLL-FORMULA-RUN-GAP-W3-QA-J-HRM-07-01",
+  "round": "R2",
+  "parent": "PO-HRM-PAYROLL-FORMULA-RUN-GAP-W3-FE-SHOWADD-TDZ-01",
+  "stamp": "PAYW3J07-R2-MSIRLK3I",
+  "u65": "zero-seed",
+  "journey_l25": "J-HRM-07",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "formula_LIVE": false,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "clicks": [
+    {
+      "step": "R2-P0",
+      "detail": "goto http://127.0.0.1:5173/hr/payroll",
+      "at": "2026-08-07T09:51:03.578Z"
+    },
+    {
+      "step": "R2-P0b",
+      "detail": "menu Danh sách bảng lương",
+      "at": "2026-08-07T09:51:07.000Z"
+    },
+    {
+      "step": "R2-create",
+      "detail": "Lập bảng lương",
+      "at": "2026-08-07T09:51:08.657Z"
+    },
+    {
+      "step": "R2-filter",
+      "detail": "pay-batch-period-option-1-2026",
+      "at": "2026-08-07T09:51:10.194Z"
+    },
+    {
+      "step": "R2-open",
+      "detail": "pay-batch-row-dffbb1fe",
+      "at": "2026-08-07T09:51:13.132Z"
+    },
+    {
+      "step": "R2-P0",
+      "detail": "goto http://127.0.0.1:5173/hr/payroll",
+      "at": "2026-08-07T09:51:17.226Z"
+    },
+    {
+      "step": "R2-P0b",
+      "detail": "menu Danh sách bảng lương",
+      "at": "2026-08-07T09:51:20.589Z"
+    },
+    {
+      "step": "R2-filter",
+      "detail": "pay-batch-period-option-7-2026",
+      "at": "2026-08-07T09:51:22.175Z"
+    },
+    {
+      "step": "R2-open",
+      "detail": "pay-batch-row-9a5ec612",
+      "at": "2026-08-07T09:51:25.834Z"
+    },
+    {
+      "step": "R2-enroll",
+      "detail": "Thêm nhân viên",
+      "at": "2026-08-07T09:51:28.911Z"
+    }
+  ],
+  "criteria": {
+    "att_prereq_jan": "PASS",
+    "payroll_load": "PASS",
+    "tdz_cleared": "PASS",
+    "lap_bang_reachable": "PASS",
+    "enroll_jan": "BLOCKED_PERIOD_CLOSED",
+    "payslip_ui_jan": "PASS",
+    "enroll_jul": "BLOCKED",
+    "process_jul": "NOT RUN",
+    "payslip_ui_jul": "NOT RUN",
+    "f5_jul": "NOT RUN"
+  },
+  "att": {
+    "closedJanCount": 1
+  },
+  "pay": {
+    "janEligibility": {
+      "status": 200,
+      "eligible_count": 53,
+      "code": "HRM-PAY-200"
+    },
+    "janPeriodStatus": "closed",
+    "janFilterOk": true,
+    "janDetailOpen": true,
+    "janAddEmpVisible": false,
+    "julFilterOk": true,
+    "julDraftId": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+    "julDraftLabel": "QA-PAY-HIRE-04-1786012073589",
+    "julEligibility": {
+      "status": 200,
+      "eligible_count": 0
+    },
+    "julDetailOpen": true,
+    "julEnroll": {
+      "enrolled": false,
+      "reason": "no_enabled_checkbox"
+    }
+  },
+  "payslip": {
+    "jan": {
+      "dialogOpen": false,
+      "reason": "no_eye"
+    },
+    "janBatchLines": {
+      "visible": true,
+      "rowCount": 1,
+      "hasNonZeroNet": false,
+      "hasComponentCols": true,
+      "sampleText": "Mã NV\tHọ và tên\tPhòng ban\tLương cơ bản\tPhụ cấp\tThưởng\tKhấu trừ\tLương Net\nUAT-0100\t\n0\nUAT NV 0100\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫"
+    },
+    "janApiProcessedCount": 1,
+    "janApiLinesCount": 0,
+    "janApiLinesStatus": 200
+  },
+  "network": {
+    "pay": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/pay-sheet-templates?company_id=main&status=active&active_only=true",
+        "code": "HRM-PAY-TPL-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+        "code": "HRM-PAY-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+        "code": "HRM-PAY-200"
+      }
+    ]
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "tdzErrors": [],
+  "residuals": [
+    {
+      "id": "R-PAY-JAN-PERIOD-ALREADY-CLOSED",
+      "sev": "P2",
+      "owner": "qa/pm",
+      "note": "Jan period dffbb1fe already closed with processed payslip — enroll/process mutate N/A this env; verified payslip presence + TDZ clear"
+    }
+  ],
+  "startedAt": "2026-08-07T09:51:02.207Z",
+  "verdict": "PASS_TO_PM",
+  "ack_status": "PASS_TO_PM",
+  "executive_summary": "R2 after FE-SHOWADD-TDZ: tdz=PASS; load=PASS; Lập bảng=PASS; Jan ATT closed=1 elig=53 periodStatus=closed enroll_jan=BLOCKED_PERIOD_CLOSED payslip_jan=PASS; Jul enroll=BLOCKED process=NOT RUN payslip=NOT RUN f5=NOT RUN. Honesty: payroll_e2e_ready=false.",
+  "next_owner": "qc",
+  "next_dispatch_prompt": "work_item_id: PO-HRM-PAYROLL-FORMULA-RUN-GAP-QC-W3-J-HRM-07-01\nfrom_role: pm\nto_role: qc\nread_first: docs/qa/evidence/po-hrm-payroll-formula-run-gap-w3-qa-j-hrm-07-01.md\nentry: QA R2 PASS — TDZ cleared; pay-batches-precision; Lập bảng reachable; Jan payslip present (period closed); stamp PAYW3J07-R2-MSIRLK3I\nexit: GWC audit · retain payroll_e2e_ready=false · C-SLICE-≠-MODULE · R-PAY-JAN-PERIOD-ALREADY-CLOSED P2",
+  "endedAt": "2026-08-07T09:51:30.334Z"
+}

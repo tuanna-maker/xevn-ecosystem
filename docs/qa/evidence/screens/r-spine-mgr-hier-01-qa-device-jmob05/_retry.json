@@ -1,0 +1,131 @@
+{
+  "submitOk": true,
+  "fromSubCount": 1,
+  "fromSub": [
+    {
+      "id": "ac9db485-5d4f-4d77-9d25-114b157f70cf",
+      "company_id": "10000000-0000-4000-8000-000000000001",
+      "employee_id": "2680f15f-02b6-44e1-8b42-92a6aaeb7bfb",
+      "leave_type": "unpaid",
+      "start_date": "2026-08-02T17:00:00.000Z",
+      "end_date": "2026-08-02T17:00:00.000Z",
+      "reason": "Xin nghỉ từ mobile",
+      "status": "pending",
+      "requested_at": "2026-08-03T15:53:17.177Z",
+      "reviewed_at": null,
+      "reviewed_by": null,
+      "employee_code": "UAT-0003",
+      "employee_name": "UAT NV 0003",
+      "department": "STAFF",
+      "position": null,
+      "total_days": "1",
+      "handover_to": null,
+      "handover_tasks": null,
+      "approver_employee_id": null,
+      "rejected_reason": null,
+      "attachment_url": null,
+      "workflow_instance_id": null,
+      "status_label": "Chờ duyệt",
+      "leave_type_label": "Không lương",
+      "employee_display_name": "UAT NV 0003",
+      "total_days_number": 1
+    }
+  ],
+  "leaveTotal": 2,
+  "mgrRoles": [
+    "employee"
+  ],
+  "mgrIsManager": false,
+  "pathA_thongBao": true,
+  "pathA_managerApprovals": false,
+  "steps": [
+    {
+      "t": "2026-08-03T15:52:44.575Z",
+      "msg": "create leave",
+      "hit": {
+        "x": 574,
+        "y": 1649
+      }
+    },
+    {
+      "t": "2026-08-03T15:52:49.510Z",
+      "msg": "step0",
+      "hit": {
+        "x": 795,
+        "y": 2061
+      }
+    },
+    {
+      "t": "2026-08-03T15:52:54.610Z",
+      "msg": "type",
+      "hit": {
+        "x": 278,
+        "y": 1156
+      }
+    },
+    {
+      "t": "2026-08-03T15:52:57.928Z",
+      "msg": "step1 next",
+      "hit": {
+        "x": 795,
+        "y": 2061
+      }
+    },
+    {
+      "t": "2026-08-03T15:53:02.510Z",
+      "msg": "step2 next",
+      "hit": {
+        "x": 795,
+        "y": 2061
+      }
+    },
+    {
+      "t": "2026-08-03T15:53:07.270Z",
+      "msg": "submit CTA",
+      "hit": {
+        "x": 540,
+        "y": 1914
+      }
+    },
+    {
+      "t": "2026-08-03T15:53:11.472Z",
+      "msg": "confirm Gui don",
+      "hit": {
+        "x": 751,
+        "y": 1518
+      }
+    },
+    {
+      "t": "2026-08-03T15:53:22.993Z",
+      "msg": "submitOk",
+      "submitOk": true,
+      "stillConfirm": false
+    },
+    {
+      "t": "2026-08-03T15:53:23.221Z",
+      "msg": "api leave",
+      "total": 2,
+      "fromSub": [
+        {
+          "id": "ac9db485-5d4f-4d77-9d25-114b157f70cf",
+          "type": "unpaid",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "t": "2026-08-03T15:53:41.601Z",
+      "msg": "mgr persona",
+      "roles": [
+        "employee"
+      ],
+      "is_manager": false
+    },
+    {
+      "t": "2026-08-03T15:53:48.577Z",
+      "msg": "pathA",
+      "thongBao": true,
+      "mgrScreen": false
+    }
+  ]
+}

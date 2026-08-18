@@ -1,0 +1,498 @@
+{
+  "work_item_id": "PO-HRM-UI-BRAND-W3-EMP-C-QA",
+  "fe_work_item": "PO-HRM-UI-BRAND-W3-EMP-C",
+  "startedAt": "2026-08-05T03:55:39.396Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "inventory": [
+    "E18",
+    "E20",
+    "E21",
+    "E22",
+    "E23",
+    "E24"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "themeContrastStrict": {
+    "exit": 0,
+    "snippet": [
+      "> xevn-ecosystem@1.0.0 verify:xevn:theme-contrast C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem",
+      "> node scripts/verify-xevn-theme-contrast.mjs \"--\" \"--strict\"",
+      "[xevn-theme-contrast] token lockstep PASS ? primary #1E40AF � text #111827 � secondary #4B5563 � muted-fg OK (portal+HRM+TW)",
+      "[xevn-theme-contrast] scanned 598 files; pale hits=0 files=0",
+      "[xevn-theme-contrast] STRICT PASS ? 0 pale hits"
+    ]
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operations/tasks?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/assets?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-kpis?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/resume-files?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/skills?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/discipline?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/rewards?company_id=main"
+    }
+  ],
+  "mutates": [],
+  "detailGets": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/assets?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/resume-files?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/skills?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/discipline?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/rewards?company_id=main"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "steps": {
+    "l0": {
+      "status": "PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "at": "2026-08-05T03:55:40.629Z"
+    },
+    "theme": {
+      "status": "PASS",
+      "note": "strict",
+      "at": "2026-08-05T03:55:40.630Z"
+    },
+    "login": {
+      "status": "PASS",
+      "note": "HTTP 201",
+      "at": "2026-08-05T03:55:40.672Z"
+    },
+    "softdel": {
+      "status": "PASS",
+      "note": "AlertDialog cancel",
+      "at": "2026-08-05T03:55:47.161Z"
+    },
+    "navigate": {
+      "status": "PASS",
+      "note": "list→/employees/:id",
+      "at": "2026-08-05T03:55:54.362Z"
+    },
+    "e18": {
+      "status": "PASS",
+      "note": "empty job list — emp-job-honesty PASS; emp-job-trend-honesty N/A until jobs>0",
+      "at": "2026-08-05T03:55:56.033Z"
+    },
+    "e20": {
+      "status": "PASS",
+      "note": "assets ops-dense",
+      "at": "2026-08-05T03:55:58.970Z"
+    },
+    "e21": {
+      "status": "PASS",
+      "note": "kpi ops-dense",
+      "at": "2026-08-05T03:56:01.894Z"
+    },
+    "e22": {
+      "status": "PASS",
+      "note": "CV/degrees/CC/skills",
+      "at": "2026-08-05T03:56:13.212Z"
+    },
+    "e23": {
+      "status": "PASS",
+      "note": "rewards DNA",
+      "at": "2026-08-05T03:56:16.186Z"
+    },
+    "e24": {
+      "status": "PASS",
+      "note": "family sharp",
+      "at": "2026-08-05T03:56:19.145Z"
+    }
+  },
+  "checks": {
+    "SoftDel_keep": {
+      "pass": true,
+      "alertOk": true,
+      "title": {
+        "text": "Xác nhận xóa nhân viên",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "className": "text-[20px] font-bold text-xevn-text"
+      },
+      "titleOk": true,
+      "note": "Hủy only — SoftDel wire kept from EMP-B; no archive POST"
+    },
+    "navigate_detail": {
+      "pass": true,
+      "url": "/hr/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "onDetail": true,
+      "detailGets": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+        }
+      ],
+      "detail200": true
+    },
+    "E18_jobs": {
+      "pass": true,
+      "honestyOk": true,
+      "trendOk": false,
+      "emptyJobs": true,
+      "trendAccept": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classAi": 0,
+        "yellow500": 0,
+        "warningToken": 0,
+        "gradientClass": 0,
+        "aiSamples": [],
+        "hasFakeMonthSeries": false,
+        "rootTag": "DIV",
+        "rootClass": "space-y-6"
+      },
+      "mathRandomInDom": "n/a-empty-or-unmounted",
+      "note": "empty job list — emp-job-honesty PASS; emp-job-trend-honesty N/A until jobs>0"
+    },
+    "E20_assets": {
+      "pass": true,
+      "opened": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classAi": 0,
+        "yellow500": 0,
+        "warningToken": 1,
+        "gradientClass": 0,
+        "aiSamples": [],
+        "hasFakeMonthSeries": false,
+        "rootTag": "DIV",
+        "rootClass": "space-y-6"
+      }
+    },
+    "E21_kpi": {
+      "pass": true,
+      "opened": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classAi": 0,
+        "yellow500": 0,
+        "warningToken": 1,
+        "gradientClass": 0,
+        "aiSamples": [],
+        "hasFakeMonthSeries": false,
+        "rootTag": "DIV",
+        "rootClass": "space-y-6 animate-fade-in"
+      }
+    },
+    "E22_cv_cluster": {
+      "pass": true,
+      "parts": {
+        "cv": {
+          "pass": true,
+          "opened": true,
+          "chrome": {
+            "paleCount": 0,
+            "purpleCount": 0,
+            "classAi": 0,
+            "yellow500": 0,
+            "warningToken": 0,
+            "gradientClass": 0,
+            "aiSamples": [],
+            "hasFakeMonthSeries": false,
+            "rootTag": "DIV",
+            "rootClass": "space-y-6 animate-fade-in"
+          },
+          "softOk": true,
+          "note": "sharp secondary"
+        },
+        "degrees": {
+          "pass": true,
+          "opened": true,
+          "chrome": {
+            "paleCount": 0,
+            "purpleCount": 0,
+            "classAi": 0,
+            "yellow500": 0,
+            "warningToken": 0,
+            "gradientClass": 0,
+            "aiSamples": [],
+            "hasFakeMonthSeries": false,
+            "rootTag": "DIV",
+            "rootClass": "rounded-card border border-xevn-border bg-card text-card-foreground shadow-soft"
+          },
+          "softOk": true,
+          "note": "sharp secondary"
+        },
+        "certificates": {
+          "pass": true,
+          "opened": true,
+          "chrome": {
+            "paleCount": 0,
+            "purpleCount": 0,
+            "classAi": 0,
+            "yellow500": 0,
+            "warningToken": 0,
+            "gradientClass": 0,
+            "aiSamples": [],
+            "hasFakeMonthSeries": false,
+            "rootTag": "DIV",
+            "rootClass": "rounded-card border border-xevn-border bg-card text-card-foreground shadow-soft"
+          },
+          "softOk": true,
+          "note": "sharp secondary"
+        },
+        "skills": {
+          "pass": true,
+          "opened": true,
+          "chrome": {
+            "paleCount": 0,
+            "purpleCount": 0,
+            "classAi": 0,
+            "yellow500": 0,
+            "warningToken": 0,
+            "gradientClass": 0,
+            "aiSamples": [],
+            "hasFakeMonthSeries": false,
+            "rootTag": "DIV",
+            "rootClass": "space-y-4"
+          },
+          "softOk": true,
+          "note": "yellow500=0 warningToken=0"
+        }
+      }
+    },
+    "E23_rewards": {
+      "pass": true,
+      "opened": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classAi": 0,
+        "yellow500": 0,
+        "warningToken": 1,
+        "gradientClass": 0,
+        "aiSamples": [],
+        "hasFakeMonthSeries": false,
+        "rootTag": "DIV",
+        "rootClass": "space-y-6"
+      }
+    },
+    "E24_family": {
+      "pass": true,
+      "opened": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classAi": 0,
+        "yellow500": 0,
+        "warningToken": 0,
+        "gradientClass": 0,
+        "aiSamples": [],
+        "hasFakeMonthSeries": false,
+        "rootTag": "DIV",
+        "rootClass": "space-y-6"
+      }
+    },
+    "OCR_OUT": {
+      "pass": true,
+      "note": "CORE-04 OUT — no OCR dialog opened"
+    },
+    "QR_SKIP": {
+      "pass": true,
+      "note": "PROP-03e SKIP — no QR invent"
+    }
+  },
+  "failReasons": [],
+  "screens": [
+    "evidence/screens/po-hrm-ui-brand-w3-emp-c-qa/01-softdel-alertdialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-c-qa/02-e18-viec-lam.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-c-qa/03-e20-tai-san.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-c-qa/04-e21-kpi.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-c-qa/05-e22-cv.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-c-qa/06-e22-degrees.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-c-qa/07-e22-certificates.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-c-qa/08-e22-skills.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-c-qa/09-e23-rewards.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-c-qa/10-e24-family.png"
+  ],
+  "residuals": [
+    {
+      "id": "R-job-trend-api",
+      "note": "trend honesty stub until Nest history API — defer BE; do not invent series"
+    },
+    {
+      "id": "R-remaster-DONE",
+      "note": "forbidden claim — Employees not CLOSED · remaster program not DONE"
+    },
+    {
+      "id": "OBS-profile-shell-tab-icons",
+      "note": "EmployeeProfile.tsx tab/group icon colors (rose/amber/cyan) outside EMP-C allowed_paths — not scanned as EMP-C panel content"
+    }
+  ],
+  "honesty": {
+    "ocr_invented": false,
+    "qr_invented": false,
+    "employees_closed_claimed": false,
+    "remaster_done_claimed": false,
+    "seed_used": false
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-05T03:56:19.401Z",
+  "criticalFail": []
+}

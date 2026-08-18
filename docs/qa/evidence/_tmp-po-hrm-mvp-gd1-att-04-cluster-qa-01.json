@@ -1,0 +1,2197 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-ATT-04-CLUSTER-QA-01",
+  "program": "PO-HRM-MVP-GD1-CONTINUOUS",
+  "uc_ids": [
+    "UC-BP-ATT-04",
+    "FR-UC-BP-ATT-04"
+  ],
+  "stamp": "ATT04QA1-MSM21P8W",
+  "fe_evidence": "docs/qa/evidence/po-hrm-mvp-gd1-att-04-cluster-fe-01.md",
+  "startedAt": "2026-08-09T17:06:50.071Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "new_type_key": "hr_att04_msm21p8w",
+  "honesty": {
+    "attendance_uat_ready": false,
+    "ne_att04_done": true,
+    "ne_att_module_uat": true,
+    "fy_hold": true,
+    "engine_hold": true,
+    "printable_false": true,
+    "pay_out": true,
+    "deny_att_leave_hold": true,
+    "nest_core_deny": true,
+    "seed_used": false,
+    "c_slice": true
+  },
+  "must_keep": [
+    "ATT03DQC1-MSM1CR19",
+    "ATT03BQC1-MSM0891H",
+    "ATT01QC1-MSLZ3KIM",
+    "ATT11QC1-MSLXTH9P",
+    "ATT10QC1-MSLWGUYH",
+    "ATT09QC1-MSLUTL9D",
+    "ATT08QC1-MSLSL36C",
+    "ATT02QC1-MSLQZUK7",
+    "PLT01QC1-MSLPUQIU",
+    "CORE10QC1-MSLP0EJB",
+    "CORE09QC1-MSLNBA89",
+    "CORE07QC1-KZJTSHNT"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    },
+    "nest_core_work_sites": {
+      "status": 404,
+      "ok": true
+    },
+    "nest_core_leave_types": {
+      "status": 404,
+      "ok": true
+    },
+    "nest_core_leave_requests": {
+      "status": 404,
+      "ok": true
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/attendance/work-sites?company_id=main",
+      "status": 404,
+      "at": "2026-08-09T17:06:50.176Z",
+      "nest_core": true,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/attendance/leave-types?company_id=main",
+      "status": 404,
+      "at": "2026-08-09T17:06:50.179Z",
+      "nest_core": true,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/attendance/leave-requests?company_id=main",
+      "status": 404,
+      "at": "2026-08-09T17:06:50.189Z",
+      "nest_core": true,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:06:51.204Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:51.323Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:51.758Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:51.770Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:06:51.822Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:51.951Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:52.751Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T17:06:52.833Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T17:06:52.861Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:06:53.658Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:53.673Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:53.721Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/leave-types",
+      "status": 200,
+      "at": "2026-08-09T17:06:54.789Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:06:54.813Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:54.881Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:06:57.206Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:57.310Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:57.621Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:57.622Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:06:57.659Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:57.774Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:06:59.677Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:59.760Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:00.241Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:00.249Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:00.303Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:00.436Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:01.289Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T17:07:01.380Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T17:07:01.430Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:07:02.192Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:02.192Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:02.267Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:03.573Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:03.643Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:03.956Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:03.966Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:04.006Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:04.106Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:05.134Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T17:07:05.200Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T17:07:05.247Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:07:06.025Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:06.028Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:06.075Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-accrual-policies",
+      "status": 201,
+      "at": "2026-08-09T17:07:08.516Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:08.543Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:10.750Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:10.796Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:11.102Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:11.115Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:11.153Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:11.266Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:12.946Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:12.995Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:13.277Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:13.283Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:13.316Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:13.410Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:14.510Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T17:07:14.575Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T17:07:14.647Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:07:15.412Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:15.412Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:15.466Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?page=1&page_size=20&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:16.651Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:16.942Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:16.985Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:17.337Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:17.345Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:17.373Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:17.465Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:18.651Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T17:07:18.679Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T17:07:18.735Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "at": "2026-08-09T17:07:20.028Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:21.416Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": true
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/leave-balance/tracked-entitlement",
+      "status": 200,
+      "at": "2026-08-09T17:07:22.689Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": true,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:22.746Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:25.932Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:25.995Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:26.265Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:26.269Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:26.307Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:26.405Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:27.656Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:27.698Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:27.994Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:28.003Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:28.039Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:28.143Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:29.326Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T17:07:29.359Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T17:07:29.395Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:30.889Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:30.947Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:31.244Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:31.250Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:31.283Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:31.393Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:32.538Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T17:07:32.570Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T17:07:32.610Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:33.856Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:34.158Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:34.226Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:34.510Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:34.516Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:34.553Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:34.654Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:35.872Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T17:07:35.912Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T17:07:35.954Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "at": "2026-08-09T17:07:37.382Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/leave-balance/tracked-entitlement",
+      "status": 400,
+      "at": "2026-08-09T17:07:38.622Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": true,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:38.981Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:39.046Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:39.390Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:39.396Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:39.432Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:39.530Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:40.548Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T17:07:40.631Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T17:07:40.659Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:07:41.433Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:41.434Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:41.492Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:42.730Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:42.818Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:43.195Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:43.280Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:43.333Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:43.544Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T17:07:44.488Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:44.551Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:44.851Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:44.859Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:44.899Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:45.011Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:46.042Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T17:07:46.119Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T17:07:46.170Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:07:46.931Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:46.933Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:46.982Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    }
+  ],
+  "nest_core_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/attendance/work-sites?company_id=main",
+      "status": 404,
+      "at": "2026-08-09T17:06:50.176Z",
+      "nest_core": true,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/attendance/leave-types?company_id=main",
+      "status": 404,
+      "at": "2026-08-09T17:06:50.179Z",
+      "nest_core": true,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/attendance/leave-requests?company_id=main",
+      "status": 404,
+      "at": "2026-08-09T17:06:50.189Z",
+      "nest_core": true,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    }
+  ],
+  "nest_core_leave_non404": [],
+  "lvt_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/attendance/leave-types?company_id=main",
+      "status": 404,
+      "at": "2026-08-09T17:06:50.179Z",
+      "nest_core": true,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:06:53.658Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/leave-types",
+      "status": 200,
+      "at": "2026-08-09T17:06:54.789Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:06:54.813Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:07:02.192Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:07:06.025Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:07:15.412Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:07:41.433Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T17:07:46.931Z",
+      "nest_core": false,
+      "lvt": true,
+      "lvrule": false,
+      "grant": false,
+      "panel": false
+    }
+  ],
+  "lvrule_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:06:53.673Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:02.192Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:06.028Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/attendance/leave-accrual-policies",
+      "status": 201,
+      "at": "2026-08-09T17:07:08.516Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:08.543Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:15.412Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:41.434Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-accrual-policies?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T17:07:46.933Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": true,
+      "grant": false,
+      "panel": false
+    }
+  ],
+  "grant_hits": [
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/leave-balance/tracked-entitlement",
+      "status": 200,
+      "at": "2026-08-09T17:07:22.689Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": true,
+      "panel": false
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/attendance/leave-balance/tracked-entitlement",
+      "status": 400,
+      "at": "2026-08-09T17:07:38.622Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": true,
+      "panel": false
+    }
+  ],
+  "panel_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:21.416Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294&year=2026",
+      "status": 200,
+      "at": "2026-08-09T17:07:22.746Z",
+      "nest_core": false,
+      "lvt": false,
+      "lvrule": false,
+      "grant": false,
+      "panel": true
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-04-cluster-qa-01/01-j01-leave-rules.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-04-cluster-qa-01/02-j01-f5-type-row.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-04-cluster-qa-01/03-j02-policy-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-04-cluster-qa-01/04-j03-grant-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-04-cluster-qa-01/05-j04-panel.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-04-cluster-qa-01/06-j05-eff-cns.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-att-04-cluster-qa-01/07-j06-honesty-f5.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-09T17:06:52.752Z",
+      "msg": "open Thiết lập"
+    },
+    {
+      "at": "2026-08-09T17:06:53.646Z",
+      "msg": "open Quy định nghỉ sidebar"
+    },
+    {
+      "at": "2026-08-09T17:06:54.768Z",
+      "msg": "J-01 save leave type"
+    },
+    {
+      "at": "2026-08-09T17:07:01.304Z",
+      "msg": "open Thiết lập"
+    },
+    {
+      "at": "2026-08-09T17:07:02.193Z",
+      "msg": "open Quy định nghỉ sidebar"
+    },
+    {
+      "at": "2026-08-09T17:07:05.147Z",
+      "msg": "open Thiết lập"
+    },
+    {
+      "at": "2026-08-09T17:07:06.029Z",
+      "msg": "open Quy định nghỉ sidebar"
+    },
+    {
+      "at": "2026-08-09T17:07:08.430Z",
+      "msg": "J-02 save policy"
+    },
+    {
+      "at": "2026-08-09T17:07:14.523Z",
+      "msg": "open Thiết lập"
+    },
+    {
+      "at": "2026-08-09T17:07:15.432Z",
+      "msg": "open Quy định nghỉ sidebar"
+    },
+    {
+      "at": "2026-08-09T17:07:18.572Z",
+      "msg": "open Nghỉ phép"
+    },
+    {
+      "at": "2026-08-09T17:07:21.412Z",
+      "msg": "J-03 employee selected in create dialog"
+    },
+    {
+      "at": "2026-08-09T17:07:22.669Z",
+      "msg": "J-03 grant save"
+    },
+    {
+      "at": "2026-08-09T17:07:29.285Z",
+      "msg": "open Nghỉ phép"
+    },
+    {
+      "at": "2026-08-09T17:07:32.505Z",
+      "msg": "open Nghỉ phép"
+    },
+    {
+      "at": "2026-08-09T17:07:35.850Z",
+      "msg": "open Nghỉ phép"
+    },
+    {
+      "at": "2026-08-09T17:07:40.550Z",
+      "msg": "open Thiết lập"
+    },
+    {
+      "at": "2026-08-09T17:07:41.434Z",
+      "msg": "open Quy định nghỉ sidebar"
+    },
+    {
+      "at": "2026-08-09T17:07:46.043Z",
+      "msg": "open Thiết lập"
+    },
+    {
+      "at": "2026-08-09T17:07:46.934Z",
+      "msg": "open Quy định nghỉ sidebar"
+    }
+  ],
+  "journeys": {
+    "J-HRM-ATT-04-01": {
+      "verdict": "PASS",
+      "at": "2026-08-09T17:07:03.265Z",
+      "summary": "POST/PUT 200 row=true F5=true key=hr_att04_msm21p8w nestCore=0",
+      "click_path": "Thiết lập → Quy định nghỉ → Loại phép N+1 → Lưu → F5",
+      "mutate": {
+        "method": "PUT",
+        "url": "/api/hrm/attendance/leave-types",
+        "status": 200,
+        "at": "2026-08-09T17:06:54.789Z",
+        "nest_core": false,
+        "lvt": true,
+        "lvrule": false,
+        "grant": false,
+        "panel": false
+      },
+      "nest_core_0": true
+    },
+    "J-HRM-ATT-04-02": {
+      "verdict": "PASS",
+      "at": "2026-08-09T17:07:16.497Z",
+      "summary": "POST policy 201 rows=3 nestCore=0",
+      "click_path": "Quy định nghỉ → Quy tắc quỹ → Lưu → F5",
+      "polMutate": {
+        "method": "POST",
+        "url": "/api/hrm/attendance/leave-accrual-policies",
+        "status": 201,
+        "at": "2026-08-09T17:07:08.516Z",
+        "nest_core": false,
+        "lvt": false,
+        "lvrule": true,
+        "grant": false,
+        "panel": false
+      },
+      "nest_core_0": true
+    },
+    "J-HRM-ATT-04-03": {
+      "verdict": "PASS",
+      "at": "2026-08-09T17:07:30.564Z",
+      "summary": "PUT 200 panelVisible=true nestCore=0",
+      "click_path": "Nghỉ phép → Tạo → chọn NV → att-04-grant-panel → Lưu entitled → F5",
+      "grantHit": {
+        "method": "PUT",
+        "url": "/api/hrm/attendance/leave-balance/tracked-entitlement",
+        "status": 200,
+        "at": "2026-08-09T17:07:22.689Z",
+        "nest_core": false,
+        "lvt": false,
+        "lvrule": false,
+        "grant": true,
+        "panel": false
+      },
+      "nest_core_0": true
+    },
+    "J-HRM-ATT-04-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T17:07:33.779Z",
+      "summary": "panel=true mvpLabels=true nestCore=0",
+      "click_path": "Nghỉ phép → leave-balance-panel",
+      "nest_core_0": true
+    },
+    "J-HRM-ATT-04-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T17:07:38.697Z",
+      "summary": "EFF hasType=true picker=true CNS probe=400:HRM-VAL-001",
+      "click_path": "Tạo đơn → EFF picker · API CNS probe when policy active",
+      "cnsProbe": {
+        "status": 400,
+        "code": "HRM-VAL-001"
+      },
+      "nest_core_0": true
+    },
+    "J-HRM-ATT-04-06": {
+      "verdict": "PASS",
+      "at": "2026-08-09T17:07:48.005Z",
+      "summary": "honesty visible=true neDone=true fyEngine=true denyHold=true nestCore=0",
+      "click_path": "F5 → att-04-honesty · FY/ENGINE HOLD footers",
+      "honesty": {
+        "visible": true,
+        "text": "C-SLICE ATT-04 — catalog LVT + quy tắc quỹ LVRULE + cấp entitled (HR). ≠ ATT-04 DONE · ≠ L1/LVRULE/grant alone · FY/engine HOLD · U65 zero-seed. attendance_uat_ready=false · ≠ ATT-04 DONE · ≠ ATT module UAT · FY HOLD · ENGINE HOLD · PAY OUT · printable false",
+        "fy": true,
+        "engine": true,
+        "neDone": true,
+        "denyHold": false
+      },
+      "must_keep": [
+        "ATT03DQC1-MSM1CR19",
+        "ATT03BQC1-MSM0891H",
+        "ATT01QC1-MSLZ3KIM",
+        "ATT11QC1-MSLXTH9P",
+        "ATT10QC1-MSLWGUYH",
+        "ATT09QC1-MSLUTL9D",
+        "ATT08QC1-MSLSL36C",
+        "ATT02QC1-MSLQZUK7",
+        "PLT01QC1-MSLPUQIU",
+        "CORE10QC1-MSLP0EJB",
+        "CORE09QC1-MSLNBA89",
+        "CORE07QC1-KZJTSHNT"
+      ],
+      "nest_core_0": true
+    }
+  },
+  "residuals": [],
+  "defects": [],
+  "setup": {
+    "grant_emp": {
+      "id": "3ad58ec2-d480-47e8-b781-91904c561294",
+      "code": "qa_c07p_msljspgo",
+      "name": "QA CORE07 PENDING msljspgo"
+    }
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T17:07:48.253Z",
+  "probes": {
+    "nest_core_leave_non404": 0,
+    "lvt_mutations": 1,
+    "lvrule_mutations": 1,
+    "grant_puts": 2,
+    "panel_gets": 2
+  }
+}

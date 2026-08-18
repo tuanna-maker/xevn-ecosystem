@@ -1,0 +1,38 @@
+{
+  "leave": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "code": "HRM-VAL-001",
+      "message": "company_id must be shorter than or equal to 64 characters; company_id must be a string",
+      "timestamp": "2026-08-03T15:11:42.744Z"
+    }
+  },
+  "leave2": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "code": "HRM-VAL-001",
+      "message": "property companyId should not exist; company_id must be shorter than or equal to 64 characters; company_id must be a string",
+      "timestamp": "2026-08-03T15:11:42.755Z"
+    }
+  },
+  "empList": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "code": "HRM-VAL-001",
+      "message": "property pageSize should not exist; company_id must be a string",
+      "timestamp": "2026-08-03T15:11:42.769Z"
+    }
+  },
+  "me": {
+    "status": 400,
+    "body": {
+      "success": false,
+      "code": "HRM-VAL-001",
+      "message": "company_id must be a string",
+      "timestamp": "2026-08-03T15:11:42.774Z"
+    }
+  }
+}

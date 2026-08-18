@@ -1,0 +1,532 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-QA-02",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-FE-01",
+  "resume_chunk": "K6.2e",
+  "startedAt": "2026-08-07T12:40:27.146Z",
+  "stamp": "RECPLATQA2-MSIXNFE2",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "apiCompanyId": "main"
+  },
+  "u65": "zero-seed · browser-only · FE after 2xx + F5",
+  "hdsd_align": "Settings → Giai đoạn REC · Tuyển dụng → Ứng viên picker · retire · UNKNOWN toast · Hire EMP",
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "payroll_e2e_ready": false,
+    "seed_used": false,
+    "deny_module_rec_uat": true,
+    "deny_j_star_promote": true,
+    "deny_reopen_rec_qc_01_l1": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "STG_KEY": "hr_custom_stage_07_msixnfe2",
+    "STG_LABEL": "GĐ QA REC msixnfe2",
+    "UNKNOWN_STAGE": "not_in_catalog_qa_msixnfe2"
+  },
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "ac": {
+    "L0-STACK": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:40:27.184Z",
+      "summary": "portal 200 · hrm 200 · xbos 200"
+    },
+    "AC-PLT-REC-02-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:40:33.648Z",
+      "summary": "Clicked settings-tab-rec-pipeline-stages"
+    },
+    "AC-PLT-REC-02-PANEL": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:40:33.767Z",
+      "summary": "Panel settings-rec-pipeline-stages visible"
+    },
+    "AC-PLT-REC-02-CREATE-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:40:35.568Z",
+      "summary": "UPSERT pipeline-stages PUT → 200 key=hr_custom_stage_07_msixnfe2 code=HRM-REC-STG-200",
+      "network": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/recruitment/pipeline-stages",
+        "id": "b7b309e4-7315-4aed-a6e9-eaf7b95f8a7a",
+        "stageKey": "hr_custom_stage_07_msixnfe2",
+        "code": "HRM-REC-STG-200"
+      }
+    },
+    "AC-PLT-REC-02-F5-ROW": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:40:41.317Z",
+      "summary": "Row settings-rec-pipeline-stage-row-hr_custom_stage_07_msixnfe2 visible after F5"
+    },
+    "AC-PLT-REC-02-PICKER": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:40:51.058Z",
+      "summary": "Picker/effective has hr_custom_stage_07_msixnfe2 · pick={\"ok\":true,\"status\":200,\"code\":\"HRM-REC-CP-200\",\"pickerIndex\":2}",
+      "probes": {
+        "effective": {
+          "status": 200,
+          "count": 3,
+          "hasNewKey": true,
+          "hiredOutcomeKey": "hired_qa_msiwiylu",
+          "sampleKeys": [
+            "hr_custom_stage_07",
+            "hired_qa_msiwiylu",
+            "hr_custom_stage_07_msixnfe2"
+          ],
+          "company_id": "main"
+        },
+        "pick": {
+          "ok": true,
+          "status": 200,
+          "code": "HRM-REC-CP-200",
+          "pickerIndex": 2
+        }
+      }
+    },
+    "AC-PLT-REC-04-UNKNOWN": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:41:22.645Z",
+      "summary": "PATCH unknown → 400 code=HRM-REC-STAGE-UNKNOWN toast=false",
+      "network": {
+        "status": 400,
+        "code": "HRM-REC-STAGE-UNKNOWN",
+        "message": "stage 'not_in_catalog_qa_msixnfe2' is not in effective pipeline catalog (free-text SoT forbidden)",
+        "via": "api_fallback"
+      },
+      "toast": false
+    },
+    "AC-PLT-REC-05-HIRE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:41:36.784Z",
+      "summary": "Hire dialog → PATCH 200 EMP soft-link emp=0500220b-f289-40df-b07e-86316285439b stage=hired_qa_msiwiylu",
+      "hiredKey": "hired_qa_msiwiylu",
+      "hirePatch": {
+        "status": 200,
+        "code": "HRM-REC-CP-200",
+        "hasEmployeeId": true,
+        "reqSnippet": "{\"stage\":\"hired_qa_msiwiylu\",\"employee_id\":\"0500220b-f289-40df-b07e-86316285439b\"}",
+        "respStage": "hired_qa_msiwiylu",
+        "respEmp": "0500220b-f289-40df-b07e-86316285439b"
+      },
+      "dialog": true
+    },
+    "AC-PLT-REC-03-RETIRE-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:41:44.481Z",
+      "summary": "Retire → 201 · active row gone=true"
+    },
+    "AC-PLT-REC-03-PICKER-HIDE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:41:53.013Z",
+      "summary": "effective hasKey=false · pickerHasRetired=false"
+    },
+    "AC-PLT-REC-03-HISTORY": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:41:53.172Z",
+      "summary": "Cand 1d291765-1ce4-4b97-a0dc-b18a6ef487ea stage=hr_custom_stage_07_msixnfe2 after retire · FE shows=true"
+    },
+    "MUST_KEEP-JD-IV-YCTD": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:41:58.246Z",
+      "summary": "jd 200 · iv 200 · yctd 200"
+    },
+    "NO-HARDCODE-SIX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:41:58.247Z",
+      "summary": "effective sample=[\"hr_custom_stage_07\",\"hired_qa_msiwiylu\",\"hr_custom_stage_07_msixnfe2\"] hasNewKey=true"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages?company_id=main&status=active",
+      "at": "2026-08-07T12:40:32.133Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages",
+      "at": "2026-08-07T12:40:33.950Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages?company_id=main&status=active",
+      "at": "2026-08-07T12:40:33.999Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages?company_id=main&status=active",
+      "at": "2026-08-07T12:40:35.608Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages?company_id=main&status=active",
+      "at": "2026-08-07T12:40:39.715Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-07T12:40:42.267Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T12:40:42.290Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-07T12:40:42.332Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:40:42.332Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:40:42.399Z"
+    },
+    {
+      "method": "PATCH",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool/1d291765-1ce4-4b97-a0dc-b18a6ef487ea/stage?company_id=main",
+      "at": "2026-08-07T12:40:50.951Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:40:51.056Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-07T12:41:23.480Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T12:41:23.518Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:41:23.548Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-07T12:41:23.549Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:41:23.631Z"
+    },
+    {
+      "method": "PATCH",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool/6f6d2250-2bc1-4d36-9228-a63299d011f8/stage?company_id=main",
+      "at": "2026-08-07T12:41:32.609Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:41:32.692Z"
+    },
+    {
+      "method": "PATCH",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool/9f31da35-9728-4349-ab3c-7ae093f3ce59/stage?company_id=main",
+      "at": "2026-08-07T12:41:36.749Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:41:36.868Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages?company_id=main&status=active",
+      "at": "2026-08-07T12:41:40.780Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/pipeline-stages/b7b309e4-7315-4aed-a6e9-eaf7b95f8a7a/retire?company_id=main",
+      "at": "2026-08-07T12:41:42.370Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages?company_id=main&status=active",
+      "at": "2026-08-07T12:41:42.389Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages?company_id=main&status=active",
+      "at": "2026-08-07T12:41:43.419Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-07T12:41:45.278Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T12:41:45.322Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:41:45.323Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-07T12:41:45.324Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:41:45.406Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-07T12:41:54.176Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T12:41:54.213Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:41:54.214Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-07T12:41:54.228Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-07T12:41:54.304Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-07T12:41:56.613Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:41:56.640Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-07T12:41:56.663Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-07T12:41:56.663Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/interviews-catalog?company_id=main",
+      "at": "2026-08-07T12:41:56.735Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-07T12:41:56.739Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-07T12:41:56.739Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/01-settings-rec-pipeline.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/02-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/03-settings-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/04-candidates-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/05-picker-select.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/06-unknown-toast.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/07-hire-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/07-hire-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/08-after-hire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/09-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/10-picker-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/11-history-key.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/12-must-keep-jobs.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-rec-qa-02/13-must-keep-interviews.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T12:40:27.252Z",
+      "msg": "loginApi ok"
+    },
+    {
+      "at": "2026-08-07T12:40:27.801Z",
+      "msg": "goto Settings Giai đoạn REC"
+    },
+    {
+      "at": "2026-08-07T12:40:33.826Z",
+      "msg": "click Tạo giai đoạn key=hr_custom_stage_07_msixnfe2"
+    },
+    {
+      "at": "2026-08-07T12:40:36.800Z",
+      "msg": "F5 settings"
+    },
+    {
+      "at": "2026-08-07T12:40:41.331Z",
+      "msg": "goto Tuyển dụng → Ứng viên"
+    },
+    {
+      "at": "2026-08-07T12:40:51.059Z",
+      "msg": "AC-PLT-REC-04 UNKNOWN toast via FE stage picker + route rewrite"
+    },
+    {
+      "at": "2026-08-07T12:41:22.647Z",
+      "msg": "AC-PLT-REC-05 Hire dialog EMP soft-link"
+    },
+    {
+      "at": "2026-08-07T12:41:36.872Z",
+      "msg": "Settings retire custom stage"
+    },
+    {
+      "at": "2026-08-07T12:41:53.173Z",
+      "msg": "must_keep JD / IV / YCTD"
+    }
+  ],
+  "probes": {
+    "upsert": {
+      "status": 200,
+      "method": "PUT",
+      "url": "/api/hrm/recruitment/pipeline-stages",
+      "id": "b7b309e4-7315-4aed-a6e9-eaf7b95f8a7a",
+      "stageKey": "hr_custom_stage_07_msixnfe2",
+      "code": "HRM-REC-STG-200"
+    },
+    "effective": {
+      "status": 200,
+      "count": 3,
+      "hasNewKey": true,
+      "hiredOutcomeKey": "hired_qa_msiwiylu",
+      "sampleKeys": [
+        "hr_custom_stage_07",
+        "hired_qa_msiwiylu",
+        "hr_custom_stage_07_msixnfe2"
+      ],
+      "company_id": "main"
+    },
+    "pickerCount": 6,
+    "pickerSelect": {
+      "ok": true,
+      "status": 200,
+      "code": "HRM-REC-CP-200",
+      "pickerIndex": 2
+    },
+    "historyCandFromPicker": "1d291765-1ce4-4b97-a0dc-b18a6ef487ea",
+    "unknownPickerCount": 2,
+    "hiredOutcomeKey": "hired_qa_msiwiylu",
+    "hirePickerCount": 6,
+    "lastDialog": "Ngừng giai đoạn «GĐ QA REC msixnfe2 (hr_custom_stage_07_msixnfe2)»? (soft-delete — lịch sử UV vẫn giữ mã)",
+    "retire": {
+      "status": 201,
+      "feButton": true
+    },
+    "effectiveAfterRetire": {
+      "status": 200,
+      "hasKey": false,
+      "count": 2
+    },
+    "history": {
+      "status": 200,
+      "candId": "1d291765-1ce4-4b97-a0dc-b18a6ef487ea",
+      "stage": "hr_custom_stage_07_msixnfe2",
+      "intact": true
+    },
+    "must_keep": {
+      "jd_field_defs": 200,
+      "interviews_catalog": 200,
+      "requisitions": 200
+    }
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T12:41:58.583Z",
+  "summary": {
+    "passed": 13,
+    "failed": 0,
+    "blocked": 0,
+    "criticalFail": false,
+    "stamp": "RECPLATQA2-MSIXNFE2"
+  }
+}

@@ -1,0 +1,9 @@
+﻿[xevn-ecosystem] BẢNG TRẠNG THÁI
+Claude: docs/peer (FIDELITY_PROGRAM_DISPATCH)
+Cursor:
+• E1-A CLOSED GWC
+• E1-B CLOSED GWC  
+• E2 CLOSED GWC
+• E3 G1 (SRS+DB/API) đang chạy
+Tiếp: E-XBOS-SPEC → Wave-B
+HOLD_DEPLOY

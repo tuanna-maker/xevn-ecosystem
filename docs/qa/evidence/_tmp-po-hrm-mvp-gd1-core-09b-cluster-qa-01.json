@@ -1,0 +1,1696 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-CORE-09B-CLUSTER-QA-01",
+  "stamp": "CORE09BQA-MSLAWKV6",
+  "startedAt": "2026-08-09T04:27:01.501Z",
+  "depends_on": "FE-01 READY_FOR_QA · docs/qa/evidence/po-hrm-mvp-gd1-core-09b-cluster-fe-01.md · API-01 CONFIRMED RETAIN · peer CORE09AQC1-MSLA4LX9",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "contracts_printable_ready": false,
+    "personnel_core_uat": false,
+    "ctr_module_uat": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "core09a_ne_printable_done": true,
+    "peer_09c_09d_invent_done": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "portal": 200,
+    "portal_url": "http://127.0.0.1:5173",
+    "hrm": 200,
+    "xbos": 200
+  },
+  "l1": {
+    "employee_id": "2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+    "employee_name": "UV UAT REC UATREC-ICHFBD",
+    "pack": {
+      "status": 200,
+      "code": "HRM-CTR-PACK-200",
+      "suggested": "GENERAL",
+      "allowed": [
+        "GENERAL",
+        "IT_OFFICE",
+        "DRIVER",
+        "LOGISTICS"
+      ]
+    },
+    "nest_core_pack_deny": true,
+    "templates_active": {
+      "total": 33,
+      "by": {
+        "GENERAL": 31,
+        "DRIVER": 1,
+        "IT_OFFICE": 1
+      }
+    },
+    "tpl_it": {
+      "id": "d4e27ca5-d116-4a3a-bf17-847daeb776cd",
+      "company_id": "holding",
+      "code": "XEVN_FT_12M_OFFICE",
+      "name_vi": "X.E — HĐLĐ 12 tháng (HCNS)",
+      "pack_code": "IT_OFFICE",
+      "layout_json": {
+        "show_driver_license_block": false
+      },
+      "keyword_map": {
+        "{{effective_to}}": {
+          "ring": "contract",
+          "source": "employee_contracts.end_date"
+        },
+        "{{effective_from}}": {
+          "ring": "contract",
+          "source": "employee_contracts.start_date"
+        },
+        "{{contract_number}}": {
+          "ring": "contract",
+          "source": "employee_contracts.contract_code"
+        },
+        "{{employer_address}}": {
+          "ring": "company",
+          "source": "company.address"
+        },
+        "{{term_type_label_vi}}": {
+          "ring": "contract",
+          "source": "derived.term_type"
+        },
+        "{{employer_legal_name}}": {
+          "ring": "company",
+          "source": "company.legal_name"
+        },
+        "{{employer_unit_label}}": {
+          "ring": "company",
+          "source": "company.display_name"
+        },
+        "{{contract_title_print}}": {
+          "ring": "contract",
+          "source": "hrm_contract_templates.title_print_vi"
+        },
+        "{{contract_number_suggested}}": {
+          "ring": "contract",
+          "source": "settings.contract_number_pattern"
+        }
+      },
+      "status": "active",
+      "version": 1,
+      "default_term_type": "definite",
+      "default_duration_days": null,
+      "default_duration_months": 12,
+      "title_print_vi": "HỢP ĐỒNG LAO ĐỘNG",
+      "matrix_family": "XEVN_MATRIX",
+      "origin": "member",
+      "origin_company_id": null,
+      "origin_publish_version": null,
+      "lineage_code": null,
+      "archived_at": null,
+      "created_at": "2026-08-07T03:50:06.936Z",
+      "updated_at": "2026-08-09T04:22:53.943Z",
+      "template_code": "XEVN_FT_12M_OFFICE",
+      "clauses": []
+    },
+    "tpl_dr": {
+      "id": "7811f8bb-1bcc-4f41-9ec4-142c4cc14769",
+      "company_id": "holding",
+      "code": "XEVN_FT_12M_DRIVER",
+      "name_vi": "X.E — HĐLĐ 12 tháng (Lái xe)",
+      "pack_code": "DRIVER",
+      "layout_json": {
+        "show_driver_license_block": true
+      },
+      "keyword_map": {
+        "{{effective_to}}": {
+          "ring": "contract",
+          "source": "employee_contracts.end_date"
+        },
+        "{{license_class}}": {
+          "ring": "public",
+          "source": "employee_contracts.license_class"
+        },
+        "{{vehicle_plate}}": {
+          "ring": "public",
+          "source": "employee_contracts.vehicle_plate"
+        },
+        "{{effective_from}}": {
+          "ring": "contract",
+          "source": "employee_contracts.start_date"
+        },
+        "{{contract_number}}": {
+          "ring": "contract",
+          "source": "employee_contracts.contract_code"
+        },
+        "{{employer_address}}": {
+          "ring": "company",
+          "source": "company.address"
+        },
+        "{{term_type_label_vi}}": {
+          "ring": "contract",
+          "source": "derived.term_type"
+        },
+        "{{employer_legal_name}}": {
+          "ring": "company",
+          "source": "company.legal_name"
+        },
+        "{{employer_unit_label}}": {
+          "ring": "company",
+          "source": "company.display_name"
+        },
+        "{{contract_title_print}}": {
+          "ring": "contract",
+          "source": "hrm_contract_templates.title_print_vi"
+        },
+        "{{driver_license_class}}": {
+          "ring": "public",
+          "source": "employee_contracts.license_class"
+        },
+        "{{driver_license_number}}": {
+          "ring": "public",
+          "source": "employee_contracts.driver_license_number"
+        },
+        "{{driver_license_issued_on}}": {
+          "ring": "public",
+          "source": "employee_contracts.driver_license_issued_on"
+        },
+        "{{contract_number_suggested}}": {
+          "ring": "contract",
+          "source": "settings.contract_number_pattern"
+        },
+        "{{driver_license_issued_place}}": {
+          "ring": "public",
+          "source": "employee_contracts.driver_license_issued_place"
+        }
+      },
+      "status": "active",
+      "version": 1,
+      "default_term_type": "definite",
+      "default_duration_days": null,
+      "default_duration_months": 12,
+      "title_print_vi": "HỢP ĐỒNG LAO ĐỘNG",
+      "matrix_family": "XEVN_MATRIX",
+      "origin": "member",
+      "origin_company_id": null,
+      "origin_publish_version": null,
+      "lineage_code": null,
+      "archived_at": null,
+      "created_at": "2026-08-07T03:50:07.042Z",
+      "updated_at": "2026-08-09T04:22:54.067Z",
+      "template_code": "XEVN_FT_12M_DRIVER",
+      "clauses": []
+    },
+    "tpl_gen": {
+      "id": "b853f70a-b419-4034-828b-899eba04f35d",
+      "company_id": "holding",
+      "code": "QA_CTR_TPL_MSK7U4CG",
+      "name_vi": "QA mẫu N+1 CTRTPLQA-MSK7U4CG",
+      "pack_code": "GENERAL",
+      "layout_json": {
+        "show_driver_license_block": false
+      },
+      "keyword_map": {},
+      "status": "active",
+      "version": 1,
+      "default_term_type": null,
+      "default_duration_days": null,
+      "default_duration_months": null,
+      "title_print_vi": null,
+      "matrix_family": "LEGACY",
+      "origin": "member",
+      "origin_company_id": null,
+      "origin_publish_version": null,
+      "lineage_code": null,
+      "archived_at": null,
+      "created_at": "2026-08-08T10:13:33.908Z",
+      "updated_at": "2026-08-08T10:13:33.908Z",
+      "template_code": "QA_CTR_TPL_MSK7U4CG",
+      "clauses": []
+    },
+    "contracts_total": 38,
+    "sample_contract_id": "fd231bda-1f52-4539-af04-2023adb45b65",
+    "sample_pv_before": 0,
+    "nest_core_preview_deny": true,
+    "core09a_clauses_live": true,
+    "core09a_nest_deny": true,
+    "probes": [
+      {
+        "method": "GET",
+        "path": "/api/hrm/employees?page_size=5&company_id=main",
+        "status": 200,
+        "code": "HRM-EMP-200",
+        "cannot": false,
+        "snippet": "{\"success\":true,\"code\":\"HRM-EMP-200\",\"message\":\"Employees listed\",\"data\":{\"total\":64,\"page\":1,\"page_size\":5,\"next_cursor\":\"MjAyNi0wOC0wNFQwOToxNjo0NS45MjIwNjZaCjBmNmUxMzY5LTQxNzAtNDJlMy1hZDZiLTNkMDRiM2VjMmVkZA\",\"data\":[{"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/contracts/pack-resolve?employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61&company_id=main",
+        "status": 200,
+        "code": "HRM-CTR-PACK-200",
+        "cannot": false,
+        "snippet": "{\"success\":true,\"code\":\"HRM-CTR-PACK-200\",\"message\":\"Contract pack resolved\",\"data\":{\"employee_id\":\"2b4cbc90-fb74-4a2d-9fef-d188d4e48d61\",\"job_family\":null,\"suggested_pack\":\"GENERAL\",\"allowed_packs\":[\"GENERAL\",\"IT_OFFICE"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/core/contracts/pack-resolve?employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61&company_id=main",
+        "status": 404,
+        "code": "HRM-DATA-404",
+        "cannot": true,
+        "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot GET /api/hrm/core/contracts/pack-resolve?employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61&company_id=main\",\"timestamp\":\"2026-08-09T04:27:02.008Z\"}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+        "status": 200,
+        "code": "HRM-CTR-TPL-200",
+        "cannot": false,
+        "snippet": "{\"success\":true,\"code\":\"HRM-CTR-TPL-200\",\"message\":\"Contract templates listed\",\"data\":{\"total\":33,\"data\":[{\"id\":\"b853f70a-b419-4034-828b-899eba04f35d\",\"company_id\":\"holding\",\"code\":\"QA_CTR_TPL_MSK7U4CG\",\"name_vi\":\"QA mẫu"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/contracts?page_size=5&company_id=main",
+        "status": 200,
+        "code": "HRM-CON-200",
+        "cannot": false,
+        "snippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":38,\"page\":1,\"page_size\":5,\"data\":[{\"id\":\"fd231bda-1f52-4539-af04-2023adb45b65\",\"company_id\":\"holding\",\"employee_id\":\"2b4cbc90-fb74-4a2d-9f"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/contracts/fd231bda-1f52-4539-af04-2023adb45b65/print-versions?company_id=main",
+        "status": 200,
+        "code": "HRM-CTR-VER-200",
+        "cannot": false,
+        "snippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T04:27:02.687Z\"}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/hrm/core/contracts/fd231bda-1f52-4539-af04-2023adb45b65/preview?company_id=main",
+        "status": 404,
+        "code": "HRM-DATA-404",
+        "cannot": true,
+        "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/core/contracts/fd231bda-1f52-4539-af04-2023adb45b65/preview?company_id=main\",\"timestamp\":\"2026-08-09T04:27:02.700Z\"}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+        "status": 200,
+        "code": "HRM-CTR-CL-200",
+        "cannot": false,
+        "snippet": "{\"success\":true,\"code\":\"HRM-CTR-CL-200\",\"message\":\"Contract clauses listed\",\"data\":{\"total\":41,\"data\":[{\"id\":\"462589f7-77a6-49f2-9f86-0cf66ba7b228\",\"company_id\":\"holding\",\"code\":\"LEGAL_CTRQA-HPY05Q\",\"title_vi\":\"Căn cứ ph"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/core/contract-clauses?company_id=main",
+        "status": 404,
+        "code": "HRM-DATA-404",
+        "cannot": true,
+        "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot GET /api/hrm/core/contract-clauses?company_id=main\",\"timestamp\":\"2026-08-09T04:27:02.745Z\"}"
+      }
+    ],
+    "pack_live": true,
+    "ok": true
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T04:27:04.061Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:04.105Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T04:27:04.137Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T04:27:04.267Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T04:27:04.361Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:04.361Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T04:27:04.578Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:04.776Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T04:27:07.090Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:07.091Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T04:27:07.091Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T04:27:07.091Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T04:27:07.152Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T04:27:07.296Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T04:27:07.397Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:07.465Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "status": null,
+      "at": "2026-08-09T04:27:07.606Z",
+      "nest_core": false,
+      "pack": true,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "status": 200,
+      "at": "2026-08-09T04:27:07.656Z",
+      "nest_core": false,
+      "pack": true,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PACK-200\",\"message\":\"Contract pack resolved\",\"data\":{\"employee_id\":\"2b4cbc90-fb74-4a2d-9fef-d188d4e48d61\",\"job_family\":null,\"suggested_pack\":\"GENERAL\",\"allowed_packs\":[\"GENERAL\",\"IT_OFFICE\",\"DRIVER\",\"LOGISTICS\"],\"reason\":\"hard_default_GENERAL\"},\"timestamp\":\"2026-08-09T04:27:07.630Z\"}"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": null,
+      "at": "2026-08-09T04:27:14.697Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": 201,
+      "at": "2026-08-09T04:27:15.971Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:15.972Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:16.374Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T04:27:20.103Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:20.163Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T04:27:20.177Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T04:27:20.306Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T04:27:20.328Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:20.328Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T04:27:20.537Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:20.720Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T04:27:24.270Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T04:27:24.270Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T04:27:24.270Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "status": null,
+      "at": "2026-08-09T04:27:24.271Z",
+      "nest_core": false,
+      "pack": true,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:24.271Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T04:27:24.295Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "status": 200,
+      "at": "2026-08-09T04:27:24.311Z",
+      "nest_core": false,
+      "pack": true,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PACK-200\",\"message\":\"Contract pack resolved\",\"data\":{\"employee_id\":\"2b4cbc90-fb74-4a2d-9fef-d188d4e48d61\",\"job_family\":null,\"suggested_pack\":\"GENERAL\",\"allowed_packs\":[\"GENERAL\",\"IT_OFFICE\",\"DRIVER\",\"LOGISTICS\"],\"reason\":\"hard_default_GENERAL\"},\"timestamp\":\"2026-08-09T04:27:24.300Z\"}"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T04:27:24.326Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": true,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T04:27:24.320Z\"}"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T04:27:24.482Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T04:27:24.550Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:30.032Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T04:27:30.148Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"b853f70a-b419-4034-828b-899eba04f35d\",\"template_code\":\"QA_CTR_TPL_MSK7U4CG\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:36.960Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T04:27:37.053Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"IT_OFFICE\",\"template_id\":\"d4e27ca5-d116-4a3a-bf17-847daeb776cd\",\"template_code\":\"XEVN_FT_12M_OFFICE\",\"template_version\":1,\"title_print_vi\":\"HỢP ĐỒNG LAO ĐỘNG\",\"term_type\":\"definite\",\"default_duration_days\":null,\"default_duration_months\":12,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_numb"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:44.052Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T04:27:44.145Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"DRIVER\",\"template_id\":\"7811f8bb-1bcc-4f41-9ec4-142c4cc14769\",\"template_code\":\"XEVN_FT_12M_DRIVER\",\"template_version\":1,\"title_print_vi\":\"HỢP ĐỒNG LAO ĐỘNG\",\"term_type\":\"definite\",\"default_duration_days\":null,\"default_duration_months\":12,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:50.502Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T04:27:50.607Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"DRIVER\",\"template_id\":\"7811f8bb-1bcc-4f41-9ec4-142c4cc14769\",\"template_code\":\"XEVN_FT_12M_DRIVER\",\"template_version\":1,\"title_print_vi\":\"HỢP ĐỒNG LAO ĐỘNG\",\"term_type\":\"definite\",\"default_duration_days\":null,\"default_duration_months\":12,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_"
+    },
+    {
+      "method": "PATCH",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b",
+      "status": null,
+      "at": "2026-08-09T04:27:54.144Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "PATCH",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b",
+      "status": 200,
+      "at": "2026-08-09T04:27:55.071Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:55.073Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:55.469Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T04:27:57.485Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:57.512Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T04:27:57.563Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T04:27:57.660Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T04:27:57.672Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:57.672Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T04:27:57.881Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:58.064Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    }
+  ],
+  "nest_core_hits": [],
+  "pack_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "status": null,
+      "at": "2026-08-09T04:27:07.606Z",
+      "nest_core": false,
+      "pack": true,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "status": 200,
+      "at": "2026-08-09T04:27:07.656Z",
+      "nest_core": false,
+      "pack": true,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PACK-200\",\"message\":\"Contract pack resolved\",\"data\":{\"employee_id\":\"2b4cbc90-fb74-4a2d-9fef-d188d4e48d61\",\"job_family\":null,\"suggested_pack\":\"GENERAL\",\"allowed_packs\":[\"GENERAL\",\"IT_OFFICE\",\"DRIVER\",\"LOGISTICS\"],\"reason\":\"hard_default_GENERAL\"},\"timestamp\":\"2026-08-09T04:27:07.630Z\"}"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "status": null,
+      "at": "2026-08-09T04:27:24.271Z",
+      "nest_core": false,
+      "pack": true,
+      "preview": false,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "status": 200,
+      "at": "2026-08-09T04:27:24.311Z",
+      "nest_core": false,
+      "pack": true,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PACK-200\",\"message\":\"Contract pack resolved\",\"data\":{\"employee_id\":\"2b4cbc90-fb74-4a2d-9fef-d188d4e48d61\",\"job_family\":null,\"suggested_pack\":\"GENERAL\",\"allowed_packs\":[\"GENERAL\",\"IT_OFFICE\",\"DRIVER\",\"LOGISTICS\"],\"reason\":\"hard_default_GENERAL\"},\"timestamp\":\"2026-08-09T04:27:24.300Z\"}"
+    }
+  ],
+  "preview_hits": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:30.032Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T04:27:30.148Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"b853f70a-b419-4034-828b-899eba04f35d\",\"template_code\":\"QA_CTR_TPL_MSK7U4CG\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:36.960Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T04:27:37.053Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"IT_OFFICE\",\"template_id\":\"d4e27ca5-d116-4a3a-bf17-847daeb776cd\",\"template_code\":\"XEVN_FT_12M_OFFICE\",\"template_version\":1,\"title_print_vi\":\"HỢP ĐỒNG LAO ĐỘNG\",\"term_type\":\"definite\",\"default_duration_days\":null,\"default_duration_months\":12,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_numb"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:44.052Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T04:27:44.145Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"DRIVER\",\"template_id\":\"7811f8bb-1bcc-4f41-9ec4-142c4cc14769\",\"template_code\":\"XEVN_FT_12M_DRIVER\",\"template_version\":1,\"title_print_vi\":\"HỢP ĐỒNG LAO ĐỘNG\",\"term_type\":\"definite\",\"default_duration_days\":null,\"default_duration_months\":12,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:50.502Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T04:27:50.607Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"DRIVER\",\"template_id\":\"7811f8bb-1bcc-4f41-9ec4-142c4cc14769\",\"template_code\":\"XEVN_FT_12M_DRIVER\",\"template_version\":1,\"title_print_vi\":\"HỢP ĐỒNG LAO ĐỘNG\",\"term_type\":\"definite\",\"default_duration_days\":null,\"default_duration_months\":12,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_"
+    }
+  ],
+  "contract_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:04.361Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:04.776Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": null,
+      "at": "2026-08-09T04:27:14.697Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": 201,
+      "at": "2026-08-09T04:27:15.971Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:15.972Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:16.374Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:20.328Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:20.720Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:24.271Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T04:27:24.326Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": true,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T04:27:24.320Z\"}"
+    },
+    {
+      "method": "PATCH",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b",
+      "status": null,
+      "at": "2026-08-09T04:27:54.144Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "PATCH",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b",
+      "status": 200,
+      "at": "2026-08-09T04:27:55.071Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:55.073Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:55.469Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T04:27:57.672Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T04:27:58.064Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false
+    }
+  ],
+  "print_version_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T04:27:24.271Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T04:27:24.326Z",
+      "nest_core": false,
+      "pack": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": true,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T04:27:24.320Z\"}"
+    }
+  ],
+  "preview_bodies": [
+    {
+      "at": "2026-08-09T04:27:30.147Z",
+      "status": 201,
+      "code": "HRM-CTR-PREV-200",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "fp": {
+        "pack": "GENERAL",
+        "can_issue": true,
+        "cb_masked": false,
+        "show_driver": false,
+        "clause_codes": [
+          "LEGAL_CTRQA-HPY05Q",
+          "JOB_CTRQA-HPY05Q",
+          "LEGAL_CTRQA-HQ0R2B",
+          "JOB_CTRQA-HQ0R2B",
+          "LEGAL_CTRQA-ICBUZ7",
+          "JOB_CTRQA-ICBUZ7",
+          "LEGAL_CTRQA-ICFFU2",
+          "JOB_CTRQA-ICFFU2",
+          "LEGAL_UATDND-ICL4R9",
+          "JOB_UATDND-ICL4R9",
+          "LEGAL_UATDND-ICMSC8",
+          "JOB_UATDND-ICMSC8",
+          "CL_IS_CLQA-KM4JR3",
+          "CL_IS_CLQA2-KMCG5L",
+          "CL_IS_CLQA3-KMJRGF",
+          "CL_IS_CLQA4-KMVYKU",
+          "CL_IS_CLQA4-KMZ54C",
+          "CL_IS_CLQA4-KN5SCA"
+        ],
+        "clause_titles": [
+          "Căn cứ pháp lý QA CTRQA-HPY05Q",
+          "Công việc QA CTRQA-HPY05Q",
+          "Căn cứ pháp lý QA CTRQA-HQ0R2B",
+          "Công việc QA CTRQA-HQ0R2B",
+          "Căn cứ pháp lý QA CTRQA-ICBUZ7",
+          "Công việc QA CTRQA-ICBUZ7",
+          "Căn cứ pháp lý QA CTRQA-ICFFU2",
+          "Công việc QA CTRQA-ICFFU2",
+          "Căn cứ pháp lý UAT UATDND-ICL4R9",
+          "Công việc UAT UATDND-ICL4R9",
+          "Căn cứ pháp lý UAT UATDND-ICMSC8",
+          "Công việc UAT UATDND-ICMSC8",
+          "QA ISSUE CLQA-KM4JR3",
+          "QA ISSUE CLQA2-KMCG5L",
+          "QA ISSUE spine CLQA3-KMJRGF",
+          "QA ISSUE spine CLQA4-KMVYKU",
+          "QA ISSUE spine CLQA4-KMZ54C",
+          "QA ISSUE spine CLQA4-KN5SCA"
+        ],
+        "missing_fields": [],
+        "missing_clauses": [],
+        "sections": 2,
+        "merged_keys": [
+          "employee_full_name",
+          "employee_code",
+          "employee_dob",
+          "employee_gender",
+          "employee_id_number",
+          "employee_phone",
+          "employee_email",
+          "employee_residence_address",
+          "job_title",
+          "position_key",
+          "job_description_text",
+          "work_location"
+        ]
+      }
+    },
+    {
+      "at": "2026-08-09T04:27:37.053Z",
+      "status": 201,
+      "code": "HRM-CTR-PREV-200",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "fp": {
+        "pack": "IT_OFFICE",
+        "can_issue": true,
+        "cb_masked": false,
+        "show_driver": false,
+        "clause_codes": [],
+        "clause_titles": [],
+        "missing_fields": [],
+        "missing_clauses": [],
+        "sections": 0,
+        "merged_keys": [
+          "employee_full_name",
+          "employee_code",
+          "employee_dob",
+          "employee_gender",
+          "employee_id_number",
+          "employee_phone",
+          "employee_email",
+          "employee_residence_address",
+          "job_title",
+          "position_key",
+          "job_description_text",
+          "work_location"
+        ]
+      }
+    },
+    {
+      "at": "2026-08-09T04:27:44.145Z",
+      "status": 201,
+      "code": "HRM-CTR-PREV-200",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "fp": {
+        "pack": "DRIVER",
+        "can_issue": false,
+        "cb_masked": false,
+        "show_driver": true,
+        "clause_codes": [],
+        "clause_titles": [],
+        "missing_fields": [
+          {
+            "field": "driver_license_number",
+            "message": "DRIVER pack requires GPLX số"
+          },
+          {
+            "field": "driver_license_class",
+            "message": "DRIVER pack requires GPLX hạng"
+          },
+          {
+            "field": "driver_license_issued_on",
+            "message": "DRIVER pack requires GPLX ngày cấp"
+          },
+          {
+            "field": "driver_license_issued_place",
+            "message": "DRIVER pack requires GPLX nơi cấp"
+          },
+          {
+            "field": "vehicle_plate",
+            "message": "DRIVER pack requires Biển số"
+          }
+        ],
+        "missing_clauses": [],
+        "sections": 0,
+        "merged_keys": [
+          "employee_full_name",
+          "employee_code",
+          "employee_dob",
+          "employee_gender",
+          "employee_id_number",
+          "employee_phone",
+          "employee_email",
+          "employee_residence_address",
+          "job_title",
+          "position_key",
+          "job_description_text",
+          "work_location"
+        ]
+      }
+    },
+    {
+      "at": "2026-08-09T04:27:50.607Z",
+      "status": 201,
+      "code": "HRM-CTR-PREV-200",
+      "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+      "fp": {
+        "pack": "DRIVER",
+        "can_issue": false,
+        "cb_masked": false,
+        "show_driver": true,
+        "clause_codes": [],
+        "clause_titles": [],
+        "missing_fields": [
+          {
+            "field": "driver_license_number",
+            "message": "DRIVER pack requires GPLX số"
+          },
+          {
+            "field": "driver_license_class",
+            "message": "DRIVER pack requires GPLX hạng"
+          },
+          {
+            "field": "driver_license_issued_on",
+            "message": "DRIVER pack requires GPLX ngày cấp"
+          },
+          {
+            "field": "driver_license_issued_place",
+            "message": "DRIVER pack requires GPLX nơi cấp"
+          },
+          {
+            "field": "vehicle_plate",
+            "message": "DRIVER pack requires Biển số"
+          }
+        ],
+        "missing_clauses": [],
+        "sections": 0,
+        "merged_keys": [
+          "employee_full_name",
+          "employee_code",
+          "employee_dob",
+          "employee_gender",
+          "employee_id_number",
+          "employee_phone",
+          "employee_email",
+          "employee_residence_address",
+          "job_title",
+          "position_key",
+          "job_description_text",
+          "work_location"
+        ]
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/01-contracts-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/02-j01-pack-suggest.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/03-j01-form-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/04-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/05-list-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/06-j02-before-preview.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/07-j02-after-preview.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/08-j03-it-preview.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/09-j03-driver-preview.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/10-j04-missing.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09b-cluster-qa-01/11-j04-f5-registry.png"
+  ],
+  "click_log": [
+    "J01 create open",
+    "J01/J02 Lưu HD-CORE09B-LAWKV6",
+    "J02 Xem trước GENERAL",
+    "J03 preview IT_OFFICE",
+    "J03 preview DRIVER missing",
+    "J04 preview DRIVER missing GPLX",
+    "J04 registry Lưu"
+  ],
+  "journeys": {
+    "j01": {
+      "id": "J-HRM-CORE-09B-01",
+      "verdict": "PASS",
+      "notes": [
+        "formReady=true",
+        "packHit=200 url=/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61 suggest=true packLabel=\"Chung\" reason=\"Mặc định cứng: Chung (GENERAL).\" spine=true"
+      ],
+      "network": [
+        {
+          "method": "GET",
+          "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+          "status": 200,
+          "at": "2026-08-09T04:27:07.656Z",
+          "nest_core": false,
+          "pack": true,
+          "preview": false,
+          "contracts": false,
+          "printVer": false,
+          "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PACK-200\",\"message\":\"Contract pack resolved\",\"data\":{\"employee_id\":\"2b4cbc90-fb74-4a2d-9fef-d188d4e48d61\",\"job_family\":null,\"suggested_pack\":\"GENERAL\",\"allowed_packs\":[\"GENERAL\",\"IT_OFFICE\",\"DRIVER\",\"LOGISTICS\"],\"reason\":\"hard_default_GENERAL\"},\"timestamp\":\"2026-08-09T04:27:07.630Z\"}"
+        }
+      ]
+    },
+    "j02": {
+      "id": "J-HRM-CORE-09B-02",
+      "verdict": "PASS",
+      "notes": [
+        "POST create 201 /api/hrm/contracts-insurance/contracts",
+        "rowVisible=true",
+        "editDialog=true",
+        "previewBtnEnabled=true",
+        "prev=201 code=HRM-CTR-PREV-200 ui=true meta=\"Pack: Chung (GENERAL) · can_issue=true · ephemeral (không INSERT VER)\" clausesUi=18 nest=0 verPost=false fpClauses=18"
+      ],
+      "network": [
+        {
+          "method": "POST",
+          "url": "/api/hrm/contracts-insurance/contracts",
+          "status": 201,
+          "at": "2026-08-09T04:27:15.971Z",
+          "nest_core": false,
+          "pack": false,
+          "preview": false,
+          "contracts": true,
+          "printVer": false
+        },
+        {
+          "method": "POST",
+          "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+          "status": 201,
+          "at": "2026-08-09T04:27:30.148Z",
+          "nest_core": false,
+          "pack": false,
+          "preview": true,
+          "contracts": false,
+          "printVer": false,
+          "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"b853f70a-b419-4034-828b-899eba04f35d\",\"template_code\":\"QA_CTR_TPL_MSK7U4CG\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2"
+        }
+      ]
+    },
+    "j03": {
+      "id": "J-HRM-CORE-09B-03",
+      "verdict": "PASS",
+      "notes": [
+        "IT preview bodiesΔ=1 fp={\"pack\":\"IT_OFFICE\",\"can_issue\":true,\"cb_masked\":false,\"show_driver\":false,\"clause_codes\":[],\"clause_titles\":[],\"missing_fields\":[],\"missing_clauses\":[],\"sections\":0,\"merged_keys\":[\"employee_full_name\",\"employee_code\",\"e",
+        "driverBlock=true",
+        "DR fp={\"pack\":\"DRIVER\",\"can_issue\":false,\"cb_masked\":false,\"show_driver\":true,\"clause_codes\":[],\"clause_titles\":[],\"missing_fields\":[{\"field\":\"driver_license_number\",\"message\":\"DRIVER pack requires GPLX số\"},{\"field\":\"driver_license_class\",\"messa missingUi=true meta=\"Pack: Lái xe (DRIVER) · can_issue=false · DRIVER block · ephemeral (không INSERT VER)\"",
+        "clauseDiff=false packBehaviorDiff=true cb_masked=false nestΔ=0"
+      ],
+      "network": [
+        {
+          "method": "POST",
+          "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b/preview?company_id=main",
+          "status": 201,
+          "at": "2026-08-09T04:27:44.145Z",
+          "nest_core": false,
+          "pack": false,
+          "preview": true,
+          "contracts": false,
+          "printVer": false,
+          "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"DRIVER\",\"template_id\":\"7811f8bb-1bcc-4f41-9ec4-142c4cc14769\",\"template_code\":\"XEVN_FT_12M_DRIVER\",\"template_version\":1,\"title_print_vi\":\"HỢP ĐỒNG LAO ĐỘNG\",\"term_type\":\"definite\",\"default_duration_days\":null,\"default_duration_months\":12,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_"
+        }
+      ]
+    },
+    "j04": {
+      "id": "J-HRM-CORE-09B-04",
+      "verdict": "PASS",
+      "notes": [
+        "missing can_issue=false missUi=true fields=[{\"field\":\"driver_license_number\",\"message\":\"DRIVER pack requires GPLX số\"},{\"field\":\"driver_license_class\",\"message\":\"DRIVER pack requires GPLX hạng\"},{\"field\":\"driver_license_iss",
+        "TPL-NONE banner(0 active)=false (L1 active=33) · honestyUI=\"Honesty: contracts_printable_ready=false — CORE-09b = preview fidelity · VER/PDF\"",
+        "registry PATCH 200",
+        "F5 rowVisible=true",
+        "nestΔ=0 nestTotal=0 physicalOnly=true core09a=true/true honesty.printable=false"
+      ],
+      "network": [
+        {
+          "method": "PATCH",
+          "url": "/api/hrm/contracts-insurance/contracts/9fdffd42-f38e-480b-b207-6528836b256b",
+          "status": 200,
+          "at": "2026-08-09T04:27:55.071Z",
+          "nest_core": false,
+          "pack": false,
+          "preview": false,
+          "contracts": true,
+          "printVer": false
+        }
+      ]
+    }
+  },
+  "residuals": [
+    {
+      "id": "R-QA-CORE-09B-CLAUSE-FP-EMPTY",
+      "sev": "P2",
+      "note": "IT/DRIVER active templates return empty clause arrays (layout clause_ids=0); pack gate/DRIVER missing still differs — peer TPL bind 09d"
+    },
+    {
+      "id": "R-QA-CORE-09B-CB-MASK-CEO",
+      "sev": "P2",
+      "note": "ceo@xe.vn preview cb_masked=false (expected C&B persona); non-C&B role probe deferred"
+    },
+    {
+      "id": "R-QA-CORE-09B-TPL-NONE-ENV",
+      "sev": "P2",
+      "note": "Active templates present — ctr-print-no-template not shown; FE path + HRM-CTR-TPL-NONE toast retained (AC-CORE-09B-06 env N/A)"
+    }
+  ],
+  "defects": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T04:28:02.000Z",
+  "nest_core_total": 0,
+  "ver_insert_posts": 0
+}

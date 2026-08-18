@@ -1,0 +1,116 @@
+{
+  "work_item_id": "PO-HRM-E2E-LINK-PAY-ATT-CLOSE-QA-02",
+  "parent": "PO-HRM-E2E-LINK-PAY-ATT-CLOSE-FE-01 + BE-01",
+  "u65": "zero-seed",
+  "hdsd_align": "Chấm công → Bảng chấm công → tạo Jan 2026 → gửi chờ ký → ký NV/QL/HCNS → Chốt → Tiền lương → Thêm NV",
+  "honesty": {
+    "payroll_e2e_ready": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5175",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "payrollTarget": {
+    "month": 1,
+    "year": 2026
+  },
+  "attPeriod": {
+    "start": "01/01/2026",
+    "end": "28/01/2026"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "clicks": [
+    {
+      "step": "S0",
+      "detail": "goto http://127.0.0.1:5175/hr/attendance",
+      "at": "2026-08-06T10:55:38.309Z"
+    },
+    {
+      "step": "S1",
+      "detail": "menu Bảng chấm công",
+      "at": "2026-08-06T10:55:41.397Z"
+    },
+    {
+      "step": "S-skip-close",
+      "detail": "Jan sheet already closed",
+      "at": "2026-08-06T10:55:43.574Z"
+    },
+    {
+      "step": "P0",
+      "detail": "goto payroll http://127.0.0.1:5175/hr/payroll",
+      "at": "2026-08-06T10:55:43.577Z"
+    },
+    {
+      "step": "P1",
+      "detail": "tab Tính lương",
+      "at": "2026-08-06T10:55:47.728Z"
+    },
+    {
+      "step": "P2",
+      "detail": "open payroll Tháng 1/2026",
+      "at": "2026-08-06T10:55:48.313Z"
+    },
+    {
+      "step": "P2-filter",
+      "detail": "set payroll filter Tháng 1/2026",
+      "at": "2026-08-06T10:55:48.314Z"
+    }
+  ],
+  "att": {
+    "apiListStatus": 200,
+    "pickReason": "existing_closed_match",
+    "activeSheetId": "a5c698e5-221a-4d29-a5ac-ab81f35a3996",
+    "statusBefore": "closed",
+    "alreadyClosed": true,
+    "dataActiveSheetId": null
+  },
+  "pay": {},
+  "network": {
+    "att": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/attendance/attendance-sheets?company_id=main"
+      }
+    ],
+    "pay": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/payslips?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/salary-templates?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods?company_id=main"
+      }
+    ],
+    "enrollBodies": [],
+    "createSheetId": null
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "criteria": {
+    "attClose": "PASS",
+    "activeSheetId": "N/A",
+    "j_hrm_06c": "PASS"
+  },
+  "residuals": [],
+  "verdict": "FAIL_TO_PM",
+  "ack_status": "FAIL_TO_PM",
+  "startedAt": "2026-08-06T10:55:37.797Z",
+  "endedAt": "2026-08-06T10:55:58.322Z",
+  "phaseError": "locator.click: Timeout 10000ms exceeded.\nCall log:\n  - waiting for locator('button[role=\"combobox\"]').filter({ hasText: /^Tháng \\d+\\/\\d+$/ }).first()\n    - locator resolved to <button dir=\"ltr\" type=\"button\" role=\"combobox\" data-state=\"closed\" aria-expanded=\"false\" aria-autocomplete=\"none\" aria-cont"
+}

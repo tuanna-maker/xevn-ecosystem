@@ -1,0 +1,197 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-U78-U84-PRIMARY-ATT-ADJ-TMDV-01-R1-20260804",
+  "work_item_id": "U78-U84-PRIMARY-ATT-ADJ-TMDV-01-R1",
+  "tester": { "role": "qa", "agent": "qa-subagent-u78-att-adj-tmdv-r1" },
+  "started_at": "2026-08-03T17:58:28.233Z",
+  "ended_at": "2026-08-03T17:59:25.717Z",
+  "environment": {
+    "portal_url": "http://127.0.0.1:5173",
+    "hrm_api": "http://127.0.0.1:28001/api/hrm",
+    "xbos_api": "http://127.0.0.1:28002/api/xbos",
+    "commit": "dc930c5",
+    "notes": "R1 after FE ISO time-wire; HP ceo@ trsport; AP uat.nv0002 mobile JWT; U65; XBOS inbox N/A; STAMP TMDV-ATT-DJ8ZUX"
+  },
+  "spec_ref": "TC-HIM-ATT-TMDV-HP-001 · TC-HIM-ATT-TMDV-AP-001 · HIM §5.5 · FN-REQ-UPD-CRUD · UC-HRM-09 · BR-PO-ATT-LGX-01",
+  "hdsd_sot": "HRM Chấm công → Quản lý đơn → Đề nghị cập nhật công → Thêm đề nghị → Thêm mới → F5 pending · mgr Eye → Duyệt (XBOS inbox N/A)",
+  "hdsd_align": true,
+  "u65_zero_seed": true,
+  "evidence_narrative": "docs/qa/evidence/u78-u84-primary-att-adj-tmdv-01-r1.md",
+  "verdict": "fail",
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-03T17:58:28.233Z",
+      "action": "L0 + API probe employees/update-requests @ trsport",
+      "expected": "employees ≥1; list update-requests 200",
+      "actual": "employees total=4; mgr VTH-0002; update-requests total=0",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/employees?company_id=trsport",
+        "status": 200,
+        "code": "HRM-EMP-200"
+      },
+      "result": "pass"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-03T17:58:29.000Z",
+      "action": "Login ceo@xe.vn → /hr/attendance companyId=trsport + OU TM-DV",
+      "expected": "Attendance overview mounts; OU member selected",
+      "actual": "OU Công ty Cổ phần Thương mại và Dịch vụ X.E selected",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/01-attendance-mount.png"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-03T17:58:38.696Z",
+      "action": "Quản lý đơn → Đề nghị cập nhật công",
+      "expected": "Update-request tab + Thêm đề nghị CTA",
+      "actual": "mountOk=true addVisible=true",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/02-update-request-tab.png"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-03T17:58:40.921Z",
+      "action": "Fail-deep: Thêm đề nghị without required fields",
+      "expected": "No POST; dialog kept",
+      "actual": "fdBlocked=true dialogOpen=true",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/03-create-dialog.png"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-03T17:58:46.332Z",
+      "action": "TC-HIM-ATT-TMDV-HP-001: fill VTH-0007 + date + Quên chấm công + reason STAMP → Thêm mới",
+      "expected": "POST 201 pending; requested_check_in/out ISO with T (not bare HH:mm)",
+      "actual": "POST 201 HRM-ATT-REQ-201 id=41387eda-fe95-4897-a21e-f5c2b1a09701 status=pending; in=2026-07-26T01:00:00.000Z out=2026-07-26T10:30:00.000Z bareHhmm=false STAMP=TMDV-ATT-DJ8ZUX",
+      "network": {
+        "method": "POST",
+        "url": "/api/hrm/attendance/update-requests",
+        "status": 201,
+        "code": "HRM-ATT-REQ-201"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/05-after-create.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-03T17:58:57.490Z",
+      "action": "F5 pending row STAMP as CEO @ companyId=trsport",
+      "expected": "Pending row visible on FE list",
+      "actual": "stampOnUi=false; GET company_id=trsport rowCount=0; row pending via ceo+main and mgr list; row company_id UUID 10000000-0000-4000-8000-000000000002",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/attendance/update-requests?company_id=trsport",
+        "status": 200,
+        "code": "HRM-ATT-REQ-200"
+      },
+      "result": "fail",
+      "attachment": "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/06-f5-list.png"
+    },
+    {
+      "seq": 7,
+      "at": "2026-08-03T17:59:05.809Z",
+      "action": "AP login mgr uat.nv0002 → list pending STAMP",
+      "expected": "Mgr sees pending row",
+      "actual": "seesStamp=true; GET trsport hasStamp=true hitStatus=pending",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/attendance/update-requests?company_id=trsport",
+        "status": 200,
+        "code": "HRM-ATT-REQ-200"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/07-mgr-list.png"
+    },
+    {
+      "seq": 8,
+      "at": "2026-08-03T17:59:11.988Z",
+      "action": "TC-HIM-ATT-TMDV-AP-001: Eye → Duyệt",
+      "expected": "POST approve 2xx; status approved",
+      "actual": "POST 409 SCOPE_CONTEXT_MISMATCH; L1 without header HRM-ATT-REQ-409; L1 with x-company-id=trsport → 201 (diagnostic only)",
+      "network": {
+        "method": "POST",
+        "url": "/api/hrm/attendance/update-requests/41387eda-fe95-4897-a21e-f5c2b1a09701/approve",
+        "status": 409,
+        "code": "SCOPE_CONTEXT_MISMATCH"
+      },
+      "result": "fail",
+      "attachment": "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/09-after-approve.png"
+    },
+    {
+      "seq": 9,
+      "at": "2026-08-03T17:59:20.000Z",
+      "action": "F5 after approve attempt",
+      "expected": "Row approved",
+      "actual": "hitStatus=pending still (FE path)",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/attendance/update-requests?company_id=trsport",
+        "status": 200
+      },
+      "result": "fail"
+    },
+    {
+      "seq": 10,
+      "at": "2026-08-03T17:59:25.716Z",
+      "action": "XBOS inbox AP observe",
+      "expected": "N/A until bridge — do not fail",
+      "actual": "not asserted (GOVERNANCE_LOCK)",
+      "result": "skipped"
+    }
+  ],
+  "cases": [
+    {
+      "id": "A-fail-deep-empty-required",
+      "name": "Fail-deep empty required",
+      "status": "pass",
+      "notes": "dialog kept; no POST"
+    },
+    {
+      "id": "B-success-hdsd-create-f5",
+      "name": "Create ISO → F5 pending",
+      "status": "fail",
+      "notes": "create+ISO PASS; CEO F5 empty due list slug/UUID scope"
+    },
+    {
+      "id": "C-logic-br-approve",
+      "name": "Mgr Duyệt approved",
+      "status": "fail",
+      "notes": "FE 409 SCOPE_CONTEXT_MISMATCH; L1 needs x-company-id header"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "R-U84-ATT-ADJ-TMDV-LIST-SCOPE-SLUG",
+      "severity": "P0",
+      "expected": "CEO F5 shows pending @ companyId=trsport after FE create 201",
+      "actual": "GET company_id=trsport returns 0; row company_id is UUID; visible under main/mgr",
+      "residual_wi": "U78-U84-ATT-ADJ-TMDV-SCOPE-PARITY-01"
+    },
+    {
+      "id": "R-U84-ATT-ADJ-TMDV-AP-SCOPE-HEADER",
+      "severity": "P0",
+      "expected": "Mgr uat.nv0002 FE Duyệt 2xx → approved",
+      "actual": "POST approve 409 SCOPE_CONTEXT_MISMATCH; L1 without header 409 HRM-ATT-REQ-409; L1 with x-company-id=trsport 201",
+      "residual_wi": "U78-U84-ATT-ADJ-TMDV-SCOPE-PARITY-01"
+    }
+  ],
+  "attachments": [
+    "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/01-attendance-mount.png",
+    "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/05-after-create.png",
+    "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/06-f5-list.png",
+    "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/07-mgr-list.png",
+    "docs/qa/evidence/screens/u78-u84-primary-att-adj-tmdv-01-r1/09-after-approve.png",
+    "docs/qa/evidence/_tmp-u78-u84-primary-att-adj-tmdv-01-r1-browser.json"
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 3,
+    "blocked": 0,
+    "skipped": 1,
+    "verdict": "fail",
+    "ack_status": "PASS_TO_PM"
+  }
+}

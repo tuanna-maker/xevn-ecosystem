@@ -1,0 +1,578 @@
+{
+  "work_item_id": "R-SPINE-WEB-APPROVE-UX-01-QA",
+  "fe_ready": "docs/qa/evidence/r-spine-web-approve-ux-01.md",
+  "layer": "browser-U65-HDSD",
+  "hdsd_align": true,
+  "u65": "zero-seed",
+  "must_keep": [
+    "LeaveOverviewRecentPanel",
+    "LV-03/04 attach GWC CLOSED",
+    "no invent L2 ladder"
+  ],
+  "startedAt": "2026-08-03T15:45:29.601Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn"
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T15:45:29.602Z",
+      "action": "API_LOGIN_POST",
+      "url": "http://127.0.0.1:5173/api/xbos/auth/login"
+    },
+    {
+      "at": "2026-08-03T15:45:29.657Z",
+      "action": "API_LOGIN_OK",
+      "status": 201
+    },
+    {
+      "at": "2026-08-03T15:45:31.874Z",
+      "action": "NAV_ATTENDANCE",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:45:36.323Z",
+      "action": "CLICK_TAB_NGHI_PHEP",
+      "text": "Nghỉ phép",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:45:40.037Z",
+      "action": "ASSERT_MOUNT",
+      "verdict": "PASS",
+      "rootChild": 4,
+      "viteResolveFail": false,
+      "overviewTestId": 0,
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+      "hasLeaveTitle": true,
+      "note": "must_keep LeaveOverviewRecentPanel mount GWC"
+    },
+    {
+      "at": "2026-08-03T15:45:40.037Z",
+      "action": "PATH_A_START",
+      "intent": "Danh sách → Duyệt pending → POST approve 2xx → F5"
+    },
+    {
+      "at": "2026-08-03T15:45:40.046Z",
+      "action": "CLICK_SUBTAB_DANH_SACH",
+      "text": "Danh sách yêu cầu",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:45:42.267Z",
+      "action": "PATH_A_APPROVE_PROBE",
+      "byTestId": 30,
+      "byRole": 30
+    },
+    {
+      "at": "2026-08-03T15:45:42.280Z",
+      "action": "PATH_A_CLICK_DUYET",
+      "text": "Duyệt",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:45:44.943Z",
+      "action": "PATH_A_APPROVE_NET",
+      "approveOk": true,
+      "posts": [
+        {
+          "status": 201,
+          "url": "/api/hrm/attendance/leave-requests/639e8033-bdbe-4623-8677-7ee1d5b2b1ac/approve",
+          "code": "HRM-LEAVE-203"
+        }
+      ]
+    },
+    {
+      "at": "2026-08-03T15:45:48.692Z",
+      "action": "PATH_A_F5_TAB_LEAVE",
+      "text": "Nghỉ phép",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:45:51.396Z",
+      "action": "CLICK_SUBTAB_DANH_SACH",
+      "text": "Danh sách yêu cầu",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:45:53.560Z",
+      "action": "PATH_A_DONE",
+      "verdict": "PASS"
+    },
+    {
+      "at": "2026-08-03T15:45:53.561Z",
+      "action": "PATH_B_START",
+      "intent": "CC/inbox hrm_leave → Duyệt (hdsd-cc-leave-approve) → POST tasks/:id/complete 2xx → F5"
+    },
+    {
+      "at": "2026-08-03T15:45:53.561Z",
+      "action": "NAV_ATTENDANCE",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:45:57.881Z",
+      "action": "CLICK_TAB_NGHI_PHEP",
+      "text": "Nghỉ phép",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:46:01.586Z",
+      "action": "ASSERT_MOUNT",
+      "verdict": "PASS",
+      "rootChild": 4,
+      "viteResolveFail": false,
+      "overviewTestId": 0,
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+      "hasLeaveTitle": true,
+      "note": "must_keep LeaveOverviewRecentPanel mount GWC"
+    },
+    {
+      "at": "2026-08-03T15:46:01.593Z",
+      "action": "CLICK_SUBTAB_DANH_SACH",
+      "text": "Danh sách yêu cầu",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T15:46:03.679Z",
+      "action": "NAV_CC_INBOX",
+      "url": "http://127.0.0.1:5173/command-center/inbox"
+    },
+    {
+      "at": "2026-08-03T15:46:08.048Z",
+      "action": "PATH_B_INBOX_PROBE",
+      "leaveApproveCount": 28,
+      "leaveCards": 28,
+      "hasLeaveWord": true,
+      "hasDuyet": true,
+      "hasXuLyNhanh": true,
+      "empty": false
+    },
+    {
+      "at": "2026-08-03T15:46:08.065Z",
+      "action": "PATH_B_CLICK_DUYET",
+      "text": "Duyệt",
+      "url": "http://127.0.0.1:5173/command-center/inbox"
+    },
+    {
+      "at": "2026-08-03T15:46:10.710Z",
+      "action": "PATH_B_COMPLETE_NET",
+      "completeOk": true,
+      "posts": [
+        {
+          "status": 201,
+          "url": "/api/xbos/workflow-engine/tasks/669909c4-b24d-47fb-bd93-8e37dd18eaa9/complete",
+          "code": "XBOS-WF-200"
+        }
+      ]
+    },
+    {
+      "at": "2026-08-03T15:46:14.394Z",
+      "action": "PATH_B_DONE",
+      "verdict": "PASS"
+    }
+  ],
+  "ac": {
+    "mount": {
+      "verdict": "PASS",
+      "rootChild": 4,
+      "viteResolveFail": false,
+      "overviewTestId": 0,
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+      "hasLeaveTitle": true,
+      "note": "must_keep LeaveOverviewRecentPanel mount GWC"
+    }
+  },
+  "case_matrix": {
+    "A_fail_deep_lv03_spot": {
+      "verdict": "SKIP",
+      "note": "LV-03/04 GWC CLOSED — must_keep; not reopened this wave (prior R1 PASS)"
+    },
+    "B_success_hdsd": {
+      "verdict": "PASS",
+      "pathA": "PASS",
+      "pathB": "PASS"
+    },
+    "C_logic_br": {
+      "verdict": "PASS",
+      "note": "Pending rows expose Duyệt (hdsd-leave-list-approve-*) on Danh sách; leave CC CTA labeled Duyệt"
+    }
+  },
+  "paths": {
+    "pathA": {
+      "verdict": "PASS",
+      "testId": "hdsd-leave-list-approve-639e8033-bdbe-4623-8677-7ee1d5b2b1ac",
+      "counts": {
+        "byTestId": 30,
+        "byRole": 30
+      },
+      "approveOk": true,
+      "approvePosts": [
+        {
+          "at": "2026-08-03T15:45:42.431Z",
+          "method": "POST",
+          "status": 201,
+          "url": "/api/hrm/attendance/leave-requests/639e8033-bdbe-4623-8677-7ee1d5b2b1ac/approve",
+          "bodySnippet": {
+            "code": "HRM-LEAVE-203",
+            "id": "639e8033-bdbe-4623-8677-7ee1d5b2b1ac",
+            "status": "approved",
+            "status_label": "Đã duyệt",
+            "attachment_url": "/api/hrm/files/holding/leave-attachment-1785771044524-_fixture-doctor-note.png",
+            "message": "Leave request approved",
+            "accessToken": false
+          },
+          "reqBody": {}
+        }
+      ],
+      "f5Mount": true,
+      "lastListStatus": 200,
+      "create": null,
+      "note": "Expect POST …/approve 2xx + F5 list mounts; status approved retained"
+    },
+    "pathB": {
+      "verdict": "PASS",
+      "testId": "hdsd-cc-leave-approve",
+      "accessibleName": "Duyệt",
+      "leaveApproveCount": 28,
+      "leaveCards": 28,
+      "completeOk": true,
+      "completePosts": [
+        {
+          "at": "2026-08-03T15:46:08.183Z",
+          "method": "POST",
+          "status": 201,
+          "url": "/api/xbos/workflow-engine/tasks/669909c4-b24d-47fb-bd93-8e37dd18eaa9/complete",
+          "bodySnippet": {
+            "code": "XBOS-WF-200",
+            "message": "Task completed",
+            "accessToken": false
+          },
+          "reqBody": {}
+        }
+      ],
+      "f5Mount": true,
+      "afterLeaveApprove": 27,
+      "create": null,
+      "hdsdTestIdExact": true,
+      "note": "Expect hdsd-cc-leave-approve → POST tasks/:id/complete 2xx → F5"
+    }
+  },
+  "network": [
+    {
+      "at": "2026-08-03T15:45:30.416Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded",
+        "accessToken": false
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:45:30.433Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded",
+        "accessToken": false
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:45:32.837Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "bodySnippet": {
+        "total": 31,
+        "first": {
+          "id": "639e8033-bdbe-4623-8677-7ee1d5b2b1ac",
+          "status": "pending",
+          "status_label": "Chờ duyệt",
+          "leave_type": "LVT_02",
+          "leave_type_label": "Ốm"
+        },
+        "code": "HRM-LEAVE-200"
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:45:36.465Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "bodySnippet": {
+        "total": 47,
+        "first": {
+          "id": "5c3ea407-02cb-4cfa-a36c-9ada56908010",
+          "status": "active",
+          "status_label": "Đang làm việc"
+        },
+        "code": "HRM-EMP-200"
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:45:42.431Z",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/leave-requests/639e8033-bdbe-4623-8677-7ee1d5b2b1ac/approve",
+      "bodySnippet": {
+        "code": "HRM-LEAVE-203",
+        "id": "639e8033-bdbe-4623-8677-7ee1d5b2b1ac",
+        "status": "approved",
+        "status_label": "Đã duyệt",
+        "attachment_url": "/api/hrm/files/holding/leave-attachment-1785771044524-_fixture-doctor-note.png",
+        "message": "Leave request approved",
+        "accessToken": false
+      },
+      "reqBody": {}
+    },
+    {
+      "at": "2026-08-03T15:45:45.649Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "bodySnippet": {
+        "total": 31,
+        "first": {
+          "id": "639e8033-bdbe-4623-8677-7ee1d5b2b1ac",
+          "status": "approved",
+          "status_label": "Đã duyệt",
+          "leave_type": "LVT_02",
+          "leave_type_label": "Ốm"
+        },
+        "code": "HRM-LEAVE-200"
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:45:48.888Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "bodySnippet": {
+        "total": 47,
+        "first": {
+          "id": "5c3ea407-02cb-4cfa-a36c-9ada56908010",
+          "status": "active",
+          "status_label": "Đang làm việc"
+        },
+        "code": "HRM-EMP-200"
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:45:54.153Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "bodySnippet": {
+        "total": 31,
+        "first": {
+          "id": "639e8033-bdbe-4623-8677-7ee1d5b2b1ac",
+          "status": "approved",
+          "status_label": "Đã duyệt",
+          "leave_type": "LVT_02",
+          "leave_type_label": "Ốm"
+        },
+        "code": "HRM-LEAVE-200"
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:45:58.021Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "bodySnippet": {
+        "total": 47,
+        "first": {
+          "id": "5c3ea407-02cb-4cfa-a36c-9ada56908010",
+          "status": "active",
+          "status_label": "Đang làm việc"
+        },
+        "code": "HRM-EMP-200"
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:46:03.811Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded",
+        "accessToken": false
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:46:03.849Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded",
+        "accessToken": false
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:46:04.050Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": {
+        "total": 32,
+        "first": {
+          "id": "669909c4-b24d-47fb-bd93-8e37dd18eaa9",
+          "status": "pending",
+          "businessType": "hrm_leave",
+          "title": "Phê duyệt đơn nghỉ phép HRM"
+        },
+        "code": "XBOS-WF-203"
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:46:08.183Z",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/workflow-engine/tasks/669909c4-b24d-47fb-bd93-8e37dd18eaa9/complete",
+      "bodySnippet": {
+        "code": "XBOS-WF-200",
+        "message": "Task completed",
+        "accessToken": false
+      },
+      "reqBody": {}
+    },
+    {
+      "at": "2026-08-03T15:46:08.221Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": {
+        "total": 31,
+        "first": {
+          "id": "55718625-3e92-4807-98c5-cadf2cffdb4e",
+          "status": "pending",
+          "businessType": "hrm_leave",
+          "title": "Phê duyệt đơn nghỉ phép HRM"
+        },
+        "code": "XBOS-WF-203"
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:46:10.804Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded",
+        "accessToken": false
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:46:10.825Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded",
+        "accessToken": false
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-03T15:46:10.917Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "bodySnippet": {
+        "total": 31,
+        "first": {
+          "id": "55718625-3e92-4807-98c5-cadf2cffdb4e",
+          "status": "pending",
+          "businessType": "hrm_leave",
+          "title": "Phê duyệt đơn nghỉ phép HRM"
+        },
+        "code": "XBOS-WF-203"
+      },
+      "reqBody": null
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    {
+      "at": "2026-08-03T15:45:36.295Z",
+      "name": "01-attendance",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/01-attendance.png"
+    },
+    {
+      "at": "2026-08-03T15:45:40.029Z",
+      "name": "02-leave-tab",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/02-leave-tab.png"
+    },
+    {
+      "at": "2026-08-03T15:45:42.251Z",
+      "name": "06-path-a-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/06-path-a-list.png"
+    },
+    {
+      "at": "2026-08-03T15:45:44.943Z",
+      "name": "07-path-a-after-approve",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/07-path-a-after-approve.png"
+    },
+    {
+      "at": "2026-08-03T15:45:53.558Z",
+      "name": "08-path-a-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/08-path-a-f5.png"
+    },
+    {
+      "at": "2026-08-03T15:45:57.850Z",
+      "name": "01-attendance",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/01-attendance.png"
+    },
+    {
+      "at": "2026-08-03T15:46:01.580Z",
+      "name": "02-leave-tab",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/02-leave-tab.png"
+    },
+    {
+      "at": "2026-08-03T15:46:08.013Z",
+      "name": "09-path-b-inbox",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/09-path-b-inbox.png"
+    },
+    {
+      "at": "2026-08-03T15:46:10.710Z",
+      "name": "10-path-b-after-approve",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/10-path-b-after-approve.png"
+    },
+    {
+      "at": "2026-08-03T15:46:14.372Z",
+      "name": "11-path-b-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/11-path-b-f5.png"
+    }
+  ],
+  "residuals": [],
+  "idle_guard": {
+    "qa_idle_viewport": "PASS",
+    "click_count": 23,
+    "note": "anti-idle: real clicks required"
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-03T15:46:14.394Z"
+}

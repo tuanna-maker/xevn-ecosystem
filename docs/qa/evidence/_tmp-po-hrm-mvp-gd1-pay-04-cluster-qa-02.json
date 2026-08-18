@@ -1,0 +1,261 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-PAY-04-CLUSTER-QA-02",
+  "stamp": "PAY04QA2-MSMCZ6AO",
+  "fe_handoff": "docs/qa/evidence/po-hrm-mvp-gd1-pay-04-cluster-fe-01.md",
+  "prior_qa": "docs/qa/evidence/po-hrm-mvp-gd1-pay-04-cluster-qa-01.md",
+  "startedAt": "2026-08-09T22:12:47.966Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-primary",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "ne_pay04_done": true,
+    "ne_pay_module_uat": true,
+    "c_slice": true,
+    "seed_used": false
+  },
+  "must_keep": [
+    "PAY01QC1-MSMBGWC1",
+    "PAY02QC1-MSMC4GWC1",
+    "PAY04QC1-MSMCR4GWC1"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "PASS"
+  },
+  "l1": {
+    "fe_vitest": "PASS (9)",
+    "be_jest_cite": "delegate PAY04QA1-MSMCR401 jest 52 PASS"
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T22:12:57.263Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:12:57.297Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:12:57.799Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T22:12:57.939Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T22:12:58.006Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:12:58.017Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:12:59.870Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/payslips/3a5333f7-237e-4157-bade-39c4b98a3fa9?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:13:01.509Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T22:13:01.878Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:13:01.918Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:13:02.265Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T22:13:02.387Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T22:13:02.431Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:13:02.444Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T22:13:04.893Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:13:04.935Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:13:05.275Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T22:13:05.400Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T22:13:05.451Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:13:05.466Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T22:13:07.501Z"
+    }
+  ],
+  "nest_core_formula": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-pay-04-cluster-qa-02/j-pay-04-06-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-pay-04-cluster-qa-02/j-pay-04-06-detail.png"
+  ],
+  "browser_j04_06": {
+    "list_status": 200,
+    "detail_status": 200,
+    "detail_code": "HRM-PAY-200",
+    "payslip_id": "3a5333f7-237e-4157-bade-39c4b98a3fa9",
+    "header_net_ok": true,
+    "panel_kind": "pay-04-honesty",
+    "f5_ok": true
+  },
+  "payslip_scan": {
+    "list_status": 200,
+    "scanned": 25,
+    "dtoSample": {
+      "payslip_id": "3a5333f7-237e-4157-bade-39c4b98a3fa9",
+      "has_segments_array": true,
+      "split": false,
+      "segmentCount": 0,
+      "net_amount": 9500000
+    },
+    "splitSample": null
+  },
+  "journeys": {
+    "J-HRM-PAY-04-01": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:12:56.189Z",
+      "summary": "BLOCKED U65: no mid-period C&B payslip with segment_count≥2 without CORE/FE path (zero-seed)",
+      "ac": "AC-PAY-04-DETECT-CB"
+    },
+    "J-HRM-PAY-04-02": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:12:56.190Z",
+      "summary": "jest+DDL OK · live segments HOLD — BLOCKED U65: no mid-period C&B payslip with segment_count≥2 without CORE/FE path (zero-seed)",
+      "ac": "AC-PAY-04-SEGMENT-DB"
+    },
+    "J-HRM-PAY-04-03": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:12:56.191Z",
+      "summary": "static merge L1 only · cite PAY04QA1",
+      "ac": "AC-PAY-04-MERGE-STATIC-ONCE"
+    },
+    "J-HRM-PAY-04-04": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:12:56.191Z",
+      "summary": "BLOCKED U65: no mid-period C&B payslip with segment_count≥2 without CORE/FE path (zero-seed)",
+      "ac": "AC-PAY-04-ONE-NET"
+    },
+    "J-HRM-PAY-04-07": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:12:56.192Z",
+      "summary": "closed-hour proration jest only · cite PAY04QA1",
+      "ac": "AC-PAY-04-CLOSED-HOURS"
+    },
+    "J-HRM-PAY-04-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:12:56.192Z",
+      "summary": "L1 SPLIT-409 contract · cite PAY04QA1",
+      "ac": "AC-PAY-04-SPLIT-409"
+    },
+    "J-HRM-PAY-01-04": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:12:56.193Z",
+      "summary": "regression delegate PAY01QC1 · cite PAY04QA1",
+      "must_keep": "PAY01QC1-MSMBGWC1"
+    },
+    "J-HRM-PAY-02-05": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:12:56.193Z",
+      "summary": "regression delegate PAY02QC1 · cite PAY04QA1",
+      "must_keep": "PAY02QC1-MSMC4GWC1"
+    },
+    "J-HRM-PAY-04-06": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:13:09.211Z",
+      "summary": "L2.5 list→Eye→GET 200 · header net from BE · panel=pay-04-honesty · F5 OK",
+      "ac": "AC-PAY-04-PREVIEW-SEGMENTS",
+      "payslip_id": "3a5333f7-237e-4157-bade-39c4b98a3fa9"
+    },
+    "J-HRM-PAY-04-08": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:13:09.212Z",
+      "summary": "must_keep seals · nest /core hits=0",
+      "ac": "AC-PAY-04-H"
+    }
+  },
+  "defects": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T22:13:09.213Z"
+}

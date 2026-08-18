@@ -1,0 +1,371 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-TPL-QA-02",
+  "startedAt": "2026-08-07T04:57:06.039Z",
+  "u65": "zero-seed · browser-only · UF claim when FE after 2xx + F5",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "STAMP": "PAYTPLQA2-IH3JZR",
+    "CODE": "qa_mau_paytplqa2_ih3jzr",
+    "NAME": "Mẫu QA browser PAYTPLQA2-IH3JZR",
+    "LABEL": "Nhãn cột QA PAYTPLQA2-IH3JZR"
+  },
+  "prior": {
+    "fe": "PO-HRM-AMIS-PARITY-PAY-TPL-FE-01 READY_FOR_QA",
+    "qc_l1": "PO-HRM-AMIS-PARITY-PAY-TPL-QC-01 GWC L1",
+    "qa_l1": "PO-HRM-AMIS-PARITY-PAY-TPL-QA-01 L1 PASS (not UF)"
+  },
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "payroll_e2e_ready_claimed": false,
+    "seed_used": false,
+    "phase1_done_claimed": false,
+    "pack_is_not_mau": true,
+    "dnd_formula": false,
+    "fe_net": false
+  },
+  "denied": [
+    "payroll_e2e_ready=true",
+    "seed",
+    "Phase1 DONE",
+    "module UAT / AMIS DONE",
+    "pack as mẫu",
+    "DnD formula canvas",
+    "FE net invent"
+  ],
+  "l0": {
+    "portal": {
+      "status": 200,
+      "ok": true
+    },
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "ids": {
+    "code": "qa_mau_paytplqa2_ih3jzr",
+    "name": "Mẫu QA browser PAYTPLQA2-IH3JZR",
+    "label": "Nhãn cột QA PAYTPLQA2-IH3JZR",
+    "sort": 10
+  },
+  "ac": {
+    "AC1_TAB_LOAD": {
+      "summary": "Settings → Mẫu bảng lương panel + list + honesty=false + pack≠mẫu note",
+      "url": "http://127.0.0.1:5173/hr/settings?portal=1&tenantId=xevn&companyId=main&_=1786078626608",
+      "honestyText": "payroll_e2e_ready=false",
+      "packNoteText": "Gói thành phần enroll (salary-templates) khác mẫu bảng lương kỳ (pay-sheet-templates).",
+      "click_path": "login → /hr/settings → settings-tab-pay-sheet-tpl → pay-sheet-tpl-settings-panel",
+      "verdict": "PASS",
+      "at": "2026-08-07T04:57:11.143Z"
+    },
+    "AC2_CREATE": {
+      "summary": "POST pay-sheet-templates 201 HRM-PAY-TPL-201 → list row qa_mau_paytplqa2_ih3jzr",
+      "createStatus": 201,
+      "createCode": "HRM-PAY-TPL-201",
+      "createdId": "e67f9e3b-3e7a-45e3-90c7-c70a10cce3e9",
+      "feAfter2xx": {
+        "visible": true,
+        "text": "qa_mau_paytplqa2_ih3jzr\tMẫu QA browser PAYTPLQA2-IH3JZR\tBản nháp\tToàn công ty\t—\tSửa\nLưu trữ"
+      },
+      "click_path": "fill code+name → hdsd-pay-sheet-tpl-save-header → list row",
+      "verdict": "PASS",
+      "at": "2026-08-07T04:57:13.366Z"
+    },
+    "AC3_EDIT_LINES": {
+      "summary": "PUT lines 200 · label/sort=10 · OV-C control+null (empty catalog OK) · no FE net",
+      "linesStatus": 200,
+      "linesCode": "HRM-PAY-TPL-200",
+      "component": "cơ bản (D)",
+      "ovc": {
+        "text": "Không override",
+        "hasFormula": false,
+        "count": 2,
+        "controlPresent": true,
+        "fieldInBody": true
+      },
+      "feAfter2xx": {
+        "previewVisible": true,
+        "previewSnippet": "Xem trước nhãn cột (display-ready)\n\n10\nNhãn cột QA PAYTPLQA2-IH3JZR\n— (không override)",
+        "feLabelOk": true
+      },
+      "noFeNetKeys": true,
+      "lineMatch": {
+        "displayLabel": "Nhãn cột QA PAYTPLQA2-IH3JZR",
+        "sortOrder": 10
+      },
+      "click_path": "pick component → sort → label → OV-C → hdsd-pay-sheet-tpl-save-lines",
+      "verdict": "PASS",
+      "at": "2026-08-07T04:57:23.923Z"
+    },
+    "AC4_F5_PERSIST": {
+      "summary": "F5 → row qa_mau_paytplqa2_ih3jzr còn · label «Nhãn cột QA PAYTPLQA2-IH3JZR» · sort=10",
+      "rowVisibleF5": true,
+      "nameOkF5": true,
+      "labelAfterF5": "Nhãn cột QA PAYTPLQA2-IH3JZR",
+      "sortAfterF5": "10",
+      "sortPersisted": true,
+      "click_path": "F5 → settings-tab-pay-sheet-tpl → edit row → assert lines",
+      "verdict": "PASS",
+      "at": "2026-08-07T04:57:29.782Z"
+    },
+    "AC5_ARCHIVE_HIDE": {
+      "summary": "Archive POST 201 → soft-hide from active list",
+      "archiveStatus": 201,
+      "hiddenAfter": true,
+      "click_path": "hdsd-pay-sheet-tpl-archive-qa_mau_paytplqa2_ih3jzr → confirm → list hide",
+      "verdict": "PASS",
+      "at": "2026-08-07T04:57:31.466Z"
+    },
+    "AC6_PACK_NEQ_MAU": {
+      "summary": "SalaryTemplatesTab banner pack≠mẫu + GET /salary-templates (not mẫu SoT)",
+      "bannerText": "Đây là gói thành phần enroll khi tuyển dụng / gán lương ( (/salary-templates)— không phải mẫu bảng lương kỳ. Mẫu cột kỳ lương nằm ở Cài đặt → Mẫu bảng lương (/pay-sheet-templates).",
+      "packGetCount": 1,
+      "mauGetOnPackSurface": 0,
+      "click_path": "/hr/payroll → payroll-tab-calculate → menuitem «Mẫu bảng lương» → pay-salary-template-pack-alias-note",
+      "url": "http://127.0.0.1:5173/hr/payroll?portal=1&tenantId=xevn&companyId=main&_=1786078651467&pay_period_month=8&pay_period_year=2026",
+      "verdict": "PASS",
+      "at": "2026-08-07T04:57:38.986Z"
+    },
+    "AC7_HONESTY_NO_DND_NO_NET": {
+      "summary": "payroll_e2e_ready=false · no DnD storm · no FE net invent in PUT body",
+      "honesty": {
+        "payroll_e2e_ready": false,
+        "payroll_e2e_ready_claimed": false,
+        "seed_used": false,
+        "phase1_done_claimed": false,
+        "pack_is_not_mau": true,
+        "dnd_formula": false,
+        "fe_net": false
+      },
+      "process": {
+        "pageErrors": 0,
+        "consoleErrors": 0,
+        "dndStorm": 0,
+        "uncaught": 0,
+        "samplePageErrors": [],
+        "sampleConsole": []
+      },
+      "noFeNetKeys": true,
+      "verdict": "PASS",
+      "at": "2026-08-07T04:57:38.990Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "at": "2026-08-07T04:57:09.675Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed",
+      "itemCount": 1
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/pay-sheet-templates",
+      "at": "2026-08-07T04:57:11.807Z",
+      "code": "HRM-PAY-TPL-201",
+      "message": "Pay sheet template created",
+      "dataId": "e67f9e3b-3e7a-45e3-90c7-c70a10cce3e9",
+      "dataCode": "qa_mau_paytplqa2_ih3jzr"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "at": "2026-08-07T04:57:12.120Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed",
+      "itemCount": 2
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates/e67f9e3b-3e7a-45e3-90c7-c70a10cce3e9/lines",
+      "at": "2026-08-07T04:57:22.345Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template lines replaced",
+      "lineCount": 1
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "at": "2026-08-07T04:57:22.850Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed",
+      "itemCount": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "at": "2026-08-07T04:57:26.705Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed",
+      "itemCount": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates/e67f9e3b-3e7a-45e3-90c7-c70a10cce3e9/lines?company_id=main",
+      "at": "2026-08-07T04:57:28.292Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template lines listed",
+      "lineCount": 1
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/pay-sheet-templates/e67f9e3b-3e7a-45e3-90c7-c70a10cce3e9/archive?company_id=main",
+      "at": "2026-08-07T04:57:29.908Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template archived",
+      "dataId": "e67f9e3b-3e7a-45e3-90c7-c70a10cce3e9",
+      "dataCode": "qa_mau_paytplqa2_ih3jzr"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "at": "2026-08-07T04:57:30.122Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed",
+      "itemCount": 1
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-templates?company_id=main",
+      "at": "2026-08-07T04:57:32.180Z",
+      "code": "HRM-PAY-200",
+      "message": "Salary templates listed"
+    }
+  ],
+  "requestBodies": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/payroll/pay-sheet-templates",
+      "body": {
+        "code": "qa_mau_paytplqa2_ih3jzr",
+        "name": "Mẫu QA browser PAYTPLQA2-IH3JZR",
+        "company_id": "main",
+        "keys": [
+          "company_id",
+          "code",
+          "name",
+          "status",
+          "isDefault",
+          "applicabilityScope"
+        ]
+      },
+      "at": "2026-08-07T04:57:11.680Z"
+    },
+    {
+      "method": "PUT",
+      "url": "/api/hrm/payroll/pay-sheet-templates/e67f9e3b-3e7a-45e3-90c7-c70a10cce3e9/lines",
+      "body": {
+        "company_id": "main",
+        "lineCount": 1,
+        "firstLine": {
+          "displayLabel": "Nhãn cột QA PAYTPLQA2-IH3JZR",
+          "sortOrder": 10,
+          "hasOvc": false,
+          "keys": [
+            "componentId",
+            "displayLabel",
+            "sortOrder",
+            "formulaOverrideDefinitionId"
+          ]
+        },
+        "keys": [
+          "company_id",
+          "lines"
+        ]
+      },
+      "at": "2026-08-07T04:57:21.473Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/payroll/pay-sheet-templates/e67f9e3b-3e7a-45e3-90c7-c70a10cce3e9/archive?company_id=main",
+      "body": {
+        "keys": []
+      },
+      "at": "2026-08-07T04:57:29.805Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-tpl-qa-02/01-settings-pay-sheet-tpl.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-tpl-qa-02/02-create-form-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-tpl-qa-02/03-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-tpl-qa-02/04-lines-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-tpl-qa-02/05-after-save-lines.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-tpl-qa-02/06-after-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-tpl-qa-02/07-after-f5-edit.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-tpl-qa-02/08-after-archive.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-tpl-qa-02/09-payroll-pack-tab.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T04:57:06.226Z",
+      "msg": "login_api_ok"
+    },
+    {
+      "at": "2026-08-07T04:57:11.137Z",
+      "msg": "open_settings_pay_sheet_tpl",
+      "visible": true,
+      "honesty": "payroll_e2e_ready=false",
+      "note": "Gói thành phần enroll (salary-templates) khác mẫu bảng lương kỳ (pay-sheet-templates)."
+    },
+    {
+      "at": "2026-08-07T04:57:13.362Z",
+      "msg": "create_response",
+      "status": 201,
+      "code": "HRM-PAY-TPL-201",
+      "note": "Pay sheet template created"
+    },
+    {
+      "at": "2026-08-07T04:57:21.450Z",
+      "msg": "lines_filled",
+      "component": "cơ bản (D)",
+      "ovc": "Không override",
+      "note": "sort=10 label=Nhãn cột QA PAYTPLQA2-IH3JZR ovcControl=true"
+    }
+  ],
+  "residuals": [],
+  "process": {
+    "pageErrors": 0,
+    "consoleErrors": 0,
+    "dndStorm": 0,
+    "uncaught": 0,
+    "samplePageErrors": [],
+    "sampleConsole": []
+  },
+  "hdsd_inventory": {
+    "settings-tab-pay-sheet-tpl": true,
+    "pay-sheet-tpl-settings-panel": true,
+    "pay-sheet-tpl-honesty-badge": true,
+    "pay-sheet-tpl-pack-alias-note": true,
+    "pay-sheet-tpl-list-table": true,
+    "hdsd-pay-sheet-tpl-code": true,
+    "hdsd-pay-sheet-tpl-name": true,
+    "hdsd-pay-sheet-tpl-save-header": true
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T04:57:38.991Z"
+}

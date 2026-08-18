@@ -1,0 +1,131 @@
+{
+  "log": [
+    {
+      "t": "2026-08-05T09:30:20.335Z",
+      "msg": "start",
+      "work_item_id": "PO-HRM-UI-BRAND-W4-MOB-A-QA-01-R5-LOGIN",
+      "serial": "emulator-5554",
+      "EMAIL": "uat.nv0001@xe.vn",
+      "apk_sha": "C415E592F8D91CC256F1A87735162D583EF47D753D19B64E5A3756F66E006EDB"
+    },
+    {
+      "t": "2026-08-05T09:30:34.880Z",
+      "msg": "case",
+      "id": "C-LOGIN-ADB-cold-dev-collapsed",
+      "verdict": "PASS",
+      "evidence": "cold-start.png",
+      "detail": "devExpanded=false login-dev-base-url=false"
+    },
+    {
+      "t": "2026-08-05T09:30:34.880Z",
+      "msg": "case",
+      "id": "C-LOGIN-ADB-login-email-present",
+      "verdict": "PASS",
+      "evidence": "cold-start.png",
+      "detail": "login-email focused hint=true"
+    },
+    {
+      "t": "2026-08-05T09:30:46.047Z",
+      "msg": "case",
+      "id": "C-LOGIN-ADB-email-not-placeholder",
+      "verdict": "PASS",
+      "evidence": "login-filled.png",
+      "detail": "emailFieldText=uat.nv0001@xe.vn"
+    },
+    {
+      "t": "2026-08-05T09:31:00.614Z",
+      "msg": "case",
+      "id": "J-MOB-01-login-home",
+      "verdict": "FAIL",
+      "evidence": "post-login.png",
+      "detail": "FE production login path only (no qa-login)"
+    },
+    {
+      "t": "2026-08-05T09:31:00.614Z",
+      "msg": "case",
+      "id": "C-LOGIN-ADB-close",
+      "verdict": "OPEN",
+      "evidence": "post-login.png",
+      "detail": "submit did not reach home"
+    },
+    {
+      "t": "2026-08-05T09:31:00.615Z",
+      "msg": "case",
+      "id": "face_live_claim",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "face_live=false"
+    },
+    {
+      "t": "2026-08-05T09:31:00.615Z",
+      "msg": "case",
+      "id": "remaster_done_claim",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "remaster_program_done=false"
+    },
+    {
+      "t": "2026-08-05T09:31:00.615Z",
+      "msg": "case",
+      "id": "qa-login-sole-path",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "qa-login not used for PASS"
+    }
+  ],
+  "cases": [
+    {
+      "id": "C-LOGIN-ADB-cold-dev-collapsed",
+      "verdict": "PASS",
+      "evidence": "cold-start.png",
+      "detail": "devExpanded=false login-dev-base-url=false"
+    },
+    {
+      "id": "C-LOGIN-ADB-login-email-present",
+      "verdict": "PASS",
+      "evidence": "cold-start.png",
+      "detail": "login-email focused hint=true"
+    },
+    {
+      "id": "C-LOGIN-ADB-email-not-placeholder",
+      "verdict": "PASS",
+      "evidence": "login-filled.png",
+      "detail": "emailFieldText=uat.nv0001@xe.vn"
+    },
+    {
+      "id": "J-MOB-01-login-home",
+      "verdict": "FAIL",
+      "evidence": "post-login.png",
+      "detail": "FE production login path only (no qa-login)"
+    },
+    {
+      "id": "C-LOGIN-ADB-close",
+      "verdict": "OPEN",
+      "evidence": "post-login.png",
+      "detail": "submit did not reach home"
+    },
+    {
+      "id": "face_live_claim",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "face_live=false"
+    },
+    {
+      "id": "remaster_done_claim",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "remaster_program_done=false"
+    },
+    {
+      "id": "qa-login-sole-path",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "qa-login not used for PASS"
+    }
+  ],
+  "ack": "FAIL_TO_PM",
+  "face_live": false,
+  "remaster_program_done": false,
+  "seed": false,
+  "apk_sha": "C415E592F8D91CC256F1A87735162D583EF47D753D19B64E5A3756F66E006EDB"
+}

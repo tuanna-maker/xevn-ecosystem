@@ -1,0 +1,247 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-PAY-CATALOG-QA-01",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-01",
+  "startedAt": "2026-08-07T09:58:54.607Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser UF + Network observe · no payroll_e2e_ready flip",
+  "hdsd_align": "Lương → Thành phần lương → Thêm mới → Lưu → F5",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "CUSTOM_CODE": "CUSTOM_TP_09",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm-api": 200,
+    "portal": 200
+  },
+  "api": {
+    "payTypes": {
+      "status": 200,
+      "total": 7,
+      "codes": [
+        "cham_cong",
+        "khau_tru",
+        "luong",
+        "phu_cap",
+        "QA_PAY_TYPE_02",
+        "QA_PT_RTMEY",
+        "thue"
+      ]
+    },
+    "list": {
+      "status": 200,
+      "total": 11
+    },
+    "getById": {
+      "status": 200,
+      "id": "13b7668b-1416-40e0-bd4d-128d0bccca30",
+      "code": "D"
+    },
+    "payFormulasWrongRoute": {
+      "status": 404
+    },
+    "formulasList": {
+      "status": 200
+    },
+    "draftFormula": {
+      "status": "from_list",
+      "id": "61786a8d-cf6d-4685-829f-5ccbcdf8cecd",
+      "fromList": true,
+      "pickedStatus": "draft"
+    },
+    "bindDraft": {
+      "status": 422,
+      "code": "HRM-PAY-COMP-FORMULA-412",
+      "message": "default_formula_definition_id must reference a published active pay_formula_definition in company scope",
+      "formulaId": "61786a8d-cf6d-4685-829f-5ccbcdf8cecd",
+      "formulaStatus": "draft"
+    },
+    "emptyCatalogBannerVisible": false,
+    "browserPost": {
+      "status": 201,
+      "formula_sot": "deprecated",
+      "code": "CUSTOM_TP_09"
+    },
+    "browserDelete": {
+      "status": 200
+    }
+  },
+  "ac": {
+    "API-PAY-TYPES-GTE1": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:56.450Z",
+      "summary": "pay_types/items → 200 total=7",
+      "codes": [
+        "cham_cong",
+        "khau_tru",
+        "luong",
+        "phu_cap",
+        "QA_PAY_TYPE_02",
+        "QA_PT_RTMEY",
+        "thue"
+      ]
+    },
+    "API-LIST-200": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:57.563Z",
+      "summary": "GET list → 200 · rows=11"
+    },
+    "API-FORMULA-SOT-DEPRECATED": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:57.564Z",
+      "summary": "All list rows have formula_sot=deprecated",
+      "sample": [
+        {
+          "code": "D",
+          "formula_sot": "deprecated"
+        },
+        {
+          "code": "PC_DIEU_XE_6A75AC29",
+          "formula_sot": "deprecated"
+        },
+        {
+          "code": "QA_LUONG_75AC29",
+          "formula_sot": "deprecated"
+        }
+      ]
+    },
+    "API-SCOPE-PARITY-LIST-GET": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:57.625Z",
+      "summary": "list id 13b7668b-1416-40e0-bd4d-128d0bccca30 → GET by id 200"
+    },
+    "API-GET-FORMULA-SOT": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:57.626Z",
+      "summary": "GET by id formula_sot=deprecated"
+    },
+    "API-ROUTE-NOT-PAY-FORMULAS": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:57.639Z",
+      "summary": "GET /payroll/pay-formulas → 404 (expect 404)"
+    },
+    "API-FORMULAS-ROUTE-200": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:57.795Z",
+      "summary": "GET /payroll/formulas → 200"
+    },
+    "API-DRAFT-FK-422": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:58:58.290Z",
+      "summary": "Bind non-active formula (draft) via /formulas id → 422 code=HRM-PAY-COMP-FORMULA-412 (expect 422 HRM-PAY-COMP-FORMULA-412)",
+      "bodyCode": "HRM-PAY-COMP-FORMULA-412",
+      "message": "default_formula_definition_id must reference a published active pay_formula_definition in company scope"
+    },
+    "L2-PAYROLL-LOAD": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:59:00.748Z",
+      "summary": "Payroll load without ERROR banner"
+    },
+    "UF-MUTATE-POST-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:59:06.723Z",
+      "summary": "POST → 201 code=CUSTOM_TP_09",
+      "postStatus": 201,
+      "savedCode": "CUSTOM_TP_09",
+      "postBody": "{\"company_id\":\"main\",\"code\":\"CUSTOM_TP_09\",\"name\":\"Thành phần QA CUSTOM_TP_09\",\"component_type\":\"luong\",\"nature\":\"income\",\"value_type\":\"currency\",\"is_taxable\":true,\"is_insurance_base\":false,\"formula\":\"\",\"default_value\":0,\"applied_to\":\"all\",\"is_active\":true,\"sort_order\":0}"
+    },
+    "UF-RESPONSE-FORMULA-SOT": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:59:06.724Z",
+      "summary": "POST response formula_sot=deprecated"
+    },
+    "UF-F5-PERSIST": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:59:10.197Z",
+      "summary": "Row CUSTOM_TP_09 visible after F5"
+    },
+    "UF-DELETE-HIDE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:59:12.733Z",
+      "summary": "Row hidden after DELETE"
+    },
+    "API-INCLUDE-ARCHIVED": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:59:13.729Z",
+      "summary": "include_archived=true shows archived row is_active=false"
+    },
+    "CONSOLE-GATE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T09:59:13.730Z",
+      "summary": "No uncaught errors",
+      "sample": []
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T09:59:02.067Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/salary-components",
+      "at": "2026-08-07T09:59:05.138Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T09:59:05.893Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T09:59:10.133Z"
+    },
+    {
+      "method": "DELETE",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-components/32915ac1-7e34-4b83-88b1-aed07061dfb1?company_id=main",
+      "at": "2026-08-07T09:59:11.523Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T09:59:12.230Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-pay-catalog-qa-01/01-payroll-load.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-pay-catalog-qa-01/02-salary-components-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-pay-catalog-qa-01/03-add-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-pay-catalog-qa-01/04-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-pay-catalog-qa-01/05-f5-persist.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-pay-catalog-qa-01/06-after-delete.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T09:58:58.674Z",
+      "msg": "goto /hr/payroll"
+    },
+    {
+      "at": "2026-08-07T09:59:03.641Z",
+      "msg": "filled free-text code",
+      "code": "CUSTOM_TP_09"
+    }
+  ],
+  "residuals": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T09:59:13.966Z"
+}

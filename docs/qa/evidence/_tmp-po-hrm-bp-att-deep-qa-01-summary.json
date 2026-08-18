@@ -1,0 +1,98 @@
+{
+  "counts": {
+    "LIVE": 28,
+    "PARTIAL": 3,
+    "GĐ2-HOLD": 1,
+    "STUB_UI": 12
+  },
+  "stubs": [
+    {
+      "id": "shifts-schedule",
+      "matrix": "17",
+      "cfg": false,
+      "fid": true,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "shifts-overtime",
+      "matrix": "18",
+      "cfg": false,
+      "fid": true,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "settings-Quy-định-làm-thêm",
+      "matrix": "40",
+      "cfg": true,
+      "fid": false,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "settings-Quy-định-nghỉ",
+      "matrix": "41",
+      "cfg": true,
+      "fid": false,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "settings-Quy-định-đi-muộn---về-sớm",
+      "matrix": "42",
+      "cfg": true,
+      "fid": false,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "settings-Quy-định-làm-đơn",
+      "matrix": "43",
+      "cfg": true,
+      "fid": false,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "settings-Người-dùng",
+      "matrix": "44",
+      "cfg": false,
+      "fid": true,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "settings-Vai-trò",
+      "matrix": "45",
+      "cfg": false,
+      "fid": true,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "settings-Hệ-thống",
+      "matrix": "46",
+      "cfg": false,
+      "fid": true,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "rules-stub-37",
+      "matrix": "37",
+      "cfg": false,
+      "fid": true,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "rules-stub-38",
+      "matrix": "38",
+      "cfg": false,
+      "fid": true,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    },
+    {
+      "id": "rules-stub-39",
+      "matrix": "39",
+      "cfg": false,
+      "fid": true,
+      "snip": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn T"
+    }
+  ],
+  "dialogs": [
+    "tab-reports-export-dialog"
+  ],
+  "portal": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+}

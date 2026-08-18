@@ -1,0 +1,152 @@
+{
+  "work_item_id": "PO-HRM-SETTINGS-FIDELITY-QA-02",
+  "stamp": "SETFID02W3-MSNHB5VD",
+  "dev_fe_ref": "PO-HRM-SETTINGS-W3-MUTATE-FIX-FE-01",
+  "startedAt": "2026-08-10T17:01:51.922Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "settings_catalog_e2e_ready": "DENY — not flipped this wave"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_dev_stack": "PASS (services 200)",
+    "qc_fe_be_health": "exit 0"
+  },
+  "ufs": {
+    "UF-SET-W3-A01": {
+      "tab": "att-attendance-codes",
+      "fr": "FR-HRM-SC-ATT · F-ATT-CAT-CODE",
+      "slug": "w3nhb5vdatt",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/attendance/attendance-codes → **200**",
+      "feAfter": "row visible pre-F5",
+      "f5": "row persists after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-A02": {
+      "tab": "att-ot-types",
+      "fr": "FR-HRM-SC-ATT · F-ATT-OT-TYPE",
+      "slug": "w3nhb5vdatt",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/attendance/ot-types → **200**",
+      "feAfter": "row visible pre-F5",
+      "f5": "row persists after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-A03": {
+      "tab": "att-ot-comp-types",
+      "fr": "FR-HRM-SC-ATT · F-ATT-OT-COMP",
+      "slug": "w3nhb5vdatt",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/attendance/ot-comp-types → **200**",
+      "feAfter": "row visible pre-F5",
+      "f5": "row persists after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B01": {
+      "tab": "emp-document-types",
+      "fr": "FR-HRM-SC-EMP-DOC",
+      "slug": "w3nhb5vdemp",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/employees/document-types → **200**",
+      "feAfter": "row visible pre-F5",
+      "f5": "row persists after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B02": {
+      "tab": "emp-employment-types",
+      "fr": "FR-HRM-SC-ET",
+      "slug": "w3nhb5vdemp",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/employees/employment-types → **200**",
+      "feAfter": "row visible pre-F5",
+      "f5": "row persists after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B04": {
+      "tab": "si-insurance-types",
+      "fr": "FR-HRM-SC-SI · insurance-types",
+      "slug": "w3nhb5vdsii",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/contracts-insurance/insurance-types → **200**",
+      "feAfter": "row visible pre-F5",
+      "f5": "row persists after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B05": {
+      "tab": "si-insurers",
+      "fr": "FR-HRM-SC-SI · insurers",
+      "slug": "w3nhb5vdsii",
+      "action": "Thêm → Lưu",
+      "network": "/api/hrm/contracts-insurance/insurers → **200**",
+      "feAfter": "row visible pre-F5",
+      "f5": "row persists after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B03": {
+      "tab": "emp-employment-statuses",
+      "fr": "FR-HRM-SC-EMP-ST-STR",
+      "slug": "qa_st_nhb5vd + qa_str_nhb5vd",
+      "action": "Inline ST PUT + STR PUT",
+      "network": "ST 200 pre=true f5=true · STR 200 pre=true f5=true",
+      "feAfter": "ST/STR dialog mutate",
+      "f5": "ST f5=true STR f5=true",
+      "verdict": "🟢"
+    }
+  },
+  "smokes": {
+    "UF-ATT-LVT-SMOKE": {
+      "verdict": "🟢",
+      "note": "REF MD: MD banner=true noSave=true · catalogs ref banner=true · extension POSTs=0 · Effective: GET leave-types/effective → 200"
+    }
+  },
+  "consoleErrors": [],
+  "networkMutations": [
+    {
+      "uf": "UF-SET-W3-A01",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes"
+    },
+    {
+      "uf": "UF-SET-W3-A02",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-types"
+    },
+    {
+      "uf": "UF-SET-W3-A03",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-comp-types"
+    },
+    {
+      "uf": "UF-SET-W3-B01",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types"
+    },
+    {
+      "uf": "UF-SET-W3-B02",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types"
+    },
+    {
+      "uf": "UF-SET-W3-B04",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types"
+    },
+    {
+      "uf": "UF-SET-W3-B05",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurers"
+    }
+  ],
+  "extensionPosts": [],
+  "ack_status": "PASS_TO_PM",
+  "defects": [],
+  "endedAt": "2026-08-10T17:04:36.989Z"
+}

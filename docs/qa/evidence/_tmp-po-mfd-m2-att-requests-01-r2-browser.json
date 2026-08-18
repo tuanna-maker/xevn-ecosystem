@@ -1,0 +1,338 @@
+{
+  "work_item_id": "PO-MFD-M2-ATT-REQUESTS-01-R2",
+  "startedAt": "2026-08-04T06:50:16.554Z",
+  "u65": "zero-seed",
+  "hdsd_align": "Attendance → Quản lý đơn → [late-early|OT|trip|update|shift-change] → list + mutate late/early",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "NV_EMAIL": "uat.nv0007@xe.vn",
+    "OU": "trsport",
+    "STAMP": "REQ2-EATJL6",
+    "commit": "dc930c5",
+    "passwordUsed": "xevn-uat-2026",
+    "jwtOu": "trsport"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    }
+  },
+  "hdsd_inventory": {
+    "quanLyDon": true,
+    "menuItems": [
+      "Đơn xin nghỉ",
+      "Đăng ký đi muộn, về sớm",
+      "Đăng ký làm thêm",
+      "Đề nghị đi công tác",
+      "Đề nghị cập nhật công",
+      "Đề nghị đổi ca",
+      "Bảng tổng hợp nghỉ phép",
+      "Bảng tổng hợp nghỉ bù",
+      "Kế hoạch nghỉ phép"
+    ],
+    "late-early": {
+      "menuPresent": true,
+      "via": "menuitem",
+      "reason": null
+    },
+    "overtime": {
+      "menuPresent": true,
+      "via": "menuitem",
+      "reason": null
+    },
+    "business-trip": {
+      "menuPresent": true,
+      "via": "menuitem",
+      "reason": null
+    },
+    "update-attendance": {
+      "menuPresent": true,
+      "via": "menuitem",
+      "reason": null
+    },
+    "change-shift": {
+      "menuPresent": true,
+      "via": "menuitem",
+      "reason": null
+    }
+  },
+  "tabs": {
+    "late-early": {
+      "surface": 20,
+      "menuOk": true,
+      "ctaVisible": true,
+      "titleVisible": true,
+      "spinnerVisible": false,
+      "dangTai": false,
+      "getCount": 1,
+      "idleGets": 0,
+      "list2xx": 1,
+      "listFail": [],
+      "lastGetStatus": 200,
+      "lastGetCode": null,
+      "rowCount": 1,
+      "emptyHonesty": true,
+      "storm": false,
+      "runtime": "LIVE",
+      "lastStep": {
+        "verdict": "PASS",
+        "summary": "cta=true gets=1 idle=0 rows=1 empty=true storm=false runtime=LIVE",
+        "at": "2026-08-04T06:50:36.293Z"
+      }
+    },
+    "overtime": {
+      "surface": 21,
+      "menuOk": true,
+      "ctaVisible": true,
+      "titleVisible": true,
+      "spinnerVisible": false,
+      "dangTai": false,
+      "getCount": 1,
+      "idleGets": 0,
+      "list2xx": 1,
+      "listFail": [],
+      "lastGetStatus": 200,
+      "lastGetCode": null,
+      "rowCount": 4,
+      "emptyHonesty": false,
+      "storm": false,
+      "runtime": "LIVE",
+      "lastStep": {
+        "verdict": "PASS",
+        "summary": "cta=true gets=1 idle=0 rows=4 empty=false storm=false runtime=LIVE",
+        "at": "2026-08-04T06:50:44.955Z"
+      }
+    },
+    "business-trip": {
+      "surface": 22,
+      "menuOk": true,
+      "ctaVisible": true,
+      "titleVisible": true,
+      "spinnerVisible": false,
+      "dangTai": false,
+      "getCount": 1,
+      "idleGets": 0,
+      "list2xx": 1,
+      "listFail": [],
+      "lastGetStatus": 200,
+      "lastGetCode": null,
+      "rowCount": 1,
+      "emptyHonesty": true,
+      "storm": false,
+      "runtime": "LIVE",
+      "lastStep": {
+        "verdict": "PASS",
+        "summary": "cta=true gets=1 idle=0 rows=1 empty=true storm=false runtime=LIVE",
+        "at": "2026-08-04T06:50:53.555Z"
+      }
+    },
+    "update-attendance": {
+      "surface": 23,
+      "menuOk": true,
+      "ctaVisible": true,
+      "titleVisible": true,
+      "spinnerVisible": false,
+      "dangTai": false,
+      "getCount": 1,
+      "idleGets": 0,
+      "list2xx": 1,
+      "listFail": [],
+      "lastGetStatus": 200,
+      "lastGetCode": null,
+      "rowCount": 12,
+      "emptyHonesty": false,
+      "storm": false,
+      "runtime": "LIVE",
+      "lastStep": {
+        "verdict": "PASS",
+        "summary": "cta=true gets=1 idle=0 rows=12 empty=false storm=false runtime=LIVE",
+        "at": "2026-08-04T06:51:02.212Z"
+      }
+    },
+    "change-shift": {
+      "surface": 24,
+      "menuOk": true,
+      "ctaVisible": true,
+      "titleVisible": true,
+      "spinnerVisible": false,
+      "dangTai": false,
+      "getCount": 1,
+      "idleGets": 0,
+      "list2xx": 1,
+      "listFail": [],
+      "lastGetStatus": 200,
+      "lastGetCode": null,
+      "rowCount": 1,
+      "emptyHonesty": true,
+      "storm": false,
+      "runtime": "LIVE",
+      "lastStep": {
+        "verdict": "PASS",
+        "summary": "cta=true gets=1 idle=0 rows=1 empty=true storm=false runtime=LIVE",
+        "at": "2026-08-04T06:51:10.761Z"
+      }
+    },
+    "mutate": {
+      "lastStep": {
+        "verdict": "PASS",
+        "summary": "created create={\"status\":201,\"code\":\"HRM-LE-REQ-201\",\"id\":\"7e7271ec-0fcd-4895-a54f-ee1244978738\",\"url\":\"/api/hrm/attendance/late-early-requests\",\"xCompanyId\":\"main\"}",
+        "at": "2026-08-04T06:51:23.913Z"
+      }
+    },
+    "f5": {
+      "lastStep": {
+        "verdict": "PASS",
+        "summary": "stampVisible=true rows=1",
+        "at": "2026-08-04T06:51:33.010Z"
+      }
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/late-early-requests?company_id=trsport",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:50:28.936Z",
+      "list": true
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overtime-requests?company_id=trsport",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:50:37.549Z",
+      "list": true
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/business-trip-requests?company_id=trsport",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:50:46.256Z",
+      "list": true
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/update-requests?company_id=trsport",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:50:54.969Z",
+      "list": true
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=trsport",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:51:03.486Z",
+      "list": true
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/late-early-requests?company_id=trsport",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:51:12.374Z",
+      "list": true
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/late-early-requests",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:51:19.908Z",
+      "code": "HRM-LE-REQ-201",
+      "id": "7e7271ec-0fcd-4895-a54f-ee1244978738",
+      "bodyStatus": "pending"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/late-early-requests?company_id=trsport",
+      "xCompanyId": "main",
+      "at": "2026-08-04T06:51:27.785Z",
+      "list": true
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "mutate": {
+    "path": "late-early",
+    "stamp": "REQ2-EATJL6",
+    "employeesInSelect": 4,
+    "datePicked": true,
+    "dateStillPlaceholder": false,
+    "create": {
+      "status": 201,
+      "code": "HRM-LE-REQ-201",
+      "id": "7e7271ec-0fcd-4895-a54f-ee1244978738",
+      "url": "/api/hrm/attendance/late-early-requests",
+      "xCompanyId": "main"
+    },
+    "createOk": true,
+    "ok": true,
+    "reason": "created"
+  },
+  "f5": {
+    "path": "late-early",
+    "stampVisible": true,
+    "rowCount": 1,
+    "at": "2026-08-04T06:51:33.010Z"
+  },
+  "stamps": {
+    "20": "LIVE",
+    "21": "LIVE",
+    "22": "LIVE",
+    "23": "LIVE",
+    "24": "LIVE"
+  },
+  "residual": [],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-04T06:51:33.011Z",
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/00-attendance-mount.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/00-requests-menu.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/20-late-early-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/21-overtime-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/22-business-trip-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/23-update-attendance-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/24-change-shift-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/20-late-early-modal.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/20-late-early-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/20-late-early-after-submit.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-requests-01-r2/f5-late-early.png"
+  ],
+  "ot_spot": {
+    "note": "Prior OT create→approve GWC CLOSED — spot list/CTA only; not reopened as invent FAIL",
+    "prior": "docs/qa/evidence/po-mfd-m2-ot-fe-approve-qc-r2.md",
+    "surface": 21,
+    "menuOk": true,
+    "ctaVisible": true,
+    "titleVisible": true,
+    "spinnerVisible": false,
+    "dangTai": false,
+    "getCount": 1,
+    "idleGets": 0,
+    "list2xx": 1,
+    "listFail": [],
+    "lastGetStatus": 200,
+    "lastGetCode": null,
+    "rowCount": 4,
+    "emptyHonesty": false,
+    "storm": false,
+    "runtime": "LIVE",
+    "lastStep": {
+      "verdict": "PASS",
+      "summary": "cta=true gets=1 idle=0 rows=4 empty=false storm=false runtime=LIVE",
+      "at": "2026-08-04T06:50:44.955Z"
+    }
+  }
+}

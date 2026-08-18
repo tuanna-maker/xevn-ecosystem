@@ -1,0 +1,86 @@
+{
+  "work_item_id": "U78-U84-PRIMARY-REC-PLAN-TMDV-01",
+  "phase": "AP-retarget",
+  "startedAt": "2026-08-03T17:16:36.486Z",
+  "STAMP": "TMDV-PLAN-DH7VCT",
+  "PLAN_ID": "69d5888d-7227-4ea0-bfef-794f4c6ce6f5",
+  "WI": "1c7b5a7d-2055-41a6-b5b0-fbf6c8cf12d0",
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:16:37.329Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/workflow-engine/tasks/e5c3b2d9-189d-4565-8d1e-6b96d63d25b2/complete",
+      "at": "2026-08-03T17:16:41.908Z",
+      "code": "XBOS-WF-200",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-200\",\"message\":\"Task completed\",\"data\":{\"task\":{\"id\":\"e5c3b2d9-189d-4565-8d1e-6b96d63d25b2\",\"instance_id\":\"1c7b5a7d-2055-41a6-b5b0-fbf6c8cf12d0\",\"step_key\":\"plan_approval\",\"hat_key\":\"group_ceo\",\"assignee_user"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:16:41.924Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/workflow-engine/tasks/1908744e-4411-41dc-ab9d-ce7918fdb768/complete",
+      "at": "2026-08-03T17:16:43.287Z",
+      "code": "XBOS-WF-200",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-200\",\"message\":\"Task completed\",\"data\":{\"task\":{\"id\":\"1908744e-4411-41dc-ab9d-ce7918fdb768\",\"instance_id\":\"092bd2c9-7e12-4e88-9db7-5d0ff4237602\",\"step_key\":\"manager_approval\",\"hat_key\":\"group_ceo\",\"assignee_u"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:16:43.303Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T17:16:45.493Z"
+    }
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-plan-tmdv-01/12-ap-inbox-before.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-plan-tmdv-01/13-ap-after-click.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-plan-tmdv-01/14-ap-inbox-f5.png"
+  ],
+  "approve": {
+    "cardVisible": true,
+    "clicked": true,
+    "completePosts": [
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/xbos/workflow-engine/tasks/e5c3b2d9-189d-4565-8d1e-6b96d63d25b2/complete",
+        "at": "2026-08-03T17:16:41.908Z",
+        "code": "XBOS-WF-200",
+        "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-200\",\"message\":\"Task completed\",\"data\":{\"task\":{\"id\":\"e5c3b2d9-189d-4565-8d1e-6b96d63d25b2\",\"instance_id\":\"1c7b5a7d-2055-41a6-b5b0-fbf6c8cf12d0\",\"step_key\":\"plan_approval\",\"hat_key\":\"group_ceo\",\"assignee_user"
+      },
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/xbos/workflow-engine/tasks/1908744e-4411-41dc-ab9d-ce7918fdb768/complete",
+        "at": "2026-08-03T17:16:43.287Z",
+        "code": "XBOS-WF-200",
+        "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-200\",\"message\":\"Task completed\",\"data\":{\"task\":{\"id\":\"1908744e-4411-41dc-ab9d-ce7918fdb768\",\"instance_id\":\"092bd2c9-7e12-4e88-9db7-5d0ff4237602\",\"step_key\":\"manager_approval\",\"hat_key\":\"group_ceo\",\"assignee_u"
+      }
+    ],
+    "cardGoneAfterF5": true,
+    "verdict": "PASS"
+  },
+  "plan_after": {
+    "id": "69d5888d-7227-4ea0-bfef-794f4c6ce6f5",
+    "status": "approved",
+    "workflow_instance_id": "1c7b5a7d-2055-41a6-b5b0-fbf6c8cf12d0",
+    "title": "KH Tuyển Lái xe Vận hành TMDV TMDV-PLAN-DH7VCT"
+  },
+  "endedAt": "2026-08-03T17:16:49.053Z"
+}

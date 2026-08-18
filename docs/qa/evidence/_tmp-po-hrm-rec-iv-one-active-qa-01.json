@@ -1,0 +1,114 @@
+{
+  "work_item_id": "PO-HRM-REC-IV-ONE-ACTIVE-QA-01",
+  "startedAt": "2026-08-06T09:43:11.894Z",
+  "u65": "zero-seed",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "recruitment_uat_ready": false,
+  "denied": [
+    "recruitment_uat_ready",
+    "seed",
+    "module_uat"
+  ],
+  "l0": {
+    "portal": 200,
+    "hrm": 404,
+    "pass": false
+  },
+  "unit": {},
+  "api": {
+    "listCandidates": {
+      "status": 200,
+      "total": 1,
+      "sampleFields": null,
+      "withActive": 0
+    },
+    "listCandidatesPool": {
+      "status": 200,
+      "total": 6,
+      "firstHasActiveInterview": false,
+      "firstKeys": [
+        "id",
+        "company_id",
+        "full_name",
+        "email",
+        "phone",
+        "stage",
+        "source",
+        "applied_date",
+        "notes",
+        "created_at",
+        "updated_at",
+        "workflow_instance_id",
+        "employee_id",
+        "rejected_reason",
+        "wf_callback_fingerprint",
+        "position",
+        "rating",
+        "expected_start_date",
+        "nationality",
+        "hometown"
+      ]
+    },
+    "conflict409": {
+      "pass": false,
+      "note": "no candidate available for conflict probe"
+    },
+    "cancelThenCreate": {
+      "pass": false,
+      "note": "skipped — no candidate"
+    },
+    "scopeParity": null,
+    "ids": {},
+    "bootstrap": {
+      "requisitionId": "6d2d71ad-5560-41e5-a593-c8791d9bdddf",
+      "createStatus": 201,
+      "createCode": "HRM-REC-202",
+      "createMessage": "Candidate created",
+      "candidateId": "73a7f4e2-b327-4308-8b9b-570cf1b04eb6"
+    },
+    "bootstrapCreate": {
+      "status": 400,
+      "code": "HRM-VAL-001"
+    },
+    "createdForTest": false
+  },
+  "browser": {
+    "badgeVisible": false,
+    "badgeLabel": null,
+    "badgeTime": null,
+    "badgeTimePattern": null,
+    "conflictToast": null,
+    "f5BadgePersists": null,
+    "poolApiMissingProjection": false,
+    "pageErrors": 0,
+    "consoleErrors": 0,
+    "screenshots": [
+      "docs/qa/evidence/po-hrm-rec-iv-one-active-qa-01/01-candidates-list.png"
+    ]
+  },
+  "ac": {
+    "AC-409-conflict": "FAIL",
+    "AC-cancel-create": "FAIL",
+    "AC-list-projection": "FAIL",
+    "AC-scope-parity": "FAIL",
+    "AC-fe-badge": "FAIL",
+    "AC-fe-pool-wire": "PASS"
+  },
+  "clickPath": [
+    "goto recruitment candidates tab",
+    "click recruitment-nav-candidates"
+  ],
+  "residuals": [
+    {
+      "id": "FE-BADGE-NO-ROW-WITH-ACTIVE",
+      "severity": "P1",
+      "owner": "qa",
+      "note": "No badge visible — may need candidate with active interview in UI list or FE wiring gap"
+    }
+  ],
+  "overall": "FAIL_TO_PM",
+  "endedAt": "2026-08-06T09:43:20.505Z"
+}

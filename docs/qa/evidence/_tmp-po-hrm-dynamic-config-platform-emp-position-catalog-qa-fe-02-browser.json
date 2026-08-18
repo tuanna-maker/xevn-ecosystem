@@ -1,0 +1,881 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-POSITION-CATALOG-QA-FE-02",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-POSITION-CATALOG-FE-02",
+  "prior_fail": "EMPPOSQAFE-MSKEVN7E",
+  "residual_target": "R-PLT-EMP-POS-FE-01",
+  "stamp_l1_retain": "EMPPOSQA2-MSK3CDH1",
+  "key_codes": [
+    "HRM-EMP-POSITION-KEY",
+    "HRM-WH-PICK-REQUIRED",
+    "HRM-WH-PICK-EMPTY-CATALOG"
+  ],
+  "startedAt": "2026-08-08T13:40:46.038Z",
+  "stamp": "EMPPOSQAFE2-MSKF8UFY",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser FE click path · invent API spot ≠ UF 🟢 alone · no wipe EFF",
+  "hdsd_align": "CH06f consumer hồ sơ NV chức danh · /hr/employees · CatalogSearchPicker position/job_title · hdsd-employee-form-* · emp-employment-status-select RETAIN",
+  "honesty": {
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "contracts_printable_ready": false,
+    "seed_used": false,
+    "ensureDefault": false,
+    "c_slice_ne_module": true,
+    "deny_module_emp_uat": true,
+    "deny_phase1": true,
+    "deny_qc_close_this_seat": true,
+    "emp_status_fe_closed_retain": true,
+    "deny_reopen_emp_status_fe": true,
+    "fe_admin_emp_st_hold": true,
+    "lvrule_01g_hold": true,
+    "nest_emp_position_deny": true,
+    "seal_retain": {
+      "L1_EMP_POS": "EMPPOSQA2-MSK3CDH1",
+      "EMP_STATUS_L1": "EMPSTQA-MSK20G7H",
+      "EMP_STATUS_FE": "EMPSTQAFE2-MSKE3NV1 CLOSED RETAIN",
+      "EMP_CUSTOM": "EMPCFQA-MSK14LUH",
+      "EXT": "EMPTOKEXTQA-MSJ57PE1",
+      "ATT_CODE_L1": "ATTCODEQA-MSK4T1A5",
+      "ATT_CODE_FE": "ATTCODEQAFE-MSKCJA95",
+      "OT_TYPE": "ATTOTQA-MSK8VETU",
+      "COMP": "ATTCOMPQA-MSKARXQU",
+      "SHIFT": "ATTSHIFTQA-MSK5FXP3",
+      "leave": "ATTLEAVEQA-MSJ7CPJH",
+      "LVRULE": "ATTLVRULEQA-MSK6G783"
+    }
+  },
+  "vitest": {
+    "claimed": "8/8 mount-guard",
+    "re_run": {
+      "claimed": "8/8",
+      "note": "pre-run QA shell exit 0 EmployeeFormDialog.mount-guard.test.ts (R-PLT-EMP-POS-FE-02 + EMP-STATUS retain)"
+    }
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "job_titles": {
+    "before": {
+      "status": 200,
+      "via": "/api/hrm/settings-catalogs/job_titles/items?company_id=main",
+      "total": 8,
+      "codes": [
+        "CEO",
+        "CHRO",
+        "DRIVER_LEAD",
+        "OPS_MANAGER",
+        "POS_01",
+        "POS_02",
+        "POS_03",
+        "POS_04"
+      ],
+      "labels": [
+        "Tổng Giám đốc",
+        "Giám đốc Nhân sự",
+        "Đội trưởng Lái xe",
+        "Quản lý Vận hành",
+        "Chuyên viên",
+        "Trưởng phòng",
+        "Phó phòng",
+        "Nhân viên"
+      ],
+      "attempts": [
+        {
+          "path": "/api/hrm/settings-catalogs/items?company_id=main&catalog_key=job_titles&page_size=100",
+          "status": 404,
+          "total": 0,
+          "active": 0
+        },
+        {
+          "path": "/api/hrm/settings-catalogs/effective?company_id=main&key=job_titles",
+          "status": 404,
+          "total": 0,
+          "active": 0
+        },
+        {
+          "path": "/api/hrm/settings-catalogs/effective-items?company_id=main&catalog_key=job_titles",
+          "status": 404,
+          "total": 0,
+          "active": 0
+        },
+        {
+          "path": "/api/hrm/settings-catalogs/job_titles/items?company_id=main",
+          "status": 200,
+          "total": 9,
+          "active": 8
+        }
+      ]
+    },
+    "codes": [
+      "CEO",
+      "CHRO",
+      "DRIVER_LEAD",
+      "OPS_MANAGER",
+      "POS_01",
+      "POS_02",
+      "POS_03",
+      "POS_04"
+    ],
+    "rows": [
+      {
+        "code": "CEO",
+        "label": "Tổng Giám đốc",
+        "unit": null,
+        "status": "active",
+        "origin": "xbos"
+      },
+      {
+        "code": "CHRO",
+        "label": "Giám đốc Nhân sự",
+        "unit": null,
+        "status": "active",
+        "origin": "xbos"
+      },
+      {
+        "code": "DRIVER_LEAD",
+        "label": "Đội trưởng Lái xe",
+        "unit": null,
+        "status": "active",
+        "origin": "xbos"
+      },
+      {
+        "code": "OPS_MANAGER",
+        "label": "Quản lý Vận hành",
+        "unit": null,
+        "status": "active",
+        "origin": "xbos"
+      },
+      {
+        "code": "POS_01",
+        "label": "Chuyên viên",
+        "unit": null,
+        "status": "active",
+        "origin": "xbos"
+      },
+      {
+        "code": "POS_02",
+        "label": "Trưởng phòng",
+        "unit": null,
+        "status": "active",
+        "origin": "xbos"
+      },
+      {
+        "code": "POS_03",
+        "label": "Phó phòng",
+        "unit": null,
+        "status": "active",
+        "origin": "xbos"
+      },
+      {
+        "code": "POS_04",
+        "label": "Nhân viên",
+        "unit": null,
+        "status": "active",
+        "origin": "xbos"
+      }
+    ],
+    "via": "/api/hrm/settings-catalogs/job_titles/items?company_id=main"
+  },
+  "nest_emp_position": null,
+  "ac": {
+    "L0": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:40:46.060Z",
+      "summary": "hrm/xbos/portal 200/200/200"
+    },
+    "VITEST": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:40:46.061Z",
+      "summary": "8/8 EmployeeFormDialog.mount-guard.test.ts exit 0"
+    },
+    "EFF_GT0": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:40:46.654Z",
+      "summary": "job_titles EFF total=8 via=/api/hrm/settings-catalogs/job_titles/items?company_id=main codes=CEO,CHRO,DRIVER_LEAD,OPS_MANAGER,POS_01,POS_02,POS_03,POS_04"
+    },
+    "EMP_LIST": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:40:47.085Z",
+      "summary": "clean=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd name=Nguyễn Văn QA M3 987275 job=(none) staffObs=0500220b-f289-40df-b07e-86316285439b"
+    },
+    "INVENT_API_KEY": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:40:48.043Z",
+      "summary": "PATCH invent job_title_key → 400 HRM-EMP-POSITION-KEY key_hit=true msg=job_title_key 'zz_invent_emp_pos_mskf8ufy' is not in job_titles catalog (free-text SoT forbidden)"
+    },
+    "INVENT_NO_PERSIST": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:40:48.477Z",
+      "summary": "after invent GET job_title_key=(none) persisted=false"
+    },
+    "NEST_EMP_POSITION_DENY": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:40:48.538Z",
+      "summary": "live GET statuses=400,404,404,404 srcRouteFile=false"
+    },
+    "SEALS_RETAIN": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:40:49.229Z",
+      "summary": "att_codes:200/1 · ot_types:200/1 · emp_st:200/4"
+    },
+    "EFF0_EMPTY_CTA": {
+      "verdict": "PASS_WITH_OBS",
+      "at": "2026-08-08T13:40:49.230Z",
+      "summary": "NOTE_BLOCKED live EFF=0 · unit cite empPositionCatalog 7 covers empty CTA HRM-WH-PICK-EMPTY-CATALOG + resolve invent clear"
+    },
+    "FE_LIST_LOAD": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:40:54.496Z",
+      "summary": "syncError=false catalogsGets=2"
+    },
+    "EMP_STATUS_SELECT_RETAIN": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:41:00.355Z",
+      "summary": "emp-employment-status-select present=true · EMP-STATUS FE CLOSED RETAIN (no reopen)"
+    },
+    "AC01_PICKER_EFF": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:41:01.218Z",
+      "summary": "combo=true opts=8 effHits=8 emptyHint=false sample=CEO\nTổng Giám đốc|CHRO\nGiám đốc Nhân sự|DRIVER_LEAD\nĐội trưởng Lái xe"
+    },
+    "AC01_SUBMIT": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:41:05.440Z",
+      "summary": "picked=true via=data-value patches=1 last=200 HRM-EMP-202 body={\"job_title_key\":\"CEO\",\"status\":\"active\",\"full_name\":\"Nguyễn Văn QA M3 987275\"}"
+    },
+    "AC01_F5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:41:15.333Z",
+      "summary": "F5 job_title_key=CEO expected≈CEO exact=true"
+    },
+    "AC01B_INVENT_UI": {
+      "verdict": "PASS_WITH_OBS",
+      "at": "2026-08-08T13:41:21.048Z",
+      "summary": "Select-only CatalogSearchPicker · API 400 HRM-EMP-POSITION-KEY key_hit=true"
+    },
+    "STAFF_OBS_CLOSABLE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:41:31.484Z",
+      "summary": "staffEdit=true cleared=true invent=400 HRM-EMP-POSITION-KEY EMP-STATUS-FE reopen=false"
+    },
+    "AC01_WH_PICKER": {
+      "verdict": "PASS_WITH_OBS",
+      "at": "2026-08-08T13:41:39.873Z",
+      "summary": "WH combos=5 opts=0 effHits=0"
+    },
+    "AC01_CREATE_PICKER": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:41:46.641Z",
+      "summary": "Create dialog position combobox visible=true via=eff-probe#0 effHits=8"
+    },
+    "EMP_STATUS_CREATE_RETAIN": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:41:46.646Z",
+      "summary": "Create emp-employment-status-select present=true"
+    },
+    "CONSOLE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T13:41:47.589Z",
+      "summary": "pageErrors=0 bad5xx=0 console=0"
+    },
+    "OVERALL": {
+      "verdict": "PASS_WITH_OBS",
+      "at": "2026-08-08T13:41:47.789Z",
+      "summary": "condition=CLOSABLE fails=none obs=EFF0_EMPTY_CTA,AC01B_INVENT_UI,AC01_WH_PICKER"
+    }
+  },
+  "network": {
+    "catalogsGets": [
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:40:50.371Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:40:50.641Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:40:56.910Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:11.783Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:12.009Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:17.703Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:21.555Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:21.763Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:27.195Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:31.973Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:32.311Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:36.161Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:40.364Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:40.595Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:43.330Z"
+      }
+    ],
+    "empGets": [
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+        "code": "HRM-EMP-SUMMARY-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:40:50.220Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "code": "HRM-EMP-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:40:50.621Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "code": "HRM-EMP-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:04.877Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+        "code": "HRM-EMP-SUMMARY-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:11.632Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "code": "HRM-EMP-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:11.947Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+        "code": "HRM-EMP-SUMMARY-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:21.372Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "code": "HRM-EMP-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:21.712Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees/59477dbc-bc63-46d0-a7eb-6daeb2458d1c?company_id=holding",
+        "code": "HRM-EMP-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:27.303Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees?company_id=main&include_archived=false&status=active&page=1&page_size=50",
+        "code": "HRM-EMP-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:27.321Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+        "code": "HRM-EMP-SUMMARY-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:31.803Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "code": "HRM-EMP-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:32.263Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main",
+        "code": "HRM-EMP-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:35.888Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+        "code": "HRM-EMP-SUMMARY-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:40.189Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "code": "HRM-EMP-200",
+        "reqBody": null,
+        "at": "2026-08-08T13:41:40.543Z"
+      }
+    ],
+    "empPatches": [
+      {
+        "method": "PATCH",
+        "status": 200,
+        "path": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+        "code": "HRM-EMP-202",
+        "reqBody": {
+          "job_title_key": "CEO",
+          "status": "active",
+          "full_name": "Nguyễn Văn QA M3 987275"
+        },
+        "at": "2026-08-08T13:41:04.518Z"
+      }
+    ],
+    "empPosts": [],
+    "whPosts": [],
+    "inventCalls": [
+      {
+        "method": "PATCH",
+        "path": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+        "body": {
+          "job_title_key": "zz_invent_emp_pos_mskf8ufy"
+        },
+        "status": 400,
+        "code": "HRM-EMP-POSITION-KEY",
+        "message": "job_title_key 'zz_invent_emp_pos_mskf8ufy' is not in job_titles catalog (free-text SoT forbidden)",
+        "key_hit": true
+      }
+    ],
+    "nestDenyCalls": [
+      {
+        "path": "/api/hrm/employees/emp-positions",
+        "status": 400,
+        "code": "HRM-VAL-001"
+      },
+      {
+        "path": "/api/hrm/employees/emp-positions/effective?company_id=main",
+        "status": 404,
+        "code": "HRM-DATA-404"
+      },
+      {
+        "path": "/api/hrm/emp-positions",
+        "status": 404,
+        "code": "HRM-DATA-404"
+      },
+      {
+        "path": "/api/hrm/emp-positions/effective?company_id=main",
+        "status": 404,
+        "code": "HRM-DATA-404"
+      }
+    ],
+    "bad5xx": []
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-position-catalog-qa-fe-02/01-employees-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-position-catalog-qa-fe-02/02-edit-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-position-catalog-qa-fe-02/03-position-picker-options.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-position-catalog-qa-fe-02/04-position-selected.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-position-catalog-qa-fe-02/05-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-position-catalog-qa-fe-02/06-f5-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-position-catalog-qa-fe-02/07-f5-edit-picker.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-position-catalog-qa-fe-02/08-staff-obs-edit.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-position-catalog-qa-fe-02/09-work-timeline.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-position-catalog-qa-fe-02/10-create-dialog.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-08T13:40:46.218Z",
+      "msg": "loginApi ok"
+    },
+    {
+      "at": "2026-08-08T13:40:58.205Z",
+      "msg": "edit dialog via=row_menu opened=true"
+    },
+    {
+      "at": "2026-08-08T13:41:02.770Z",
+      "msg": "picked position {\"ok\":true,\"via\":\"data-value\",\"code\":\"CEO\"}"
+    }
+  ],
+  "picker_form": {
+    "findVia": "eff-probe#0",
+    "probeNotes": [
+      {
+        "i": 0,
+        "count": 8,
+        "hit": 8,
+        "hasSearch": true,
+        "isManager": false,
+        "isStatus": false,
+        "sample": [
+          "CEO\nTổng Giám đốc",
+          "CHRO\nGiám đốc Nhân sự",
+          "DRIVER_LEAD\nĐội trưởng Lái xe"
+        ]
+      }
+    ],
+    "comboVisible": true,
+    "emptyHint": false,
+    "optionCount": 8,
+    "effHits": [
+      "CEO",
+      "CHRO",
+      "DRIVER_LEAD",
+      "OPS_MANAGER",
+      "POS_01",
+      "POS_02",
+      "POS_03",
+      "POS_04"
+    ],
+    "sample": [
+      {
+        "text": "CEO\nTổng Giám đốc",
+        "value": "CEO"
+      },
+      {
+        "text": "CHRO\nGiám đốc Nhân sự",
+        "value": "CHRO"
+      },
+      {
+        "text": "DRIVER_LEAD\nĐội trưởng Lái xe",
+        "value": "DRIVER_LEAD"
+      },
+      {
+        "text": "OPS_MANAGER\nQuản lý Vận hành",
+        "value": "OPS_MANAGER"
+      },
+      {
+        "text": "POS_01\nChuyên viên",
+        "value": "POS_01"
+      },
+      {
+        "text": "POS_02\nTrưởng phòng",
+        "value": "POS_02"
+      },
+      {
+        "text": "POS_03\nPhó phòng",
+        "value": "POS_03"
+      },
+      {
+        "text": "POS_04\nNhân viên",
+        "value": "POS_04"
+      }
+    ],
+    "pickCode": "CEO",
+    "reopenTrigger": "CEOTổng Giám đốc",
+    "reopenVia": "eff-probe#0"
+  },
+  "picker_wh": {
+    "comboCount": 5,
+    "visible": true,
+    "optionCount": 0,
+    "effHits": []
+  },
+  "invent_ui": {
+    "catalog_search_picker_only": true,
+    "free_text_invent": false,
+    "note": "CatalogSearchPicker Select-only — invent free-text N/A on UI; API KEY proven this seat",
+    "api_key": {
+      "method": "PATCH",
+      "path": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "body": {
+        "job_title_key": "zz_invent_emp_pos_mskf8ufy"
+      },
+      "status": 400,
+      "code": "HRM-EMP-POSITION-KEY",
+      "message": "job_title_key 'zz_invent_emp_pos_mskf8ufy' is not in job_titles catalog (free-text SoT forbidden)",
+      "key_hit": true
+    }
+  },
+  "invent_api": {
+    "method": "PATCH",
+    "path": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+    "body": {
+      "job_title_key": "zz_invent_emp_pos_mskf8ufy"
+    },
+    "status": 400,
+    "code": "HRM-EMP-POSITION-KEY",
+    "message": "job_title_key 'zz_invent_emp_pos_mskf8ufy' is not in job_titles catalog (free-text SoT forbidden)",
+    "key_hit": true
+  },
+  "staff_obs": {
+    "opened": true,
+    "triggerText": "Vị trí công việc",
+    "cleared_or_placeholder": true,
+    "invent_status": 400,
+    "invent_code": "HRM-EMP-POSITION-KEY",
+    "key_hit": true,
+    "emp_status_fe_reopened": false
+  },
+  "empty_path": {
+    "verdict": "NOTE_BLOCKED",
+    "reason": "EFF>0 (job_titles total≥1) — live EFF=0 not wiped; unit cite empty CTA CH06f / HRM-WH-PICK-EMPTY-CATALOG",
+    "unit_cite": {
+      "path": "apps/web/hrm/src/lib/empPositionCatalog.test.ts",
+      "present": true,
+      "claimed": "7/7",
+      "covers": [
+        "normalizeEmpPositionKey",
+        "resolveEmpPositionEditValue invent/STAFF clear",
+        "isEmpPositionInventKeyError POSITION+WH",
+        "empPositionKeyToastMessage VI",
+        "empMutateKeyToastMessage",
+        "HRM_WH_PICK_EMPTY_CATALOG",
+        "EMP_POSITION_NEST_TABLE_DENIED"
+      ]
+    },
+    "empty_catalog_code": "HRM-WH-PICK-EMPTY-CATALOG"
+  },
+  "nest_deny": {
+    "results": [
+      {
+        "path": "/api/hrm/employees/emp-positions",
+        "status": 400,
+        "code": "HRM-VAL-001"
+      },
+      {
+        "path": "/api/hrm/employees/emp-positions/effective?company_id=main",
+        "status": 404,
+        "code": "HRM-DATA-404"
+      },
+      {
+        "path": "/api/hrm/emp-positions",
+        "status": 404,
+        "code": "HRM-DATA-404"
+      },
+      {
+        "path": "/api/hrm/emp-positions/effective?company_id=main",
+        "status": 404,
+        "code": "HRM-DATA-404"
+      }
+    ],
+    "srcRouteFile": false,
+    "allAbsentOr404": true
+  },
+  "unit_cite": {
+    "path": "apps/web/hrm/src/lib/empPositionCatalog.test.ts",
+    "present": true,
+    "claimed": "7/7",
+    "covers": [
+      "normalizeEmpPositionKey",
+      "resolveEmpPositionEditValue invent/STAFF clear",
+      "isEmpPositionInventKeyError POSITION+WH",
+      "empPositionKeyToastMessage VI",
+      "empMutateKeyToastMessage",
+      "HRM_WH_PICK_EMPTY_CATALOG",
+      "EMP_POSITION_NEST_TABLE_DENIED"
+    ]
+  },
+  "edit_submit": {
+    "picked": {
+      "ok": true,
+      "via": "data-value",
+      "code": "CEO"
+    },
+    "patches": [
+      {
+        "method": "PATCH",
+        "status": 200,
+        "path": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+        "code": "HRM-EMP-202",
+        "reqBody": {
+          "job_title_key": "CEO",
+          "status": "active",
+          "full_name": "Nguyễn Văn QA M3 987275"
+        },
+        "at": "2026-08-08T13:41:04.518Z"
+      }
+    ],
+    "okPatch": {
+      "method": "PATCH",
+      "status": 200,
+      "path": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "code": "HRM-EMP-202",
+      "reqBody": {
+        "job_title_key": "CEO",
+        "status": "active",
+        "full_name": "Nguyễn Văn QA M3 987275"
+      },
+      "at": "2026-08-08T13:41:04.518Z"
+    },
+    "posPatch": {
+      "method": "PATCH",
+      "status": 200,
+      "path": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "code": "HRM-EMP-202",
+      "reqBody": {
+        "job_title_key": "CEO",
+        "status": "active",
+        "full_name": "Nguyễn Văn QA M3 987275"
+      },
+      "at": "2026-08-08T13:41:04.518Z"
+    }
+  },
+  "f5": {
+    "afterKey": "CEO",
+    "pickCode": "CEO",
+    "exact": true,
+    "status": 200
+  },
+  "emp_status_retain": {
+    "verdict": "CLOSED_RETAIN",
+    "note": "EMP-STATUS FE CLOSED — STAFF OBS owned by POSITION KEY this seat · DENY reopen"
+  },
+  "emp_status_select_present": {
+    "present": true,
+    "testid": "emp-employment-status-select"
+  },
+  "seals_retain": {
+    "checks": [
+      {
+        "name": "att_codes",
+        "status": 200,
+        "code": "HRM-ATT-CODE-200",
+        "total": 1
+      },
+      {
+        "name": "ot_types",
+        "status": 200,
+        "code": "HRM-ATT-OT-200",
+        "total": 1
+      },
+      {
+        "name": "emp_st",
+        "status": 200,
+        "code": "HRM-EMP-ST-200",
+        "total": 4
+      }
+    ]
+  },
+  "overall": "PASS_WITH_OBS",
+  "ack_status": "PASS_TO_PM",
+  "condition_r_plt_emp_pos_fe_01": "CLOSABLE",
+  "endedAt": "2026-08-08T13:41:47.789Z",
+  "target_employee": {
+    "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+    "name": "Nguyễn Văn QA M3 987275",
+    "job_title_key": null
+  },
+  "staff_employee": {
+    "id": "0500220b-f289-40df-b07e-86316285439b",
+    "name": "UAT NV 0100",
+    "job_title_key": "STAFF"
+  }
+}

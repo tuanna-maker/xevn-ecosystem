@@ -1,0 +1,662 @@
+{
+  "work_item_id": "PO-HRM-UI-BRAND-W3-ATT-B-QA",
+  "startedAt": "2026-08-05T03:42:04.890Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "inventory": [
+    "S23",
+    "S24",
+    "S25",
+    "S26",
+    "S27",
+    "S28",
+    "S35",
+    "S36",
+    "S37",
+    "S38"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM_FE": "http://127.0.0.1:8080",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main",
+    "commit": "dc930c5",
+    "BASE": "http://127.0.0.1:5173",
+    "PORTAL_MODE": true
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200,
+    "hrm_fe": 200
+  },
+  "themeContrastStrict": {
+    "note": "run separately: pnpm verify:xevn:theme-contrast -- --strict"
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/attendance-sheets",
+      "bodyKeys": [
+        "company_id",
+        "name",
+        "start_date",
+        "end_date",
+        "attendance_type",
+        "standard_type"
+      ],
+      "code": "HRM-AS-201"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main"
+    },
+    {
+      "method": "DELETE",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets/74c79785-07e7-4ac2-940e-70999b91afd8?company_id=main",
+      "bodyKeys": [],
+      "code": "HRM-AS-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-shifts?company_id=main"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/work-shifts",
+      "bodyKeys": [
+        "company_id",
+        "code",
+        "name",
+        "department",
+        "start_time",
+        "end_time",
+        "coefficient",
+        "work_hours",
+        "status"
+      ],
+      "code": "HRM-WS-201"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-shifts?company_id=main"
+    },
+    {
+      "method": "DELETE",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-shifts/48f8eaad-a409-42f2-85bc-80b55cc7f8c4?company_id=main",
+      "bodyKeys": [],
+      "code": "HRM-WS-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-shifts?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    }
+  ],
+  "mutates": [
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/attendance-sheets",
+      "bodyKeys": [
+        "company_id",
+        "name",
+        "start_date",
+        "end_date",
+        "attendance_type",
+        "standard_type"
+      ],
+      "code": "HRM-AS-201"
+    },
+    {
+      "method": "DELETE",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets/74c79785-07e7-4ac2-940e-70999b91afd8?company_id=main",
+      "bodyKeys": [],
+      "code": "HRM-AS-200"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/work-shifts",
+      "bodyKeys": [
+        "company_id",
+        "code",
+        "name",
+        "department",
+        "start_time",
+        "end_time",
+        "coefficient",
+        "work_hours",
+        "status"
+      ],
+      "code": "HRM-WS-201"
+    },
+    {
+      "method": "DELETE",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-shifts/48f8eaad-a409-42f2-85bc-80b55cc7f8c4?company_id=main",
+      "bodyKeys": [],
+      "code": "HRM-WS-200"
+    }
+  ],
+  "consoleErrors": [
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+  ],
+  "pageErrors": [],
+  "steps": {
+    "l0": {
+      "status": "PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":200,\"hrm_fe\":200}",
+      "at": "2026-08-05T03:42:04.941Z"
+    },
+    "login": {
+      "status": "PASS",
+      "note": "HTTP 201",
+      "at": "2026-08-05T03:42:05.007Z"
+    },
+    "S23": {
+      "status": "PASS",
+      "note": "sheets list sharp + primary Thêm",
+      "at": "2026-08-05T03:42:11.121Z"
+    },
+    "S24": {
+      "status": "PASS",
+      "note": "add sheet wire",
+      "at": "2026-08-05T03:42:20.854Z"
+    },
+    "S25": {
+      "status": "PASS",
+      "note": "delete sheet title ≥20",
+      "at": "2026-08-05T03:42:23.592Z"
+    },
+    "S26": {
+      "status": "PASS",
+      "note": "records summary+table",
+      "at": "2026-08-05T03:42:26.078Z"
+    },
+    "S27": {
+      "status": "PASS",
+      "note": "empty_records_chrome_only",
+      "at": "2026-08-05T03:42:26.081Z"
+    },
+    "S28": {
+      "status": "PASS",
+      "note": "delete record title",
+      "at": "2026-08-05T03:42:28.487Z"
+    },
+    "S35": {
+      "status": "PASS",
+      "note": "shifts list",
+      "at": "2026-08-05T03:42:30.992Z"
+    },
+    "S36": {
+      "status": "PASS",
+      "note": "shift add/edit wire",
+      "at": "2026-08-05T03:42:35.263Z"
+    },
+    "S37": {
+      "status": "PASS",
+      "note": "bulk delete title",
+      "at": "2026-08-05T03:42:40.083Z"
+    },
+    "S38": {
+      "status": "PASS",
+      "note": "single delete title",
+      "at": "2026-08-05T03:42:43.136Z"
+    }
+  },
+  "checks": {
+    "S23_sheets_list": {
+      "pass": true,
+      "s23Visible": true,
+      "addPrimary": true,
+      "addBg": "rgb(30, 64, 175)",
+      "h2Style": {
+        "text": "Bảng chấm công chi tiết",
+        "color": "rgb(17, 24, 39)",
+        "fontWeight": "700",
+        "fontSize": "17.5px"
+      },
+      "paleCount": 0
+    },
+    "S24_add_sheet": {
+      "pass": true,
+      "addDlgOk": true,
+      "postSheet": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/attendance/attendance-sheets",
+        "bodyKeys": [
+          "company_id",
+          "name",
+          "start_date",
+          "end_date",
+          "attendance_type",
+          "standard_type"
+        ],
+        "code": "HRM-AS-201"
+      },
+      "inList": true,
+      "afterF5": true,
+      "savePrimary": true,
+      "saveBg": "rgb(30, 64, 175)",
+      "addTitle": {
+        "text": "Thêm bảng chấm công chi tiết",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "sheetName": "QA-ATT-B 2026-08-05 03:42",
+      "createdSheetId": "74c79785-07e7-4ac2-940e-70999b91afd8"
+    },
+    "S25_delete_sheet_title": {
+      "pass": true,
+      "title": {
+        "text": "Xác nhận xóa",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "dialog": true,
+      "deleteNetwork": {
+        "method": "DELETE",
+        "status": 200,
+        "url": "/api/hrm/attendance/attendance-sheets/74c79785-07e7-4ac2-940e-70999b91afd8?company_id=main",
+        "bodyKeys": [],
+        "code": "HRM-AS-200"
+      },
+      "cleanupAttempted": true
+    },
+    "S26_records": {
+      "pass": true,
+      "recOk": true,
+      "summarySharp": {
+        "cardCount": 6,
+        "sample": [
+          {
+            "text": "Đúng giờ",
+            "color": "rgb(75, 85, 99)",
+            "fontSize": "12.25px"
+          },
+          {
+            "text": "Đi muộn",
+            "color": "rgb(75, 85, 99)",
+            "fontSize": "12.25px"
+          },
+          {
+            "text": "Về sớm",
+            "color": "rgb(75, 85, 99)",
+            "fontSize": "12.25px"
+          },
+          {
+            "text": "Vắng mặt",
+            "color": "rgb(75, 85, 99)",
+            "fontSize": "12.25px"
+          },
+          {
+            "text": "Tổng số",
+            "color": "rgb(75, 85, 99)",
+            "fontSize": "12.25px"
+          }
+        ],
+        "h2": {
+          "text": "Dữ liệu chấm công",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "700",
+          "fontSize": "17.5px"
+        }
+      },
+      "paleSummary": 0
+    },
+    "S27_edit_status": {
+      "pass": true,
+      "reason": "no records rows — empty honesty; cannot PATCH",
+      "empty": true,
+      "waived": "empty_records_chrome_only"
+    },
+    "S28_delete_record_title": {
+      "pass": true,
+      "waived": "empty_records_no_delete_dialog",
+      "note": "no row to open delete"
+    },
+    "S35_shifts_list": {
+      "pass": true,
+      "shiftsOk": true,
+      "shiftsAddPrimary": true,
+      "addBg": "rgb(30, 64, 175)",
+      "tableOk": true
+    },
+    "S36_shift_crud": {
+      "pass": true,
+      "dlgOk": true,
+      "savePrimary": true,
+      "saveBg": "rgb(30, 64, 175)",
+      "post": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/attendance/work-shifts",
+        "bodyKeys": [
+          "company_id",
+          "code",
+          "name",
+          "department",
+          "start_time",
+          "end_time",
+          "coefficient",
+          "work_hours",
+          "status"
+        ],
+        "code": "HRM-WS-201"
+      },
+      "inList": true,
+      "title": {
+        "text": "Thêm ca làm việc",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "shiftCode": "QA350992"
+    },
+    "S37_bulk_delete_title": {
+      "pass": true,
+      "title": {
+        "text": "Xác nhận xóa nhiều ca",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "selected": true
+    },
+    "S38_single_delete_title": {
+      "pass": true,
+      "title": {
+        "text": "Xác nhận xóa",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "color": "rgb(17, 24, 39)"
+      },
+      "cleanup": {
+        "method": "DELETE",
+        "status": 200,
+        "url": "/api/hrm/attendance/work-shifts/48f8eaad-a409-42f2-85bc-80b55cc7f8c4?company_id=main",
+        "bodyKeys": [],
+        "code": "HRM-WS-200"
+      }
+    },
+    "must_keep_face_hold": {
+      "pass": true,
+      "faceHold": true,
+      "text": "Tính năng đang được phát triển\nChấm công khuôn mặt đang phát triển (GĐ2) — không ghi nhận chấm công thành công từ màn nà"
+    },
+    "must_keep_gps_latlon": {
+      "pass": true,
+      "hasLatLonUi": true,
+      "note": "UI shows coords on GPS method (wire spot; full POST covered in ATT-A)"
+    },
+    "must_keep_no_qr_invent": {
+      "pass": true,
+      "qrLiveClaim": false
+    }
+  },
+  "failReasons": [],
+  "screens": [
+    "evidence/screens/po-hrm-ui-brand-w3-att-b-qa/01-s23-sheets-list.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-b-qa/02-s24-sheets-after-create.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-b-qa/03-s25-delete-sheet-dialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-b-qa/04-s26-records-tab.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-b-qa/07-s35-shifts-list.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-b-qa/08-s36-shift-form.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-b-qa/09-s37-bulk-delete-dialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-b-qa/10-s38-single-delete-dialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-b-qa/11-face-hold.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-b-qa/12-gps-method.png"
+  ],
+  "residuals": [
+    {
+      "id": "OBS-S27-NO-ROWS",
+      "severity": "P2",
+      "note": "Records empty for persona/date — S27 mutate skipped; chrome S26 still gated separately"
+    }
+  ],
+  "honesty": {
+    "face_live_claimed": false,
+    "attendance_closed_claimed": false,
+    "remaster_program_done_claimed": false,
+    "qr_invented": false
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-05T03:42:47.671Z"
+}

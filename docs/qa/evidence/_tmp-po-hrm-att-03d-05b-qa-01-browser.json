@@ -1,0 +1,191 @@
+{
+  "work_item_id": "PO-HRM-ATT-03d-05b-QA-01",
+  "startedAt": "2026-08-05T03:23:27.048Z",
+  "u65": "zero-seed-browser-only",
+  "hdsd_align": "Chấm công → Thiết lập → Quy định chấm công → App → GPS card · Nghỉ phép → Tạo yêu cầu → panel quỹ",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "steps": {
+    "login": {
+      "http": 201,
+      "persona": "ceo@xe.vn",
+      "companyId": "main"
+    },
+    "landed": {
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    }
+  },
+  "network": {
+    "workSitesGet": [
+      {
+        "at": "2026-08-05T03:23:28.479Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/work-sites?company_id=main"
+      },
+      {
+        "at": "2026-08-05T03:23:35.835Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/work-sites?company_id=main"
+      },
+      {
+        "at": "2026-08-05T03:23:38.933Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/work-sites?company_id=main"
+      },
+      {
+        "at": "2026-08-05T03:23:46.282Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/work-sites?company_id=main"
+      },
+      {
+        "at": "2026-08-05T03:23:49.230Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/work-sites?company_id=main"
+      },
+      {
+        "at": "2026-08-05T03:23:56.366Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/work-sites?company_id=main"
+      },
+      {
+        "at": "2026-08-05T03:23:58.746Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/work-sites?company_id=main"
+      }
+    ],
+    "workSitesPost": [
+      {
+        "at": "2026-08-05T03:23:35.769Z",
+        "method": "POST",
+        "status": 201,
+        "path": "/api/hrm/attendance/work-sites"
+      }
+    ],
+    "workSitesPatch": [
+      {
+        "at": "2026-08-05T03:23:46.211Z",
+        "method": "PATCH",
+        "status": 200,
+        "path": "/api/hrm/attendance/work-sites/860f4116-86a2-4471-a3e8-df71815508fe?company_id=main"
+      }
+    ],
+    "workSitesDelete": [
+      {
+        "at": "2026-08-05T03:23:56.293Z",
+        "method": "DELETE",
+        "status": 200,
+        "path": "/api/hrm/attendance/work-sites/860f4116-86a2-4471-a3e8-df71815508fe?company_id=main"
+      }
+    ],
+    "leaveBalancePanel": [
+      {
+        "at": "2026-08-05T03:24:04.139Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&year=2026"
+      }
+    ],
+    "leaveBalanceSingle": [],
+    "bad5xx": []
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "uf": {
+    "gps_list": {
+      "get2xx": true,
+      "emptyOrRows": true,
+      "rowCount0": 2,
+      "getCalls": []
+    },
+    "gps_crud": {
+      "siteName": "QA-GPS-fivf0o",
+      "postOk": true,
+      "rowVisibleAfterCreate": true,
+      "radiusVisibleAfterCreate": true,
+      "f5AfterCreate": true,
+      "patchOk": true,
+      "feAfterEdit": true,
+      "f5AfterEdit": true,
+      "deleteOk": true,
+      "posts": [
+        {
+          "at": "2026-08-05T03:23:35.769Z",
+          "method": "POST",
+          "status": 201,
+          "path": "/api/hrm/attendance/work-sites"
+        }
+      ],
+      "patches": [
+        {
+          "at": "2026-08-05T03:23:46.211Z",
+          "method": "PATCH",
+          "status": 200,
+          "path": "/api/hrm/attendance/work-sites/860f4116-86a2-4471-a3e8-df71815508fe?company_id=main"
+        }
+      ],
+      "deletes": [
+        {
+          "at": "2026-08-05T03:23:56.293Z",
+          "method": "DELETE",
+          "status": 200,
+          "path": "/api/hrm/attendance/work-sites/860f4116-86a2-4471-a3e8-df71815508fe?company_id=main"
+        }
+      ]
+    },
+    "gps_verdict": "PASS",
+    "leave_panel": {
+      "empPicked": true,
+      "empText": "Nguyễn Văn QA M3 987275 — QA-M3-987275",
+      "panelVisible": true,
+      "byTypeVisible": true,
+      "panelGet2xx": true,
+      "panelGets": [
+        {
+          "at": "2026-08-05T03:24:04.139Z",
+          "method": "GET",
+          "status": 200,
+          "path": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd&year=2026"
+        }
+      ],
+      "mvpRows": {
+        "annual": true,
+        "seniority": true,
+        "compensatory": true,
+        "carry_over": true,
+        "advance": true
+      },
+      "mvpRowCount": 5,
+      "singleGetsCount": 0,
+      "singleGetsSample": [],
+      "storm": false,
+      "bannerStorm": false,
+      "honestEmpty": true,
+      "projectedVisible": false,
+      "pageErrors": []
+    },
+    "leave_verdict": "PASS"
+  },
+  "residual": [],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "failReasons": [],
+  "endedAt": "2026-08-05T03:24:06.799Z",
+  "attendance_closed_claim": false
+}

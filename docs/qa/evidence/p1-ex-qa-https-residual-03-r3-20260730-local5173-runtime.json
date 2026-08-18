@@ -1,0 +1,120 @@
+{
+  "portal": "http://127.0.0.1:5173",
+  "cacheBust": "_qa_r3=20260730local5173r2",
+  "startedAt": "2026-07-30T14:44:34.413Z",
+  "afterLoginUrl": "http://127.0.0.1:5173/command-center",
+  "attendanceUrl": "http://127.0.0.1:5173/hr/attendance?portal=1&companyId=main&_qa_r3=20260730local5173r2",
+  "console54321": [],
+  "consoleErrorSample": [],
+  "dashboardUrl": "http://127.0.0.1:5173/command-center/hrm/dashboard?companyId=main&_qa_r3=20260730local5173r2",
+  "dashboardSpot": {
+    "bodyHasSyncError": false,
+    "href": "http://127.0.0.1:5173/command-center/hrm/dashboard?companyId=main&_qa_r3=20260730local5173r2",
+    "api": [
+      {
+        "id": "employees/summary",
+        "path": "/api/hrm/employees/summary?company_id=main",
+        "http": 200,
+        "code": "HRM-EMP-SUMMARY-200"
+      },
+      {
+        "id": "attendance/overview",
+        "path": "/api/hrm/attendance/overview?company_id=main&year=2026",
+        "http": 200,
+        "code": "HRM-ATT-OVERVIEW-200"
+      }
+    ],
+    "resourceSample": [
+      "http://127.0.0.1:5173/api/hrm/",
+      "http://127.0.0.1:5173/api/hrm/employees/summary?company_id=main",
+      "http://127.0.0.1:5173/api/hrm/attendance/overview?company_id=main&year=2026"
+    ],
+    "fallbackAllCount": 0
+  },
+  "fallbackBefore": {
+    "phase": "after_attendance_load",
+    "resourceCount": 373,
+    "fallbackAllCount": 0,
+    "localhost54321AnyCount": 0,
+    "fallbackSample": [],
+    "nestAttSample": [
+      "http://127.0.0.1:5173/api/hrm/attendance/overview?company_id=main&year=2026"
+    ],
+    "recordsUrls": [],
+    "leaveUrls": [],
+    "bodyHasEmpty": false,
+    "bodyHasSyncError": false,
+    "href": "http://127.0.0.1:5173/hr/attendance?portal=1&companyId=main&_qa_r3=20260730local5173r2"
+  },
+  "chamCongClick": { "ok": false },
+  "attendanceMenuOpen": { "ok": false },
+  "recordsMenuClick": { "ok": false },
+  "fallbackAfterRecords": {
+    "phase": "after_records_nav",
+    "resourceCount": 417,
+    "fallbackAllCount": 0,
+    "localhost54321AnyCount": 0,
+    "fallbackSample": [],
+    "recordsUrls": [],
+    "leaveUrls": [],
+    "bodyHasEmpty": false,
+    "bodyHasSyncError": false
+  },
+  "refreshClicked": false,
+  "refreshEquivalent": "auth-records-refetch",
+  "fallbackAfterRefresh": {
+    "phase": "after_refresh",
+    "resourceCount": 418,
+    "fallbackAllCount": 0,
+    "localhost54321AnyCount": 0,
+    "recordsUrls": [
+      "http://127.0.0.1:5173/api/hrm/attendance/records?company_id=main&page=1&page_size=10"
+    ]
+  },
+  "authFive": {
+    "tokenPresent": true,
+    "tokenLen": 311,
+    "results": [
+      { "id": "Contracts", "http": 200, "code": "HRM-CON-200" },
+      { "id": "Insurance", "http": 200, "code": "HRM-CON-200" },
+      { "id": "Recruitment", "http": 200, "code": "HRM-REC-200" },
+      { "id": "Attendance", "http": 200, "code": "HRM-ATT-200" },
+      { "id": "Payroll", "http": 200, "code": "HRM-PAY-200" }
+    ]
+  },
+  "fallbackAfterAuth": {
+    "phase": "after_auth5_records_fetch",
+    "resourceCount": 422,
+    "fallbackAllCount": 0,
+    "localhost54321AnyCount": 0,
+    "recordsUrls": [
+      "http://127.0.0.1:5173/api/hrm/attendance/records?company_id=main&page=1&page_size=10"
+    ]
+  },
+  "leaveTabClick": { "ok": true },
+  "requestListClick": { "ok": true },
+  "eyeClick": { "ok": true, "via": "evaluate" },
+  "leaveDetail": {
+    "hasDetailTitle": true,
+    "hasNotFound": false,
+    "dialogOpen": true,
+    "fallbackAllCount": 0,
+    "leaveUrls": [
+      "http://127.0.0.1:5173/api/hrm/attendance/leave-requests?company_id=main"
+    ]
+  },
+  "verdict": {
+    "authOk": true,
+    "fbOk": true,
+    "attHttp": 200,
+    "attCode": "HRM-ATT-200",
+    "leaveOk": true,
+    "recordsUiNav": false,
+    "recordsProbeOk": true,
+    "dashOk": true,
+    "dashSummaryHttp": 200,
+    "dashOverviewHttp": 200,
+    "console54321Count": 0,
+    "pass": true
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-PAY-09-CLUSTER-QA-01",
+  "stamp": "PAY09QA1-MSN8L7V3",
+  "be_handoff": "docs/qa/evidence/po-hrm-mvp-gd1-pay-09-cluster-be-01.md",
+  "fe_handoff": "HOLD PO-HRM-MVP-GD1-PAY-09-CLUSTER-FE-01",
+  "startedAt": "2026-08-10T12:57:45.057Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-api-primary-fe-hold",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "ne_pay09_done": true,
+    "ne_pay_module_uat": true,
+    "c_slice": true,
+    "seed_used": false
+  },
+  "must_keep": [
+    "PAY01QC1-MSMBGWC1",
+    "PAY02QC1-MSMC4GWC1",
+    "PAY03QC1-MSMDDGWC1",
+    "PAY04QC1-MSMCR4GWC1",
+    "PAY05QC1-MSMDU2GWC1",
+    "PAY06QC1-MSMECGWC1",
+    "PAY07QC1-MSMEY7GWC1",
+    "PAY08QC1-MSMFFXGWC1"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "PASS"
+  },
+  "l1": {
+    "be_jest_pay09": "PASS (59)",
+    "be_jest_regression": "cite BE-01 bundle · delegate PAY08QA1-MSMFFXAZ PAY08 smoke · PAY01..07 deny codes in live"
+  },
+  "nest_core_pay": [],
+  "setup": {
+    "login": "ok",
+    "groupId": "71ac7955-304b-49d1-b5b2-787c534376ba",
+    "periodId": "2455eff2-6e6c-4a39-9282-81a16513982a",
+    "periodSource": "create"
+  },
+  "group_probe": {
+    "create": {
+      "status": 201,
+      "id": "71ac7955-304b-49d1-b5b2-787c534376ba",
+      "code": "Q09MSN8LT8L"
+    },
+    "period_create_attempt": {
+      "status": 409,
+      "code": "HRM-PAY-002",
+      "attempt": 0
+    },
+    "members": {
+      "status": 200,
+      "count": 0
+    },
+    "scope": {
+      "scopedCreate": {
+        "status": 409,
+        "code": "HRM-PAY-002"
+      },
+      "patchPeriod": {
+        "status": 200,
+        "code": "HRM-PAY-200"
+      },
+      "elig_status": 200,
+      "elig_code": "HRM-PAY-200",
+      "period_list_status": 200,
+      "period_list_code": "HRM-PAY-200"
+    },
+    "deny": {
+      "dup": {
+        "status": 409,
+        "code": "HRM-PAY-GROUP-409"
+      },
+      "retired_bind": {
+        "status": 409,
+        "code": "HRM-PAY-GROUP-409"
+      }
+    }
+  },
+  "journeys": {
+    "J-HRM-PAY-09-01": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-10T12:58:12.357Z",
+      "summary": "POST group Q09MSN8LT8L → 201 · GET by id 200 · list contains row · F5 list by code 200 · **FE HOLD** (no browser catalog UI)",
+      "ac": "AC-PAY-GROUP-CATALOG-SOT · FE-01 HOLD"
+    },
+    "J-HRM-PAY-09-02": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-10T12:58:12.981Z",
+      "summary": "GET …/groups/71ac7955…/members?period_id= → 200 · items[] · **FE HOLD** preview UI",
+      "ac": "AC-PAY-GROUP-RESOLVE · PRIORITY jest cite"
+    },
+    "J-HRM-PAY-09-03": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-10T12:58:14.043Z",
+      "summary": "eligibility payroll_group_id filter 200 · scoped period create 409 · **FE HOLD**",
+      "ac": "AC-PAY-GROUP-PERIOD-SCOPE · ENROLL-FILTER"
+    },
+    "J-HRM-PAY-09-04": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-10T12:58:14.275Z",
+      "summary": "GET payslips?payroll_group_id= → 200 · rows=0 · **FE HOLD** report filter",
+      "ac": "AC-PAY-GROUP-REPORT-FILTER"
+    },
+    "J-HRM-PAY-09-05": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-10T12:58:14.499Z",
+      "summary": "L2.5 GET 200 · group snapshot fields no payslip in scope · **FE HOLD** badge",
+      "ac": "AC-PAY-GROUP-SNAPSHOT · DISPLAY"
+    },
+    "J-HRM-PAY-09-06": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-10T12:58:14.499Z",
+      "summary": "Mid-month group change → PAY-04 split HOLD U65 (cite PAY04QC1 + jest) · **≠** second payslip via PAY-09",
+      "ac": "AC-PAY-GROUP-MID-MONTH"
+    },
+    "J-HRM-PAY-09-07": {
+      "verdict": "PASS",
+      "at": "2026-08-10T12:58:14.797Z",
+      "summary": "duplicate code → 409 HRM-PAY-GROUP-409 · retired bind period → 409 HRM-PAY-GROUP-409 · dual 409 cite jest resolver",
+      "ac": "AC-PAY-GROUP-DUAL-409 · RETIRE · ≠-HARDCODE"
+    },
+    "J-HRM-PAY-09-08": {
+      "verdict": "PASS",
+      "at": "2026-08-10T12:58:14.798Z",
+      "summary": "honesty payroll_e2e_ready=false · nest /core hits=0 · must_keep PAY01..08QC1 · ≠ CRUD alone DONE",
+      "ac": "AC-PAY-GROUP-H · MK-PEERS"
+    },
+    "J-HRM-PAY-01-04": {
+      "verdict": "PASS",
+      "at": "2026-08-10T12:58:15.179Z",
+      "summary": "regression PAY01 ATT-412 → 412 HRM-PAY-ATT-412",
+      "must_keep": "PAY01QC1-MSMBGWC1"
+    },
+    "J-HRM-PAY-03-03": {
+      "verdict": "PASS",
+      "at": "2026-08-10T12:58:15.179Z",
+      "summary": "regression PAY03 gtgc → 403 HRM-PAY-GTCG-403",
+      "must_keep": "PAY03QC1-MSMDDGWC1"
+    },
+    "J-HRM-PAY-05-04": {
+      "verdict": "PASS",
+      "at": "2026-08-10T12:58:15.180Z",
+      "summary": "regression PAY05 si → 403 HRM-PAY-SI-403",
+      "must_keep": "PAY05QC1-MSMDU2GWC1"
+    },
+    "J-HRM-PAY-06-05": {
+      "verdict": "PASS",
+      "at": "2026-08-10T12:58:15.180Z",
+      "summary": "regression PAY06 tax → 403 HRM-PAY-TAX-403",
+      "must_keep": "PAY06QC1-MSMECGWC1"
+    },
+    "J-HRM-PAY-08-05": {
+      "verdict": "PASS",
+      "at": "2026-08-10T12:58:15.181Z",
+      "summary": "regression PAY08 deny PATCH payslip → 0 null · cite PAY08QA1-MSMFFXAZ",
+      "must_keep": "PAY08QC1-MSMFFXGWC1"
+    },
+    "J-HRM-PAY-04-05": {
+      "verdict": "PASS",
+      "at": "2026-08-10T12:58:15.181Z",
+      "summary": "L1 bundle split/gtgc regression (PAY03/04)",
+      "must_keep": "PAY04QC1-MSMCR4GWC1"
+    },
+    "J-HRM-PAY-07-06": {
+      "verdict": "PASS",
+      "at": "2026-08-10T12:58:15.182Z",
+      "summary": "regression PAY07 cite PAY07QC1 jest bundle",
+      "must_keep": "PAY07QC1-MSMEY7GWC1"
+    },
+    "J-HRM-PAY-02-05": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-10T12:58:15.182Z",
+      "summary": "regression FORMULA-412 cite PAY02QC1 + jest — live HOLD U65",
+      "must_keep": "PAY02QC1-MSMC4GWC1"
+    }
+  },
+  "defects": [],
+  "overall": null,
+  "ack_status": null,
+  "endedAt": null
+}

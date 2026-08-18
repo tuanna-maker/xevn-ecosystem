@@ -1,0 +1,440 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-EMP-SALARY-HISTORY-QA-SRC-02-02",
+  "parent": "PO-HRM-AMIS-PARITY-EMP-SALARY-HISTORY-FE-CB-01",
+  "stamp": "SRCSRC0202-ISYBOK",
+  "startedAt": "2026-08-07T10:28:57.380Z",
+  "journey": "FE-CB-COMPONENT · Đãi ngộ create/revise",
+  "u65": "zero-seed · HDSD testids · Network POST 2xx · F5 · no product-path mirror",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed_used": false,
+    "product_path_mirror": false,
+    "amis_done": false
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "ac": {
+    "L0": {
+      "verdict": "🟢 PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "at": "2026-08-07T10:28:57.402Z"
+    },
+    "AUTH": {
+      "verdict": "🟢 PASS",
+      "note": "ceo@xe.vn token ok",
+      "at": "2026-08-07T10:28:57.464Z"
+    },
+    "SETUP-SC": {
+      "verdict": "🟢 PASS",
+      "note": "base=4a8b7dc4-cc62-4463-92ca-0c860d05016f an=23bd4a1b-4795-4fe6-8388-0d39be0ced55 xang=08f7eb61-9b28-4da0-bc7e-5bf811a65828 · catalog only",
+      "at": "2026-08-07T10:29:00.343Z"
+    },
+    "HDSD-LATCH": {
+      "verdict": "🟢 PASS",
+      "note": "{\"hdsd-emp-contracts-tab-dai-ngo\":true,\"hdsd-emp-compensation-panel\":true,\"hdsd-emp-comp-base\":true,\"hdsd-emp-comp-allowance-amount-0\":true,\"hdsd-emp-comp-allowance-amount-1\":true,\"hdsd-emp-comp-create\":false,\"hdsd-emp-comp-revise\":true,\"hdsd-emp-comp-create-unlinked\":true,\"hdsd-emp-comp-change-reason\":true,\"hdsd-emp-comp-active-lines\":false}",
+      "at": "2026-08-07T10:29:27.012Z"
+    },
+    "FE-CB-COMPONENT": {
+      "verdict": "🟢 PASS",
+      "note": "post2xx=true base=cc an=cc allHaveCc=true posts=1 mode=revise",
+      "at": "2026-08-07T10:29:27.013Z"
+    },
+    "F5-PERSIST": {
+      "verdict": "🟢 PASS",
+      "note": "pkg=72971f1b-2000-460f-8148-110a7cb8db7e hasBase=true hasAn=true uiLines=true",
+      "at": "2026-08-07T10:29:32.952Z"
+    },
+    "UF-CONSOLE": {
+      "verdict": "🟢 PASS",
+      "note": "uncaught=0 pageErr=0",
+      "at": "2026-08-07T10:29:32.953Z"
+    },
+    "NO-MIRROR": {
+      "verdict": "🟢 PASS",
+      "note": "product_path_mirror=false · seed_used=false",
+      "at": "2026-08-07T10:29:32.954Z"
+    }
+  },
+  "network": {
+    "comp": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916&page_size=50",
+        "code": "HRM-COMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages/active?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916",
+        "code": "HRM-COMP-200"
+      },
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages",
+        "code": "HRM-COMP-201"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916&page_size=50",
+        "code": "HRM-COMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages/active?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916",
+        "code": "HRM-COMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages/active?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916",
+        "code": "HRM-COMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916&page_size=50",
+        "code": "HRM-COMP-200"
+      }
+    ],
+    "hrm": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/operating-units",
+        "code": "HRM-OPU-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/company-subscription?company_id=main",
+        "code": "HRM-SUB-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/employees/80d66820-185d-430d-85a8-3a2645c45916?company_id=main",
+        "code": "HRM-EMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/employees/80d66820-185d-430d-85a8-3a2645c45916/hire-readiness?company_id=main",
+        "code": "HRM-HTP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916",
+        "code": "HRM-CON-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916&page_size=50",
+        "code": "HRM-COMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages/active?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916",
+        "code": "HRM-COMP-200"
+      },
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages",
+        "code": "HRM-COMP-201"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916&page_size=50",
+        "code": "HRM-COMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages/active?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916",
+        "code": "HRM-COMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/operating-units",
+        "code": "HRM-OPU-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/company-subscription?company_id=main",
+        "code": "HRM-SUB-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/employees/80d66820-185d-430d-85a8-3a2645c45916?company_id=main",
+        "code": "HRM-EMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/employees/80d66820-185d-430d-85a8-3a2645c45916/hire-readiness?company_id=main",
+        "code": "HRM-HTP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916",
+        "code": "HRM-CON-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/settings-catalogs",
+        "code": "HRM-SET-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages/active?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916",
+        "code": "HRM-COMP-200"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages?company_id=main&employee_id=80d66820-185d-430d-85a8-3a2645c45916&page_size=50",
+        "code": "HRM-COMP-200"
+      }
+    ]
+  },
+  "postBodies": [
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages",
+      "method": "POST",
+      "lines": [
+        {
+          "line_type": "base",
+          "component_code": "base",
+          "allowance_code": null,
+          "amount": 13579000
+        },
+        {
+          "line_type": "allowance",
+          "component_code": "phu_cap_an",
+          "allowance_code": "PHU_CAP_AN",
+          "amount": 777000
+        },
+        {
+          "line_type": "allowance",
+          "component_code": "phu_cap_xang",
+          "allowance_code": "PHU_CAP_XANG",
+          "amount": 300000
+        }
+      ],
+      "change_reason": "U65 FE-CB SRC-02-02 SRCSRC0202-ISYBOK"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "click_log": [
+    {
+      "at": "2026-08-07T10:29:01.016Z",
+      "msg": "FE employee → Contracts → Đãi ngộ (HDSD)"
+    },
+    {
+      "at": "2026-08-07T10:29:27.014Z",
+      "msg": "F5 persist — reload Đãi ngộ + GET active package"
+    }
+  ],
+  "steps": [
+    {
+      "name": "ensure_sc_base",
+      "status": "exists",
+      "id": "4a8b7dc4-cc62-4463-92ca-0c860d05016f"
+    },
+    {
+      "name": "ensure_sc_phu_cap_an",
+      "status": "exists",
+      "id": "23bd4a1b-4795-4fe6-8388-0d39be0ced55"
+    },
+    {
+      "name": "ensure_sc_phu_cap_xang",
+      "status": 201,
+      "code": "HRM-SC-201",
+      "id": "08f7eb61-9b28-4da0-bc7e-5bf811a65828",
+      "note": "catalog prerequisite ≠ C&B package mirror"
+    },
+    {
+      "name": "pick_emp",
+      "id": "80d66820-185d-430d-85a8-3a2645c45916",
+      "code": "UAT-0016",
+      "company": "holding",
+      "mode": "create"
+    },
+    {
+      "name": "hdsd_inventory",
+      "inv": {
+        "hdsd-emp-contracts-tab-dai-ngo": true,
+        "hdsd-emp-compensation-panel": true,
+        "hdsd-emp-comp-base": true,
+        "hdsd-emp-comp-allowance-amount-0": true,
+        "hdsd-emp-comp-allowance-amount-1": true,
+        "hdsd-emp-comp-create": false,
+        "hdsd-emp-comp-revise": true,
+        "hdsd-emp-comp-create-unlinked": true,
+        "hdsd-emp-comp-change-reason": true,
+        "hdsd-emp-comp-active-lines": false
+      }
+    },
+    {
+      "name": "field_snapshot",
+      "base": "13.579.000",
+      "an": "777.000",
+      "xang": "300.000",
+      "reason": "U65 FE-CB SRC-02-02 SRCSRC0202-ISYBOK"
+    },
+    {
+      "name": "action_buttons",
+      "reviseVisible": true,
+      "createVisible": false,
+      "createUnlinkedVisible": true,
+      "activeLinesEmpty": true
+    },
+    {
+      "name": "retry_create_unlinked",
+      "prior": "hdsd-emp-comp-revise",
+      "priorPosts": []
+    },
+    {
+      "name": "fe_cb_save",
+      "clicked": "hdsd-emp-comp-revise+create-unlinked",
+      "post2xx": true,
+      "posts": [
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages",
+          "code": "HRM-COMP-201"
+        }
+      ],
+      "bodies": [
+        {
+          "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/compensation-packages",
+          "method": "POST",
+          "lines": [
+            {
+              "line_type": "base",
+              "component_code": "base",
+              "allowance_code": null,
+              "amount": 13579000
+            },
+            {
+              "line_type": "allowance",
+              "component_code": "phu_cap_an",
+              "allowance_code": "PHU_CAP_AN",
+              "amount": 777000
+            },
+            {
+              "line_type": "allowance",
+              "component_code": "phu_cap_xang",
+              "allowance_code": "PHU_CAP_XANG",
+              "amount": 300000
+            }
+          ],
+          "change_reason": "U65 FE-CB SRC-02-02 SRCSRC0202-ISYBOK"
+        }
+      ],
+      "bodyAnalysis": {
+        "hasBody": true,
+        "hasBaseCc": true,
+        "hasAnCc": true,
+        "allHaveCc": true,
+        "lines": [
+          {
+            "line_type": "base",
+            "component_code": "base",
+            "allowance_code": null,
+            "amount": 13579000
+          },
+          {
+            "line_type": "allowance",
+            "component_code": "phu_cap_an",
+            "allowance_code": "PHU_CAP_AN",
+            "amount": 777000
+          },
+          {
+            "line_type": "allowance",
+            "component_code": "phu_cap_xang",
+            "allowance_code": "PHU_CAP_XANG",
+            "amount": 300000
+          }
+        ]
+      },
+      "toast": [
+        "Đã tạo gói đãi ngộ"
+      ],
+      "bodyHasError": true
+    },
+    {
+      "name": "f5_active_pkg",
+      "getStatus": 200,
+      "pkgId": "72971f1b-2000-460f-8148-110a7cb8db7e",
+      "activeLinesVisible": true,
+      "lines": [
+        {
+          "type": "base",
+          "component_code": "base",
+          "allowance_code": null,
+          "amount": 13579000
+        },
+        {
+          "type": "allowance",
+          "component_code": "phu_cap_an",
+          "allowance_code": "PHU_CAP_AN",
+          "amount": 777000
+        },
+        {
+          "type": "allowance",
+          "component_code": "phu_cap_xang",
+          "allowance_code": "PHU_CAP_XANG",
+          "amount": 300000
+        }
+      ],
+      "hasBase": true,
+      "hasAn": true
+    }
+  ],
+  "residuals": [],
+  "hdsd_inventory": {
+    "hdsd-emp-contracts-tab-dai-ngo": true,
+    "hdsd-emp-compensation-panel": true,
+    "hdsd-emp-comp-base": true,
+    "hdsd-emp-comp-allowance-amount-0": true,
+    "hdsd-emp-comp-allowance-amount-1": true,
+    "hdsd-emp-comp-create": false,
+    "hdsd-emp-comp-revise": true,
+    "hdsd-emp-comp-create-unlinked": true,
+    "hdsd-emp-comp-change-reason": true,
+    "hdsd-emp-comp-active-lines": false
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T10:29:33.143Z"
+}

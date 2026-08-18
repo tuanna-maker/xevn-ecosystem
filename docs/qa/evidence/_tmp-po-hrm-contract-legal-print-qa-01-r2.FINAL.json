@@ -1,0 +1,500 @@
+{
+  "work_item_id": "PO-HRM-CONTRACT-LEGAL-PRINT-QA-01-R2",
+  "parent": "PO-HRM-CONTRACT-LEGAL-PRINT-FE-02",
+  "round": "R2-FE02-QUERY-ONLY",
+  "startedAt": "2026-08-06T16:28:42.765Z",
+  "u65": "zero-seed · browser-only",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "STAMP": "CTR2-HQD4EL"
+  },
+  "honesty": {
+    "contracts_printable_ready": false,
+    "contracts_printable_ready_claimed": false,
+    "seed_used": false,
+    "api_only_pass": false
+  },
+  "denied": [
+    "contracts_printable_ready=true",
+    "seed",
+    "api_only_pass",
+    "invent_printable_uat"
+  ],
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "beProbe": {
+    "/api/hrm/contracts-insurance/contract-clauses?company_id=main": {
+      "status": 200,
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    "/api/hrm/contracts-insurance/contract-templates?company_id=main": {
+      "status": 200,
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    "/api/hrm/contracts-insurance/contracts?page_size=3&company_id=main": {
+      "status": 200,
+      "code": "HRM-CON-200",
+      "message": "Contracts listed"
+    }
+  },
+  "beUp": true,
+  "ids": {
+    "contractId": "b5fdd9cc-5c7b-405d-8af2-ebb28c730a2c",
+    "contractCode": "HD-QDKM8",
+    "printVersionsList": {
+      "status": 200,
+      "count": 0
+    }
+  },
+  "uf": {
+    "SETTINGS_CHROME": {
+      "summary": "clauseForm=true tplChrome=true honesty=true loadError=false mojibake=false",
+      "honestySettings": true,
+      "tplChrome": true,
+      "loadError": false,
+      "mojibake": false,
+      "verdict": "PASS",
+      "at": "2026-08-06T16:28:55.333Z"
+    },
+    "UF-HRM-02": {
+      "summary": "listOk=true POST=201:HRM-CON-201 code=HD-QDKM8 F5=true id=b5fdd9cc-5c7b-405d-8af2-ebb28c730a2c mojibake=false",
+      "posts": [
+        {
+          "status": 201,
+          "code": "HRM-CON-201"
+        }
+      ],
+      "verdict": "PASS",
+      "at": "2026-08-06T16:29:15.251Z"
+    },
+    "HONESTY": {
+      "summary": "contracts_printable_ready=false settings=true spine=true",
+      "verdict": "PASS",
+      "at": "2026-08-06T16:30:04.127Z"
+    },
+    "PROCESS_GATE": {
+      "summary": "dndStorm=0 uncaught=0 pageErr=0 console=0",
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "dndStorm": 0,
+      "uncaught": 0,
+      "samplePageErrors": [],
+      "sampleConsole": [],
+      "sampleDnd": [],
+      "verdict": "PASS",
+      "at": "2026-08-06T16:30:04.128Z"
+    }
+  },
+  "ac": {
+    "SMOKE-CL-TPL": {
+      "summary": "CL chrome OK; TPL chrome=true (re-smoke only — R1 already 🟢 mutate)",
+      "verdict": "PASS",
+      "at": "2026-08-06T16:28:55.333Z"
+    },
+    "AC-CTR-PRINT-SPINE": {
+      "summary": "preview=true bodyUi=true bodyClean=true qsOk=true val001=false can_issue=false canSave=false versionOk=false vBodyClean=true versionsF5=0 pdfOk=false err= ",
+      "previewOk": true,
+      "previewBodyUi": true,
+      "bodyClean": true,
+      "qsOk": true,
+      "canIssue": false,
+      "canSave": false,
+      "versionOk": false,
+      "versionsAfterF5": 0,
+      "pdfOk": false,
+      "prevPosts": [
+        {
+          "status": 201,
+          "code": "HRM-CTR-PREV-200",
+          "message": "Contract merge preview",
+          "qsHasCompanyId": true,
+          "can_issue": false,
+          "missing_fields": [
+            {
+              "field": "work_location",
+              "message": "Work location is required"
+            }
+          ],
+          "missing_clauses": []
+        }
+      ],
+      "previewBodies": [
+        {
+          "at": "2026-08-06T16:29:21.162Z",
+          "method": "POST",
+          "url": "/api/hrm/contracts-insurance/contracts/b5fdd9cc-5c7b-405d-8af2-ebb28c730a2c/preview?company_id=main",
+          "qsHasCompanyId": true,
+          "bodyHasCompanyId": false,
+          "bodyKeys": [
+            "pack_code",
+            "template_id"
+          ],
+          "bodySnippet": "{\"pack_code\":\"GENERAL\",\"template_id\":\"e1e8196c-46ea-42c5-a6e0-311d2f0a165e\"}"
+        }
+      ],
+      "note": "Q-CTR-02 PDF HTML stub; honesty remains false",
+      "verdict": "PARTIAL",
+      "at": "2026-08-06T16:30:04.126Z"
+    }
+  },
+  "process": {
+    "pageErrors": 0,
+    "consoleErrors": 0,
+    "dndStorm": 0,
+    "uncaught": 0,
+    "samplePageErrors": [],
+    "sampleConsole": [],
+    "sampleDnd": []
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-06T16:28:46.363Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 4,
+      "total": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-06T16:28:46.374Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 2,
+      "total": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-06T16:28:52.966Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 4,
+      "total": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-06T16:28:52.968Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 2,
+      "total": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-06T16:28:55.972Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 14,
+      "total": 14
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-06T16:28:58.997Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 14,
+      "total": 14
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "at": "2026-08-06T16:29:03.895Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 4,
+      "total": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-06T16:29:03.921Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 2,
+      "total": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-06T16:29:03.954Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "at": "2026-08-06T16:29:06.050Z",
+      "qsHasCompanyId": false,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-201",
+      "message": "Contract created",
+      "dataId": "b5fdd9cc-5c7b-405d-8af2-ebb28c730a2c"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-06T16:29:06.252Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 15,
+      "total": 15
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-06T16:29:09.970Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 15,
+      "total": 15
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "at": "2026-08-06T16:29:16.542Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 4,
+      "total": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-06T16:29:16.551Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 2,
+      "total": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-06T16:29:16.560Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/b5fdd9cc-5c7b-405d-8af2-ebb28c730a2c/print-versions?company_id=main",
+      "at": "2026-08-06T16:29:16.561Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-VER-200",
+      "message": "Print versions listed",
+      "listCount": 0,
+      "total": 0
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts/b5fdd9cc-5c7b-405d-8af2-ebb28c730a2c/preview?company_id=main",
+      "at": "2026-08-06T16:29:21.204Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PREV-200",
+      "message": "Contract merge preview",
+      "can_issue": false,
+      "missing_fields": [
+        {
+          "field": "work_location",
+          "message": "Work location is required"
+        }
+      ],
+      "missing_clauses": []
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-06T16:29:55.780Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 15,
+      "total": 15
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-06T16:30:01.550Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 2,
+      "total": 2
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "at": "2026-08-06T16:30:01.555Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 4,
+      "total": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/b5fdd9cc-5c7b-405d-8af2-ebb28c730a2c/print-versions?company_id=main",
+      "at": "2026-08-06T16:30:01.564Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-VER-200",
+      "message": "Print versions listed",
+      "listCount": 0,
+      "total": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-06T16:30:01.565Z",
+      "qsHasCompanyId": true,
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    }
+  ],
+  "postBodies": [
+    {
+      "at": "2026-08-06T16:29:21.162Z",
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/b5fdd9cc-5c7b-405d-8af2-ebb28c730a2c/preview?company_id=main",
+      "qsHasCompanyId": true,
+      "bodyHasCompanyId": false,
+      "bodyKeys": [
+        "pack_code",
+        "template_id"
+      ],
+      "bodySnippet": "{\"pack_code\":\"GENERAL\",\"template_id\":\"e1e8196c-46ea-42c5-a6e0-311d2f0a165e\"}"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01-r2/00-settings-legal.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01-r2/01-settings-tpl.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01-r2/02-contracts-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01-r2/03-after-registry-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01-r2/04-f5-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01-r2/05-edit-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01-r2/06-preview.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01-r2/07-versions-pdf.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-06T16:28:43.117Z",
+      "msg": "BE_PROBE",
+      "note": "beUp=true"
+    },
+    {
+      "at": "2026-08-06T16:29:05.416Z",
+      "msg": "CLICK_LUU",
+      "note": "HD-QDKM8"
+    },
+    {
+      "at": "2026-08-06T16:29:16.535Z",
+      "msg": "CLICK_PENCIL_EDIT",
+      "note": "HD-QDKM8"
+    },
+    {
+      "at": "2026-08-06T16:29:21.163Z",
+      "msg": "CLICK_PREVIEW"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "R-CTR-PRINT-CAN-ISSUE",
+      "severity": "P1",
+      "owner": "ba-process/dev-be",
+      "note": "canSave=false can_issue=false — print-version not 2xx"
+    }
+  ],
+  "closed_residuals": [
+    {
+      "id": "R-CTR-PREVIEW-COMPANY-ID-BODY",
+      "note": "POST preview body has no company_id; query has company_id; HTTP 2xx"
+    }
+  ],
+  "overall": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-06T16:30:04.128Z",
+  "note": "R2 exit requires preview 2xx + print-version 2xx + PDF 2xx + F5 versions>0. PARTIAL spine → FAIL_TO_PM (no invent printable). R-CTR-PREVIEW-COMPANY-ID-BODY may still be CLOSED if body clean."
+}

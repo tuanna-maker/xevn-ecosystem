@@ -1,0 +1,244 @@
+{
+  "work_item_id": "QA-HRM-LEAVE-REQ-CREATE-01",
+  "startedAt": "2026-07-30T15:04:49.051Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM_FE": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false
+  },
+  "steps": [
+    {
+      "id": "api-login",
+      "ok": true,
+      "detail": "ceo@xe.vn token ok",
+      "at": "2026-07-30T15:04:49.170Z"
+    },
+    {
+      "id": "login-url",
+      "ok": true,
+      "detail": "http://127.0.0.1:28002/api/xbos/auth/login",
+      "at": "2026-07-30T15:04:49.170Z"
+    },
+    {
+      "id": "settings-catalogs",
+      "ok": true,
+      "detail": "HTTP 200",
+      "at": "2026-07-30T15:04:49.389Z"
+    },
+    {
+      "id": "leave-type-catalog",
+      "ok": true,
+      "detail": "code=LVT_01 label=Phép năm count=4",
+      "at": "2026-07-30T15:04:49.390Z"
+    },
+    {
+      "id": "employee-sample",
+      "ok": true,
+      "detail": "id=139ee909-df32-4467-81e1-dfb1281f604d code=PORTAL-GCEO name=CEO Tập đoàn",
+      "at": "2026-07-30T15:04:49.407Z"
+    },
+    {
+      "id": "leave-tab",
+      "ok": true,
+      "detail": "Nghỉ phép → Tạo yêu cầu nghỉ",
+      "at": "2026-07-30T15:04:55.889Z"
+    },
+    {
+      "id": "open-create-dialog",
+      "ok": true,
+      "detail": "Tạo yêu cầu nghỉ",
+      "at": "2026-07-30T15:04:56.013Z"
+    },
+    {
+      "id": "leave-type-ready",
+      "ok": true,
+      "detail": "CatalogSearchPicker ready",
+      "at": "2026-07-30T15:04:57.230Z"
+    },
+    {
+      "id": "employee-pick",
+      "ok": true,
+      "detail": "{\"count\":4,\"texts\":[\"Lịch nghỉ\",\"Danh sách yêu cầu\",\"Chờ duyệt (3)\",\"CEO Tập đoàn — PORTAL-GCEO · CEO\"],\"chosen\":\"CEO Tập đoàn — PORTAL-GCEO · CEO\"}",
+      "at": "2026-07-30T15:04:59.840Z"
+    },
+    {
+      "id": "leave-type-pick",
+      "ok": true,
+      "detail": "{\"options\":[\"LVT_01Phép năm\",\"LVT_02Ốm\",\"LVT_03Thai sản\",\"LVT_04Không lương\"],\"chosen\":\"LVT_01Phép năm\",\"catalogSot\":true}",
+      "at": "2026-07-30T15:05:01.003Z"
+    },
+    {
+      "id": "date-inputs",
+      "ok": true,
+      "detail": "count=2",
+      "at": "2026-07-30T15:05:01.367Z"
+    },
+    {
+      "id": "date-filled",
+      "ok": true,
+      "detail": "[\"17/12/2026\",\"17/12/2026\"]",
+      "at": "2026-07-30T15:05:03.115Z"
+    },
+    {
+      "id": "submit-click",
+      "ok": true,
+      "detail": "{\"ok\":true,\"text\":\"Gửi yêu cầu\"}",
+      "at": "2026-07-30T15:05:03.388Z"
+    },
+    {
+      "id": "leave-create-post",
+      "ok": true,
+      "detail": "status=201 body={\"success\":true,\"code\":\"HRM-LEAVE-201\",\"message\":\"Leave request created\",\"data\":{\"id\":\"4c716e4c-0555-4c04-aceb-61b943f6730e\",\"company_id\":\"holding\",\"employee_id\":\"139ee909-df32-4467-81e1-dfb1281f604d\",\"leave_type\":\"LVT_01\",\"start_date\":\"2026-12-16T17:00:00.000Z\",\"end_date\":\"2026-12-16T17:00:00.000Z\",\"reason\":null,\"status\":\"pending\",\"requested_at\":\"2026-07-30T15:05:07.631Z\",\"reviewed_at\":null,\"reviewed_by\":null,\"employee_code\":\"PORTAL-GCEO\",\"employee_name\":\"CEO Tập đoàn\",\"department\":\"CEO\",\"position\":\"CEO\",\"total_days\":\"1\",\"handover_to\":null,\"handover_tasks\":\"QA-LEAVE-REQ-MS7NAEZ6\",\"approver_employee_id\":null,\"rejected_reason\":null,\"attachment_url\":null,\"workflow_instance_id\":null},\"timestamp\":\"2026-07-30T15:05:04.142Z\"} req={\"company_id\":\"holding\",\"employee_id\":\"139ee909-df32-4467-81e1-dfb1281f604d\",\"employee_code\":\"PORTAL-GCEO\",\"employee_name\":\"CEO Tập đoàn\",\"department\":\"CEO\",\"position\":\"CEO\",\"leave_type\":\"LVT_01\",\"start_date\":\"2026-12-17\",\"end_date\":\"2026-12-17\",\"total_days\":1,\"handover_tasks\":\"QA-LEAVE-REQ-MS7NAEZ6\"}",
+      "at": "2026-07-30T15:05:07.398Z"
+    },
+    {
+      "id": "f5-switch-list-tab",
+      "ok": true,
+      "detail": "{\"ok\":true,\"text\":\"Danh sách yêu cầu\"}",
+      "at": "2026-07-30T15:05:11.960Z"
+    },
+    {
+      "id": "crash",
+      "ok": false,
+      "detail": "TypeError: fetch failed"
+    }
+  ],
+  "verdicts": {
+    "overall": "FAIL"
+  },
+  "net": [
+    {
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/employees?company_id=main&keyword=PORTAL-GCEO&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 201,
+      "method": "POST"
+    },
+    {
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 500,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 500,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/settings-catalogs",
+      "status": 500,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 500,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/settings-catalogs",
+      "status": 500,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 500,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/settings-catalogs",
+      "status": 500,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 500,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/settings-catalogs",
+      "status": 500,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 500,
+      "method": "GET"
+    }
+  ],
+  "postBodies": [
+    {
+      "status": 201,
+      "url": "/api/hrm/attendance/leave-requests",
+      "requestBody": "{\"company_id\":\"holding\",\"employee_id\":\"139ee909-df32-4467-81e1-dfb1281f604d\",\"employee_code\":\"PORTAL-GCEO\",\"employee_name\":\"CEO Tập đoàn\",\"department\":\"CEO\",\"position\":\"CEO\",\"leave_type\":\"LVT_01\",\"start_date\":\"2026-12-17\",\"end_date\":\"2026-12-17\",\"total_days\":1,\"handover_tasks\":\"QA-LEAVE-REQ-MS7NAEZ6\"}",
+      "responseBody": {
+        "success": true,
+        "code": "HRM-LEAVE-201",
+        "message": "Leave request created",
+        "data": {
+          "id": "4c716e4c-0555-4c04-aceb-61b943f6730e",
+          "company_id": "holding",
+          "employee_id": "139ee909-df32-4467-81e1-dfb1281f604d",
+          "leave_type": "LVT_01",
+          "start_date": "2026-12-16T17:00:00.000Z",
+          "end_date": "2026-12-16T17:00:00.000Z",
+          "reason": null,
+          "status": "pending",
+          "requested_at": "2026-07-30T15:05:07.631Z",
+          "reviewed_at": null,
+          "reviewed_by": null,
+          "employee_code": "PORTAL-GCEO",
+          "employee_name": "CEO Tập đoàn",
+          "department": "CEO",
+          "position": "CEO",
+          "total_days": "1",
+          "handover_to": null,
+          "handover_tasks": "QA-LEAVE-REQ-MS7NAEZ6",
+          "approver_employee_id": null,
+          "rejected_reason": null,
+          "attachment_url": null,
+          "workflow_instance_id": null
+        },
+        "timestamp": "2026-07-30T15:05:04.142Z"
+      }
+    }
+  ],
+  "ownerHint": "devops",
+  "leaveWindow": {
+    "startVi": "17/12/2026",
+    "endVi": "17/12/2026",
+    "startIso": "2026-12-17"
+  },
+  "leaveTypeCode": "LVT_01",
+  "markerReason": "QA-LEAVE-REQ-MS7NAEZ6",
+  "createdId": "4c716e4c-0555-4c04-aceb-61b943f6730e",
+  "endedAt": "2026-07-30T15:05:22.324Z"
+}

@@ -1,0 +1,406 @@
+{
+  "work_item_id": "PO-MFD-M2-ATT-REPORTS-01",
+  "startedAt": "2026-08-04T07:11:55.643Z",
+  "u65": "zero-seed",
+  "u76_hdsd_align": true,
+  "u87_menu_fidelity": true,
+  "hdsd_align": "CC → HRM → Chấm công → Báo cáo (matrix #29) · filters month/year · charts/tables · export CTA spot (#30 P2)",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "hdsd_inventory": [
+    {
+      "surface": "overview",
+      "hdsd_label": "/^Tổng quan$/",
+      "present": "🟢"
+    },
+    {
+      "surface": "clock",
+      "hdsd_label": "/^Chấm công$/",
+      "present": "🟢"
+    },
+    {
+      "surface": "sheets",
+      "hdsd_label": "/Bảng chấm công/i",
+      "present": "🔴"
+    },
+    {
+      "surface": "reports",
+      "hdsd_label": "/^Báo cáo$/",
+      "present": "🟢"
+    },
+    {
+      "surface": "leave",
+      "hdsd_label": "/^Nghỉ phép$/",
+      "present": "🟢"
+    },
+    {
+      "surface": "settings",
+      "hdsd_label": "/^Thiết lập$/",
+      "present": "🟢"
+    },
+    {
+      "surface": 29,
+      "hdsd_label": "Tab Báo cáo · filter tháng/năm · KPI · charts · bảng",
+      "present": "🟢"
+    },
+    {
+      "surface": 30,
+      "hdsd_label": "Xuất báo cáo (AttendanceExportDialog)",
+      "present": "🟡 spot CTA only — P2 not exercised"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T07:11:58.033Z",
+      "xCompanyId": "main",
+      "code": "HRM-LEAVE-200",
+      "total": 42,
+      "rowCount": 42
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T07:11:59.580Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 59
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&status=active&page=1&page_size=1",
+      "at": "2026-08-04T07:11:59.594Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 1
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T07:11:59.727Z",
+      "xCompanyId": "main",
+      "code": "HRM-LEAVE-200",
+      "total": 42,
+      "rowCount": 42
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-01&to_date=2026-08-31&page=1&page_size=100",
+      "at": "2026-08-04T07:11:59.753Z",
+      "xCompanyId": "main",
+      "code": "HRM-ATT-200",
+      "total": 4,
+      "rowCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&status=active&page=1&page_size=1",
+      "at": "2026-08-04T07:12:07.063Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 1
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T07:12:07.211Z",
+      "xCompanyId": "main",
+      "code": "HRM-LEAVE-200",
+      "total": 42,
+      "rowCount": 42
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-07-01&to_date=2026-07-31&page=1&page_size=100",
+      "at": "2026-08-04T07:12:07.222Z",
+      "xCompanyId": "main",
+      "code": "HRM-ATT-200",
+      "total": 0,
+      "rowCount": 0
+    }
+  ],
+  "recordsGets": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-01&to_date=2026-08-31&page=1&page_size=100",
+      "at": "2026-08-04T07:11:59.753Z",
+      "xCompanyId": "main",
+      "code": "HRM-ATT-200",
+      "total": 4,
+      "rowCount": 4
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-07-01&to_date=2026-07-31&page=1&page_size=100",
+      "at": "2026-08-04T07:12:07.222Z",
+      "xCompanyId": "main",
+      "code": "HRM-ATT-200",
+      "total": 0,
+      "rowCount": 0
+    }
+  ],
+  "employeesGets": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T07:11:59.580Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 59
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&status=active&page=1&page_size=1",
+      "at": "2026-08-04T07:11:59.594Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 1
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&status=active&page=1&page_size=1",
+      "at": "2026-08-04T07:12:07.063Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 1
+    }
+  ],
+  "leaveGets": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T07:11:58.033Z",
+      "xCompanyId": "main",
+      "code": "HRM-LEAVE-200",
+      "total": 42,
+      "rowCount": 42
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T07:11:59.727Z",
+      "xCompanyId": "main",
+      "code": "HRM-LEAVE-200",
+      "total": 42,
+      "rowCount": 42
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T07:12:07.211Z",
+      "xCompanyId": "main",
+      "code": "HRM-LEAVE-200",
+      "total": 42,
+      "rowCount": 42
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "networkBad": [],
+  "steps": {
+    "l0": {
+      "status": "PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "at": "2026-08-04T07:11:55.673Z"
+    },
+    "login": {
+      "status": "PASS",
+      "note": "ceo@xe.vn company=main",
+      "at": "2026-08-04T07:11:55.776Z"
+    },
+    "nav_reports": {
+      "status": "PASS",
+      "note": "clicked tab Báo cáo",
+      "at": "2026-08-04T07:11:59.559Z"
+    },
+    "page_load": {
+      "status": "PASS",
+      "note": "errorBanner=false gets=4 idle=0 storm=false export=true",
+      "at": "2026-08-04T07:12:06.373Z"
+    },
+    "filter_month": {
+      "status": "PASS",
+      "note": "ok=true Tháng 8->Tháng 7 gets=3 idle=0 feUpdated=true",
+      "at": "2026-08-04T07:12:13.895Z"
+    }
+  },
+  "load": {
+    "settled": {
+      "titleOk": true,
+      "spinner": false
+    },
+    "hasCharts": true,
+    "tableRows": 6,
+    "percentSamples": [
+      "0.32",
+      "0",
+      "4.76",
+      "4.76",
+      "4.76",
+      "4.76"
+    ],
+    "totalEmployeesHint": "59",
+    "exportBtn": true,
+    "noData": true,
+    "errorBanner": false,
+    "getCounts": {
+      "records": 1,
+      "employees": 2,
+      "leave": 1,
+      "total": 4,
+      "list2xx": 4,
+      "listFail": []
+    },
+    "idleGets": 0,
+    "lastRecords": {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-01&to_date=2026-08-31&page=1&page_size=100",
+      "at": "2026-08-04T07:11:59.753Z",
+      "xCompanyId": "main",
+      "code": "HRM-ATT-200",
+      "total": 4,
+      "rowCount": 4
+    },
+    "lastEmployees": {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&status=active&page=1&page_size=1",
+      "at": "2026-08-04T07:11:59.594Z",
+      "xCompanyId": "main",
+      "code": "HRM-EMP-200",
+      "total": 59,
+      "rowCount": 1
+    },
+    "lastLeave": {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T07:11:59.727Z",
+      "xCompanyId": "main",
+      "code": "HRM-LEAVE-200",
+      "total": 42,
+      "rowCount": 42
+    }
+  },
+  "filter": {
+    "monthChange": {
+      "ok": true,
+      "before": "Tháng 8",
+      "after": "Tháng 7",
+      "picked": "Tháng 7",
+      "optCount": 12
+    },
+    "snap": {
+      "hasCharts": true,
+      "tableRows": 2,
+      "percentSamples": [
+        "0",
+        "0"
+      ],
+      "totalEmployeesHint": "59",
+      "exportBtn": true,
+      "noData": false,
+      "errorBanner": false
+    },
+    "getCount": 3,
+    "idleGets": 0,
+    "fail": [],
+    "storm": false,
+    "feUpdated": true,
+    "loadFrom": "2026-08-01",
+    "filterFromDates": [
+      "2026-07-01"
+    ],
+    "rangeChanged": true
+  },
+  "honesty": {
+    "dedicated_reports_api": false,
+    "sources": [
+      "GET /api/hrm/attendance/records (range + pagination)",
+      "GET /api/hrm/employees (total active)",
+      "GET leave-requests (filter month client-side)"
+    ],
+    "aggregation": "FE useAttendanceReports — pure client RPT after parallel fetch",
+    "monthly_trend": "single-month point only (no 12× fan-out)",
+    "observed_get_fan_in": {
+      "load_records": 1,
+      "load_employees": 2,
+      "load_leave": 1
+    },
+    "note": "PARTIAL OK only if SPEC_GAP — here sources honest + UI LIVE → stamp LIVE for #29; #30 export dialog spot only"
+  },
+  "residuals": [
+    {
+      "id": "R-MFD-M2-ATT-REPORTS-NO-DEDICATED-API",
+      "severity": "OBS",
+      "owner": "ba-process",
+      "note": "No GET /attendance/reports/* — client aggregate from records+employees+leave (documented honesty). UNMAPPED vs UC-HRM-27 alone. Not blocking LIVE UI."
+    }
+  ],
+  "criteria": {
+    "nav_hdsd": true,
+    "no_error_banner": true,
+    "get_2xx_or_honest_empty": true,
+    "filter_applies": true,
+    "no_get_storm": true,
+    "honesty_documented": true,
+    "screenshot": true
+  },
+  "failReasons": [],
+  "matrix_stamp": {
+    "29": "LIVE",
+    "30": "PARTIAL"
+  },
+  "screens": [
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-mfd-m2-att-reports-01\\01-attendance-shell.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-mfd-m2-att-reports-01\\03-reports-loaded.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-mfd-m2-att-reports-01\\04-reports-after-month-filter.png"
+  ],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "uat_done": false,
+  "attendance_closed": false,
+  "endedAt": "2026-08-04T07:12:13.896Z",
+  "login": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "source": "xbos-portal",
+    "http": 201
+  },
+  "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+}

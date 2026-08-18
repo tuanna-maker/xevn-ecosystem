@@ -1,0 +1,171 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-PAY-06-CLUSTER-QA-01",
+  "stamp": "PAY06QA1-MSMECGBI",
+  "be_handoff": "docs/qa/evidence/po-hrm-mvp-gd1-pay-06-cluster-be-01.md",
+  "startedAt": "2026-08-09T22:51:07.097Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-api-primary-pay_tax-settings-probe-not-payroll-seed",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "ne_pay06_done": true,
+    "ne_pay_module_uat": true,
+    "c_slice": true,
+    "seed_used": false,
+    "cfg_via_settings": true
+  },
+  "must_keep": [
+    "PAY01QC1-MSMBGWC1",
+    "PAY02QC1-MSMC4GWC1",
+    "PAY03QC1-MSMDDGWC1",
+    "PAY04QC1-MSMCR4GWC1",
+    "PAY05QC1-MSMDU2GWC1"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "PASS"
+  },
+  "l1": {
+    "be_jest_pay06": "PASS (63)",
+    "be_jest_regression": "cite BE-01 bundle · delegate PAY05QA1-MSMDU2I5 PAY05 smoke · PAY03 gtgc + PAY04 split in bundle"
+  },
+  "nest_core_pay": [],
+  "setup": {
+    "login": "ok",
+    "tax_cfg_probe": {
+      "regime_status": 200,
+      "regime_code": "progressive_vn",
+      "prefix_status": 200,
+      "prefix_keys": [
+        "pay_tax_dependent_deduction_vnd",
+        "pay_tax_flags",
+        "pay_tax_personal_deduction_vnd",
+        "pay_tax_regime"
+      ]
+    },
+    "periodId": "da7816b8-ddbb-46d7-beea-66819cd0fed6"
+  },
+  "journeys": {
+    "J-HRM-PAY-06-01": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:13.158Z",
+      "summary": "GET pay_tax_regime → 200 code=progressive_vn · prefix 200",
+      "ac": "AC-PAY-06-REGIME · F-SET-TAX RETAIN"
+    },
+    "J-HRM-PAY-06-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:13.494Z",
+      "summary": "(b) POST process tax/net override → 403 HRM-PAY-TAX-403",
+      "ac": "AC-PAY-06-DENY-MANUAL"
+    },
+    "J-HRM-PAY-06-05-enroll": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:51:13.510Z",
+      "summary": "POST enroll tax_amount → 400 HRM-VAL-001 (DTO whitelist before service guard — process path 403 primary)",
+      "ac": "AC-PAY-06-DENY-MANUAL enroll"
+    },
+    "J-HRM-PAY-06-05-412": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:13.511Z",
+      "summary": "L1 pay-tncn-resolver + settings-defaults contract HRM-SET-TAX-412-MISSING · live process stops ATT-412 before tax KV strip U65",
+      "ac": "AC-PAY-06-REGIME · J-06-05(a)"
+    },
+    "J-HRM-PAY-06-02": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:13.744Z",
+      "summary": "GET eligibility 200 items=59 reasons[] shape ok",
+      "ac": "AC-PAY-HIRE-01 · AC-PAY-06-EMPTY-REASON"
+    },
+    "J-HRM-PAY-06-03": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:51:13.745Z",
+      "summary": "FE enroll/process after 2xx+F5 HOLD until PO-HRM-MVP-GD1-PAY-06-CLUSTER-FE-01 · API enroll/process RETAIN cite",
+      "ac": "AC-PAY-HIRE-04/05"
+    },
+    "J-HRM-PAY-06-04": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:51:13.746Z",
+      "summary": "L1 computePayTncnBreakdown + progressive_vn_v1 once · live POST process tax_amount_vnd HOLD U65 (ATT-412 gate)",
+      "ac": "AC-PAY-06-TNCN-ONCE · PROCESS-ORDER after SI"
+    },
+    "J-HRM-PAY-06-06": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:27.606Z",
+      "summary": "L2.5 list 200 → GET 3a5333f7-237e-4157-bade-39c4b98a3fa9 200 · tax DTO keys present",
+      "ac": "AC-PAY-06-DISPLAY"
+    },
+    "J-HRM-PAY-06-07": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:27.607Z",
+      "summary": "segments scanned — no static TAX/THUE on segment · splitSample=none",
+      "ac": "AC-PAY-06-SPLIT-ONCE",
+      "must_keep": "PAY04QC1-MSMCR4GWC1"
+    },
+    "J-HRM-PAY-06-08": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:27.608Z",
+      "summary": "honesty payroll_e2e_ready=false · nest /core hits=0 · must_keep PAY01..05QC1",
+      "ac": "AC-PAY-06-H · MK-PEERS"
+    },
+    "J-HRM-PAY-05-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:27.627Z",
+      "summary": "regression POST process si_* → 403 HRM-PAY-SI-403",
+      "must_keep": "PAY05QC1-MSMDU2GWC1"
+    },
+    "J-HRM-PAY-03-03": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:27.631Z",
+      "summary": "regression POST gtgc override → 403 HRM-PAY-GTCG-403",
+      "must_keep": "PAY03QC1-MSMDDGWC1"
+    },
+    "J-HRM-PAY-01-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:27.899Z",
+      "summary": "regression POST process → 412 HRM-PAY-ATT-412",
+      "must_keep": "PAY01QC1-MSMBGWC1"
+    },
+    "J-HRM-PAY-04-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:51:27.900Z",
+      "summary": "L1 bundle includes pay-gtgc + split regression (PAY03/04)",
+      "must_keep": "PAY04QC1-MSMCR4GWC1"
+    },
+    "J-HRM-PAY-02-05": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:51:27.901Z",
+      "summary": "regression FORMULA-412 / gd1_eval_v1 cite PAY02QC1 + jest payroll.service.spec — live HOLD U65",
+      "must_keep": "PAY02QC1-MSMC4GWC1"
+    }
+  },
+  "payslip_scan": {
+    "list_status": 200,
+    "scanned": 120,
+    "sampleId": "3a5333f7-237e-4157-bade-39c4b98a3fa9",
+    "taxFieldProbe": {
+      "taxableIncomeVnd": 9500000,
+      "personalDeductionVnd": 11500000,
+      "dependentDeductionVnd": 0,
+      "taxAmountVnd": 0,
+      "payTaxRegimeCode": "progressive_vn",
+      "bracketSnapshotVersion": "progressive_vn_v1",
+      "segmentCount": 0,
+      "segments": []
+    },
+    "l25_tax_dto_keys": true,
+    "splitSample": null,
+    "segment_static_tax_absent": true
+  },
+  "defects": [],
+  "overall": null,
+  "ack_status": null,
+  "endedAt": null
+}

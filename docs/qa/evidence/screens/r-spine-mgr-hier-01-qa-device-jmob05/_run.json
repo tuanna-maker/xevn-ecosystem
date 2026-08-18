@@ -1,0 +1,346 @@
+{
+  "work_item_id": "R-SPINE-MGR-HIER-01-QA-DEVICE-JMOB05",
+  "startedAt": "2026-08-03T15:48:14.801Z",
+  "finishedAt": "2026-08-03T15:50:58.234Z",
+  "verdict": "FAIL",
+  "preflight": {
+    "submitter": {
+      "email": "uat.nv0003@xe.vn",
+      "emp": "2680f15f-02b6-44e1-8b42-92a6aaeb7bfb",
+      "code": "UAT-0003",
+      "uuid": "10000000-0000-4000-8000-000000000001",
+      "roles": [
+        "employee"
+      ]
+    },
+    "approver": {
+      "email": "uat.nv0001@xe.vn",
+      "emp": "3796d949-4513-45c0-88fa-33030a062b17",
+      "code": "HLD-0001",
+      "uuid": "10000000-0000-4000-8000-000000000001",
+      "roles": [
+        "employee"
+      ],
+      "is_manager": false,
+      "jwt_roles": [
+        "employee"
+      ],
+      "custom_fields": {
+        "uat_seed": "realistic-v2",
+        "tenant_id": "xevn",
+        "is_manager": "false",
+        "is_primary": "true",
+        "mobile_persona": "emp",
+        "company_display": "Tập đoàn X.E",
+        "uat_login_email": "uat.nv0001@xe.vn",
+        "mobile_password_hash": "92b92e2e42572c25d01e5641f8bac54dffa7bc1f9712b10371de52df4f82399d",
+        "is_primary_membership": "true"
+      }
+    },
+    "subordinate_manager_id": "3796d949-4513-45c0-88fa-33030a062b17",
+    "hierarchy_ok": true,
+    "holding_uuid_ok": true,
+    "leave_pending_mgr": 1,
+    "home_is_manager": false,
+    "home_manager_pending": {
+      "total_count": 0,
+      "leave_count": 0,
+      "update_count": 0,
+      "preview": []
+    }
+  },
+  "pendingBefore": 1,
+  "pendingAfter": 1,
+  "submitResult": {
+    "ok": false,
+    "success": false
+  },
+  "approvals": {
+    "mounted": false,
+    "pathA": false,
+    "pathB": false,
+    "pathC": false,
+    "leaveTab": null,
+    "isThongBao": true,
+    "fabHasApprovals": false,
+    "sample": [
+      "Thông báo",
+      "Đơn nghỉ đã duyệt",
+      "Chưa đọc",
+      "Đơn nghỉ phép mới",
+      "Chưa đọc",
+      "Đơn nghỉ phép mới",
+      "Chưa đọc",
+      "Đơn nghỉ phép mới",
+      "Chưa đọc",
+      "Nguyễn Văn An · Nghỉ phép năm · 03/08/2026&#10;03/08/2026 21:54 · 56 phút trước",
+      "Đơn nghỉ phép mới",
+      "Chưa đọc",
+      "Đơn nghỉ phép mới",
+      "Chưa đọc",
+      "Đơn nghỉ phép mới",
+      "Chưa đọc",
+      "Trang chủ",
+      "Đội nhóm",
+      "Phiếu lương",
+      "Hồ sơ"
+    ]
+  },
+  "approveResult": {
+    "ok": false,
+    "reason": "manager_approvals_not_mounted"
+  },
+  "fromSubLeaveIds": [],
+  "steps": [
+    {
+      "t": "2026-08-03T15:48:15.108Z",
+      "msg": "preflight",
+      "submitter": {
+        "email": "uat.nv0003@xe.vn",
+        "emp": "2680f15f-02b6-44e1-8b42-92a6aaeb7bfb",
+        "code": "UAT-0003",
+        "uuid": "10000000-0000-4000-8000-000000000001",
+        "roles": [
+          "employee"
+        ]
+      },
+      "approver": {
+        "email": "uat.nv0001@xe.vn",
+        "emp": "3796d949-4513-45c0-88fa-33030a062b17",
+        "code": "HLD-0001",
+        "uuid": "10000000-0000-4000-8000-000000000001",
+        "roles": [
+          "employee"
+        ],
+        "is_manager": false,
+        "jwt_roles": [
+          "employee"
+        ],
+        "custom_fields": {
+          "uat_seed": "realistic-v2",
+          "tenant_id": "xevn",
+          "is_manager": "false",
+          "is_primary": "true",
+          "mobile_persona": "emp",
+          "company_display": "Tập đoàn X.E",
+          "uat_login_email": "uat.nv0001@xe.vn",
+          "mobile_password_hash": "92b92e2e42572c25d01e5641f8bac54dffa7bc1f9712b10371de52df4f82399d",
+          "is_primary_membership": "true"
+        }
+      },
+      "subordinate_manager_id": "3796d949-4513-45c0-88fa-33030a062b17",
+      "hierarchy_ok": true,
+      "holding_uuid_ok": true,
+      "leave_pending_mgr": 1,
+      "home_is_manager": false,
+      "home_manager_pending": {
+        "total_count": 0,
+        "leave_count": 0,
+        "update_count": 0,
+        "preview": []
+      }
+    },
+    {
+      "t": "2026-08-03T15:48:44.371Z",
+      "msg": "submitter home",
+      "ok": true,
+      "hit": "Trang chủ"
+    },
+    {
+      "t": "2026-08-03T15:48:52.088Z",
+      "msg": "FAB open",
+      "hit": {
+        "x": 540,
+        "y": 2209
+      }
+    },
+    {
+      "t": "2026-08-03T15:48:56.539Z",
+      "msg": "tap create leave",
+      "hit": {
+        "x": 574,
+        "y": 1649
+      }
+    },
+    {
+      "t": "2026-08-03T15:49:01.705Z",
+      "msg": "on create",
+      "onCreate": true,
+      "sample": [
+        "Nghỉ phép",
+        "Tạo đơn nghỉ",
+        "4 bước — ngày → loại → xác nhận → gửi",
+        "Chọn ngày",
+        "Loại nghỉ",
+        "Xác nhận",
+        "Gửi đơn",
+        "Bước 1 · Chọn ngày",
+        "Chọn khoảng thời gian nghỉ trên lịch.",
+        "Sá»‘ dÆ° phĂ©p",
+        "Còn lại: 0 / 0 ngày phép năm 2026",
+        "Khoảng ngày nghỉ",
+        "03/08/2026 – 03/08/2026",
+        "Tổng: 1 ngày · 03/08/2026",
+        "Huỷ",
+        "Tiếp tục",
+        "Trang chủ",
+        "Đội nhóm",
+        "Phiếu lương",
+        "Hồ sơ"
+      ]
+    },
+    {
+      "t": "2026-08-03T15:49:01.817Z",
+      "msg": "open date",
+      "hit": {
+        "x": 540,
+        "y": 1154
+      }
+    },
+    {
+      "t": "2026-08-03T15:49:13.033Z",
+      "msg": "step0 next",
+      "hit": {
+        "x": 795,
+        "y": 2061
+      }
+    },
+    {
+      "t": "2026-08-03T15:49:21.083Z",
+      "msg": "step1 next",
+      "hit": {
+        "x": 795,
+        "y": 2061
+      }
+    },
+    {
+      "t": "2026-08-03T15:49:26.905Z",
+      "msg": "step2 next",
+      "hit": {
+        "x": 795,
+        "y": 2061
+      }
+    },
+    {
+      "t": "2026-08-03T15:49:32.210Z",
+      "msg": "submit tap",
+      "hit": {
+        "x": 540,
+        "y": 1914
+      }
+    },
+    {
+      "t": "2026-08-03T15:49:36.422Z",
+      "msg": "confirm",
+      "hit": {
+        "x": 540,
+        "y": 1232
+      }
+    },
+    {
+      "t": "2026-08-03T15:49:46.397Z",
+      "msg": "submit result",
+      "ok": false,
+      "success": false
+    },
+    {
+      "t": "2026-08-03T15:49:46.485Z",
+      "msg": "leave after submit API",
+      "total": 1,
+      "from_uat0003": 0,
+      "ids": []
+    },
+    {
+      "t": "2026-08-03T15:50:15.503Z",
+      "msg": "approver home",
+      "ok": true,
+      "hit": "Trang chủ",
+      "roles": [
+        "employee"
+      ],
+      "is_manager": false
+    },
+    {
+      "t": "2026-08-03T15:50:26.115Z",
+      "msg": "mgr home tiles",
+      "tiles": [
+        "home-action-tile-checkin",
+        "home-action-tile-time_off",
+        "home-action-tile-payroll",
+        "home-action-tile-approve",
+        "home-action-tile-approve-badge",
+        "home-action-tile-team"
+      ],
+      "sample": [
+        "NA",
+        "Nguyễn Văn An",
+        "Nhân viên",
+        "Tập đoàn XeVN",
+        "Chấm công",
+        "Nghỉ phép",
+        "Phiếu lương",
+        "Việc",
+        "Đồng nghiệp",
+        "Hoạt động",
+        "Bảng lương, việc cần làm, lịch nghỉ",
+        "Hành trình",
+        "Xem tất cả",
+        "Đơn nghỉ đã duyệt",
+        "03/08/2026",
+        "03/08/2026 22:45",
+        "Đơn nghỉ phép",
+        "03/08/2026",
+        "03/08/2026 22:30",
+        "Đơn nghỉ phép",
+        "03/08/2026",
+        "03/08/2026 22:09",
+        "Xem toàn bộ hành trình",
+        "Đi làm",
+        "Đi muộn",
+        "Vắng",
+        "Trang chủ",
+        "Đội nhóm",
+        "Phiếu lương",
+        "Hồ sơ"
+      ]
+    },
+    {
+      "t": "2026-08-03T15:50:26.243Z",
+      "msg": "pathA approve tile",
+      "hit": {
+        "x": 916,
+        "y": 517
+      }
+    },
+    {
+      "t": "2026-08-03T15:50:42.643Z",
+      "msg": "pathB FAB",
+      "hit": null,
+      "fabHasApprovals": false
+    },
+    {
+      "t": "2026-08-03T15:50:52.989Z",
+      "msg": "pathC profile",
+      "hit": null,
+      "hasEntry": false
+    },
+    {
+      "t": "2026-08-03T15:50:58.154Z",
+      "msg": "approvals open",
+      "mounted": false,
+      "pathA": false,
+      "pathB": false,
+      "pathC": false,
+      "leaveTab": null,
+      "isThongBao": true,
+      "fabHasApprovals": false
+    },
+    {
+      "t": "2026-08-03T15:50:58.155Z",
+      "msg": "approve result",
+      "ok": false,
+      "reason": "manager_approvals_not_mounted"
+    }
+  ],
+  "ack_status": "FAIL_TO_PM"
+}

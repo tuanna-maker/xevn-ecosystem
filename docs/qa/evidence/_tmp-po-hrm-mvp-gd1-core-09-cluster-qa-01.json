@@ -1,0 +1,3465 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-CORE-09-CLUSTER-QA-01",
+  "stamp": "CORE09QA-MSLNTR5P",
+  "startedAt": "2026-08-09T10:28:44.667Z",
+  "depends_on": "FE-01 READY_FOR_QA · docs/qa/evidence/po-hrm-mvp-gd1-core-09-cluster-fe-01.md · API-01 CONFIRMED RETAIN",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "contracts_printable_ready": false,
+    "personnel_core_uat": false,
+    "ctr_module_uat": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "registry_ne_core09_done": true,
+    "peers_09ad_ne_core09_done": true,
+    "soft_ne_core06_done": true,
+    "core07_ne_done_retain": true,
+    "pay_att_printable_invent_done": false,
+    "word_docx_out": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:8080",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "portal": 200,
+    "portal_url": "http://127.0.0.1:8080",
+    "hrm": 200,
+    "xbos": 200
+  },
+  "l1": {
+    "employee_id": "3ad58ec2-d480-47e8-b781-91904c561294",
+    "employee_name": "QA CORE07 PENDING msljspgo",
+    "templates_active": {
+      "total": 39,
+      "by": {
+        "GENERAL": 37,
+        "DRIVER": 1,
+        "IT_OFFICE": 1
+      }
+    },
+    "tpl_gen": {
+      "id": "f00c4b64-0403-49ab-b36d-18d9d3d8e352",
+      "company_id": "holding",
+      "code": "TPL_CLQA4-KN5SCA",
+      "name_vi": "QA tpl spine CLQA4-KN5SCA",
+      "pack_code": "GENERAL",
+      "layout_json": {
+        "chrome": {
+          "show_quoc_hieu": true
+        },
+        "clause_ids": []
+      },
+      "keyword_map": {},
+      "status": "active",
+      "version": 1,
+      "default_term_type": null,
+      "default_duration_days": null,
+      "default_duration_months": null,
+      "title_print_vi": null,
+      "matrix_family": null,
+      "origin": "member",
+      "origin_company_id": null,
+      "origin_publish_version": null,
+      "lineage_code": null,
+      "archived_at": null,
+      "created_at": "2026-08-08T17:22:48.687Z",
+      "updated_at": "2026-08-08T17:22:51.313Z",
+      "template_code": "TPL_CLQA4-KN5SCA",
+      "clauses": []
+    },
+    "tpl_dr": {
+      "id": "7811f8bb-1bcc-4f41-9ec4-142c4cc14769",
+      "company_id": "holding",
+      "code": "XEVN_FT_12M_DRIVER",
+      "name_vi": "X.E — HĐLĐ 12 tháng (Lái xe)",
+      "pack_code": "DRIVER",
+      "layout_json": {
+        "chrome": {
+          "show_quoc_hieu": true
+        },
+        "clause_ids": [
+          "3cbc360e-3dfd-4734-8a7a-3971431e99d6"
+        ]
+      },
+      "keyword_map": {
+        "{{effective_to}}": {
+          "ring": "contract",
+          "source": "employee_contracts.end_date"
+        },
+        "{{license_class}}": {
+          "ring": "public",
+          "source": "employee_contracts.license_class"
+        },
+        "{{vehicle_plate}}": {
+          "ring": "public",
+          "source": "employee_contracts.vehicle_plate"
+        },
+        "{{effective_from}}": {
+          "ring": "contract",
+          "source": "employee_contracts.start_date"
+        },
+        "{{contract_number}}": {
+          "ring": "contract",
+          "source": "employee_contracts.contract_code"
+        },
+        "{{employer_address}}": {
+          "ring": "company",
+          "source": "company.address"
+        },
+        "{{term_type_label_vi}}": {
+          "ring": "contract",
+          "source": "derived.term_type"
+        },
+        "{{employer_legal_name}}": {
+          "ring": "company",
+          "source": "company.legal_name"
+        },
+        "{{employer_unit_label}}": {
+          "ring": "company",
+          "source": "company.display_name"
+        },
+        "{{contract_title_print}}": {
+          "ring": "contract",
+          "source": "hrm_contract_templates.title_print_vi"
+        },
+        "{{driver_license_class}}": {
+          "ring": "public",
+          "source": "employee_contracts.license_class"
+        },
+        "{{driver_license_number}}": {
+          "ring": "public",
+          "source": "employee_contracts.driver_license_number"
+        },
+        "{{driver_license_issued_on}}": {
+          "ring": "public",
+          "source": "employee_contracts.driver_license_issued_on"
+        },
+        "{{contract_number_suggested}}": {
+          "ring": "contract",
+          "source": "settings.contract_number_pattern"
+        },
+        "{{driver_license_issued_place}}": {
+          "ring": "public",
+          "source": "employee_contracts.driver_license_issued_place"
+        }
+      },
+      "status": "active",
+      "version": 1,
+      "default_term_type": "definite",
+      "default_duration_days": null,
+      "default_duration_months": 12,
+      "title_print_vi": "HỢP ĐỒNG LAO ĐỘNG",
+      "matrix_family": "XEVN_MATRIX",
+      "origin": "member",
+      "origin_company_id": null,
+      "origin_publish_version": null,
+      "lineage_code": null,
+      "archived_at": null,
+      "created_at": "2026-08-07T03:50:07.042Z",
+      "updated_at": "2026-08-09T05:43:59.650Z",
+      "template_code": "XEVN_FT_12M_DRIVER",
+      "clauses": [
+        {
+          "id": "3cbc360e-3dfd-4734-8a7a-3971431e99d6",
+          "company_id": "holding",
+          "code": "CL_DR_LDM40Y",
+          "title_vi": "Điều khoản DRIVER CORE09DQA2-MSLDM40Y",
+          "body_vi": "Nội dung Lái xe {{bien_so}} — CORE09DQA2-MSLDM40Y",
+          "clause_group": "LEGAL_BASIS",
+          "apply_to_packs": [
+            "DRIVER"
+          ],
+          "sort_order": 0,
+          "mandatory": false,
+          "status": "active",
+          "version": 1,
+          "effective_from": null,
+          "archived_at": null,
+          "origin": "member",
+          "origin_company_id": null,
+          "origin_publish_version": null,
+          "lineage_code": null,
+          "created_at": "2026-08-09T05:43:32.219Z",
+          "updated_at": "2026-08-09T05:43:34.776Z"
+        }
+      ]
+    },
+    "sample_contract_id": "1f6a0957-94b9-472e-999d-6e06c42e9f1e",
+    "nest_core_list_deny": true,
+    "nest_core_prev_deny": true,
+    "nest_core_ver_deny": true,
+    "probes": [
+      {
+        "method": "GET",
+        "path": "/api/hrm/employees?page_size=5&company_id=main",
+        "status": 200,
+        "code": "HRM-EMP-200",
+        "cannot": false,
+        "snippet": "{\"success\":true,\"code\":\"HRM-EMP-200\",\"message\":\"Employees listed\",\"data\":{\"total\":67,\"page\":1,\"page_size\":5,\"next_cursor\":\"MjAyNi0wOC0wOVQwMjowMTozMi41OTgzMjFaCjU3ZGQ3Mzc2LTgyODEtNGUzYi05OTRiLWE2ZDkwOGY0NmVmZA\",\"data\":[{"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+        "status": 200,
+        "code": "HRM-CTR-TPL-200",
+        "cannot": false,
+        "snippet": "{\"success\":true,\"code\":\"HRM-CTR-TPL-200\",\"message\":\"Contract templates listed\",\"data\":{\"total\":39,\"data\":[{\"id\":\"b853f70a-b419-4034-828b-899eba04f35d\",\"company_id\":\"holding\",\"code\":\"QA_CTR_TPL_MSK7U4CG\",\"name_vi\":\"QA mẫu"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/contracts-insurance/contracts?page_size=5&company_id=main",
+        "status": 200,
+        "code": "HRM-CON-200",
+        "cannot": false,
+        "snippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":52,\"page\":1,\"page_size\":5,\"data\":[{\"id\":\"1f6a0957-94b9-472e-999d-6e06c42e9f1e\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b7"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/core/contracts?company_id=main",
+        "status": 404,
+        "code": "HRM-DATA-404",
+        "cannot": true,
+        "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot GET /api/hrm/core/contracts?company_id=main\",\"timestamp\":\"2026-08-09T10:28:45.238Z\"}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/hrm/core/contracts/1f6a0957-94b9-472e-999d-6e06c42e9f1e/preview?company_id=main",
+        "status": 404,
+        "code": "HRM-DATA-404",
+        "cannot": true,
+        "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/core/contracts/1f6a0957-94b9-472e-999d-6e06c42e9f1e/preview?company_id=main\",\"timestamp\":\"2026-08-09T10:28:45.245Z\"}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/core/contracts/1f6a0957-94b9-472e-999d-6e06c42e9f1e/print-versions?company_id=main",
+        "status": 404,
+        "code": "HRM-DATA-404",
+        "cannot": true,
+        "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot GET /api/hrm/core/contracts/1f6a0957-94b9-472e-999d-6e06c42e9f1e/print-versions?company_id=main\",\"timestamp\":\"2026-08-09T10:28:45.260Z\"}"
+      }
+    ],
+    "ok": true,
+    "created_contract_id": "07d73b1e-de89-49d5-b310-394c120c1e88"
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T10:28:45.956Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:28:46.004Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T10:28:46.018Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:28:46.136Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:28:46.270Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:28:46.271Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:28:46.358Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:28:46.498Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":52,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"1f6a0957-94b9-472e-999d-6e06c42e9f1e\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09NT-LNND2O\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"sig"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:28:48.940Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:28:48.940Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:28:48.941Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:28:48.943Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:28:48.974Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:28:49.030Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:28:49.080Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": null,
+      "at": "2026-08-09T10:28:49.183Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:28:49.188Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": 200,
+      "at": "2026-08-09T10:28:49.243Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": null,
+      "at": "2026-08-09T10:28:55.559Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:28:56.041Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": 201,
+      "at": "2026-08-09T10:28:56.088Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-201\",\"message\":\"Contract created\",\"data\":{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signer_name\":null,\"signer_position\":null,\"signer_p"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:28:56.286Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T10:28:59.966Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:28:59.987Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T10:29:00.006Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:00.056Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:29:00.202Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:29:00.202Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:29:00.284Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:29:00.417Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:29:04.072Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:29:04.073Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:29:04.074Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": null,
+      "at": "2026-08-09T10:29:04.074Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:04.074Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:29:04.094Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": 200,
+      "at": "2026-08-09T10:29:04.095Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:04.107Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T10:29:04.091Z\"}"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:29:04.165Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:29:04.261Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:10.780Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:29:10.851Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T10:29:14.601Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:14.623Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T10:29:14.645Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:14.696Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:29:14.811Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:29:14.811Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:29:14.890Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:29:15.020Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T10:29:16.902Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:16.923Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T10:29:16.942Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:17.001Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:29:17.128Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:29:17.128Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:29:17.208Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:29:17.322Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:29:21.004Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:29:21.005Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:29:21.006Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": null,
+      "at": "2026-08-09T10:29:21.006Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:21.006Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:29:21.026Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:29:21.026Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": 200,
+      "at": "2026-08-09T10:29:21.027Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:21.067Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T10:29:21.021Z\"}"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:29:21.095Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T10:29:26.978Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:26.999Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T10:29:27.018Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:27.087Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:29:27.198Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:29:27.198Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:29:27.279Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:29:27.407Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T10:29:28.770Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:28.794Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T10:29:28.820Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:28.868Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:29:28.992Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:29:28.992Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:29:29.074Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:29:29.208Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:29:32.886Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:29:32.886Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:29:32.887Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": null,
+      "at": "2026-08-09T10:29:32.887Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:32.887Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:29:32.910Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": 200,
+      "at": "2026-08-09T10:29:32.911Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:32.924Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T10:29:32.904Z\"}"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:29:32.980Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:29:33.045Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:43.481Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:29:43.548Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:50.868Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:29:50.939Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:59.249Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:29:59.324Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T10:30:02.692Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:02.714Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T10:30:02.730Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:02.791Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:30:02.951Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:30:02.951Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:30:03.030Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:30:03.161Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:30:06.809Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:30:06.810Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:30:06.811Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": null,
+      "at": "2026-08-09T10:30:06.811Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:06.811Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:30:06.836Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": 200,
+      "at": "2026-08-09T10:30:06.861Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:06.876Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T10:30:06.853Z\"}"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:30:06.922Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:30:07.014Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:13.703Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:30:13.771Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:17.742Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:17.804Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:30:17.812Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-201\",\"message\":\"Print version issued\",\"data\":{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_CLQA4-KN5SCA\"},\"job_title\":\"Tổng Giám đốc\",\"term_type\":null,\"department\":null,\"effective_to\":\"2027-0"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions/2f446770-9f59-443c-91db-7974484ff14f?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:17.848Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:17.852Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":1,\"data\":[{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_CLQA4-KN5SCA\"},\"job_title\":\"Tổng Giám đốc\",\"term_type\":null,\"department\":null,\"e"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions/2f446770-9f59-443c-91db-7974484ff14f?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:17.882Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print version detail\",\"data\":{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_CLQA4-KN5SCA\"},\"job_title\":\"Tổng Giám đốc\",\"term_type\":null,\"department\":null,\"effective_to\":\"2027-0"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T10:30:23.158Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:23.179Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T10:30:23.199Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:23.260Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:30:23.371Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:30:23.371Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:30:23.457Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:30:23.589Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:30:27.265Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:30:27.265Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:30:27.266Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": null,
+      "at": "2026-08-09T10:30:27.266Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:27.266Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:30:27.289Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": 200,
+      "at": "2026-08-09T10:30:27.293Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions/2f446770-9f59-443c-91db-7974484ff14f?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:27.311Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:27.316Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":1,\"data\":[{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_CLQA4-KN5SCA\"},\"job_title\":\"Tổng Giám đốc\",\"term_type\":null,\"department\":null,\"e"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions/2f446770-9f59-443c-91db-7974484ff14f?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:27.348Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print version detail\",\"data\":{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_CLQA4-KN5SCA\"},\"job_title\":\"Tổng Giám đốc\",\"term_type\":null,\"department\":null,\"effective_to\":\"2027-0"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:30:27.384Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:30:27.468Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T10:30:31.728Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:31.750Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T10:30:31.773Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:31.823Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:30:31.964Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:30:31.964Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:30:32.049Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:30:32.190Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:31:34.316Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:31:34.316Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:31:34.316Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:31:34.316Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:31:34.350Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:31:34.440Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:31:34.482Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:31:34.497Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": null,
+      "at": "2026-08-09T10:31:34.622Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=3ad58ec2-d480-47e8-b781-91904c561294",
+      "status": 200,
+      "at": "2026-08-09T10:31:34.636Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": null,
+      "at": "2026-08-09T10:31:38.098Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:31:38.556Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": 201,
+      "at": "2026-08-09T10:31:38.604Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-201\",\"message\":\"Contract created\",\"data\":{\"id\":\"224cc4a8-49fa-45f8-a467-e92539a96b91\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09NT-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signer_name\":null,\"signer_position\":null,\"signer"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:31:38.792Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":54,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"224cc4a8-49fa-45f8-a467-e92539a96b91\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09NT-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"sig"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": null,
+      "at": "2026-08-09T10:31:42.408Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:31:42.431Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T10:31:42.449Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:31:42.498Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": null,
+      "at": "2026-08-09T10:31:42.623Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:31:42.623Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T10:31:42.706Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:31:42.821Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":54,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"224cc4a8-49fa-45f8-a467-e92539a96b91\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09NT-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"sig"
+    }
+  ],
+  "nest_core_hits": [],
+  "preview_hits": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:10.780Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:29:10.851Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:43.481Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:29:43.548Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:50.868Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:29:50.939Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:59.249Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:29:59.324Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:13.703Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:30:13.771Z",
+      "nest_core": false,
+      "preview": true,
+      "contracts": false,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+    }
+  ],
+  "contract_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:28:46.271Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:28:46.498Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":52,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"1f6a0957-94b9-472e-999d-6e06c42e9f1e\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09NT-LNND2O\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"sig"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": null,
+      "at": "2026-08-09T10:28:55.559Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:28:56.041Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": 201,
+      "at": "2026-08-09T10:28:56.088Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-201\",\"message\":\"Contract created\",\"data\":{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signer_name\":null,\"signer_position\":null,\"signer_p"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:28:56.286Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:29:00.202Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:29:00.417Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:29:14.811Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:29:15.020Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:29:17.128Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:29:17.322Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:29:27.198Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:29:27.407Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:29:28.992Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:29:29.208Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:30:02.951Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:30:03.161Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:30:23.371Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:30:23.589Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:30:31.964Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:30:32.190Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":53,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signe"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": null,
+      "at": "2026-08-09T10:31:38.098Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:31:38.556Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "status": 201,
+      "at": "2026-08-09T10:31:38.604Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-201\",\"message\":\"Contract created\",\"data\":{\"id\":\"224cc4a8-49fa-45f8-a467-e92539a96b91\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09NT-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"signer_name\":null,\"signer_position\":null,\"signer"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:31:38.792Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":54,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"224cc4a8-49fa-45f8-a467-e92539a96b91\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09NT-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"sig"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": null,
+      "at": "2026-08-09T10:31:42.623Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-09T10:31:42.821Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": true,
+      "printVer": false,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CON-200\",\"message\":\"Contracts listed\",\"data\":{\"total\":54,\"page\":1,\"page_size\":100,\"data\":[{\"id\":\"224cc4a8-49fa-45f8-a467-e92539a96b91\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09NT-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"notes\":null,\"position\":\"Tổng Giám đốc\",\"position_key\":\"CEO\",\"department\":null,\"department_key\":null,\"sig"
+    }
+  ],
+  "print_version_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:04.074Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:04.107Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T10:29:04.091Z\"}"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:21.006Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:21.067Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T10:29:21.021Z\"}"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:29:32.887Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:29:32.924Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T10:29:32.904Z\"}"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:06.811Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:06.876Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":0,\"data\":[]},\"timestamp\":\"2026-08-09T10:30:06.853Z\"}"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:17.742Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:17.804Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 201,
+      "at": "2026-08-09T10:30:17.812Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-201\",\"message\":\"Print version issued\",\"data\":{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_CLQA4-KN5SCA\"},\"job_title\":\"Tổng Giám đốc\",\"term_type\":null,\"department\":null,\"effective_to\":\"2027-0"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions/2f446770-9f59-443c-91db-7974484ff14f?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:17.848Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:17.852Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":1,\"data\":[{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_CLQA4-KN5SCA\"},\"job_title\":\"Tổng Giám đốc\",\"term_type\":null,\"department\":null,\"e"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions/2f446770-9f59-443c-91db-7974484ff14f?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:17.882Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print version detail\",\"data\":{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_CLQA4-KN5SCA\"},\"job_title\":\"Tổng Giám đốc\",\"term_type\":null,\"department\":null,\"effective_to\":\"2027-0"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:27.266Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions/2f446770-9f59-443c-91db-7974484ff14f?company_id=main",
+      "status": null,
+      "at": "2026-08-09T10:30:27.311Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:27.316Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print versions listed\",\"data\":{\"total\":1,\"data\":[{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_CLQA4-KN5SCA\"},\"job_title\":\"Tổng Giám đốc\",\"term_type\":null,\"department\":null,\"e"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions/2f446770-9f59-443c-91db-7974484ff14f?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T10:30:27.348Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": true,
+      "templates": false,
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-200\",\"message\":\"Print version detail\",\"data\":{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_CLQA4-KN5SCA\"},\"job_title\":\"Tổng Giám đốc\",\"term_type\":null,\"department\":null,\"effective_to\":\"2027-0"
+    }
+  ],
+  "template_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:28:48.941Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:28:49.188Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:29:04.073Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:29:04.261Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:29:21.005Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:29:21.026Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:29:32.886Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:29:33.045Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:30:06.810Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:30:07.014Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:30:27.265Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:30:27.468Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": null,
+      "at": "2026-08-09T10:31:34.316Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T10:31:34.497Z",
+      "nest_core": false,
+      "preview": false,
+      "contracts": false,
+      "printVer": false,
+      "templates": true
+    }
+  ],
+  "ver_bodies": [
+    {
+      "at": "2026-08-09T10:30:17.812Z",
+      "status": 201,
+      "code": "HRM-CTR-VER-201",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/print-versions?company_id=main",
+      "nest_core": false,
+      "physical": true,
+      "ver": {
+        "id": "2f446770-9f59-443c-91db-7974484ff14f",
+        "version_no": 1,
+        "pack_code": "GENERAL",
+        "status": "issued",
+        "code": "HRM-CTR-VER-201"
+      },
+      "error": null,
+      "snippet": "{\"success\":true,\"code\":\"HRM-CTR-VER-201\",\"message\":\"Print version issued\",\"data\":{\"id\":\"2f446770-9f59-443c-91db-7974484ff14f\",\"contract_id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"version_no\":1,\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"merged_fields_json\":{\"_meta\":{\"template_code\":\"TPL_"
+    }
+  ],
+  "preview_bodies": [
+    {
+      "at": "2026-08-09T10:29:10.850Z",
+      "status": 201,
+      "code": "HRM-CTR-PREV-200",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "fp": {
+        "pack": "GENERAL",
+        "can_issue": true,
+        "cb_masked": false,
+        "template_code": "TPL_CLQA4-KN5SCA",
+        "missing_fields": [],
+        "missing_clauses": [],
+        "merged_keys": [
+          "employee_full_name",
+          "employee_code",
+          "employee_dob",
+          "employee_gender",
+          "employee_id_number",
+          "employee_phone",
+          "employee_email",
+          "employee_residence_address",
+          "job_title",
+          "position_key",
+          "job_description_text",
+          "work_location",
+          "work_location_scope",
+          "effective_from",
+          "effective_to",
+          "term_type"
+        ],
+        "merged_count": 41,
+        "salary_like_keys": [],
+        "salary_like_values": []
+      }
+    },
+    {
+      "at": "2026-08-09T10:29:43.548Z",
+      "status": 201,
+      "code": "HRM-CTR-PREV-200",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "fp": {
+        "pack": "GENERAL",
+        "can_issue": true,
+        "cb_masked": false,
+        "template_code": "TPL_CLQA4-KN5SCA",
+        "missing_fields": [],
+        "missing_clauses": [],
+        "merged_keys": [
+          "employee_full_name",
+          "employee_code",
+          "employee_dob",
+          "employee_gender",
+          "employee_id_number",
+          "employee_phone",
+          "employee_email",
+          "employee_residence_address",
+          "job_title",
+          "position_key",
+          "job_description_text",
+          "work_location",
+          "work_location_scope",
+          "effective_from",
+          "effective_to",
+          "term_type"
+        ],
+        "merged_count": 41,
+        "salary_like_keys": [],
+        "salary_like_values": []
+      }
+    },
+    {
+      "at": "2026-08-09T10:29:50.939Z",
+      "status": 201,
+      "code": "HRM-CTR-PREV-200",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "fp": {
+        "pack": "GENERAL",
+        "can_issue": false,
+        "cb_masked": false,
+        "template_code": "TPL_CLQA4-KN5SCA",
+        "missing_fields": [
+          {
+            "field": "work_location",
+            "message": "Work location is required"
+          }
+        ],
+        "missing_clauses": [],
+        "merged_keys": [
+          "employee_full_name",
+          "employee_code",
+          "employee_dob",
+          "employee_gender",
+          "employee_id_number",
+          "employee_phone",
+          "employee_email",
+          "employee_residence_address",
+          "job_title",
+          "position_key",
+          "job_description_text",
+          "work_location",
+          "work_location_scope",
+          "effective_from",
+          "effective_to",
+          "term_type"
+        ],
+        "merged_count": 41,
+        "salary_like_keys": [],
+        "salary_like_values": []
+      }
+    },
+    {
+      "at": "2026-08-09T10:29:59.324Z",
+      "status": 201,
+      "code": "HRM-CTR-PREV-200",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "fp": {
+        "pack": "GENERAL",
+        "can_issue": true,
+        "cb_masked": false,
+        "template_code": "TPL_CLQA4-KN5SCA",
+        "missing_fields": [],
+        "missing_clauses": [],
+        "merged_keys": [
+          "employee_full_name",
+          "employee_code",
+          "employee_dob",
+          "employee_gender",
+          "employee_id_number",
+          "employee_phone",
+          "employee_email",
+          "employee_residence_address",
+          "job_title",
+          "position_key",
+          "job_description_text",
+          "work_location",
+          "work_location_scope",
+          "effective_from",
+          "effective_to",
+          "term_type"
+        ],
+        "merged_count": 41,
+        "salary_like_keys": [],
+        "salary_like_values": []
+      }
+    },
+    {
+      "at": "2026-08-09T10:30:13.771Z",
+      "status": 201,
+      "code": "HRM-CTR-PREV-200",
+      "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+      "fp": {
+        "pack": "GENERAL",
+        "can_issue": true,
+        "cb_masked": false,
+        "template_code": "TPL_CLQA4-KN5SCA",
+        "missing_fields": [],
+        "missing_clauses": [],
+        "merged_keys": [
+          "employee_full_name",
+          "employee_code",
+          "employee_dob",
+          "employee_gender",
+          "employee_id_number",
+          "employee_phone",
+          "employee_email",
+          "employee_residence_address",
+          "job_title",
+          "position_key",
+          "job_description_text",
+          "work_location",
+          "work_location_scope",
+          "effective_from",
+          "effective_to",
+          "term_type"
+        ],
+        "merged_count": 41,
+        "salary_like_keys": [],
+        "salary_like_values": []
+      }
+    }
+  ],
+  "create_bodies": [
+    {
+      "at": "2026-08-09T10:28:56.088Z",
+      "status": 201,
+      "code": "HRM-CON-201",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "nest_core": false,
+      "physical": true,
+      "has_template_id": true,
+      "contract_code": "HD-CORE09-LNTR5P",
+      "id": "07d73b1e-de89-49d5-b310-394c120c1e88",
+      "snippet": "{\"success\":true,\"code\":\"HRM-CON-201\",\"message\":\"Contract created\",\"data\":{\"id\":\"07d73b1e-de89-49d5-b310-394c120c1e88\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\",\"n"
+    },
+    {
+      "at": "2026-08-09T10:31:38.604Z",
+      "status": 201,
+      "code": "HRM-CON-201",
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "nest_core": false,
+      "physical": true,
+      "has_template_id": false,
+      "contract_code": "HD-CORE09NT-LNTR5P",
+      "id": "224cc4a8-49fa-45f8-a467-e92539a96b91",
+      "snippet": "{\"success\":true,\"code\":\"HRM-CON-201\",\"message\":\"Contract created\",\"data\":{\"id\":\"224cc4a8-49fa-45f8-a467-e92539a96b91\",\"company_id\":\"holding\",\"employee_id\":\"3ad58ec2-d480-47e8-b781-91904c561294\",\"contract_code\":\"HD-CORE09NT-LNTR5P\",\"contract_type\":\"HDHV\",\"start_date\":\"2026-08-08T17:00:00.000Z\",\"end_date\":\"2027-08-08T17:00:00.000Z\",\"status\":\"active\","
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/01-contracts-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/02-form-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/03-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/04-edit-spine.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/05-j01-zero-tpl.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/06-j02-preview.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/07-j03-mandatory.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/08-j04-cb-mask.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/09-j05-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/10-j05-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/11-j06-create-no-tpl.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-09-cluster-qa-01/12-j06-f5.png"
+  ],
+  "click_log": [
+    "registry Lưu HD-CORE09-LNTR5P",
+    "POST create 201",
+    "warm prev status=201 can_issue=true tpl=TPL_CLQA4-KN5SCA",
+    "J02 Xem trước",
+    "J03 preview missing",
+    "J05 Lưu phiên bản in",
+    "J06 Lưu no-tpl HD-CORE09NT-LNTR5P"
+  ],
+  "journeys": {
+    "j01": {
+      "id": "J-HRM-CORE-09-01",
+      "verdict": "PASS",
+      "notes": [
+        "reOpen=true",
+        "cta=true saveDisabled=true title=0 mẫu — chặn VER giả (R-CORE-09-ZERO-TPL) ctaText=Chưa có mẫu HĐ hiệu lực (HRM-CTR-TPL-NONE)0 mẫu active (HRM-CTR-TPL-NONE) — cấu hình mẫu trước khi xem trước / lưu phiên bản từ mẫu. Không lưu phiên bản giả.Cài đặt → Điều khoản HĐ / Mẫu theo loại · AC-CTR-TPL-01 / R-COR",
+        "ver2xx_after_force=0 nest_delta=0",
+        "restore_spine=true"
+      ],
+      "network": [
+        {
+          "method": "GET",
+          "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+          "status": 200,
+          "at": "2026-08-09T10:29:21.026Z",
+          "nest_core": false,
+          "preview": false,
+          "contracts": false,
+          "printVer": false,
+          "templates": true
+        }
+      ]
+    },
+    "j02": {
+      "id": "J-HRM-CORE-09-02",
+      "verdict": "PASS",
+      "notes": [
+        "btnOk=true prev=201 code=HRM-CTR-PREV-200 merged=41 ui=true ephemeral=true ver201=0 nest=0 newPrev=true"
+      ],
+      "network": [
+        {
+          "method": "POST",
+          "url": "/api/hrm/contracts-insurance/contracts/07d73b1e-de89-49d5-b310-394c120c1e88/preview?company_id=main",
+          "status": 201,
+          "at": "2026-08-09T10:29:43.548Z",
+          "nest_core": false,
+          "preview": true,
+          "contracts": false,
+          "printVer": false,
+          "templates": false,
+          "bodySnippet": "{\"success\":true,\"code\":\"HRM-CTR-PREV-200\",\"message\":\"Contract merge preview\",\"data\":{\"pack_code\":\"GENERAL\",\"template_id\":\"f00c4b64-0403-49ab-b36d-18d9d3d8e352\",\"template_code\":\"TPL_CLQA4-KN5SCA\",\"template_version\":1,\"title_print_vi\":null,\"term_type\":null,\"default_duration_days\":null,\"default_duration_months\":null,\"number_pattern_hint\":\"{seq}/2026/HDLD-XE-9062\",\"contract_number_suggested\":\"001/2026/HDLD-XE-9062\",\"show_driver_license_block\":false,\"sections\":[{\"clause_group\":\"LEGAL_BASIS\",\"clauses\""
+        }
+      ]
+    },
+    "j03": {
+      "id": "J-HRM-CORE-09-03",
+      "verdict": "PASS",
+      "notes": [
+        "can_issue=false missUi=true saveDisabled=true ver2xx=0 missing=[{\"field\":\"work_location\",\"message\":\"Work location is required\"}] nest=0"
+      ],
+      "network": []
+    },
+    "j04": {
+      "id": "J-HRM-CORE-09-04",
+      "verdict": "PASS",
+      "notes": [
+        "cb_masked=false banner=false metaHasMask=false salaryKeys=[] nest=0"
+      ],
+      "network": []
+    },
+    "j05": {
+      "id": "J-HRM-CORE-09-05",
+      "verdict": "PASS",
+      "notes": [
+        "pre_can_issue=true tpl=TPL_CLQA4-KN5SCA missing=[]",
+        "POST VER 201 code=HRM-CTR-VER-201 id=2f446770-9f59-443c-91db-7974484ff14f physical=true nest=false",
+        "honesty={\"printable_false\":true,\"peers_09ad_ne\":true,\"registry_ne\":true,\"core07_retain\":true,\"soft_ne_06\":true,\"word_out\":true,\"nest_core_0\":true}",
+        "F5_reopen=true nest_delta=0"
+      ],
+      "network": [],
+      "honesty_blob": "Honesty: contracts_printable_ready=false · 09a–d ADD ≠ CORE-09 DONE · registry CRUD ≠ CORE-09 DONE · CORE-07 GATE/ACT RETAIN (≠ DONE) · soft ≠ CORE-06 DONE · AC-CTR-XEVN-08: Lưu sổ không bắt buộc mẫu in · 09a–d ADD ≠ CORE-09 DONE · CORE-07 GATE/ACT RETAIN\nHonesty: contracts_printable_ready=false · 09a–d ADD ≠ CORE-09 DONE · registry CRUD ≠ CORE-09 DONE · CORE-07 GATE/ACT RETAIN (≠ DONE) · soft ≠ CORE-06 DONE · 09a–d ADD ≠ CORE-09 DONE · CORE-07 GATE/ACT RETAIN (≠ DONE) · soft ≠ CORE-06 DONE · Wo"
+    },
+    "j06": {
+      "id": "J-HRM-CORE-09-06",
+      "verdict": "PASS",
+      "notes": [
+        "honesty={\"printable_false\":true,\"peers_09ad_ne\":true,\"registry_ne\":true,\"core07_retain\":true,\"soft_ne_06\":true,\"word_out\":false,\"nest_core_0\":false}",
+        "POST 201 code=HRM-CON-201 has_tpl=false physical=true nest=false noteDialog=true noteList=false",
+        "honesty={\"printable_false\":true,\"peers_09ad_ne\":true,\"registry_ne\":true,\"core07_retain\":true,\"soft_ne_06\":true,\"word_out\":false,\"nest_core_0\":false}",
+        "F5_row=true nest_delta=0 nest_total=0"
+      ],
+      "network": [],
+      "honesty_blob": "Honesty: contracts_printable_ready=false · 09a–d ADD ≠ CORE-09 DONE · registry CRUD ≠ CORE-09 DONE · CORE-07 GATE/ACT RETAIN (≠ DONE) · soft ≠ CORE-06 DONE · AC-CTR-XEVN-08: Lưu sổ không bắt buộc mẫu in · 09a–d ADD ≠ CORE-09 DONE · CORE-07 GATE/ACT RETAIN\n\n"
+    }
+  },
+  "residuals": [
+    {
+      "id": "R-QA-CORE-09-ISSUE-SOFT-DISABLE",
+      "sev": "P2 OBS",
+      "note": "FE disables Lưu when can_issue=false — server ISSUE-BLOCKED not clicked; missing + 0 INSERT asserted"
+    },
+    {
+      "id": "R-QA-CORE-09-CB-MASK-CEO",
+      "sev": "P2 OBS",
+      "note": "ceo@xe.vn Group CEO → PREV cb_masked=false (has C&B). Banner path present in FE; Non-C&B persona not in this seat. DENY invent C&B engine DONE."
+    }
+  ],
+  "defects": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T10:32:46.750Z",
+  "nest_core_browser_total": 0,
+  "physical_only_assert": true,
+  "summary": {
+    "stamp": "CORE09QA-MSLNTR5P",
+    "overall": "PASS",
+    "journeys": {
+      "j01": {
+        "id": "J-HRM-CORE-09-01",
+        "verdict": "PASS",
+        "notes": [
+          "reOpen=true",
+          "cta=true saveDisabled=true title=0 mẫu — chặn VER giả (R-CORE-09-ZERO-TPL) ctaText=Chưa có mẫu HĐ hiệu lực (HRM-CTR-TPL-NONE)0 mẫu active (HRM-CTR-TPL-NONE) — cấu hình mẫu trước khi xem trước / lưu phiên bản từ mẫu. Không lưu phiên bản giả.Cài đặt → Điều khoản HĐ / Mẫu theo loại · AC-CTR-TPL-01 / R-COR",
+          "ver2xx_after_force=0 nest_delta=0",
+          "restore_spine=true"
+        ]
+      },
+      "j02": {
+        "id": "J-HRM-CORE-09-02",
+        "verdict": "PASS",
+        "notes": [
+          "btnOk=true prev=201 code=HRM-CTR-PREV-200 merged=41 ui=true ephemeral=true ver201=0 nest=0 newPrev=true"
+        ]
+      },
+      "j03": {
+        "id": "J-HRM-CORE-09-03",
+        "verdict": "PASS",
+        "notes": [
+          "can_issue=false missUi=true saveDisabled=true ver2xx=0 missing=[{\"field\":\"work_location\",\"message\":\"Work location is required\"}] nest=0"
+        ]
+      },
+      "j04": {
+        "id": "J-HRM-CORE-09-04",
+        "verdict": "PASS",
+        "notes": [
+          "cb_masked=false banner=false metaHasMask=false salaryKeys=[] nest=0"
+        ]
+      },
+      "j05": {
+        "id": "J-HRM-CORE-09-05",
+        "verdict": "PASS",
+        "notes": [
+          "pre_can_issue=true tpl=TPL_CLQA4-KN5SCA missing=[]",
+          "POST VER 201 code=HRM-CTR-VER-201 id=2f446770-9f59-443c-91db-7974484ff14f physical=true nest=false",
+          "honesty={\"printable_false\":true,\"peers_09ad_ne\":true,\"registry_ne\":true,\"core07_retain\":true,\"soft_ne_06\":true,\"word_out\":true,\"nest_core_0\":true}",
+          "F5_reopen=true nest_delta=0"
+        ]
+      },
+      "j06": {
+        "id": "J-HRM-CORE-09-06",
+        "verdict": "PASS",
+        "notes": [
+          "honesty={\"printable_false\":true,\"peers_09ad_ne\":true,\"registry_ne\":true,\"core07_retain\":true,\"soft_ne_06\":true,\"word_out\":false,\"nest_core_0\":false}",
+          "POST 201 code=HRM-CON-201 has_tpl=false physical=true nest=false noteDialog=true noteList=false",
+          "honesty={\"printable_false\":true,\"peers_09ad_ne\":true,\"registry_ne\":true,\"core07_retain\":true,\"soft_ne_06\":true,\"word_out\":false,\"nest_core_0\":false}",
+          "F5_row=true nest_delta=0 nest_total=0"
+        ]
+      }
+    },
+    "nest_core": 0,
+    "contract_code": "HD-CORE09-LNTR5P",
+    "contract_code_notpl": "HD-CORE09NT-LNTR5P",
+    "created_contract_id": "07d73b1e-de89-49d5-b310-394c120c1e88",
+    "issued_version_id": "2f446770-9f59-443c-91db-7974484ff14f",
+    "residuals": [
+      {
+        "id": "R-QA-CORE-09-ISSUE-SOFT-DISABLE",
+        "sev": "P2 OBS",
+        "note": "FE disables Lưu when can_issue=false — server ISSUE-BLOCKED not clicked; missing + 0 INSERT asserted"
+      },
+      {
+        "id": "R-QA-CORE-09-CB-MASK-CEO",
+        "sev": "P2 OBS",
+        "note": "ceo@xe.vn Group CEO → PREV cb_masked=false (has C&B). Banner path present in FE; Non-C&B persona not in this seat. DENY invent C&B engine DONE."
+      }
+    ],
+    "defects": []
+  }
+}

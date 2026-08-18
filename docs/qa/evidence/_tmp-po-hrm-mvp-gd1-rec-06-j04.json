@@ -1,0 +1,93 @@
+{
+  "work_item": "PO-HRM-MVP-GD1-REC-06-CLUSTER-QA-01-J04",
+  "network": [
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/operating-units",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/company-subscription?company_id=main",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/dashboard?company_id=main&year=2026&include=yctd",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates?company_id=main",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/candidates-pool?company_id=main",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/candidates-pool?company_id=main",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "s": 200
+    },
+    {
+      "m": "POST",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/candidates/f0b2d4e3-e71c-4ca7-a78e-7116a805a5ed/transitions?company_id=main",
+      "s": 201
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/candidates-pool?company_id=main",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "s": 200
+    },
+    {
+      "m": "GET",
+      "u": "http://127.0.0.1:5173/api/hrm/recruitment/candidates/f0b2d4e3-e71c-4ca7-a78e-7116a805a5ed/stage-history?company_id=main&requisition_id=4ab3d804-1d8c-4cb5-8765-031215203281&limit=100",
+      "s": 200
+    }
+  ],
+  "nest_rec": 0,
+  "transition": {
+    "status": 201,
+    "code": "HRM-REC-200",
+    "history_id": "00b63398-22c1-43a1-a96d-1f46decfe02d",
+    "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates/f0b2d4e3-e71c-4ca7-a78e-7116a805a5ed/transitions?company_id=main"
+  },
+  "notes": [
+    "detail open idx=1",
+    "eff_options=4"
+  ],
+  "timeline": true,
+  "ok": true
+}

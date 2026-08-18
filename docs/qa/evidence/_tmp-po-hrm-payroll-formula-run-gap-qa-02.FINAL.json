@@ -1,0 +1,594 @@
+{
+  "work_item_id": "PO-HRM-PAYROLL-FORMULA-RUN-GAP-QA-02",
+  "stamp": "PAYFQ2-MSIGD3E0",
+  "lane": "L1_API_smoke_only",
+  "u65": "zero-seed · probe ≠ UF · cấm claim formula LIVE",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "formula_live": false,
+    "browser_uf": false
+  },
+  "author": "ceo@xe.vn",
+  "publisher_candidate": "admin@xe.vn",
+  "company_id": "main",
+  "formula_code": "qa_formula_msigd3e0",
+  "startedAt": "2026-08-07T04:36:31.464Z",
+  "checks": {
+    "ac1_post_draft": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 201 code=HRM-PAY-FORMULA-201 id=d06e0d6d-a615-477e-b787-012191a6b88c status=draft"
+    },
+    "ac2_list": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 200 code=HRM-PAY-FORMULA-200 rows=1 inList=true"
+    },
+    "ac2_get": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 200 code=HRM-PAY-FORMULA-200 id=d06e0d6d-a615-477e-b787-012191a6b88c"
+    },
+    "ac3_submit": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 201 code=HRM-PAY-FORMULA-200 status=pending_publish"
+    },
+    "ac4_self_publish_dual": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 403 code=HRM-PAY-FORMULA-403-DUAL msg=Dual-control: publisher must differ from authored_by"
+    },
+    "ac3_second_actor_publish": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 201 code=HRM-PAY-FORMULA-200 status=active publisher=admin@xe.vn"
+    },
+    "ac5_put_immutable": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "target_status=active HTTP 409 code=HRM-PAY-FORMULA-409-IMMUTABLE msg=Only draft formulas may be updated in place; create a new version"
+    },
+    "ac6_preview_stub": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 412 code=HRM-PAY-FORMULA-412-PREVIEW-STUB msg=Formula preview staged — hours fidelity blocked until att_timesheet_line; evaluator not LIVE"
+    },
+    "ac7_no_pay_sheet_template_formula_invent": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "GET /payroll/pay-sheet-templates → HTTP 200 code=HRM-PAY-TPL-200 (expect no formula invent surface)"
+    },
+    "ac7_salary_templates_not_formula_claim": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "salary-templates HTTP 200 code=HRM-PAY-200 — peer catalog; not formula engine SoT"
+    }
+  },
+  "steps": [
+    {
+      "method": "POST",
+      "path": "/api/hrm/payroll/formulas",
+      "status": 201,
+      "code": "HRM-PAY-FORMULA-201",
+      "message": "Pay formula draft created",
+      "dataSummary": "{\"id\":\"d06e0d6d-a615-477e-b787-012191a6b88c\",\"companyId\":\"holding\",\"code\":\"qa_formula_msigd3e0\",\"version\":1,\"status\":\"draft\",\"expressionJson\":{\"ops\":[{\"op\":\"noop\",\"note\":\"L1 smoke opaque\"}],\"form\":\"opaque\",\"stamp\":\"PAYFQ2-MSIGD3E0\"},\"requiredVarsJson\":{\"keys\":[\"payable_hours\",\"base_salary\"]},\"label\":\"QA L1 PAYFQ2-MSIGD3E0\",\"authoredBy\":\"ceo@xe.vn\",\"authoredAt\":\"2026-08-07 04:36:42.375165+00\",\"publishedBy\":null,\"publishedAt\":null,\"effectiveFrom\":null,\"effectiveTo\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 04:36:42.375165+00\",\"updatedAt\":\"2026-08-07 04:36:42.375165+00\"}",
+      "data": {
+        "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+        "companyId": "holding",
+        "code": "qa_formula_msigd3e0",
+        "version": 1,
+        "status": "draft",
+        "expressionJson": {
+          "ops": [
+            {
+              "op": "noop",
+              "note": "L1 smoke opaque"
+            }
+          ],
+          "form": "opaque",
+          "stamp": "PAYFQ2-MSIGD3E0"
+        },
+        "requiredVarsJson": {
+          "keys": [
+            "payable_hours",
+            "base_salary"
+          ]
+        },
+        "label": "QA L1 PAYFQ2-MSIGD3E0",
+        "authoredBy": "ceo@xe.vn",
+        "authoredAt": "2026-08-07 04:36:42.375165+00",
+        "publishedBy": null,
+        "publishedAt": null,
+        "effectiveFrom": null,
+        "effectiveTo": null,
+        "archivedAt": null,
+        "createdAt": "2026-08-07 04:36:42.375165+00",
+        "updatedAt": "2026-08-07 04:36:42.375165+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-FORMULA-201",
+        "message": "Pay formula draft created",
+        "data": {
+          "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+          "companyId": "holding",
+          "code": "qa_formula_msigd3e0",
+          "version": 1,
+          "status": "draft",
+          "expressionJson": {
+            "ops": [
+              {
+                "op": "noop",
+                "note": "L1 smoke opaque"
+              }
+            ],
+            "form": "opaque",
+            "stamp": "PAYFQ2-MSIGD3E0"
+          },
+          "requiredVarsJson": {
+            "keys": [
+              "payable_hours",
+              "base_salary"
+            ]
+          },
+          "label": "QA L1 PAYFQ2-MSIGD3E0",
+          "authoredBy": "ceo@xe.vn",
+          "authoredAt": "2026-08-07 04:36:42.375165+00",
+          "publishedBy": null,
+          "publishedAt": null,
+          "effectiveFrom": null,
+          "effectiveTo": null,
+          "archivedAt": null,
+          "createdAt": "2026-08-07 04:36:42.375165+00",
+          "updatedAt": "2026-08-07 04:36:42.375165+00"
+        },
+        "timestamp": "2026-08-07T04:36:31.821Z"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/payroll/formulas?company_id=main&code=qa_formula_msigd3e0",
+      "status": 200,
+      "code": "HRM-PAY-FORMULA-200",
+      "message": "Pay formulas listed",
+      "dataSummary": "{\"items\":[{\"id\":\"d06e0d6d-a615-477e-b787-012191a6b88c\",\"companyId\":\"holding\",\"code\":\"qa_formula_msigd3e0\",\"version\":1,\"status\":\"draft\",\"expressionJson\":{\"ops\":[{\"op\":\"noop\",\"note\":\"L1 smoke opaque\"}],\"form\":\"opaque\",\"stamp\":\"PAYFQ2-MSIGD3E0\"},\"requiredVarsJson\":{\"keys\":[\"payable_hours\",\"base_salary\"]},\"label\":\"QA L1 PAYFQ2-MSIGD3E0\",\"authoredBy\":\"ceo@xe.vn\",\"authoredAt\":\"2026-08-07 04:36:42.375165+00\",\"publishedBy\":null,\"publishedAt\":null,\"effectiveFrom\":null,\"effectiveTo\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 04:36:42.375165+00\",\"updatedAt\":\"2026-08-07 04:36:42.375165+00\"}]}",
+      "data": {
+        "items": [
+          {
+            "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+            "companyId": "holding",
+            "code": "qa_formula_msigd3e0",
+            "version": 1,
+            "status": "draft",
+            "expressionJson": {
+              "ops": [
+                {
+                  "op": "noop",
+                  "note": "L1 smoke opaque"
+                }
+              ],
+              "form": "opaque",
+              "stamp": "PAYFQ2-MSIGD3E0"
+            },
+            "requiredVarsJson": {
+              "keys": [
+                "payable_hours",
+                "base_salary"
+              ]
+            },
+            "label": "QA L1 PAYFQ2-MSIGD3E0",
+            "authoredBy": "ceo@xe.vn",
+            "authoredAt": "2026-08-07 04:36:42.375165+00",
+            "publishedBy": null,
+            "publishedAt": null,
+            "effectiveFrom": null,
+            "effectiveTo": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 04:36:42.375165+00",
+            "updatedAt": "2026-08-07 04:36:42.375165+00"
+          }
+        ]
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-FORMULA-200",
+        "message": "Pay formulas listed",
+        "data": {
+          "items": [
+            {
+              "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+              "companyId": "holding",
+              "code": "qa_formula_msigd3e0",
+              "version": 1,
+              "status": "draft",
+              "expressionJson": {
+                "ops": [
+                  {
+                    "op": "noop",
+                    "note": "L1 smoke opaque"
+                  }
+                ],
+                "form": "opaque",
+                "stamp": "PAYFQ2-MSIGD3E0"
+              },
+              "requiredVarsJson": {
+                "keys": [
+                  "payable_hours",
+                  "base_salary"
+                ]
+              },
+              "label": "QA L1 PAYFQ2-MSIGD3E0",
+              "authoredBy": "ceo@xe.vn",
+              "authoredAt": "2026-08-07 04:36:42.375165+00",
+              "publishedBy": null,
+              "publishedAt": null,
+              "effectiveFrom": null,
+              "effectiveTo": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 04:36:42.375165+00",
+              "updatedAt": "2026-08-07 04:36:42.375165+00"
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T04:36:31.876Z"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/payroll/formulas/d06e0d6d-a615-477e-b787-012191a6b88c?company_id=main",
+      "status": 200,
+      "code": "HRM-PAY-FORMULA-200",
+      "message": "Pay formula loaded",
+      "dataSummary": "{\"id\":\"d06e0d6d-a615-477e-b787-012191a6b88c\",\"companyId\":\"holding\",\"code\":\"qa_formula_msigd3e0\",\"version\":1,\"status\":\"draft\",\"expressionJson\":{\"ops\":[{\"op\":\"noop\",\"note\":\"L1 smoke opaque\"}],\"form\":\"opaque\",\"stamp\":\"PAYFQ2-MSIGD3E0\"},\"requiredVarsJson\":{\"keys\":[\"payable_hours\",\"base_salary\"]},\"label\":\"QA L1 PAYFQ2-MSIGD3E0\",\"authoredBy\":\"ceo@xe.vn\",\"authoredAt\":\"2026-08-07 04:36:42.375165+00\",\"publishedBy\":null,\"publishedAt\":null,\"effectiveFrom\":null,\"effectiveTo\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 04:36:42.375165+00\",\"updatedAt\":\"2026-08-07 04:36:42.375165+00\"}",
+      "data": {
+        "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+        "companyId": "holding",
+        "code": "qa_formula_msigd3e0",
+        "version": 1,
+        "status": "draft",
+        "expressionJson": {
+          "ops": [
+            {
+              "op": "noop",
+              "note": "L1 smoke opaque"
+            }
+          ],
+          "form": "opaque",
+          "stamp": "PAYFQ2-MSIGD3E0"
+        },
+        "requiredVarsJson": {
+          "keys": [
+            "payable_hours",
+            "base_salary"
+          ]
+        },
+        "label": "QA L1 PAYFQ2-MSIGD3E0",
+        "authoredBy": "ceo@xe.vn",
+        "authoredAt": "2026-08-07 04:36:42.375165+00",
+        "publishedBy": null,
+        "publishedAt": null,
+        "effectiveFrom": null,
+        "effectiveTo": null,
+        "archivedAt": null,
+        "createdAt": "2026-08-07 04:36:42.375165+00",
+        "updatedAt": "2026-08-07 04:36:42.375165+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-FORMULA-200",
+        "message": "Pay formula loaded",
+        "data": {
+          "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+          "companyId": "holding",
+          "code": "qa_formula_msigd3e0",
+          "version": 1,
+          "status": "draft",
+          "expressionJson": {
+            "ops": [
+              {
+                "op": "noop",
+                "note": "L1 smoke opaque"
+              }
+            ],
+            "form": "opaque",
+            "stamp": "PAYFQ2-MSIGD3E0"
+          },
+          "requiredVarsJson": {
+            "keys": [
+              "payable_hours",
+              "base_salary"
+            ]
+          },
+          "label": "QA L1 PAYFQ2-MSIGD3E0",
+          "authoredBy": "ceo@xe.vn",
+          "authoredAt": "2026-08-07 04:36:42.375165+00",
+          "publishedBy": null,
+          "publishedAt": null,
+          "effectiveFrom": null,
+          "effectiveTo": null,
+          "archivedAt": null,
+          "createdAt": "2026-08-07 04:36:42.375165+00",
+          "updatedAt": "2026-08-07 04:36:42.375165+00"
+        },
+        "timestamp": "2026-08-07T04:36:31.948Z"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/payroll/formulas/d06e0d6d-a615-477e-b787-012191a6b88c/submit-publish?company_id=main",
+      "status": 201,
+      "code": "HRM-PAY-FORMULA-200",
+      "message": "Pay formula submitted for publish",
+      "dataSummary": "{\"id\":\"d06e0d6d-a615-477e-b787-012191a6b88c\",\"companyId\":\"holding\",\"code\":\"qa_formula_msigd3e0\",\"version\":1,\"status\":\"pending_publish\",\"expressionJson\":{\"ops\":[{\"op\":\"noop\",\"note\":\"L1 smoke opaque\"}],\"form\":\"opaque\",\"stamp\":\"PAYFQ2-MSIGD3E0\"},\"requiredVarsJson\":{\"keys\":[\"payable_hours\",\"base_salary\"]},\"label\":\"QA L1 PAYFQ2-MSIGD3E0\",\"authoredBy\":\"ceo@xe.vn\",\"authoredAt\":\"2026-08-07 04:36:42.375165+00\",\"publishedBy\":null,\"publishedAt\":null,\"effectiveFrom\":null,\"effectiveTo\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 04:36:42.375165+00\",\"updatedAt\":\"2026-08-07 04:36:42.569854+00\"}",
+      "data": {
+        "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+        "companyId": "holding",
+        "code": "qa_formula_msigd3e0",
+        "version": 1,
+        "status": "pending_publish",
+        "expressionJson": {
+          "ops": [
+            {
+              "op": "noop",
+              "note": "L1 smoke opaque"
+            }
+          ],
+          "form": "opaque",
+          "stamp": "PAYFQ2-MSIGD3E0"
+        },
+        "requiredVarsJson": {
+          "keys": [
+            "payable_hours",
+            "base_salary"
+          ]
+        },
+        "label": "QA L1 PAYFQ2-MSIGD3E0",
+        "authoredBy": "ceo@xe.vn",
+        "authoredAt": "2026-08-07 04:36:42.375165+00",
+        "publishedBy": null,
+        "publishedAt": null,
+        "effectiveFrom": null,
+        "effectiveTo": null,
+        "archivedAt": null,
+        "createdAt": "2026-08-07 04:36:42.375165+00",
+        "updatedAt": "2026-08-07 04:36:42.569854+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-FORMULA-200",
+        "message": "Pay formula submitted for publish",
+        "data": {
+          "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+          "companyId": "holding",
+          "code": "qa_formula_msigd3e0",
+          "version": 1,
+          "status": "pending_publish",
+          "expressionJson": {
+            "ops": [
+              {
+                "op": "noop",
+                "note": "L1 smoke opaque"
+              }
+            ],
+            "form": "opaque",
+            "stamp": "PAYFQ2-MSIGD3E0"
+          },
+          "requiredVarsJson": {
+            "keys": [
+              "payable_hours",
+              "base_salary"
+            ]
+          },
+          "label": "QA L1 PAYFQ2-MSIGD3E0",
+          "authoredBy": "ceo@xe.vn",
+          "authoredAt": "2026-08-07 04:36:42.375165+00",
+          "publishedBy": null,
+          "publishedAt": null,
+          "effectiveFrom": null,
+          "effectiveTo": null,
+          "archivedAt": null,
+          "createdAt": "2026-08-07 04:36:42.375165+00",
+          "updatedAt": "2026-08-07 04:36:42.569854+00"
+        },
+        "timestamp": "2026-08-07T04:36:32.023Z"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/payroll/formulas/d06e0d6d-a615-477e-b787-012191a6b88c/publish?company_id=main",
+      "status": 403,
+      "code": "HRM-PAY-FORMULA-403-DUAL",
+      "message": "Dual-control: publisher must differ from authored_by",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-FORMULA-403-DUAL\",\"message\":\"Dual-control: publisher must differ from authored_by\",\"timestamp\":\"2026-08-07T04:36:32.079Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-FORMULA-403-DUAL",
+        "message": "Dual-control: publisher must differ from authored_by",
+        "timestamp": "2026-08-07T04:36:32.079Z"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/payroll/formulas/d06e0d6d-a615-477e-b787-012191a6b88c/publish?company_id=main",
+      "status": 201,
+      "code": "HRM-PAY-FORMULA-200",
+      "message": "Pay formula published",
+      "dataSummary": "{\"id\":\"d06e0d6d-a615-477e-b787-012191a6b88c\",\"companyId\":\"holding\",\"code\":\"qa_formula_msigd3e0\",\"version\":1,\"status\":\"active\",\"expressionJson\":{\"ops\":[{\"op\":\"noop\",\"note\":\"L1 smoke opaque\"}],\"form\":\"opaque\",\"stamp\":\"PAYFQ2-MSIGD3E0\"},\"requiredVarsJson\":{\"keys\":[\"payable_hours\",\"base_salary\"]},\"label\":\"QA L1 PAYFQ2-MSIGD3E0\",\"authoredBy\":\"ceo@xe.vn\",\"authoredAt\":\"2026-08-07 04:36:42.375165+00\",\"publishedBy\":\"admin@xe.vn\",\"publishedAt\":\"2026-08-07 04:36:42.714366+00\",\"effectiveFrom\":null,\"effectiveTo\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 04:36:42.375165+00\",\"updatedAt\":\"2026-08-07 04:36:42.714366+00\"}",
+      "data": {
+        "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+        "companyId": "holding",
+        "code": "qa_formula_msigd3e0",
+        "version": 1,
+        "status": "active",
+        "expressionJson": {
+          "ops": [
+            {
+              "op": "noop",
+              "note": "L1 smoke opaque"
+            }
+          ],
+          "form": "opaque",
+          "stamp": "PAYFQ2-MSIGD3E0"
+        },
+        "requiredVarsJson": {
+          "keys": [
+            "payable_hours",
+            "base_salary"
+          ]
+        },
+        "label": "QA L1 PAYFQ2-MSIGD3E0",
+        "authoredBy": "ceo@xe.vn",
+        "authoredAt": "2026-08-07 04:36:42.375165+00",
+        "publishedBy": "admin@xe.vn",
+        "publishedAt": "2026-08-07 04:36:42.714366+00",
+        "effectiveFrom": null,
+        "effectiveTo": null,
+        "archivedAt": null,
+        "createdAt": "2026-08-07 04:36:42.375165+00",
+        "updatedAt": "2026-08-07 04:36:42.714366+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-FORMULA-200",
+        "message": "Pay formula published",
+        "data": {
+          "id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+          "companyId": "holding",
+          "code": "qa_formula_msigd3e0",
+          "version": 1,
+          "status": "active",
+          "expressionJson": {
+            "ops": [
+              {
+                "op": "noop",
+                "note": "L1 smoke opaque"
+              }
+            ],
+            "form": "opaque",
+            "stamp": "PAYFQ2-MSIGD3E0"
+          },
+          "requiredVarsJson": {
+            "keys": [
+              "payable_hours",
+              "base_salary"
+            ]
+          },
+          "label": "QA L1 PAYFQ2-MSIGD3E0",
+          "authoredBy": "ceo@xe.vn",
+          "authoredAt": "2026-08-07 04:36:42.375165+00",
+          "publishedBy": "admin@xe.vn",
+          "publishedAt": "2026-08-07 04:36:42.714366+00",
+          "effectiveFrom": null,
+          "effectiveTo": null,
+          "archivedAt": null,
+          "createdAt": "2026-08-07 04:36:42.375165+00",
+          "updatedAt": "2026-08-07 04:36:42.714366+00"
+        },
+        "timestamp": "2026-08-07T04:36:32.165Z"
+      },
+      "skipped": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/hrm/payroll/formulas/d06e0d6d-a615-477e-b787-012191a6b88c",
+      "status": 409,
+      "code": "HRM-PAY-FORMULA-409-IMMUTABLE",
+      "message": "Only draft formulas may be updated in place; create a new version",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-FORMULA-409-IMMUTABLE\",\"message\":\"Only draft formulas may be updated in place; create a new version\",\"timestamp\":\"2026-08-07T04:36:32.231Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-FORMULA-409-IMMUTABLE",
+        "message": "Only draft formulas may be updated in place; create a new version",
+        "timestamp": "2026-08-07T04:36:32.231Z"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/payroll/formulas/d06e0d6d-a615-477e-b787-012191a6b88c/preview",
+      "status": 412,
+      "code": "HRM-PAY-FORMULA-412-PREVIEW-STUB",
+      "message": "Formula preview staged — hours fidelity blocked until att_timesheet_line; evaluator not LIVE",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-FORMULA-412-PREVIEW-STUB\",\"message\":\"Formula preview staged — hours fidelity blocked until att_timesheet_line; evaluator not LIVE\",\"details\":{\"formulaDefinitionId\":\"d06e0d6d-a615-477e-b787-012191a6b88c\",\"version\":1,\"status\":\"active\",\"warnings\":[\"PREVIEW_STAGED\",\"ATT_TIMESHEET_LINE_ABSENT\",\"EVALUATOR_NOT_LIVE\"],\"payroll_e2e_ready\":false},\"timestamp\":\"2026-08-07T04:36:32.324Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-FORMULA-412-PREVIEW-STUB",
+        "message": "Formula preview staged — hours fidelity blocked until att_timesheet_line; evaluator not LIVE",
+        "details": {
+          "formulaDefinitionId": "d06e0d6d-a615-477e-b787-012191a6b88c",
+          "version": 1,
+          "status": "active",
+          "warnings": [
+            "PREVIEW_STAGED",
+            "ATT_TIMESHEET_LINE_ABSENT",
+            "EVALUATOR_NOT_LIVE"
+          ],
+          "payroll_e2e_ready": false
+        },
+        "timestamp": "2026-08-07T04:36:32.324Z"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "status": 200,
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed",
+      "dataSummary": "{\"items\":[]}",
+      "data": {
+        "items": []
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-200",
+        "message": "Pay sheet templates listed",
+        "data": {
+          "items": []
+        },
+        "timestamp": "2026-08-07T04:36:32.475Z"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/payroll/salary-templates?company_id=main",
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "message": "Salary templates listed",
+      "dataSummary": "{\"total\":0,\"data\":[]}",
+      "data": {
+        "total": 0,
+        "data": []
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-200",
+        "message": "Salary templates listed",
+        "data": {
+          "total": 0,
+          "data": []
+        },
+        "timestamp": "2026-08-07T04:36:32.503Z"
+      },
+      "note": "EXISTING salary-templates peer — not claimed as F-PAY-FORMULA invent this wave"
+    }
+  ],
+  "author_login": {
+    "ok": true,
+    "status": 201,
+    "sub": "ceo@xe.vn",
+    "err": null
+  },
+  "publisher_login": {
+    "ok": true,
+    "status": 201,
+    "sub": "admin@xe.vn",
+    "err": null
+  },
+  "created_id": "d06e0d6d-a615-477e-b787-012191a6b88c",
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "finishedAt": "2026-08-07T04:36:32.504Z"
+}

@@ -1,0 +1,138 @@
+{
+  "work_item_id": "PO-HRM-CTR-WORKSPACE-G4-PROFILE-URL-QA-02",
+  "parent": "PO-HRM-CTR-WORKSPACE-G4-PROFILE-URL-FE-02",
+  "defect_closed": [
+    "DEF-CTR-G4-PROFILE-EMBED-P0",
+    "DEF-CTR-G4-PROFILE-URL-P2"
+  ],
+  "stamp": "CTRG4URL-MSO7HQ08",
+  "startedAt": "2026-08-11T05:14:48.040Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "hdsd_align": "UI-HRM-CTR-PROFILE-DEEP-LINK.md",
+  "honesty": {
+    "contracts_printable_ready": false,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "gates": {
+    "embedModule": {
+      "url": "http://127.0.0.1:5173/hr/src/components/layout/PortalEmbedRouterSync.tsx",
+      "status": 200
+    }
+  },
+  "prereq": {
+    "status": 200,
+    "count": 3,
+    "first": {
+      "id": "33333333-3333-4333-8333-333333333333",
+      "company_id": "trsport",
+      "company_uuid": "10000000-0000-4000-8000-000000000002",
+      "company_display_name": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+      "employee_code": "NV101",
+      "email": "ops.manager@xe.vn",
+      "full_name": "Le Van C",
+      "display_name": "Le Van C",
+      "job_title_key": "OPS_MANAGER",
+      "job_title_label": null,
+      "department": null,
+      "phone_number": null,
+      "manager_id": null,
+      "status": "active",
+      "status_label": "Đang làm việc",
+      "statusLabelVi": "Đang làm việc",
+      "hired_at": "2026-02-10T17:00:00.000Z",
+      "archived_at": null,
+      "avatar_url": null,
+      "candidate_id": null,
+      "custom_fields": {},
+      "created_at": "2026-08-10T05:37:17.564Z",
+      "updated_at": "2026-08-10T05:37:17.564Z",
+      "checklist_complete": null,
+      "blocking_items": null,
+      "can_activate": null,
+      "activated_at": null
+    }
+  },
+  "rows": {
+    "L2-embed-module": {
+      "verdict": "PASS",
+      "url": "http://127.0.0.1:5173/hr/src/components/layout/PortalEmbedRouterSync.tsx",
+      "status": 200
+    },
+    "L2-embed-mount": {
+      "verdict": "PASS",
+      "profilePageVisible": true,
+      "moduleFailures": [],
+      "empId": "33333333-3333-4333-8333-333333333333"
+    },
+    "WS-G4-12": {
+      "verdict": "PASS",
+      "clickPathStrict": true,
+      "parentUrl": "http://127.0.0.1:5173/command-center/hrm/contracts?tab=contract&workspace=create&employee_id=33333333-3333-4333-8333-333333333333&subject_type=employee&lock_subject_employee=1",
+      "parsed": {
+        "pathname": "/command-center/hrm/contracts",
+        "workspace": "create",
+        "employee_id": "33333333-3333-4333-8333-333333333333",
+        "lock_subject_employee": "1",
+        "tab": "contract",
+        "search": "?tab=contract&workspace=create&employee_id=33333333-3333-4333-8333-333333333333&subject_type=employee&lock_subject_employee=1"
+      },
+      "hasWorkspace": true,
+      "hasEmp": true,
+      "hasLock": true,
+      "step1": true,
+      "uvTabHidden": true,
+      "locked": true,
+      "empId": "33333333-3333-4333-8333-333333333333",
+      "moduleFailures": []
+    },
+    "WS-G4-12-F5": {
+      "verdict": "CARRY_P3",
+      "inExitCriteria": false,
+      "defect": "DEF-CTR-G4-PROFILE-URL-F5-P3",
+      "url": "http://127.0.0.1:5173/command-center/hrm/contracts?tab=contract",
+      "parsed": {
+        "pathname": "/command-center/hrm/contracts",
+        "workspace": null,
+        "employee_id": null,
+        "lock_subject_employee": null,
+        "tab": "contract",
+        "search": "?tab=contract"
+      }
+    }
+  },
+  "journeys": {
+    "J-HRM-CTR-PROFILE-01": {
+      "verdict": "PASS",
+      "clickPath": "profile → tab HĐ → Thêm HĐ → workspace create",
+      "parentUrlSync": true,
+      "embedLoads": true,
+      "noModule500": true
+    }
+  },
+  "steps_attempted": [
+    "Navigate profile /employees/33333333-3333-4333-8333-333333333333?tab=contract",
+    "Clicked profile-tab-contract",
+    "Click ec-open-contract-workspace-create",
+    "F5 regression — reload parent URL"
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-profile-url-retest-02/00-profile-loaded.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-profile-url-retest-02/01-profile-add-contract.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-profile-url-retest-02/02-after-f5.png"
+  ],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "residual": ["DEF-CTR-G4-PROFILE-URL-F5-P3"],
+  "endedAt": "2026-08-11T05:15:41.228Z"
+}

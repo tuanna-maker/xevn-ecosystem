@@ -1,0 +1,7 @@
+﻿## 2026-08-07 | xevn PO-HRM-PAYROLL-FORMULA-RUN-GAP-W3-QA-J-HRM-07-01 R2 PASS_TO_PM
+- **Context:** FE-SHOWADD-TDZ READY; R1 FAIL showAddDialog TDZ; U65 J-HRM-07 Jan; honesty payroll_e2e_ready=false
+- **Action:** Browser R2 ceo@xe.vn — assert no TDZ; pay-batches-precision; Lập bảng dialog; Jan closed period detail+lines; Sep process confirm reached but POST 2xx unproven
+- **Outcome:** **PASS_TO_PM** · TDZ CLOSED · Jan enroll BLOCKED (period closed) · stamp PAYW3J07-R2-MSIRLK3I · DENIED e2e-ready/LIVE
+- **Evidence:** docs/qa/evidence/po-hrm-payroll-formula-run-gap-w3-qa-j-hrm-07-01.md (R2 append) · _tmp-…-r2-browser.json
+- **Reuse-tag:** pay-batches-tdz-retest, j-hrm-07-w3-r2, honesty-no-payroll-e2e, closed-period-blocks-enroll
+

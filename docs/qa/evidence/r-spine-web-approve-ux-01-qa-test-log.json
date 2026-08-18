@@ -1,0 +1,130 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-R-SPINE-WEB-APPROVE-UX-01-QA-20260803",
+  "work_item_id": "R-SPINE-WEB-APPROVE-UX-01-QA",
+  "tester": {
+    "role": "qa",
+    "agent": "R-SPINE-WEB-APPROVE-UX-01-QA-browser"
+  },
+  "started_at": "2026-08-03T15:45:29.601Z",
+  "ended_at": "2026-08-03T15:46:14.395Z",
+  "environment": {
+    "portal_url": "http://127.0.0.1:5173",
+    "hrm_api": "http://127.0.0.1:28001/api/hrm",
+    "xbos_api": "http://127.0.0.1:28002/api/xbos",
+    "persona": "ceo@xe.vn",
+    "company_id": "main",
+    "commit": "dc930c5",
+    "notes": "U65 zero-seed · U76 HDSD · Path A list Duyệt + Path B CC leave Duyệt · must_keep LV-03/04 + LeaveOverviewRecentPanel"
+  },
+  "spec_ref": "FR-UC-H03 · UF-XBOS-08 · J-HRM-06",
+  "hdsd_sot": "HDSD Chấm công → Nghỉ phép — Danh sách Duyệt · CC Việc cần xử lý — Duyệt leave",
+  "hdsd_align": true,
+  "u65_zero_seed": true,
+  "evidence_narrative": "docs/qa/evidence/r-spine-web-approve-ux-01-qa.md",
+  "raw_harness": "docs/qa/evidence/_tmp-r-spine-web-approve-ux-01-qa-browser.json",
+  "verdict": "pass",
+  "ack_status": "PASS_TO_PM",
+  "idle_guard": {
+    "qa_idle_viewport": "PASS",
+    "click_count": 23
+  },
+  "case_matrix": {
+    "A_fail_deep": { "status": "skipped", "id": "LV-03-spot", "note": "GWC CLOSED must_keep" },
+    "B_success_hdsd": { "status": "pass", "pathA": "PASS", "pathB": "PASS" },
+    "C_logic_br": { "status": "pass", "note": "Duyệt CTA HDSD on list + CC leave" }
+  },
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-03T15:45:29.657Z",
+      "action": "API_LOGIN_POST",
+      "expected": "Login 2xx + accessToken",
+      "actual": "HTTP 201",
+      "network": { "method": "POST", "url": "/api/xbos/auth/login", "status": 201 },
+      "result": "pass"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-03T15:45:40.037Z",
+      "action": "NAV_ATTENDANCE_LEAVE",
+      "expected": "/hr/attendance mounts · Nghỉ phép tab · must_keep panel",
+      "actual": "#root=4 · leave tab · no Vite LeaveOverviewRecentPanel resolve fail",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/02-leave-tab.png"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-03T15:45:42.267Z",
+      "action": "PATH_A_LIST_PROBE",
+      "expected": "Pending rows show hdsd-leave-list-approve*",
+      "actual": "byTestId=30 · byRole=30",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/06-path-a-list.png"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-03T15:45:42.431Z",
+      "action": "PATH_A_CLICK_DUYET",
+      "expected": "POST leave-requests/:id/approve 2xx",
+      "actual": "201 HRM-LEAVE-203 status=approved status_label=Đã duyệt",
+      "network": {
+        "method": "POST",
+        "url": "/api/hrm/attendance/leave-requests/639e8033-bdbe-4623-8677-7ee1d5b2b1ac/approve",
+        "status": 201,
+        "code": "HRM-LEAVE-203"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/07-path-a-after-approve.png"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-03T15:45:53.558Z",
+      "action": "PATH_A_F5",
+      "expected": "List mounts after reload",
+      "actual": "GET leave-requests 200 · f5Mount=true",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/08-path-a-f5.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-03T15:46:08.048Z",
+      "action": "PATH_B_INBOX_PROBE",
+      "expected": "hrm_leave cards + hdsd-cc-leave-approve Duyệt",
+      "actual": "leaveCards=28 · leaveApproveCount=28 · accessibleName=Duyệt",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/09-path-b-inbox.png"
+    },
+    {
+      "seq": 7,
+      "at": "2026-08-03T15:46:08.183Z",
+      "action": "PATH_B_CLICK_DUYET",
+      "expected": "POST workflow-engine/tasks/:id/complete 2xx",
+      "actual": "201 XBOS-WF-200 Task completed",
+      "network": {
+        "method": "POST",
+        "url": "/api/xbos/workflow-engine/tasks/669909c4-b24d-47fb-bd93-8e37dd18eaa9/complete",
+        "status": 201,
+        "code": "XBOS-WF-200"
+      },
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/10-path-b-after-approve.png"
+    },
+    {
+      "seq": 8,
+      "at": "2026-08-03T15:46:14.394Z",
+      "action": "PATH_B_F5",
+      "expected": "Completed leave card reduced / page mounts",
+      "actual": "afterLeaveApprove=27 · f5Mount=true",
+      "result": "pass",
+      "attachment": "docs/qa/evidence/screens/r-spine-web-approve-ux-01-qa/11-path-b-f5.png"
+    }
+  ],
+  "incidents": [],
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "blocked": 0,
+    "skipped": 1
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "work_item_id": "QA-HDSD-MATRIX-PROMOTE-BF-03-BULK-01",
+  "before": {
+    "c": {
+      "🟢": 310,
+      "🟡": 54
+    },
+    "total": 364
+  },
+  "after": {
+    "c": {
+      "🟢": 310,
+      "🟡": 54
+    },
+    "total": 364
+  },
+  "appliedCount": 0,
+  "greenApplied": 0,
+  "yellowApplied": 0,
+  "regressions": [],
+  "applied": [],
+  "skipped": 67,
+  "runtimeSummary": {
+    "total": 71,
+    "green": 49,
+    "yellow": 22,
+    "red": 0
+  }
+}

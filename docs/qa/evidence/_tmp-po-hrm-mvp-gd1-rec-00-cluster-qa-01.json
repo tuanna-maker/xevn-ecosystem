@@ -1,0 +1,378 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-REC-00-CLUSTER-QA-01",
+  "startedAt": "2026-08-08T23:26:42.625Z",
+  "stamp": "REC00QA-MSL06DF5",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser FE Thư viện JD · Network 2xx · F5",
+  "hdsd_align": true,
+  "hdsd_inventory": [
+    "Tuyển dụng → Thư viện JD",
+    "hdsd-jd-library-add-btn · hdsd-jd-form-* · jd-library-publish-btn · jd-library-retire-btn",
+    "chips Nháp / Hiệu lực / Ngừng · Lưu nháp · Phát hành"
+  ],
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "deny_module_rec_uat": true,
+    "deny_nest_rec_dual": true,
+    "deny_boolean_only_pass": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "portal": 200
+  },
+  "l1": {
+    "list": {
+      "status": 200,
+      "code": "HRM-REC-JD-200",
+      "count": 10,
+      "sampleHasStatus": true,
+      "sampleStatus": "active",
+      "sampleIsActive": true
+    },
+    "publish_route": {
+      "status": 404,
+      "code": "HRM-REC-JD-404",
+      "message": "Resource not found",
+      "live": true
+    },
+    "nest_rec_dual": {
+      "status": 404,
+      "code": "HRM-DATA-404"
+    },
+    "bindable": {
+      "status": 200,
+      "code": "HRM-REC-JD-200",
+      "count": 7,
+      "statuses": [
+        "active"
+      ],
+      "allActiveOrMissing": true
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/operating-units",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:26:45.305Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/company-subscription?company_id=main",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:26:45.424Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/operating-units",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:26:48.561Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/company-subscription?company_id=main",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:26:48.689Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/operating-units",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:26:51.510Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/company-subscription?company_id=main",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:26:51.563Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/operating-units",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:26:54.785Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/company-subscription?company_id=main",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:26:54.841Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/operating-units",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:26:57.545Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/company-subscription?company_id=main",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:26:57.603Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/operating-units",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:27:00.455Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/company-subscription?company_id=main",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:27:00.520Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/operating-units",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:27:03.769Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "path": "/api/hrm/company-subscription?company_id=main",
+      "bodyCode": null,
+      "bodySnippet": null,
+      "at": "2026-08-08T23:27:03.832Z"
+    }
+  ],
+  "mutates": [],
+  "createBodies": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx?t=1786231196246:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=f2f9cd98:4131:5)\n    at Outlet (http://127.0.0.1:5173/hr/node_module",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx?t=1786231196246:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=f2f9cd98:4131:5)\n    at Outlet (http://127.0.0.1:5173/hr/node_module",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx?t=1786231196246:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=f2f9cd98:4131:5)\n    at Outlet (http://127.0.0.1:5173/hr/node_module",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx?t=1786231196246:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=f2f9cd98:4131:5)\n    at Outlet (http://127.0.0.1:5173/hr/node_module",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx?t=1786231196246:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=f2f9cd98:4131:5)\n    at Outlet (http://127.0.0.1:5173/hr/node_module",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx?t=1786231196246:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=f2f9cd98:4131:5)\n    at Outlet (http://127.0.0.1:5173/hr/node_module",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://127.0.0.1:5173/hr/src/components/auth/PermissionRoute.tsx?t=1786231196246:93:35)\n    at RenderedRoute (http://127.0.0.1:5173/hr/node_modules/.vite/deps/react-router-dom.js?v=f2f9cd98:4131:5)\n    at Outlet (http://127.0.0.1:5173/hr/node_module"
+  ],
+  "pageErrors": [
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/hr/src/pages/Recruitment.tsx?t=1786231196246"
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-00-cluster-qa-01/01-jd-library.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-00-cluster-qa-01/02-jd-library-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-00-cluster-qa-01/03-after-luu-nhap.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-00-cluster-qa-01/04-draft-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-00-cluster-qa-01/05-after-publish.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-00-cluster-qa-01/06-code-dup.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-00-cluster-qa-01/07-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-00-cluster-qa-01/08-requisitions.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-00-cluster-qa-01/09-yctd-picker.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-08T23:26:42.626Z",
+      "msg": "start",
+      "stamp": "REC00QA-MSL06DF5",
+      "code": "JD-R00-MSL06DF5"
+    },
+    {
+      "at": "2026-08-08T23:26:42.699Z",
+      "msg": "login ok"
+    },
+    {
+      "at": "2026-08-08T23:26:44.426Z",
+      "msg": "J-01 start"
+    },
+    {
+      "at": "2026-08-08T23:26:51.025Z",
+      "msg": "J-02 create draft"
+    },
+    {
+      "at": "2026-08-08T23:26:57.250Z",
+      "msg": "J-02 publish"
+    },
+    {
+      "at": "2026-08-08T23:26:59.986Z",
+      "msg": "P05 CODE-DUP"
+    },
+    {
+      "at": "2026-08-08T23:27:03.443Z",
+      "msg": "J-04 retire"
+    },
+    {
+      "at": "2026-08-08T23:27:03.497Z",
+      "msg": "J-03 YCTD bindable"
+    }
+  ],
+  "ac": {
+    "AC-REC-JD-00-01": {
+      "verdict": "FAIL",
+      "at": "2026-08-08T23:26:51.024Z",
+      "summary": "GET 2xx=false F5=false precision=false filter=false chips=empty dual=false",
+      "chipTexts": [],
+      "chipData": []
+    },
+    "AC-REC-JD-00-02": {
+      "verdict": "FAIL",
+      "at": "2026-08-08T23:26:54.520Z",
+      "summary": "POST=undefined code=undefined created.status=undefined chip=undefined/undefined submitLabel=undefined"
+    },
+    "AC-REC-JD-00-P04": {
+      "verdict": "FAIL",
+      "at": "2026-08-08T23:26:54.520Z",
+      "summary": "default draft — status=undefined is_active=undefined"
+    },
+    "AC-REC-JD-00-03": {
+      "verdict": "FAIL",
+      "at": "2026-08-08T23:26:59.983Z",
+      "summary": "Phát hành button missing"
+    },
+    "AC-REC-JD-00-P02": {
+      "verdict": "SKIP",
+      "at": "2026-08-08T23:26:59.985Z",
+      "summary": "not observed this run (got n/a)"
+    },
+    "AC-REC-JD-00-P05": {
+      "verdict": "FAIL",
+      "at": "2026-08-08T23:27:03.442Z",
+      "summary": "dup POST=undefined code=undefined toast=false"
+    },
+    "AC-REC-JD-00-05": {
+      "verdict": "BLOCKED_DATA",
+      "at": "2026-08-08T23:27:03.445Z",
+      "summary": "No Hiệu lực JD reachable this run (publish gate 4xx) — retire smoke deferred"
+    },
+    "AC-REC-JD-00-P03": {
+      "verdict": "BLOCKED_DATA",
+      "at": "2026-08-08T23:27:03.446Z",
+      "summary": "depends on active JD"
+    },
+    "AC-REC-JD-00-EX-05": {
+      "verdict": "SKIP",
+      "at": "2026-08-08T23:27:06.242Z",
+      "summary": "no draft id"
+    },
+    "AC-REC-JD-00-04": {
+      "verdict": "PASS",
+      "at": "2026-08-08T23:27:06.243Z",
+      "summary": "bindable L1={\"status\":200,\"code\":\"HRM-REC-JD-200\",\"count\":7,\"statuses\":[\"active\"],\"allActiveOrMissing\":true} picker=create_btn_missing"
+    }
+  },
+  "journeys": {
+    "J-HRM-REC-JD-00-01": {
+      "verdict": "FAIL",
+      "at": "2026-08-08T23:26:51.025Z",
+      "summary": "Thư viện JD list + chips VI + F5 · path /recruitment/job-templates only"
+    },
+    "J-HRM-REC-JD-00-02": {
+      "verdict": "FAIL",
+      "at": "2026-08-08T23:26:59.985Z",
+      "summary": "draft+F5 OK; publish=undefined/; chip=undefined",
+      "publish": {
+        "tried": false
+      }
+    },
+    "J-HRM-REC-JD-00-04": {
+      "verdict": "BLOCKED_DATA",
+      "at": "2026-08-08T23:27:03.497Z",
+      "summary": "No Hiệu lực JD reachable this run (publish gate 4xx) — retire smoke deferred"
+    },
+    "J-HRM-REC-JD-00-03": {
+      "verdict": "PASS",
+      "at": "2026-08-08T23:27:06.244Z",
+      "summary": "active-only bindable smoke · create_btn_missing"
+    }
+  },
+  "defects": [
+    {
+      "id": "R-REC-00-FE-COMMENT-ASTERISK",
+      "severity": "P0",
+      "summary": "JobTemplatesTab.tsx CODE-MEMORY PUB-*/CODE-DUP closes block comment → Vite 500 → Recruitment whitescreen",
+      "owner": "dev-fe",
+      "at": "2026-08-08T23:28:39.896Z"
+    },
+    {
+      "id": "R-REC-00-PUB-BTN-MISSING",
+      "severity": "P1",
+      "summary": "jd-library-publish-btn not visible on draft row",
+      "owner": "dev-fe",
+      "at": "2026-08-08T23:26:59.984Z"
+    },
+    {
+      "id": "R-REC-00-CODE-DUP",
+      "severity": "P1",
+      "summary": "Expected 409 CODE-DUP on duplicate code; got undefined undefined",
+      "owner": "dev-be",
+      "at": "2026-08-08T23:27:03.443Z"
+    }
+  ],
+  "overall": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-08T23:27:06.512Z",
+  "honesty_footer": {
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "c_slice": true,
+    "note": "C-SLICE ≠ module REC UAT · no honesty flip"
+  },
+  "root_cause": "R-REC-00-FE-COMMENT-ASTERISK"
+}

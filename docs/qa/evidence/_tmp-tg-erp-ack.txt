@@ -1,0 +1,3 @@
+﻿[xevn-ecosystem] Intake Claude dispatch OK.
+Cohort ACTIVE: E1-A ‖ E1-B (G1 docs Cursor) → E2 → E3 → XBOS-SPEC → Wave-B.
+Claude=docs/peer · Cursor=G1 rồi FE/BE/QA. HOLD_DEPLOY. TG liên lạc.

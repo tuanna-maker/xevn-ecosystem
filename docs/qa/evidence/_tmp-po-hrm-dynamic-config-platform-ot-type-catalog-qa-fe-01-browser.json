@@ -1,0 +1,318 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-OT-TYPE-CATALOG-QA-FE-01",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-OT-TYPE-CATALOG-FE-01",
+  "residual_target": "R-PLT-ATT-OT-FE-01",
+  "stamp_l1_retain": "ATTOTQA-MSK8VETU",
+  "startedAt": "2026-08-08T11:08:53.782Z",
+  "stamp": "ATTOTQAFE-MSK9TJDM",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser-only · FE after 2xx + F5 · admin Network POST ot-types ≠ seed · probe ≠ UF 🟢 alone",
+  "hdsd_align": "Attendance → Quản lý đơn → Đăng ký làm thêm (requests-menu-overtime) · att-ot-precision · att-ot-add-dialog-precision · att-ot-type-select",
+  "honesty": {
+    "attendance_uat_ready": false,
+    "payroll_e2e_ready": false,
+    "formula_LIVE": false,
+    "seed_used": false,
+    "ensureDefault": false,
+    "c_slice_ne_module": true,
+    "deny_module_att_uat": true,
+    "deny_phase1": true,
+    "fe_admin_hold": "R-PLT-ATT-OT-FE-ADMIN NOTE/HOLD — no invent admin panel",
+    "seal_retain": {
+      "L1_OT": "ATTOTQA-MSK8VETU",
+      "ATT_CODE": "ATTCODEQA-MSK4T1A5",
+      "leave": "ATTLEAVEQA-MSJ7CPJH",
+      "worksite": "ATTWSQA-MSJC3IN9",
+      "SHIFT": "ATTSHIFTQA-MSK5FXP3",
+      "CTR": "CTRTPLQA-MSK7U4CG"
+    }
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "nest": {
+    "before": {
+      "status": 200,
+      "total": 1,
+      "codes": [
+        "qc_spot_ot_msk8"
+      ]
+    },
+    "after_admin": {
+      "status": 200,
+      "total": 1,
+      "codes": [
+        "qc_spot_ot_msk8"
+      ],
+      "created": false,
+      "openCode": null,
+      "createdId": null
+    },
+    "codes": [
+      "qc_spot_ot_msk8"
+    ],
+    "createdId": null
+  },
+  "ac": {
+    "L0": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:08:53.806Z",
+      "summary": "hrm/xbos/portal 200/200/200"
+    },
+    "EFF_GT0": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:08:54.015Z",
+      "summary": "GET ot-types/effective 200 HRM-ATT-OT-200 total=1 codes=qc_spot_ot_msk8"
+    },
+    "ADMIN_EFF_ENSURE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:08:54.015Z",
+      "summary": "reused existing EFF total=1"
+    },
+    "INVENT_KEY_L1": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:08:54.020Z",
+      "summary": "400 HRM-ATT-OT-TYPE-KEY LIVE (stamp ATTOTQA-MSK8VETU)"
+    },
+    "EFF0_BOOTSTRAP": {
+      "verdict": "NOTE_BLOCKED",
+      "at": "2026-08-08T11:08:54.022Z",
+      "summary": "live EFF=0 not forced · useAttOtTypesEffective.test.ts covers EFF=0 bootstrap branch (FE-01: 17 passed)"
+    },
+    "NAV_OT_TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:09:02.313Z",
+      "summary": "Quản lý đơn → Đăng ký làm thêm · att-ot-precision visible"
+    },
+    "FE_GET_EFFECTIVE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:09:03.820Z",
+      "summary": "Network GET ot-types/effective 200 count=1 (staleTime may reuse)"
+    },
+    "INVENT_UI_SELECT_ONLY": {
+      "verdict": "PASS_WITH_OBS",
+      "at": "2026-08-08T11:09:06.029Z",
+      "summary": "Hard Select-only — invent UI not available; L1 KEY LIVE via API invent"
+    },
+    "PICKER_NEST_NAMEVI": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:09:06.030Z",
+      "summary": "Nest nameVi options visible · hits=1 · onlyBoot=false · coeffPattern=true"
+    },
+    "CREATE_SUBMIT": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:09:11.784Z",
+      "summary": "POST overtime-requests 201 HRM-OT-201 overtime_type=qc_spot_ot_msk8 coeff=1.5"
+    },
+    "FE_AFTER_2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:09:12.664Z",
+      "summary": "feShowsNest=true preferred=QC spot OT"
+    },
+    "F5_RETAIN": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:09:19.100Z",
+      "summary": "f5Shows=true listGET200=2"
+    },
+    "FE_ADMIN_HOLD": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:09:19.104Z",
+      "summary": "R-PLT-ATT-OT-FE-ADMIN HOLD_ABSENT_OK · no invent panel"
+    },
+    "CONSOLE_CLEAN": {
+      "verdict": "PASS",
+      "at": "2026-08-08T11:09:19.105Z",
+      "summary": "pageErrors=0 uncaught=0 mojibake=false bad5xx=0"
+    }
+  },
+  "network": {
+    "effectiveGets": [
+      {
+        "at": "2026-08-08T11:09:00.238Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/ot-types/effective?company_id=main",
+        "code": "HRM-ATT-OT-200",
+        "bodySnippet": "{\"success\":true,\"code\":\"HRM-ATT-OT-200\",\"message\":\"Effective OT types listed\",\"data\":{\"total\":1,\"data\":[{\"id\":\"13cf69cd-44ec-4141-a7af-069c9ab0ba11\",\"companyId\":\"holding\",\"code\":\"qc_spot_ot_msk8\",\"nameVi\":\"QC spot OT\",\"nameEn\":\"QC spot\",\"defaultCoeff\":1.5,\"defaultCoefficient\":1.5",
+        "req": null
+      },
+      {
+        "at": "2026-08-08T11:09:15.493Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/ot-types/effective?company_id=main",
+        "code": "HRM-ATT-OT-200",
+        "bodySnippet": "{\"success\":true,\"code\":\"HRM-ATT-OT-200\",\"message\":\"Effective OT types listed\",\"data\":{\"total\":1,\"data\":[{\"id\":\"13cf69cd-44ec-4141-a7af-069c9ab0ba11\",\"companyId\":\"holding\",\"code\":\"qc_spot_ot_msk8\",\"nameVi\":\"QC spot OT\",\"nameEn\":\"QC spot\",\"defaultCoeff\":1.5,\"defaultCoefficient\":1.5",
+        "req": null
+      }
+    ],
+    "otTypePosts": [],
+    "otRequestPosts": [
+      {
+        "at": "2026-08-08T11:09:08.709Z",
+        "method": "POST",
+        "status": 201,
+        "path": "/api/hrm/attendance/overtime-requests",
+        "code": "HRM-OT-201",
+        "bodySnippet": "{\"success\":true,\"code\":\"HRM-OT-201\",\"message\":\"Overtime request created\",\"data\":{\"id\":\"99a26180-e593-4e90-a373-1ebb0e2e6ac1\",\"company_id\":\"holding\",\"employee_id\":\"0500220b-f289-40df-b07e-86316285439b\",\"employee_code\":\"UAT-0100\",\"employee_name\":\"UAT NV 0100\",\"department\":null,\"pos",
+        "req": {
+          "overtime_type": "qc_spot_ot_msk8",
+          "coefficient": 1.5,
+          "code": null,
+          "nameVi": null,
+          "defaultCoeff": null
+        }
+      }
+    ],
+    "otRequestGets": [
+      {
+        "at": "2026-08-08T11:09:00.297Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/overtime-requests?company_id=main",
+        "code": "HRM-OT-200",
+        "bodySnippet": "{\"success\":true,\"code\":\"HRM-OT-200\",\"message\":\"Overtime requests listed\",\"data\":{\"total\":4,\"data\":[{\"id\":\"b3f995e2-6218-44fc-8909-e6ba103169b9\",\"company_id\":\"trsport\",\"employee_id\":\"b06422c0-f640-45d1-8cab-cb4a609848d6\",\"employee_code\":\"VTH-0007\",\"employee_name\":\"Phan Văn An\",\"de",
+        "req": null
+      },
+      {
+        "at": "2026-08-08T11:09:15.552Z",
+        "method": "GET",
+        "status": 200,
+        "path": "/api/hrm/attendance/overtime-requests?company_id=main",
+        "code": "HRM-OT-200",
+        "bodySnippet": "{\"success\":true,\"code\":\"HRM-OT-200\",\"message\":\"Overtime requests listed\",\"data\":{\"total\":5,\"data\":[{\"id\":\"99a26180-e593-4e90-a373-1ebb0e2e6ac1\",\"company_id\":\"holding\",\"employee_id\":\"0500220b-f289-40df-b07e-86316285439b\",\"employee_code\":\"UAT-0100\",\"employee_name\":\"UAT NV 0100\",\"de",
+        "req": null
+      }
+    ],
+    "inventPosts": [],
+    "bad5xx": []
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ot-type-catalog-qa-fe-01/01-attendance.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ot-type-catalog-qa-fe-01/02-ot-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ot-type-catalog-qa-fe-01/03-add-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ot-type-catalog-qa-fe-01/04-dialog-filled-nest.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ot-type-catalog-qa-fe-01/05-after-submit.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ot-type-catalog-qa-fe-01/06-f5-ot-tab.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-08T11:08:53.903Z",
+      "msg": "login ok",
+      "email": "ceo@xe.vn"
+    },
+    {
+      "at": "2026-08-08T11:08:54.014Z",
+      "msg": "Nest EFF already N=1 — reuse existing active rows (no wipe)"
+    },
+    {
+      "at": "2026-08-08T11:08:59.470Z",
+      "msg": "attendance loaded"
+    }
+  ],
+  "picker": {
+    "options": [
+      {
+        "value": "",
+        "text": "QC spot OT (x1.5)"
+      }
+    ],
+    "inferred": {
+      "texts": [
+        "QC spot OT (x1.5)"
+      ],
+      "values": [],
+      "onlyBootstrapText": false,
+      "onlyBootstrapSole": false,
+      "nestNameHits": [
+        {
+          "code": "qc_spot_ot_msk8",
+          "nameVi": "QC spot OT",
+          "defaultCoeff": 1.5
+        }
+      ],
+      "nestCodeInValue": [],
+      "nestCodeInText": [],
+      "hasCoeffPattern": true,
+      "pass": true
+    }
+  },
+  "invent_ui": {
+    "selectOnly": true,
+    "freeTextInputsNearType": 0,
+    "verdict": "PASS_WITH_OBS",
+    "note": "Hard Select-only — invent UI not available; L1 KEY LIVE via API invent"
+  },
+  "invent_api": {
+    "status": null,
+    "note": "no employee for invent spot — cite L1 ATTOTQA-MSK8VETU KEY LIVE",
+    "expectKey": true,
+    "cited_l1": "ATTOTQA-MSK8VETU"
+  },
+  "empty_path": {
+    "verdict": "NOTE_BLOCKED",
+    "reason": "no wipe active Nest rows (U65)",
+    "unit_cite": "useAttOtTypesEffective.test.ts covers EFF=0 bootstrap branch (FE-01: 17 passed)"
+  },
+  "fe_admin_spot": {
+    "settingsNavCount": 0,
+    "hold": "R-PLT-ATT-OT-FE-ADMIN",
+    "verdict": "HOLD_ABSENT_OK",
+    "note": "Do not invent admin panel this seat"
+  },
+  "unit_cite": {
+    "path": "apps/web/hrm/src/hooks/useAttOtTypesEffective.test.ts",
+    "fe_evidence": true,
+    "unit_file_present": true,
+    "covers_eff0": true,
+    "summary": "useAttOtTypesEffective.test.ts covers EFF=0 bootstrap branch (FE-01: 17 passed)",
+    "note": "Live EFF=0 not re-forced (would wipe active Nest rows — FORBIDDEN U65)"
+  },
+  "create_submit": {
+    "post": {
+      "at": "2026-08-08T11:09:08.709Z",
+      "method": "POST",
+      "status": 201,
+      "path": "/api/hrm/attendance/overtime-requests",
+      "code": "HRM-OT-201",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-OT-201\",\"message\":\"Overtime request created\",\"data\":{\"id\":\"99a26180-e593-4e90-a373-1ebb0e2e6ac1\",\"company_id\":\"holding\",\"employee_id\":\"0500220b-f289-40df-b07e-86316285439b\",\"employee_code\":\"UAT-0100\",\"employee_name\":\"UAT NV 0100\",\"department\":null,\"pos",
+      "req": {
+        "overtime_type": "qc_spot_ot_msk8",
+        "coefficient": 1.5,
+        "code": null,
+        "nameVi": null,
+        "defaultCoeff": null
+      }
+    },
+    "submitMeta": {
+      "empText": "UAT NV 0100 - UAT-0100",
+      "preferred": "qc_spot_ot_msk8",
+      "labelHint": "QC spot OT",
+      "coeffText": "Hệ số: x1.5"
+    },
+    "nestInBody": true,
+    "bodyOk": true
+  },
+  "f5": {
+    "f5Shows": true,
+    "listGetCount": 2
+  },
+  "overall": "PASS_WITH_OBS",
+  "ack_status": "PASS_WITH_OBS",
+  "condition_r_plt_att_ot_fe_01": "CLOSABLE",
+  "endedAt": "2026-08-08T11:09:19.106Z"
+}

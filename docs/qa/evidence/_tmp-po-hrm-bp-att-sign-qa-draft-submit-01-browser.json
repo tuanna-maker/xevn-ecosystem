@@ -1,0 +1,98 @@
+{
+  "work_item_id": "PO-HRM-BP-ATT-SIGN-QA-DRAFT-SUBMIT-01",
+  "u65_zero_seed": true,
+  "commit": "dc930c5",
+  "startedAt": "2026-08-05T08:51:48.478Z",
+  "network": [
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets/ae71f0b0-a3cb-43ab-9f5f-f42004add657/submit?company_id=main",
+      "status": 201,
+      "method": "POST"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets/ae71f0b0-a3cb-43ab-9f5f-f42004add657/signatures?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets/ae71f0b0-a3cb-43ab-9f5f-f42004add657/signatures?company_id=main",
+      "status": 200,
+      "method": "GET"
+    }
+  ],
+  "pageErrors": [],
+  "findings": {
+    "loginApi": true,
+    "apiSheetsStatus": 200,
+    "apiSheetStatusesBefore": [
+      {
+        "id": "ae71f0b0-a3cb-43ab-9f5f-f42004add657",
+        "status": "draft",
+        "name": "QA-BP-ATT-SIGN-DRAFT-SUBMIT-01"
+      },
+      {
+        "id": "642a4713-b0ee-4802-a1d9-2fe650cbc17f",
+        "status": "closed",
+        "name": "QA-SHEET-MFD-M2 01/07/2026–31/07/2026"
+      },
+      {
+        "id": "3934591a-50ec-452b-940f-7f29ede50272",
+        "status": "submitted",
+        "name": "QA-SHEET-MFD-M2 01/07/2026-31/07/2026"
+      }
+    ],
+    "activeSheetId": "ae71f0b0-a3cb-43ab-9f5f-f42004add657",
+    "activeSheetStatusBefore": "draft",
+    "draftRowIndex": 0,
+    "holdDraftBeforeSubmit": true,
+    "submitBtnVisible": true,
+    "submitPost2xx": 1,
+    "submitPostLog": [
+      {
+        "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets/ae71f0b0-a3cb-43ab-9f5f-f42004add657/submit?company_id=main",
+        "status": 201,
+        "method": "POST"
+      }
+    ],
+    "holdDraftAfterSubmit": false,
+    "attSignPanelVisible": true,
+    "signaturesGet2xx": 1,
+    "attSignPanelAfterF5": true,
+    "holdDraftAfterF5": false,
+    "apiSheetStatusAfter": "submitted",
+    "c_draft_submit_fe": "CLOSED"
+  },
+  "steps": {
+    "S0_obtain_draft": {
+      "hadDraft": true,
+      "draftId": "ae71f0b0-a3cb-43ab-9f5f-f42004add657"
+    },
+    "S1_submit": {
+      "submitBtnVisible": true
+    },
+    "S2_f5": {
+      "submitOk": true,
+      "panelOk": true,
+      "f5Ok": true,
+      "apiStatus": "submitted"
+    }
+  },
+  "verdictHint": "PASS_TO_PM",
+  "ack_status": "PASS_TO_PM",
+  "finishedAt": "2026-08-05T08:52:09.852Z"
+}

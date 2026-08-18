@@ -1,0 +1,376 @@
+{
+  "work_item_id": "PO-MFD-M3-EMP-IMPORT-01",
+  "startedAt": "2026-08-04T09:19:37.654Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "journey": "J-HRM-IM-01",
+  "spec_ref": "HDSD CH06 §5.1 · FR-HRM-IM-01 · matrix #8–9",
+  "matrix_surfaces": [
+    8,
+    9
+  ],
+  "must_keep": [
+    "#1-6 LIST",
+    "#10-12 DETAIL",
+    "#28 SCOPE"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "COMPANY": "main",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "portal_url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main",
+  "l0": {
+    "entry": {
+      "hrm": 200,
+      "xbos": 200,
+      "portal": 200
+    },
+    "exit": {
+      "hrm": 200,
+      "xbos": 200,
+      "portal": 200
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-04T09:19:37.704Z",
+      "action": "API_LOGIN",
+      "note": "ceo@xe.vn"
+    },
+    {
+      "at": "2026-08-04T09:19:38.602Z",
+      "action": "NAV_EMPLOYEES",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-04T09:19:48.898Z",
+      "action": "BASELINE",
+      "totalApi": 60,
+      "totalUi": 60,
+      "rangeText": "1–50 / 60",
+      "code": "HRM-EMP-200",
+      "syncError": false
+    },
+    {
+      "at": "2026-08-04T09:19:49.936Z",
+      "action": "OPEN_IMPORT",
+      "dialogOpen": true,
+      "hasImportTitle": true
+    },
+    {
+      "at": "2026-08-04T09:19:51.473Z",
+      "action": "TEMPLATE",
+      "templateOk": true,
+      "templateMeta": {
+        "suggested": "employee_import_template.xlsx",
+        "bytes": 6457,
+        "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/_tmp-po-mfd-m3-emp-import-01/employee_import_template.xlsx"
+      },
+      "tplNet": 1
+    },
+    {
+      "at": "2026-08-04T09:19:55.610Z",
+      "action": "PREVIEW",
+      "previewOk": true,
+      "hasPreviewTable": true,
+      "nets": 1
+    },
+    {
+      "at": "2026-08-04T09:19:56.851Z",
+      "action": "CANCEL",
+      "dialogOpen": false
+    },
+    {
+      "at": "2026-08-04T09:20:00.883Z",
+      "action": "F5_PROBE",
+      "baselineTotal": 60,
+      "afterTotal": 60,
+      "totalEqual": true,
+      "previewCodePersisted": {
+        "http": 200,
+        "total": 0,
+        "codes": [],
+        "hit": false
+      }
+    },
+    {
+      "at": "2026-08-04T09:20:02.430Z",
+      "action": "EXPORT_SPOT",
+      "opened": true,
+      "hasExportTitle": true,
+      "dialogText": "Xuất danh sách nhân viênBộ lọc dữ liệuPhòng banTất cả phòng banTrạng tháiTất cả trạng tháiSố nhân viên sẽ xuất: 60Chọn cột xuất (9/17)Chọn tất cảBỏ chọnSTTMã nhân viênHọ và tênEmailSố điện thoạiPhòng banChức vụNgày vào làmTrạng tháiLương cơ"
+    }
+  ],
+  "network": [
+    {
+      "at": "2026-08-04T09:19:46.679Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "bodySnippet": {
+        "code": "HRM-EMP-200",
+        "total": 60,
+        "count": 50
+      }
+    },
+    {
+      "at": "2026-08-04T09:19:46.778Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "bodySnippet": {
+        "code": "HRM-EMP-SUMMARY-200",
+        "message": "Employee summary loaded"
+      }
+    },
+    {
+      "at": "2026-08-04T09:19:49.991Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/spreadsheet/templates/employee_import?format=xlsx",
+      "bodySnippet": {
+        "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "contentLength": "6457"
+      }
+    },
+    {
+      "at": "2026-08-04T09:19:51.545Z",
+      "method": "POST",
+      "status": 200,
+      "url": "/api/hrm/spreadsheet/import/preview",
+      "bodySnippet": {
+        "code": "SHEET-200",
+        "dryRun": true,
+        "rowCount": 1,
+        "errorCount": 0,
+        "truncated": false,
+        "sessionId": null
+      }
+    },
+    {
+      "at": "2026-08-04T09:19:57.983Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "bodySnippet": {
+        "code": "HRM-EMP-SUMMARY-200",
+        "message": "Employee summary loaded"
+      }
+    },
+    {
+      "at": "2026-08-04T09:19:58.224Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "bodySnippet": {
+        "code": "HRM-EMP-200",
+        "total": 60,
+        "count": 50
+      }
+    },
+    {
+      "at": "2026-08-04T09:20:01.165Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page_size=100",
+      "bodySnippet": {
+        "code": "HRM-EMP-200",
+        "total": 60,
+        "count": 60
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    {
+      "at": "2026-08-04T09:19:48.892Z",
+      "name": "01-list-baseline",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-import-01/01-list-baseline.png"
+    },
+    {
+      "at": "2026-08-04T09:19:49.933Z",
+      "name": "02-import-dialog",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-import-01/02-import-dialog.png"
+    },
+    {
+      "at": "2026-08-04T09:19:51.473Z",
+      "name": "03-after-template",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-import-01/03-after-template.png"
+    },
+    {
+      "at": "2026-08-04T09:19:55.607Z",
+      "name": "04-preview",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-import-01/04-preview.png"
+    },
+    {
+      "at": "2026-08-04T09:19:56.851Z",
+      "name": "05-after-cancel",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-import-01/05-after-cancel.png"
+    },
+    {
+      "at": "2026-08-04T09:20:00.846Z",
+      "name": "06-f5-after-cancel",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-import-01/06-f5-after-cancel.png"
+    },
+    {
+      "at": "2026-08-04T09:20:01.957Z",
+      "name": "07-export-dialog",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-import-01/07-export-dialog.png"
+    }
+  ],
+  "hdsd_inventory": [
+    {
+      "step": "CH06 §2 list load baseline",
+      "ok": true,
+      "total": 60
+    },
+    {
+      "step": "CH06 §5.1 open Nhập Excel / Import Excel",
+      "ok": true,
+      "dialogText": "Import nhân viên từ ExcelTải file mẫuTải file Excel mẫu để biết định dạng dữ liệu cần nhậpTải file mẫu (.xlsx)Kéo thả file hoặc click để chọnHỗ trợ: .xlsx, .xls, .csv — xử lý trên máy chủ.Hướng dẫn:• "
+    },
+    {
+      "step": "CH06 §5.1 Tải mẫu (.xlsx)",
+      "ok": true,
+      "templateMeta": {
+        "suggested": "employee_import_template.xlsx",
+        "bytes": 6457,
+        "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/_tmp-po-mfd-m3-emp-import-01/employee_import_template.xlsx"
+      },
+      "network": [
+        {
+          "status": 200,
+          "url": "/api/hrm/spreadsheet/templates/employee_import?format=xlsx"
+        }
+      ]
+    },
+    {
+      "step": "CH06 §5.1 upload → preview table",
+      "ok": true,
+      "previewOk": true,
+      "hasPreviewTable": true,
+      "previewNets": [
+        {
+          "status": 200,
+          "code": "SHEET-200",
+          "dryRun": true,
+          "rowCount": 1,
+          "sessionId": null
+        }
+      ]
+    },
+    {
+      "step": "CH06 §5.1 Hủy on preview (no commit)",
+      "ok": true,
+      "dialogOpen": false
+    },
+    {
+      "step": "CH06 §5.2 Xuất dialog spot (honesty)",
+      "ok": true,
+      "exportSpot": {
+        "opened": true,
+        "hasExportTitle": true,
+        "dialogText": "Xuất danh sách nhân viênBộ lọc dữ liệuPhòng banTất cả phòng banTrạng tháiTất cả trạng tháiSố nhân viên sẽ xuất: 60Chọn cột xuất (9/17)Chọn tất cảBỏ chọnSTTMã nhân viênHọ và tênEmailSố điện thoạiPhòng banChức vụNgày vào làmTrạng tháiLương cơ"
+      }
+    },
+    {
+      "step": "CH06 §5.1 F5 list unchanged after Hủy",
+      "ok": true,
+      "baselineTotal": 60,
+      "afterTotal": 60,
+      "totalEqual": true,
+      "previewCodePersisted": {
+        "http": 200,
+        "total": 0,
+        "codes": [],
+        "hit": false
+      },
+      "note": "total equal + preview code absent"
+    }
+  ],
+  "surfaces": {
+    "8": {
+      "runtime": "LIVE",
+      "note": "FR-HRM-IM-01 preview+Hủy+F5; commit IM-02 NOT exercised — not claim commit LIVE"
+    },
+    "9": {
+      "runtime": "PARTIAL",
+      "note": "Client EmployeeExportDialog open (xlsx/csv columns); Nest spreadsheet export not exercised — P1-2 depth"
+    }
+  },
+  "criteria": {
+    "l0_entry": true,
+    "list_baseline": true,
+    "import_dialog": true,
+    "template": true,
+    "preview_sheet200": true,
+    "preview_ui": true,
+    "cancel_zero_persist": true,
+    "f5_unchanged": true,
+    "no_page_errors": true,
+    "export_spot": true,
+    "u65_no_seed": true,
+    "commit_not_claimed": true,
+    "l0_exit": true
+  },
+  "failReasons": [],
+  "stamp": {
+    "#8": {
+      "runtime": "LIVE",
+      "note": "FR-HRM-IM-01 preview+Hủy+F5; commit IM-02 NOT exercised — not claim commit LIVE"
+    },
+    "#9": {
+      "runtime": "PARTIAL",
+      "note": "Client EmployeeExportDialog open (xlsx/csv columns); Nest spreadsheet export not exercised — P1-2 depth"
+    }
+  },
+  "baseline": {
+    "totalApi": 60,
+    "totalUi": 60,
+    "rangeText": "1–50 / 60",
+    "code": "HRM-EMP-200",
+    "syncError": false
+  },
+  "afterCancel": {
+    "totalApi": 60,
+    "totalUi": 60,
+    "rangeText": "1–50 / 60",
+    "syncError": false
+  },
+  "commit_exercised": false,
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "employees_closed": false,
+  "attendance_closed": false,
+  "uat_done": false,
+  "endedAt": "2026-08-04T09:20:02.464Z",
+  "login": {
+    "http": 201,
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "tenantId": "xevn"
+  },
+  "preview_file": {
+    "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/_tmp-po-mfd-m3-emp-import-01/preview-cancel-row.csv",
+    "code": "QA-IM-MSEG5WOH",
+    "email": "qa-im-mseg5woh@qa.xevn.local"
+  },
+  "preview_persist_probe": {
+    "http": 200,
+    "total": 0,
+    "codes": [],
+    "hit": false
+  },
+  "guards": {
+    "commitCalls": 0,
+    "empMutates": 0,
+    "previewCalls": 1,
+    "templateCalls": 1
+  }
+}

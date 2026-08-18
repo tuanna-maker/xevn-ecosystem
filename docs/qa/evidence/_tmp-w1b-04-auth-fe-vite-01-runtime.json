@@ -1,0 +1,9 @@
+{
+  "url": "http://127.0.0.1:5173/login",
+  "emailInputs": 1,
+  "passwordInputs": 1,
+  "bodyPreview": "XeVN Portal\n\nĐăng nhập tập đoàn / công ty thành viên\n\nEmail\nMật khẩu\nĐăng nhập\n\nDev: du-lich.ceo@xe.vn / Xevn@2026",
+  "consoleErrors": [],
+  "failedSrcResponses": [],
+  "loginFormVisible": true
+}

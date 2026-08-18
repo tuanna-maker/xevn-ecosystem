@@ -1,0 +1,327 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-OT-TYPE-CATALOG-QA-01",
+  "stamp": "ATTOTQA-MSK8VETU",
+  "startedAt": "2026-08-08T10:42:21.522Z",
+  "gitHead": "dc930c5",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "XBOS": "http://127.0.0.1:28002/api/xbos",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "EMAIL": "ceo@xe.vn",
+    "HEADER_COMPANY": "main",
+    "TENANT": "xevn"
+  },
+  "honesty": {
+    "attendance_uat_ready": false,
+    "payroll_e2e_ready": false,
+    "contracts_printable_ready": false,
+    "C_SLICE_NE_MODULE": true,
+    "U65_zero_seed": true,
+    "formula_LIVE": false,
+    "seals_retain": {
+      "CTR_TEMPLATE": "CTRTPLQA-MSK7U4CG",
+      "ATT_LVRULE": "ATTLVRULEQA2-MSK79F2F",
+      "ATT_CODE": "ATTCODEQA-MSK4T1A5",
+      "ATT_LEAVE": "ATTLEAVEQA-MSJ7CPJH",
+      "ATT_WS": "ATTWSQA-MSJC3IN9",
+      "ATT_SHIFT": "ATTSHIFTQA-MSK5FXP3",
+      "FE_LVRULE_01g": "HOLD"
+    }
+  },
+  "dist_fe": {
+    "dist_has_key": true,
+    "src_has_key": true,
+    "dist_has_ot_types_route": true,
+    "src_has_ot_types_route": true,
+    "fe_ot_hardcode_3": true,
+    "fe_hardcode_ids": [
+      "weekday",
+      "weekend",
+      "holiday"
+    ],
+    "fe_ot_types_fetch": false,
+    "fe_admin_surface": true,
+    "note": "VAL-ATT-OT-CNS-06 residual — OvertimeRequestTab closed weekday|weekend|holiday; no Nest EFF bind",
+    "fe_admin_files": [
+      "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/apps/web/hrm/src\\i18n\\locales\\en.json",
+      "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/apps/web/hrm/src\\i18n\\locales\\vi.json"
+    ]
+  },
+  "steps": [
+    {
+      "id": "DIST_FE_GATE",
+      "at": "2026-08-08T10:42:21.645Z",
+      "verdict": "PASS",
+      "summary": "{\"dist_has_key\":true,\"src_has_key\":true,\"dist_has_ot_types_route\":true,\"src_has_ot_types_route\":true,\"fe_ot_hardcode_3\":true,\"fe_hardcode_ids\":[\"weekday\",\"weekend\",\"holiday\"],\"fe_ot_types_fetch\":false,\"fe_admin_surface\":true,\"note\":\"VAL-ATT-OT-CNS-06 residual — OvertimeRequestTab closed weekday|weekend|holiday; no Nest EFF bind\",\"fe_admin_files\":[\"C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/apps/web/hrm/src\\\\i18n\\\\locales\\\\en.json\",\"C:/Users/ADMIN/OneDrive/Tài liệu/V…"
+    },
+    {
+      "id": "L0_HRM_HEALTH",
+      "at": "2026-08-08T10:42:21.681Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-HEALTH-200"
+    },
+    {
+      "id": "UNAUTH_EFF",
+      "at": "2026-08-08T10:42:21.694Z",
+      "verdict": "PASS",
+      "summary": "401 HRM-AUTH-001"
+    },
+    {
+      "id": "LOGIN",
+      "at": "2026-08-08T10:42:21.826Z",
+      "verdict": "PASS",
+      "summary": "via http://127.0.0.1:5173/api/xbos/auth/login status=201"
+    },
+    {
+      "id": "LIST_DEFAULT_0",
+      "at": "2026-08-08T10:42:22.027Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-ATT-OT-200 total=0 inactiveInDefault=false"
+    },
+    {
+      "id": "EFF_0",
+      "at": "2026-08-08T10:42:22.050Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-ATT-OT-200 total=0"
+    },
+    {
+      "id": "ADMIN_N1_A",
+      "at": "2026-08-08T10:42:22.103Z",
+      "verdict": "PASS",
+      "summary": "201 HRM-ATT-OT-201 code=comp_time_msk8vetu id=2ac82802-5394-4dc0-99c4-9815e8997d0c nameVi=Bù giờ QA ATTOTQA-MSK8VETU coeff=1.75"
+    },
+    {
+      "id": "ADMIN_N1_B",
+      "at": "2026-08-08T10:42:22.133Z",
+      "verdict": "PASS",
+      "summary": "201 HRM-ATT-OT-201 code=night_qa_msk8vetu id=063b0c92-83cc-44bd-b6f7-c6335a55e202"
+    },
+    {
+      "id": "LIST_HAS_OPEN_F5",
+      "at": "2026-08-08T10:42:22.154Z",
+      "verdict": "PASS",
+      "summary": "hasOpen=true total=2 baseline=0 f5Display=true"
+    },
+    {
+      "id": "EFF_ACTIVE_GT0",
+      "at": "2026-08-08T10:42:22.165Z",
+      "verdict": "PASS",
+      "summary": "total=2 hasOpen=true nameVi=Bù giờ QA ATTOTQA-MSK8VETU coeff=1.75"
+    },
+    {
+      "id": "AC_01f_COEFF_DISPLAY",
+      "at": "2026-08-08T10:42:22.165Z",
+      "verdict": "PASS",
+      "summary": "listCoeff=1.75 formula_LIVE_claimed=false"
+    },
+    {
+      "id": "PICK_EMPLOYEE",
+      "at": "2026-08-08T10:42:22.576Z",
+      "verdict": "PASS",
+      "summary": "id=0500220b-f289-40df-b07e-86316285439b company=holding"
+    },
+    {
+      "id": "INVENT_OT_TYPE_KEY",
+      "at": "2026-08-08T10:42:22.633Z",
+      "verdict": "PASS",
+      "summary": "400 HRM-ATT-OT-TYPE-KEY · overtime_type 'zz_invent_att_ot_msk8vetu' is not in effective OT-type catalog (invent forbidden when EFF ≠ empty)"
+    },
+    {
+      "id": "INVENT_NO_PERSIST",
+      "at": "2026-08-08T10:42:22.678Z",
+      "verdict": "PASS",
+      "summary": "inventPersisted=false listStatus=200"
+    },
+    {
+      "id": "VALID_NEST_OT_TYPE",
+      "at": "2026-08-08T10:42:22.728Z",
+      "verdict": "PASS",
+      "summary": "201 HRM-OT-201 id=9830dc98-bf7b-4f54-a0de-47b542662399 coeff=1.75"
+    },
+    {
+      "id": "SOFT_RETIRE",
+      "at": "2026-08-08T10:42:22.751Z",
+      "verdict": "PASS",
+      "summary": "201 HRM-ATT-OT-200 status=inactive archived_at=null"
+    },
+    {
+      "id": "AC_01e_LIST_FILTER",
+      "at": "2026-08-08T10:42:22.803Z",
+      "verdict": "PASS",
+      "summary": "hiddenDefault=true inactiveInDefault=false retiredInInclude=true effExcludes=true"
+    },
+    {
+      "id": "SOFT_RETIRE_B_CLEANUP",
+      "at": "2026-08-08T10:42:22.826Z",
+      "verdict": "PASS",
+      "summary": "201 HRM-ATT-OT-200"
+    },
+    {
+      "id": "CLEANUP_VALID_OT",
+      "at": "2026-08-08T10:42:22.856Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-OT-205"
+    },
+    {
+      "id": "AC_01c_EMPTY",
+      "at": "2026-08-08T10:42:22.856Z",
+      "verdict": "NOTE_BLOCKED",
+      "summary": "baselineEff=0 afterAdmin=2"
+    },
+    {
+      "id": "SEAL_SPOT",
+      "at": "2026-08-08T10:42:23.433Z",
+      "verdict": "PASS",
+      "summary": "leave=200 ws=200 code=200 shift=200"
+    },
+    {
+      "id": "U19_GET_FAKE",
+      "at": "2026-08-08T10:42:23.455Z",
+      "verdict": "PASS",
+      "summary": "404 HRM-ATT-OT-404"
+    },
+    {
+      "id": "AC_01H_HONESTY",
+      "at": "2026-08-08T10:42:23.455Z",
+      "verdict": "PASS",
+      "summary": "ready=false · formula_LIVE=false · seals RETAIN · C-SLICE"
+    }
+  ],
+  "val": {
+    "unauth_effective": {
+      "expect": "401/403 ≠ 404",
+      "status": 401,
+      "code": "HRM-AUTH-001",
+      "verdict": "PASS"
+    },
+    "AC-PLT-ATT-OT-01d": {
+      "expect": "Admin CREATE N+1 open code 2xx/201 · F5 list/EFF · display-ready nameVi/defaultCoeff",
+      "status": 201,
+      "code": "HRM-ATT-OT-201",
+      "open_key": "comp_time_msk8vetu",
+      "createdId": "2ac82802-5394-4dc0-99c4-9815e8997d0c",
+      "displayReady": true,
+      "nameVi": "Bù giờ QA ATTOTQA-MSK8VETU",
+      "defaultCoeff": 1.75,
+      "summary": "{\"success\":true,\"code\":\"HRM-ATT-OT-201\",\"message\":\"OT type created\",\"data\":{\"id\":\"2ac82802-5394-4dc0-99c4-9815e8997d0c\",\"companyId\":\"holding\",\"code\":\"comp_time_msk8vetu\",\"nameVi\":\"Bù giờ QA ATTOTQA-MSK8VETU\",\"nameEn\":\"Comp time QA ATTOTQA-MSK8VETU\",\"defaultCoeff\":1.75,\"defaultCoefficient\":1.75,\"sortOrder\":50,\"color\":null,\"metadata\":null,\"status\":\"active\",\"source\":\"att_native\",\"catalogKind\":\"att_ot_type\",\"archivedAt\":null,\"updatedAt\":\"2026-08-08T10:42:32.709Z\",\"createdAt\":\"2026-08-08T10:42:32.709Z\"},\"timestamp\":\"2026-08-08T10:42:22.102Z\"}",
+      "verdict": "PASS",
+      "f5": {
+        "total": 2,
+        "hasOpen": true,
+        "f5Display": true,
+        "nameVi": "Bù giờ QA ATTOTQA-MSK8VETU",
+        "defaultCoeff": 1.75
+      }
+    },
+    "AC-PLT-ATT-OT-01f": {
+      "expect": "defaultCoeff display-ready only · FORBIDDEN formula LIVE",
+      "defaultCoeff_on_list": 1.75,
+      "defaultCoeff_on_eff": 1.75,
+      "formula_LIVE_claimed": false,
+      "payroll_e2e_ready": false,
+      "verdict": "PASS",
+      "note": "Evidence stamps defaultCoeff as catalog display/prefill field only — NOT payroll formula engine LIVE"
+    },
+    "AC-PLT-ATT-OT-01b": {
+      "expect": "4xx HRM-ATT-OT-TYPE-KEY · no persist",
+      "status": 400,
+      "code": "HRM-ATT-OT-TYPE-KEY",
+      "invent_key": "zz_invent_att_ot_msk8vetu",
+      "summary": "{\"success\":false,\"code\":\"HRM-ATT-OT-TYPE-KEY\",\"message\":\"overtime_type 'zz_invent_att_ot_msk8vetu' is not in effective OT-type catalog (invent forbidden when EFF ≠ empty)\",\"details\":{\"overtime_type\":\"zz_invent_att_ot_msk8vetu\",\"key\":\"zz_invent_att_ot_msk8vetu\"},\"timestamp\":\"2026-08-08T10:42:22.633Z\"}",
+      "verdict": "PASS",
+      "network_key_hit": true
+    },
+    "VAL-ATT-OT-CNS-01": {
+      "expect": "4xx HRM-ATT-OT-TYPE-KEY · no persist",
+      "status": 400,
+      "code": "HRM-ATT-OT-TYPE-KEY",
+      "invent_key": "zz_invent_att_ot_msk8vetu",
+      "summary": "{\"success\":false,\"code\":\"HRM-ATT-OT-TYPE-KEY\",\"message\":\"overtime_type 'zz_invent_att_ot_msk8vetu' is not in effective OT-type catalog (invent forbidden when EFF ≠ empty)\",\"details\":{\"overtime_type\":\"zz_invent_att_ot_msk8vetu\",\"key\":\"zz_invent_att_ot_msk8vetu\"},\"timestamp\":\"2026-08-08T10:42:22.633Z\"}",
+      "verdict": "PASS",
+      "network_key_hit": true
+    },
+    "AC-PLT-ATT-OT-01_L1_VALID": {
+      "expect": "Nest OT type ∈ catalog → 2xx (L1 consumer wire)",
+      "status": 201,
+      "code": "HRM-OT-201",
+      "id": "9830dc98-bf7b-4f54-a0de-47b542662399",
+      "coefficient": "1.75",
+      "verdict": "PASS",
+      "note": "UF browser Nest picker rebind = R-PLT-ATT-OT-FE-01 residual; L1 proves API accept Nest codes; coeff prefill ≠ formula LIVE"
+    },
+    "AC-PLT-ATT-OT-01e": {
+      "expect": "soft-retire → inactive; EFF excludes; include_inactive shows",
+      "retireStatus": 201,
+      "retireCode": "HRM-ATT-OT-200",
+      "status": "inactive",
+      "hiddenDefault": true,
+      "retiredVisible": true,
+      "effExcludes": true,
+      "verdict": "PASS"
+    },
+    "AC-PLT-ATT-OT-01c": {
+      "expect": "EFF=0 invent soft-skip · no seed · empty CTA",
+      "verdict": "NOTE_BLOCKED",
+      "note": "Live Nest has/created active rows; isolating EFF=0 would require wipe/retire-all (risk peer data) — FORBIDDEN U65 reckless DELETE. Covered by BE jest VAL-ATT-OT-CNS-05 / AC-01c empty soft-skip; live invent-only path proven at EFF>0 (01b). Baseline EFF before admin documented.",
+      "baseline_eff_before_admin": 0,
+      "live_eff_after_admin": 2,
+      "jest_cite": "att-ot-type.service.spec + attendance-requests.service.spec VAL-ATT-OT-CNS-05 soft-skip"
+    },
+    "AC-PLT-ATT-OT-01": {
+      "expect": "EFF>0 OvertimeRequestTab picker Nest GET ot-types",
+      "fe_hardcode_3": true,
+      "fe_fetches_ot_types": false,
+      "fe_admin_surface": true,
+      "verdict": "PASS_WITH_OBS",
+      "residual": "R-PLT-ATT-OT-FE-01",
+      "note": "FE still closed weekday|weekend|holiday while Nest EFF>0 — admin L1 PASS; Nest rebind P2 residual — do not FAIL whole BE"
+    },
+    "R-PLT-ATT-OT-FE-ADMIN": {
+      "severity": "P2",
+      "expect": "FE admin surface Loại tăng ca (Settings REF only this wave)",
+      "present": true,
+      "verdict": "OBS",
+      "note": "Admin L1 proven via authenticated Network POST/GET — FE admin ABSENT OK this wave"
+    },
+    "U19_OT_404": {
+      "expect": "404 HRM-ATT-OT-404 ≠ invent KEY",
+      "status": 404,
+      "code": "HRM-ATT-OT-404",
+      "verdict": "PASS",
+      "note": "exact OT-404"
+    },
+    "AC-PLT-ATT-OT-01H": {
+      "expect": "honesty flags false · C-SLICE · seals RETAIN · DENY formula LIVE",
+      "attendance_uat_ready": false,
+      "payroll_e2e_ready": false,
+      "contracts_printable_ready": false,
+      "formula_LIVE": false,
+      "C_SLICE_NE_MODULE": true,
+      "U65_zero_seed": true,
+      "seals_retain": {
+        "CTR_TEMPLATE": "CTRTPLQA-MSK7U4CG",
+        "ATT_LVRULE": "ATTLVRULEQA2-MSK79F2F",
+        "ATT_CODE": "ATTCODEQA-MSK4T1A5",
+        "ATT_LEAVE": "ATTLEAVEQA-MSJ7CPJH",
+        "ATT_WS": "ATTWSQA-MSJC3IN9",
+        "ATT_SHIFT": "ATTSHIFTQA-MSK5FXP3",
+        "FE_LVRULE_01g": "HOLD"
+      },
+      "verdict": "PASS"
+    }
+  },
+  "residuals": [
+    {
+      "id": "R-PLT-ATT-OT-FE-01",
+      "severity": "P2",
+      "owner": "dev-fe",
+      "summary": "OvertimeRequestTab still hardcode weekday|weekend|holiday + getCoefficient; rebind Nest ot-types/effective when EFF>0"
+    }
+  ],
+  "overall": "PASS_WITH_OBS",
+  "ack_status": "PASS_WITH_OBS",
+  "obs_reason": "FE OvertimeRequestTab hardcode-3 residual R-PLT-ATT-OT-FE-01",
+  "network_key_hit": true,
+  "endedAt": "2026-08-08T10:42:23.455Z",
+  "today": "2026-08-08"
+}

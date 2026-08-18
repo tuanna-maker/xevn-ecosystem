@@ -1,0 +1,171 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-EMP-SALARY-HISTORY-QA-TIER-01",
+  "parent": "PO-HRM-AMIS-PARITY-EMP-SALARY-HISTORY-BE-TIER-01",
+  "defect": "R-PAY-SRC-TIER-FIELD",
+  "stamp": "SRCTIER-ISPYVE",
+  "startedAt": "2026-08-07T10:22:27.531Z",
+  "journey": "J-HRM-07",
+  "u65": "zero-seed · browser payroll + GET lines source_tier key (no prefix-only assert)",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed_used": false,
+    "amis_done": false
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "ac": {
+    "L0": {
+      "verdict": "🟢 PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "at": "2026-08-07T10:22:27.552Z"
+    },
+    "AUTH": {
+      "verdict": "🟢 PASS",
+      "note": "ceo@xe.vn",
+      "at": "2026-08-07T10:22:27.675Z"
+    },
+    "TDZ-GATE": {
+      "verdict": "🟢 PASS",
+      "note": "precision=true showAddDialogErr=false",
+      "at": "2026-08-07T10:22:36.692Z"
+    },
+    "F5-STABLE": {
+      "verdict": "🟢 PASS",
+      "note": "reload payroll after browse",
+      "at": "2026-08-07T10:22:38.997Z"
+    },
+    "AC-PAY-SRC-GET-TIER": {
+      "verdict": "🟢 PASS",
+      "note": "emp_cb_refs=2 failures=[] get=200/HRM-PAY-200",
+      "at": "2026-08-07T10:22:39.662Z"
+    },
+    "R-PAY-SRC-TIER-FIELD": {
+      "verdict": "🟢 CLOSED",
+      "note": "GET lines expose source_tier===emp_cb with key present (no prefix-only assert)",
+      "at": "2026-08-07T10:22:39.662Z"
+    },
+    "AC-PAY-SRC-01": {
+      "verdict": "🟢 PASS",
+      "note": "base=13579000@emp_cb an=777000@emp_cb expect base=13579000 an=777000",
+      "at": "2026-08-07T10:22:39.663Z"
+    },
+    "VAL-PAY-SRC-02A": {
+      "verdict": "🟢 PASS",
+      "note": "an=777000@emp_cb ref=emp_cb:package:ab2c7c78-8b89-4f59-a84e-6f99df05763c:line:d6d116da-1fa0-4815-a48f-6bc9825b52b0",
+      "at": "2026-08-07T10:22:39.664Z"
+    },
+    "VAL-PAY-SRC-02B": {
+      "verdict": "🟢 PASS",
+      "note": "overrideWon=false historyWins=true ovrConst=7500000",
+      "at": "2026-08-07T10:22:39.664Z"
+    },
+    "UF-CONSOLE": {
+      "verdict": "🟢 PASS",
+      "note": "uncaught=0",
+      "at": "2026-08-07T10:22:40.068Z"
+    }
+  },
+  "network": {
+    "pay": [
+      {
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+        "status": 200
+      }
+    ],
+    "hrm": []
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "click_log": [
+    {
+      "at": "2026-08-07T10:22:28.020Z",
+      "msg": "browser login"
+    },
+    {
+      "at": "2026-08-07T10:22:38.997Z",
+      "msg": "GET payslip lines",
+      "id": "e9903a23-fe1e-4b39-acb2-a0603007e952"
+    }
+  ],
+  "steps": [
+    {
+      "name": "payslip_lines_get",
+      "payslipId": "e9903a23-fe1e-4b39-acb2-a0603007e952",
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "total": 2,
+      "lines": [
+        {
+          "component_code": "base",
+          "amount": 13579000,
+          "source_ref": "emp_cb:package:ab2c7c78-8b89-4f59-a84e-6f99df05763c:line:e73e9624-185f-48ac-9a79-acaaa9cae51e",
+          "source_tier": "emp_cb",
+          "has_source_tier_key": true
+        },
+        {
+          "component_code": "phu_cap_an",
+          "amount": 777000,
+          "source_ref": "emp_cb:package:ab2c7c78-8b89-4f59-a84e-6f99df05763c:line:d6d116da-1fa0-4815-a48f-6bc9825b52b0",
+          "source_tier": "emp_cb",
+          "has_source_tier_key": true
+        }
+      ]
+    },
+    {
+      "name": "tier_assert",
+      "emp_cb_ref_count": 2,
+      "failures": [],
+      "pass": true
+    },
+    {
+      "name": "payslip_by_id",
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "nested_lines": 2,
+      "nested_tier_sample": [
+        {
+          "component_code": "base",
+          "source_tier": "emp_cb",
+          "has_key": true
+        },
+        {
+          "component_code": "phu_cap_an",
+          "source_tier": "emp_cb",
+          "has_key": true
+        }
+      ]
+    }
+  ],
+  "residuals": [
+    {
+      "id": "R-EMP-SH-FE-CB-CLICK",
+      "owner": "dev-fe",
+      "note": "Unchanged from QA-SRC-02 — FE Đãi ngộ save POST still open (not in this tier scope)"
+    }
+  ],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T10:22:40.271Z",
+  "next_owner": "qc",
+  "next_dispatch_prompt": "work_item_id: PO-HRM-AMIS-PARITY-EMP-SALARY-HISTORY-QC-TIER-01\nfrom_role: pm\nto_role: qc\nlane: governance\nGWC R-PAY-SRC-TIER-FIELD CLOSED + AC-PAY-SRC-01 / VAL-02A/B retain\nevidence: docs/qa/evidence/po-hrm-amis-parity-emp-salary-history-qa-tier-01.md\nhonesty: payroll_e2e_ready=false · no AMIS DONE",
+  "completion_report": "Closed: U65 R-PAY-SRC-TIER-FIELD retest stamp SRCTIER-ISPYVE. GET-TIER: 🟢 PASS; AC-PAY-SRC-01: 🟢 PASS; VAL-02A: 🟢 PASS; VAL-02B: 🟢 PASS; F5: 🟢 PASS. Honesty: payroll_e2e_ready=false; no seed; no AMIS DONE."
+}

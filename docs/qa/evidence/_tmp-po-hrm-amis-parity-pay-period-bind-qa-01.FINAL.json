@@ -1,0 +1,266 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-PERIOD-BIND-QA-01",
+  "startedAt": "2026-08-07T09:42:17.964Z",
+  "u65": "zero-seed · browser-only · AC-PAY-TPL-03",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "STAMP": "PAYBINDQA1-IRABN0",
+    "TPL_CODE": "qa_bind_paybindqa1_irabn0",
+    "TPL_NAME": "Mẫu bind QA PAYBINDQA1-IRABN0",
+    "PERIOD_NAME": "Bảng lương QA PAYBINDQA1-IRABN0",
+    "PERIOD_MONTH": 3,
+    "PERIOD_YEAR": 2027
+  },
+  "prior": {
+    "fe": "PO-HRM-AMIS-PARITY-PAY-PERIOD-BIND-FE-01 READY_FOR_QA"
+  },
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "payroll_e2e_ready_claimed": false,
+    "seed_used": false,
+    "pack_is_not_mau": true
+  },
+  "l0": {
+    "portal": {
+      "status": 200,
+      "ok": true
+    },
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "ac": {
+    "AC0_SETTINGS_ACTIVE_TPL": {
+      "summary": "Active mẫu qa_bind_paybindqa1_irabn0 ready (created=true)",
+      "tpl": {
+        "created": true,
+        "code": "qa_bind_paybindqa1_irabn0",
+        "name": "Mẫu bind QA PAYBINDQA1-IRABN0",
+        "createPost": {
+          "method": "POST",
+          "status": 201,
+          "url": "/api/hrm/payroll/pay-sheet-templates",
+          "at": "2026-08-07T09:42:31.542Z",
+          "code": "HRM-PAY-TPL-201",
+          "message": "Pay sheet template created",
+          "dataId": "d692cc06-0327-438d-8b8a-01281688b5f6"
+        },
+        "rowVisible": true
+      },
+      "click_path": "settings-tab-pay-sheet-tpl → create mẫu active",
+      "verdict": "PASS",
+      "at": "2026-08-07T09:42:33.493Z"
+    },
+    "AC1_DIALOG_PACK_NEQ_MAU": {
+      "summary": "Create dialog shows pay-period-pay-sheet-tpl-alias-note pack≠mẫu",
+      "aliasText": "Gói thành phần enroll (salary-templates) khác mẫu bảng lương kỳ (pay-sheet-templates). Chọn mẫu từ Cài đặt → Mẫu bảng lương (/pay-sheet-templates), không phải gói enroll Tính lương.",
+      "click_path": "payroll-tab-calculate → Danh sách bảng lương → Lập bảng lương",
+      "verdict": "PASS",
+      "at": "2026-08-07T09:42:40.930Z"
+    },
+    "AC2_POST_PERIOD_BIND": {
+      "summary": "POST periods 201 HRM-PAY-201 paySheetTemplateId present · no salary-templates SoT",
+      "periodPost": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/payroll/periods",
+        "at": "2026-08-07T09:42:43.962Z",
+        "code": "HRM-PAY-201",
+        "message": "Payroll period created",
+        "dataId": "8af75b83-c9eb-4fb3-ae44-27e3fba60d71",
+        "paySheetTemplateId": "c2073510-1b19-475e-9ce1-129e4a1b4e4d",
+        "snapshotTemplateName": "QA mẫu bind PAYTPLQA-MSIGIKB1"
+      },
+      "periodBody": {
+        "method": "POST",
+        "url": "/api/hrm/payroll/periods",
+        "body": {
+          "paySheetTemplateId": "c2073510-1b19-475e-9ce1-129e4a1b4e4d",
+          "period_label": "Bảng lương QA PAYBINDQA1-IRABN0",
+          "keys": [
+            "company_id",
+            "period_label",
+            "start_date",
+            "end_date",
+            "paySheetTemplateId"
+          ]
+        },
+        "at": "2026-08-07T09:42:43.693Z"
+      },
+      "snapshotName": "QA mẫu bind PAYTPLQA-MSIGIKB1",
+      "click_path": "hdsd-pay-period-create-submit",
+      "verdict": "PASS",
+      "at": "2026-08-07T09:42:47.229Z"
+    },
+    "AC3_ROW_TPL_AFTER_CREATE": {
+      "summary": "FAIL row tpl cell=\"\" expected \"Mẫu bind QA PAYBINDQA1-IRABN0\"",
+      "rowTplText": "",
+      "periodId": "8af75b83-c9eb-4fb3-ae44-27e3fba60d71",
+      "click_path": "list after POST invalidateQueries",
+      "verdict": "FAIL",
+      "at": "2026-08-07T09:43:18.829Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "at": "2026-08-07T09:42:29.401Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/pay-sheet-templates",
+      "at": "2026-08-07T09:42:31.542Z",
+      "code": "HRM-PAY-TPL-201",
+      "message": "Pay sheet template created",
+      "dataId": "d692cc06-0327-438d-8b8a-01281688b5f6"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "at": "2026-08-07T09:42:31.647Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T09:42:35.263Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 20
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main&status=active&active_only=true",
+      "at": "2026-08-07T09:42:41.450Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/periods",
+      "at": "2026-08-07T09:42:43.962Z",
+      "code": "HRM-PAY-201",
+      "message": "Payroll period created",
+      "dataId": "8af75b83-c9eb-4fb3-ae44-27e3fba60d71",
+      "paySheetTemplateId": "c2073510-1b19-475e-9ce1-129e4a1b4e4d",
+      "snapshotTemplateName": "QA mẫu bind PAYTPLQA-MSIGIKB1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T09:42:44.132Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 21,
+      "listHit": {
+        "id": "8af75b83-c9eb-4fb3-ae44-27e3fba60d71",
+        "pay_sheet_template_id": null,
+        "snapshot_name": null
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T09:42:44.249Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 21,
+      "listHit": {
+        "id": "8af75b83-c9eb-4fb3-ae44-27e3fba60d71",
+        "pay_sheet_template_id": null,
+        "snapshot_name": null
+      }
+    }
+  ],
+  "requestBodies": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/payroll/pay-sheet-templates",
+      "body": {
+        "keys": [
+          "company_id",
+          "code",
+          "name",
+          "status",
+          "isDefault",
+          "applicabilityScope"
+        ]
+      },
+      "at": "2026-08-07T09:42:31.410Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/payroll/periods",
+      "body": {
+        "paySheetTemplateId": "c2073510-1b19-475e-9ce1-129e4a1b4e4d",
+        "period_label": "Bảng lương QA PAYBINDQA1-IRABN0",
+        "keys": [
+          "company_id",
+          "period_label",
+          "start_date",
+          "end_date",
+          "paySheetTemplateId"
+        ]
+      },
+      "at": "2026-08-07T09:42:43.693Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-period-bind-qa-01/01-settings-active-template.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-period-bind-qa-01/02-payroll-batches-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-period-bind-qa-01/03-create-dialog-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-period-bind-qa-01/04-after-create-list.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T09:42:19.679Z",
+      "msg": "login_api_ok"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "R-PAY-PERIOD-LIST-TPL",
+      "owner": "dev-be",
+      "note": "GET /payroll/periods list missing snapshot — row shows em-dash after refetch"
+    },
+    {
+      "id": "HARNESS",
+      "owner": "qa",
+      "note": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByTestId('pay-batch-row-8af75b83-c9eb-4fb3-ae44-27e3fba60d71')\n"
+    }
+  ],
+  "ids": {
+    "periodId": "8af75b83-c9eb-4fb3-ae44-27e3fba60d71",
+    "tplCode": "qa_bind_paybindqa1_irabn0",
+    "tplName": "Mẫu bind QA PAYBINDQA1-IRABN0"
+  },
+  "overall": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-07T09:43:48.835Z"
+}

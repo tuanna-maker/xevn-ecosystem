@@ -1,0 +1,67 @@
+{
+  "work_item_id": "PO-MFD-M2-ATT-SETTINGS-CATALOG-500-01-QA",
+  "startedAt": "2026-08-04T05:37:40.008Z",
+  "u65_zero_seed": true,
+  "hdsd_align": "Chấm công → Thiết lập → Quy định chấm công → Tùy chỉnh bảng công",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "EMAIL": "ceo@xe.vn",
+    "COMPANY": "main",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm_api": 200,
+    "portal": 200
+  },
+  "settingsCatalogGets": [
+    {
+      "at": "2026-08-04T05:37:45.347Z",
+      "status": 200,
+      "code": "HRM-SET-200",
+      "path": "/api/hrm/settings-catalogs"
+    }
+  ],
+  "networkBad": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "steps": {
+    "login": {
+      "http": 201,
+      "persona": "ceo@xe.vn",
+      "companyId": "main"
+    },
+    "directApi": {
+      "status": 200,
+      "code": "HRM-SET-200",
+      "keysSample": "object"
+    },
+    "attendanceLoad": {
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+      "hasAttendance": true
+    },
+    "openRules": {
+      "ok": true
+    },
+    "customizeTab": {
+      "visibleCustomize": true,
+      "syncErrorBanner": false
+    },
+    "assert": {
+      "settingsCatalogGets": 1,
+      "catalogOk": true,
+      "catalogAny200": true,
+      "no500OnCatalog": true,
+      "networkBadCount": 0,
+      "syncErrorBanner": false,
+      "directApi200": true
+    }
+  },
+  "bodyTextSample": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nTổng quan\nChấm công\nCa làm việc\nQuản lý đơn\nNghỉ phép\nBáo cáo\nThiết lập\nNhân viên\nQuy định chấm công\nQuy định làm thêm\nQuy định nghỉ\nQuy định đi muộn - về sớm\nQuy định làm đơn\nNgười dùng\nVai trò\nHệ thống\nQuy định chấm công\nGợi ý hình thức chấm công\nChung\nSố công chuẩn\nTùy chỉnh bảng công\nMáy chấm công\nỨng dụng di động\nMáy tính bảng\nChấm công hộ\nTự động chấm công\n\nThiết lập cấu trúc bảng chấm công tổng hợp cho toàn công ty\n\nLấy lại mặc định\nXem trước\nTên cột\tMô tả\n\nCông ngày lễ\n\t\n\nCông ngày lễ\n\n\n\nLàm thêm giờ hưởng lương\n\t\n\nLàm thêm giờ hưởng lương\n\n\n\nLàm thêm giờ nghỉ bù\n\t\n\nLàm thêm giờ nghỉ bù\n\n\n\nNghỉ phép\n\t\n\nNghỉ phép\n\n\n\nNghỉ lễ\n\t\n\nNghỉ lễ\n\n\n\nCông tác\nThiết lập nâng cao\n\t\n\nCông tác\n\n\n\nNghỉ ",
+  "syncErrorBanner": false,
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-04T05:37:49.478Z",
+  "runtime_stamp_hint": "LIVE"
+}

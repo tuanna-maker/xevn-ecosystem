@@ -1,0 +1,291 @@
+{
+  "work_item_id": "QA-HDSD-BF-03-PROFILE-DEPTH-01",
+  "program": "P-HDSD-ECOSYSTEM-03 · C-P2-YELLOW-PROMOTE · C-BF03-PROFILE-01",
+  "startedAt": "2026-07-31T03:25:00.288Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "tc": [
+    {
+      "id": "TC-HRM-HDSD-028",
+      "verdict": "🟢",
+      "detail": "§5.4 Header name=true edit=true badge=false back=false",
+      "at": "2026-07-31T03:25:13.350Z",
+      "clickPath": "profile header",
+      "uf": "UF-HRM-01",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-029",
+      "verdict": "🟢",
+      "detail": "§5.4 Dải tab Cốt lõi {\"groups\":true,\"general\":true,\"work\":true,\"contract\":true,\"salary\":true}",
+      "at": "2026-07-31T03:25:13.465Z",
+      "clickPath": "profile-tab-* core",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-030",
+      "verdict": "🟢",
+      "detail": "§5.4 Nhóm tab mở rộng groups={\"hr\":true,\"career\":true,\"personal\":true} panel=true nested=kpi",
+      "at": "2026-07-31T03:25:20.161Z",
+      "clickPath": "profile-group-* → profile-group-tab-*",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-031",
+      "verdict": "🟢",
+      "detail": "§5.4 Tab Thông tin chung blocks={\"personal\":true,\"address\":true,\"emergency\":true,\"work\":true,\"financeOrInsurance\":true,\"statusBadge\":true}",
+      "at": "2026-07-31T03:25:21.327Z",
+      "clickPath": "profile-tab-general blocks",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-032",
+      "verdict": "🟢",
+      "detail": "§5.4 Phân quyền nhạy cảm (CEO portal positive) {\"fallbackVisible\":false,\"hasSalaryish\":true,\"blank\":false} · deny-path non-CEO defer",
+      "at": "2026-07-31T03:25:22.648Z",
+      "clickPath": "profile-tab-salary + general sensitive fields",
+      "uf": "UF-XBOS-13",
+      "note": "Group CEO has view_salary — assert content path; deny path = separate persona"
+    },
+    {
+      "id": "TC-HRM-HDSD-033",
+      "verdict": "🟢",
+      "detail": "§5.4 Trạng thái hồ sơ badge=Đang làm việc",
+      "at": "2026-07-31T03:25:23.582Z",
+      "clickPath": "general card status badge",
+      "journey": "J-HRM-02"
+    },
+    {
+      "id": "TC-HRM-HDSD-034",
+      "verdict": "🟢",
+      "detail": "§5.4 Lỗi hồ sơ msg=true back=true GET=404 banner500=false",
+      "at": "2026-07-31T03:25:27.315Z",
+      "clickPath": "deeplink bad UUID → not-found / recovery",
+      "http": 404,
+      "journey": "J-HRM-02"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "J-HRM-02",
+      "verdict": "🟢",
+      "detail": "nav=row-click clicked=QAHDSDVS7BLHNV HDSDVS7BLqahdsdvs7bl@xevn.localTập đoàn XeVN30/7/2026Đang làm việ profile=true GET=200 id=36e2b988-8188-426d-b111-eb799f697c5b url=http://127.0.0.1:5173/hr/employees/36e2b988-8188-426d-b111-eb799f697c5b",
+      "clickPath": "list → /hr/employees/:id",
+      "http": 200
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-31T03:25:01.171Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-31T03:25:01.172Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-31T03:25:01.224Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T03:25:05.733Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T03:25:06.168Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-31T03:25:06.307Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-31T03:25:06.449Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:25:06.510Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:25:06.707Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/36e2b988-8188-426d-b111-eb799f697c5b?company_id=main",
+      "at": "2026-07-31T03:25:10.569Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/36e2b988-8188-426d-b111-eb799f697c5b/work-timeline?company_id=main",
+      "at": "2026-07-31T03:25:10.786Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:25:10.846Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operations/tasks?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T03:25:13.559Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&employee_id=36e2b988-8188-426d-b111-eb799f697c5b",
+      "at": "2026-07-31T03:25:15.167Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-31T03:25:15.474Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/36e2b988-8188-426d-b111-eb799f697c5b/work-timeline?company_id=main",
+      "at": "2026-07-31T03:25:16.475Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-kpis?company_id=main&employee_id=36e2b988-8188-426d-b111-eb799f697c5b",
+      "at": "2026-07-31T03:25:18.123Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/36e2b988-8188-426d-b111-eb799f697c5b/work-timeline?company_id=main",
+      "at": "2026-07-31T03:25:20.408Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-31T03:25:21.539Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/36e2b988-8188-426d-b111-eb799f697c5b/work-timeline?company_id=main",
+      "at": "2026-07-31T03:25:22.931Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T03:25:24.182Z"
+    },
+    {
+      "method": "GET",
+      "status": 404,
+      "url": "/api/hrm/employees/00000000-0000-4000-8000-000000000099?company_id=main",
+      "at": "2026-07-31T03:25:24.220Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T03:25:24.337Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-31T03:25:27.500Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-31T03:25:27.599Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:25:27.717Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:25:28.032Z"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-profile-depth-01-20260801/01-employees-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-profile-depth-01-20260801/02-profile-landing.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-profile-depth-01-20260801/03-header.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-profile-depth-01-20260801/04-core-tabs.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-profile-depth-01-20260801/05-group-popover.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-profile-depth-01-20260801/06-general-blocks.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-profile-depth-01-20260801/07-salary-sensitive.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-profile-depth-01-20260801/08-not-found.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-profile-depth-01-20260801/09-recovery-list.png"
+  ],
+  "employeeId": "36e2b988-8188-426d-b111-eb799f697c5b",
+  "must_keep": {
+    "mutate": [
+      "TC-HDSD-06",
+      "TC-HDSD-07",
+      "TC-HDSD-08"
+    ],
+    "ch09": [
+      "TC-HRM-HDSD-096",
+      "TC-HRM-HDSD-097"
+    ],
+    "note": "no re-mutate · no matrix touch outside 028..034"
+  },
+  "must_keep_ack": {
+    "mutate_tc_06_07_08": "not re-mutated this WI",
+    "ch09_096_097": "matrix rows untouched by promote (NEVER_DOWNGRADE)"
+  },
+  "finishedAt": "2026-07-31T03:25:29.976Z",
+  "summary": {
+    "profile": {
+      "green": 7,
+      "yellow": 0,
+      "red": 0,
+      "total": 7
+    },
+    "jHrm02": "🟢"
+  }
+}

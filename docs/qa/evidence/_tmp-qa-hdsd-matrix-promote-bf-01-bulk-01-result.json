@@ -1,0 +1,363 @@
+{
+  "work_item_id": "QA-HDSD-BF-01-BULK-01",
+  "before": {
+    "c": {
+      "🟢": 218,
+      "⬜": 135,
+      "🟡": 10
+    },
+    "total": 363
+  },
+  "after": {
+    "c": {
+      "🟢": 258,
+      "🟡": 25,
+      "⬜": 80
+    },
+    "total": 363
+  },
+  "appliedCount": 55,
+  "greenApplied": 40,
+  "yellowApplied": 15,
+  "regressions": [],
+  "applied": [
+    {
+      "id": "TC-XBOS-HDSD-109",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "cross-ref qa-hdsd-bf-01-01 §4.1 inbox nav — no duplicate mutate"
+    },
+    {
+      "id": "TC-XBOS-HDSD-110",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "cross-ref qa-hdsd-bf-01-01 inbox action btns — no duplicate mutate"
+    },
+    {
+      "id": "TC-XBOS-HDSD-111",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "cross-ref qa-hdsd-bf-01-01 inbox card columns — no duplicate mutate"
+    },
+    {
+      "id": "TC-XBOS-HDSD-112",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "cross-ref qa-hdsd-bf-01-jrecwf03 Xử lý nhanh panel — no duplicate mutate"
+    },
+    {
+      "id": "TC-XBOS-HDSD-113",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "cross-ref qa-hdsd-bf-01-jrecwf03 task completed state — no duplicate mutate"
+    },
+    {
+      "id": "TC-HRM-HDSD-056",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "cross-ref qa-hdsd-bf-01-01 J-REC-WF-01 YCTD POST 201+submit — no duplicate mutate"
+    },
+    {
+      "id": "TC-XBOS-HDSD-115",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "canvas load-only GET=200 postSave=0 ui={\"hasCanvas\":true,\"hasDots\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-116",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "canvas load-only GET=200 postSave=0 ui={\"hasCanvas\":true,\"hasDots\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-118",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "canvas load-only GET=200 postSave=0 ui={\"hasCanvas\":true,\"hasDots\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-119",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "canvas load-only GET=200 postSave=0 ui={\"hasCanvas\":true,\"hasDots\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-120",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "canvas load-only GET=200 postSave=0 ui={\"hasCanvas\":true,\"hasDots\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-121",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "canvas load-only GET=200 postSave=0 ui={\"hasCanvas\":true,\"hasDots\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-130",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "workflow canvas trạng thái visible"
+    },
+    {
+      "id": "TC-XBOS-HDSD-124",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "RACI matrix=200 409=0 ui={\"hasTabs\":true,\"hasTable\":true,\"hasStats\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-125",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "RACI matrix=200 409=0 ui={\"hasTabs\":true,\"hasTable\":true,\"hasStats\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-126",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "RACI matrix=200 409=0 ui={\"hasTabs\":true,\"hasTable\":true,\"hasStats\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-127",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "RACI matrix=200 409=0 ui={\"hasTabs\":true,\"hasTable\":true,\"hasStats\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-128",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "RACI matrix=200 409=0 ui={\"hasTabs\":true,\"hasTable\":true,\"hasStats\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-129",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "RACI matrix=200 409=0 ui={\"hasTabs\":true,\"hasTable\":true,\"hasStats\":true}"
+    },
+    {
+      "id": "TC-XBOS-HDSD-133",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "catalog governance load banner=false"
+    },
+    {
+      "id": "TC-XBOS-HDSD-134",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "KPI dashboard kpiNet=200 bodyOk=true"
+    },
+    {
+      "id": "TC-XBOS-HDSD-135",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "KPI dashboard kpiNet=200 bodyOk=true"
+    },
+    {
+      "id": "TC-XBOS-HDSD-136",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "KPI dashboard kpiNet=200 bodyOk=true"
+    },
+    {
+      "id": "TC-XBOS-HDSD-137",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "KPI dashboard kpiNet=200 bodyOk=true"
+    },
+    {
+      "id": "TC-HRM-HDSD-054",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "intro/overview tab=overview load"
+    },
+    {
+      "id": "TC-HRM-HDSD-057",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "YCTD list tab=requisitions load"
+    },
+    {
+      "id": "TC-HRM-HDSD-058",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "JD library tab=jd-library load"
+    },
+    {
+      "id": "TC-HRM-HDSD-060",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "headcount proposals tab=headcount-proposals load"
+    },
+    {
+      "id": "TC-HRM-HDSD-061",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "campaigns tab=campaigns load"
+    },
+    {
+      "id": "TC-HRM-HDSD-062",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "interviews tab=interviews load"
+    },
+    {
+      "id": "TC-HRM-HDSD-063",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "evaluations tab=evaluations load"
+    },
+    {
+      "id": "TC-HRM-HDSD-064",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "plan list tab=recruitment-plans load"
+    },
+    {
+      "id": "TC-HRM-HDSD-067",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "reports tab=reports load"
+    },
+    {
+      "id": "TC-HRM-HDSD-066",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "plan detail click=no-row"
+    },
+    {
+      "id": "TC-HRM-HDSD-065",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "create plan btn not found — defer"
+    },
+    {
+      "id": "TC-HRM-HDSD-069",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "status labels {\"hasOpen\":true,\"hasPending\":false,\"hasDraft\":false}"
+    },
+    {
+      "id": "TC-HRM-HDSD-071",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "Ch07 footer/test-link section present on module shell"
+    },
+    {
+      "id": "TC-HRM-HDSD-068",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "shared dialog mutate deferred — module dialogs exist on tabs"
+    },
+    {
+      "id": "TC-HRM-HDSD-107",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "company tabs=0"
+    },
+    {
+      "id": "TC-HRM-HDSD-108",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "company mgmt buttons visible"
+    },
+    {
+      "id": "TC-HRM-HDSD-109",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "company list columns"
+    },
+    {
+      "id": "TC-HRM-HDSD-110",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "add/edit company dialog mutate deferred"
+    },
+    {
+      "id": "TC-HRM-HDSD-111",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "members/dept tab"
+    },
+    {
+      "id": "TC-HRM-HDSD-112",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "service package tab"
+    },
+    {
+      "id": "TC-HRM-HDSD-137",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "workflow view tab ui={\"hasWorkflow\":true,\"cardCount\":3,\"hasView\":false}"
+    },
+    {
+      "id": "TC-HRM-HDSD-138",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "workflow view tab ui={\"hasWorkflow\":true,\"cardCount\":3,\"hasView\":false}"
+    },
+    {
+      "id": "TC-HRM-HDSD-139",
+      "from": "⬜",
+      "to": "🟢",
+      "detail": "workflow view tab ui={\"hasWorkflow\":true,\"cardCount\":3,\"hasView\":false}"
+    },
+    {
+      "id": "TC-HRM-HDSD-140",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "no view button on workflow list"
+    },
+    {
+      "id": "TC-XBOS-HDSD-114",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "Lỗi thường gặp — recovery path doc-only; not reproduced U65 this wave"
+    },
+    {
+      "id": "TC-XBOS-HDSD-122",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "Lỗi thường gặp — recovery path doc-only; not reproduced U65 this wave"
+    },
+    {
+      "id": "TC-XBOS-HDSD-131",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "Lỗi thường gặp — recovery path doc-only; not reproduced U65 this wave"
+    },
+    {
+      "id": "TC-XBOS-HDSD-138",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "Lỗi thường gặp — recovery path doc-only; not reproduced U65 this wave"
+    },
+    {
+      "id": "TC-HRM-HDSD-070",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "Lỗi thường gặp — recovery path doc-only; not reproduced U65 this wave"
+    },
+    {
+      "id": "TC-HRM-HDSD-113",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "Lỗi thường gặp — recovery path doc-only; not reproduced U65 this wave"
+    },
+    {
+      "id": "TC-HRM-HDSD-141",
+      "from": "⬜",
+      "to": "🟡",
+      "detail": "Lỗi thường gặp — recovery path doc-only; not reproduced U65 this wave"
+    }
+  ],
+  "skippedCount": 1,
+  "runtimeSummary": {
+    "total": 56,
+    "green": 41,
+    "yellow": 15,
+    "red": 0,
+    "expected": 55
+  }
+}

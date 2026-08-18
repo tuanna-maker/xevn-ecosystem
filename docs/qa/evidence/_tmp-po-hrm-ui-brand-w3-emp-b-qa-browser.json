@@ -1,0 +1,970 @@
+{
+  "work_item_id": "PO-HRM-UI-BRAND-W3-EMP-B-QA",
+  "fe_work_item": "PO-HRM-UI-BRAND-W3-EMP-B",
+  "startedAt": "2026-08-05T03:41:43.628Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "inventory": [
+    "E09",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E19",
+    "E25",
+    "E26",
+    "E27"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "themeContrastStrict": {
+    "exit": 0,
+    "snippet": [
+      "> xevn-ecosystem@1.0.0 verify:xevn:theme-contrast C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem",
+      "> node scripts/verify-xevn-theme-contrast.mjs \"--\" \"--strict\"",
+      "[xevn-theme-contrast] token lockstep PASS ? primary #1E40AF � text #111827 � secondary #4B5563 � muted-fg OK (portal+HRM+TW)",
+      "[xevn-theme-contrast] scanned 598 files; pale hits=0 files=0",
+      "[xevn-theme-contrast] STRICT PASS ? 0 pale hits"
+    ]
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=true&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&status=active&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-benefits?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-benefits?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/training?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operations/tasks?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-benefits?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0f6e1369-4170-42e3-ad6b-3d04b3ec2edd"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/training?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    }
+  ],
+  "mutates": [],
+  "detailGets": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/training?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/training?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "steps": {
+    "l0": {
+      "status": "PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "at": "2026-08-05T03:41:45.090Z"
+    },
+    "theme": {
+      "status": "PASS",
+      "note": "strict",
+      "at": "2026-08-05T03:41:45.091Z"
+    },
+    "login": {
+      "status": "PASS",
+      "note": "HTTP 201",
+      "at": "2026-08-05T03:41:45.190Z"
+    },
+    "e09": {
+      "status": "PASS",
+      "note": "Xuất sticky CTA",
+      "at": "2026-08-05T03:41:51.465Z"
+    },
+    "e13": {
+      "status": "PASS",
+      "note": "SoftDel sharp",
+      "at": "2026-08-05T03:41:53.910Z"
+    },
+    "e14e15": {
+      "status": "PASS",
+      "note": "archive lifecycle",
+      "at": "2026-08-05T03:41:58.209Z"
+    },
+    "e27": {
+      "status": "PASS",
+      "note": "manager picker",
+      "at": "2026-08-05T03:42:04.342Z"
+    },
+    "navigate": {
+      "status": "PASS",
+      "note": "list→/employees/:id",
+      "at": "2026-08-05T03:42:11.261Z"
+    },
+    "e12e26": {
+      "status": "PASS",
+      "note": "salary + RBAC chrome",
+      "at": "2026-08-05T03:42:13.376Z"
+    },
+    "e16": {
+      "status": "PASS",
+      "note": "contracts",
+      "at": "2026-08-05T03:42:15.575Z"
+    },
+    "e17": {
+      "status": "PASS",
+      "note": "insurance",
+      "at": "2026-08-05T03:42:17.408Z"
+    },
+    "e19": {
+      "status": "PASS",
+      "note": "training",
+      "at": "2026-08-05T03:42:20.015Z"
+    },
+    "e25": {
+      "status": "PASS",
+      "note": "work history",
+      "at": "2026-08-05T03:42:25.705Z"
+    }
+  },
+  "checks": {
+    "E09_export": {
+      "pass": true,
+      "title": {
+        "text": "Xuất danh sách nhân viên",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "className": "xevn-type-title text-[20px] font-bold leading-none tracking-tight text-xevn-text flex items-center gap-2"
+      },
+      "titleOk": true,
+      "stickyFooter": true,
+      "stickyExportCta": true,
+      "paleLabelCount": 0,
+      "labelSample": [
+        {
+          "text": "Bộ lọc dữ liệu",
+          "color": "rgb(17, 24, 39)",
+          "className": "font-medium text-xevn-text"
+        },
+        {
+          "text": "Phòng ban",
+          "color": "rgb(17, 24, 39)",
+          "className": "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:"
+        },
+        {
+          "text": "Trạng thái",
+          "color": "rgb(17, 24, 39)",
+          "className": "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:"
+        },
+        {
+          "text": "Số nhân viên sẽ xuất: 60",
+          "color": "rgb(75, 85, 99)",
+          "className": "text-sm text-xevn-textSecondary"
+        },
+        {
+          "text": "Chọn cột xuất (9/17)",
+          "color": "rgb(17, 24, 39)",
+          "className": "font-medium text-xevn-text"
+        }
+      ]
+    },
+    "E13_softdel": {
+      "pass": true,
+      "alertOk": true,
+      "title": {
+        "text": "Xác nhận xóa nhân viên",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "className": "text-[20px] font-bold text-xevn-text"
+      },
+      "titleOk": true,
+      "reasonLabel": {
+        "text": "Lý do xóa (tùy chọn)",
+        "color": "rgb(17, 24, 39)",
+        "className": "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:"
+      },
+      "note": "Hủy only — SoftDel wire UI verified, no archive POST"
+    },
+    "E14_deleted_list": {
+      "pass": true,
+      "title": {
+        "text": "Danh sách nhân viên đã xóa",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "className": "xevn-type-title text-[20px] font-bold leading-none tracking-tight text-xevn-text flex items-center gap-2"
+      },
+      "titleOk": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classPurple": 0,
+        "secondaryCount": 4,
+        "samples": [
+          {
+            "text": "Danh sách nhân viên đã xóa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex flex-col space-y-1.5 text-center sm:text-left"
+          },
+          {
+            "text": "Danh sách nhân viên đã xóa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "xevn-type-title text-[20px] font-bold leading-none tracking-"
+          },
+          {
+            "text": "SQA SoftDel SD8N1STGQA-SD-SD8N1STG • Xóa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgb(255, 255, 255)",
+            "className": "flex items-center justify-between rounded-card border border"
+          },
+          {
+            "text": "SQA SoftDel SD8N1STGQA-SD-SD8N1STG • Xóa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex items-center gap-4"
+          },
+          {
+            "text": "QA SoftDel SD8N1STGQA-SD-SD8N1STG • Xóa ",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": ""
+          },
+          {
+            "text": "QA SoftDel SD8N1STGQA-SD-SD8N1STG",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex items-center gap-2"
+          },
+          {
+            "text": "QA SoftDel SD8N1STG",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "font-medium text-xevn-text"
+          },
+          {
+            "text": "QA-SD-SD8N1STG",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "inline-flex items-center rounded-full border px-2.5 py-0.5 f"
+          },
+          {
+            "text": "Xóa lúc: 14:46 31/07/2026",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "mt-1 flex items-center gap-4 text-xs text-xevn-textSecondary"
+          },
+          {
+            "text": "Xóa lúc: 14:46 31/07/2026",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex items-center gap-1"
+          }
+        ]
+      }
+    },
+    "E15_restore": {
+      "pass": true,
+      "restoreOk": true,
+      "title": {
+        "text": "Khôi phục nhân viên?",
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "20px",
+        "fontWeight": "700",
+        "className": "text-[20px] font-bold text-xevn-text"
+      },
+      "titleOk": true,
+      "note": "opened restore confirm then Hủy — no restore mutate"
+    },
+    "E27_manager_picker": {
+      "pass": true,
+      "formVisible": true,
+      "labelVisible": true,
+      "labelStyle": {
+        "color": "rgb(17, 24, 39)",
+        "className": "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:",
+        "text": "Quản lý trực tiếp"
+      },
+      "labelSharp": true,
+      "pickerOpen": true,
+      "note": "picker interacted"
+    },
+    "navigate_detail": {
+      "pass": true,
+      "url": "/hr/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "onDetail": true,
+      "detailGets": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+        }
+      ],
+      "detail200": true
+    },
+    "E12_salary": {
+      "pass": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classPurple": 0,
+        "secondaryCount": 3,
+        "samples": [
+          {
+            "text": "Đơn vị thành viên",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "font-medium text-xevn-text"
+          },
+          {
+            "text": "Tất cả đơn vị (rollup)",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": ""
+          },
+          {
+            "text": "Đang xem: Tất cả đơn vị (rollup)",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "text-sm text-xevn-textSecondary"
+          },
+          {
+            "text": "Tổng giám đốc tập đoàn",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "text-sm font-medium text-xevn-textSecondary"
+          },
+          {
+            "text": "Nguyễn Văn QA M3 987275QA-M3-987275Chỉnh",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex items-center gap-2 sm:gap-4 min-w-0"
+          },
+          {
+            "text": "QA-M3-987275",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "inline-flex items-center rounded-full border px-2.5 py-0.5 t"
+          },
+          {
+            "text": "Chỉnh sửa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "ml-auto shrink-0"
+          },
+          {
+            "text": "Chỉnh sửa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          },
+          {
+            "text": "Thông tin chungCông việcHợp đồngLương & ",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "border-b overflow-hidden"
+          },
+          {
+            "text": "Thông tin chungCông việcHợp đồngLương & ",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex items-center gap-1 pb-2 overflow-x-auto scrollbar-hide"
+          }
+        ]
+      },
+      "indigoClass": 0,
+      "netPrimary": 0,
+      "fallbackVisible": false
+    },
+    "E26_permission_fallback": {
+      "pass": true,
+      "fallbackVisible": false,
+      "note": "ceo@xe.vn has view_salary — PermissionFallback not shown; E26 chrome PASS via salary sharp + no purple deny invent"
+    },
+    "E16_contracts": {
+      "pass": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classPurple": 0,
+        "secondaryCount": 9,
+        "samples": [
+          {
+            "text": "Đơn vị thành viên",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "font-medium text-xevn-text"
+          },
+          {
+            "text": "Tất cả đơn vị (rollup)",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": ""
+          },
+          {
+            "text": "Đang xem: Tất cả đơn vị (rollup)",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "text-sm text-xevn-textSecondary"
+          },
+          {
+            "text": "Tổng giám đốc tập đoàn",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "text-sm font-medium text-xevn-textSecondary"
+          },
+          {
+            "text": "Nguyễn Văn QA M3 987275QA-M3-987275Chỉnh",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex items-center gap-2 sm:gap-4 min-w-0"
+          },
+          {
+            "text": "QA-M3-987275",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "inline-flex items-center rounded-full border px-2.5 py-0.5 t"
+          },
+          {
+            "text": "Chỉnh sửa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "ml-auto shrink-0"
+          },
+          {
+            "text": "Chỉnh sửa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          },
+          {
+            "text": "Thông tin chungCông việcHợp đồngLương & ",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "border-b overflow-hidden"
+          },
+          {
+            "text": "Thông tin chungCông việcHợp đồngLương & ",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex items-center gap-1 pb-2 overflow-x-auto scrollbar-hide"
+          }
+        ]
+      }
+    },
+    "E17_insurance": {
+      "pass": true,
+      "insuranceOpened": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classPurple": 0,
+        "secondaryCount": 10,
+        "samples": [
+          {
+            "text": "Đơn vị thành viên",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "font-medium text-xevn-text"
+          },
+          {
+            "text": "Tất cả đơn vị (rollup)",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": ""
+          },
+          {
+            "text": "Đang xem: Tất cả đơn vị (rollup)",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "text-sm text-xevn-textSecondary"
+          },
+          {
+            "text": "Tổng giám đốc tập đoàn",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "text-sm font-medium text-xevn-textSecondary"
+          },
+          {
+            "text": "Nguyễn Văn QA M3 987275QA-M3-987275Chỉnh",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex items-center gap-2 sm:gap-4 min-w-0"
+          },
+          {
+            "text": "QA-M3-987275",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "inline-flex items-center rounded-full border px-2.5 py-0.5 t"
+          },
+          {
+            "text": "Chỉnh sửa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "ml-auto shrink-0"
+          },
+          {
+            "text": "Chỉnh sửa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          },
+          {
+            "text": "Thông tin chung",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          },
+          {
+            "text": "Công việc",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          }
+        ]
+      }
+    },
+    "E19_training": {
+      "pass": true,
+      "opened": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classPurple": 0,
+        "secondaryCount": 8,
+        "samples": [
+          {
+            "text": "Đơn vị thành viên",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "font-medium text-xevn-text"
+          },
+          {
+            "text": "Tất cả đơn vị (rollup)",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": ""
+          },
+          {
+            "text": "Đang xem: Tất cả đơn vị (rollup)",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "text-sm text-xevn-textSecondary"
+          },
+          {
+            "text": "Tổng giám đốc tập đoàn",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "text-sm font-medium text-xevn-textSecondary"
+          },
+          {
+            "text": "Nguyễn Văn QA M3 987275QA-M3-987275Chỉnh",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex items-center gap-2 sm:gap-4 min-w-0"
+          },
+          {
+            "text": "QA-M3-987275",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "inline-flex items-center rounded-full border px-2.5 py-0.5 t"
+          },
+          {
+            "text": "Chỉnh sửa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "ml-auto shrink-0"
+          },
+          {
+            "text": "Chỉnh sửa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          },
+          {
+            "text": "Thông tin chung",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          },
+          {
+            "text": "Công việc",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          }
+        ]
+      }
+    },
+    "E25_work_history": {
+      "pass": true,
+      "opened": true,
+      "chrome": {
+        "paleCount": 0,
+        "purpleCount": 0,
+        "classPurple": 0,
+        "secondaryCount": 50,
+        "samples": [
+          {
+            "text": "Đơn vị thành viên",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "font-medium text-xevn-text"
+          },
+          {
+            "text": "Tất cả đơn vị (rollup)",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": ""
+          },
+          {
+            "text": "Đang xem: Tất cả đơn vị (rollup)",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "text-sm text-xevn-textSecondary"
+          },
+          {
+            "text": "Tổng giám đốc tập đoàn",
+            "color": "rgb(75, 85, 99)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "text-sm font-medium text-xevn-textSecondary"
+          },
+          {
+            "text": "Nguyễn Văn QA M3 987275QA-M3-987275Chỉnh",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "flex items-center gap-2 sm:gap-4 min-w-0"
+          },
+          {
+            "text": "QA-M3-987275",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "inline-flex items-center rounded-full border px-2.5 py-0.5 t"
+          },
+          {
+            "text": "Chỉnh sửa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "ml-auto shrink-0"
+          },
+          {
+            "text": "Chỉnh sửa",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          },
+          {
+            "text": "Thông tin chung",
+            "color": "rgb(248, 250, 252)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          },
+          {
+            "text": "Công việc",
+            "color": "rgb(17, 24, 39)",
+            "bg": "rgba(0, 0, 0, 0)",
+            "className": "hidden sm:inline"
+          }
+        ]
+      },
+      "note": "deep-link tab=workHistory"
+    },
+    "OCR_OUT": {
+      "pass": true,
+      "note": "CORE-04 OUT — no OCR dialog opened"
+    },
+    "QR_SKIP": {
+      "pass": true,
+      "note": "PROP-03e SKIP — no QR invent"
+    }
+  },
+  "failReasons": [],
+  "screens": [
+    "evidence/screens/po-hrm-ui-brand-w3-emp-b-qa/01-export-dialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-b-qa/02-softdel-alertdialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-b-qa/03-deleted-employees.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-b-qa/04-restore-alertdialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-b-qa/05-manager-picker-form.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-b-qa/06-profile-salary.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-b-qa/07-profile-contract.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-b-qa/08-profile-insurance.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-b-qa/09-profile-training.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-b-qa/10-profile-work-history.png"
+  ],
+  "residuals": [
+    {
+      "id": "W3-EMP-C",
+      "note": "P2 nested remaining inventory after EMP-B — PM defer unless inventory open"
+    },
+    {
+      "id": "R-remaster-DONE",
+      "note": "forbidden claim — Employees not CLOSED · remaster program not DONE"
+    }
+  ],
+  "honesty": {
+    "ocr_invented": false,
+    "qr_invented": false,
+    "employees_closed_claimed": false,
+    "remaster_done_claimed": false,
+    "seed_used": false
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-05T03:42:25.887Z",
+  "criticalFail": []
+}

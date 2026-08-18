@@ -1,0 +1,656 @@
+{
+  "work_item_id": "PO-HRM-CONTRACT-LEGAL-PRINT-QA-01",
+  "round": "R1-LIVE-BE",
+  "startedAt": "2026-08-07T02:46:22.443Z",
+  "u65": "zero-seed · browser-only",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "STAMP": "CTRQA-ICFFU2"
+  },
+  "prior_blocked_be": {
+    "at": "2026-08-07T02:45:33.614Z",
+    "beUp": true,
+    "ac": {
+      "AC-CTR-CL-01": {
+        "verdict": "PASS",
+        "summary": "c1 post=201 act=true F5=true/true status=LEGAL_CTRQA-ICBUZ7\tCăn cứ pháp lý QA CTRQA-ICBUZ7\tCăn cứ pháp lý\tGENERAL\tNội bộ\t c2act=true"
+      },
+      "AC-CTR-TPL-DND": {
+        "verdict": "FAIL",
+        "summary": "placed=0 reorder={\"ok\":false} save=true F5row=true orderMatch=false activate=true"
+      },
+      "AC-CTR-PRINT-SPINE": {
+        "verdict": "PASS",
+        "summary": "preview=true/true err= versionOk=false canSave=false pdfOk=false  val001=false"
+      }
+    },
+    "note": "R0/R1-partial BLOCKED-BE while hrm-api dist stale (404 clauses)"
+  },
+  "honesty": {
+    "contracts_printable_ready": false,
+    "contracts_printable_ready_claimed": false,
+    "seed_used": false,
+    "api_only_pass": false
+  },
+  "denied": [
+    "contracts_printable_ready=true",
+    "seed",
+    "api_only_pass",
+    "invent_printable_uat"
+  ],
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "beProbe": {
+    "/api/hrm/contracts-insurance/contract-clauses?company_id=main": {
+      "status": 200,
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    "/api/hrm/contracts-insurance/contract-templates?company_id=main": {
+      "status": 200,
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    "/api/hrm/contracts-insurance/contracts?page_size=3&company_id=main": {
+      "status": 200,
+      "code": "HRM-CON-200",
+      "message": "Contracts listed"
+    }
+  },
+  "beUp": true,
+  "ids": {
+    "clauseCodes": [
+      "LEGAL_CTRQA-ICFFU2",
+      "JOB_CTRQA-ICFFU2"
+    ],
+    "tplActivate": true,
+    "tplCode": "TPL_CTRQA-ICFFU2",
+    "contractId": "76e8e83f-ba9f-48a1-bd11-125f2ace589c",
+    "contractCode": "HD-CGTK7",
+    "printVersionsList": {
+      "status": 200,
+      "count": 0
+    }
+  },
+  "uf": {
+    "SETTINGS_CHROME": {
+      "summary": "form=true honesty=true loadError=false mojibake=false",
+      "honestySettings": true,
+      "loadError": false,
+      "verdict": "PASS",
+      "at": "2026-08-07T02:46:34.513Z"
+    },
+    "UF-HRM-02": {
+      "summary": "POST=201:HRM-CON-201 code=HD-CGTK7 F5=true id=76e8e83f-ba9f-48a1-bd11-125f2ace589c",
+      "posts": [
+        {
+          "status": 201,
+          "code": "HRM-CON-201"
+        }
+      ],
+      "verdict": "PASS",
+      "at": "2026-08-07T02:47:41.102Z"
+    },
+    "HONESTY": {
+      "summary": "contracts_printable_ready=false visible settings=true spine=true",
+      "verdict": "PASS",
+      "at": "2026-08-07T02:48:20.415Z"
+    },
+    "PROCESS_GATE": {
+      "summary": "dndStorm=0 uncaught=0 pageErr=0 console=0",
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "dndStorm": 0,
+      "uncaught": 0,
+      "samplePageErrors": [],
+      "sampleConsole": [],
+      "sampleDnd": [],
+      "verdict": "PASS",
+      "at": "2026-08-07T02:48:20.416Z"
+    }
+  },
+  "ac": {
+    "AC-CTR-CL-01": {
+      "summary": "c1 post=201 act=true F5=true/true status=LEGAL_CTRQA-ICFFU2\tCăn cứ pháp lý QA CTRQA-ICFFU2\tCăn cứ pháp lý\tGENERAL\tNội bộ\t c2act=true",
+      "codes": [
+        "LEGAL_CTRQA-ICFFU2",
+        "JOB_CTRQA-ICFFU2"
+      ],
+      "verdict": "PASS",
+      "at": "2026-08-07T02:46:58.443Z"
+    },
+    "AC-CTR-TPL-DND": {
+      "summary": "placed=0 reorder={\"ok\":false} save=true F5row=true orderMatch=false activate=true",
+      "orderBeforeSave": [],
+      "orderAfterF5": [],
+      "tplPosts": [
+        {
+          "status": 201,
+          "code": "HRM-CTR-TPL-201",
+          "method": "POST"
+        },
+        {
+          "status": 200,
+          "code": "HRM-CTR-TPL-200",
+          "method": "GET"
+        }
+      ],
+      "verdict": "FAIL",
+      "at": "2026-08-07T02:47:17.486Z"
+    },
+    "AC-CTR-PRINT-SPINE": {
+      "summary": "preview=true/true err= versionOk=false canSave=false pdfOk=false  val001=false",
+      "previewOk": true,
+      "previewBody": true,
+      "versionOk": false,
+      "pdfOk": false,
+      "prevPosts": [
+        {
+          "status": 201,
+          "code": "HRM-CTR-PREV-200",
+          "message": "Contract merge preview"
+        }
+      ],
+      "note": "PDF = HTML stub OK (Q-CTR-02)",
+      "verdict": "PASS",
+      "at": "2026-08-07T02:48:20.413Z"
+    }
+  },
+  "process": {
+    "pageErrors": 0,
+    "consoleErrors": 0,
+    "dndStorm": 0,
+    "uncaught": 0,
+    "samplePageErrors": [],
+    "sampleConsole": [],
+    "sampleDnd": []
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:46:26.509Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 14,
+      "total": 14
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:46:26.550Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 7,
+      "total": 7
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:46:33.224Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 14,
+      "total": 14
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:46:33.262Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 7,
+      "total": 7
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-clauses",
+      "at": "2026-08-07T02:46:35.604Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-201",
+      "message": "Contract clause created",
+      "dataId": "e316a9c4-97de-4199-95ba-d85bab9cb8f1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:46:35.626Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 15,
+      "total": 15
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:46:35.665Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 7,
+      "total": 7
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-clauses/e316a9c4-97de-4199-95ba-d85bab9cb8f1/activate?company_id=main",
+      "at": "2026-08-07T02:46:41.037Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clause activated",
+      "dataId": "e316a9c4-97de-4199-95ba-d85bab9cb8f1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:46:41.056Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 15,
+      "total": 15
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:46:41.114Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 7,
+      "total": 7
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-clauses",
+      "at": "2026-08-07T02:46:44.056Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-201",
+      "message": "Contract clause created",
+      "dataId": "f7e08174-8f30-476d-97f2-3721ec246bcb"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:46:44.094Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 16,
+      "total": 16
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:46:44.255Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 7,
+      "total": 7
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-clauses/f7e08174-8f30-476d-97f2-3721ec246bcb/activate?company_id=main",
+      "at": "2026-08-07T02:46:49.494Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clause activated",
+      "dataId": "f7e08174-8f30-476d-97f2-3721ec246bcb"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:46:49.512Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 16,
+      "total": 16
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:46:50.031Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 7,
+      "total": 7
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:46:57.226Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 16,
+      "total": 16
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:46:57.718Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 7,
+      "total": 7
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-templates",
+      "at": "2026-08-07T02:47:02.827Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-201",
+      "message": "Contract template created",
+      "dataId": "f58c6d61-2e11-4e62-8d66-5e9e0cc59113"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:47:02.863Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 16,
+      "total": 16
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:47:02.922Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 8,
+      "total": 8
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-templates/f58c6d61-2e11-4e62-8d66-5e9e0cc59113/activate?company_id=main",
+      "at": "2026-08-07T02:47:05.366Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract template activated",
+      "dataId": "f58c6d61-2e11-4e62-8d66-5e9e0cc59113"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:47:05.392Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 16,
+      "total": 16
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:47:05.452Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 8,
+      "total": 8
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-07T02:47:13.936Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 16,
+      "total": 16
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-07T02:47:14.014Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 8,
+      "total": 8
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:47:18.872Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 21,
+      "total": 21
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:47:22.473Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 21,
+      "total": 21
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "at": "2026-08-07T02:47:26.996Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 12,
+      "total": 12
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-07T02:47:27.121Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 6,
+      "total": 6
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T02:47:27.155Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "at": "2026-08-07T02:47:32.250Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-201",
+      "message": "Contract created",
+      "dataId": "76e8e83f-ba9f-48a1-bd11-125f2ace589c"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:47:32.546Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 22,
+      "total": 22
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:47:35.997Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed",
+      "listCount": 22,
+      "total": 22
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "at": "2026-08-07T02:47:42.427Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed",
+      "listCount": 12,
+      "total": 12
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T02:47:42.428Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-07T02:47:42.460Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed",
+      "listCount": 6,
+      "total": 6
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/76e8e83f-ba9f-48a1-bd11-125f2ace589c/print-versions?company_id=main",
+      "at": "2026-08-07T02:47:42.483Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-VER-200",
+      "message": "Print versions listed",
+      "listCount": 0,
+      "total": 0
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts/76e8e83f-ba9f-48a1-bd11-125f2ace589c/preview?company_id=main",
+      "at": "2026-08-07T02:47:47.242Z",
+      "contentType": "application/json; charset=utf-8",
+      "code": "HRM-CTR-PREV-200",
+      "message": "Contract merge preview"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/00-settings-legal.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/01-clause1-active.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/02-clause2-active.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/03-tpl-after-dnd.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/04-tpl-after-reorder.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/05-tpl-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/06-contracts-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/07-create-spine.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/08-after-registry-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/09-f5-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/10-edit-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/11-preview.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-contract-legal-print-qa-01/12-print-version-pdf.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T02:46:23.113Z",
+      "msg": "BE_PROBE",
+      "note": "beUp=true"
+    },
+    {
+      "at": "2026-08-07T02:47:31.184Z",
+      "msg": "CLICK_LUU",
+      "note": "HD-CGTK7"
+    },
+    {
+      "at": "2026-08-07T02:47:42.426Z",
+      "msg": "CLICK_PENCIL_EDIT",
+      "note": "HD-CGTK7"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "Q-CTR-02-PDF-STUB-OPEN",
+      "severity": "P2",
+      "owner": "dev-be",
+      "note": "PDF stub not opened/2xx: "
+    },
+    {
+      "id": "OBS-HRM-API-NEST-BUILD-TS2345",
+      "severity": "P1",
+      "owner": "dev-be",
+      "note": "nest build fails contract-legal-print.service.ts:1038 custom_fields string|Record — QA restarted from existing dist emit that already had routes"
+    }
+  ],
+  "overall": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-07T02:48:20.417Z"
+}

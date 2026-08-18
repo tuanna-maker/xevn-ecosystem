@@ -1,0 +1,408 @@
+{
+  "work_item_id": "U78-U84-PRIMARY-REC-REQ-VISUN-01",
+  "cell": "P-REC-REQ @ CO-VISUN",
+  "be_fix_ref": "D-U84-REC-REQ-TMDV-JD-CATALOG-ASSERT-01 (holding picker parity applies to logistics)",
+  "startedAt": "2026-08-03T18:16:56.436Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "COMPANY": "logistics",
+    "TENANT": "xevn",
+    "STAMP": "VISUN-REQ-DJWQYC",
+    "JD_CODE": "JD-HDV-DJWQYC",
+    "POS_SEARCH": "Quản lý Vận hành",
+    "commit": "dc930c5"
+  },
+  "persona_note": "Group CEO ceo@xe.vn embed companyId=logistics (CO-VISUN Primary slug) · OU Du lịch Visun · HDV/điều hành tour via OPS_MANAGER",
+  "api_probes": {
+    "employees": {
+      "code": "HRM-EMP-200",
+      "total": 0,
+      "note": "REC-REQ create does not require employee rows; 0 = env observation not auto-BLOCK"
+    },
+    "job_titles_holding": {
+      "code": "HRM-SET-200",
+      "total": 8,
+      "has_OPS_MANAGER": true,
+      "has_HDV_code": false,
+      "codes": [
+        "CEO",
+        "CHRO",
+        "DRIVER_LEAD",
+        "OPS_MANAGER",
+        "POS_01",
+        "POS_02",
+        "POS_03",
+        "POS_04"
+      ]
+    },
+    "jd_before": {
+      "code": "HRM-REC-JD-200",
+      "total": 0
+    },
+    "requisitions_before": {
+      "code": "HRM-REC-200",
+      "total": 0
+    },
+    "wf_req_def": {
+      "id": "6f17062a-8bf7-465d-89b3-529696f0d531",
+      "status": "active",
+      "code": "hrm_requisition_approval"
+    }
+  },
+  "steps": {
+    "precond_wf_def": {
+      "summary": "active hrm_requisition_approval id=6f17062a-8bf7-465d-89b3-529696f0d531",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:16:56.874Z"
+    },
+    "fd_jd_empty": {
+      "summary": "empty JD submit kept dialog",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:17:06.759Z"
+    },
+    "jd_create": {
+      "summary": "POST job-templates 201:HRM-REC-JD-201 jdId=acecf190-4066-4ed3-98d4-8a81df486d8c",
+      "network": [
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "/api/hrm/recruitment/job-templates",
+          "at": "2026-08-03T18:18:08.807Z",
+          "createdId": "acecf190-4066-4ed3-98d4-8a81df486d8c",
+          "code": "HRM-REC-JD-201",
+          "title": "JD HDV điều hành tour Visun VISUN-REQ-DJWQYC",
+          "message": "Job description template created"
+        }
+      ],
+      "verdict": "PASS",
+      "at": "2026-08-03T18:18:12.174Z"
+    },
+    "jd_f5": {
+      "summary": "stampOnList=true",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:18:18.902Z"
+    },
+    "mount_requisitions": {
+      "summary": "mountOk=true createVisible=true",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:18:27.101Z"
+    },
+    "fd_req_empty_or_disabled": {
+      "summary": "dialog kept after empty submit",
+      "verdict": "SKIP",
+      "at": "2026-08-03T18:18:29.340Z"
+    },
+    "create_req": {
+      "summary": "POST requisitions 201:HRM-REC-201 id=6d2d71ad-5560-41e5-a593-c8791d9bdddf",
+      "network": [
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "/api/hrm/recruitment/requisitions",
+          "at": "2026-08-03T18:18:28.834Z",
+          "createdId": "6d2d71ad-5560-41e5-a593-c8791d9bdddf",
+          "code": "HRM-REC-201",
+          "title": "JD HDV điều hành tour Visun VISUN-REQ-DJWQYC"
+        }
+      ],
+      "verdict": "PASS",
+      "at": "2026-08-03T18:19:10.733Z"
+    },
+    "submit_wf": {
+      "summary": "clicked=true POST 201:HRM-REC-WF-200 spawnMissing=false wi=2b4f0d9c-f56f-431d-a785-5fb6bca52f93",
+      "submitBody": {
+        "code": "HRM-REC-WF-200",
+        "spawnMissing": false,
+        "workflowInstanceId": "2b4f0d9c-f56f-431d-a785-5fb6bca52f93",
+        "message": "Job requisition submitted to workflow",
+        "status": 201
+      },
+      "toastOk": true,
+      "verdict": "PASS",
+      "at": "2026-08-03T18:19:15.802Z"
+    },
+    "f5_persist": {
+      "summary": "stamp=true wi=2b4f0d9c-f56f-431d-a785-5fb6bca52f93 status=pending_approval",
+      "verdict": "PASS",
+      "at": "2026-08-03T18:19:23.497Z"
+    },
+    "ap_inbox": {
+      "summary": "clicked=true completes=1 cardGone=true status=open notTaiXe=true",
+      "completeCodes": [
+        "XBOS-WF-200"
+      ],
+      "verdict": "PASS",
+      "at": "2026-08-03T18:19:34.065Z"
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T18:16:56.436Z",
+      "msg": "START",
+      "PORTAL": "http://127.0.0.1:5173",
+      "COMPANY": "logistics",
+      "STAMP": "VISUN-REQ-DJWQYC"
+    },
+    {
+      "at": "2026-08-03T18:16:56.494Z",
+      "msg": "LOGIN_OK",
+      "email": "ceo@xe.vn"
+    },
+    {
+      "at": "2026-08-03T18:16:56.874Z",
+      "msg": "API_PROBES",
+      "note": "{\"employees\":{\"code\":\"HRM-EMP-200\",\"total\":0,\"note\":\"REC-REQ create does not require employee rows; 0 = env observation not auto-BLOCK\"},\"job_titles_holding\":{\"code\":\"HRM-SET-200\",\"total\":8,\"has_OPS_MANAGER\":true,\"has_HDV_code\":false,\"codes\":[\"CEO\",\"CHRO\",\"DRIVER_LEAD\",\"OPS_MANAGER\",\"POS_01\",\"POS_02\",\"POS_03\",\"POS_04\"]},\"jd_before\":{\"code\":\"HRM-REC-JD-200\",\"total\":0},\"requisitions_before\":{\"code\":\"HRM-REC-200\",\"total\":0},\"wf_req_def\":{\"id\":\"6f17062a-8bf7-465d-89b3-529696f0d531\",\"status\":\"active\",\"code\":\"hrm_requisition_approval\"}}"
+    },
+    {
+      "at": "2026-08-03T18:16:57.248Z",
+      "msg": "GOTO_JD_LIBRARY",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=logistics&tab=jd-library"
+    },
+    {
+      "at": "2026-08-03T18:17:04.782Z",
+      "msg": "OU_FILTER_VISUN",
+      "note": "selected member OU option Visun"
+    },
+    {
+      "at": "2026-08-03T18:18:08.496Z",
+      "msg": "JD_POSITION_PICK",
+      "note": "picked Quản lý Vận hành/OPS_MANAGER"
+    },
+    {
+      "at": "2026-08-03T18:18:18.838Z",
+      "msg": "OU_FILTER_VISUN",
+      "note": "selected member OU option Visun"
+    },
+    {
+      "at": "2026-08-03T18:18:18.904Z",
+      "msg": "GOTO_REQUISITIONS",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=logistics&tab=requisitions"
+    },
+    {
+      "at": "2026-08-03T18:18:27.035Z",
+      "msg": "OU_FILTER_VISUN",
+      "note": "selected member OU option Visun"
+    },
+    {
+      "at": "2026-08-03T18:18:29.953Z",
+      "msg": "REQ_JD_PICK",
+      "note": "picked"
+    },
+    {
+      "at": "2026-08-03T18:19:02.616Z",
+      "msg": "REQ_DEPT_PICK",
+      "note": "may use template default"
+    },
+    {
+      "at": "2026-08-03T18:19:23.405Z",
+      "msg": "OU_FILTER_VISUN",
+      "note": "selected member OU option Visun"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T18:16:58.149Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=logistics",
+      "at": "2026-08-03T18:17:03.313Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/job-templates",
+      "at": "2026-08-03T18:18:08.807Z",
+      "createdId": "acecf190-4066-4ed3-98d4-8a81df486d8c",
+      "code": "HRM-REC-JD-201",
+      "title": "JD HDV điều hành tour Visun VISUN-REQ-DJWQYC",
+      "message": "Job description template created"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=logistics",
+      "at": "2026-08-03T18:18:08.862Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=logistics",
+      "at": "2026-08-03T18:18:12.779Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=logistics",
+      "at": "2026-08-03T18:18:19.504Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=logistics&page=1&page_size=100",
+      "at": "2026-08-03T18:18:19.636Z",
+      "rowCount": 0,
+      "hasStamp": false,
+      "hitStatus": null,
+      "hitWi": null
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions",
+      "at": "2026-08-03T18:18:28.834Z",
+      "createdId": "6d2d71ad-5560-41e5-a593-c8791d9bdddf",
+      "code": "HRM-REC-201",
+      "title": "JD HDV điều hành tour Visun VISUN-REQ-DJWQYC"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=logistics&page=1&page_size=100",
+      "at": "2026-08-03T18:18:28.935Z",
+      "rowCount": 1,
+      "hasStamp": true,
+      "hitStatus": "open",
+      "hitWi": null
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions/6d2d71ad-5560-41e5-a593-c8791d9bdddf/submit-workflow?company_id=logistics",
+      "at": "2026-08-03T18:19:12.214Z",
+      "code": "HRM-REC-WF-200",
+      "spawnMissing": false,
+      "workflowInstanceId": "2b4f0d9c-f56f-431d-a785-5fb6bca52f93"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=logistics&page=1&page_size=100",
+      "at": "2026-08-03T18:19:12.310Z",
+      "rowCount": 1,
+      "hasStamp": true,
+      "hitStatus": "pending_approval",
+      "hitWi": "2b4f0d9c-f56f-431d-a785-5fb6bca52f93"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=logistics",
+      "at": "2026-08-03T18:19:16.376Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=logistics&page=1&page_size=100",
+      "at": "2026-08-03T18:19:16.502Z",
+      "rowCount": 1,
+      "hasStamp": true,
+      "hitStatus": "pending_approval",
+      "hitWi": "2b4f0d9c-f56f-431d-a785-5fb6bca52f93"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:19:23.802Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/workflow-engine/tasks/5e2f94c8-4c84-404e-8719-c3c207889c3e/complete",
+      "at": "2026-08-03T18:19:28.873Z",
+      "code": "XBOS-WF-200",
+      "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-200\",\"message\":\"Task completed\",\"data\":{\"task\":{\"id\":\"5e2f94c8-4c84-404e-8719-c3c207889c3e\",\"instance_id\":\"2b4f0d9c-f56f-431d-a785-5fb6bca52f93\",\"step_key\":\"requisition_approval\",\"hat_key\":\"group_ceo\",\"assign"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:19:28.891Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T18:19:30.509Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/01-jd-library.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/02-jd-create-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/03-jd-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/04-jd-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/05-jd-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/06-requisitions-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/07-req-create-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/08-req-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/09-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/10-after-submit.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/11-f5-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/12-inbox-before.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/13-ap-after-click.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/u78-u84-primary-rec-req-visun-01/14-ap-inbox-f5.png"
+  ],
+  "ids": {
+    "jdId": "acecf190-4066-4ed3-98d4-8a81df486d8c",
+    "requisitionId": "6d2d71ad-5560-41e5-a593-c8791d9bdddf",
+    "workflowInstanceId": "2b4f0d9c-f56f-431d-a785-5fb6bca52f93"
+  },
+  "submitBody": {
+    "code": "HRM-REC-WF-200",
+    "spawnMissing": false,
+    "workflowInstanceId": "2b4f0d9c-f56f-431d-a785-5fb6bca52f93",
+    "message": "Job requisition submitted to workflow",
+    "status": 201
+  },
+  "spawnMissing": false,
+  "approve": {
+    "cardVisible": true,
+    "clicked": true,
+    "completePosts": [
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/xbos/workflow-engine/tasks/5e2f94c8-4c84-404e-8719-c3c207889c3e/complete",
+        "at": "2026-08-03T18:19:28.873Z",
+        "code": "XBOS-WF-200",
+        "bodySnippet": "{\"success\":true,\"code\":\"XBOS-WF-200\",\"message\":\"Task completed\",\"data\":{\"task\":{\"id\":\"5e2f94c8-4c84-404e-8719-c3c207889c3e\",\"instance_id\":\"2b4f0d9c-f56f-431d-a785-5fb6bca52f93\",\"step_key\":\"requisition_approval\",\"hat_key\":\"group_ceo\",\"assign"
+      }
+    ],
+    "cardGoneAfterF5": true,
+    "req_after": {
+      "id": "6d2d71ad-5560-41e5-a593-c8791d9bdddf",
+      "status": "open",
+      "workflow_instance_id": "2b4f0d9c-f56f-431d-a785-5fb6bca52f93",
+      "title": "JD HDV điều hành tour Visun VISUN-REQ-DJWQYC"
+    },
+    "not_tai_xe_context": true,
+    "inbox_stamp_context": "VISUN-REQ-DJWQYC",
+    "verdict": "PASS"
+  },
+  "residuals": [
+    {
+      "id": "R-U84-REC-REQ-VISUN-HDV-TITLE-PROXY",
+      "severity": "P2",
+      "note": "No HDV_* in job_titles AS-IS — using OPS_MANAGER (Quản lý Vận hành) as điều hành tour proxy; stamp title carries HDV context"
+    }
+  ],
+  "endedAt": "2026-08-03T18:19:34.066Z",
+  "lastJdPost": {
+    "status": 201,
+    "code": "HRM-REC-JD-201",
+    "message": "Job description template created",
+    "companyHint": "logistics"
+  }
+}

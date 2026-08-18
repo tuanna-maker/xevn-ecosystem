@@ -1,0 +1,127 @@
+{
+  "work_item_id": "QA-HRM-SETTINGS-ATT-LVT-SOT-01",
+  "parent_be": "PO-HRM-SETTINGS-ATT-LVT-SOT-BE-01",
+  "startedAt": "2026-08-10T16:31:35.947Z",
+  "stamp": "ATTLVTSOTQA-MSNG88NH",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "LVT_KEY": "hr_lvt_sot_msng88nh"
+  },
+  "uf": {
+    "UF-HRM-SC-01-OVERVIEW": {
+      "verdict": "PASS",
+      "at": "2026-08-10T16:31:36.126Z",
+      "summary": "GET settings-catalogs leave_types tenantWriter stamped"
+    },
+    "UF-HRM-SC-01-REF-409": {
+      "verdict": "PASS",
+      "at": "2026-08-10T16:31:36.186Z",
+      "summary": "POST extension leave_types → 409 HRM-SC-LEAVE-REF-ONLY"
+    },
+    "UF-ATT-ADMIN-CREATE-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-10T16:31:51.097Z",
+      "summary": "ATT admin PUT/POST 2xx + F5 row hr_lvt_sot_msng88nh"
+    },
+    "UF-LEAVE-CONSUMER-EFFECTIVE": {
+      "verdict": "PASS",
+      "at": "2026-08-10T16:31:57.080Z",
+      "summary": "GET effective 200 · invent → 400 HRM-LEAVE-TYPE-UNKNOWN"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main"
+    }
+  ],
+  "probes": {
+    "overview": {
+      "status": 200,
+      "tenantWriter": {
+        "kind": "att_leave_type",
+        "apiPath": "/api/hrm/attendance/leave-types",
+        "effectiveApiPath": "/api/hrm/attendance/leave-types/effective",
+        "groupRefReadOnly": true
+      },
+      "catalogKeys": [
+        "activity_capability_map",
+        "allowance_types",
+        "attendance_update_types",
+        "benefit_price_policies",
+        "branches",
+        "candidate_sources",
+        "candidate_statuses",
+        "company_form_presets",
+        "company_job_titles",
+        "contract_types",
+        "cost_centers",
+        "departments"
+      ]
+    },
+    "extensionPost": {
+      "status": 409,
+      "code": "HRM-SC-LEAVE-REF-ONLY"
+    },
+    "adminCreate": {
+      "upsertStatus": 200,
+      "rowVisible": true,
+      "key": "hr_lvt_sot_msng88nh"
+    },
+    "effectiveGet": {
+      "status": 200
+    },
+    "inventLeave": {
+      "status": 400,
+      "code": "HRM-LEAVE-TYPE-UNKNOWN",
+      "employeeId": "33333333-3333-4333-8333-333333333333"
+    }
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-10T16:31:57.290Z"
+}

@@ -1,0 +1,259 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-REC-02-TARGET-MONTH-QA-01",
+  "residual": "R-REC-02-TARGET-MONTH-DATE",
+  "startedAt": "2026-08-08T21:20:53.809Z",
+  "stamp": "RECTMQA-MSKVOKQ9",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · L1 probe only (FE omits target_month)",
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "deny_module_rec_uat": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "portal": 200,
+    "srcMtime": "2026-08-08T21:14:12.5622928Z",
+    "distMtime": "2026-08-08T21:19:31.1033578Z",
+    "stale_dist": false,
+    "dist_has_normalize": true
+  },
+  "l1": {
+    "target_month": {
+      "YYYY_MM": {
+        "status": 201,
+        "code": "HRM-REC-201",
+        "id": "8ebdb8d7-d5b6-4c30-ac33-da9ec8de5f54",
+        "reqStatus": "draft",
+        "target_month_raw": "2026-09-01",
+        "target_month": "2026-09-01",
+        "message": "Job requisition created"
+      },
+      "YYYY_MM_01": {
+        "status": 201,
+        "code": "HRM-REC-201",
+        "id": "0cac6f5b-e2e9-4d68-bade-cf1375b5ebbb",
+        "reqStatus": "draft",
+        "target_month": "2026-09-01",
+        "message": "Job requisition created"
+      },
+      "GARBAGE_8": {
+        "status": 400,
+        "code": "HRM-YCTD-VAL-400",
+        "message": "target_month phải là YYYY-MM hoặc YYYY-MM-01"
+      },
+      "GARBAGE_BAD": {
+        "status": 400,
+        "code": "HRM-YCTD-VAL-400",
+        "message": "target_month phải là YYYY-MM hoặc YYYY-MM-01"
+      },
+      "OMIT": {
+        "status": 201,
+        "code": "HRM-REC-201",
+        "id": "4dc4bb5c-53d3-4a59-b8b2-09e5a5dbcf61",
+        "reqStatus": "draft",
+        "target_month": null
+      }
+    },
+    "must_keep": {
+      "SPAWN_DUP": {
+        "status": 409,
+        "code": "HRM-YCTD-SPAWN-DUP",
+        "message": "Ô này đã có YCTD trong ĐB — không tạo trùng (spawn UQ)",
+        "cell": "0402ba25-e172-46a6-b9b1-e0bd455d9422"
+      },
+      "MODE_UNCLASSIFIED": {
+        "status": 409,
+        "code": "HRM-YCTD-MODE-UNCLASSIFIED",
+        "message": "YCTD chưa phân loại trong/ngoài ĐB — cần chọn headcount_mode trước khi nhận hồ sơ / mở tin",
+        "id": "4ab3d804-1d8c-4cb5-8765-031215203281"
+      },
+      "CELL_LOCKED": {
+        "status": 409,
+        "code": "HRM-HC-CELL-LOCKED",
+        "message": "Ô Cần tuyển đã duyệt — không được chỉnh số lượng/trạng thái (thiếu quyền override)",
+        "beforeNeed": 8,
+        "afterNeed": 8,
+        "beforeCount": 2,
+        "afterCount": 2,
+        "sameCell": true,
+        "gridIntact": true,
+        "planId": "7fe953c8-8e86-4746-9e27-a38f17ec772a",
+        "cell_id": "0402ba25-e172-46a6-b9b1-e0bd455d9422"
+      },
+      "CELL_QTY": {
+        "status": 409,
+        "code": "HRM-YCTD-CELL-QTY",
+        "message": "Số lượng vượt ô Cần tuyển (còn tối đa 8) — hãy chuyển sang ngoài ĐB nếu phát sinh",
+        "headcount": 999,
+        "cell": "0402ba25-e172-46a6-b9b1-e0bd455d9422",
+        "probe": "supp-occupied-qty-before-spawn"
+      }
+    }
+  },
+  "ac": {
+    "L0": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:20:54.692Z",
+      "summary": "{\"hrm\":200,\"portal\":200,\"srcMtime\":\"2026-08-08T21:14:12.5622928Z\",\"distMtime\":\"2026-08-08T21:19:31.1033578Z\",\"stale_dist\":false,\"dist_has_normalize\":true}"
+    },
+    "L1-TM-YYYY-MM": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:21:01.152Z",
+      "summary": "target_month=2026-09 → 201 HRM-REC-201 stored=2026-09-01",
+      "status": 201,
+      "code": "HRM-REC-201",
+      "id": "8ebdb8d7-d5b6-4c30-ac33-da9ec8de5f54",
+      "reqStatus": "draft",
+      "target_month_raw": "2026-09-01",
+      "target_month": "2026-09-01",
+      "message": "Job requisition created"
+    },
+    "L1-TM-YYYY-MM-01": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:21:01.585Z",
+      "summary": "target_month=2026-09-01 → 201 HRM-REC-201 stored=2026-09-01",
+      "status": 201,
+      "code": "HRM-REC-201",
+      "id": "0cac6f5b-e2e9-4d68-bade-cf1375b5ebbb",
+      "reqStatus": "draft",
+      "target_month": "2026-09-01",
+      "message": "Job requisition created"
+    },
+    "L1-TM-GARBAGE-8": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:21:01.991Z",
+      "summary": "target_month=8 → 400 HRM-YCTD-VAL-400 (expect 400 VAL-400)",
+      "status": 400,
+      "code": "HRM-YCTD-VAL-400",
+      "message": "target_month phải là YYYY-MM hoặc YYYY-MM-01"
+    },
+    "L1-TM-GARBAGE-BAD": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:21:02.446Z",
+      "summary": "target_month=not-a-date → 400 HRM-YCTD-VAL-400",
+      "status": 400,
+      "code": "HRM-YCTD-VAL-400",
+      "message": "target_month phải là YYYY-MM hoặc YYYY-MM-01"
+    },
+    "L1-TM-OMIT": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:21:02.887Z",
+      "summary": "omit target_month → 201 HRM-REC-201 status=draft tm=null",
+      "status": 201,
+      "code": "HRM-REC-201",
+      "id": "4dc4bb5c-53d3-4a59-b8b2-09e5a5dbcf61",
+      "reqStatus": "draft",
+      "target_month": null
+    },
+    "L1-MK-SPAWN-DUP": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:21:03.350Z",
+      "summary": "SPAWN-DUP → 409 HRM-YCTD-SPAWN-DUP",
+      "status": 409,
+      "code": "HRM-YCTD-SPAWN-DUP",
+      "message": "Ô này đã có YCTD trong ĐB — không tạo trùng (spawn UQ)",
+      "cell": "0402ba25-e172-46a6-b9b1-e0bd455d9422"
+    },
+    "L1-MK-CELL-QTY": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:21:54.662Z",
+      "summary": "CELL-QTY → 409 HRM-YCTD-CELL-QTY (supp on occupied cell headcount=999 before SPAWN-DUP)",
+      "status": 409,
+      "code": "HRM-YCTD-CELL-QTY",
+      "message": "Số lượng vượt ô Cần tuyển (còn tối đa 8) — hãy chuyển sang ngoài ĐB nếu phát sinh",
+      "headcount": 999,
+      "cell": "0402ba25-e172-46a6-b9b1-e0bd455d9422",
+      "note": "freeCells=0; qty gate fires before spawn UQ"
+    },
+    "L1-MK-MODE-UNCLASSIFIED": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:21:03.797Z",
+      "summary": "MODE-UNCLASSIFIED → 409 HRM-YCTD-MODE-UNCLASSIFIED",
+      "status": 409,
+      "code": "HRM-YCTD-MODE-UNCLASSIFIED",
+      "message": "YCTD chưa phân loại trong/ngoài ĐB — cần chọn headcount_mode trước khi nhận hồ sơ / mở tin",
+      "id": "4ab3d804-1d8c-4cb5-8765-031215203281"
+    },
+    "L1-MK-CELL-LOCKED-NO-WIPE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:21:05.884Z",
+      "summary": "CELL-LOCKED → 409 HRM-HC-CELL-LOCKED; sameCell=true gridIntact=true",
+      "status": 409,
+      "code": "HRM-HC-CELL-LOCKED",
+      "message": "Ô Cần tuyển đã duyệt — không được chỉnh số lượng/trạng thái (thiếu quyền override)",
+      "beforeNeed": 8,
+      "afterNeed": 8,
+      "beforeCount": 2,
+      "afterCount": 2,
+      "sameCell": true,
+      "gridIntact": true,
+      "planId": "7fe953c8-8e86-4746-9e27-a38f17ec772a",
+      "cell_id": "0402ba25-e172-46a6-b9b1-e0bd455d9422"
+    }
+  },
+  "defects": [],
+  "fixtures": {
+    "freeCells": [],
+    "occupiedCells": [
+      {
+        "cell_id": "0402ba25-e172-46a6-b9b1-e0bd455d9422",
+        "planId": "7fe953c8-8e86-4746-9e27-a38f17ec772a"
+      },
+      {
+        "cell_id": "69327694-8691-46df-90bb-3d86c7178044",
+        "planId": "6c06e772-d3a6-4ace-bd41-68cadad92e8c"
+      },
+      {
+        "cell_id": "f447d354-eb3e-440b-8029-d6e4d8f9a655",
+        "planId": "c3232942-21bc-430d-b298-4b404897f277"
+      },
+      {
+        "cell_id": "2822b499-6b36-4055-96a2-e2eb9e751a97",
+        "planId": "3f302f4d-82a1-4e41-adbf-7e1fab6a0fc4"
+      }
+    ],
+    "jd": {
+      "id": "b284e4cd-63df-4723-9f31-755d8ea2ae96",
+      "code": "JD-QA-QAH1BVIR",
+      "title": "QA JD Dynamic QAH1BVIR"
+    },
+    "nullModeCount": 14,
+    "nullModeSample": [
+      {
+        "id": "4ab3d804-1d8c-4cb5-8765-031215203281",
+        "status": "open"
+      },
+      {
+        "id": "e1c8c160-e136-40c1-a0e4-cc510182030e",
+        "status": "open"
+      }
+    ],
+    "approvedPlanCount": 9,
+    "lockedCellSample": {
+      "planId": "7fe953c8-8e86-4746-9e27-a38f17ec772a",
+      "cell_id": "0402ba25-e172-46a6-b9b1-e0bd455d9422",
+      "need": 8
+    },
+    "omitDraftId": "4dc4bb5c-53d3-4a59-b8b2-09e5a5dbcf61"
+  },
+  "residual_close": {
+    "id": "R-REC-02-TARGET-MONTH-DATE",
+    "closable": true,
+    "state": "CLOSED",
+    "reason": "L1 YYYY-MM→first-day · YYYY-MM-01 · garbage→400 VAL-400 · omit→draft; must_keep SPAWN-DUP/CELL-QTY/MODE-UNCLASSIFIED/CELL-LOCKED PASS"
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-08T21:21:05.886Z"
+}

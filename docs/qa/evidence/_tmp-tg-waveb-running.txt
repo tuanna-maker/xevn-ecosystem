@@ -1,0 +1,4 @@
+﻿[xevn-ecosystem] Đã CHỐT → đang chạy Wave B:
+• Cursor FE: EmptyState + PermissionFallback
+• Claude: SoT docs peer
+Xong sẽ báo lại Telegram + Cursor.

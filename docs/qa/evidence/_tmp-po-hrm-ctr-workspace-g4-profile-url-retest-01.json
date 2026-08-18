@@ -1,0 +1,66 @@
+{
+  "work_item_id": "PO-HRM-CTR-WORKSPACE-G4-PROFILE-URL-QA-01",
+  "defect_closed": "DEF-CTR-G4-PROFILE-URL-P2",
+  "stamp": "CTRG4URL-MSO6W1QB",
+  "startedAt": "2026-08-11T04:57:56.756Z",
+  "endedAt": "2026-08-11T05:04:16.365Z",
+  "persona": { "email": "ceo@xe.vn", "companyId": "main" },
+  "u65": "zero-seed-browser-only",
+  "honesty": { "contracts_printable_ready": false, "seed_used": false },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "gates": {
+    "l0_dev_stack": "PASS",
+    "l0_fe_be_health": "PASS",
+    "l2_embed": "FAIL"
+  },
+  "root_cause": {
+    "defect_id": "DEF-CTR-G4-PROFILE-EMBED-P0",
+    "file": "apps/web/hrm/src/components/layout/PortalEmbedRouterSync.tsx",
+    "failed_url": "http://127.0.0.1:5173/hr/src/components/layout/PortalEmbedRouterSync.tsx",
+    "http_status": 500,
+    "note": "Malformed JSDoc — closed */ then stray * block at lines 18-24"
+  },
+  "prereq": {
+    "status": 200,
+    "count": 3,
+    "first": { "id": "33333333-3333-4333-8333-333333333333", "employee_code": "NV101" }
+  },
+  "rows": {
+    "WS-G4-12": {
+      "verdict": "FAIL",
+      "reason": "HRM embed blank — PortalEmbedRouterSync.tsx HTTP 500; ec-open-contract-workspace-create not visible",
+      "empId": "33333333-3333-4333-8333-333333333333",
+      "hasWorkspace": false,
+      "hasEmp": false,
+      "hasLock": false,
+      "step1": false,
+      "uvTabHidden": null
+    }
+  },
+  "journeys": {
+    "J-HRM-CTR-PROFILE-01": {
+      "verdict": "FAIL",
+      "reason": "embed module 500 — click path not executable"
+    }
+  },
+  "defects": [
+    { "id": "DEF-CTR-G4-PROFILE-EMBED-P0", "severity": "P0", "status": "OPEN", "owner": "dev-fe" },
+    { "id": "DEF-CTR-G4-PROFILE-URL-P2", "severity": "P2", "status": "OPEN", "owner": "dev-fe" }
+  ],
+  "steps_attempted": [
+    "Navigate profile /employees/33333333-3333-4333-8333-333333333333?tab=contract",
+    "Profile page not visible — retry navigate after 3s",
+    "Network probe: PortalEmbedRouterSync.tsx → HTTP 500"
+  ],
+  "screens": [
+    "docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-profile-url-retest-01/01-profile-no-add-btn.png"
+  ],
+  "ack_status": "FAIL_TO_PM",
+  "overall": "FAIL"
+}

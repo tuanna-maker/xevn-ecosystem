@@ -1,0 +1,78 @@
+{
+  "work_item_id": "W1-B-02-EMP-FE-PROFILE-01",
+  "startedAt": "2026-08-03T13:56:12.004Z",
+  "vite": {
+    "http://127.0.0.1:5173": {
+      "status": 200,
+      "resolveFail": false,
+      "len": 226105
+    },
+    "http://127.0.0.1:8080": {
+      "status": 200,
+      "resolveFail": false,
+      "len": 226105
+    }
+  },
+  "mount": {
+    "detail": {
+      "url": "http://127.0.0.1:5173/hr/employees/84df5edb-77b1-4069-b5e5-2d2abc7ff2f9?portal=1&tenantId=xevn&companyId=main",
+      "empId": "84df5edb-77b1-4069-b5e5-2d2abc7ff2f9",
+      "childCount": 4,
+      "textLen": 1250,
+      "hasProfileHint": true,
+      "snippet": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn UAT NV 0201 UAT-0201 Chỉnh sửa Thông tin chung Công việc Hợp đồng Lương & Phụ cấp Nhân sự Sự nghiệp Cá nhân 0 UAT NV 0201 STAFF Chưa có phòng ban Đang làm việc Thông tin cá nhân Email uat.nv0201@xe.vn Điện thoại -- Ngày s"
+    }
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "network": [
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/hr/src/pages/EmployeeProfile.tsx?t=1785765371380"
+    },
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/hr/src/components/auth/PermissionFallback.tsx"
+    },
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/hr/src/lib/employeeProfileTabGroups.ts"
+    },
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/hr/src/components/ui/ViDateField.tsx?t=1785765371380"
+    },
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/hr/src/lib/contractEndDatePolicy.ts"
+    },
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/hr/src/components/employee/EmployeeCompensationHistoryPanel.tsx"
+    },
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/hr/src/components/employee/EmployeeCompensationPanel.tsx?t=1785765303612"
+    },
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/hr/src/hooks/useEmployeeCompensation.ts"
+    },
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/employees/84df5edb-77b1-4069-b5e5-2d2abc7ff2f9?company_id=main"
+    },
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/employees/84df5edb-77b1-4069-b5e5-2d2abc7ff2f9/work-timeline?company_id=main"
+    }
+  ],
+  "loginStatus": 201,
+  "listApi": {
+    "status": 200,
+    "total": 43,
+    "empId": "84df5edb-77b1-4069-b5e5-2d2abc7ff2f9"
+  },
+  "finishedAt": "2026-08-03T13:56:21.347Z",
+  "verdict": "PASS_MOUNT"
+}

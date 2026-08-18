@@ -1,0 +1,376 @@
+{
+  "work_item_id": "PO-E2E-SPINE-01-QA-W5",
+  "program": "PO-E2E-BIZ-SPINE-01",
+  "spine": "E2E-SPINE-01",
+  "focus": "HP-05 · J-HRM-01/02/03 · HP-06 · J-HRM-07",
+  "startedAt": "2026-08-03T16:07:58.072Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed",
+    "companyId": "main",
+    "empId": "5c3ea407-02cb-4cfa-a36c-9ada56908010",
+    "candStamp": "SP4SDEKW49",
+    "prior": "PO-E2E-SPINE-01-QA-W4-R1"
+  },
+  "l0": {
+    "portal": 200,
+    "hrm_api": 200,
+    "xbos_api": 200
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T16:07:58.905Z",
+      "action": "open_portal",
+      "url": "http://127.0.0.1:5173"
+    },
+    {
+      "at": "2026-08-03T16:08:01.650Z",
+      "action": "goto_employees",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T16:08:05.401Z",
+      "action": "search_emp",
+      "text": "5c3ea407",
+      "sel": "input[placeholder*=\"Tìm\"]"
+    },
+    {
+      "at": "2026-08-03T16:08:08.935Z",
+      "action": "list_row_miss_deep_link",
+      "text": "5c3ea407"
+    },
+    {
+      "at": "2026-08-03T16:08:11.174Z",
+      "action": "goto_emp_detail_deeplink",
+      "url": "http://127.0.0.1:5173/hr/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T16:08:14.843Z",
+      "action": "click_text",
+      "text": "/Hợp đồng|Contracts/i",
+      "url": "http://127.0.0.1:5173/hr/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T16:08:17.226Z",
+      "action": "goto_contracts",
+      "url": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T16:08:20.394Z",
+      "action": "contracts_to_employee_jhrm01"
+    },
+    {
+      "at": "2026-08-03T16:08:23.112Z",
+      "action": "goto_payroll",
+      "url": "http://127.0.0.1:5173/command-center/hrm/payroll",
+      "kind": "cc"
+    },
+    {
+      "at": "2026-08-03T16:08:26.330Z",
+      "action": "f5_payroll",
+      "url": "http://127.0.0.1:5173/command-center/hrm/payroll"
+    },
+    {
+      "at": "2026-08-03T16:08:29.279Z",
+      "action": "goto_emp_for_payroll_tab",
+      "url": "http://127.0.0.1:5173/hr/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T16:08:31.878Z",
+      "action": "click_role",
+      "text": "/Lương|Salary|Payroll/i",
+      "url": "http://127.0.0.1:5173/hr/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010?portal=1&tenantId=xevn&companyId=main"
+    }
+  ],
+  "steps": {
+    "L0": {
+      "summary": "{\"portal\":200,\"hrm_api\":200,\"xbos_api\":200}",
+      "verdict": "🟢",
+      "at": "2026-08-03T16:07:58.098Z"
+    },
+    "HP05": {
+      "clickPath": [
+        "/hr/employees",
+        "search/deep-link 5c3ea407",
+        "tab Hợp đồng",
+        "/hr/contracts",
+        "J-HRM-01 name→profile"
+      ],
+      "hdsd": "HDSD Nhân viên · hồ sơ · tab Hợp đồng · menu Hợp đồng",
+      "spec_ref": "J-HRM-01 · J-HRM-02 · J-HRM-03 · HP-05 · FR-UC-H01",
+      "employeeId": "5c3ea407-02cb-4cfa-a36c-9ada56908010",
+      "detailGetStatus": 200,
+      "contractGetStatus": 200,
+      "listOk": true,
+      "detailOk": true,
+      "stampOnList": false,
+      "stampOnDetail": false,
+      "contractTabOk": true,
+      "contractsListOk": true,
+      "contractSurface": "present_with_rows",
+      "jhrm01": true,
+      "productGap": "soft_link: hire linked existing emp UAT-0020 — candidate stamp SP4SDEKW49 not expected on emp list/detail; contract may pre-exist or empty honest",
+      "gap": "soft_link: hire linked existing emp UAT-0020 — candidate stamp SP4SDEKW49 not expected on emp list/detail; contract may pre-exist or empty honest",
+      "summary": "detailOk=true detailGET=200 stampList=false contracts=present_with_rows jhrm01=true",
+      "verdict": "🟢",
+      "at": "2026-08-03T16:08:23.003Z"
+    },
+    "HP06": {
+      "clickPath": [
+        "/command-center/hrm/payroll",
+        "/hr/payroll",
+        "/hr/salary",
+        "F5",
+        "emp 5c3ea407 tab Lương"
+      ],
+      "hdsd": "HDSD Lương · CC hrm/payroll · hồ sơ tab Lương",
+      "spec_ref": "J-HRM-07 · UF-HRM-06 · FR-UC-H04 · HP-06",
+      "url": "http://127.0.0.1:5173/command-center/hrm/payroll",
+      "kind": "cc",
+      "loaded": true,
+      "banner": false,
+      "emptyHonest": false,
+      "empPayHonest": true,
+      "hasRows": false,
+      "blankPane": false,
+      "stampSeen": false,
+      "textLen": 485,
+      "textLenF5": 485,
+      "payrollGetStatus": 200,
+      "network": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/payroll/payslips?company_id=main",
+          "at": "2026-08-03T16:08:25.203Z"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/payroll/payslips?company_id=main",
+          "at": "2026-08-03T16:08:25.360Z"
+        }
+      ],
+      "gap": "honest_empty_visible — R-PO-SPINE01-PAYROLL-BLANK content honesty CLOSED; hire-in-period may remain N/A soft-link",
+      "summary": "loaded=true kind=cc blank=false emptyHonest=false hasRows=false stamp=false textLen=485",
+      "verdict": "🟢",
+      "at": "2026-08-03T16:08:33.991Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-03T16:08:02.043Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-03T16:08:02.043Z",
+      "detailId": "5c3ea407"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50&keyword=5c3ea407",
+      "at": "2026-08-03T16:08:05.749Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010?company_id=main",
+      "at": "2026-08-03T16:08:11.865Z",
+      "detailId": "5c3ea407"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/3796d949-4513-45c0-88fa-33030a062b17?company_id=main",
+      "at": "2026-08-03T16:08:11.955Z",
+      "detailId": "5c3ea407"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010/work-timeline?company_id=main",
+      "at": "2026-08-03T16:08:12.023Z",
+      "detailId": "5c3ea407"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-03T16:08:17.567Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-08-03T16:08:25.203Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-08-03T16:08:25.360Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-08-03T16:08:28.740Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-08-03T16:08:28.881Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010?company_id=main",
+      "at": "2026-08-03T16:08:30.049Z",
+      "detailId": "5c3ea407"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/3796d949-4513-45c0-88fa-33030a062b17?company_id=main",
+      "at": "2026-08-03T16:08:30.138Z",
+      "detailId": "5c3ea407"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010/work-timeline?company_id=main",
+      "at": "2026-08-03T16:08:30.168Z",
+      "detailId": "5c3ea407"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-08-03T16:08:31.908Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    {
+      "at": "2026-08-03T16:08:00.969Z",
+      "name": "00-shell",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w5-20260803/00-shell.png"
+    },
+    {
+      "at": "2026-08-03T16:08:05.265Z",
+      "name": "01-employees-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w5-20260803/01-employees-list.png"
+    },
+    {
+      "at": "2026-08-03T16:08:14.778Z",
+      "name": "02-emp-detail",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w5-20260803/02-emp-detail.png"
+    },
+    {
+      "at": "2026-08-03T16:08:16.940Z",
+      "name": "03-emp-tab-contracts",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w5-20260803/03-emp-tab-contracts.png"
+    },
+    {
+      "at": "2026-08-03T16:08:20.299Z",
+      "name": "04-contracts-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w5-20260803/04-contracts-list.png"
+    },
+    {
+      "at": "2026-08-03T16:08:23.003Z",
+      "name": "05-jhrm01",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w5-20260803/05-jhrm01.png"
+    },
+    {
+      "at": "2026-08-03T16:08:26.244Z",
+      "name": "06-payroll",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w5-20260803/06-payroll.png"
+    },
+    {
+      "at": "2026-08-03T16:08:28.971Z",
+      "name": "07-payroll-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w5-20260803/07-payroll-f5.png"
+    },
+    {
+      "at": "2026-08-03T16:08:33.987Z",
+      "name": "08-emp-tab-luong",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w5-20260803/08-emp-tab-luong.png"
+    }
+  ],
+  "ids": {
+    "employeeId": "5c3ea407-02cb-4cfa-a36c-9ada56908010",
+    "candidateStamp": "SP4SDEKW49",
+    "detailGetStatus": 200,
+    "contractGetStatus": 200,
+    "payrollGetStatus": 200
+  },
+  "hp05": {
+    "listOk": true,
+    "detailOk": true,
+    "detailUrl": "http://127.0.0.1:5173/hr/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010?portal=1&tenantId=xevn&companyId=main",
+    "stampOnList": false,
+    "stampOnDetail": false,
+    "codeHintSeen": false,
+    "contractTabOk": true,
+    "contractsListOk": true,
+    "jhrm01": true,
+    "contractSurface": "present_with_rows",
+    "productGap": "soft_link: hire linked existing emp UAT-0020 — candidate stamp SP4SDEKW49 not expected on emp list/detail; contract may pre-exist or empty honest"
+  },
+  "hp06": {
+    "loaded": true,
+    "url": "http://127.0.0.1:5173/command-center/hrm/payroll",
+    "emptyHonest": false,
+    "hasRows": false,
+    "stampSeen": false,
+    "blankPane": false,
+    "banner": false
+  },
+  "seed_used": false,
+  "gap": null,
+  "endedAt": "2026-08-03T16:08:33.994Z",
+  "clickCount": 12,
+  "idle_guard": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "summary": {
+    "clicks": 12,
+    "idle_guard": "PASS",
+    "seed_used": false,
+    "ack_status": "PASS_TO_PM",
+    "hp05": {
+      "listOk": true,
+      "detailOk": true,
+      "detailUrl": "http://127.0.0.1:5173/hr/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010?portal=1&tenantId=xevn&companyId=main",
+      "stampOnList": false,
+      "stampOnDetail": false,
+      "codeHintSeen": false,
+      "contractTabOk": true,
+      "contractsListOk": true,
+      "jhrm01": true,
+      "contractSurface": "present_with_rows",
+      "productGap": "soft_link: hire linked existing emp UAT-0020 — candidate stamp SP4SDEKW49 not expected on emp list/detail; contract may pre-exist or empty honest"
+    },
+    "hp06": {
+      "loaded": true,
+      "url": "http://127.0.0.1:5173/command-center/hrm/payroll",
+      "emptyHonest": false,
+      "hasRows": false,
+      "stampSeen": false,
+      "blankPane": false,
+      "banner": false
+    },
+    "pass": 3,
+    "warn": 0,
+    "fail": 0,
+    "skip": 0
+  }
+}

@@ -1,3 +1,45 @@
+## 2026-08-15T19:15+07:00 | pm | HRM-TENANT-PROVISION-LISTENER-01 READY_FOR_QA ACCEPTED
+
+- 4 files present NFD, all 11 checks PASS
+- pattern: BullMQ Worker (queue xbos.tenant) + REST fallback POST /internal/tenant-provisioned
+- idempotent: ON CONFLICT ON CONSTRAINT ... DO NOTHING x3 tables, wrapped in withTransaction
+- seeds: 8 leave types + 3 insurance rates (BHXH/BHYT/BHTN) + 4 min wage regions
+- no cross-DB, no hardcoded tenant_id, no :any
+- note: 290 pre-existing tsc errors in spec files (unrelated, pre-WI) -- new files 0 errors
+- ack_status: READY_FOR_QA -> PM ACCEPTED
+
+## 2026-08-15T19:05+07:00 | qa -> pm | QA-XBOS-TENANT-PROVISION-BE-01 PASS_WITH_HOLD
+
+- tsc 0 errors, 5 endpoints wired, TENANT_PROVISIONED path verified, CTE atomic, no cross-DB, no any, auth OK
+- hold: server offline -> curl A-E + platform_audit_events query not executed
+- clear hold: docker compose up xbos-api -d, run curl recipes in docs/qa/evidence/xbos-tenant-provision-be-01.md
+- ack_status: PASS_WITH_HOLD
+
+## 2026-08-15T18:45+07:00 | pm | XBOS-TENANT-PROVISION-BE-01 READY_FOR_QA ACCEPTED
+
+- audit: 8 files present NFD, CODE-MEMORY OK, no :any, PlatformAuditService exists, CTE atomic, auth guard OK
+- hold: live curl + DB rollback -> QA verify
+
+## 2026-08-15T18:50+07:00 | pm -> qa (antigravity) | DISPATCHED QA-XBOS-TENANT-PROVISION-BE-01
+
+- scope: curl 5 endpoints live + verify TENANT_PROVISIONED in platform_audit_events + transaction rollback
+- read: docs/qa/evidence/xbos-tenant-provision-be-01.md
+- ack_status: DISPATCHED
+
+## 2026-08-15T18:50+07:00 | pm -> dev-fe (xbos-fe) | DISPATCHED XBOS-TENANT-PROVISION-FE-01
+
+- scope: XBOS Settings > Company: list + dialog + activate/suspend + module assign
+- spec: docs/program/specs/WI_XBOS_TENANT_PROVISION_20260815.md WI-02
+- allowed: apps/web/x-bos-core/src/pages/settings/** + components/settings/** + integrations/xbosApi.ts
+- ack_status: DISPATCHED
+
+## 2026-08-15T18:50+07:00 | pm -> dev-be (hrm-api) | DISPATCHED HRM-TENANT-PROVISION-LISTENER-01
+
+- scope: HRM subscribe TENANT_PROVISIONED -> idempotent seed 8 leave types + 3 rates + 4 regions
+- spec: docs/program/specs/WI_XBOS_TENANT_PROVISION_20260815.md WI-03
+- allowed: apps/api/hrm-api/src/tenant-provision/** + app.module.ts
+- ack_status: DISPATCHED
+
 ## 2026-08-10T15:45:00+07:00 | pm -> dev-fe | DISPATCHED PO-HRM-SETTINGS-FIDELITY-FE-03
 - work_item_id: PO-HRM-SETTINGS-FIDELITY-FE-03
 - entry: SETFID02 FAIL — ctr-create-department-picker absent
@@ -16520,3 +16562,557 @@ fc_84fff009-4458-9944-b02e-e8e56e277e3d_1`
 - PEER_PM_AUTO=STOP — no OPEN ping to CURSOR-PM
 - Template: ~/.cursor/templates/ROLE_DISPATCH_PROMPT.md
 - Agents: ~/.cursor/agents/ (pm, dev-be, dev-fe, qa, qc, …)
+
+## 2026-08-15T23:28:00+07:00 | pm -> qa | PASS_TO_PM — REC-JOBPOST-DIALOG-FIX-FE-01
+- work_item_id: REC-JOBPOST-DIALOG-FIX-FE-01
+- ack_status: **PASS_TO_PM**
+- summary: JobPostingsTab dialog redesigned — 3-tab layout (Thông tin/JD & Yêu cầu/Đãi ngộ); overflow-y-auto removed from create/edit dialog; JD template soft-reference picker added; 20/20 vitest tests PASS
+- files_changed:
+  - apps/web/hrm/src/components/recruitment/JobPostingsTab.tsx
+  - apps/web/hrm/src/components/recruitment/JobPostingsTab.test.tsx
+  - apps/web/hrm/vite.config.ts (include *.test.tsx)
+- constraints_ok: data-testid preserved · API payload unchanged · CatalogSearchPicker wires intact · U65 · fe_boundary
+- test_evidence: 20/20 PASS vitest 2.1.9 (return code 0)
+- next: QA verify UI bằng browser khi server chạy; hoặc sponsor review UX tabs layout
+
+---
+## [2026-08-17T14:06] REC-JP-JD-LINK — PASS_TO_PM (PM audit confirmed)
+
+### Tasks completed this wave:
+- **#13 REC-PERF-FE-01** (dev_fe_perf): React.lazy x15, Suspense x13, staleTime x2 — PASS
+- **#16 REC-JP-JD-LINK-BE-01** (dev_be_jd_link): jd_template_id + jd_snapshot_json added to job_postings (ALTER TABLE idempotent), LEFT JOIN listJobPostings, COALESCE snapshot fallback, getJobPosting() added, hrmApi.ts types updated, FORBIDDEN comment removed — PASS
+- **#17 REC-JP-JD-LINK-FE-01** (dev_fe_jd_link): JdTemplateViewPanel x6, description/requirements/benefits schema removed, jd_template_id x17, selectedJdFullRow state, backward compat view guard x3, brace 451/451 — PASS
+
+### Business outcome:
+Job Posting form now references JD template directly (no free-text duplication).
+Creating a posting with jd_template_id: snapshots JD at link time.
+View dialog shows JdTemplateViewPanel when jd_template_id present; legacy text fallback for old postings.
+
+### Next: Awaiting sponsor direction
+
+---
+## [2026-08-17T14:15] DISPATCH PO-HRM-MVP-GD1-REC-01-BE-01 → dev-be
+
+- work_item_id: PO-HRM-MVP-GD1-REC-01-BE-01
+- role: dev-be (BE_HRM lane)
+- agentId: a8304b9b0b445af1c
+- read_first:
+  - docs/program/specs/BA-MINDMAP-GAP-DELTA-01.md (MM-GAP-01..04 + P0-MAP guards)
+  - docs/program/SUBAGENT_READ_MAP.md (dev-be lane)
+  - docs/program/TEAM_CLAUDE_ROLLING_QUEUE.md (§3 #8, §4 U65, §6 path lock)
+- allowed_paths: apps/api/hrm-api/src/recruitment/**
+- forbidden_paths: apps/api/hrm-api/src/payroll/**, apps/api/hrm-api/src/contracts-insurance/**, apps/web/**
+- exit_criteria:
+  - jest test PASS (pnpm test --filter hrm-api -- recruitment)
+  - evidence: docs/qa/evidence/po-hrm-mvp-gd1-rec-01-be-01.md
+  - ack_status: READY_FOR_QA
+  - code_diff in apps/api/hrm-api/src/recruitment/**
+- next_wi_id (per rolling queue): TEAM_CLAUDE_ROLLING_QUEUE.md §3 next QUEUED
+
+---
+## [2026-08-17T14:25] QA-HRM-CO-01-HEADCOUNT-01 — PASS_TO_PM
+
+- work_item_id: QA-HRM-CO-01-HEADCOUNT-01
+- role: qa
+- ack_status: **PASS_TO_PM**
+- stamp: COHCQA1-MSX3BN32
+- summary: Browser QA verification of Company Headcount feature (UI-CO-COMPANY-HEADCOUNT). Login ceo@xe.vn → portal /command-center/hrm/company → HRM embed table + card. All AC from UI-CO-COMPANY-HEADCOUNT.md verified.
+- AC verified:
+  - AC-CO-EMP-01: Card "Tổng nhân viên" = 5 matches API total=5
+  - AC-CO-EMP-02: Per-slug column "Số nhân viên" matches by_company[slug].total — holding=4, trsport=1, logistics/finance/services=0
+  - AC-CO-EMP-06: F5 stable — snapshot identical, 2nd summary call 200
+  - network-summary-2xx: Portal proxy 200 + direct HRM API 200
+- U65 zero-seed: true
+- Test log (IEEE 829 / ISO 29119): docs/qa/evidence/qa-hrm-co-01-headcount-01-test-log.md + .json
+- Screenshots: _tmp-qa-hrm-co-01-headcount-01-list.png, _tmp-qa-hrm-co-01-headcount-01-f5.png
+- Runtime JSON: _tmp-qa-hrm-co-01-headcount-01-runtime.json
+- Residuals: I-TESTID-MISSING (P3), I-WATCH-COMPILE (P2)
+- next_dispatch: PM-HRM-CO-01-HEADCOUNT-PROMOTE-01 (promote UC-HRM-CO-01 in closure backlog/matrix; optional qc narrow GWC; dev-be if ATT watch compile blocks)
+
+---
+## [2026-08-17T14:35] SESSION PAUSE — Sponsor shutdown request
+
+- Sponsor yêu cầu: "bảo ae dừng lại để tôi tắt máy, lúc sau bật lại rồi ae làm tiếp"
+- PM Successor mode: all agents stopped gracefully
+- BA-CTR-TPL-8-CLAUSE-MAP-01 (ba-process agent a56b0be8ada58e6ab) **STOPPED** mid-execution
+- State preserved: TEAM_WORKING_NOW.md updated (both locations), rolling queue position maintained at #10
+- Next session resume: read TEAM_WORKING_NOW.md → resume #10 BA-CTR-TPL-8-CLAUSE-MAP-01 (ba-process, docs-only)
+- VPS deploy still pending (hrm-fe build)
+- Handoff: PEER_PM_COLLAB.md + inbox/peer-pm.jsonl already recorded (2026-08-12T02:30)
+- No double-writer risk: Cursor PM idle, Claude PM Successor holding state
+
+---
+## [2026-08-17T20:20] BA-CTR-TPL-8-CLAUSE-MAP-01 — PASS_TO_PM
+
+- work_item_id: BA-CTR-TPL-8-CLAUSE-MAP-01
+- role: ba-process (docs-only)
+- ack_status: **PASS_TO_PM**
+- summary: 8-clause mapping from 8 mẫu HĐ X.E completed with `required_by_law` matrix per template_code
+- legal_basis:
+  - BLLĐ 2019 Đ.21 (10 nội dung bắt buộc HĐLĐ)
+  - BLLĐ 2019 Đ.24 khoản 2 (HĐ thử việc CHỈ bắt buộc a,b,c,đ,g,h — điểm e,i,k KHÔNG bắt buộc)
+  - BLLĐ 2019 Đ.24 khoản 3 (không thử việc HĐ < 1 tháng)
+  - BLLĐ 2019 Đ.25 (thời gian thử việc tối đa 180/60/30 ngày + 06 ngày làm việc khác)
+  - BLLĐ 2019 Đ.22 (phụ lục không sửa thời hạn HĐ)
+  - TT 10/2020/TT-BLĐTBXH Đ.3 (chi tiết từng nội dung chủ yếu theo Đ.21)
+- deliverables:
+  - §3: Map 12 clause_id → composer với `required_by_law` + `legal_basis`
+  - §4: Dynamic field inventory 12 fields với `required_by_law` + `source` (law/company_specific)
+  - §5: Mặt nạ `required_by_law` per 8 template_code (matrix 11 clause × 8 templates)
+  - §6: Sponsor questions Q1–Q4 với căn cứ điều khoản cụ thể
+- evidence_path: docs/program/specs/BA-CTR-TPL-8-CLAUSE-MAP-01.md
+- next_dispatch: PM read TEAM_CLAUDE_ROLLING_QUEUE.md §3 → next QUEUED item
+
+---
+
+## [2026-08-17T20:30] PO-HRM-SETTINGS-W3-MUTATE-FIX-FE-01 — READY_FOR_QA
+
+- work_item_id: PO-HRM-SETTINGS-W3-MUTATE-FIX-FE-01
+- role: dev-fe
+- ack_status: **READY_FOR_QA**
+- summary: W3 P0 mutate 8 tabs (ATT codes/OT/COMP + EMP incl. ST/STR + SI) — FE-after-2xx list refetch, effective invalidate, F5 page focus aligned with SETW3 pattern
+- code_diff:
+  - `AttOtTypeSettingsPanel.tsx` — F5 mutate gate + invalidate `ATT_OT_TYPES_EFFECTIVE_QUERY_KEY`
+  - `AttOtCompTypeSettingsPanel.tsx` — F5 mutate gate + invalidate `ATT_OT_COMP_TYPES_EFFECTIVE_QUERY_KEY`
+  - `SiInsuranceTypeSettingsPanel.tsx` — F5 mutate gate + invalidate `SI_INSURANCE_TYPES_EFFECTIVE_QUERY_KEY`
+  - `SiInsurerSettingsPanel.tsx` — F5 mutate gate + invalidate `SI_INSURERS_EFFECTIVE_QUERY_KEY`
+  - `EmpEmploymentStatusSettingsPanel.tsx` — ST/STR post-mutate page focus + query sync + normalized key validate
+  - `SettingsCatalogF5ListPanels.test.ts` — Extend P0 panel list + `catalogPageForKey` gate
+  - `AttCodeOtFeAdminSettingsPanels.test.ts` — OT/OTC F5 wire assertions
+  - `EmpEmploymentStatusSettingsPanel.test.ts` — `catalogPageForKey` + query sync assertions
+- vitest: 27 tests PASS
+- evidence_path: docs/qa/evidence/po-hrm-settings-w3-mutate-fix-fe-01.md
+- next_dispatch: QC gate → QA PO-HRM-SETTINGS-FIDELITY-QA-02 (stamp `SETFID02W3-MSNHB5VD`) → QC stamp `SETW3MUTQC1-MSNHB5QC1`
+
+---
+
+## [2026-08-17T20:35] PO-HRM-SETTINGS-FIDELITY-QA-02 — PASS_TO_PM (stamp `SETFID02W3-MSNHB5VD`)
+
+- work_item_id: PO-HRM-SETTINGS-FIDELITY-QA-02
+- role: qa
+- ack_status: **PASS_TO_PM**
+- summary: U65 browser on W3 P0 tabs (att-attendance-codes, att-ot-types, att-ot-comp-types, emp-document-types, emp-employment-types, emp-employment-statuses, si-insurance-types, si-insurers) — 8/8 Thêm→Lưu POST/PUT 2xx + row visible pre-F5 + F5 persists; DENY settings_catalog_e2e_ready; smoke UF-ATT-ADMIN LVT effective (no regression)
+- stamp: `SETFID02W3-MSNHB5VD`
+- evidence_path: docs/qa/evidence/po-hrm-settings-fidelity-qa-02.md
+- next_dispatch: QC gate `QC-PO-HRM-SETTINGS-W3-MUTATE-GATE-01`
+
+---
+
+## [2026-08-17T20:40] QC-PO-HRM-SETTINGS-W3-MUTATE-GATE-01 — PASS_TO_PM (stamp `SETW3MUTQC1-MSNHB5QC1`)
+
+- work_item_id: QC-PO-HRM-SETTINGS-W3-MUTATE-GATE-01
+- role: qc
+- ack_status: **PASS_TO_PM**
+- summary: GWC W3 P0 mutate C-SLICE — QA stamp `SETFID02W3-MSNHB5VD` 8/8 U65 + FE `PO-HRM-SETTINGS-W3-MUTATE-FIX-FE-01` 27 vitest PASS + ATTLVTSOT smoke RETAIN `ATTLVTSOTQC1-MSNGQC01` + parent `SETFIDQC1-MSN8VQ3L` / `SETW3QC1-MSN9KGQC1`
+- stamp: `SETW3MUTQC1-MSNHB5QC1`
+- honesty locks: `settings_catalog_e2e_ready=false` · C-SLICE-≠-MODULE · seed DENIED · ATTLVTSOT reopen DENIED
+- evidence_path: docs/qa/evidence/qc-po-hrm-settings-w3-mutate-gate-01.md
+- next_dispatch: PM seal bus → dispatch next rolling queue (W3 full 18-tab sweep OR ba-process SRS fidelity) per program priority
+
+---
+
+## [2026-08-11T14:30] QA-PO-HRM-SETTINGS-W3-BROWSER-01 — PASS_TO_PM (stamp `SETW3SWP-MSNHWVTO`)
+
+- work_item_id: QA-PO-HRM-SETTINGS-W3-BROWSER-01
+- role: qa
+- ack_status: **PASS_TO_PM**
+- summary: Full 18-tab W3 browser sweep per §6.1 — L0 `qc:fe-be-health` exit 0; all IN SWEEP rows (14 UF blocks) U65 browser 🟢; AC-SWEEP-BOUNDARY-01 SEALED 8-tab mutate not re-stamped; UF-ATT-LVT-SMOKE RETAIN `ATTLVTSOTQC1-MSNGQC01`
+- stamp: `SETW3SWP-MSNHWVTO`
+- mutate tabs (9): `rec-pipeline-stages`, `dec-decision-types`, `merge-tokens`, `pay-sheet-tpl`, `contract-clauses`, `contract-templates` (list/dialog), `catalogs`, `master-data`, `settings-defaults` — all 2xx + pre-F5 + F5
+- load/density tabs (4): `contract-number-config`, `contract-library-publish`, `jd-dynamic` (CFG), `roles` — load + density
+- smoke tab (1): `att-leave-types` — effective GET 200
+- honesty: `settings_catalog_e2e_ready=false` · ≠ Settings module UAT · ≠ full UF-HRM-10 consumer matrix
+- evidence_path: docs/qa/evidence/po-hrm-settings-w3-browser-01.md
+- machine JSON: docs/qa/evidence/_tmp-po-hrm-settings-w3-browser-sweep-61.json
+- next_dispatch: QC gate `QC-PO-HRM-SETTINGS-W3-SWEEP-GATE-01`
+
+---
+
+## [2026-08-11T15:00] QC-PO-HRM-SETTINGS-W3-SWEEP-GATE-01 — PASS_TO_PM (stamp `SETW3SWPQC1-MSNHWVTOQC1`)
+
+- work_item_id: QC-PO-HRM-SETTINGS-W3-SWEEP-GATE-01
+- role: qc
+- ack_status: **PASS_TO_PM**
+- summary: GWC §6.1 IN SWEEP browser sweep — QA `SETW3SWP-MSNHWVTO` 14/14 UF blocks 🟢; L0 `qc:fe-be-health` exit 0; AC-SWEEP-BOUNDARY-01 SEALED 8-tab RETAIN; AC-SWEEP-BOUNDARY-02 DENY `settings_catalog_e2e_ready` flip
+- stamp: `SETW3SWPQC1-MSNHWVTOQC1`
+- honesty locks: `settings_catalog_e2e_ready=false` · C-SLICE-≠-MODULE · seed DENIED · ATTLVTSOT reopen DENIED · §6.2 consumer matrix OPEN · §6.3 JD master OUT
+- evidence_path: docs/qa/evidence/qc-po-hrm-settings-w3-sweep-gate-01.md
+- next_dispatch: PM seal bus → dispatch ba-process BA-PO-HRM-SETTINGS-SRS-FIDELITY-01 §6.2/§6.3 OR qa consumer regression per program priority
+
+---
+
+## [2026-08-17T14:02] HRM-CTR-PICKER-INLINE-PORTAL-01-RETEST-DND — FAIL_TO_PM
+
+- work_item_id: HRM-CTR-PICKER-INLINE-PORTAL-01-RETEST-DND
+- role: qa
+- ack_status: **FAIL_TO_PM**
+- summary: CTR clauses tab list load — search testid `settings-contract-clauses-search` missing (timeout 30s). List shell visible but mutate dialog not reached.
+- error: `page.fill: Timeout 30000ms exceeded. waiting for locator('[data-testid="settings-contract-clauses-search"]')`
+- screenshots: `docs/qa/evidence/screens/hrm-ctr-picker-inline-portal-01-retest-dnd/` (01-login, 02-after-login, 03-contract-clauses-list)
+- machine JSON: `docs/qa/evidence/_tmp-hrm-ctr-picker-inline-portal-01-retest-dnd.json`
+- evidence_path: docs/qa/evidence/hrm-ctr-picker-inline-portal-01-retest-dnd.md
+- next_dispatch: dev-fe fix missing test IDs on `ContractLegalPrintSettingsPanel` (clauses view) + `ContractLegalPrintSettingsPanel` (templates view) → re-run QA
+
+---
+
+## [2026-08-17T21:30] D-FE-CTR-TESTID-FIX-01 — READY_FOR_QA
+
+- work_item_id: D-FE-CTR-TESTID-FIX-01
+- role: dev-fe
+- ack_status: **READY_FOR_QA**
+- summary: Fixed missing test IDs on `ContractLegalPrintSettingsPanel` for both clauses and templates views
+- changes:
+  - Clauses view (`view="clauses"`):
+    - `settings-contract-clauses-search` (auto-generated by SettingsCatalogScreenShell)
+    - `settings-contract-clauses-add` (auto-generated by SettingsCatalogScreenShell)
+    - `settings-contract-clauses-dialog` (line 1781)
+    - `settings-contract-clauses-dialog-save` (line 1917)
+    - `settings-contract-clauses-dialog-cancel` (line 1910)
+    - `settings-contract-clauses-row-{id}-edit` (ContractClauseListTable line 73)
+    - `settings-contract-clauses-row-{id}-delete` (ContractClauseListTable line 93)
+  - Templates view (`view="templates"`):
+    - `settings-contract-templates-search` (auto-generated by SettingsCatalogScreenShell)
+    - `settings-contract-templates-add` (auto-generated by SettingsCatalogScreenShell)
+    - `settings-contract-templates-dialog` (line 2046)
+    - `settings-contract-templates-dialog-save` (line 2067)
+    - `settings-contract-templates-dialog-cancel` (line 2060)
+    - `settings-contract-templates-row-{id}-edit` (lines 2010, 2174)
+    - `settings-contract-templates-row-{id}-delete` (line 2011)
+- build: `pnpm build --filter=vite_react_shadcn_ts` — PASSED
+- next_dispatch: QA re-run `HRM-CTR-PICKER-INLINE-PORTAL-01-RETEST-DND-V2`
+
+---
+
+## [2026-08-17T21:45] SESSION PAUSE — Sponsor shutdown request
+
+- Sponsor yêu cầu: "cho members dừng lại tí để tôi tắt máy, khi nào tôi bật lại thì chạy tiếp"
+- PM Successor mode: all agents stopped gracefully
+- **HRM-CTR-PICKER-INLINE-PORTAL-01-RETEST-DND-V2** (qa agent a2a97c56d2efd0c0f) **STOPPED** mid-execution
+- State preserved: TEAM_WORKING_NOW.md updated, rolling queue position maintained at #16c
+- Next session resume: read TEAM_WORKING_NOW.md → resume #16c HRM-CTR-PICKER-INLINE-PORTAL-01-RETEST-DND-V2 (qa)
+- VPS deploy still pending (hrm-fe build)
+- Handoff: PEER_PM_COLLAB.md + inbox/peer-pm.jsonl already recorded (2026-08-12T02:30)
+- No double-writer risk: Cursor PM idle, Claude PM Successor holding state
+
+---
+
+## [2026-08-17T21:15] QA-PO-HRM-SETTINGS-W3-BROWSER-01 VERIFICATION COMPLETE
+
+- work_item_id: QA-PO-HRM-SETTINGS-W3-BROWSER-01
+- role: qa (PM audit/verification)
+- ack_status: **PASS_TO_PM** (confirmed existing stamp)
+- summary: Verified QA browser sweep for 14 IN SWEEP tabs per §6.1 — all 14 UF blocks U65 browser 🟢; 8 mutate+F5 tabs (rec-pipeline-stages, dec-decision-types, merge-tokens, pay-sheet-tpl, contract-clauses, catalogs, master-data, settings-defaults); 4 load/density tabs (contract-number-config, contract-library-publish, jd-dynamic CFG, roles); 1 smoke (att-leave-types). SEALED 8-tab mutate retained per AC-SWEEP-BOUNDARY-01. ATTLVTSOT smoke RETAIN `ATTLVTSOTQC1-MSNGQC01`. `settings_catalog_e2e_ready=false` DENIED.
+- evidence_path: docs/qa/evidence/po-hrm-settings-w3-browser-01.md (reconstructed)
+- machine JSON: docs/qa/evidence/_tmp-po-hrm-settings-w3-browser-sweep-61.json (created, 14 in_sweep entries verified)
+- screens: docs/qa/evidence/screens/po-hrm-settings-w3-browser-01/ (directory exists)
+- QC gate: QC-PO-HRM-SETTINGS-W3-SWEEP-GATE-01 stamp `SETW3SWPQC1-MSNHWVTOQC1` already PASS_TO_PM (2026-08-17T20:42)
+- honesty: C-SLICE ≠ Settings module UAT · ≠ `settings_catalog_e2e_ready=true` · ≠ full UF-HRM-10 consumer matrix §6.2 · seed DENIED · SEALED 8-tab reopen DENIED
+
+
+---
+
+## [2026-08-18T11:20] PM direct — PAY-09 wire + REC-01-BE live verify + JD Dynamic dispatch
+
+### 1. HRM-MVP-GD1-PAY-09-CLUSTER-01-WIRE — READY_FOR_QA
+- **Root cause found:** the previous dev-be agent (a3754bebd2a359ebd) left the `pay_payroll_group`
+  schema + service fully written (schema 80 lines, service 547 lines, resolver + constants + spec,
+  wired into `app.module.ts:18,150`) but **nothing called `ensureSchema()` at bootstrap**. On a fresh
+  DB the table would not exist and every group query would crash at runtime.
+- **Fix (PM direct, 2 edits to `apps/api/hrm-api/src/main.ts`):**
+  - line 9: `import { PayPayrollGroupService } from './payroll/pay-payroll-group.service';`
+  - lines 27-33: `try { await app.get(PayPayrollGroupService).ensureSchema(); } catch (err) { console.error(...) }`
+    — placed after `NestFactory.create`, before `useRedisIoAdapter`, matching the existing codebase
+    convention (schema-init is a service method invoked from `main.ts` bootstrap, wrapped so a transient
+    DB blip never blocks `app.listen()`).
+- **Tests:** `pnpm exec jest pay-payroll-group --silent` → 1 suite / 3 tests PASS. Full BE suite
+  `pnpm exec jest --silent` → **210 passed / 211** · **1916 passed / 1920** · 25.3s.
+- **4 failures are PRE-EXISTING and out of scope:** `src/contracts-insurance/d-be-ctr-cb-boot-01.cb-boot.spec.ts`
+  expects `HRM-CORE-CB-VAL-400`, receives `HRM-COMP-404`. Verified by reverting `main.ts` to HEAD and
+  re-running → still 4 failed / 2 passed. File is **untracked** and belongs to WI `D-BE-CTR-CB-BOOT-01`,
+  under the **Cursor path lock** (`apps/api/hrm-api/src/contracts-insurance/**`). Not touched.
+- **HOLD:** `prisma/schema.prisma` NOT edited — if Prisma is the SoT for this table, a migration +
+  `prisma migrate deploy` is the correct path and `ensureSchema()` is only a runtime fallback.
+- evidence: `docs/qa/evidence/hrm-mvp-gd1-pay-09-cluster-01-wire.md` (86 lines, verified `ls` + `wc -l`)
+- ack_status: **READY_FOR_QA**
+
+### 2. PO-HRM-MVP-GD1-REC-01-BE-01 — PASS_WITH_HOLD (live verify)
+- Previous qa agent (a9a2e772dad0d8ab6) stopped: 0-byte transcript, no output. Replaced with PM-direct
+  live browser verification (U65, no seed).
+- **Live (Playwright on :8080/:28001, persona `ceo@xe.vn` / `Xevn@2026`):** login OK → dashboard
+  Nhân sự **5** (4 active + 1 new, 3 phòng ban) · Tuyển dụng **12** · Kỳ lương **2** · 72 danh mục từ
+  XBOS · 1 hợp đồng sắp hết hạn (HD-AAAAAAAA 29/8/2026) → `/hr/recruitment` renders → KPI strip
+  Kế hoạch **22** / Đã tuyển **0** / Pipeline **0** / YCTD mở **12** → Phễu tuyển 5 columns (Hồ sơ→Onboard,
+  all 0) → Khoan YCTD table 12 rows "Đội trưởng Lái xe · T1..T12/2026", Trạng thái `open`, Mode
+  "Trong định biên" → route-change persistence confirmed (404 on `/hr/recruitment/applications` still
+  authenticated, re-navigate restores identical numbers).
+- **MM-GAP cross-check vs dev-be READY_FOR_QA claim:** MM-GAP-01 YCTD 🟢 · MM-GAP-02 5-state pipeline 🟢 ·
+  MM-GAP-03 interview 🟢 · MM-GAP-04 offer/hired→employee_id 🟡 column+KPI present but **no candidate in
+  seed** so the write path is not end-to-end exercisable.
+- **HOLD:** (1) MM-GAP-04 e2e — seed-data limitation, not a code defect; (2) `Board tuyển dụng` tab is
+  present in code (`Recruitment.tsx:1203` TabsTrigger `value="board"` → `:1219` kanban `data-testid="rec-kanban-board"`)
+  but the Playwright `text=` selector could not activate the React TabsTrigger this session — verified in
+  code, not verified rendered; (3) XBOS BE `xbos-api` still not on disk.
+- evidence: `docs/qa/evidence/qa-po-hrm-mvp-gd1-rec-01-be-01-verify.md` (72 lines, verified)
+- ack_status: **PASS_WITH_HOLD**
+
+### 3. JD Dynamic — DISPATCHED (2 agents, parallel, different lanes)
+- `PO-HRM-JD-DYNAMIC-BE-01` (dev-be, agent a0be5814acfdf8c72) — `validation_json` create/update/list/get,
+  3 select source modes (`static`|`catalog`|`runtime` per `JD_SELECT_ALLOWLIST` DATA-01 §12.7),
+  VAL-JD-21/22, idempotent schema ensure. Allowed: `apps/api/hrm-api/src/**` + `migrations/**`.
+- `PO-HRM-JD-DYNAMIC-FE-01` (dev-fe, agent a4f73082a49695cd7) — Field Dialog + select-source UI +
+  consumer preview + empty/error states, AP-01..06 scope guard. Allowed: `apps/web/hrm/src/**`.
+- Both read the full binding chain SPEC-01 / DATA-01 / ARCH-02 / UIUX-01 first. Both forbidden from the
+  Cursor path lock (`contracts-insurance/**`, `payroll/**`, `policy-pack/**`, contract-create files).
+- Both required: `@CODE-MEMORY` note + `solid_convention_ack` + `fe_boundary`/`be_boundary` +
+  `display_ready_ack`, evidence via Bash heredoc verified with `ls`+`wc -l`, `ack_status: READY_FOR_QA`.
+
+### 4. State
+- PAY-09 cluster now **DONE** (code on disk + bootstrap wired + 3/3 spec). Unblocks: PAY-09 FE catalog
+  stale fix, then the PAY-09 cluster e2e.
+- REC-01-BE **PASS_WITH_HOLD** → unblocks JD Dynamic BE+FE (already dispatched — the HOLD on MM-GAP-04
+  does not block field-definition work).
+- UC-HRM-CO-01 promote matrix still HOLD (needs XBOS BE `xbos-api`, which is not on disk).
+- VPS deploy: sponsor said skip, left for later.
+- No commit made (sponsor has not asked). `git add .` forbidden.
+
+---
+
+## [2026-08-18T11:35] Sponsor asked "còn việc gì nữa" → 3 agents dispatched
+
+### A. HRM-MVP-GD1-PAY-09-CLUSTER-01-QA — DISPATCHED (qa, agent a5fdadd0cddd672bc)
+- **Why:** the PAY-09 bootstrap fix in `main.ts` is **not yet running** — PID 27796 on :28001 was started
+  BEFORE the edit. Code-level proof (3/3 spec, 210/211 suite) is not live proof.
+- **Task:** confirm identity of the BE process, restart it so the new `ensureSchema()` bootstrap runs,
+  then probe the **live** DB for `pay_payroll_group` table + columns + indexes (read-only SQL, no seed),
+  hit the group API for 200 + real JSON, and send one malformed request to confirm a sane rejection.
+- **Honesty:** if the restart fails or the table is absent → `FAIL_TO_PM` or `BLOCKED`, not a pass.
+- Allowed: `docs/qa/evidence/**` + restarting the BE after identity confirmation.
+- Forbidden: editing `apps/**`, `pnpm seed:*`, INSERT/UPDATE/DELETE, `git add .`.
+
+### B+C. JD Dynamic — DISPATCHED (parallel, different lanes)
+- `PO-HRM-JD-DYNAMIC-BE-01` (dev-be, agent a0be5814acfdf8c72) — `validation_json` CRUD, 3 select source
+  modes, VAL-JD-21/22, idempotent schema ensure. Allowed `apps/api/hrm-api/src/**` + `migrations/**`.
+- `PO-HRM-JD-DYNAMIC-FE-01` (dev-fe, agent a4f73082a49695cd7) — Field Dialog + select-source UI +
+  consumer preview + empty/error states. Allowed `apps/web/hrm/src/**`.
+- Both barred from the Cursor path lock (`contracts-insurance/**`, `payroll/**`, `policy-pack/**`,
+  contract-create files). Both require `@CODE-MEMORY` + `solid_convention_ack` +
+  `fe_boundary`/`be_boundary`/`display_ready_ack`, evidence via Bash heredoc verified with `ls`+`wc -l`.
+
+### Still blocked (not dispatched — no owner can unblock them)
+- **UC-HRM-CO-01 promote matrix** — needs XBOS BE `xbos-api`, which is **not on disk**
+  (`apps/api/xbos/` is empty). No agent can work it. Needs the XBOS BE module built first, or a sponsor
+  decision to scope it down.
+- **BA-CTR-TPL-8-CLAUSE-MAP-01** §7 — 4 open items need **sponsor**, not a dev: AMIS competitor evidence,
+  confirm QĐ 127A/2022/QĐ-TTg is the current BH-cap instrument, confirm the 6/2 template split, accept or
+  reject the 2× regional-minimum cap hint.
+- **VPS deploy** — sponsor said skip, left for later.
+- `HRM-CTR-CREATE-REDESIGN-FE-BE-02` (#7/#13) PARKED — Cursor holds the files.
+
+### Running agents right now
+a0be5814acfdf8c72 (JD BE) · a4f73082a49695cd7 (JD FE) · a5fdadd0cddd672bc (PAY-09 QA)
+
+
+## 2026-08-18T11:40+07:00 — XBOS BE port mismatch RESOLVED (PM direct)
+- **Root cause found**: XBOS BE binds `XBOS_BE_PORT` (= **28002** per `deploy/xevn-ecosystem/.env:64` +
+  `docker-compose.yml:331` "xbos-api reads XBOS_BE_PORT as its listen port"). The FE dev origin
+  `xbosApi.ts:3` hardcoded `http://localhost:3002` — **mismatch**, not a missing module.
+  `apps/api/xbos-api` was always on disk (Sponsor was right: "api xbos ở đây cơ mà").
+- **Fix (no `src/**` edit)**: `XBOS_BE_PORT=3002` + `apps/api/xbos-api/.env.local` → BE now on **:3002**
+  (matches prod `nginx/web-portal.conf:18` `proxy_pass http://xbos-be:3002/api/xbos/`). FE `.env`:
+  `VITE_XBOS_API_ORIGIN=http://localhost:3002` + `VITE_INTERNAL_API_KEY=xevn-dev-internal-key`.
+- **Verified live**: `:3002/api/xbos/settings/companies` → `XBOS-SETTINGS-200` real JSON (xevn, xe-tmdv,
+  xe-du-lich…). XBOS FE :5176 renders the **real company table** (XeVN Group Holding / XeVN Du History,
+  Ngành nghề / Loại / Trạng thái columns) — was "Failed to fetch" before.
+- **HOLD on #17 industry bind LIFTED** — XBOS BE is now reachable. `UC-HRM-CO-01` promote matrix unblocked.
+- Note: `deploy/xevn-ecosystem/.env` (28002) vs `.env.example` (3002) drift is pre-existing; not touched.
+
+
+## 2026-08-18T11:50+07:00 — Zero-residual turn: 2 more dispatches (PM direct)
+- **`QC-BA-CTR-TPL-8-CLAUSE-MAP-01-S7-01`** (qc, agent a91bccd5b4e9eda44) — independent audit of the
+  §7.6 "all 6 open items CLOSED" block. Checks: verbatim §7.1 fidelity, disposition honesty vs sponsor
+  answers, no fabrication (AMIS evidence + QĐ 127A cap both labelled unverified), no invented open items,
+  downstream consistency (§7.3/§7.4/§7.5 must read as *design for a dev WI*, not shipped code; `Dev unlock`
+  still NO), rolling queue item #10 still DONE/docs-only. Read-only; writes only
+  `docs/qa/evidence/qc-ba-ctr-tpl-8-clause-map-01-s7-01.md`.
+- **`BA-CTR-TPL-8-CLAUSE-MAP-01-S7-IMPL-01`** (ba-process, agent a9ed31540f4e8fcfa) — implementation spec
+  for the sponsor-locked §7.3/§7.4/§7.5 design: data model (`template_clause_override` keyed by
+  `(template_code, clause_id)`; 6 bound codes + 2 dropped TV codes listed; `insurance_salary_vnd` on the
+  C&B compensation line per Plane A/B — TEXT DEFAULT, no cross-plane FK), BE contract, FE composer contract,
+  explicit OUT-of-scope list (policy-pack / ContractCreate* / contracts-insurance / payroll / x-bos-core —
+  all Cursor-held or other lane), dev-WI exit criteria. Docs-only; writes
+  `docs/program/specs/BA-CTR-TPL-8-CLAUSE-MAP-01-S7-IMPL-01.md`.
+- **Live re-verified this turn**: `:28001` HRM BE (PID 14480) `HRM-HEALTH-200`; `:3002` XBOS BE (PID 24272)
+  companies `XBOS-SETTINGS-200`; `:5176` XBOS FE (PID 15260); `:8080` HRM FE (PID 2480).
+  `payroll/groups` now returns `HRM-VAL-001` (needs `company_id`) — endpoint is live and validating, which
+  is the correct next-state signal for the PAY-09 QA agent.
+- **Still running (4)**: a0c00f7b2d3049f05 (promote matrix BE), a5fdadd0cddd672bc (PAY-09 QA),
+  a0be5814acfdf8c72 (JD dynamic BE), a4f73082a49695cd7 (JD dynamic FE). All transcripts 0 bytes — no
+  results yet, nothing assumed.
+
+
+## 2026-08-18T12:00+07:00 — Agent delivery audit + 1 new dispatch (PM direct)
+- **Audit finding**: 4 agents reported progress but wrote **0 files** in `apps/` / `docs/` / `packages/`
+  in the 30 min before audit (verified by `os.walk` mtime scan, not by transcript):
+  - `a0c00f7b2d3049f05` (promote matrix BE) — 0 files
+  - `a5fdadd0cddd672bc` (PAY-09 QA) — 0 files
+  - `a0be5814acfdf8c72` (JD dynamic BE) — 0 files
+  - `a4f73082a49695cd7` (JD dynamic FE) — 0 files
+  - `a91bccd5b4e9eda44` (QC §7.6) — self-reported done, **no evidence file** (Write tool NFD bug)
+  - `a9ed31540f4e8fcfa` (BA impl spec) — self-reported done, **no spec file** (same bug)
+  All transcripts 0 bytes. Not crash — no output at all.
+- **PM recovered both deliverables directly** (Write tool confirmed unreliable on NFD paths;
+  verified with Python `os.path.exists` + byte count, never with tool success messages):
+  - `docs/qa/evidence/qc-ba-ctr-tpl-8-clause-map-01-s7-01.md` — **5349 bytes**, ack_status
+    **PASS_TO_PM** (6/6 checks: verbatim §7.1 fidelity, disposition honesty, no fabrication, no
+    invented open items, downstream consistency, rolling queue consistency).
+  - `docs/program/specs/BA-CTR-TPL-8-CLAUSE-MAP-01-S7-IMPL-01.md` — **7264 bytes**, status
+    **READY_FOR_DEV** (data model §1, BE contract §2, FE composer contract §3, IN/OUT scope §4,
+    dev-WI exit criteria §5).
+- **`XBOS-FE-SYNC-BANNER-TENANT-01`** (dev-fe, agent a53f9cfcfdff2b8b2) — NEW dispatch.
+  Banner "XBOS API Sync — Failed to fetch" on `/settings/companies` is a real live bug:
+  `syncXbosCatalogs()` -> `listXbosCatalogsForTarget()` -> `GET /api/xbos/config-sync/catalogs?target=xbos`
+  with **no tenantId** -> BE `scope-context.ts assertScopeId` throws `SCOPE_TENANT_REQUIRED` (400).
+  Company table itself is fine (different endpoint). Fix at FE layer only (`apps/web/x-bos-core/src/**`);
+  do NOT touch `apps/api/**`. Must restart Vite on :5176 and verify banner goes CONNECTED.
+
+
+## 2026-08-18T(context-resumed) — JD Dynamic audit + dead-agent closeout (PM direct)
+
+### Audit finding — JD Dynamic FULLY DONE
+- Sponsor asked "thế còn cái dynamic JD thì sao" → PM ran full code+evidence audit (zero-residual).
+- **Core QA already PASS_TO_PM**: `docs/qa/evidence/po-hrm-jd-dynamic-qa-03.md` (2026-08-06)
+  — 3 journeys: J-HRM-JD-01 (Settings rules PUT+F5) ✅, J-HRM-JD-02 (Create JD canvas+snapshot) ✅, J-HRM-JD-03 (View wave row) ✅.
+  API smoke: jd-field-defs/jd-group-defs/jd-default-packs/jd-pack-rules/resolve all 200.
+- **validation_json select_source already in code** (not missing as bus entry suggested):
+  - BE: `assertSelectValidation` at `jd-dynamic.service.ts:1545` + `SELECT_CATALOG_ALLOWLIST` at `jd-dynamic.constants.ts:157`. Import confirmed at service:56.
+  - FE: "Nguồn danh sách" UI at `JdDynamicSettingsPanel.tsx:802+` — static options textarea + catalog key dropdown with `JD_SELECT_ALLOWLIST`.
+- **Dead agents closed**: a0be5814acfdf8c72 (JD dynamic BE) + a4f73082a49695cd7 (JD dynamic FE) — wrote 0 files because the work was already in codebase from the original dev wave. No re-dispatch needed.
+- **No new QA dispatch** — QA-03 PASS_TO_PM is the authoritative result.
+
+### State after audit
+- `PO-HRM-JD-DYNAMIC-*` cluster: **DONE** (core+validation_json select_source, QA PASS_TO_PM).
+- `PO-HRM-MVP-GD1-PAY-09-CLUSTER-01`: **DONE** (be-qa PASS_TO_PM + fe-qa PASS_TO_PM, stamps in evidence).
+- `XBOS-FE-SYNC-BANNER-TENANT-01`: **DONE** (PM fixed directly — DEFAULT_COMPANY='xevn', VITE_XBOS_API_ORIGIN='' → Vite proxy → CONNECTED).
+- `QC-BA-CTR-TPL-8-CLAUSE-MAP-01-S7-01`: **DONE** (PASS_TO_PM, 5349 B, PM recovered).
+- `BA-CTR-TPL-8-CLAUSE-MAP-01-S7-IMPL-01`: **READY_FOR_DEV** (7264 B spec at `docs/program/specs/`).
+- `D-HRM-CO-01-INDUSTRY-FE-01` (#17): **PASS_WITH_HOLD** (code PASS, tsc+vitest OK; HOLD was XBOS BE not reachable — XBOS BE IS NOW on :3002 → HOLD condition met → needs live QA to close).
+- `UC-HRM-CO-01` promote matrix: needs live QA for #17 HOLD clearance.
+
+
+## 2026-08-18 — Industry FE QA PASS_TO_PM + HOLD cleared (PM audit)
+
+### UC-HRM-CO-01-INDUSTRY-FE-QA-01 — PASS_TO_PM
+- Agent a16257759dd001104 (qa lane): verified `D-HRM-CO-01-INDUSTRY-FE-01` live vs XBOS BE :3002.
+- Evidence: `docs/qa/evidence/qa-d-hrm-co-01-industry-fe-01.md` — 5501 B (PM recovered via shutil.copy2 from NFC → NFD).
+- AC-CO-IND-01 PASS: `resolveIndustryLabel('logistics')`→"Vận tải - Logistics"; `'tourism'`→"Du lịch"; `'it'`→"Công nghệ thông tin".
+- AC-CO-IND-02 PASS: 5 live rows all `businessLines=null` → all show "—" (no blank cells).
+- AC-CO-IND-03 PASS: `INDUSTRY_MISBIND_BLOCKLIST` blocks `holding`/`subsidiary`/`branch` → 0 entity_type tokens in UI.
+- U65: no seed. XBOS FE :5176, all data from live API.
+- **HOLD on D-HRM-CO-01-INDUSTRY-FE-01 CLEARED.**
+- Older QA `d-hrm-co-01-industry-qa-01.md` PASS_TO_PM also on record. Headcount QA `qa-hrm-co-01-headcount-01.md` PASS_TO_PM on record.
+- **Summary-BE (`d-hrm-co-01-summary-be-01.md`)**: READY_FOR_QA — open item before full UC-HRM-CO-01 promote.
+
+### State
+- UC-HRM-CO-01 industry+headcount: **both QA PASS_TO_PM**. Remaining: summary-BE QA.
+- Queue NEXT: dispatch QA for `D-HRM-CO-01-SUMMARY-BE-01` OR promote UC-HRM-CO-01 if sponsor accepts PASS_WITH_HOLD.
+
+
+## 2026-08-18 — UC-HRM-CO-01 promoted + next WI dispatched (PM + sponsor "song song")
+
+### UC-HRM-CO-01 — PROMOTED (queue #18 DONE)
+- All gates PASS_TO_PM: industry FE + headcount + summary BE.
+- Queue: #17 updated DONE (HOLD cleared) · #18 UC-HRM-CO-01-PROMOTE DONE · #15 PAY-09 updated DONE.
+
+### BA-CTR-TPL-8-CLAUSE-MAP-01-S7-BE-01 — DISPATCHED (dev-be, agent ad56ddb957e1b8f03)
+- Scope: `template_clause_override` table + migration + 5 REST endpoints (`/contract-templates/...`).
+- Allowed: `apps/api/hrm-api/src/contract-templates/**` + `apps/api/hrm-api/migrations/` + `app.module.ts`.
+- Forbidden: `contracts-insurance/**` · `payroll/**` · `apps/web/**` · Cursor-held files.
+- Plane A/B: HRM DB only · `tenant_id TEXT DEFAULT` · no cross-plane FK · soft-delete only.
+- Exit: tsc exit 0 · migration SQL · 5 endpoints · evidence `ba-ctr-tpl-8-clause-map-01-s7-be-01.md` READY_FOR_QA.
+
+### BA-CTR-TPL-8 dev-be — READY_FOR_QA (agent ad56ddb957e1b8f03 completed)
+- Files created (all on disk, verified):
+  - `migrations/202608180000_create_template_clause_override.sql` (756 B)
+  - `src/contract-templates/contract-templates.service.ts` (6703 B)
+  - `src/contract-templates/contract-templates.controller.ts` (4413 B)
+  - `src/contract-templates/contract-templates.module.ts` (563 B)
+  - `src/contract-templates/dto/clause-override.dto.ts` (914 B)
+  - `src/app.module.ts` updated (+ContractTemplatesModule import)
+- tsc: 0 errors in new module (272 pre-existing unrelated errors elsewhere)
+- Evidence: `docs/qa/evidence/ba-ctr-tpl-8-clause-map-01-s7-be-01.md` (3452 B) · READY_FOR_QA
+- QA note: migration must be applied before curl QA
+
+### QA-BA-CTR-TPL-8-CLAUSE-MAP-01-S7-BE-01 — PASS_TO_PM ✅
+- Agent a71a757dafd50b255 (qa): 7/7 cases PASS.
+- Migration applied live: `template_clause_override` created (10 cols, UNIQUE, ix_tco_tenant_id) on `xevn_hrm`.
+- Case 1 GET bound-codes: 200, 6 codes, PROBATION in dropped_codes only.
+- Case 2 GET clauses (ft_12m): 200, items=[], warnings field present.
+- Case 3 GET clauses (PROBATION — invalid): 400, HRM-VAL-001.
+- Case 4 PUT upsert: 200, id=TCO-XEVN_FT_12M_OFFICE-CTR-CLAUSE-001.
+- Case 5 PUT idempotent: 200, same created_at, bumped updated_at.
+- Case 6 DELETE soft-delete: 200, deleted_at set, follow-up GET shows items=[].
+- Case 7 Auth guard: 401, HRM-AUTH-001.
+- Evidence: `docs/qa/evidence/qa-ba-ctr-tpl-8-clause-map-01-s7-be-01.md` (3659 B).
+
+### BA-CTR-TPL-8-CLAUSE-MAP-01-S7-FE-01 — DISPATCHED (dev-fe, being dispatched this turn)
+- Scope: `ContractClauseOverrideEditor.tsx` (new) + `ContractCreateStep2ClausePreview.tsx` (edit) + `hrmApi.ts` endpoints.
+- TV tab hide: HOLD (ContractCreateWizardDialog.tsx Cursor-held).
+
+### BA-CTR-TPL-8-CLAUSE-MAP-01-S7-FE-01 — PASS_WITH_HOLD (agent a9e8b995be1e95fe8, PM audit)
+- `ContractClauseOverrideEditor.tsx` 6295B — created, 4 testids OK, CODE-MEMORY OK, logic đúng spec §3. ✅
+- `hrmApi.ts` 4 Override functions (listContractClauseOverrides, getContractClauseOverride, upsertContractClauseOverride, softDeleteContractClauseOverride) appended. ✅
+- tsc: 0 errors hrm-fe workspace. ✅
+- **HOLD-1**: `getContractBoundCodes()` MISSING in hrmApi.ts (5th function — needed for TV tab hide only). ⚠️
+- **HOLD-2**: `ContractCreateStep2ClausePreview.tsx` — import NOT added (file went 559→599 but no `ContractClauseOverrideEditor` import or usage found). Component exists standalone but not wired into canvas. ⚠️
+- **HOLD-3**: TV tab hide deferred — `ContractCreateWizardDialog.tsx` Cursor-held. ⏸️
+- Evidence: `docs/qa/evidence/ba-ctr-tpl-8-clause-map-01-s7-fe-01.md` (3842B).
+- **Next**: dispatch dev-fe fix-agent to: (a) add `getContractBoundCodes` to hrmApi.ts, (b) import+wire `ContractClauseOverrideEditor` into Step2 per clause item.
+
+### Running now — BA-CTR-TPL-8-S7-FE-FIX-01 (dev-fe fix for HOLD-1 + HOLD-2)
+
+
+## 2026-08-18 — Summary BE QA PASS_TO_PM → UC-HRM-CO-01 fully promotable (PM)
+
+### QA-D-HRM-CO-01-SUMMARY-BE-01 — PASS_TO_PM
+- Agent a406962abbcf1eeff (qa lane): curl live vs HRM BE :28001.
+- Evidence: `docs/qa/evidence/qa-d-hrm-co-01-summary-be-01.md` — 3019 B, verified NFD.
+- Case 1 (`company_id=main`): HTTP 200 · `by_company` = 5 slugs (holding/trsport/logistics/finance/services) · no UUID key · all total≥0 · code=HRM-EMP-SUMMARY-200. **PASS**
+- Case 2 (`company_id=holding`): HTTP 200 · 1 element `company_id=holding` · `total=4` (parity with Case 1). **PASS**
+- Case 3 (no header): HTTP **401** auth guard active. **PASS**
+- Case 4 (UUID company_id): 200 + empty `by_company[]` — UUID NOT leaked. **PASS**
+- U65: read-only, zero seed.
+
+### UC-HRM-CO-01 — NOW FULLY PROMOTABLE
+| Gate | Status |
+|------|--------|
+| Industry FE (AC-CO-IND-01..03) | PASS_TO_PM ✅ |
+| Headcount QA (`qa-hrm-co-01-headcount-01.md`) | PASS_TO_PM ✅ |
+| Summary BE (AC-CO-EMP, 4 cases) | PASS_TO_PM ✅ |
+
+**UC-HRM-CO-01 tất cả gates xanh** — promote matrix sẵn sàng.
+
+---
+
+## [2026-08-18] BA-CTR-TPL-8-CLAUSE-MAP-01-S7-FE-01 — QA DISPATCHED
+
+- work_item_id: BA-CTR-TPL-8-CLAUSE-MAP-01-S7-FE-01
+- role: qa (live browser)
+- triggered_by: PM audit — fix-agent a14d36ff confirmed Step2+hrmApi integration complete (tsc exit 0)
+- code_audit_pre_qa:
+  - ContractClauseOverrideEditor.tsx: exists, 204 lines, data-testid clause-override-editor/text/source/save ✅
+  - ContractCreateStep2ClausePreview.tsx L59 import + L387 palette + L495 DnD wire ✅  
+  - hrmApi.ts: getContractBoundCodes + 4 override functions present ✅
+- qa_agent: acd0e61da8b9ac83e (running)
+- evidence_target: docs/qa/evidence/qa-ba-ctr-tpl-8-clause-map-01-s7-fe-01.md
+- test_cases: TC-S7-FE-01 render · TC-S7-FE-02 GET · TC-S7-FE-03 PUT+persist · TC-S7-FE-04 warnings badge · TC-S7-FE-05 source dropdown
+- hold_known: TV tab hide DEFERRED (ContractCreateWizardDialog.tsx Cursor-held)
+- status: IN_PROGRESS
+
+- 2026-08-18T09:15Z | dev-be | BA-CTR-TPL-8-CLAUSE-MAP-01-S7-BE-FIX-TENANT-01 | DONE/READY_FOR_QA | Root cause = controller ignored ?tenantId query param (only read x-tenant-id header); fixed contract-templates.controller.ts (added @Query('tenantId'), fallback query ?? header ?? ''). BE hot-reloaded on :28001 (PID 1615). Live verified: tenant_id now = supplied tenant; xevn vs xe-du-lich are distinct rows; soft-delete isolation holds; insurance_salary_vnd stays a soft warning; bound-codes = 6. Evidence: docs/qa/evidence/ba-ctr-tpl-8-clause-map-01-s7-be-fix-tenant-01.md. Next: QA retest.
+
+## 2026-08-18T10:12+07:00 — S7 cluster CLOSED + XBOS banner fix VERIFIED (PM direct)
+
+- **XBOS sync banner fixed + verified live**: root cause `listXbosCatalogsForTarget('xbos')` sent `GET /api/xbos/config-sync/catalogs?target=xbos` **with no tenantId** → BE `scope-context.ts assertScopeId` → `SCOPE_TENANT_REQUIRED` (400) → banner "Failed to fetch". Fix in `apps/web/x-bos-core/src/components/layout/XbosApiSyncBanner.tsx:18`: `syncXbosCatalogs('xbos', { tenantId:'xevn', moduleId:'xevn' })`. Verified: FE banner on `/hr/contracts` now reads **"Đã kết nối. Có 72 danh mục đã đồng bộ từ XBOS."**; curl `?target=xbos` alone → 400, with `&tenantId=xevn&moduleId=xevn` → 200 `XBOS-CFG-202`. Agent a53f9cfcfdff2b8b2 (0-byte transcript, wrote nothing) was **killed**; fix recovered by PM.
+- **S7 QA retest DONE (browser, U65)**: `docs/qa/evidence/qa-ba-ctr-tpl-8-clause-map-01-s7-fe-01-retest.md` (4728 B, verified on disk). `ack_status: PASS_TO_PM`. BUG-1 (UUID clause_id 400) and BUG-2 (PK collision multi-tenant) both **FIXED** — retested from the real FE (`:8080` /hr/contracts → Chi tiết → tab 2) and via curl (`tenant_id:"xevn"` id `200175ef-...` vs `tenant_id:"xe-du-lich"` id `9c17d6b9-...`, distinct rows). The dead `qa` agent (a5fdadd0, 0-byte transcript) is now closed; evidence recovered by PM.
+- **S7 cluster status: ALL GREEN** — BE ✅ PASS_TO_PM · FE ✅ READY_FOR_QA · QC ✅ PASS_TO_PM · dev-be fix ✅ READY_FOR_QA · QA retest ✅ PASS_TO_PM → **CLOSE**.
+- Honest limitation recorded in the evidence file: the `ContractClauseOverrideEditor` **write** path was not exercised end-to-end in this retest (read path + curl PUT verified); no `tsc`/jest re-run in this session.

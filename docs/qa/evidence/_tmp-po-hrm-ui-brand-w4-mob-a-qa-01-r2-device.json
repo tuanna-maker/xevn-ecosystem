@@ -1,0 +1,165 @@
+{
+  "log": [
+    {
+      "t": "2026-08-05T08:29:42.188Z",
+      "msg": "start",
+      "work_item_id": "PO-HRM-UI-BRAND-W4-MOB-A-QA-01-R2",
+      "serial": "emulator-5554",
+      "EMAIL": "uat.nv0001@xe.vn",
+      "API_HOST": "http://14.225.217.232:3001",
+      "EMU_API": "http://14.225.217.232:3001"
+    },
+    {
+      "t": "2026-08-05T08:29:42.294Z",
+      "msg": "case",
+      "id": "ENV-ADB",
+      "verdict": "PASS",
+      "evidence": "adb",
+      "detail": "List of devices attached\r; emulator-5554\tdevice"
+    },
+    {
+      "t": "2026-08-05T08:29:42.418Z",
+      "msg": "case",
+      "id": "L0-HRM",
+      "verdict": "PASS",
+      "evidence": "qc:fe-be-health",
+      "detail": "200"
+    },
+    {
+      "t": "2026-08-05T08:30:00.972Z",
+      "msg": "case",
+      "id": "MOB-01-login-chrome",
+      "verdict": "PASS",
+      "evidence": "login-0.png",
+      "detail": "branded-login-card=true login-email=true"
+    },
+    {
+      "t": "2026-08-05T08:30:31.731Z",
+      "msg": "ui-login-fail",
+      "err": "UI login did not reach home"
+    },
+    {
+      "t": "2026-08-05T08:30:31.932Z",
+      "msg": "case",
+      "id": "MOB-04-api-login-probe",
+      "verdict": "PASS",
+      "evidence": "api",
+      "detail": "status=201"
+    },
+    {
+      "t": "2026-08-05T08:31:09.371Z",
+      "msg": "case",
+      "id": "J-MOB-01-login-home",
+      "verdict": "PARTIAL",
+      "evidence": "deeplink-home.png",
+      "detail": "UI fail → qa-login deep link; base=http://14.225.217.232:3001"
+    },
+    {
+      "t": "2026-08-05T08:31:15.639Z",
+      "msg": "case",
+      "id": "J-MOB-01-home-brand-testIDs",
+      "verdict": "PASS",
+      "evidence": "home-brand.png",
+      "detail": "home-top-bar-brand-accent=true dashboard-attendance-brand-bar=true"
+    },
+    {
+      "t": "2026-08-05T08:31:21.065Z",
+      "msg": "case",
+      "id": "J-MOB-02-FAB-sheet",
+      "verdict": "PASS",
+      "evidence": "fab-sheet.png",
+      "detail": "fab-primary-action-sheet=true"
+    },
+    {
+      "t": "2026-08-05T08:31:27.702Z",
+      "msg": "case",
+      "id": "J-MOB-02-checkin-channels",
+      "verdict": "PARTIAL",
+      "evidence": "checkin-screen.png",
+      "detail": "check-in-channel-gps=false"
+    },
+    {
+      "t": "2026-08-05T08:31:27.703Z",
+      "msg": "case",
+      "id": "MOB-04b-face-honesty",
+      "verdict": "PARTIAL",
+      "evidence": "checkin-screen.png",
+      "detail": "Face channel control not tapped"
+    },
+    {
+      "t": "2026-08-05T08:31:44.929Z",
+      "msg": "case",
+      "id": "MOB-04-gps-post-2xx",
+      "verdict": "PARTIAL",
+      "evidence": "gps-after-submit.png",
+      "detail": "logcat_attendance=false ui_ok=Chấm công|Hôm nay · 05/08/2026|NA|Nguyễn Văn An|Mã nhân viên|HLD-0001|Phương thức chấm công|"
+    }
+  ],
+  "cases": [
+    {
+      "id": "ENV-ADB",
+      "verdict": "PASS",
+      "evidence": "adb",
+      "detail": "List of devices attached\r; emulator-5554\tdevice"
+    },
+    {
+      "id": "L0-HRM",
+      "verdict": "PASS",
+      "evidence": "qc:fe-be-health",
+      "detail": "200"
+    },
+    {
+      "id": "MOB-01-login-chrome",
+      "verdict": "PASS",
+      "evidence": "login-0.png",
+      "detail": "branded-login-card=true login-email=true"
+    },
+    {
+      "id": "MOB-04-api-login-probe",
+      "verdict": "PASS",
+      "evidence": "api",
+      "detail": "status=201"
+    },
+    {
+      "id": "J-MOB-01-login-home",
+      "verdict": "PARTIAL",
+      "evidence": "deeplink-home.png",
+      "detail": "UI fail → qa-login deep link; base=http://14.225.217.232:3001"
+    },
+    {
+      "id": "J-MOB-01-home-brand-testIDs",
+      "verdict": "PASS",
+      "evidence": "home-brand.png",
+      "detail": "home-top-bar-brand-accent=true dashboard-attendance-brand-bar=true"
+    },
+    {
+      "id": "J-MOB-02-FAB-sheet",
+      "verdict": "PASS",
+      "evidence": "fab-sheet.png",
+      "detail": "fab-primary-action-sheet=true"
+    },
+    {
+      "id": "J-MOB-02-checkin-channels",
+      "verdict": "PARTIAL",
+      "evidence": "checkin-screen.png",
+      "detail": "check-in-channel-gps=false"
+    },
+    {
+      "id": "MOB-04b-face-honesty",
+      "verdict": "PARTIAL",
+      "evidence": "checkin-screen.png",
+      "detail": "Face channel control not tapped"
+    },
+    {
+      "id": "MOB-04-gps-post-2xx",
+      "verdict": "PARTIAL",
+      "evidence": "gps-after-submit.png",
+      "detail": "logcat_attendance=false ui_ok=Chấm công|Hôm nay · 05/08/2026|NA|Nguyễn Văn An|Mã nhân viên|HLD-0001|Phương thức chấm công|"
+    }
+  ],
+  "loginMethod": "qa-deep-link-fallback",
+  "ack": "PASS_TO_PM",
+  "face_live": false,
+  "remaster_program_done": false,
+  "seed": false
+}

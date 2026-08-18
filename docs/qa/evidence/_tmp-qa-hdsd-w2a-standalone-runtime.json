@@ -1,0 +1,813 @@
+{
+  "work_item_id": "QA-HDSD-W2A-STANDALONE-01",
+  "program": "HDSD-P2-FULL-01",
+  "entry": "standalone",
+  "baseUrl": "http://127.0.0.1:5175",
+  "startedAt": "2026-07-30T15:02:23.078Z",
+  "env": {
+    "HRM": "http://127.0.0.1:5175",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed"
+  },
+  "l0": {
+    "hrm-api": {
+      "ok": true,
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "hrm-standalone": {
+      "ok": true,
+      "status": 200,
+      "url": "http://127.0.0.1:5175/"
+    },
+    "hrm-employees": {
+      "ok": true,
+      "status": 200,
+      "url": "http://127.0.0.1:5175/hr/employees"
+    }
+  },
+  "tc": [
+    {
+      "id": "TC-HRM-HDSD-004",
+      "legacyId": "TC-ECO-03-standalone",
+      "verdict": "🟢",
+      "detail": "Standalone login → http://127.0.0.1:5175/hr; loginAPI=201; token=true",
+      "at": "2026-07-30T15:02:34.048Z",
+      "entry": "standalone",
+      "clickPath": "http://127.0.0.1:5175/hr/login → Đăng nhập",
+      "uf": "UF-HRM-MENU-01"
+    },
+    {
+      "id": "TC-HRM-HDSD-006",
+      "legacyId": "TC-HDSD-05-01-01",
+      "verdict": "🟡",
+      "detail": "CH05 §5.1 Danh sách NV GET=200 url=http://127.0.0.1:5175/hr/employees scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:02:37.546Z",
+      "entry": "standalone",
+      "clickPath": "CH05 §5.1 Danh sách NV",
+      "uf": "UF-HRM-01",
+      "route": "http://127.0.0.1:5175/hr/employees"
+    },
+    {
+      "id": "TC-HRM-HDSD-026",
+      "legacyId": "TC-HDSD-05-02-01",
+      "verdict": "🟡",
+      "detail": "CH05 §5.2 list→detail J-HRM-01 GET=200 url=http://127.0.0.1:5175/hr/employees scope409=/api/hrm/catalog-sync clickRow=false detailGET=none J-HRM-01",
+      "at": "2026-07-30T15:02:44.509Z",
+      "entry": "standalone",
+      "clickPath": "CH05 §5.2 list→detail J-HRM-01",
+      "uf": "UF-HRM-01",
+      "route": "http://127.0.0.1:5175/hr/employees"
+    },
+    {
+      "id": "TC-HRM-HDSD-016",
+      "legacyId": "TC-HDSD-05-03-01",
+      "verdict": "🟡",
+      "detail": "CH05 §5.3 Tạo NV GET=200 url=http://127.0.0.1:5175/hr/employees scope409=/api/hrm/catalog-sync createForm=true · mutate BLOCKED U65 (form-only OK)",
+      "at": "2026-07-30T15:02:49.460Z",
+      "entry": "standalone",
+      "clickPath": "CH05 §5.3 Tạo NV",
+      "uf": "UF-HRM-03",
+      "route": "http://127.0.0.1:5175/hr/employees"
+    },
+    {
+      "id": "TC-HRM-HDSD-022",
+      "legacyId": "TC-HDSD-05-04-01",
+      "verdict": "🟡",
+      "detail": "CH05 §5.4 Sửa NV GET=200 url=http://127.0.0.1:5175/hr/employees scope409=/api/hrm/catalog-sync empty — BLOCKED mutate",
+      "at": "2026-07-30T15:02:52.761Z",
+      "entry": "standalone",
+      "clickPath": "CH05 §5.4 Sửa NV",
+      "uf": "UF-HRM-03",
+      "route": "http://127.0.0.1:5175/hr/employees"
+    },
+    {
+      "id": "TC-HRM-HDSD-036",
+      "legacyId": "TC-HDSD-06-01-01",
+      "verdict": "🟡",
+      "detail": "CH06 §6.1 HĐ list GET=200 url=http://127.0.0.1:5175/hr/contracts scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:02:56.167Z",
+      "entry": "standalone",
+      "clickPath": "CH06 §6.1 HĐ list",
+      "uf": "UF-HRM-04",
+      "route": "http://127.0.0.1:5175/hr/contracts"
+    },
+    {
+      "id": "TC-HRM-HDSD-042",
+      "legacyId": "TC-HDSD-06-02-01",
+      "verdict": "🟡",
+      "detail": "CH06 §6.2 Tạo HĐ GET=200 url=http://127.0.0.1:5175/hr/contracts scope409=/api/hrm/catalog-sync createForm=true · mutate BLOCKED U65 (form-only OK)",
+      "at": "2026-07-30T15:03:01.020Z",
+      "entry": "standalone",
+      "clickPath": "CH06 §6.2 Tạo HĐ",
+      "uf": "UF-HRM-05",
+      "route": "http://127.0.0.1:5175/hr/contracts"
+    },
+    {
+      "id": "TC-HRM-HDSD-048",
+      "legacyId": "TC-HDSD-06-03-01",
+      "verdict": "🟡",
+      "detail": "CH06 §6.3 BHXH GET=200 url=http://127.0.0.1:5175/hr/insurance scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:04.405Z",
+      "entry": "standalone",
+      "clickPath": "CH06 §6.3 BHXH",
+      "uf": "UF-HRM-06",
+      "route": "http://127.0.0.1:5175/hr/insurance"
+    },
+    {
+      "id": "TC-HRM-HDSD-052",
+      "legacyId": "TC-HDSD-06-04-01",
+      "verdict": "🟡",
+      "detail": "CH06 §6.4 BHXH hết hạn GET=200 url=http://127.0.0.1:5175/hr/insurance scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:07.689Z",
+      "entry": "standalone",
+      "clickPath": "CH06 §6.4 BHXH hết hạn",
+      "uf": "UF-HRM-06",
+      "route": "http://127.0.0.1:5175/hr/insurance"
+    },
+    {
+      "id": "TC-HRM-HDSD-054",
+      "legacyId": "TC-HDSD-07-01-01",
+      "verdict": "🟡",
+      "detail": "CH07 §7.1 YCTD list GET=200 url=http://127.0.0.1:5175/hr/recruitment scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:10.976Z",
+      "entry": "standalone",
+      "clickPath": "CH07 §7.1 YCTD list",
+      "uf": "UF-HRM-07",
+      "route": "http://127.0.0.1:5175/hr/recruitment"
+    },
+    {
+      "id": "TC-HRM-HDSD-058",
+      "legacyId": "TC-HDSD-07-02-01",
+      "verdict": "🟡",
+      "detail": "CH07 §7.2 Tạo YCTD GET=200 url=http://127.0.0.1:5175/hr/recruitment scope409=/api/hrm/catalog-sync createForm=true · mutate BLOCKED U65 (form-only OK)",
+      "at": "2026-07-30T15:03:15.801Z",
+      "entry": "standalone",
+      "clickPath": "CH07 §7.2 Tạo YCTD",
+      "uf": "UF-HRM-07",
+      "route": "http://127.0.0.1:5175/hr/recruitment"
+    },
+    {
+      "id": "TC-HRM-HDSD-064",
+      "legacyId": "TC-HDSD-07-03-01",
+      "verdict": "🟡",
+      "detail": "CH07 §7.3 Pipeline GET=200 url=http://127.0.0.1:5175/hr/recruitment scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:19.082Z",
+      "entry": "standalone",
+      "clickPath": "CH07 §7.3 Pipeline",
+      "uf": "UF-HRM-07",
+      "route": "http://127.0.0.1:5175/hr/recruitment"
+    },
+    {
+      "id": "TC-HRM-HDSD-072",
+      "legacyId": "TC-HDSD-08-01-01",
+      "verdict": "🟡",
+      "detail": "CH08 §8.1 Bảng CC GET=200 url=http://127.0.0.1:5175/hr/attendance scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:22.374Z",
+      "entry": "standalone",
+      "clickPath": "CH08 §8.1 Bảng CC",
+      "uf": "UF-HRM-08",
+      "route": "http://127.0.0.1:5175/hr/attendance"
+    },
+    {
+      "id": "TC-HRM-HDSD-078",
+      "legacyId": "TC-HDSD-08-02-01",
+      "verdict": "🟡",
+      "detail": "CH08 §8.2 Đơn nghỉ GET=200 url=http://127.0.0.1:5175/hr/attendance scope409=/api/hrm/catalog-sync · leave mutate known BE 400 — load-only",
+      "at": "2026-07-30T15:03:26.894Z",
+      "entry": "standalone",
+      "clickPath": "CH08 §8.2 Đơn nghỉ",
+      "uf": "UF-HRM-09",
+      "route": "http://127.0.0.1:5175/hr/attendance"
+    },
+    {
+      "id": "TC-HRM-HDSD-084",
+      "legacyId": "TC-HDSD-08-03-01",
+      "verdict": "🟡",
+      "detail": "CH08 §8.3 Công chuẩn GET=200 url=http://127.0.0.1:5175/hr/attendance scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:30.230Z",
+      "entry": "standalone",
+      "clickPath": "CH08 §8.3 Công chuẩn",
+      "uf": "UF-HRM-08",
+      "route": "http://127.0.0.1:5175/hr/attendance"
+    },
+    {
+      "id": "TC-HRM-HDSD-089",
+      "legacyId": "TC-HDSD-09-01-01",
+      "verdict": "🟡",
+      "detail": "CH09 §9.1 Kỳ lương GET=200 url=http://127.0.0.1:5175/hr/payroll scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:33.538Z",
+      "entry": "standalone",
+      "clickPath": "CH09 §9.1 Kỳ lương",
+      "uf": "UF-HRM-10",
+      "route": "http://127.0.0.1:5175/hr/payroll"
+    },
+    {
+      "id": "TC-HRM-HDSD-094",
+      "legacyId": "TC-HDSD-09-02-01",
+      "verdict": "🟡",
+      "detail": "CH09 §9.2 Phiếu lương GET=200 url=http://127.0.0.1:5175/hr/payroll scope409=/api/hrm/catalog-sync clickRow=false detailGET=none J-HRM-01 drill=payslip",
+      "at": "2026-07-30T15:03:40.362Z",
+      "entry": "standalone",
+      "clickPath": "CH09 §9.2 Phiếu lương",
+      "uf": "UF-HRM-11",
+      "route": "http://127.0.0.1:5175/hr/payroll"
+    },
+    {
+      "id": "TC-HRM-HDSD-099",
+      "legacyId": "TC-HDSD-09-03-01",
+      "verdict": "🟡",
+      "detail": "CH09 §9.3 Đối soát GET=200 url=http://127.0.0.1:5175/hr/payroll scope409=/api/hrm/catalog-sync drill=reconciliation",
+      "at": "2026-07-30T15:03:45.119Z",
+      "entry": "standalone",
+      "clickPath": "CH09 §9.3 Đối soát",
+      "uf": "UF-HRM-11",
+      "route": "http://127.0.0.1:5175/hr/payroll"
+    },
+    {
+      "id": "TC-HRM-HDSD-106",
+      "legacyId": "TC-HDSD-10-01-01",
+      "verdict": "🔴",
+      "detail": "CH10 §10.1 Headcount GET=200 url=http://127.0.0.1:5175/hr/company scope409=/api/hrm/catalog-sync summaryAPI=409",
+      "at": "2026-07-30T15:03:48.939Z",
+      "entry": "standalone",
+      "clickPath": "CH10 §10.1 Headcount",
+      "uf": "UF-HRM-MENU-15",
+      "route": "http://127.0.0.1:5175/hr/company"
+    },
+    {
+      "id": "TC-HRM-HDSD-118",
+      "legacyId": "TC-HDSD-10-02-01",
+      "verdict": "🟡",
+      "detail": "CH10 §10.2 Quyết định GET=200 url=http://127.0.0.1:5175/hr/decisions scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:52.768Z",
+      "entry": "standalone",
+      "clickPath": "CH10 §10.2 Quyết định",
+      "uf": "UF-HRM-MENU-05",
+      "route": "http://127.0.0.1:5175/hr/decisions"
+    },
+    {
+      "id": "TC-HRM-HDSD-124",
+      "legacyId": "TC-HDSD-10-03-01",
+      "verdict": "🟡",
+      "detail": "CH10 §10.3 Công việc GET=200 url=http://127.0.0.1:5175/hr/tasks scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:56.104Z",
+      "entry": "standalone",
+      "clickPath": "CH10 §10.3 Công việc",
+      "uf": "UF-HRM-MENU-05",
+      "route": "http://127.0.0.1:5175/hr/tasks"
+    },
+    {
+      "id": "TC-HRM-HDSD-130",
+      "legacyId": "TC-HDSD-10-04-01",
+      "verdict": "🟡",
+      "detail": "CH10 §10.4 DVC GET=200 url=http://127.0.0.1:5175/hr/internal-services scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:59.367Z",
+      "entry": "standalone",
+      "clickPath": "CH10 §10.4 DVC",
+      "uf": "UF-HRM-MENU-05",
+      "route": "http://127.0.0.1:5175/hr/internal-services"
+    },
+    {
+      "id": "TC-HRM-HDSD-136",
+      "legacyId": "TC-HDSD-10-05-01",
+      "verdict": "🟡",
+      "detail": "CH10 §10.5 Quy trình GET=200 url=http://127.0.0.1:5175/hr/processes scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:04:02.691Z",
+      "entry": "standalone",
+      "clickPath": "CH10 §10.5 Quy trình",
+      "uf": "UF-HRM-MENU-05",
+      "route": "http://127.0.0.1:5175/hr/processes"
+    },
+    {
+      "id": "TC-HRM-HDSD-142",
+      "legacyId": "TC-HDSD-10-06-01",
+      "verdict": "🟡",
+      "detail": "CH10 §10.6 Fleet GET=200 url=http://127.0.0.1:5175/hr/fleet scope409=/api/hrm/settings-catalogs",
+      "at": "2026-07-30T15:04:06.086Z",
+      "entry": "standalone",
+      "clickPath": "CH10 §10.6 Fleet",
+      "uf": "UF-HRM-MENU-05",
+      "route": "http://127.0.0.1:5175/hr/fleet"
+    },
+    {
+      "id": "TC-HRM-HDSD-147",
+      "legacyId": "TC-HDSD-11-01-01",
+      "verdict": "🔴",
+      "detail": "CH11 §11.1 Settings catalogs GET=200 url=http://127.0.0.1:5175/hr/settings scope409=/api/hrm/catalog-sync catalogSync=none",
+      "at": "2026-07-30T15:04:09.459Z",
+      "entry": "standalone",
+      "clickPath": "CH11 §11.1 Settings catalogs",
+      "uf": "UF-HRM-12",
+      "route": "http://127.0.0.1:5175/hr/settings"
+    },
+    {
+      "id": "TC-HRM-HDSD-162",
+      "legacyId": "TC-HDSD-11-02-01",
+      "verdict": "🟡",
+      "detail": "CH11 §11.2 Báo cáo GET=200 url=http://127.0.0.1:5175/hr/reports scope409=/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:04:12.791Z",
+      "entry": "standalone",
+      "clickPath": "CH11 §11.2 Báo cáo",
+      "uf": "UF-HRM-13",
+      "route": "http://127.0.0.1:5175/hr/reports"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 401,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:02:25.673Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/auth/mobile/login",
+      "at": "2026-07-30T15:02:28.864Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:02:29.045Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:02:29.154Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/operations/reports/summary?company_id=main",
+      "at": "2026-07-30T15:02:29.411Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/employees/summary?company_id=main",
+      "at": "2026-07-30T15:02:29.418Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/contracts-insurance/contracts/expiring?company_id=main&days=30",
+      "at": "2026-07-30T15:02:29.418Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-07-30T15:02:29.419Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-07-30T15:02:29.419Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T15:02:29.419Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/employees/summary?company_id=main",
+      "at": "2026-07-30T15:02:30.449Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/contracts-insurance/contracts/expiring?company_id=main&days=30",
+      "at": "2026-07-30T15:02:30.449Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-07-30T15:02:30.455Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/employees/summary?company_id=main",
+      "at": "2026-07-30T15:02:32.472Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/contracts-insurance/contracts/expiring?company_id=main&days=30",
+      "at": "2026-07-30T15:02:32.473Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:02:34.592Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:02:34.967Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:02:39.682Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:02:40.462Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:02:44.935Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:02:45.012Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:02:49.720Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:02:49.809Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:02:53.172Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:02:53.331Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:02:56.477Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:02:56.564Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:01.472Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:01.637Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:04.683Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:04.810Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:07.961Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:08.059Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:11.260Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:11.358Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:16.086Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:16.216Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:19.396Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:19.496Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:22.637Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:22.736Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:27.195Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:27.335Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:30.521Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:30.629Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:33.819Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:33.924Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:40.632Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:40.736Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:45.928Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:46.071Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:49.758Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:49.861Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:53.106Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:53.226Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:56.352Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:56.443Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:03:59.675Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:03:59.761Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:04:03.115Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/fleet/vehicles?company_id=main&limit=500",
+      "at": "2026-07-30T15:04:03.237Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T15:04:03.242Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:04:03.263Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/fleet/vehicles?company_id=main&limit=500",
+      "at": "2026-07-30T15:04:04.276Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T15:04:04.279Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:04:06.523Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:04:06.698Z"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T15:04:09.786Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T15:04:09.917Z"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Error fetching attendance overview: ApiClientError: companyId mismatches token scope",
+    "Error fetching payroll payslips: ApiClientError: companyId mismatches token scope",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/w2a-login.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_006.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_026.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_016.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_022.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_036.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_042.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_048.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_052.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_054.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_058.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_064.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_072.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_078.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_084.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_089.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_094.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_099.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_106.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_118.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_124.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_130.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_136.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_142.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_147.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-uat-w2a-20260730/tc_hrm_hdsd_162.png"
+  ],
+  "finishedAt": "2026-07-30T15:04:12.793Z",
+  "summary": {
+    "total": 26,
+    "green": 1,
+    "yellow": 23,
+    "red": 2
+  }
+}

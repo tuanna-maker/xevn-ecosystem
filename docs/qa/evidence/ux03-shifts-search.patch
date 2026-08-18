@@ -1,0 +1,22 @@
+--- a/apps/web/hrm/src/pages/Attendance.tsx
++++ b/apps/web/hrm/src/pages/Attendance.tsx
+@@ -352,6 +352,9 @@
+ } | null>(null);
+ const { toast } = useToast();
+ const { user } = useAuth();
++const [shiftsSearchQuery, setShiftsSearchQuery] = useState('');
++const debouncedShiftsSearch = useDebouncedPickerKeyword(shiftsSearchQuery, 300);
++
+ 
+ // Transform DB data to display format
+ const shiftsData = workShiftsDB.map(s => ({@@ -2430,7 +2433,13 @@
+ <div className="relative flex-1 min-w-[200px] max-w-[300px]">
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+ <Input
+-placeholder={t('attPage.search')}
++placeholder={t('attPage.search')}
++value={shiftsSearchQuery}
++onChange={(e) => setShiftsSearchQuery(e.target.value)}
+ className="pl-10"
+ />
+ </div>

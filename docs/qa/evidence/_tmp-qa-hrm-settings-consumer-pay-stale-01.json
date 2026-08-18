@@ -1,0 +1,67 @@
+{
+  "work_item_id": "QA-HRM-SETTINGS-CONSUMER-PAY-STALE-01",
+  "stamp": "QACONPAYST1-MSNPHVE0",
+  "startedAt": "2026-08-10T20:51:01.863Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0 (pre-run)"
+  },
+  "uf": {
+    "UF-HRM-10": {
+      "verdict": "PASS",
+      "spec_ref": "docs/hrm/SRS.md §16.8 O4 · HRM-SC-02 · UF-HRM-10 consumer",
+      "click_path": "Command Center → HRM Hợp đồng → Tạo HĐ → bước 1",
+      "dept_picker": {
+        "ok": true,
+        "note": "6 options; sample catalog-picker-option-DEPT_01; via ctr-create-department-picker-combobox",
+        "optionCount": 6,
+        "sampleOptionTestId": "catalog-picker-option-DEPT_01",
+        "usedTestId": "ctr-create-department-picker-combobox"
+      },
+      "contract_type_picker": {
+        "ok": true,
+        "note": "5 options; sample catalog-picker-option-HDHV; via hdsd-contracts-form-contract-type",
+        "optionCount": 5,
+        "sampleOptionTestId": "catalog-picker-option-HDHV",
+        "usedTestId": "hdsd-contracts-form-contract-type"
+      },
+      "settings_catalog_gets": [
+        "http://127.0.0.1:5173/api/hrm/settings-catalogs"
+      ],
+      "url": "http://127.0.0.1:5173/command-center/hrm/contracts"
+    }
+  },
+  "journeys": {
+    "J-HRM-PAY-09-01": {
+      "verdict": "PASS",
+      "spec_ref": "FR-UC-BP-PAY-09 · UI-PAYROLL-CLUSTER-EMBED J-HRM-PAY-09-01",
+      "click_path": "Lương → Chính sách → Phân nhóm bảng lương → Tạo nhóm → Lưu",
+      "post": {
+        "status": 201,
+        "id": "717e9c80-b127-4444-859e-35393f5c5807",
+        "code": "Q09CPYNPHVE0"
+      },
+      "row_without_f5": true,
+      "url": "http://127.0.0.1:5173/hr/payroll?portal=1&tenantId=xevn&companyId=main"
+    }
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-hrm-settings-consumer-pay-stale-01/contracts-create-pickers.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-hrm-settings-consumer-pay-stale-01/pay-group-after-create-no-f5.png"
+  ],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "endedAt": "2026-08-10T20:51:14.980Z"
+}

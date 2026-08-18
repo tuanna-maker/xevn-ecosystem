@@ -1,0 +1,538 @@
+{
+  "work_item_id": "PO-HRM-SETTINGS-DEFAULTS-QA-03",
+  "parent": "PO-HRM-SETTINGS-DEFAULTS-FE-01",
+  "resume_chunk": "K6.3",
+  "startedAt": "2026-08-07T12:05:28.542Z",
+  "stamp": "SETDEFQA3-MSIWEG3M",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser-only · FE after 2xx + F5",
+  "hdsd_align": "Settings → Mặc định thuế/BH/PC · Lưu thuế · Tạo BH · Tạo PC · Resolve draft",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed_used": false,
+    "deny_module_settings_uat": true,
+    "deny_amis_done": true,
+    "deny_j_star_promote": true,
+    "deny_fe_formula_invent": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "SI_KEY": "BHXH_QA3_msiweg3m",
+    "POS_KEY": "CEO",
+    "TAX_PERSONAL": 11500000,
+    "TAX_DEPENDENT": 4400000
+  },
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "ac": {
+    "L0-STACK": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:05:28.575Z",
+      "summary": "portal 200 · hrm 200 · xbos 200"
+    },
+    "AC-SETDEF-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:05:35.647Z",
+      "summary": "Clicked settings-tab-settings-defaults"
+    },
+    "AC-SETDEF-PANEL": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:05:35.752Z",
+      "summary": "Panel visible"
+    },
+    "AC-SETDEF-HONESTY": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:05:35.758Z",
+      "summary": "badge=\"payroll_e2e_ready=false\" · expected payroll_e2e_ready=false"
+    },
+    "AC-SETDEF-TAX-SAVE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:05:39.008Z",
+      "summary": "PUT count=4 statuses=200,200,200,200 codes=HRM-SET-TAX-200,HRM-SET-TAX-200,HRM-SET-TAX-200,HRM-SET-TAX-200 firstWait=200"
+    },
+    "AC-SETDEF-TAX-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:07:13.867Z",
+      "summary": "personal=11500000 expect 11500000 · dependent=4400000 expect 4400000"
+    },
+    "AC-SETDEF-SI-CREATE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:07:17.165Z",
+      "summary": "POST ok=true statuses=201/HRM-SET-SI-201 rowVisible=true key=BHXH_QA3_msiweg3m"
+    },
+    "AC-SETDEF-SI-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:08:52.295Z",
+      "summary": "F5 list has BHXH_QA3_msiweg3m=true"
+    },
+    "AC-SETDEF-POS-CREATE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:09:56.842Z",
+      "summary": "catalogOpts=14 picked=PC_RET_AC81 — Retire probe PC_RET_AC81 POST=201/HRM-SET-POS-201 row=true err= wait=201"
+    },
+    "AC-SETDEF-POS-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:11:31.726Z",
+      "summary": "F5 list has CEO=true"
+    },
+    "AC-SETDEF-POS-RESOLVE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:11:33.658Z",
+      "summary": "status=200 code=HRM-SET-POS-200 uiLen=151 inventEmpPkg=false ui=Có chính sách khớp (draft read-only).\n\npolicyId=4309d1f0-8a16-44a0-a13e-9d6a62d22ffe · lines=1 · không ghi employeePackage\n\nPC_RET_AC81: 750000 (fixed)"
+    },
+    "AC-SETDEF-NO-INVENT": {
+      "verdict": "PASS",
+      "at": "2026-08-07T12:11:33.727Z",
+      "summary": "panel honesty copy present=true"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "at": "2026-08-07T12:05:33.638Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-POS-200",
+      "url": "/api/hrm/settings/position-compensation-policies?company_id=main",
+      "at": "2026-08-07T12:05:33.658Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-SI-200",
+      "url": "/api/hrm/settings/insurance-rate-cfg?company_id=main&include_retired=false",
+      "at": "2026-08-07T12:05:33.658Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SC-200",
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T12:05:34.026Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings",
+      "at": "2026-08-07T12:05:36.405Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings",
+      "at": "2026-08-07T12:05:36.427Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings",
+      "at": "2026-08-07T12:05:36.449Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings",
+      "at": "2026-08-07T12:05:36.500Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "at": "2026-08-07T12:05:36.513Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "at": "2026-08-07T12:05:42.332Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-POS-200",
+      "url": "/api/hrm/settings/position-compensation-policies?company_id=main",
+      "at": "2026-08-07T12:05:42.332Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-SI-200",
+      "url": "/api/hrm/settings/insurance-rate-cfg?company_id=main&include_retired=false",
+      "at": "2026-08-07T12:05:42.332Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SC-200",
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T12:05:42.696Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "code": "HRM-SET-SI-201",
+      "url": "/api/hrm/settings/insurance-rate-cfg",
+      "at": "2026-08-07T12:07:14.536Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-SI-200",
+      "url": "/api/hrm/settings/insurance-rate-cfg?company_id=main&include_retired=false",
+      "at": "2026-08-07T12:07:14.566Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "at": "2026-08-07T12:07:20.738Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-SI-200",
+      "url": "/api/hrm/settings/insurance-rate-cfg?company_id=main&include_retired=false",
+      "at": "2026-08-07T12:07:20.739Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-POS-200",
+      "url": "/api/hrm/settings/position-compensation-policies?company_id=main",
+      "at": "2026-08-07T12:07:20.750Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SC-200",
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T12:07:21.103Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "code": "HRM-SET-POS-201",
+      "url": "/api/hrm/settings/position-compensation-policies",
+      "at": "2026-08-07T12:09:24.285Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-POS-200",
+      "url": "/api/hrm/settings/position-compensation-policies?company_id=main",
+      "at": "2026-08-07T12:09:24.294Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SC-200",
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T12:09:24.761Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "at": "2026-08-07T12:10:00.188Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-SI-200",
+      "url": "/api/hrm/settings/insurance-rate-cfg?company_id=main&include_retired=false",
+      "at": "2026-08-07T12:10:00.188Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-POS-200",
+      "url": "/api/hrm/settings/position-compensation-policies?company_id=main",
+      "at": "2026-08-07T12:10:00.189Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SC-200",
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-08-07T12:10:00.553Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-POS-200",
+      "url": "/api/hrm/settings/position-compensation-policies/resolve?company_id=main&positionKey=CEO&asOf=2026-08-07",
+      "at": "2026-08-07T12:11:32.139Z"
+    }
+  ],
+  "networkDetail": [
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "at": "2026-08-07T12:05:33.638Z",
+      "bodySnippet": null
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings",
+      "at": "2026-08-07T12:05:36.405Z",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-TAX-200\",\"message\":\"Company tax setting saved\",\"data\":{\"id\":\"5e60bd88-6e95-46fa-8c17-bcd8d1773967\",\"companyId\":\"holding\",\"settingKey\":\"pay_tax_personal_deduction_vnd\",\"value\":{\"amount\":11500000,\"currency\":\"VND\"},\"archivedAt\":null,\"updatedAt\":\"2026-08-07T12:05:47.757Z\",\"updatedBy\":null},\"timestamp\":\"2026-08-07T12:05:36.399Z\"}"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings",
+      "at": "2026-08-07T12:05:36.427Z",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-TAX-200\",\"message\":\"Company tax setting saved\",\"data\":{\"id\":\"f8691303-f0bb-46cf-a932-fd6f640e667f\",\"companyId\":\"holding\",\"settingKey\":\"pay_tax_dependent_deduction_vnd\",\"value\":{\"amount\":4400000,\"currency\":\"VND\"},\"archivedAt\":null,\"updatedAt\":\"2026-08-07T12:05:47.779Z\",\"updatedBy\":null},\"timestamp\":\"2026-08-07T12:05:36.421Z\"}"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings",
+      "at": "2026-08-07T12:05:36.449Z",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-TAX-200\",\"message\":\"Company tax setting saved\",\"data\":{\"id\":\"0b67b828-2f6c-466e-971e-8b2d281a9d62\",\"companyId\":\"holding\",\"settingKey\":\"pay_tax_regime\",\"value\":{\"code\":\"progressive_vn\"},\"archivedAt\":null,\"updatedAt\":\"2026-08-07T12:05:47.803Z\",\"updatedBy\":null},\"timestamp\":\"2026-08-07T12:05:36.443Z\"}"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings",
+      "at": "2026-08-07T12:05:36.500Z",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-TAX-200\",\"message\":\"Company tax setting saved\",\"data\":{\"id\":\"f6dec405-14a8-4ed6-bb2d-1d385c13c57d\",\"companyId\":\"holding\",\"settingKey\":\"pay_tax_flags\",\"value\":{\"applyPersonalDeduction\":true,\"applyDependentDeduction\":true},\"archivedAt\":null,\"updatedAt\":\"2026-08-07T12:05:47.824Z\",\"updatedBy\":null},\"timestamp\":\"2026-08-07T12:05:36.469Z\"}"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "at": "2026-08-07T12:05:36.513Z",
+      "bodySnippet": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "at": "2026-08-07T12:05:42.332Z",
+      "bodySnippet": null
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "code": "HRM-SET-SI-201",
+      "url": "/api/hrm/settings/insurance-rate-cfg",
+      "at": "2026-08-07T12:07:14.536Z",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-SI-201\",\"message\":\"Insurance rate cfg created\",\"data\":{\"id\":\"0daa0684-d891-44dd-a51b-26b8d34eb6ad\",\"companyId\":\"holding\",\"ouId\":null,\"insuranceTypeKey\":\"BHXH_QA3_msiweg3m\",\"employeeRatePct\":8,\"employerRatePct\":17.5,\"ceilingAmount\":36000000,\"currency\":\"VND\",\"effectiveFrom\":\"2026-08-07\",\"effectiveTo\":null,\"status\":\"active\",\"version\":1,\"supersedesId\":null,\"notes\":\"QA-03 U65 msiweg3m\",\"arc"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "at": "2026-08-07T12:07:20.738Z",
+      "bodySnippet": null
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "code": "HRM-SET-POS-201",
+      "url": "/api/hrm/settings/position-compensation-policies",
+      "at": "2026-08-07T12:09:24.285Z",
+      "bodySnippet": "{\"success\":true,\"code\":\"HRM-SET-POS-201\",\"message\":\"Position compensation policy created\",\"data\":{\"id\":\"4309d1f0-8a16-44a0-a13e-9d6a62d22ffe\",\"companyId\":\"holding\",\"ouId\":null,\"positionKey\":\"CEO\",\"positionLabelSnapshot\":\"Tổng Giám đốc\",\"nameVi\":\"PC QA3 msiweg3m\",\"effectiveFrom\":\"2026-08-07\",\"effectiveTo\":null,\"status\":\"active\",\"archivedAt\":null,\"lines\":[{\"id\":\"0789c2e1-3866-4616-80b3-5e0ac6e1a87d\",\"policyId\":\"4309d1f"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-TAX-200",
+      "url": "/api/hrm/settings/company-settings?company_id=main&prefix=pay_tax_",
+      "at": "2026-08-07T12:10:00.188Z",
+      "bodySnippet": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-SET-POS-200",
+      "url": "/api/hrm/settings/position-compensation-policies/resolve?company_id=main&positionKey=CEO&asOf=2026-08-07",
+      "at": "2026-08-07T12:11:32.139Z",
+      "bodySnippet": null
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-defaults-qa-03/01-tab-defaults.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-defaults-qa-03/02-tax-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-defaults-qa-03/03-tax-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-defaults-qa-03/04-si-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-defaults-qa-03/05-si-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-defaults-qa-03/06-pos-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-defaults-qa-03/07-pos-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-defaults-qa-03/08-pos-resolve.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T12:05:28.632Z",
+      "msg": "loginApi ok"
+    },
+    {
+      "at": "2026-08-07T12:05:29.275Z",
+      "msg": "goto /hr/settings Mặc định thuế/BH/PC"
+    },
+    {
+      "at": "2026-08-07T12:05:35.760Z",
+      "msg": "TAX fill + save"
+    },
+    {
+      "at": "2026-08-07T12:05:39.009Z",
+      "msg": "TAX F5 persist"
+    },
+    {
+      "at": "2026-08-07T12:07:13.990Z",
+      "msg": "SI create"
+    },
+    {
+      "at": "2026-08-07T12:07:17.167Z",
+      "msg": "SI F5"
+    },
+    {
+      "at": "2026-08-07T12:08:52.387Z",
+      "msg": "POS create + catalog PC · positionKey=CEO (job_titles)"
+    },
+    {
+      "at": "2026-08-07T12:09:56.844Z",
+      "msg": "POS F5"
+    },
+    {
+      "at": "2026-08-07T12:11:31.824Z",
+      "msg": "POS resolve SRC-02"
+    }
+  ],
+  "probes": {
+    "honestyBadge": "payroll_e2e_ready=false",
+    "taxPuts": [
+      {
+        "method": "PUT",
+        "status": 200,
+        "code": "HRM-SET-TAX-200",
+        "url": "/api/hrm/settings/company-settings",
+        "at": "2026-08-07T12:05:36.405Z"
+      },
+      {
+        "method": "PUT",
+        "status": 200,
+        "code": "HRM-SET-TAX-200",
+        "url": "/api/hrm/settings/company-settings",
+        "at": "2026-08-07T12:05:36.427Z"
+      },
+      {
+        "method": "PUT",
+        "status": 200,
+        "code": "HRM-SET-TAX-200",
+        "url": "/api/hrm/settings/company-settings",
+        "at": "2026-08-07T12:05:36.449Z"
+      },
+      {
+        "method": "PUT",
+        "status": 200,
+        "code": "HRM-SET-TAX-200",
+        "url": "/api/hrm/settings/company-settings",
+        "at": "2026-08-07T12:05:36.500Z"
+      }
+    ],
+    "taxF5": {
+      "personalAfter": "11500000",
+      "dependentAfter": "4400000"
+    },
+    "siPosts": [
+      {
+        "method": "POST",
+        "status": 201,
+        "code": "HRM-SET-SI-201",
+        "url": "/api/hrm/settings/insurance-rate-cfg",
+        "at": "2026-08-07T12:07:14.536Z"
+      }
+    ],
+    "siWaitStatus": 201,
+    "siTableSnippet": "Loại\t% NLĐ / NSDLĐ\tHiệu lực\tTT\tThao tác\nBHXH\t8 / 17.5\t2026-06-01\tĐang hiệu lực\tSửa\n\nBHXH\t8 / 17.5\t2026-03-01\tĐang hiệu lực\tSửa\n\nBHXH_QA3_msiw4odg\t8 / 17.5\t2026-08-07\tĐang hiệu lực\tSửa\n\nBHXH_QA3_msiweg3m\t8 / 17.5\t2026-08-07\tĐang hiệu lực\tSửa\n\nBHXH_QA_SETDEFISCBIH\t8 / 17.5\t2026-06-01\tĐang hiệu lực\tSửa\n\nBHYT\t1.5 / 3\t2026-01-01\tBản nháp\tSửa",
+    "siF5": "Loại\t% NLĐ / NSDLĐ\tHiệu lực\tTT\tThao tác\nBHXH\t8 / 17.5\t2026-06-01\tĐang hiệu lực\tSửa\n\nBHXH\t8 / 17.5\t2026-03-01\tĐang hiệu lực\tSửa\n\nBHXH_QA3_msiw4odg\t8 / 17.5\t2026-08-07\tĐang hiệu lực\tSửa\n\nBHXH_QA3_msiweg3m\t8 / 17.5\t2026-08-07\tĐang hiệu lực\tSửa\n\nBHXH_QA_SETDEFISCBIH\t8 / 17.5\t2026-06-01\tĐang hiệu lực\tSửa\n\nBHYT\t1.5 / 3\t2026-01-01\tBản nháp\tSửa",
+    "posPcOptCount": 14,
+    "posPickedPc": "PC_RET_AC81 — Retire probe PC_RET_AC81",
+    "posPosts": [
+      {
+        "method": "POST",
+        "status": 201,
+        "code": "HRM-SET-POS-201",
+        "url": "/api/hrm/settings/position-compensation-policies",
+        "at": "2026-08-07T12:09:24.285Z"
+      }
+    ],
+    "posError": "",
+    "posTableSnippet": "Vị trí\tTên\tDòng\tTT\tThao tác\nCEO\tPC QA3 msiweg3m\tPC_RET_AC81:750000\tĐang hiệu lực",
+    "posF5": "Vị trí\tTên\tDòng\tTT\tThao tác\nCEO\tPC QA3 msiweg3m\tPC_RET_AC81:750000\tĐang hiệu lực",
+    "resolve": {
+      "status": 200,
+      "code": "HRM-SET-POS-200",
+      "ui": "Có chính sách khớp (draft read-only).\n\npolicyId=4309d1f0-8a16-44a0-a13e-9d6a62d22ffe · lines=1 · không ghi employeePackage\n\nPC_RET_AC81: 750000 (fixed)",
+      "bodyKeys": [
+        "companyId",
+        "ouId",
+        "positionKey",
+        "asOf",
+        "policyId",
+        "policyStatus",
+        "lines",
+        "warnings"
+      ],
+      "hasEmployeePackageId": false,
+      "warnings": []
+    },
+    "panelHonestySnippet": "payroll_e2e_ready=false\n\nDisplay-ready · không công thức FE · resolve PC chỉ draft (SRC-02) · soft-delete.\n\nThông số thuế mặc định\n\nKV pay_tax_* — UC-SET-DEF-01 · Lưu → F5.\n\nTải lại\nGiảm trừ bản thân (VND)\nGiảm trừ người phụ thuộc (VND)\nChế độ thuế\nLũy tiến Việt Nam\nÁp dụng giảm "
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T12:11:33.729Z",
+  "summary": {
+    "passCount": 12,
+    "failCount": 0,
+    "total": 12,
+    "stamp": "SETDEFQA3-MSIWEG3M",
+    "payroll_e2e_ready": false
+  }
+}

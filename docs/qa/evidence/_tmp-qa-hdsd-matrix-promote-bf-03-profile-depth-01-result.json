@@ -1,0 +1,70 @@
+{
+  "work_item_id": "QA-HDSD-BF-03-PROFILE-DEPTH-01",
+  "before": {
+    "c": {
+      "🟢": 310,
+      "🟡": 54
+    },
+    "total": 364
+  },
+  "after": {
+    "c": {
+      "🟢": 317,
+      "🟡": 47
+    },
+    "total": 364
+  },
+  "applied": [
+    {
+      "id": "TC-HRM-HDSD-028",
+      "from": "🟡",
+      "to": "🟢",
+      "detail": "§5.4 Header name=true edit=true badge=false back=false"
+    },
+    {
+      "id": "TC-HRM-HDSD-029",
+      "from": "🟡",
+      "to": "🟢",
+      "detail": "§5.4 Dải tab Cốt lõi {\"groups\":true,\"general\":true,\"work\":true,\"contract\":true,\"salary\":true}"
+    },
+    {
+      "id": "TC-HRM-HDSD-030",
+      "from": "🟡",
+      "to": "🟢",
+      "detail": "§5.4 Nhóm tab mở rộng groups={\"hr\":true,\"career\":true,\"personal\":true} panel=true nested=kpi"
+    },
+    {
+      "id": "TC-HRM-HDSD-031",
+      "from": "🟡",
+      "to": "🟢",
+      "detail": "§5.4 Tab Thông tin chung blocks={\"personal\":true,\"address\":true,\"emergency\":true,\"work\":true,\"financeOrInsurance\":true,\""
+    },
+    {
+      "id": "TC-HRM-HDSD-032",
+      "from": "🟡",
+      "to": "🟢",
+      "detail": "§5.4 Phân quyền nhạy cảm (CEO portal positive) {\"fallbackVisible\":false,\"hasSalaryish\":true,\"blank\":false} · deny-path n"
+    },
+    {
+      "id": "TC-HRM-HDSD-033",
+      "from": "🟡",
+      "to": "🟢",
+      "detail": "§5.4 Trạng thái hồ sơ badge=Đang làm việc"
+    },
+    {
+      "id": "TC-HRM-HDSD-034",
+      "from": "🟡",
+      "to": "🟢",
+      "detail": "§5.4 Lỗi hồ sơ msg=true back=true GET=404 banner500=false"
+    }
+  ],
+  "skipped": [],
+  "regressions": [],
+  "must_keep_untouched": [
+    "TC-HRM-HDSD-096",
+    "TC-HRM-HDSD-097",
+    "TC-HRM-HDSD-016",
+    "TC-HRM-HDSD-027"
+  ],
+  "at": "2026-07-31T03:25:53.059Z"
+}

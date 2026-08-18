@@ -1,0 +1,419 @@
+{
+  "work_item_id": "PO-UC-TC-W4-QA-INB-X-COMPANY-01",
+  "startedAt": "2026-08-04T02:51:56.177Z",
+  "u65": "zero-seed",
+  "uat_done": false,
+  "evidence_dev": "docs/qa/evidence/po-uc-tc-w4-dev-fe-inb-x-company-01.md",
+  "prior": "docs/qa/evidence/po-uc-tc-w4-qa-e1-p1-inb-cv.md",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "XBOS": "http://127.0.0.1:28002",
+    "HRM": "http://127.0.0.1:28001",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "hdsd_inventory": [
+    "Login portal (ceo@xe.vn)",
+    "Hộp thư /command-center/inbox",
+    "Mở chi tiết leave FE-origin (if any) → Duyệt",
+    "Assert POST …/tasks/:id/complete header x-company-id=main + 2xx XBOS-WF-200"
+  ],
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "steps": {
+    "L0": {
+      "summary": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:51:56.202Z"
+    },
+    "LOGIN": {
+      "summary": "POST login 201 XBOS-AUTH-200",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:00.089Z"
+    },
+    "INB-LIST": {
+      "summary": "empty=false cards=46 get=200 code=XBOS-WF-203 x-company-id=main",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:04.114Z"
+    },
+    "INB-LIST-HDR": {
+      "summary": "GET tasks x-company-id=main",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:04.115Z"
+    },
+    "INB-APPR-HDR": {
+      "summary": "POST /api/xbos/workflow-engine/tasks/a7408588-ac8f-4699-9466-397b62eda2a0/complete status=201 code=XBOS-WF-200 x-company-id=main",
+      "verdict": "PASS",
+      "at": "2026-08-04T02:52:07.981Z"
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-04T02:51:57.573Z",
+      "msg": "LOGIN_CEO"
+    },
+    {
+      "at": "2026-08-04T02:52:04.380Z",
+      "msg": "CLICK_INBOX_APPROVE",
+      "note": "hrm_leave"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-08-04T02:51:56.965Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-04T02:51:57.610Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Đăng nhập thành công"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-04T02:51:58.091Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-08-04T02:51:58.092Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-04T02:51:58.092Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-08-04T02:51:58.092Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-08-04T02:51:58.092Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-08-04T02:51:58.092Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-08-04T02:51:58.093Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:51:58.093Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-04T02:51:58.093Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:51:58.125Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-08-04T02:51:58.151Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-08-04T02:52:00.206Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-04T02:52:00.240Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-04T02:52:00.287Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-08-04T02:52:00.500Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-08-04T02:52:00.504Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-08-04T02:52:00.526Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-08-04T02:52:00.563Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-08-04T02:52:00.579Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-08-04T02:52:00.618Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:00.620Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:00.638Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-08-04T02:52:00.680Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-04T02:52:00.731Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-08-04T02:52:00.774Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-08-04T02:52:01.487Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-04T02:52:01.500Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-04T02:52:01.539Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:01.664Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/workflow-engine/tasks/a7408588-ac8f-4699-9466-397b62eda2a0/complete",
+      "at": "2026-08-04T02:52:04.523Z",
+      "code": "XBOS-WF-200",
+      "message": "Task completed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:04.561Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded"
+    }
+  ],
+  "requestHeaders": [
+    {
+      "method": "GET",
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "xCompanyId": "main",
+      "xTenantId": "xevn",
+      "headerKeys": [
+        "x-company-id",
+        "authorization",
+        "x-tenant-id"
+      ],
+      "at": "2026-08-04T02:51:57.893Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "xCompanyId": "main",
+      "xTenantId": "xevn",
+      "headerKeys": [
+        "x-company-id",
+        "authorization",
+        "x-tenant-id"
+      ],
+      "at": "2026-08-04T02:51:57.893Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "xCompanyId": "main",
+      "xTenantId": "xevn",
+      "headerKeys": [
+        "x-company-id",
+        "authorization",
+        "x-tenant-id"
+      ],
+      "at": "2026-08-04T02:52:00.469Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "xCompanyId": "main",
+      "xTenantId": "xevn",
+      "headerKeys": [
+        "x-company-id",
+        "authorization",
+        "x-tenant-id"
+      ],
+      "at": "2026-08-04T02:52:00.469Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "xCompanyId": "main",
+      "xTenantId": "xevn",
+      "headerKeys": [
+        "x-company-id",
+        "authorization",
+        "x-tenant-id"
+      ],
+      "at": "2026-08-04T02:52:01.609Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/xbos/workflow-engine/tasks/a7408588-ac8f-4699-9466-397b62eda2a0/complete",
+      "xCompanyId": "main",
+      "xTenantId": "xevn",
+      "headerKeys": [
+        "x-company-id",
+        "authorization",
+        "x-tenant-id"
+      ],
+      "at": "2026-08-04T02:52:04.364Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "xCompanyId": "main",
+      "xTenantId": "xevn",
+      "headerKeys": [
+        "x-company-id",
+        "authorization",
+        "x-tenant-id"
+      ],
+      "at": "2026-08-04T02:52:04.526Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-inb-x-company-01/01-cc.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-inb-x-company-01/02-inbox.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-inb-x-company-01/03-target-card.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-inb-x-company-01/05-after-approve.png"
+  ],
+  "residuals": [],
+  "capture": {
+    "listGet": {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-04T02:52:01.664Z",
+      "code": "XBOS-WF-203",
+      "message": "Tasks loaded"
+    },
+    "completePost": {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/workflow-engine/tasks/a7408588-ac8f-4699-9466-397b62eda2a0/complete",
+      "at": "2026-08-04T02:52:04.523Z",
+      "code": "XBOS-WF-200",
+      "message": "Task completed"
+    },
+    "listHeader": {
+      "method": "GET",
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "xCompanyId": "main",
+      "xTenantId": "xevn",
+      "headerKeys": [
+        "x-company-id",
+        "authorization",
+        "x-tenant-id"
+      ],
+      "at": "2026-08-04T02:52:01.609Z"
+    },
+    "completeHeader": {
+      "method": "POST",
+      "url": "/api/xbos/workflow-engine/tasks/a7408588-ac8f-4699-9466-397b62eda2a0/complete",
+      "xCompanyId": "main",
+      "xTenantId": "xevn",
+      "headerKeys": [
+        "x-company-id",
+        "authorization",
+        "x-tenant-id"
+      ],
+      "at": "2026-08-04T02:52:04.364Z"
+    }
+  },
+  "endedAt": "2026-08-04T02:52:07.982Z",
+  "overall": "PASS"
+}

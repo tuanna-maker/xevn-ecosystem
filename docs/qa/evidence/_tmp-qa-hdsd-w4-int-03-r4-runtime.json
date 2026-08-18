@@ -1,0 +1,296 @@
+{
+  "work_item_id": "QA-HDSD-W4-INT-03-R4",
+  "program": "HDSD-W4-INTEGRATION",
+  "prior": "QA-HDSD-W4-INT-03-R3",
+  "startedAt": "2026-07-30T16:16:41.843Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed",
+    "marker": "QA-INT03-R4-MS7PUPGZ"
+  },
+  "steps": [
+    {
+      "id": "api-login",
+      "ok": true,
+      "detail": "ceo@xe.vn via http://127.0.0.1:28002/api/xbos/auth/login",
+      "at": "2026-07-30T16:16:41.922Z"
+    },
+    {
+      "id": "employee-sample",
+      "ok": true,
+      "detail": "code=PORTAL-GCEO HTTP=200",
+      "at": "2026-07-30T16:16:41.939Z"
+    },
+    {
+      "id": "portal-attendance-load",
+      "ok": true,
+      "detail": "{\"href\":\"http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main&_int03r4=20260731\",\"hasSyncError\":false,\"hasLeave\":true,\"hasCreate\":false}",
+      "at": "2026-07-30T16:16:51.057Z"
+    },
+    {
+      "id": "leave-tab",
+      "ok": true,
+      "detail": "Nghỉ phép createVisible=true",
+      "at": "2026-07-30T16:16:51.493Z"
+    },
+    {
+      "id": "open-create-dialog",
+      "ok": true,
+      "detail": "Tạo yêu cầu nghỉ",
+      "at": "2026-07-30T16:16:51.564Z"
+    },
+    {
+      "id": "leave-type-ready",
+      "ok": true,
+      "detail": "CatalogSearchPicker LVT_01",
+      "at": "2026-07-30T16:16:52.766Z"
+    },
+    {
+      "id": "employee-pick",
+      "ok": true,
+      "detail": "{\"count\":4,\"chosen\":\"CEO Tập đoàn — PORTAL-GCEO · CEO\"}",
+      "at": "2026-07-30T16:16:55.696Z"
+    },
+    {
+      "id": "leave-type-pick",
+      "ok": true,
+      "detail": "{\"chosen\":\"LVT_01Phép năm\"}",
+      "at": "2026-07-30T16:16:56.860Z"
+    },
+    {
+      "id": "date-inputs",
+      "ok": true,
+      "detail": "count=2",
+      "at": "2026-07-30T16:16:58.196Z"
+    },
+    {
+      "id": "submit-click",
+      "ok": true,
+      "detail": "{\"ok\":true,\"text\":\"Gửi yêu cầu\"}",
+      "at": "2026-07-30T16:16:58.562Z"
+    },
+    {
+      "id": "leave-create-post-201",
+      "ok": true,
+      "detail": "status=201 code=n/a id=a28a2178-c8d3-4ff0-ab85-9d03333e8b71 wf=1c6221e8-f7c2-4d17-92ed-dd9f2b34b93e",
+      "at": "2026-07-30T16:17:04.571Z"
+    },
+    {
+      "id": "workflow-instance-bind",
+      "ok": true,
+      "detail": "workflow_instance_id=1c6221e8-f7c2-4d17-92ed-dd9f2b34b93e",
+      "at": "2026-07-30T16:17:04.571Z"
+    },
+    {
+      "id": "wf-tasks-net-200",
+      "ok": true,
+      "detail": "GET /api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn 200",
+      "at": "2026-07-30T16:17:12.128Z"
+    },
+    {
+      "id": "cc-inbox-task-card",
+      "ok": true,
+      "detail": "cards=9 panel=true leaveCard=true Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo",
+      "at": "2026-07-30T16:17:12.131Z"
+    },
+    {
+      "id": "wf-tasks-api",
+      "ok": true,
+      "detail": "HTTP 200 pending=9 hit=true",
+      "at": "2026-07-30T16:17:12.143Z"
+    }
+  ],
+  "net": [
+    {
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/employees?company_id=main&keyword=PORTAL-GCEO&include_archived=false&page=1&page_size=50",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/attendance/leave-requests",
+      "status": 201,
+      "method": "POST"
+    },
+    {
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/xbos/tenant-scope/accessible",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/xbos/auth/me",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/xbos/auth/me",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "status": 200,
+      "method": "GET"
+    }
+  ],
+  "postBodies": [
+    {
+      "status": 201,
+      "url": "/api/hrm/attendance/leave-requests",
+      "requestBody": "{\"company_id\":\"holding\",\"employee_id\":\"139ee909-df32-4467-81e1-dfb1281f604d\",\"employee_code\":\"PORTAL-GCEO\",\"employee_name\":\"CEO Tập đoàn\",\"department\":\"CEO\",\"position\":\"CEO\",\"leave_type\":\"LVT_01\",\"start_date\":\"2027-03-14\",\"end_date\":\"2027-03-14\",\"total_days\":1,\"handover_tasks\":\"QA-INT03-R4-MS7PUPGZ\"}",
+      "responseBody": {
+        "success": true,
+        "code": "HRM-LEAVE-201",
+        "message": "Leave request created",
+        "data": {
+          "id": "a28a2178-c8d3-4ff0-ab85-9d03333e8b71",
+          "company_id": "holding",
+          "employee_id": "139ee909-df32-4467-81e1-dfb1281f604d",
+          "leave_type": "LVT_01",
+          "start_date": "2027-03-13T17:00:00.000Z",
+          "end_date": "2027-03-13T17:00:00.000Z",
+          "reason": null,
+          "status": "pending",
+          "requested_at": "2026-07-30T16:17:03.114Z",
+          "reviewed_at": null,
+          "reviewed_by": null,
+          "employee_code": "PORTAL-GCEO",
+          "employee_name": "CEO Tập đoàn",
+          "department": "CEO",
+          "position": "CEO",
+          "total_days": "1",
+          "handover_to": null,
+          "handover_tasks": "QA-INT03-R4-MS7PUPGZ",
+          "approver_employee_id": null,
+          "rejected_reason": null,
+          "attachment_url": null,
+          "workflow_instance_id": "1c6221e8-f7c2-4d17-92ed-dd9f2b34b93e"
+        },
+        "timestamp": "2026-07-30T16:16:58.974Z"
+      }
+    }
+  ],
+  "wfTasks": {
+    "http": 200,
+    "count": 9,
+    "hit": {
+      "id": "9f92788d-2d8f-4b35-88a2-1068c6203c04",
+      "business_type": "hrm_leave",
+      "instance_id": "1c6221e8-f7c2-4d17-92ed-dd9f2b34b93e",
+      "business_id": "a28a2178-c8d3-4ff0-ab85-9d03333e8b71"
+    },
+    "browserNet": [
+      {
+        "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+        "status": 200,
+        "method": "GET"
+      }
+    ]
+  },
+  "workflowInstanceId": "1c6221e8-f7c2-4d17-92ed-dd9f2b34b93e",
+  "inboxCards": [
+    {
+      "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+      "hasLeave": true,
+      "hasMarker": false
+    },
+    {
+      "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+      "hasLeave": true,
+      "hasMarker": false
+    },
+    {
+      "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+      "hasLeave": true,
+      "hasMarker": false
+    },
+    {
+      "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+      "hasLeave": true,
+      "hasMarker": false
+    },
+    {
+      "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+      "hasLeave": true,
+      "hasMarker": false
+    },
+    {
+      "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+      "hasLeave": true,
+      "hasMarker": false
+    },
+    {
+      "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+      "hasLeave": true,
+      "hasMarker": false
+    },
+    {
+      "text": "Trung bìnhxbos-workflow · hrmPhê duyệt đơn nghỉ phép HRMNghỉ phépNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+      "hasLeave": true,
+      "hasMarker": false
+    },
+    {
+      "text": "Trung bìnhxbos-workflow · businessPhê duyệt đơn nghỉ phép HRMDuyệt định nghĩa quy trìnhNgười nhận: ceo@xe.vnMở chi tiếtXử lý nhanh",
+      "hasLeave": true,
+      "hasMarker": false
+    }
+  ],
+  "verdicts": {
+    "leavePost201": "PASS",
+    "workflowInstanceId": "PASS",
+    "wfTasksNet200": "PASS",
+    "wfTasksApi200": "PASS",
+    "ccInboxTaskCard": "PASS",
+    "wfHitForLeave": "PASS",
+    "TC_ECO_INT_03": "PASS",
+    "overall": "PASS"
+  },
+  "ownerHint": null,
+  "leaveWindow": {
+    "startVi": "14/03/2027",
+    "endVi": "14/03/2027",
+    "startIso": "2027-03-14"
+  },
+  "createdId": "a28a2178-c8d3-4ff0-ab85-9d03333e8b71",
+  "endedAt": "2026-07-30T16:17:12.528Z"
+}

@@ -1,0 +1,110 @@
+{
+  "work_item_id": "PO-HRM-UI-BRAND-FE-FOUND-01-QA",
+  "startedAt": "2026-08-05T03:30:47.516Z",
+  "u65": "zero-seed",
+  "adr": "ADR-XEVN-PRECISION-MOTION-TOKENS-20260805",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "COMPANY": "main",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "click_log": [
+    {
+      "at": "2026-08-05T03:30:47.542Z",
+      "action": "API_LOGIN",
+      "note": "ceo@xe.vn"
+    },
+    {
+      "at": "2026-08-05T03:30:48.050Z",
+      "action": "NAV_SHELL",
+      "url": "http://127.0.0.1:5173/command-center?tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-05T03:30:50.383Z",
+      "action": "NAV_EMP",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-05T03:30:53.456Z",
+      "action": "CLICK",
+      "note": "IMPORT"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    {
+      "at": "2026-08-05T03:30:50.378Z",
+      "name": "01-portal-shell",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ui-brand-fe-found-01-qa/01-portal-shell.png"
+    },
+    {
+      "at": "2026-08-05T03:30:54.732Z",
+      "name": "02-dialog",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ui-brand-fe-found-01-qa/02-dialog.png"
+    }
+  ],
+  "shell": {
+    "primary": "#1e40af",
+    "text": "#111827",
+    "secondary": "#4b5563",
+    "muted": "#6b7280",
+    "bodyColor": "rgb(17, 24, 39)",
+    "hasPurpleBg": false,
+    "primaryHex": "#1E40AF",
+    "textHex": "#111827",
+    "bodyHex": "#111827"
+  },
+  "dialog": {
+    "open": true,
+    "hasSurfaceClass": true,
+    "surfaceClasses": "xevn-dialog-surface fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%] gap-4 bg-background p-6 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[sta",
+    "borderColor": "rgb(229, 231, 235)",
+    "barBg": "rgb(30, 64, 175)",
+    "barHeight": "3px",
+    "titleText": "Import nhân viên từ Excel",
+    "titleColor": "rgb(17, 24, 39)",
+    "titleFontSize": "20px",
+    "titleFontWeight": "700",
+    "dialogText": "Import nhân viên từ ExcelTải file mẫuTải file Excel mẫu để biết định dạng dữ liệu cần nhậpTải file mẫu (.xlsx)Kéo thả file hoặc click để chọnHỗ trợ: .xlsx, .xls, .csv — xử lý trên máy chủ.Hướng dẫn:• ",
+    "barHex": "#1E40AF",
+    "titleHex": "#111827",
+    "titlePx": 20,
+    "titleWeightNum": 700
+  },
+  "criteria": {
+    "l0": "PASS",
+    "shell_primary": "PASS",
+    "shell_text": "PASS",
+    "no_purple_ai": "PASS",
+    "dialog_open": "PASS",
+    "dialog_surface": "PASS",
+    "dialog_brand_bar": "PASS",
+    "dialog_title_size": "PASS",
+    "dialog_title_weight": "PASS",
+    "dialog_title_color": "PASS"
+  },
+  "failReasons": [],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "remaster_done": false,
+  "attendance_closed": false,
+  "product_go": false,
+  "endedAt": "2026-08-05T03:30:54.732Z",
+  "r1": {
+    "titleSizeOk": true,
+    "titleWeightOk": true,
+    "titleColorOk": true,
+    "surfaceOk": true,
+    "barLoose": true
+  }
+}

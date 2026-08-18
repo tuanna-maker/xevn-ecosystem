@@ -1,0 +1,289 @@
+{
+  "work_item_id": "PO-HRM-PAYROLL-FORMULA-RUN-GAP-W3-QA-PROCESS-POST-01",
+  "parent": "PO-HRM-PAYROLL-FORMULA-RUN-GAP-QC-W3-J-HRM-07-01",
+  "stamp": "PAYW3PROC-MSISALZ0",
+  "u65": "zero-seed",
+  "journey_l25": "J-HRM-07",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "formula_LIVE": false,
+    "seed_used": false,
+    "module_uat_claim": false,
+    "non_zero_observed": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "target": {
+    "periodId": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+    "month": 9,
+    "year": 2026,
+    "note": "Sep draft + ATT closed same month; NOT Jan dffbb1fe"
+  },
+  "clicks": [
+    {
+      "step": "P0",
+      "detail": "goto http://127.0.0.1:5173/hr/payroll",
+      "at": "2026-08-07T10:10:32.345Z"
+    },
+    {
+      "step": "P0b",
+      "detail": "menu Danh sách bảng lương",
+      "at": "2026-08-07T10:10:35.795Z"
+    },
+    {
+      "step": "filter",
+      "detail": "pay-batch-period-option-9-2026",
+      "at": "2026-08-07T10:10:37.370Z"
+    },
+    {
+      "step": "open",
+      "detail": "pay-batch-row-d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+      "at": "2026-08-07T10:10:40.219Z"
+    },
+    {
+      "step": "enroll",
+      "detail": "Thêm nhân viên",
+      "at": "2026-08-07T10:10:43.831Z"
+    },
+    {
+      "step": "process",
+      "detail": "Khóa bảng lương",
+      "at": "2026-08-07T10:10:46.101Z"
+    },
+    {
+      "step": "f5",
+      "detail": "reload + re-open period",
+      "at": "2026-08-07T10:10:59.644Z"
+    },
+    {
+      "step": "P0",
+      "detail": "goto http://127.0.0.1:5173/hr/payroll",
+      "at": "2026-08-07T10:11:03.834Z"
+    },
+    {
+      "step": "P0b",
+      "detail": "menu Danh sách bảng lương",
+      "at": "2026-08-07T10:11:07.003Z"
+    },
+    {
+      "step": "filter",
+      "detail": "pay-batch-period-option-9-2026",
+      "at": "2026-08-07T10:11:08.545Z"
+    }
+  ],
+  "criteria": {
+    "att_closed_same_month": "PASS",
+    "period_draft": "PASS",
+    "payroll_load": "PASS",
+    "tdz_cleared": "PASS",
+    "enroll": "PASS_PREEXISTING_53_NO_ENABLED_CB",
+    "process": "FAIL_HTTP",
+    "payslip_ui": "PASS",
+    "f5": "PASS"
+  },
+  "att": {
+    "closedSepCount": 1,
+    "closedSepIds": [
+      "ae71f0b0"
+    ],
+    "sample": {
+      "id": "ae71f0b0-a3cb-43ab-9f5f-f42004add657",
+      "name": "QA-BP-ATT-SIGN-DRAFT-SUBMIT-01",
+      "start": "2026-08-31T17:00:00.000Z",
+      "end": "2026-09-29T17:00:00.000Z"
+    }
+  },
+  "pay": {
+    "periodBefore": {
+      "id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+      "status": "draft",
+      "employee_count": 53,
+      "start_date": "2026-08-31T17:00:00.000Z",
+      "end_date": "2026-09-29T17:00:00.000Z",
+      "period_label": "QA-EVAL-NF PAYFEQ1-MSIHM5A1"
+    },
+    "eligibility": {
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "eligible_count": 53,
+      "ineligible_count": 0
+    },
+    "detailHas53": true,
+    "addEmpVisible": true,
+    "enrollDialogOpen": true,
+    "checkboxTotal": 8,
+    "enabledCheckboxes": 0,
+    "lockVisible": true,
+    "lockCount": 1,
+    "confirmClicked": true,
+    "processPosts": [
+      {
+        "method": "POST",
+        "status": 412,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/d92d3bbb-f53a-4151-9b12-0ebe9dd27d25/process",
+        "code": "HRM-PAY-FORMULA-412-VARS"
+      }
+    ],
+    "periodAfter": {
+      "id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+      "status": "draft",
+      "employee_count": 53,
+      "processed_at": null
+    }
+  },
+  "payslip": {
+    "afterProcess": {
+      "visible": true,
+      "rowCount": 53,
+      "hasComponentCols": true,
+      "hasNonZero": false,
+      "sample": "Mã NV\tHọ và tên\tPhòng ban\tLương cơ bản\tPhụ cấp\tThưởng\tKhấu trừ\tLương Net\t\nHLD-0001\t\nA\nNguyễn Văn An\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nNV002\t\nB\nTran Thi B\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nNVN7L5J\t\nH\nNV HDSDN6M8T\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nPORTAL-GCEO\t\nđ\nCEO Tập đoàn\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nQA-E3-W4E3E0Z51J\t\nU\nQA W4E3 W4E3E0Z51J UPD\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nQA-E3-W4E3E1V7HA\t\nU\nQA W4E3 W4E3E1V7HA UPD\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nQA-E3-W4E3E1YKGD\t\nU\nQA W4E3 W4E3E1YKGD UPD\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nQA-IM-W4B1E63RYV\t\nW\nQA I"
+    },
+    "afterF5": {
+      "visible": true,
+      "rowCount": 53,
+      "hasComponentCols": true,
+      "hasNonZero": false,
+      "sample": "Mã NV\tHọ và tên\tPhòng ban\tLương cơ bản\tPhụ cấp\tThưởng\tKhấu trừ\tLương Net\t\nHLD-0001\t\nA\nNguyễn Văn An\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nNV002\t\nB\nTran Thi B\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nNVN7L5J\t\nH\nNV HDSDN6M8T\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nPORTAL-GCEO\t\nđ\nCEO Tập đoàn\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nQA-E3-W4E3E0Z51J\t\nU\nQA W4E3 W4E3E0Z51J UPD\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nQA-E3-W4E3E1V7HA\t\nU\nQA W4E3 W4E3E1V7HA UPD\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nQA-E3-W4E3E1YKGD\t\nU\nQA W4E3 W4E3E1YKGD UPD\n\t-\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t0 ₫\t\n\nQA-IM-W4B1E63RYV\t\nW\nQA I"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+      "code": "HRM-PAY-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+      "code": "HRM-PAY-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+      "code": "HRM-PAY-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+      "code": "HRM-PAY-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/d92d3bbb-f53a-4151-9b12-0ebe9dd27d25/eligibility",
+      "code": "HRM-PAY-200"
+    },
+    {
+      "method": "POST",
+      "status": 412,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/d92d3bbb-f53a-4151-9b12-0ebe9dd27d25/process",
+      "code": "HRM-PAY-FORMULA-412-VARS"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+      "code": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+      "code": "HRM-PAY-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+      "code": "HRM-PAY-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main",
+      "code": "HRM-PAY-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+      "code": "HRM-PAY-200"
+    }
+  ],
+  "pageErrors": [],
+  "tdzErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 412 (Precondition Failed)",
+    "ApiClientError: Required formula variables missing: base_salary\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts:67:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/in",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Error fetching payroll payslips: ApiClientError: Không xử lý được yêu cầu HRM (500)\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts:67:15)\n    at async requestHrm (http://127."
+  ],
+  "startedAt": "2026-08-07T10:10:31.103Z",
+  "verdict": "FAIL_TO_PM",
+  "ack_status": "FAIL_TO_PM",
+  "finishedAt": "2026-08-07T10:11:15.889Z",
+  "executive_summary": "stamp=PAYW3PROC-MSISALZ0 · att_sep=PASS · enroll=PASS_PREEXISTING_53_NO_ENABLED_CB · process=FAIL_HTTP · payslip=PASS · f5=PASS · tdz=PASS · period_status_after=draft · non_zero=false · verdict=FAIL_TO_PM · honesty payroll_e2e_ready=false LIVE=DENIED",
+  "process_error_detail": {
+    "status": 412,
+    "code": "HRM-PAY-FORMULA-412-VARS",
+    "message": "Required formula variables missing: base_salary",
+    "formulaDefinitionId": "5d9f0964-62f1-4a64-b791-15e6ffa5613d",
+    "missingVars": [
+      "base_salary"
+    ],
+    "warnings": [
+      "CB_PACKAGE_ABSENT",
+      "CATALOG_FORMULA_TEXT_FORBIDDEN"
+    ],
+    "formulaSource": "company_active",
+    "componentCode": "base",
+    "periodId": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+    "note": "Browser POST /process captured; 2xx NOT achieved — product gate not harness gap"
+  },
+  "residuals": [
+    {
+      "id": "R-PAY-W3-PROCESS-POST-UNPROVEN",
+      "status": "SUPERSEDED",
+      "note": "POST /process now captured (412) — no longer unproven"
+    },
+    {
+      "id": "R-PAY-W3-PROCESS-FORMULA-412-VARS",
+      "sev": "P1",
+      "owner": "dev-be",
+      "status": "OPEN",
+      "note": "base_salary missing · CB_PACKAGE_ABSENT · CATALOG_FORMULA_TEXT_FORBIDDEN on Sep draft d92d3bbb"
+    },
+    {
+      "id": "R-PAY-BATCHES-SHOWADD-TDZ",
+      "status": "CLOSED",
+      "note": "not reopened — tdzErrors=[]"
+    }
+  ],
+  "command_table": [
+    {
+      "cmd": "pnpm run qc:dev-stack",
+      "result": "hrm/xbos/portal 200"
+    },
+    {
+      "cmd": "pnpm run qc:fe-be-health",
+      "result": "ALL PASS"
+    },
+    {
+      "cmd": "node scripts/qa/_tmp-po-hrm-payroll-formula-run-gap-w3-qa-process-post-01.mjs",
+      "result": "exit 1 FAIL_TO_PM stamp PAYW3PROC-MSISALZ0"
+    }
+  ],
+  "portal_url": "http://127.0.0.1:5173/hr/payroll"
+}

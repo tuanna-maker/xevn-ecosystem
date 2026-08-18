@@ -1,0 +1,39 @@
+{
+  "hit": {
+    "x": 540,
+    "y": 1567
+  },
+  "isLeaveWizard": true,
+  "sample": [
+    "Nghỉ phép",
+    "Tạo đơn nghỉ",
+    "4 bước — ngày → loại → xác nhận → gửi",
+    "1",
+    "2",
+    "3",
+    "4",
+    "Chọn ngày",
+    "Loại nghỉ",
+    "Xác nhận",
+    "Gửi đơn",
+    "Bước 1 · Chọn ngày",
+    "Chọn khoảng thời gian nghỉ trên lịch.",
+    "Sá»‘ dÆ° phĂ©p",
+    "Còn lại: 0 / 0 ngày phép năm 2026",
+    "Khoảng ngày nghỉ",
+    "04/08/2026 – 04/08/2026",
+    "▾",
+    "Tổng: 1 ngày · 04/08/2026",
+    "Số dư phép đã hết — đơn vẫn có thể gửi; quản lý/HR sẽ xem xét (BR-LEAVE-BAL-02).",
+    "Huỷ",
+    "Tiếp tục",
+    "",
+    "Trang chủ",
+    "",
+    "Đội nhóm",
+    "",
+    "Phiếu lương",
+    "",
+    "Hồ sơ"
+  ]
+}

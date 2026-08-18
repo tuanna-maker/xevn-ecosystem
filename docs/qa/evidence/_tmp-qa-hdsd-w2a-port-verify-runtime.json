@@ -1,0 +1,330 @@
+{
+  "work_item_id": "QA-HDSD-W2A-PORT-VERIFY-01",
+  "startedAt": "2026-07-30T14:55:41.714Z",
+  "persona": "ceo@xe.vn",
+  "u65": "zero-seed browser-only",
+  "l0": {},
+  "w2a": {
+    "url": "http://127.0.0.1:8080/hr/employees?portal=1&tenantId=xevn&companyId=main",
+    "target": "http://127.0.0.1:8080/hr/employees",
+    "loginMode": "portal-session-bridge",
+    "screenshot": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-w2a-port-verify-20260730/w2a-employees-list.png",
+    "employeesGet": {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    "errorBanner": false,
+    "bodySnippet": "Không xử lý được yêu cầu HRM (500) Không xử lý được yêu cầu HRM (500) Không xử lý được yêu cầu HRM (500) Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đ",
+    "navLabels": [],
+    "verdict": "🟡"
+  },
+  "w2b": {
+    "url": "http://127.0.0.1:5173/command-center/hrm/employees",
+    "target": "http://127.0.0.1:5173/command-center/hrm/employees",
+    "screenshot": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-w2a-port-verify-20260730/w2b-employees-list.png",
+    "employeesGet": {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    "errorBanner": false,
+    "bodySnippet": "XeVN OS Command Center BOD Quản lý Nhân viên GROUP TÀI CHÍNH KẾ TOÁN NHÂN SỰ KINH DOANH VẬN HÀNH CÀI ĐẶT HỆ THỐNG Mở HRM MENU CHÍNH Tổng quan NHÂN SỰ Nhân sự Hợp đồng Bảo hiểm Quyết định Tuyển dụng 3 ",
+    "navLabels": [
+      "Tổng quan",
+      "Nhân sự",
+      "Hợp đồng",
+      "Bảo hiểm",
+      "Quyết định",
+      "Tuyển dụng3",
+      "Chấm công",
+      "Tiền lương",
+      "Đánh giá",
+      "UniAI",
+      "Công việc",
+      "Quy trình & chính sách",
+      "Dịch vụ nội bộ",
+      "Công cụ & thiết bị",
+      "Hồ sơ xe",
+      "Phòng/Ban & Công ty",
+      "Báo cáo",
+      "Cấu hình HRM",
+      "Hướng dẫn sử dụng"
+    ],
+    "verdict": "🟡"
+  },
+  "menuParity": {
+    "keyTokens": [
+      {
+        "token": "Nhân sự",
+        "w2a": false,
+        "w2b": true,
+        "match": false
+      },
+      {
+        "token": "Hợp đồng",
+        "w2a": false,
+        "w2b": true,
+        "match": false
+      },
+      {
+        "token": "Chấm công",
+        "w2a": false,
+        "w2b": true,
+        "match": false
+      },
+      {
+        "token": "Lương",
+        "w2a": false,
+        "w2b": false,
+        "match": true
+      },
+      {
+        "token": "Cài đặt",
+        "w2a": false,
+        "w2b": false,
+        "match": true
+      },
+      {
+        "token": "Báo cáo",
+        "w2a": false,
+        "w2b": true,
+        "match": false
+      },
+      {
+        "token": "Tuyển dụng",
+        "w2a": false,
+        "w2b": true,
+        "match": false
+      }
+    ],
+    "parityOk": false,
+    "w2aCount": 0,
+    "w2bCount": 19
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 500,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Error fetching departments: ApiClientError: Không xử lý được yêu cầu HRM (500)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Error fetching employees page: ApiClientError: Không xử lý được yêu cầu HRM (500)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Error fetching employees page: ApiClientError: Không xử lý được yêu cầu HRM (500)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Error fetching departments: ApiClientError: Không xử lý được yêu cầu HRM (500)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Error fetching employees page: ApiClientError: Không xử lý được yêu cầu HRM (500)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Error fetching employees page: ApiClientError: Không xử lý được yêu cầu HRM (500)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Error fetching employees page: ApiClientError: Không xử lý được yêu cầu HRM (500)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+  ],
+  "verdict": "PASS_WITH_SOFT",
+  "portalAuth": {
+    "loginUrl": "http://127.0.0.1:5173/api/xbos/auth/login",
+    "tokenOk": true
+  },
+  "finishedAt": "2026-07-30T14:56:25.314Z"
+}

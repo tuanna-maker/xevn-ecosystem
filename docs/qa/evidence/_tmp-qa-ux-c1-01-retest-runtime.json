@@ -1,0 +1,435 @@
+{
+  "work_item_id": "QA-UX-C1-01",
+  "startedAt": "2026-07-28T06:49:22.442Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "hold_deploy": true
+  },
+  "steps": [
+    {
+      "id": "L0-portal",
+      "ok": true,
+      "detail": "http://127.0.0.1:5173",
+      "at": "2026-07-28T06:49:22.442Z"
+    },
+    {
+      "id": "login",
+      "ok": true,
+      "detail": "token ok · company main",
+      "at": "2026-07-28T06:49:22.602Z"
+    },
+    {
+      "id": "ATT-overview-no-error-banner",
+      "ok": true,
+      "detail": "clean",
+      "at": "2026-07-28T06:49:28.411Z"
+    },
+    {
+      "id": "UF-C1-ATT-PathA",
+      "ok": true,
+      "detail": "via=overview-clock-in-cta wizard=true methodSel=true manualPanel=true depth=1",
+      "at": "2026-07-28T06:49:30.013Z"
+    },
+    {
+      "id": "UF-C1-ATT-F5",
+      "ok": true,
+      "detail": "wizard=true banner=false",
+      "at": "2026-07-28T06:49:47.020Z"
+    },
+    {
+      "id": "UF-C1-ATT-PathB",
+      "ok": true,
+      "detail": "qrcode:true faceid:true gps:true depth=2",
+      "at": "2026-07-28T06:49:50.445Z"
+    },
+    {
+      "id": "UF-C1-ATT-console-TypeError",
+      "ok": true,
+      "detail": "count=0",
+      "at": "2026-07-28T06:49:50.446Z"
+    },
+    {
+      "id": "ATT-root-non-empty",
+      "ok": true,
+      "detail": "rootInnerHTML.length=78966",
+      "at": "2026-07-28T06:49:50.449Z"
+    },
+    {
+      "id": "PAY-open-calculate",
+      "ok": true,
+      "detail": "button:^Tính lương$",
+      "at": "2026-07-28T06:49:58.467Z"
+    },
+    {
+      "id": "PAY-open-tax-settlement",
+      "ok": true,
+      "detail": "via=menuitem:Bảng quyết toán thuế",
+      "at": "2026-07-28T06:49:58.469Z"
+    },
+    {
+      "id": "PAY-tax-settlement-view",
+      "ok": true,
+      "detail": "tax settlement heading/copy visible",
+      "at": "2026-07-28T06:49:58.472Z"
+    },
+    {
+      "id": "PAY-root-non-empty",
+      "ok": true,
+      "detail": "rootInnerHTML.length=18369",
+      "at": "2026-07-28T06:49:58.524Z"
+    },
+    {
+      "id": "UF-C1-PAY-page-load-null-guard",
+      "ok": true,
+      "detail": "banner=false typeErrors=0",
+      "at": "2026-07-28T06:49:58.524Z"
+    },
+    {
+      "id": "UF-C1-PAY-edit-cancel-reopen",
+      "ok": true,
+      "detail": "BLOCKED-DATA: no tax settlement rows under U65 — null-guard PASS on tax page load only (no seed)",
+      "at": "2026-07-28T06:49:58.526Z"
+    },
+    {
+      "id": "UF-C1-PAY-console-TypeError",
+      "ok": true,
+      "detail": "count=0; editPath=BLOCKED-DATA",
+      "at": "2026-07-28T06:49:58.527Z"
+    },
+    {
+      "id": "UF-C1-PAY-F5",
+      "ok": true,
+      "detail": "banner=false typeErrors=0",
+      "at": "2026-07-28T06:50:02.182Z"
+    }
+  ],
+  "consoleErrors": [
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+  ],
+  "pageErrors": [],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-28T06:49:23.394Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-28T06:49:23.428Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-07-28T06:49:23.819Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-07-28T06:49:28.518Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-07-28T06:49:28.566Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-07-28&to_date=2026-07-28&page=1&page_size=100",
+      "at": "2026-07-28T06:49:28.590Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-07-28T06:49:29.054Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-28T06:49:30.295Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-28T06:49:30.355Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-07-28T06:49:30.603Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-07-28T06:49:45.831Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-07-28T06:49:45.852Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-07-28&to_date=2026-07-28&page=1&page_size=100",
+      "at": "2026-07-28T06:49:46.001Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-07-28T06:49:46.489Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-07-28T06:49:47.698Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:48.276Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:48.382Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:48.477Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:48.597Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:48.721Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-07-28T06:49:48.721Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:48.823Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:48.937Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:49.043Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:49.107Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:49.249Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:49.333Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:49.418Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:49.597Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:49.709Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:49.818Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:50.100Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-07-28T06:49:50.176Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:50.206Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:50.315Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-07-28T06:49:50.443Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-28T06:49:50.667Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-28T06:49:50.708Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-28T06:49:51.191Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-28T06:49:51.426Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-28T06:49:58.811Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-28T06:49:58.854Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-28T06:49:59.162Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-28T06:49:59.848Z"
+    }
+  ],
+  "screens": [
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01-retest\\01-attendance-overview.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01-retest\\02-clock-in-wizard-manual.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01-retest\\03-attendance-after-f5.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01-retest\\04-method-qrcode.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01-retest\\04-method-faceid.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01-retest\\04-method-gps.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01-retest\\05-payroll-landing.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01-retest\\06-tax-settlement.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01-retest\\09-payroll-f5.png"
+  ],
+  "taxRowPresent": false,
+  "finishedAt": "2026-07-28T06:50:02.262Z",
+  "verdict": "PASS",
+  "failedSteps": []
+}

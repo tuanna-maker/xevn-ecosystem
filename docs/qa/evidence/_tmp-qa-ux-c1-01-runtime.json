@@ -1,0 +1,149 @@
+{
+  "work_item_id": "QA-UX-C1-01",
+  "startedAt": "2026-07-28T06:36:25.014Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "hold_deploy": true
+  },
+  "steps": [
+    {
+      "id": "L0-portal",
+      "ok": true,
+      "detail": "http://127.0.0.1:5173",
+      "at": "2026-07-28T06:36:25.015Z"
+    },
+    {
+      "id": "login",
+      "ok": true,
+      "detail": "token ok · company main",
+      "at": "2026-07-28T06:36:25.117Z"
+    },
+    {
+      "id": "ATT-overview-no-error-banner",
+      "ok": true,
+      "detail": "clean",
+      "at": "2026-07-28T06:37:00.659Z"
+    },
+    {
+      "id": "UF-C1-ATT-PathA",
+      "ok": false,
+      "detail": "via=selectors-missing wizard=false methodSel=false manualPanel=false depth=1",
+      "at": "2026-07-28T06:37:24.681Z"
+    },
+    {
+      "id": "UF-C1-ATT-F5",
+      "ok": false,
+      "detail": "wizard=false banner=false",
+      "at": "2026-07-28T06:38:16.480Z"
+    },
+    {
+      "id": "UF-C1-ATT-PathB",
+      "ok": false,
+      "detail": "qrcode:false faceid:false gps:false depth=2",
+      "at": "2026-07-28T06:39:16.557Z"
+    },
+    {
+      "id": "UF-C1-ATT-console-TypeError",
+      "ok": false,
+      "detail": "count=6",
+      "at": "2026-07-28T06:39:16.558Z"
+    },
+    {
+      "id": "PAY-open-calculate",
+      "ok": false,
+      "detail": "calculate tab not found",
+      "at": "2026-07-28T06:39:21.950Z"
+    },
+    {
+      "id": "PAY-open-tax-settlement",
+      "ok": false,
+      "detail": "via=null",
+      "at": "2026-07-28T06:39:23.977Z"
+    },
+    {
+      "id": "UF-C1-PAY-page-load-null-guard",
+      "ok": false,
+      "detail": "banner=false typeErrors=3",
+      "at": "2026-07-28T06:39:24.033Z"
+    },
+    {
+      "id": "UF-C1-PAY-edit-cancel-reopen",
+      "ok": true,
+      "detail": "BLOCKED-DATA: no tax settlement rows under U65 — null-guard PASS on page load only (no seed)",
+      "at": "2026-07-28T06:39:24.035Z"
+    },
+    {
+      "id": "UF-C1-PAY-console-TypeError",
+      "ok": false,
+      "detail": "count=3; editPath=BLOCKED-DATA",
+      "at": "2026-07-28T06:39:24.035Z"
+    },
+    {
+      "id": "UF-C1-PAY-F5",
+      "ok": false,
+      "detail": "banner=false typeErrors=12",
+      "at": "2026-07-28T06:39:27.681Z"
+    }
+  ],
+  "consoleErrors": [
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "The above error occurred in the <App> component:\n\n    at App (http://127.0.0.1:5173/hr/src/App.tsx:190:5)\n\nConsider adding an error boundary to your tree to customize error handling behavior.\nVisit https://reactjs.org/link/error-boundaries to learn more about error boundaries.",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "The above error occurred in the <App> component:\n\n    at App (http://127.0.0.1:5173/hr/src/App.tsx:190:5)\n\nConsider adding an error boundary to your tree to customize error handling behavior.\nVisit https://reactjs.org/link/error-boundaries to learn more about error boundaries.",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "The above error occurred in the <App> component:\n\n    at App (http://127.0.0.1:5173/hr/src/App.tsx:190:5)\n\nConsider adding an error boundary to your tree to customize error handling behavior.\nVisit https://reactjs.org/link/error-boundaries to learn more about error boundaries.",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "Warning: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more",
+    "The above error occurred in the <App> component:\n\n    at App (http://127.0.0.1:5173/hr/src/App.tsx:190:5)\n\nConsider adding an error boundary to your tree to customize error handling behavior.\nVisit https://reactjs.org/link/error-boundaries to learn more about error boundaries."
+  ],
+  "pageErrors": [
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')",
+    "TypeError: Cannot read properties of null (reading 'useEffect')"
+  ],
+  "network": [],
+  "screens": [
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01\\01-attendance-overview.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01\\02-clock-in-wizard-manual.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01\\03-attendance-after-f5.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01\\05-payroll-landing.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01\\06-tax-settlement.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-c1-01\\09-payroll-f5.png"
+  ],
+  "taxRowPresent": false,
+  "finishedAt": "2026-07-28T06:39:27.728Z",
+  "verdict": "FAIL",
+  "failedSteps": [
+    "UF-C1-ATT-PathA",
+    "UF-C1-ATT-F5",
+    "UF-C1-ATT-PathB",
+    "UF-C1-ATT-console-TypeError",
+    "PAY-open-calculate",
+    "PAY-open-tax-settlement",
+    "UF-C1-PAY-page-load-null-guard",
+    "UF-C1-PAY-console-TypeError",
+    "UF-C1-PAY-F5"
+  ]
+}

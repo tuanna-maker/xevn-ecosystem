@@ -1,0 +1,307 @@
+{
+  "work_item_id": "PO-HRM-E2E-LINK-PAY-HIRE-QA-04",
+  "parent": "PO-HRM-E2E-LINK-PAY-HIRE-FE-04",
+  "supersedes": "PO-HRM-E2E-LINK-PAY-HIRE-QA-03",
+  "startedAt": "2026-08-06T10:27:53.674Z",
+  "u65": "zero-seed",
+  "hdsd_align": "HRM → Tiền lương → Tính lương → Lập bảng lương → Thêm NV",
+  "honesty": {
+    "payroll_e2e_ready": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5175",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "network": {
+    "enroll": [
+      {
+        "method": "POST",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/enroll",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      }
+    ],
+    "enrollBodies": [
+      {
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/enroll",
+        "body": {
+          "mode": "explicit",
+          "employee_ids": [
+            "0500220b-f289-40df-b07e-86316285439b"
+          ]
+        },
+        "hasCompanyId": false,
+        "keys": [
+          "employee_ids",
+          "mode"
+        ]
+      }
+    ],
+    "process": [],
+    "periods": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods?company_id=main",
+        "code": "HRM-PAY-200",
+        "message": "Payroll periods listed"
+      },
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods",
+        "code": "HRM-PAY-201",
+        "message": "Payroll period created"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods?company_id=main",
+        "code": "HRM-PAY-200",
+        "message": "Payroll periods listed"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods?company_id=main",
+        "code": "HRM-PAY-200",
+        "message": "Payroll periods listed"
+      },
+      {
+        "method": "GET",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      },
+      {
+        "method": "GET",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      },
+      {
+        "method": "GET",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      },
+      {
+        "method": "POST",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/enroll",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      },
+      {
+        "method": "GET",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      }
+    ],
+    "payslips": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200",
+        "message": "Payroll payslips listed"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/payslips?company_id=main&period_id=9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+        "code": "HRM-PAY-200",
+        "message": "Payroll payslips listed"
+      }
+    ],
+    "eligibility": [
+      {
+        "method": "GET",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      },
+      {
+        "method": "GET",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      },
+      {
+        "method": "GET",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      },
+      {
+        "method": "GET",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      }
+    ]
+  },
+  "steps": {
+    "login": {
+      "http": 201,
+      "companyId": "main"
+    },
+    "apiEligibilityProbe": {
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "eligible_count": 0,
+      "ineligible_count": 53,
+      "sampleReasons": [
+        {
+          "code": "HLD-0001",
+          "reasons": [
+            "NO_CLOSED_SHEET"
+          ]
+        },
+        {
+          "code": "NV002",
+          "reasons": [
+            "NO_CLOSED_SHEET"
+          ]
+        },
+        {
+          "code": "NVN7L5J",
+          "reasons": [
+            "NO_CLOSED_SHEET"
+          ]
+        }
+      ],
+      "hasReasons": true
+    },
+    "apiEnrollProbeNoCompanyId": {
+      "status": 409,
+      "code": "HRM-PAY-003",
+      "message": "Only draft payroll periods allow enrollment",
+      "bodySent": {
+        "mode": "auto_eligible"
+      }
+    },
+    "landed": {
+      "url": "http://127.0.0.1:5175/hr/payroll?portal=1&tenantId=xevn&companyId=main",
+      "nav": "batches-direct"
+    },
+    "create": {
+      "created": true,
+      "dialogVisible": true,
+      "postEntry": {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods",
+        "code": "HRM-PAY-201",
+        "message": "Payroll period created"
+      },
+      "month": 7,
+      "demoMonth": 6,
+      "year": 2026,
+      "monthSelectMs": 1137,
+      "addEmpBtnVisible": true,
+      "autoDetail": true,
+      "overlap409": false,
+      "createdViaPost": true
+    },
+    "eligibilityUi": {
+      "eligGets": [
+        {
+          "method": "GET",
+          "status": 404,
+          "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+          "code": "HRM-PAY-404",
+          "message": "Payroll period not found"
+        },
+        {
+          "method": "GET",
+          "status": 404,
+          "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/eligibility",
+          "code": "HRM-PAY-404",
+          "message": "Payroll period not found"
+        }
+      ],
+      "reasonBadge": false,
+      "disabledCheckbox": 0,
+      "errorBanner": false,
+      "noClosedSheetText": false,
+      "fePass": false
+    },
+    "enroll": {
+      "added": false,
+      "enrollPost": {
+        "method": "POST",
+        "status": 404,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/enroll",
+        "code": "HRM-PAY-404",
+        "message": "Payroll period not found"
+      },
+      "enrollBody": {
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/enroll",
+        "body": {
+          "mode": "explicit",
+          "employee_ids": [
+            "0500220b-f289-40df-b07e-86316285439b"
+          ]
+        },
+        "hasCompanyId": false,
+        "keys": [
+          "employee_ids",
+          "mode"
+        ]
+      },
+      "enabledCount": 61
+    },
+    "process412": {
+      "procPosts": [],
+      "errorToast": false,
+      "lockedBadge": false,
+      "skipped": true
+    }
+  },
+  "criteria": {
+    "monthSelect": "PASS (1137ms — Tháng 6)",
+    "autoDetail": "PASS (auto detail after POST 2xx)",
+    "eligibilityFe": "PARTIAL",
+    "enrollBody": "PASS (keys: employee_ids, mode)",
+    "ac04": "PASS (business 404 — HRM-PAY-404)",
+    "ac05": "NOT RUN (enroll did not succeed — U65 NO_CLOSED_SHEET)",
+    "att412": "SKIP",
+    "routesLive": "FAIL"
+  },
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "ApiClientError: Payroll period not found\n    at parseHrmJson (http://127.0.0.1:5175/src/integrations/hrmApi.ts?t=1786011815578:65:15)\n    at async requestHrm (http://127.0.0.1:5175/src/integrations/hrmApi.ts?t=1786011815578:118:26)\n    at async Object.mutationFn (http://127.0.0.1:5175/src/hooks/useP",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": [],
+  "failReasons": [
+    "GET eligibility 404",
+    "POST enroll 404"
+  ],
+  "residuals": [],
+  "verdict": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-06T10:28:18.285Z"
+}

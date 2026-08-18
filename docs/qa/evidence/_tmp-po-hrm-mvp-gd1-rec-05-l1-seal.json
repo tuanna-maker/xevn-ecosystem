@@ -1,0 +1,55 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-REC-05-CLUSTER-QA-02",
+  "stamp": "REC05L1-MSL31HIU",
+  "startedAt": "2026-08-09T00:46:53.430Z",
+  "token_ok": true,
+  "probes": [
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "status": 200,
+      "code": "HRM-REC-STG-200",
+      "snippet": "{\"success\":true,\"code\":\"HRM-REC-STG-200\",\"message\":\"Effective pipeline stages listed\",\"data\":{\"total\":4,\"data\":[{\"id\":\"debe15de-ea76-4943-9417-19ac76369c63\",\"companyId\":\"holding\",\"stageKey\":\"hr_custom_stage_07\",\"nameVi\":\"QA hr_custom_stage_07 RECPLATQA-MSIWKJWP\",\"sortOrder\":71,\"i",
+      "cannot": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/recruitment/candidates/00000000-0000-4000-8000-000000000001/transitions",
+      "status": 404,
+      "code": "HRM-REC-404",
+      "snippet": "{\"success\":false,\"code\":\"HRM-REC-404\",\"message\":\"Candidate not found\",\"timestamp\":\"2026-08-09T00:46:52.686Z\"}",
+      "cannot": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates/00000000-0000-4000-8000-000000000001/stage-history?company_id=main",
+      "status": 404,
+      "code": "HRM-REC-404",
+      "snippet": "{\"success\":false,\"code\":\"HRM-REC-404\",\"message\":\"Candidate not found\",\"timestamp\":\"2026-08-09T00:46:53.395Z\"}",
+      "cannot": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/rec/candidates/00000000-0000-4000-8000-000000000001/transitions",
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/rec/candidates/00000000-0000-4000-8000-000000000001/transitions\",\"timestamp\":\"2026-08-09T00:46:53.414Z\"}",
+      "cannot": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/rec/candidates/00000000-0000-4000-8000-000000000001/stage-history",
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot GET /api/hrm/rec/candidates/00000000-0000-4000-8000-000000000001/stage-history\",\"timestamp\":\"2026-08-09T00:46:53.429Z\"}",
+      "cannot": true
+    }
+  ],
+  "seal": {
+    "transitions_route_live": true,
+    "stage_history_route_live": true,
+    "nest_rec_deny": true,
+    "eff_ok": true
+  },
+  "overall": "L1_ROUTES_LIVE"
+}

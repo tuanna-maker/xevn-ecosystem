@@ -1,0 +1,353 @@
+{
+  "work_item_id": "QA-XBOS-U72-FIELD-DISPLAY-01-R2",
+  "alias": "QA-XBOS-U72-LABEL-02",
+  "startedAt": "2026-07-27T08:29:49.860Z",
+  "portal": "http://127.0.0.1:5173",
+  "xbosCore": "http://127.0.0.1:5176",
+  "account": "ceo@xe.vn",
+  "seed": false,
+  "fids": {
+    "F-XBOS-01": {
+      "verdict": "PASS",
+      "detail": "No raw orgTypeCode in table/select text",
+      "screenshot": "f01-f02-organization.png",
+      "url": "http://127.0.0.1:5176/"
+    },
+    "F-XBOS-02": {
+      "verdict": "PASS",
+      "detail": "No raw active/inactive status badges",
+      "screenshot": "f01-f02-organization.png",
+      "url": "http://127.0.0.1:5176/"
+    },
+    "F-XBOS-03": {
+      "verdict": "PASS",
+      "detail": "entityType/dataType show VI labels",
+      "screenshot": "f03-metadata.png",
+      "url": "http://127.0.0.1:5176/metadata"
+    },
+    "F-XBOS-04": {
+      "verdict": "PASS",
+      "detail": "frequency/status VI in table+select",
+      "screenshot": "f04-kpi-definitions.png",
+      "url": "http://127.0.0.1:5176/kpi"
+    },
+    "F-XBOS-05": {
+      "verdict": "PASS",
+      "detail": "Header/summary use VI status labels",
+      "screenshot": "f05-kpi-assignments.png",
+      "url": "http://127.0.0.1:5176/kpi/assign"
+    },
+    "F-XBOS-06": {
+      "verdict": "PASS",
+      "detail": "group/policy status VI",
+      "screenshot": "f06-policy.png",
+      "url": "http://127.0.0.1:5176/policy"
+    },
+    "F-XBOS-07": {
+      "verdict": "PASS",
+      "detail": "run select status VI / unknown —",
+      "screenshot": "f07-reward-penalty.png",
+      "url": "http://127.0.0.1:5176/policy/summary"
+    },
+    "F-XBOS-08": {
+      "verdict": "PASS",
+      "detail": "Partner type badges VI (Nhà cung cấp/…)",
+      "screenshot": "f08-partners.png",
+      "url": "http://127.0.0.1:5173/partners"
+    },
+    "F-XBOS-09": {
+      "verdict": "PASS",
+      "detail": "Thuộc khối/block nav VI only; displays=[{\"kind\":\"select\",\"valueAttr\":\"general\",\"display\":\"Khối Thông tin chung\"},{\"kind\":\"readonly\",\"display\":\"Khối Thông tin chung\"},{\"kind\":\"select-via-span\",\"valueAttr\":\"general\",\"display\":\"Khối Thông tin chung\"},{\"kind\":\"readonly-via-span\",\"display\":\"Khối Thông tin chung\"}]; options=Text ; Number ; Date ; Select ; Phone ; Email ; Khối Thông tin chung ; Khối Vị trí & liên hệ ; Khối Năng lực ; Text ; Number ; Date ; Select ; Phone ; Email",
+      "screenshot": "f09-infra-custom-fields.png",
+      "url": "http://127.0.0.1:5173/command-center?settings=company_infrastructure",
+      "click_path": "login → settings=company_infrastructure → Sửa → Tiếp theo×2 → chip PN → Cấu hình khối & trường → Thêm/Sửa field",
+      "probe": {
+        "dialogCount": 2,
+        "badOptions": [],
+        "shortHits": [],
+        "sampleOptions": [
+          "Text",
+          "Number",
+          "Date",
+          "Select",
+          "Phone",
+          "Email",
+          "Khối Thông tin chung",
+          "Khối Vị trí & liên hệ",
+          "Khối Năng lực",
+          "Text",
+          "Number",
+          "Date",
+          "Select",
+          "Phone",
+          "Email"
+        ],
+        "hasThuocKhoi": true,
+        "hasBlockNavVi": true,
+        "title": true,
+        "thuocKhoiDisplays": [
+          {
+            "kind": "select",
+            "valueAttr": "general",
+            "display": "Khối Thông tin chung"
+          },
+          {
+            "kind": "readonly",
+            "display": "Khối Thông tin chung"
+          },
+          {
+            "kind": "select-via-span",
+            "valueAttr": "general",
+            "display": "Khối Thông tin chung"
+          },
+          {
+            "kind": "readonly-via-span",
+            "display": "Khối Thông tin chung"
+          }
+        ],
+        "displayLeak": [],
+        "bodySnippet": "Cấu hình mục thông tin hạ tầng cơ sở Khối thông tin Khối Thông tin chung Xóa Khối Vị trí và liên hệ Xóa Khối Năng lực (Capacity) Xóa Chưa có custom block. + Thêm khối Khối Thông tin chung Cấu hình khối Tên khối Lưu Field đã cấu hình trong khối này (3) Họ và tên company_infrastructure__general__ho_va_ten · text · Hiển thị Ẩn Xóa ngay thang nam sinh company_infrastructure__general__ngay_thang_nam_si",
+        "nestedOpened": {
+          "ok": true,
+          "disabled": false,
+          "count": 1
+        },
+        "chipClicked": true,
+        "usedFallback": false,
+        "openedFieldForm": true
+      }
+    },
+    "F-XBOS-10": {
+      "verdict": "PASS",
+      "detail": "Copy uses tập đoàn; no \\bholding\\b / xevn/holding in panel; F5 OK; wireHolding=true (OK)",
+      "screenshot": "f10-apply-catalog.png",
+      "url": "http://127.0.0.1:5173/command-center?settings=hrm_catalog_apply_members",
+      "click_path": "/command-center?settings=hrm_catalog_apply_members → F5",
+      "holdingHits": {
+        "lines": [],
+        "sourceLine": "Nguồn tập đoàn: tập đoàn · version 7 · 4 mục checksum: sha256:af60ffad5a89c85a3beb631de09069d5c",
+        "hasTapDoanInSource": true,
+        "hasXevnHoldingPath": false
+      },
+      "holdingAfterF5": {
+        "stillHolding": false,
+        "sourceLine": "Nguồn tập đoàn: tập đoàn ",
+        "hasTapDoan": true
+      },
+      "networkWire": {
+        "companyIdHoldingSeen": true,
+        "sampleUrls": [
+          "200 http://127.0.0.1:5173/src/data/command-center-rail-catalog.ts",
+          "200 http://127.0.0.1:5173/src/data/hrm-recruitment-workflow-presets.ts",
+          "200 http://127.0.0.1:5173/src/data/xevn-raci-catalog.ts",
+          "200 http://127.0.0.1:5173/src/modules/hrm/HrmCollapsibleSidebar.tsx",
+          "200 http://127.0.0.1:5173/src/components/common/HrmApiHealthBanner.tsx",
+          "200 http://127.0.0.1:5173/src/modules/hrm/commandCenterUrl.ts",
+          "200 http://127.0.0.1:5173/src/modules/hrm/inboxDeepLink.ts",
+          "200 http://127.0.0.1:5173/src/modules/hrm/paths.ts",
+          "200 http://127.0.0.1:5173/src/integrations/commandCenterCatalogApi.ts",
+          "200 http://127.0.0.1:5173/src/modules/hrm/hrmApiClient.ts",
+          "200 http://127.0.0.1:5173/src/pages/command-center/ApplyCatalogToMembersPanel.tsx?t=1785140778583",
+          "200 http://127.0.0.1:5173/src/pages/command-center/CatalogGovernancePanel.tsx"
+        ],
+        "catalogBodies": [
+          "http://127.0.0.1:5173/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+          "http://127.0.0.1:5173/api/xbos/config-sync/catalog/job_titles?target=hrm&tenantId=xevn&companyId=holding",
+          "http://127.0.0.1:5173/api/xbos/config-sync/catalog/job_titles?target=hrm&tenantId=xevn&companyId=holding"
+        ]
+      }
+    },
+    "F-XBOS-11": {
+      "verdict": "PASS",
+      "detail": "mapper browser-import: unknown→«—» pending→«Đang chờ» completed→«Hoàn thành»",
+      "screenshot": "f11-workflow-status.png",
+      "url": "http://127.0.0.1:5173/command-center?settings=workflow",
+      "click_path": "/command-center?settings=workflow (+ Vite import mapper)",
+      "probe": {
+        "ok": true,
+        "unknown": "—",
+        "pending": "Đang chờ",
+        "completed": "Hoàn thành"
+      }
+    }
+  },
+  "hids": {
+    "AC-H-XBOS-01": {
+      "verdict": "PASS",
+      "detail": "No raw entityLevel keys (VI labels may be empty list)",
+      "screenshot": "h01-entity-level.png",
+      "url": "http://127.0.0.1:5173/command-center"
+    },
+    "AC-H-XBOS-04": {
+      "verdict": "PASS",
+      "detail": "No enterpriseType select on surface (N/A soft PASS — no raw keys)",
+      "screenshot": "h04-enterprise-type.png",
+      "url": "http://127.0.0.1:5173/command-center",
+      "probe": {
+        "bad": [],
+        "hasVi": false,
+        "sample": []
+      }
+    },
+    "AC-H-XBOS-08": {
+      "verdict": "PASS",
+      "detail": "Partner status badges VI (no active/inactive raw)",
+      "url": "http://127.0.0.1:5173/partners"
+    },
+    "AC-H-XBOS-12": {
+      "verdict": "PASS",
+      "detail": "Mirrors AC-F-XBOS-04 (KPI status+frequency)",
+      "ref": "F-XBOS-04"
+    },
+    "AC-H-XBOS-03": {
+      "verdict": "PASS",
+      "detail": "HRM Company: no holding/subsidiary as Ngành nghề (AC-CO-IND-02)",
+      "screenshot": "h03-industry-regression.png",
+      "url": "http://127.0.0.1:5173/command-center/hrm/company",
+      "probe": {
+        "hits": [],
+        "url": "http://127.0.0.1:5173/command-center/hrm/company"
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "L0-login-api",
+      "ok": true,
+      "detail": "ceo@xe.vn token ok",
+      "at": "2026-07-27T08:29:49.957Z"
+    },
+    {
+      "id": "F-XBOS-01",
+      "ok": true,
+      "detail": "No raw orgTypeCode in table/select text",
+      "at": "2026-07-27T08:29:52.645Z"
+    },
+    {
+      "id": "F-XBOS-02",
+      "ok": true,
+      "detail": "No raw active/inactive status badges",
+      "at": "2026-07-27T08:29:52.646Z"
+    },
+    {
+      "id": "F-XBOS-03",
+      "ok": true,
+      "detail": "entityType/dataType show VI labels",
+      "at": "2026-07-27T08:29:54.081Z"
+    },
+    {
+      "id": "F-XBOS-04",
+      "ok": true,
+      "detail": "frequency/status VI in table+select",
+      "at": "2026-07-27T08:29:55.825Z"
+    },
+    {
+      "id": "F-XBOS-05",
+      "ok": true,
+      "detail": "Header/summary use VI status labels",
+      "at": "2026-07-27T08:29:57.348Z"
+    },
+    {
+      "id": "F-XBOS-06",
+      "ok": true,
+      "detail": "group/policy status VI",
+      "at": "2026-07-27T08:29:59.016Z"
+    },
+    {
+      "id": "F-XBOS-07",
+      "ok": true,
+      "detail": "run select status VI / unknown —",
+      "at": "2026-07-27T08:30:00.536Z"
+    },
+    {
+      "id": "F-XBOS-08",
+      "ok": true,
+      "detail": "Partner type badges VI (Nhà cung cấp/…)",
+      "at": "2026-07-27T08:30:02.826Z"
+    },
+    {
+      "id": "F-XBOS-09",
+      "ok": true,
+      "detail": "Thuộc khối/block nav VI only; displays=[{\"kind\":\"select\",\"valueAttr\":\"general\",\"display\":\"Khối Thông tin chung\"},{\"kind\":\"readonly\",\"display\":\"Khối Thông tin chung\"},{\"kind\":\"select-via-span\",\"valueAttr\":\"general\",\"display\":\"Khối Thông tin chung\"},{\"kind\":\"readonly-via-span\",\"display\":\"Khối Thông tin chung\"}]; options=Text ; Number ; Date ; Select ; Phone ; Email ; Khối Thông tin chung ; Khối Vị trí & liên hệ ; Khối Năng lực ; Text ; Number ; Date ; Select ; Phone ; Email",
+      "at": "2026-07-27T08:30:14.640Z"
+    },
+    {
+      "id": "F-XBOS-10",
+      "ok": true,
+      "detail": "Copy uses tập đoàn; no \\bholding\\b / xevn/holding in panel; F5 OK; wireHolding=true (OK)",
+      "at": "2026-07-27T08:30:23.953Z"
+    },
+    {
+      "id": "F-XBOS-11",
+      "ok": true,
+      "detail": "mapper browser-import: unknown→«—» pending→«Đang chờ» completed→«Hoàn thành»",
+      "at": "2026-07-27T08:30:27.979Z"
+    },
+    {
+      "id": "AC-H-XBOS-01",
+      "ok": true,
+      "detail": "No raw entityLevel keys (VI labels may be empty list)",
+      "at": "2026-07-27T08:30:30.840Z"
+    },
+    {
+      "id": "AC-H-XBOS-04",
+      "ok": true,
+      "detail": "No enterpriseType select on surface (N/A soft PASS — no raw keys)",
+      "at": "2026-07-27T08:30:32.045Z"
+    },
+    {
+      "id": "AC-H-XBOS-08",
+      "ok": true,
+      "detail": "Partner status badges VI (no active/inactive raw)",
+      "at": "2026-07-27T08:30:34.964Z"
+    },
+    {
+      "id": "AC-H-XBOS-12",
+      "ok": true,
+      "detail": "Mirrors AC-F-XBOS-04 (KPI status+frequency)",
+      "at": "2026-07-27T08:30:34.965Z"
+    },
+    {
+      "id": "AC-H-XBOS-03",
+      "ok": true,
+      "detail": "HRM Company: no holding/subsidiary as Ngành nghề (AC-CO-IND-02)",
+      "at": "2026-07-27T08:30:40.063Z"
+    }
+  ],
+  "screenshots": [
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f01-f02-organization.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f03-metadata.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f04-kpi-definitions.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f05-kpi-assignments.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f06-policy.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f07-reward-penalty.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f08-partners.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f09-infra-custom-fields.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f10-apply-catalog.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f10-apply-catalog-f5.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\f11-workflow-status.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\h01-entity-level.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\h04-enterprise-type.png",
+    "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\qa-xbos-u72-field-display-01-r2\\h03-industry-regression.png"
+  ],
+  "networkWire": {
+    "companyIdHoldingSeen": true,
+    "sampleUrls": [
+      "200 http://127.0.0.1:5173/src/data/command-center-rail-catalog.ts",
+      "200 http://127.0.0.1:5173/src/data/hrm-recruitment-workflow-presets.ts",
+      "200 http://127.0.0.1:5173/src/data/xevn-raci-catalog.ts",
+      "200 http://127.0.0.1:5173/src/modules/hrm/HrmCollapsibleSidebar.tsx",
+      "200 http://127.0.0.1:5173/src/components/common/HrmApiHealthBanner.tsx",
+      "200 http://127.0.0.1:5173/src/modules/hrm/commandCenterUrl.ts",
+      "200 http://127.0.0.1:5173/src/modules/hrm/inboxDeepLink.ts",
+      "200 http://127.0.0.1:5173/src/modules/hrm/paths.ts",
+      "200 http://127.0.0.1:5173/src/integrations/commandCenterCatalogApi.ts",
+      "200 http://127.0.0.1:5173/src/modules/hrm/hrmApiClient.ts",
+      "200 http://127.0.0.1:5173/src/pages/command-center/ApplyCatalogToMembersPanel.tsx?t=1785140778583",
+      "200 http://127.0.0.1:5173/src/pages/command-center/CatalogGovernancePanel.tsx"
+    ]
+  },
+  "finishedAt": "2026-07-27T08:30:40.064Z",
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM"
+}

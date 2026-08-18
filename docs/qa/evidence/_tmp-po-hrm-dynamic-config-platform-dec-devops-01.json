@@ -1,0 +1,48 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-DEVOPS-01",
+  "ack_status": "READY_FOR_QA",
+  "closes": "D-DEC-PLT-STALE-DIST",
+  "stamp": "DECPLATDEVOPS-MSJ1K9XZ",
+  "prior_qa_fail_stamp": "DECPLATQA-MSJ14FCK",
+  "program": "PO-HRM-CONTINUOUS-W8-20260807",
+  "listener": {
+    "port": 28001,
+    "pid": 25416,
+    "start_local": "2026-08-07T21:22:53+07:00",
+    "cmd": "node dist/main"
+  },
+  "dist": {
+    "hr_decision_type_service": true,
+    "hr_decision_type_constants": true,
+    "hr_decision_type_dto": true,
+    "controller_decision_types_matches": 7,
+    "mtime_local": "2026-08-07T21:21:27+07:00"
+  },
+  "smoke": {
+    "GET /api/hrm": 200,
+    "GET /api/hrm/decisions/decision-types?company_id=holding": {
+      "status": 401,
+      "code": "HRM-AUTH-001"
+    },
+    "GET /api/hrm/decisions/decision-types/effective?company_id=holding": {
+      "status": 401,
+      "code": "HRM-AUTH-001"
+    },
+    "GET /api/hrm/decisions/decision-types": {
+      "status": 400,
+      "note": "route present; DTO VAL without company_id"
+    },
+    "GET /api/hrm/decisions/decision-types/effective": {
+      "status": 400,
+      "note": "route present; DTO VAL without company_id"
+    }
+  },
+  "gates": {
+    "qc_dev_stack_services_200": true,
+    "qc_fe_be_health": "ALL PASS",
+    "seed": "DENIED",
+    "honesty_flip": "DENIED"
+  },
+  "next_owner": "qa",
+  "next_work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-QA-01"
+}

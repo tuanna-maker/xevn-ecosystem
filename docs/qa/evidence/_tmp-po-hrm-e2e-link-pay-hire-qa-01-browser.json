@@ -1,0 +1,153 @@
+{
+  "work_item_id": "PO-HRM-E2E-LINK-PAY-HIRE-QA-01",
+  "startedAt": "2026-08-06T09:52:03.514Z",
+  "u65": "zero-seed",
+  "hdsd_align": "HRM → Tính lương → Danh sách bảng lương → Lập bảng → Thêm NV → Khóa",
+  "honesty": {
+    "payroll_e2e_ready": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "network": {
+    "enroll": [],
+    "process": [],
+    "periods": [],
+    "payslips": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200",
+        "message": "Payroll payslips listed"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200",
+        "message": "Payroll payslips listed"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200",
+        "message": "Payroll payslips listed"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200",
+        "message": "Payroll payslips listed"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200",
+        "message": "Payroll payslips listed"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+        "code": "HRM-PAY-200",
+        "message": "Payroll payslips listed"
+      }
+    ],
+    "eligibility": []
+  },
+  "steps": {
+    "login": {
+      "http": 201,
+      "companyId": "main"
+    },
+    "payslipProbe": {
+      "status": 200,
+      "count": 1
+    },
+    "landed": {
+      "url": "http://127.0.0.1:5173/hr/payroll?portal=1&tenantId=xevn&companyId=main",
+      "nav": "stuck-on-overview"
+    },
+    "surface": {
+      "batchesTab": false,
+      "createBtn": false,
+      "payslipListTitle": false,
+      "payslipRow": true,
+      "mode": "payslips-api"
+    },
+    "f5ExistingPayslip": {
+      "rowVisible": true,
+      "rowAfter": true,
+      "getsAfter": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+          "code": "HRM-PAY-200",
+          "message": "Payroll payslips listed"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main",
+          "code": "HRM-PAY-200",
+          "message": "Payroll payslips listed"
+        }
+      ]
+    },
+    "periodsProbe": {
+      "status": 200,
+      "periodId": "d8a3c74f-9678-4529-8f63-65f1d39e1385",
+      "statusPeriod": "processed"
+    },
+    "eligibilityApi": {
+      "status": 404,
+      "sampleReasons": []
+    }
+  },
+  "criteria": {
+    "ac05": "PASS (existing row only)",
+    "eligibilityBe": "FAIL",
+    "eligibilityFe": "FAIL",
+    "ac04": "BLOCKED (no enroll UI)",
+    "enroll": "BLOCKED (PayrollBatchesTab hidden)",
+    "processClosed": "NOT RUN (no draft period FE path)",
+    "att412": "NOT RUN (enroll UI blocked)",
+    "dualSot": "PARTIAL (existing payslip list 200)"
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failReasons": [
+    "Enroll FE path blocked: PayrollBatchesTab not mounted when payslip count >= 1"
+  ],
+  "residuals": [
+    {
+      "id": "R-PAY-HIRE-BATCHES-HIDDEN",
+      "owner": "dev-fe",
+      "severity": "P0",
+      "note": "PayrollBatchesTab hidden — livePayslips=1 forces PayrollPayslipsApiTab; enroll/Lập bảng UX unreachable (Payroll.tsx calc-list branch)"
+    },
+    {
+      "id": "R-PAY-HIRE-ELIGIBILITY-FE",
+      "owner": "dev-fe",
+      "severity": "P1",
+      "note": "FE does not wire GET eligibility — reasons only on BE response"
+    }
+  ],
+  "verdict": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-06T09:52:23.485Z"
+}

@@ -1,0 +1,165 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-ATT-11-CLUSTER-QA-01",
+  "program": "PO-HRM-MVP-GD1-CONTINUOUS",
+  "uc_ids": [
+    "UC-BP-ATT-11",
+    "FR-UC-BP-ATT-11"
+  ],
+  "stamp": "ATT11QA1-MSLXD7ZD",
+  "fe01": "docs/qa/evidence/po-hrm-mvp-gd1-att-11-cluster-fe-01.md",
+  "startedAt": "2026-08-09T14:55:49.484Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "attendance_uat_ready": false,
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "contracts_printable_ready": false,
+    "hrm_personnel_uat_ready": false,
+    "ne_live_eq_att11_done": true,
+    "ne_agg_eq_att10_done": true,
+    "ne_soft_att08_eq_att09": true,
+    "ne_att_module_uat": true,
+    "cfg_ne_att02_done": true,
+    "ne_fixed_gd1_eq_full_rsign01": true,
+    "pay_out": true,
+    "nest_core_deny": true,
+    "deny_att_leave_hold": true,
+    "deny_second_ledger": true,
+    "csum_inbox_out": true,
+    "hol_meal_lines_out": true,
+    "soft_ne_core06_done": true,
+    "plt_core_retain": true,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "printable_false": true
+  },
+  "must_keep": [
+    "ATT10QC1-MSLWGUYH",
+    "ATT09QC1-MSLUTL9D",
+    "ATT08QC1-MSLSL36C",
+    "ATT02QC1-MSLQZUK7",
+    "PLT01QC1-MSLPUQIU",
+    "CORE10QC1-MSLP0EJB",
+    "CORE09QC1-MSLNBA89",
+    "CORE07QC1-KZJTSHNT"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    },
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "nest_core_att": {
+      "status": 404,
+      "url": "/api/hrm/core/attendance/attendance-sheets"
+    }
+  },
+  "network": [],
+  "nest_core_hits": [],
+  "nest_core_sign_non404": [],
+  "sign_get_hits": [],
+  "sign_post_hits": [],
+  "close_hits": [],
+  "reopen_hits": [],
+  "capture": {
+    "signGetBodies": [],
+    "signPostBodies": [],
+    "closeBodies": [],
+    "reopenBodies": [],
+    "forceCloseProbes": [],
+    "uiSnapshots": []
+  },
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+  ],
+  "pageErrors": [],
+  "screens": [],
+  "click_log": [],
+  "journeys": {},
+  "residuals": [],
+  "defects": [
+    {
+      "id": "RUNNER",
+      "sev": "P0",
+      "note": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('[data-testid=\"attendance-tab-menu\"]')\n"
+    }
+  ],
+  "setup": {
+    "loginApi": true,
+    "apiSheetsStatus": 200,
+    "sheetStatuses": [
+      {
+        "id": "f76649bc-4afc-4c08-8d97-a2331ec1f69e",
+        "status": "closed",
+        "name": "QA-J07-ATT PAYJ07FULL-MSIYSHHY"
+      },
+      {
+        "id": "26955ae6-0220-4c9f-a343-3970712b8a3e",
+        "status": "closed",
+        "name": "QA-J07-ATT PAYJ07FULL-MSIYP9VH"
+      },
+      {
+        "id": "ae71f0b0-a3cb-43ab-9f5f-f42004add657",
+        "status": "closed",
+        "name": "QA-BP-ATT-SIGN-DRAFT-SUBMIT-01"
+      },
+      {
+        "id": "2d1a688e-0449-4237-a2df-2b2f1707f138",
+        "status": "submitted",
+        "name": "QA-ATT-10-CLUSTER-01"
+      },
+      {
+        "id": "74aba4d4-9c75-4707-9d01-7690516e95c7",
+        "status": "closed",
+        "name": "QA-ATT-LINE-03 2026-08 PAYFEATT-MSIKCMFF"
+      },
+      {
+        "id": "a9ee768f-1980-46dd-bccc-2210aec2efd7",
+        "status": "submitted",
+        "name": "QA-ATT-10-CLUSTER-01"
+      },
+      {
+        "id": "74832120-0e70-4f1d-87a5-6804e23ad368",
+        "status": "submitted",
+        "name": "QA-ATT-10-CLUSTER-01"
+      },
+      {
+        "id": "642a4713-b0ee-4802-a1d9-2fe650cbc17f",
+        "status": "closed",
+        "name": "QA-SHEET-MFD-M2 01/07/2026–31/07/2026"
+      },
+      {
+        "id": "3934591a-50ec-452b-940f-7f29ede50272",
+        "status": "closed",
+        "name": "QA-SHEET-MFD-M2 01/07/2026-31/07/2026"
+      },
+      {
+        "id": "a5c698e5-221a-4d29-a5ac-ab81f35a3996",
+        "status": "closed",
+        "name": "QA-ATT-CLOSE-PAY-1786013003378"
+      }
+    ],
+    "hadSubmitted": true
+  },
+  "overall": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-09T14:56:23.343Z"
+}

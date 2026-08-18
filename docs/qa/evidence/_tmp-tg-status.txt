@@ -1,0 +1,4 @@
+﻿[xevn-ecosystem] Status:
+• Claude: docs/peer (dispatch SoT)
+• Cursor: E1-A+E1-B CLOSED GWC · E2 Dev FE‖BE đang chạy
+HOLD_DEPLOY.

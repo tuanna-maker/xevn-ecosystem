@@ -1,0 +1,101 @@
+{
+  "work_item_id": "QA-PO-HRM-SETTINGS-W3-BROWSER-01-RETEST-02",
+  "stamp": "SETW3RT2-MSN9KG40",
+  "startedAt": "2026-08-10T13:25:08.881Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0 (pre-run)"
+  },
+  "ufs": {
+    "UF-SET-W3-A01": {
+      "tab": "att-attendance-codes",
+      "slug": "rt2n9kg40att",
+      "action": "Thêm → Lưu (slug=rt2n9kg40att)",
+      "network": "/api/hrm/attendance/attendance-codes → **200**",
+      "feAfter": "row visible pre-F5 (lowercase slug)",
+      "f5": "row visible after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B01": {
+      "tab": "emp-document-types",
+      "slug": "rt2n9kg40emp",
+      "action": "Thêm → Lưu (slug=rt2n9kg40emp)",
+      "network": "/api/hrm/employees/document-types → **200**",
+      "feAfter": "row visible pre-F5 (lowercase slug)",
+      "f5": "row visible after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B02": {
+      "tab": "emp-employment-types",
+      "slug": "rt2n9kg40emp",
+      "action": "Thêm → Lưu (slug=rt2n9kg40emp)",
+      "network": "/api/hrm/employees/employment-types → **200**",
+      "feAfter": "row visible pre-F5 (lowercase slug)",
+      "f5": "row visible after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-B07": {
+      "tab": "rec-pipeline-stages",
+      "slug": "rt2n9kg40rec",
+      "action": "Thêm → Lưu (slug=rt2n9kg40rec)",
+      "network": "/api/hrm/recruitment/pipeline-stages → **200**",
+      "feAfter": "row visible pre-F5 (lowercase slug)",
+      "f5": "row visible after F5",
+      "verdict": "🟢"
+    },
+    "UF-SET-W3-C03": {
+      "tab": "contract-templates",
+      "slug": "",
+      "action": "Thêm mẫu → ctr-tpl-canvas visible (iframe dialog portal)",
+      "network": "",
+      "feAfter": "canvas visible",
+      "f5": "",
+      "verdict": "🟢"
+    }
+  },
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+  ],
+  "pageErrors": [],
+  "networkMutations": [
+    {
+      "uf": "UF-SET-W3-A01",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes"
+    },
+    {
+      "uf": "UF-SET-W3-B01",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types"
+    },
+    {
+      "uf": "UF-SET-W3-B02",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types"
+    },
+    {
+      "uf": "UF-SET-W3-B07",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages"
+    }
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-w3-browser-retry-02/att-attendance-codes.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-w3-browser-retry-02/emp-document-types.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-w3-browser-retry-02/emp-employment-types.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-w3-browser-retry-02/rec-pipeline-stages.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-settings-w3-browser-retry-02/contract-templates.png"
+  ],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "defects": [],
+  "endedAt": "2026-08-10T13:26:57.232Z"
+}

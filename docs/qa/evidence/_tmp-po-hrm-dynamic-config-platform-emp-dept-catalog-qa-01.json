@@ -1,0 +1,315 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-DEPT-CATALOG-QA-01",
+  "parent": "EMP-DEPT-CATALOG-BA-01 CONFIRMED · Option A Settings/XBOS departments · R-EMP-POS-DEPT-01",
+  "program": "PO-HRM-CONTINUOUS-W8-20260807",
+  "stamp": "EMPDEPTQA-MSK3VVXX",
+  "invent_key": "zz_invent_emp_dept_msk3vvxx",
+  "open_key": "hr_dept_msk3vvxx",
+  "git_head": "dc930c5",
+  "lane": "L1_API (≠ UF 🟢)",
+  "u65": "zero-seed · no pnpm seed · no invent density wipe",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "headerCompany": "main",
+    "apiCompany": "holding"
+  },
+  "honesty": {
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "contracts_printable_ready": false,
+    "c_slice_ne_module": true,
+    "deny_module_emp_uat": true,
+    "deny_flip_ready": true,
+    "deny_uf_green_from_l1": true,
+    "deny_nest_emp_department": true,
+    "deny_nest_emp_position": true,
+    "seed_used": false
+  },
+  "src_dist": {
+    "src_has_WH_DEPT_KEY": true,
+    "src_assertWhDepartmentKey": true,
+    "src_catalogKey_departments": true,
+    "src_has_EMP_DEPT_KEY_string": false,
+    "settings_assertCode_present": true,
+    "nest_emp_department_route": false,
+    "nest_emp_department_service_file": false,
+    "nest_emp_position_route": false,
+    "nest_emp_position_service_file": false,
+    "dist_has_WH_DEPT_KEY": true,
+    "note": "PASS: no Nest emp_department / emp_position catalog · Option A Settings departments SoT · org-tree DepartmentsService retain ≠ invent SoT",
+    "emp_department_hits": [],
+    "emp_position_hits": []
+  },
+  "seals": {
+    "retain": {
+      "EMPPOSQA2": "EMPPOSQA2-MSK3CDH1",
+      "EMPSTQA": "EMPSTQA-MSK20G7H",
+      "EMPCFQA": "EMPCFQA-MSK14LUH",
+      "EMPTOKEXTQA": "EMPTOKEXTQA-MSJ57PE1"
+    },
+    "cited_in": [
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-position-catalog-qa-02.md",
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-status-catalog-qa-01.md",
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-custom-field-qa-01.md",
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-merge-token-emp-ext-qc-01.md",
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-dept-catalog-ba-01.md"
+    ],
+    "reopened": false,
+    "note": "cite-only RETAIN · suite not re-executed · DOC/ET · ATT/SI/CTR per dispatch must_keep"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "steps": [
+    {
+      "id": "SRC_DIST_NEST_DENY",
+      "at": "2026-08-08T08:22:45.810Z",
+      "verdict": "PASS",
+      "src_has_WH_DEPT_KEY": true,
+      "src_assertWhDepartmentKey": true,
+      "src_catalogKey_departments": true,
+      "src_has_EMP_DEPT_KEY_string": false,
+      "settings_assertCode_present": true,
+      "nest_emp_department_route": false,
+      "nest_emp_department_service_file": false,
+      "nest_emp_position_route": false,
+      "nest_emp_position_service_file": false,
+      "dist_has_WH_DEPT_KEY": true,
+      "note": "PASS: no Nest emp_department / emp_position catalog · Option A Settings departments SoT · org-tree DepartmentsService retain ≠ invent SoT",
+      "emp_department_hits": [],
+      "emp_position_hits": [],
+      "summary": "PASS: no Nest emp_department / emp_position catalog · Option A Settings departments SoT · org-tree DepartmentsService retain ≠ invent SoT"
+    },
+    {
+      "id": "L0",
+      "at": "2026-08-08T08:22:45.853Z",
+      "verdict": "PASS",
+      "hrm": {
+        "status": 200,
+        "ok": true
+      },
+      "xbos": {
+        "status": 200,
+        "ok": true
+      },
+      "portal": {
+        "status": 200,
+        "ok": true
+      }
+    },
+    {
+      "id": "LOGIN",
+      "at": "2026-08-08T08:22:45.936Z",
+      "verdict": "PASS",
+      "status": 201,
+      "via": "http://127.0.0.1:5173/api/xbos/auth/login",
+      "claims_sub": "ceo@xe.vn",
+      "summary": "ceo@xe.vn token ok"
+    },
+    {
+      "id": "EFF_DEPARTMENTS",
+      "at": "2026-08-08T08:22:46.314Z",
+      "verdict": "PASS",
+      "companyId": "holding",
+      "activeCount": 4,
+      "total": 5,
+      "via": "/api/hrm/settings-catalogs/departments/items?company_id=holding",
+      "sample": [
+        "dept_01",
+        "dept_02",
+        "dept_03",
+        "dept_04"
+      ],
+      "attempts": [
+        {
+          "path": "/api/hrm/settings-catalogs/departments/items?company_id=holding",
+          "status": 200,
+          "code": "HRM-SET-200",
+          "total": 5,
+          "active": 4,
+          "sample": [
+            "dept_01",
+            "dept_02",
+            "dept_03",
+            "dept_04"
+          ]
+        }
+      ],
+      "summary": "EFF active departments=4 via /api/hrm/settings-catalogs/departments/items?company_id=holding"
+    },
+    {
+      "id": "PICK_EMPLOYEE",
+      "at": "2026-08-08T08:22:46.635Z",
+      "verdict": "PASS",
+      "companyId": "holding",
+      "listStatus": 200,
+      "listCode": "HRM-EMP-200",
+      "employeeId": "0500220b-f289-40df-b07e-86316285439b",
+      "employee_code": "UAT-0100",
+      "job_title_key": "STAFF",
+      "summary": "employee UAT-0100 @ holding"
+    },
+    {
+      "id": "ADMIN_CREATE_N1_01d",
+      "at": "2026-08-08T08:22:46.811Z",
+      "verdict": "PASS",
+      "expect": "POST settings-catalogs/items departments N+1 → 2xx",
+      "status": 201,
+      "code": "HRM-SET-201",
+      "open_key": "hr_dept_msk3vvxx",
+      "path": "/api/hrm/settings-catalogs/items",
+      "summary": "ADMIN CREATE → 201 HRM-SET-201 key=hr_dept_msk3vvxx"
+    },
+    {
+      "id": "EFF_HAS_OPEN_KEY",
+      "at": "2026-08-08T08:22:47.194Z",
+      "verdict": "PASS",
+      "open_key": "hr_dept_msk3vvxx",
+      "openInEff": true,
+      "activeCount": 5,
+      "summary": "open key visible in EFF active=5"
+    },
+    {
+      "id": "PICKER_SOT_BASELINE_01",
+      "at": "2026-08-08T08:22:47.591Z",
+      "verdict": "PASS",
+      "activeDepartments": 5,
+      "validDept": "hr_dept_msk3vvxx",
+      "validPosition": "ceo",
+      "summary": "SoT departments EFF>0=true validDept=hr_dept_msk3vvxx validPos=ceo"
+    },
+    {
+      "id": "WH_LIST_BEFORE",
+      "at": "2026-08-08T08:22:48.052Z",
+      "verdict": "PASS",
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "count": 15
+    },
+    {
+      "id": "WH_INVENT_DEPT_KEY_01b",
+      "at": "2026-08-08T08:22:49.110Z",
+      "verdict": "PASS",
+      "expect": "4xx HRM-EMP-DEPT-KEY ≡ HRM-WH-DEPT-KEY — NOT 200",
+      "status": 400,
+      "code": "HRM-WH-DEPT-KEY",
+      "message": "department_key 'zz_invent_emp_dept_msk3vvxx' is not in departments catalog",
+      "path": "/api/hrm/employees/0500220b-f289-40df-b07e-86316285439b/work-timeline?company_id=holding",
+      "invent_key": "zz_invent_emp_dept_msk3vvxx",
+      "summary": "WH invent → 400 HRM-WH-DEPT-KEY"
+    },
+    {
+      "id": "WH_INVENT_NO_PERSIST",
+      "at": "2026-08-08T08:22:49.577Z",
+      "verdict": "PASS",
+      "invent_persisted": false,
+      "count_after": 15,
+      "count_before": 15,
+      "summary": "invent NOT persisted after GET"
+    },
+    {
+      "id": "WH_VALID_DEPT_01",
+      "at": "2026-08-08T08:22:52.036Z",
+      "attempted": true,
+      "status": 201,
+      "code": "HRM-EMP-PROFILE-201",
+      "department_key": "dept_01",
+      "createdId": "3582708e-c870-421e-a4a9-ba63e84a9488",
+      "persisted_before_cleanup": true,
+      "cleaned": true,
+      "verdict": "PASS",
+      "summary": "WH valid dept → 201 HRM-EMP-PROFILE-201 key=dept_01",
+      "message": "Work timeline item created"
+    },
+    {
+      "id": "SOFT_RETIRE_01e",
+      "at": "2026-08-08T08:22:53.270Z",
+      "attempted": true,
+      "retire_status": 200,
+      "retire_code": "HRM-SET-202",
+      "invent_retired_status": 400,
+      "invent_retired_code": "HRM-WH-DEPT-KEY",
+      "verdict": "PASS",
+      "summary": "soft-retire PATCH 200 · invent retired → 400 HRM-WH-DEPT-KEY"
+    },
+    {
+      "id": "EFF0_EMPTY_01c",
+      "at": "2026-08-08T08:22:53.271Z",
+      "verdict": "NOTE_BLOCKED",
+      "reachable_without_seed": false,
+      "live_eff_active": 5,
+      "note": "AC-PLT-EMP-DEPT-01c EFF=0 soft empty + CTA / EMPTY-CATALOG — NOT forced (wipe/seed FORBIDDEN U65). Live EFF>0 invent KEY is authoritative. Empty CTA FE not claimed 🟢 from L1."
+    },
+    {
+      "id": "CTR_INVENT_SPOT_CNS05",
+      "at": "2026-08-08T08:22:54.323Z",
+      "attempted": true,
+      "contractId": "1381020f-e9a4-43e7-9f10-f97e6dc05aab",
+      "status": 400,
+      "code": "HRM-CON-POS-KEY",
+      "message": "department_key 'zz_invent_emp_dept_msk3vvxx' is not in departments catalog",
+      "verdict": "PASS",
+      "summary": "CTR invent → 400 HRM-CON-POS-KEY"
+    },
+    {
+      "id": "NEST_DENY_ROUTE_PROBE_01H",
+      "at": "2026-08-08T08:22:54.361Z",
+      "verdict": "PASS",
+      "get_emp_department": {
+        "status": 404,
+        "code": "HRM-DATA-404"
+      },
+      "get_employees_emp_departments": {
+        "status": 500,
+        "code": "HRM-SYS-001"
+      },
+      "get_emp_position": {
+        "status": 404,
+        "code": "HRM-DATA-404"
+      },
+      "src_dist_deny": true,
+      "summary": "live Nest catalog routes 404 expected · src deny=true"
+    }
+  ],
+  "val": {
+    "AC-PLT-EMP-DEPT-01_SOT_EFF_GT0": "PASS",
+    "AC-PLT-EMP-DEPT-01_WH_VALID_SPOT": "PASS",
+    "AC-PLT-EMP-DEPT-01b_WH_INVENT_4xx_KEY": "PASS",
+    "AC-PLT-EMP-DEPT-01b_NO_PERSIST": "PASS",
+    "AC-PLT-EMP-DEPT-01c_EFF0": "NOTE_BLOCKED_NO_WIPE",
+    "AC-PLT-EMP-DEPT-01d_ADMIN_N1": "PASS",
+    "AC-PLT-EMP-DEPT-01e_SOFT_RETIRE": "PASS",
+    "AC-PLT-EMP-DEPT-01H_NEST_DENY": "PASS",
+    "AC-PLT-EMP-DEPT-01H_SEALS_RETAIN": "PASS",
+    "AC-PLT-EMP-DEPT-01H_HONESTY_FALSE": "PASS",
+    "VAL-EMP-DEPT-CNS-01": "PASS",
+    "VAL-EMP-DEPT-CNS-02": "NOTE_BLOCKED_NO_WIPE",
+    "VAL-EMP-DEPT-CNS-05_CTR_SPOT": "PASS",
+    "VAL-EMP-DEPT-ADM-01": "PASS",
+    "PLATFORM_KEY_ALIAS": "PASS_RETAIN_WH_ALIAS_≡_EMP_DEPT_KEY"
+  },
+  "residuals": [
+    {
+      "id": "R-EMP-DEPT-CNS-01-ALIAS-OBSERVE",
+      "severity": "P3",
+      "note": "LIVE uses HRM-WH-DEPT-KEY (≡ class per BA) — platform string HRM-EMP-DEPT-KEY not required for PASS retain",
+      "owner": "pm",
+      "action": "HOLD — no BE unlock unless QC requires unified code string"
+    }
+  ],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "startedAt": "2026-08-08T08:22:45.686Z",
+  "endedAt": "2026-08-08T08:22:54.362Z"
+}

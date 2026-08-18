@@ -1,0 +1,509 @@
+{
+  "work_item_id": "PO-MFD-M3-EMP-CREATE-UPDATE-01",
+  "startedAt": "2026-08-04T09:16:27.275Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "journeys": [
+    "UF-HRM-03"
+  ],
+  "matrix_surface": [
+    7
+  ],
+  "must_keep": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    10,
+    11,
+    12,
+    28
+  ],
+  "persona": {
+    "email": "ceo@xe.vn",
+    "tenantId": "xevn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200,
+    "exit": {
+      "hrm": 200,
+      "xbos": 200,
+      "portal": 200
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-04T09:16:27.321Z",
+      "action": "API_LOGIN",
+      "email": "ceo@xe.vn",
+      "companyId": "main",
+      "tenantId": "xevn"
+    },
+    {
+      "at": "2026-08-04T09:16:28.048Z",
+      "action": "NAV_EMPLOYEES",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-04T09:16:33.190Z",
+      "action": "CASE_A_VALIDATION_START"
+    },
+    {
+      "at": "2026-08-04T09:16:33.195Z",
+      "action": "CLICK_THEM_NHAN_VIEN",
+      "testid": "hdsd-employees-create-btn"
+    },
+    {
+      "at": "2026-08-04T09:16:34.917Z",
+      "action": "CREATE_DIALOG",
+      "visible": true
+    },
+    {
+      "at": "2026-08-04T09:16:35.034Z",
+      "action": "CASE_A_CLEAR_REQUIRED"
+    },
+    {
+      "at": "2026-08-04T09:16:36.966Z",
+      "action": "CASE_A_DONE",
+      "verdict": "PASS",
+      "validationUi": true,
+      "dialogStill": true,
+      "successMutate": 0,
+      "note": "Expect FE block or no 2xx POST on empty required"
+    },
+    {
+      "at": "2026-08-04T09:16:37.862Z",
+      "action": "CASE_B_CREATE_START",
+      "code": "QA-M3-987275",
+      "name": "Nguyễn Văn QA M3 987275"
+    },
+    {
+      "at": "2026-08-04T09:16:37.866Z",
+      "action": "CLICK_THEM_NHAN_VIEN",
+      "testid": "hdsd-employees-create-btn"
+    },
+    {
+      "at": "2026-08-04T09:16:39.551Z",
+      "action": "CREATE_DIALOG",
+      "visible": true
+    },
+    {
+      "at": "2026-08-04T09:16:39.654Z",
+      "action": "COMPANY_PICKER_ABSENT",
+      "note": "single company or hidden"
+    },
+    {
+      "at": "2026-08-04T09:16:39.697Z",
+      "action": "CASE_B_FILLED_BASIC",
+      "code": "QA-M3-987275",
+      "name": "Nguyễn Văn QA M3 987275",
+      "company": null
+    },
+    {
+      "at": "2026-08-04T09:16:39.702Z",
+      "action": "CASE_B_CATALOG_OPTIONAL",
+      "dept": null,
+      "pos": null
+    },
+    {
+      "at": "2026-08-04T09:16:46.625Z",
+      "action": "CASE_B_F5"
+    },
+    {
+      "at": "2026-08-04T09:16:53.572Z",
+      "action": "CASE_B_CREATE_DONE",
+      "verdict": "PASS",
+      "postStatus": 201,
+      "createdId": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "createdCode": "QA-M3-987275",
+      "createdCompany": "holding",
+      "feAfter2xx": true,
+      "f5Persist": true,
+      "listAfter": [
+        {
+          "status": 200,
+          "total": 1
+        },
+        {
+          "status": 200,
+          "total": 60
+        },
+        {
+          "status": 200,
+          "total": 1
+        }
+      ]
+    }
+  ],
+  "network": [
+    {
+      "at": "2026-08-04T09:16:28.709Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": null,
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:28.843Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": null,
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:28.901Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "bodySnippet": {
+        "code": "HRM-EMP-SUMMARY-200",
+        "message": "Employee summary loaded"
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:28.987Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "bodySnippet": {
+        "total": 59,
+        "code": "HRM-EMP-200",
+        "first": {
+          "id": "646306df-f4a6-4199-bf99-9ea8a3ff8584",
+          "company_id": "holding",
+          "employee_code": "QA-IM-W4B1E63RYV",
+          "full_name": "QA Import W4B1E63RYV"
+        }
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:29.168Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": null,
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:29.762Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": null,
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:33.642Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": null,
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:39.939Z",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees",
+      "bodySnippet": {
+        "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+        "company_id": "holding",
+        "employee_code": "QA-M3-987275",
+        "full_name": "Nguyễn Văn QA M3 987275",
+        "code": "HRM-EMP-201"
+      },
+      "reqBody": {
+        "employee_code": "QA-M3-987275",
+        "full_name": "Nguyễn Văn QA M3 987275",
+        "company_id": "main",
+        "email": "qa***@xevn.local"
+      }
+    },
+    {
+      "at": "2026-08-04T09:16:39.955Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "bodySnippet": {
+        "total": 60,
+        "code": "HRM-EMP-200",
+        "first": {
+          "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+          "company_id": "holding",
+          "employee_code": "QA-M3-987275",
+          "full_name": "Nguyễn Văn QA M3 987275"
+        }
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:45.183Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50&keyword=QA-M3-987275",
+      "bodySnippet": {
+        "total": 1,
+        "code": "HRM-EMP-200",
+        "first": {
+          "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+          "company_id": "holding",
+          "employee_code": "QA-M3-987275",
+          "full_name": "Nguyễn Văn QA M3 987275"
+        }
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:46.945Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": null,
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:47.150Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "bodySnippet": {
+        "code": "HRM-EMP-SUMMARY-200",
+        "message": "Employee summary loaded"
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:47.225Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "bodySnippet": {
+        "total": 60,
+        "code": "HRM-EMP-200",
+        "first": {
+          "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+          "company_id": "holding",
+          "employee_code": "QA-M3-987275",
+          "full_name": "Nguyễn Văn QA M3 987275"
+        }
+      },
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:47.507Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": null,
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:47.615Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": null,
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:48.360Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": null,
+      "reqBody": null
+    },
+    {
+      "at": "2026-08-04T09:16:51.365Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50&keyword=QA-M3-987275",
+      "bodySnippet": {
+        "total": 1,
+        "code": "HRM-EMP-200",
+        "first": {
+          "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+          "company_id": "holding",
+          "employee_code": "QA-M3-987275",
+          "full_name": "Nguyễn Văn QA M3 987275"
+        }
+      },
+      "reqBody": null
+    }
+  ],
+  "mutates": [
+    {
+      "at": "2026-08-04T09:16:39.939Z",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees",
+      "bodySnippet": {
+        "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+        "company_id": "holding",
+        "employee_code": "QA-M3-987275",
+        "full_name": "Nguyễn Văn QA M3 987275",
+        "code": "HRM-EMP-201"
+      },
+      "reqBody": {
+        "employee_code": "QA-M3-987275",
+        "full_name": "Nguyễn Văn QA M3 987275",
+        "company_id": "main",
+        "email": "qa***@xevn.local"
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    {
+      "at": "2026-08-04T09:16:33.157Z",
+      "name": "01-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-create-update-01/01-list.png"
+    },
+    {
+      "at": "2026-08-04T09:16:34.994Z",
+      "name": "02-create-dialog",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-create-update-01/02-create-dialog.png"
+    },
+    {
+      "at": "2026-08-04T09:16:36.966Z",
+      "name": "03-validation-fail",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-create-update-01/03-validation-fail.png"
+    },
+    {
+      "at": "2026-08-04T09:16:39.647Z",
+      "name": "04-create-fill",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-create-update-01/04-create-fill.png"
+    },
+    {
+      "at": "2026-08-04T09:16:39.776Z",
+      "name": "05-create-ready",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-create-update-01/05-create-ready.png"
+    },
+    {
+      "at": "2026-08-04T09:16:44.487Z",
+      "name": "06-create-after-save",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-create-update-01/06-create-after-save.png"
+    },
+    {
+      "at": "2026-08-04T09:16:46.625Z",
+      "name": "07-create-fe-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-create-update-01/07-create-fe-list.png"
+    },
+    {
+      "at": "2026-08-04T09:16:53.572Z",
+      "name": "08-create-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-create-update-01/08-create-f5.png"
+    }
+  ],
+  "hdsd_inventory": [
+    {
+      "surface": "HDSD CH06 §2 Danh sách → Thêm/Sửa",
+      "attempted": true,
+      "persona": "ceo@xe.vn"
+    },
+    {
+      "surface": "HDSD CH06 §3.2 thiếu mã/họ tên → không gửi lưu",
+      "attempted": true
+    },
+    {
+      "surface": "HDSD CH06 §3.1 Tạo mới → Lưu → F5",
+      "attempted": true
+    }
+  ],
+  "cases": {
+    "validation": {
+      "verdict": "PASS",
+      "validationUi": true,
+      "dialogStill": true,
+      "successMutate": 0,
+      "note": "Expect FE block or no 2xx POST on empty required"
+    },
+    "create": {
+      "verdict": "PASS",
+      "postStatus": 201,
+      "createdId": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "createdCode": "QA-M3-987275",
+      "createdCompany": "holding",
+      "feAfter2xx": true,
+      "f5Persist": true,
+      "listAfter": [
+        {
+          "status": 200,
+          "total": 1
+        },
+        {
+          "status": 200,
+          "total": 60
+        },
+        {
+          "status": 200,
+          "total": 1
+        }
+      ]
+    },
+    "edit": {
+      "verdict": "SKIPPED",
+      "note": "create PASS — edit fallback not required"
+    }
+  },
+  "surfaces": {
+    "list": {
+      "rows": 50,
+      "listStatus": 200,
+      "total": 59,
+      "companyQueryOk": true
+    },
+    "matrix7": {
+      "runtime": "LIVE",
+      "mode": "CREATE",
+      "create": "PASS",
+      "edit": "SKIPPED",
+      "validation": "PASS"
+    }
+  },
+  "criteria": {
+    "l0_entry": true,
+    "list_loaded": true,
+    "validation_fd": true,
+    "mutate_2xx_persist_f5": true,
+    "u65_no_seed": true,
+    "not_invent_employees_closed": true,
+    "must_keep_list_detail_scope": true
+  },
+  "failReasons": [],
+  "mode": "CREATE",
+  "created": {
+    "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+    "code": "QA-M3-987275",
+    "name": "Nguyễn Văn QA M3 987275",
+    "company_id": "holding",
+    "postStatus": 201,
+    "apiCode": "HRM-EMP-201",
+    "toastOk": false,
+    "feRow": true,
+    "dialogGone": true
+  },
+  "edited": null,
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "employees_closed": false,
+  "attendance_closed": false,
+  "uat_done": false,
+  "endedAt": "2026-08-04T09:16:53.592Z"
+}

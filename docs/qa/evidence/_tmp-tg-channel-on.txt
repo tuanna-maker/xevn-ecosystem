@@ -1,0 +1,10 @@
+﻿[xevn-ecosystem] Kênh Telegram liên tục đã bật
+
+Bạn cần nhớ:
+1) Tôi xong việc → bot tự gửi (mirror Cursor)
+2) Bạn nhắn Tele → bot nhận + toast + mở file intake; Agent Cursor sẽ bắt như chat ở đây
+
+Chạy máy: pnpm run pm:telegram:channel (đã start)
+Agent mode: RUN (tự nối vòng)
+
+Thử nhắn «ping channel» — sẽ thấy toast + file TELEGRAM_ACTIVE_INTAKE.md

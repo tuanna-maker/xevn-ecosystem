@@ -1,0 +1,422 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-ESS-QA-02",
+  "prior": "PO-HRM-AMIS-PARITY-PAY-ESS-FE-01",
+  "parent": "PO-HRM-CONTINUOUS-W7-20260807",
+  "startedAt": "2026-08-07T13:29:19.223Z",
+  "stamp": "PAYESSQA2-IZE9S5",
+  "u65": "zero-seed · browser-only · FE after 2xx + F5 · no API-only PASS",
+  "hdsd_align": "portal → HRM → Tiền lương → tab Phiếu của tôi (hdsd-pay-ess-tab) → open → confirm",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed_used": false,
+    "module_uat_claimed": false,
+    "amis_done_claimed": false,
+    "j_hrm_07_done_claimed": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "stamp": "PAYESSQA2-IZE9S5"
+  },
+  "personas": {
+    "ess": {
+      "email": "uat.nv0001@xe.vn"
+    },
+    "ceo": {
+      "email": "ceo@xe.vn"
+    }
+  },
+  "l0": {
+    "hrm-api": 200,
+    "xbos-api": 200,
+    "portal": 200
+  },
+  "probes": {
+    "essLogin": {
+      "ok": true,
+      "employeeId": "3796d949-4513-45c0-88fa-33030a062b17",
+      "companyId": "holding",
+      "jwtEmployeeId": "3796d949-4513-45c0-88fa-33030a062b17",
+      "jwtCompanyId": "holding"
+    },
+    "essListHolding": {
+      "http": 200,
+      "code": "HRM-PAY-200",
+      "total": 2,
+      "rows": [
+        {
+          "id": "e1ac365a-473a-4f9b-bc00-15acc4cccf05",
+          "status": "processed",
+          "ess_confirmed": false,
+          "period_label": "QA-EVAL-NF PAYFEQ1-MSIHM5A1"
+        },
+        {
+          "id": "7c78b34e-046a-48ef-89bc-be389cb7156b",
+          "status": "processed",
+          "ess_confirmed": true,
+          "period_label": "05/2026 (UAT-MOB-PILOT)"
+        }
+      ],
+      "pending": [
+        {
+          "id": "e1ac365a-473a-4f9b-bc00-15acc4cccf05",
+          "company_id": "holding",
+          "period_id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+          "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+          "employee_code": "HLD-0001",
+          "employee_name": "Nguyễn Văn An",
+          "gross_amount": 19500000,
+          "deduction_amount": 0,
+          "net_amount": 19500000,
+          "currency": "VND",
+          "status": "processed",
+          "formula_definition_id": "f4460176-3335-4856-b924-caa95163fad0",
+          "employee_confirmed_at": null,
+          "employee_confirmed_by": null,
+          "ess_confirmed": false,
+          "created_at": "2026-08-07T05:11:50.420Z",
+          "updated_at": "2026-08-07T10:20:24.336Z",
+          "period_label": "QA-EVAL-NF PAYFEQ1-MSIHM5A1"
+        }
+      ]
+    },
+    "essListMain": {
+      "http": 409,
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "total": 0,
+      "rows": [],
+      "pending": []
+    },
+    "targetPayslip": {
+      "id": "e1ac365a-473a-4f9b-bc00-15acc4cccf05",
+      "company_id": "holding",
+      "period_id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+      "employee_id": "3796d949-4513-45c0-88fa-33030a062b17",
+      "employee_code": "HLD-0001",
+      "employee_name": "Nguyễn Văn An",
+      "gross_amount": 19500000,
+      "deduction_amount": 0,
+      "net_amount": 19500000,
+      "currency": "VND",
+      "status": "processed",
+      "formula_definition_id": "f4460176-3335-4856-b924-caa95163fad0",
+      "employee_confirmed_at": null,
+      "employee_confirmed_by": null,
+      "ess_confirmed": false,
+      "created_at": "2026-08-07T05:11:50.420Z",
+      "updated_at": "2026-08-07T10:20:24.336Z",
+      "period_label": "QA-EVAL-NF PAYFEQ1-MSIHM5A1"
+    },
+    "ceoLogin": {
+      "ok": true,
+      "jwtEmployeeId": null,
+      "jwtCompanyId": "main",
+      "loginVia": "http://127.0.0.1:5173/api/xbos/auth/login"
+    }
+  },
+  "ac": {
+    "L0-STACK": {
+      "verdict": "PASS",
+      "at": "2026-08-07T13:29:19.272Z",
+      "summary": "{\"hrm-api\":200,\"xbos-api\":200,\"portal\":200}"
+    },
+    "PRECOND-ESS-LIST-HOLDING": {
+      "verdict": "PASS",
+      "at": "2026-08-07T13:29:20.412Z",
+      "summary": "API holding GET 200 HRM-PAY-200 total=2 pending=1"
+    },
+    "PRECOND-ESS-LIST-MAIN": {
+      "verdict": "PASS",
+      "at": "2026-08-07T13:29:20.414Z",
+      "summary": "API main GET 409 SCOPE_CONTEXT_MISMATCH (expect 409 scope mismatch vs holding JWT)"
+    },
+    "AC1-LIST-200-OWN": {
+      "verdict": "PASS",
+      "at": "2026-08-07T13:29:28.408Z",
+      "summary": "GET me/payslips → 200 code=HRM-PAY-200 company_id=holding total=2 FE rows=2 banner403=false panel=true count=\"2 bản ghi\"",
+      "listGet": {
+        "at": "2026-08-07T13:29:25.070Z",
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/payroll/me/payslips?company_id=holding",
+        "code": "HRM-PAY-200",
+        "message": "ESS payroll payslips listed",
+        "total": 2,
+        "ess_confirmed": null,
+        "employee_confirmed_at": null,
+        "company_id_query": "holding"
+      },
+      "rowCount": 2,
+      "banner403": false
+    },
+    "AC2-DETAIL-200": {
+      "verdict": "PASS",
+      "at": "2026-08-07T13:29:29.823Z",
+      "summary": "GET me/payslips/e1ac365a… → 200 ess_confirmed=false company_id=holding",
+      "detailGet": {
+        "at": "2026-08-07T13:29:28.928Z",
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/payroll/me/payslips/e1ac365a-473a-4f9b-bc00-15acc4cccf05?company_id=holding",
+        "code": "HRM-PAY-200",
+        "message": "ESS payroll payslip loaded",
+        "total": null,
+        "ess_confirmed": false,
+        "employee_confirmed_at": null,
+        "company_id_query": "holding"
+      },
+      "detailBody": "Họ và tên: Nguyễn Văn An (HLD-0001)\n\nLương Gross: 19.500.000 ₫\n\nKhấu trừ: 0 ₫\n\nThực lĩnh: 19.500.000 ₫\n\nĐã xử lý\nChờ xác nhận\n\nThời điểm xác nhận: —\n\nMã thành phần\tSố tiền\nbase\t12.000.000 ₫\nphu_cap_an\t7.500.000 ₫"
+    },
+    "AC3-CONFIRM-POST": {
+      "verdict": "FAIL",
+      "at": "2026-08-07T13:29:32.004Z",
+      "summary": "POST confirm → 201 HRM-PAY-204-ESS badge=false ctaHidden=true",
+      "confirmPost": {
+        "at": "2026-08-07T13:29:30.614Z",
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/payroll/me/payslips/e1ac365a-473a-4f9b-bc00-15acc4cccf05/confirm?company_id=holding",
+        "code": "HRM-PAY-204-ESS",
+        "message": "ESS payroll payslip confirmed",
+        "total": null,
+        "ess_confirmed": true,
+        "employee_confirmed_at": "2026-08-07 13:29:41.416777+00",
+        "company_id_query": "holding"
+      }
+    },
+    "AC4-F5-PERSIST": {
+      "verdict": "PASS",
+      "at": "2026-08-07T13:29:37.940Z",
+      "summary": "F5 GET → 200 ess_confirmed=true badge=false ctaHidden=true",
+      "f5Detail": {
+        "at": "2026-08-07T13:29:36.954Z",
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/payroll/me/payslips/e1ac365a-473a-4f9b-bc00-15acc4cccf05?company_id=holding",
+        "code": "HRM-PAY-200",
+        "message": "ESS payroll payslip loaded",
+        "total": null,
+        "ess_confirmed": true,
+        "employee_confirmed_at": "2026-08-07 13:29:41.416777+00",
+        "company_id_query": "holding"
+      }
+    },
+    "AC5-CEO-403": {
+      "verdict": "FAIL",
+      "at": "2026-08-07T13:30:13.846Z",
+      "summary": "CEO GET → 403 HRM-PAY-403-ESS banner403=false rows=0",
+      "listGet": {
+        "at": "2026-08-07T13:29:40.237Z",
+        "method": "GET",
+        "status": 403,
+        "url": "/api/hrm/payroll/me/payslips?company_id=main",
+        "code": "HRM-PAY-403-ESS",
+        "message": "ESS phiếu lương yêu cầu token gắn nhân viên",
+        "total": null,
+        "ess_confirmed": null,
+        "employee_confirmed_at": null,
+        "company_id_query": "main"
+      },
+      "panelSnippet": ""
+    }
+  },
+  "network": [
+    {
+      "at": "2026-08-07T13:29:25.070Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/me/payslips?company_id=holding",
+      "code": "HRM-PAY-200",
+      "message": "ESS payroll payslips listed",
+      "total": 2,
+      "ess_confirmed": null,
+      "employee_confirmed_at": null,
+      "company_id_query": "holding"
+    },
+    {
+      "at": "2026-08-07T13:29:28.928Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/me/payslips/e1ac365a-473a-4f9b-bc00-15acc4cccf05?company_id=holding",
+      "code": "HRM-PAY-200",
+      "message": "ESS payroll payslip loaded",
+      "total": null,
+      "ess_confirmed": false,
+      "employee_confirmed_at": null,
+      "company_id_query": "holding"
+    },
+    {
+      "at": "2026-08-07T13:29:30.614Z",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/me/payslips/e1ac365a-473a-4f9b-bc00-15acc4cccf05/confirm?company_id=holding",
+      "code": "HRM-PAY-204-ESS",
+      "message": "ESS payroll payslip confirmed",
+      "total": null,
+      "ess_confirmed": true,
+      "employee_confirmed_at": "2026-08-07 13:29:41.416777+00",
+      "company_id_query": "holding"
+    },
+    {
+      "at": "2026-08-07T13:29:33.807Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/me/payslips?company_id=holding",
+      "code": "HRM-PAY-200",
+      "message": "ESS payroll payslips listed",
+      "total": 2,
+      "ess_confirmed": null,
+      "employee_confirmed_at": null,
+      "company_id_query": "holding"
+    },
+    {
+      "at": "2026-08-07T13:29:36.954Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/me/payslips/e1ac365a-473a-4f9b-bc00-15acc4cccf05?company_id=holding",
+      "code": "HRM-PAY-200",
+      "message": "ESS payroll payslip loaded",
+      "total": null,
+      "ess_confirmed": true,
+      "employee_confirmed_at": "2026-08-07 13:29:41.416777+00",
+      "company_id_query": "holding"
+    },
+    {
+      "at": "2026-08-07T13:29:40.237Z",
+      "method": "GET",
+      "status": 403,
+      "url": "/api/hrm/payroll/me/payslips?company_id=main",
+      "code": "HRM-PAY-403-ESS",
+      "message": "ESS phiếu lương yêu cầu token gắn nhân viên",
+      "total": null,
+      "ess_confirmed": null,
+      "employee_confirmed_at": null,
+      "company_id_query": "main"
+    }
+  ],
+  "essNetwork": [
+    {
+      "at": "2026-08-07T13:29:25.070Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/me/payslips?company_id=holding",
+      "code": "HRM-PAY-200",
+      "message": "ESS payroll payslips listed",
+      "total": 2,
+      "ess_confirmed": null,
+      "employee_confirmed_at": null,
+      "company_id_query": "holding"
+    },
+    {
+      "at": "2026-08-07T13:29:28.928Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/me/payslips/e1ac365a-473a-4f9b-bc00-15acc4cccf05?company_id=holding",
+      "code": "HRM-PAY-200",
+      "message": "ESS payroll payslip loaded",
+      "total": null,
+      "ess_confirmed": false,
+      "employee_confirmed_at": null,
+      "company_id_query": "holding"
+    },
+    {
+      "at": "2026-08-07T13:29:30.614Z",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/me/payslips/e1ac365a-473a-4f9b-bc00-15acc4cccf05/confirm?company_id=holding",
+      "code": "HRM-PAY-204-ESS",
+      "message": "ESS payroll payslip confirmed",
+      "total": null,
+      "ess_confirmed": true,
+      "employee_confirmed_at": "2026-08-07 13:29:41.416777+00",
+      "company_id_query": "holding"
+    },
+    {
+      "at": "2026-08-07T13:29:33.807Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/me/payslips?company_id=holding",
+      "code": "HRM-PAY-200",
+      "message": "ESS payroll payslips listed",
+      "total": 2,
+      "ess_confirmed": null,
+      "employee_confirmed_at": null,
+      "company_id_query": "holding"
+    },
+    {
+      "at": "2026-08-07T13:29:36.954Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/me/payslips/e1ac365a-473a-4f9b-bc00-15acc4cccf05?company_id=holding",
+      "code": "HRM-PAY-200",
+      "message": "ESS payroll payslip loaded",
+      "total": null,
+      "ess_confirmed": true,
+      "employee_confirmed_at": "2026-08-07 13:29:41.416777+00",
+      "company_id_query": "holding"
+    },
+    {
+      "at": "2026-08-07T13:29:40.237Z",
+      "method": "GET",
+      "status": 403,
+      "url": "/api/hrm/payroll/me/payslips?company_id=main",
+      "code": "HRM-PAY-403-ESS",
+      "message": "ESS phiếu lương yêu cầu token gắn nhân viên",
+      "total": null,
+      "ess_confirmed": null,
+      "employee_confirmed_at": null,
+      "company_id_query": "main"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Error fetching payroll payslips: ApiClientError: companyId mismatches token scope\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786109137245:69:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786109137245:122:26)\n    at async http://127.0.0.1:5173/hr/src/hooks/usePayrollPayslips.ts?t=178610913",
+    "`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.\n\nIf you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.\n\nFor more information, see https://radix-ui.com/primitives/docs/components/dialog",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Error fetching payroll payslips: ApiClientError: companyId mismatches token scope\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786109137245:69:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786109137245:122:26)\n    at async http://127.0.0.1:5173/hr/src/hooks/usePayrollPayslips.ts?t=178610913",
+    "`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.\n\nIf you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.\n\nFor more information, see https://radix-ui.com/primitives/docs/components/dialog",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  "pageErrors": [],
+  "click_log": [
+    {
+      "at": "2026-08-07T13:29:20.771Z",
+      "msg": "goto /hr/payroll as ESS (companyId=holding in URL)"
+    },
+    {
+      "at": "2026-08-07T13:29:28.411Z",
+      "msg": "open detail e1ac365a-473a-4f9b-bc00-15acc4cccf05"
+    },
+    {
+      "at": "2026-08-07T13:29:29.829Z",
+      "msg": "click confirm CTA"
+    },
+    {
+      "at": "2026-08-07T13:29:32.006Z",
+      "msg": "F5 reload ESS tab"
+    },
+    {
+      "at": "2026-08-07T13:29:38.248Z",
+      "msg": "goto /hr/payroll as CEO"
+    }
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-ess-qa-02/01-ess-payroll.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-ess-qa-02/02-ess-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-ess-qa-02/03-ess-detail.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-ess-qa-02/04-ess-after-confirm.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-ess-qa-02/05-ess-f5-detail.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-ess-qa-02/06-ceo-ess-tab.png"
+  ],
+  "residuals": [],
+  "overall": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-07T13:30:14.172Z",
+  "failIds": [
+    "AC3-CONFIRM-POST",
+    "AC5-CEO-403"
+  ]
+}

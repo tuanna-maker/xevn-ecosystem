@@ -1,0 +1,138 @@
+{
+  "stamp": "RECQAKS25S5",
+  "planId": "1bed6827-6c83-4a32-81e6-1addc8dc96cc",
+  "out": [
+    {
+      "k": "CREATE",
+      "v": {
+        "status": 201,
+        "code": "HRM-REC-PLAN-201",
+        "id": "1bed6827-6c83-4a32-81e6-1addc8dc96cc"
+      }
+    },
+    {
+      "k": "LIST_PARITY",
+      "v": {
+        "status": 200,
+        "inList": true,
+        "total": 5
+      }
+    },
+    {
+      "k": "GET_PARITY",
+      "v": {
+        "status": 200,
+        "code": "HRM-REC-PLAN-200",
+        "sameId": true,
+        "need_hire": 5,
+        "cell_status": "need_hire",
+        "lifecycle": "open",
+        "cell_id": "e3c9fd62-a20b-4246-a5cf-532c5ac19c9a"
+      }
+    },
+    {
+      "k": "PUT",
+      "v": {
+        "status": 200,
+        "code": "HRM-REC-PLAN-200",
+        "need_hire": 7
+      }
+    },
+    {
+      "k": "SPAWN_NOT_APPROVED",
+      "v": {
+        "status": 409,
+        "code": "HRM-HC-SPAWN-PLAN-NOT-APPROVED",
+        "message": "Chỉ định biên đã duyệt mới được sinh YCTD tự động"
+      }
+    },
+    {
+      "k": "APPROVE",
+      "v": {
+        "status": 200,
+        "code": "HRM-REC-PLAN-200",
+        "data": {
+          "id": "1bed6827-6c83-4a32-81e6-1addc8dc96cc",
+          "company_id": "holding",
+          "title": "QA ĐB RECQAKS25S5",
+          "start_month": 1,
+          "end_month": 12,
+          "year": 2026,
+          "note": null,
+          "status": "approved",
+          "creator_id": null,
+          "creator_name": "QA REC",
+          "created_at": "2026-08-08T19:39:29.194Z",
+          "updated_at": "2026-08-08T19:39:32.164Z",
+          "workflow_instance_id": null,
+          "wf_callback_fingerprint": null,
+          "submitted_by_dept_key": null,
+          "approved_at": "2026-08-08T19:39:32.164Z",
+          "approved_by": "ceo@xe.vn",
+          "activation_mode": "on_approve",
+          "planId": "1bed6827-6c83-4a32-81e6-1addc8dc96cc",
+          "approved_cell_count": 1
+        }
+      }
+    },
+    {
+      "k": "CELL_LOCK",
+      "v": {
+        "lifecycle": "need_hire_approved",
+        "need_hire": 7,
+        "cell_id": "e1b6e6ae-158c-42dc-9cc8-867a14635b4c",
+        "planStatus": "approved"
+      }
+    },
+    {
+      "k": "PUT_LOCKED",
+      "v": {
+        "status": 409,
+        "code": "HRM-HC-CELL-LOCKED",
+        "message": "Ô Cần tuyển đã duyệt — không được chỉnh số lượng/trạng thái (thiếu quyền override)"
+      }
+    },
+    {
+      "k": "SPAWN1",
+      "v": {
+        "status": 201,
+        "code": "HRM-HC-SPAWN-200",
+        "created": 0,
+        "skipped": 0,
+        "data": {
+          "created": [],
+          "skipped_duplicate": []
+        }
+      }
+    },
+    {
+      "k": "SPAWN2",
+      "v": {
+        "status": 201,
+        "code": "HRM-HC-SPAWN-200",
+        "created": 0,
+        "skipped": 0,
+        "data": {
+          "created": [],
+          "skipped_duplicate": []
+        }
+      }
+    },
+    {
+      "k": "INVENT_DENY",
+      "v": {
+        "rec_headcount_plans": 404,
+        "rec_headcount_underscore": 404
+      }
+    },
+    {
+      "k": "U19_ROLLUP_GET",
+      "v": {
+        "listCompany": "trsport",
+        "status": 200,
+        "code": "HRM-REC-PLAN-200",
+        "idMatch": true
+      }
+    }
+  ]
+}

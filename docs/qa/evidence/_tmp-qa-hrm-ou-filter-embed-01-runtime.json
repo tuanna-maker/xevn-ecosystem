@@ -1,0 +1,351 @@
+{
+  "work_item_id": "QA-HRM-OU-FILTER-EMBED-01",
+  "startedAt": "2026-07-27T03:54:21.682Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "HOLD_DEPLOY": true,
+    "WAIT_MS": 5500
+  },
+  "steps": [
+    {
+      "id": "api-login",
+      "ok": true,
+      "detail": "ceo@xe.vn via http://127.0.0.1:28002/api/xbos/auth/login",
+      "at": "2026-07-27T03:54:21.770Z"
+    },
+    {
+      "id": "ac0-embed-context",
+      "ok": true,
+      "detail": "via=iframe url=http://127.0.0.1:5173/hr/?portal=1&tenantId=xevn&companyId=main&_v=1785124463719",
+      "at": "2026-07-27T03:54:28.743Z"
+    },
+    {
+      "id": "ac1-filter-visible",
+      "ok": true,
+      "detail": "OU filter present in embed",
+      "at": "2026-07-27T03:54:28.746Z"
+    },
+    {
+      "id": "ac1-dropdown-open",
+      "ok": true,
+      "detail": "Select opened",
+      "at": "2026-07-27T03:54:29.544Z"
+    },
+    {
+      "id": "ac1-member-options",
+      "ok": true,
+      "detail": "all=true members=5 sample=Tập đoàn XeVN | Công ty Cổ phần Thương mại và Dịch vụ X.E | Công ty TNHH Du lịch Visun | Công ty TNHH Du lịch X.E Việt Nam",
+      "at": "2026-07-27T03:54:30.497Z"
+    },
+    {
+      "id": "ac2-reopen-click",
+      "ok": true,
+      "detail": "Select reopened after wait",
+      "at": "2026-07-27T03:54:37.189Z"
+    },
+    {
+      "id": "ac2-options-persist",
+      "ok": true,
+      "detail": "afterWait=5500ms all=true members=5 sample=Tập đoàn XeVN | Công ty Cổ phần Thương mại và Dịch vụ X.E | Công ty TNHH Du lịch Visun | Công ty TNHH Du lịch X.E Việt Nam (openHad=5)",
+      "at": "2026-07-27T03:54:38.137Z"
+    },
+    {
+      "id": "ac3-select-visun",
+      "ok": true,
+      "detail": "Visun option clicked",
+      "at": "2026-07-27T03:54:46.116Z"
+    },
+    {
+      "id": "ac3-banner",
+      "ok": true,
+      "detail": "Đang xem: Công ty TNHH Du lịch Visun",
+      "at": "2026-07-27T03:54:49.022Z"
+    },
+    {
+      "id": "ac3-employees-scoped",
+      "ok": true,
+      "detail": "status=200 company_id=logistics rows=0 url=/api/hrm/employees?company_id=logistics&page=1&page_size=50",
+      "at": "2026-07-27T03:54:50.525Z"
+    },
+    {
+      "id": "ac4-reg-filter",
+      "ok": true,
+      "detail": "OU filter on /hr/employees?portal=1",
+      "at": "2026-07-27T03:54:54.727Z"
+    },
+    {
+      "id": "ac4-reg-options",
+      "ok": true,
+      "detail": "members=5 all=true",
+      "at": "2026-07-27T03:54:56.120Z"
+    },
+    {
+      "id": "ac4-regression",
+      "ok": true,
+      "detail": "banner=Đang xem: Công ty TNHH Du lịch Visun logisticsNet=200 q=logistics",
+      "at": "2026-07-27T03:55:00.419Z"
+    }
+  ],
+  "verdicts": {
+    "ac1": "PASS",
+    "ac2": "PASS",
+    "ac3": "PASS",
+    "ac4": "PASS",
+    "overall": "PASS"
+  },
+  "net": {
+    "operatingUnits": [
+      {
+        "url": "/api/hrm/operating-units",
+        "status": 200,
+        "dataLen": 5,
+        "slugs": [
+          "holding",
+          "trsport",
+          "logistics",
+          "finance",
+          "services"
+        ],
+        "code": "HRM-OPU-200"
+      },
+      {
+        "url": "/api/hrm/operating-units",
+        "status": 200,
+        "dataLen": 5,
+        "slugs": [
+          "holding",
+          "trsport",
+          "logistics",
+          "finance",
+          "services"
+        ],
+        "code": "HRM-OPU-200"
+      },
+      {
+        "url": "/api/hrm/operating-units",
+        "status": 200,
+        "dataLen": 5,
+        "slugs": [
+          "holding",
+          "trsport",
+          "logistics",
+          "finance",
+          "services"
+        ],
+        "code": "HRM-OPU-200"
+      }
+    ],
+    "employees": [
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=logistics&page=1&page_size=50",
+        "status": 200,
+        "query": {
+          "company_id": "logistics",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=logistics&page=1&page_size=50",
+        "status": 200,
+        "query": {
+          "company_id": "logistics",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      }
+    ]
+  },
+  "embed": {
+    "resolve": {
+      "via": "iframe",
+      "url": "http://127.0.0.1:5173/hr/?portal=1&tenantId=xevn&companyId=main&_v=1785124463719"
+    },
+    "optionsOpen": [
+      {
+        "text": "Tất cả đơn vị (rollup)",
+        "value": null
+      },
+      {
+        "text": "Tập đoàn XeVN",
+        "value": null
+      },
+      {
+        "text": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+        "value": null
+      },
+      {
+        "text": "Công ty TNHH Du lịch Visun",
+        "value": null
+      },
+      {
+        "text": "Công ty TNHH Du lịch X.E Việt Nam",
+        "value": null
+      },
+      {
+        "text": "Công ty TNHH X.E Việt Nam",
+        "value": null
+      }
+    ],
+    "resolveAfterWait": {
+      "via": "iframe",
+      "url": "http://127.0.0.1:5173/hr/?portal=1&tenantId=xevn&companyId=main&_v=1785124463719"
+    },
+    "optionsReopen": [
+      {
+        "text": "Tất cả đơn vị (rollup)",
+        "value": null
+      },
+      {
+        "text": "Tập đoàn XeVN",
+        "value": null
+      },
+      {
+        "text": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+        "value": null
+      },
+      {
+        "text": "Công ty TNHH Du lịch Visun",
+        "value": null
+      },
+      {
+        "text": "Công ty TNHH Du lịch X.E Việt Nam",
+        "value": null
+      },
+      {
+        "text": "Công ty TNHH X.E Việt Nam",
+        "value": null
+      }
+    ],
+    "resolveEmployees": {
+      "via": "iframe",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main&_v=1785124479568"
+    },
+    "banner": "Đang xem: Công ty TNHH Du lịch Visun",
+    "logisticsEmployees": {
+      "url": "/api/hrm/employees?company_id=logistics&page=1&page_size=50",
+      "status": 200,
+      "query": {
+        "company_id": "logistics",
+        "page": "1",
+        "page_size": "50"
+      },
+      "rowCount": 0,
+      "sampleCompanyIds": []
+    }
+  },
+  "regression": {
+    "options": [
+      {
+        "text": "Tất cả đơn vị (rollup)",
+        "value": null
+      },
+      {
+        "text": "Tập đoàn XeVN",
+        "value": null
+      },
+      {
+        "text": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+        "value": null
+      },
+      {
+        "text": "Công ty TNHH Du lịch Visun",
+        "value": null
+      },
+      {
+        "text": "Công ty TNHH Du lịch X.E Việt Nam",
+        "value": null
+      },
+      {
+        "text": "Công ty TNHH X.E Việt Nam",
+        "value": null
+      }
+    ],
+    "banner": "Đang xem: Công ty TNHH Du lịch Visun",
+    "logistics": {
+      "url": "/api/hrm/employees?company_id=logistics&page=1&page_size=50",
+      "status": 200,
+      "query": {
+        "company_id": "logistics",
+        "page": "1",
+        "page_size": "50"
+      },
+      "rowCount": 0,
+      "sampleCompanyIds": []
+    }
+  },
+  "ownerHint": null,
+  "finishedAt": "2026-07-27T03:55:00.451Z"
+}

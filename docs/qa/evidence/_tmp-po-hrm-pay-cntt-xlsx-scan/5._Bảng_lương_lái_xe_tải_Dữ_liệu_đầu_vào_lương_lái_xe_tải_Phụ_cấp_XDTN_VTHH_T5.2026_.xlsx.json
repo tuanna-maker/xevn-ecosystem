@@ -1,0 +1,122 @@
+{
+  "sheets": [
+    {
+      "name": "Sheet1",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "Phòng Vận tải hàng hóa - Dự án Xe đạp Thống Nhất"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "BẢNG KÊ CHI TIẾT PHỤ CẤP BỐC XẾP THÁNG 5.2026"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "DỰ ÁN XE ĐẠP THỐNG NHẤT"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Tên lái xe",
+            "Thành tiền"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "1.5T",
+            "2.5T",
+            "5.5T",
+            "6.5T",
+            "8T",
+            "1.5T",
+            "2.5T",
+            "5.5T",
+            "6.5T",
+            "8T"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "Đặng Văn Thắng",
+            "5",
+            "1",
+            "1000000",
+            "250000",
+            "=SUM(G7:K7)"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "Hoàng Đức Mạnh",
+            "2",
+            "4",
+            "300000",
+            "800000",
+            "=SUM(G8:K8)"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "Hoàng Văn Chuyền",
+            "4",
+            "7",
+            "600000",
+            "1400000",
+            "=SUM(G9:K9)"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "Mai Văn Long",
+            "1",
+            "250000",
+            "=SUM(G10:K10)"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "Mai Văn Ngọc",
+            "2",
+            "6",
+            "300000",
+            "1200000",
+            "=SUM(G11:K11)"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "Mai Văn Toản",
+            "1",
+            "150000",
+            "=SUM(G12:K12)"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "Nguyễn Duy Trung",
+            "3",
+            "6",
+            "450000",
+            "1200000",
+            "=SUM(G13:K13)"
+          ]
+        }
+      ]
+    }
+  ]
+}

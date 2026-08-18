@@ -1,0 +1,323 @@
+{
+  "log": [
+    {
+      "t": "2026-08-04T02:14:05.004Z",
+      "msg": "start",
+      "serial": "emulator-5554",
+      "email": "uat.nv0003@xe.vn",
+      "api": "http://127.0.0.1:28001",
+      "apk": "hrm-mobile-qa-device.apk"
+    },
+    {
+      "t": "2026-08-04T02:14:05.050Z",
+      "msg": "L0",
+      "health": 200
+    },
+    {
+      "t": "2026-08-04T02:14:05.050Z",
+      "msg": "case",
+      "tc": "L0-STACK",
+      "verdict": "PASS",
+      "evidence": "api",
+      "detail": "http://127.0.0.1:28001 200"
+    },
+    {
+      "t": "2026-08-04T02:14:05.078Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-01-LOGIN-FD-001",
+      "verdict": "PASS",
+      "evidence": "api",
+      "detail": "status=401 code=HRM-AUTH-401"
+    },
+    {
+      "t": "2026-08-04T02:14:05.114Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-01-LOGIN-HP-001(api)",
+      "verdict": "PASS",
+      "evidence": "api",
+      "detail": "mems=1 uuid=10000000-0000-4000-8000-000000000001"
+    },
+    {
+      "t": "2026-08-04T02:14:17.124Z",
+      "msg": "login-screen",
+      "edits": 5,
+      "sample": [
+        "XeVN HRM",
+        "Đăng nhập bằng email và mật khẩu. Hệ thống tự xác định công ty từ hồ sơ nhân viên.",
+        "Email",
+        "name@company.com",
+        "Mật khẩu",
+        "••••••••",
+        "Đăng nhập",
+        "Ẩn đăng nhập dev",
+        "URL máy chủ",
+        "http://14.225.217.232:3001",
+        "tenantId",
+        "companyId (header)"
+      ]
+    },
+    {
+      "t": "2026-08-04T02:14:42.692Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-01-LOGIN-FD-001(ui)",
+      "verdict": "PASS",
+      "evidence": "01-fd-after.png",
+      "detail": "Lỗi | HRM-AUTH-401: Email hoặc mật khẩu không đúng"
+    },
+    {
+      "t": "2026-08-04T02:15:33.950Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-01-LOGIN-HP-001",
+      "verdict": "PASS",
+      "evidence": "01-home.png",
+      "detail": "U0 | UAT NV 0003 | Nhân viên |  | Tập đoàn X.E |  | Chấm công |  | Nghỉ phép |  | Phiếu lương |  | 2 | Việc | Đồng nghiệp"
+    },
+    {
+      "t": "2026-08-04T02:15:33.951Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-02-SINGLE-HP-002",
+      "verdict": "PASS",
+      "evidence": "01-home.png",
+      "detail": "mems=1 uuid=10000000-0000-4000-8000-000000000001 markers="
+    },
+    {
+      "t": "2026-08-04T02:15:33.951Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-02-CONFIRM-HP-001",
+      "verdict": "N/A",
+      "evidence": "api",
+      "detail": "persona has 1 membership(s) — multi-CT picker not exercised"
+    },
+    {
+      "t": "2026-08-04T02:15:33.951Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-02-CONFIRM-FD-001",
+      "verdict": "N/A",
+      "evidence": "api",
+      "detail": "requires multi-CT forced confirm path"
+    },
+    {
+      "t": "2026-08-04T02:15:33.951Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-02-MISMATCH-AU-001",
+      "verdict": "PASS",
+      "evidence": "api",
+      "detail": "active company_uuid=10000000-0000-4000-8000-000000000001 (not slug main)"
+    },
+    {
+      "t": "2026-08-04T02:15:34.082Z",
+      "msg": "uc04-tap",
+      "hit": {
+        "x": 162,
+        "y": 517,
+        "text": "",
+        "desc": "Chấm công",
+        "rid": "home-action-tile-checkin"
+      }
+    },
+    {
+      "t": "2026-08-04T02:15:42.006Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-04-OPEN-HP-003",
+      "verdict": "PASS",
+      "evidence": "04-checkin.png",
+      "detail": "Chấm công | Hôm nay · 04/08/2026 | U0 | UAT NV 0003 | Mã nhân viên | UAT-0003 |  | Vị trí thiết bị | Đang lấy vị trí… | Chấm công vào | Lịch sử chấm công | "
+    },
+    {
+      "t": "2026-08-04T02:15:51.416Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-04-CHECKIN-HP-001",
+      "verdict": "PASS",
+      "evidence": "04-after-submit-2.png",
+      "detail": "Chấm công | Vị trí thiết bị | Đang lấy vị trí… | Chấm công vào | Lịch sử chấm công"
+    },
+    {
+      "t": "2026-08-04T02:15:51.416Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-04-GPS-HP-002",
+      "verdict": "PASS",
+      "evidence": "04-checkin.png",
+      "detail": "permission pre-granted; coords UI optional"
+    },
+    {
+      "t": "2026-08-04T02:15:55.711Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-06-L2-SG-001",
+      "verdict": "SPEC_GAP",
+      "evidence": "by-uc",
+      "detail": "Leave/att L2 ladder inventory — không invent PASS"
+    },
+    {
+      "t": "2026-08-04T02:15:55.711Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-06-L2-SG-002",
+      "verdict": "SPEC_GAP",
+      "evidence": "by-uc",
+      "detail": "After L1 non-terminal when threshold exceeded — design inventory only"
+    },
+    {
+      "t": "2026-08-04T02:16:00.116Z",
+      "msg": "uc06-leave-tap",
+      "hit": null
+    },
+    {
+      "t": "2026-08-04T02:16:05.431Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-06-LV-NAV-HP-004",
+      "verdict": "FAIL",
+      "evidence": "06-leave-list.png",
+      "detail": "Đội nhóm | Khác | 45 | NH | Nhân viên | Khác | QAHDSDQ2ASY | NH | NV HDSDQG3HJ | Chưa chấm | Nhân viên | Khác"
+    },
+    {
+      "t": "2026-08-04T02:16:10.795Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-06-LV-CREATE-HP-002",
+      "verdict": "PARTIAL",
+      "evidence": "06-leave-wizard.png",
+      "detail": "Wizard opened — submit mutate deferred (smoke; avoid orphan leave without mgr path)"
+    },
+    {
+      "t": "2026-08-04T02:16:28.094Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-06-ATT-NAV-HP-003",
+      "verdict": "PASS",
+      "evidence": "06-att.png",
+      "detail": "Chấm công | Hôm nay · 04/08/2026 | U0 | UAT NV 0003 | Mã nhân viên | UAT-0003 |  | Vị trí thiết bị | Đang lấy vị trí… | Chấm công vào | Lịch sử chấm công | "
+    },
+    {
+      "t": "2026-08-04T02:16:28.094Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-06-ATT-CREATE-HP-001",
+      "verdict": "NOT_RUN",
+      "evidence": "06-att.png",
+      "detail": "Smoke stopped at nav — full ATT submit needs ISO fields + U65 FE chain; not invented PASS"
+    },
+    {
+      "t": "2026-08-04T02:16:28.094Z",
+      "msg": "case",
+      "tc": "TC-HRM-MOB-06-VAL-FD-001",
+      "verdict": "NOT_RUN",
+      "evidence": "—",
+      "detail": "FD empty submit deferred to dedicated leave/att wave"
+    }
+  ],
+  "cases": [
+    {
+      "tc": "L0-STACK",
+      "verdict": "PASS",
+      "evidence": "api",
+      "detail": "http://127.0.0.1:28001 200"
+    },
+    {
+      "tc": "TC-HRM-MOB-01-LOGIN-FD-001",
+      "verdict": "PASS",
+      "evidence": "api",
+      "detail": "status=401 code=HRM-AUTH-401"
+    },
+    {
+      "tc": "TC-HRM-MOB-01-LOGIN-HP-001(api)",
+      "verdict": "PASS",
+      "evidence": "api",
+      "detail": "mems=1 uuid=10000000-0000-4000-8000-000000000001"
+    },
+    {
+      "tc": "TC-HRM-MOB-01-LOGIN-FD-001(ui)",
+      "verdict": "PASS",
+      "evidence": "01-fd-after.png",
+      "detail": "Lỗi | HRM-AUTH-401: Email hoặc mật khẩu không đúng"
+    },
+    {
+      "tc": "TC-HRM-MOB-01-LOGIN-HP-001",
+      "verdict": "PASS",
+      "evidence": "01-home.png",
+      "detail": "U0 | UAT NV 0003 | Nhân viên |  | Tập đoàn X.E |  | Chấm công |  | Nghỉ phép |  | Phiếu lương |  | 2 | Việc | Đồng nghiệp"
+    },
+    {
+      "tc": "TC-HRM-MOB-02-SINGLE-HP-002",
+      "verdict": "PASS",
+      "evidence": "01-home.png",
+      "detail": "mems=1 uuid=10000000-0000-4000-8000-000000000001 markers="
+    },
+    {
+      "tc": "TC-HRM-MOB-02-CONFIRM-HP-001",
+      "verdict": "N/A",
+      "evidence": "api",
+      "detail": "persona has 1 membership(s) — multi-CT picker not exercised"
+    },
+    {
+      "tc": "TC-HRM-MOB-02-CONFIRM-FD-001",
+      "verdict": "N/A",
+      "evidence": "api",
+      "detail": "requires multi-CT forced confirm path"
+    },
+    {
+      "tc": "TC-HRM-MOB-02-MISMATCH-AU-001",
+      "verdict": "PASS",
+      "evidence": "api",
+      "detail": "active company_uuid=10000000-0000-4000-8000-000000000001 (not slug main)"
+    },
+    {
+      "tc": "TC-HRM-MOB-04-OPEN-HP-003",
+      "verdict": "PASS",
+      "evidence": "04-checkin.png",
+      "detail": "Chấm công | Hôm nay · 04/08/2026 | U0 | UAT NV 0003 | Mã nhân viên | UAT-0003 |  | Vị trí thiết bị | Đang lấy vị trí… | Chấm công vào | Lịch sử chấm công | "
+    },
+    {
+      "tc": "TC-HRM-MOB-04-CHECKIN-HP-001",
+      "verdict": "PASS",
+      "evidence": "04-after-submit-2.png",
+      "detail": "Chấm công | Vị trí thiết bị | Đang lấy vị trí… | Chấm công vào | Lịch sử chấm công"
+    },
+    {
+      "tc": "TC-HRM-MOB-04-GPS-HP-002",
+      "verdict": "PASS",
+      "evidence": "04-checkin.png",
+      "detail": "permission pre-granted; coords UI optional"
+    },
+    {
+      "tc": "TC-HRM-MOB-06-L2-SG-001",
+      "verdict": "SPEC_GAP",
+      "evidence": "by-uc",
+      "detail": "Leave/att L2 ladder inventory — không invent PASS"
+    },
+    {
+      "tc": "TC-HRM-MOB-06-L2-SG-002",
+      "verdict": "SPEC_GAP",
+      "evidence": "by-uc",
+      "detail": "After L1 non-terminal when threshold exceeded — design inventory only"
+    },
+    {
+      "tc": "TC-HRM-MOB-06-LV-NAV-HP-004",
+      "verdict": "FAIL",
+      "evidence": "06-leave-list.png",
+      "detail": "Đội nhóm | Khác | 45 | NH | Nhân viên | Khác | QAHDSDQ2ASY | NH | NV HDSDQG3HJ | Chưa chấm | Nhân viên | Khác"
+    },
+    {
+      "tc": "TC-HRM-MOB-06-LV-CREATE-HP-002",
+      "verdict": "PARTIAL",
+      "evidence": "06-leave-wizard.png",
+      "detail": "Wizard opened — submit mutate deferred (smoke; avoid orphan leave without mgr path)"
+    },
+    {
+      "tc": "TC-HRM-MOB-06-ATT-NAV-HP-003",
+      "verdict": "PASS",
+      "evidence": "06-att.png",
+      "detail": "Chấm công | Hôm nay · 04/08/2026 | U0 | UAT NV 0003 | Mã nhân viên | UAT-0003 |  | Vị trí thiết bị | Đang lấy vị trí… | Chấm công vào | Lịch sử chấm công | "
+    },
+    {
+      "tc": "TC-HRM-MOB-06-ATT-CREATE-HP-001",
+      "verdict": "NOT_RUN",
+      "evidence": "06-att.png",
+      "detail": "Smoke stopped at nav — full ATT submit needs ISO fields + U65 FE chain; not invented PASS"
+    },
+    {
+      "tc": "TC-HRM-MOB-06-VAL-FD-001",
+      "verdict": "NOT_RUN",
+      "evidence": "—",
+      "detail": "FD empty submit deferred to dedicated leave/att wave"
+    }
+  ],
+  "email": "uat.nv0003@xe.vn",
+  "uuid": "10000000-0000-4000-8000-000000000001",
+  "mems": 1
+}

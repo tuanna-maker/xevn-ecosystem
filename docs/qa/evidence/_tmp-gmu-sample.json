@@ -1,0 +1,63 @@
+﻿{
+    "success":  true,
+    "code":  "XBOS-TENANT-200",
+    "message":  "Group member units loaded",
+    "data":  {
+                 "holding":  {
+                                 "tenant_id":  "xevn",
+                                 "name":  "Tập đoàn XeVN",
+                                 "short_name":  "Tập đoàn"
+                             },
+                 "members":  [
+                                 {
+                                     "tenant_id":  "xe-tmdv",
+                                     "tenant_name":  "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+                                     "tenant_short_name":  "X.E TM-DV",
+                                     "id":  "88665f2e-86d5-410f-8219-1044ff8ec257",
+                                     "code":  "XE_TMDV",
+                                     "name":  "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+                                     "entity_type":  "subsidiary",
+                                     "payload":  {
+                                                     "shortName":  "X.E TM-DV"
+                                                 }
+                                 },
+                                 {
+                                     "tenant_id":  "visun",
+                                     "tenant_name":  "Công ty TNHH Du lịch Visun",
+                                     "tenant_short_name":  "Visun",
+                                     "id":  "dfb107a7-99e3-433a-94e5-f78ce8b2d665",
+                                     "code":  "VISUN",
+                                     "name":  "Công ty TNHH Du lịch Visun",
+                                     "entity_type":  "subsidiary",
+                                     "payload":  {
+                                                     "shortName":  "Visun"
+                                                 }
+                                 },
+                                 {
+                                     "tenant_id":  "xe-du-lich",
+                                     "tenant_name":  "Công ty TNHH Du lịch X.E Việt Nam",
+                                     "tenant_short_name":  "X.E Du lịch VN",
+                                     "id":  "fd984157-5caf-4ed4-aee4-6aec82e0291a",
+                                     "code":  "XE_DU_LICH",
+                                     "name":  "Công ty TNHH Du lịch X.E Việt Nam",
+                                     "entity_type":  "subsidiary",
+                                     "payload":  {
+                                                     "shortName":  "X.E Du lịch VN"
+                                                 }
+                                 },
+                                 {
+                                     "tenant_id":  "xe-vietnam",
+                                     "tenant_name":  "Công ty TNHH X.E Việt Nam",
+                                     "tenant_short_name":  "X.E Việt Nam",
+                                     "id":  "dbaf6552-806d-4f1d-a7de-d5ed8cc7150d",
+                                     "code":  "XE_VIETNAM",
+                                     "name":  "Công ty TNHH X.E Việt Nam",
+                                     "entity_type":  "subsidiary",
+                                     "payload":  {
+                                                     "shortName":  "X.E Việt Nam"
+                                                 }
+                                 }
+                             ]
+             },
+    "timestamp":  "2026-07-27T02:42:35.093Z"
+}

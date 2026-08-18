@@ -1,0 +1,339 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-QA-02",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-FE-01",
+  "resume_chunk": "K5",
+  "startedAt": "2026-08-07T11:44:26.256Z",
+  "stamp": "ATTPLATQA2-MSIVNE4A",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "apiCompanyId": "main"
+  },
+  "u65": "zero-seed · browser-only · FE after 2xx + F5",
+  "hdsd_align": "Settings → Loại phép ATT · Attendance → Nghỉ phép create picker · retire Ngừng",
+  "honesty": {
+    "attendance_uat_ready": false,
+    "payroll_e2e_ready": false,
+    "seed_used": false,
+    "deny_module_att_uat": true,
+    "deny_j_star_promote": true,
+    "deny_reopen_att_qc_01_l1": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "LVT_KEY": "hr_custom_09_msivne4a",
+    "LVT_LABEL": "Phép QA ATT msivne4a"
+  },
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "ac": {
+    "L0-STACK": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:44:26.293Z",
+      "summary": "portal 200 · hrm 200 · xbos 200"
+    },
+    "AC-PLT-ATT-01-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:44:36.149Z",
+      "summary": "Clicked settings-tab-att-leave-types"
+    },
+    "AC-PLT-ATT-01-PANEL": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:44:36.229Z",
+      "summary": "Panel settings-att-leave-types visible"
+    },
+    "AC-PLT-ATT-01-CREATE-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:44:37.937Z",
+      "summary": "UPSERT leave-types PUT → 200 key=hr_custom_09_msivne4a",
+      "network": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/attendance/leave-types",
+        "id": "94df8e8b-b598-459d-a393-46e0f0c01198",
+        "leaveTypeKey": "hr_custom_09_msivne4a"
+      }
+    },
+    "AC-PLT-ATT-01-F5-ROW": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:44:43.701Z",
+      "summary": "Row settings-att-leave-type-row-hr_custom_09_msivne4a visible after F5"
+    },
+    "AC-PLT-ATT-01-LEAVE-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:44:50.212Z",
+      "summary": "att-leave-precision visible"
+    },
+    "AC-PLT-ATT-01-PICKER": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:44:54.232Z",
+      "summary": "Picker selected hr_custom_09_msivne4a · effective hasKey=true status=200",
+      "probes": {
+        "status": 200,
+        "count": 7,
+        "hasNewKey": true,
+        "via": "api_probe_main_scope",
+        "company_id": "main",
+        "sampleKeys": [
+          "hr_custom_09",
+          "hr_custom_09_msiv8ixk",
+          "hr_custom_09_msivne4a",
+          "lvt_01",
+          "lvt_02",
+          "lvt_03",
+          "lvt_04"
+        ]
+      }
+    },
+    "AC-PLT-ATT-02-LEAVE-CREATE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:44:54.575Z",
+      "summary": "POST leave-requests → 201 id=f1fbed06-1198-43cc-9eef-e8e13d95abbe type=hr_custom_09_msivne4a err=HRM-LEAVE-201"
+    },
+    "AC-PLT-ATT-02-RETIRE-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:45:46.265Z",
+      "summary": "Retire → 201 · active row gone=true · feBtn=true"
+    },
+    "AC-PLT-ATT-02-PICKER-HIDE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:45:54.870Z",
+      "summary": "effective hasKey=false · pickerHasRetired=false"
+    },
+    "AC-PLT-ATT-02-HISTORY": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:46:01.725Z",
+      "summary": "Leave f1fbed06-1198-43cc-9eef-e8e13d95abbe still leave_type=hr_custom_09_msivne4a after retire · FE text has key/label=true"
+    },
+    "MUST_KEEP-SHIFTS-SHEETS": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:46:07.295Z",
+      "summary": "work_shifts 200 · attendance-sheets 200"
+    },
+    "NO-HARDCODE-LVT": {
+      "verdict": "PASS",
+      "at": "2026-08-07T11:46:07.295Z",
+      "summary": "effective sample=[\"hr_custom_09\",\"hr_custom_09_msiv8ixk\",\"hr_custom_09_msivne4a\",\"lvt_01\",\"lvt_02\",\"lvt_03\",\"lvt_04\"] hasNewKey=true · open key hr_custom_09_msivne4a"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "at": "2026-08-07T11:44:34.626Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types",
+      "at": "2026-08-07T11:44:36.319Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "at": "2026-08-07T11:44:36.343Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "at": "2026-08-07T11:44:37.977Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "at": "2026-08-07T11:44:42.086Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T11:44:45.458Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "at": "2026-08-07T11:44:46.975Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "at": "2026-08-07T11:44:57.652Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types?company_id=main&status=active",
+      "at": "2026-08-07T11:45:45.191Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T11:45:47.064Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "at": "2026-08-07T11:45:48.716Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T11:45:56.169Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-types/effective?company_id=main",
+      "at": "2026-08-07T11:45:58.393Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T11:46:02.631Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-qa-02/01-settings-att-leave-types.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-qa-02/02-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-qa-02/03-settings-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-qa-02/04-leave-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-qa-02/05-leave-create-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-qa-02/06-picker-after-select.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-qa-02/07-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-qa-02/08-picker-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-qa-02/09-leave-list-history.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-qa-02/10-must-keep-shifts-ui.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T11:44:26.355Z",
+      "msg": "loginApi ok"
+    },
+    {
+      "at": "2026-08-07T11:44:27.241Z",
+      "msg": "goto /hr/settings Loại phép ATT"
+    },
+    {
+      "at": "2026-08-07T11:44:36.269Z",
+      "msg": "click Tạo loại phép key=hr_custom_09_msivne4a"
+    },
+    {
+      "at": "2026-08-07T11:44:39.178Z",
+      "msg": "F5 settings"
+    },
+    {
+      "at": "2026-08-07T11:44:43.702Z",
+      "msg": "goto /hr/attendance → Nghỉ phép"
+    },
+    {
+      "at": "2026-08-07T11:44:55.159Z",
+      "msg": "back to Settings retire"
+    },
+    {
+      "at": "2026-08-07T11:46:01.743Z",
+      "msg": "must_keep work_shifts + attendance-sheets"
+    }
+  ],
+  "probes": {
+    "upsert": {
+      "status": 200,
+      "method": "PUT",
+      "url": "/api/hrm/attendance/leave-types",
+      "id": "94df8e8b-b598-459d-a393-46e0f0c01198",
+      "leaveTypeKey": "hr_custom_09_msivne4a"
+    },
+    "effective": {
+      "status": 200,
+      "count": 7,
+      "hasNewKey": true,
+      "via": "api_probe_main_scope",
+      "company_id": "main",
+      "sampleKeys": [
+        "hr_custom_09",
+        "hr_custom_09_msiv8ixk",
+        "hr_custom_09_msivne4a",
+        "lvt_01",
+        "lvt_02",
+        "lvt_03",
+        "lvt_04"
+      ]
+    },
+    "employee": {
+      "status": 200,
+      "id": "0500220b-f289-40df-b07e-86316285439b",
+      "code": "UAT-0100"
+    },
+    "retire": {
+      "status": 201,
+      "feButton": true,
+      "url": null,
+      "fallbackApi": true
+    },
+    "retireApi": {
+      "status": 201,
+      "id": "94df8e8b-b598-459d-a393-46e0f0c01198"
+    },
+    "effectiveAfterRetire": {
+      "status": 200,
+      "hasKey": false,
+      "count": 6
+    },
+    "history": {
+      "status": 200,
+      "leaveId": "f1fbed06-1198-43cc-9eef-e8e13d95abbe",
+      "key": "hr_custom_09_msivne4a",
+      "intact": true
+    },
+    "must_keep": {
+      "work_shifts": 200,
+      "attendance_sheets": 200
+    }
+  },
+  "leaveCreate": {
+    "status": 201,
+    "id": "f1fbed06-1198-43cc-9eef-e8e13d95abbe",
+    "leave_type": "hr_custom_09_msivne4a",
+    "start": "2027-06-19",
+    "error": "HRM-LEAVE-201",
+    "bodySnippet": "{\"success\":true,\"code\":\"HRM-LEAVE-201\",\"message\":\"Leave request created\",\"data\":{\"id\":\"f1fbed06-1198-43cc-9eef-e8e13d95abbe\",\"company_id\":\"holding\",\"employee_id\":\"0500220b-f289-40df-b07e-86316285439b\",\"leave_type\":\"hr_custom_09_msivne4a\",\"start_date\":\"2027-06-18T17:00:00.000Z\",\"end_date\":\"2027-06-18T17:00:00.000Z\",\"reason\":\"QA-02 history msivne4a\",\"status\":\"pending\",\"requested_at\":\"2026-08-07T11:4",
+    "note": "API leave create AFTER FE catalog create — history assert only (not seed catalog)"
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T11:46:07.606Z",
+  "summary": {
+    "passed": 13,
+    "failed": 0,
+    "blocked": 0,
+    "criticalFail": false,
+    "stamp": "ATTPLATQA2-MSIVNE4A"
+  }
+}

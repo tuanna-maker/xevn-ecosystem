@@ -1,0 +1,476 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-OT-FE-ADMIN-QA-FE-01",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-OT-FE-ADMIN-BUILD-FE-01",
+  "startedAt": "2026-08-08T18:04:34.298Z",
+  "stamp": "ATTADMINQAFE-MSKOO3JR",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser FE create/edit/retire/F5 · Network 2xx on sealed Nest paths only",
+  "hdsd_align": "Settings tabs att-attendance-codes · att-ot-types · att-ot-comp-types · ATT CFG sidebar attendance-codes · ot-types · ot-comp-types",
+  "honesty": {
+    "attendance_uat_ready": false,
+    "attendance_e2e_linkage_ready": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "deny_module_att_uat": true,
+    "deny_lvrule": true,
+    "deny_dual_write": true,
+    "l1_retain": {
+      "ATT_CODE": "ATTCODEQA-MSK4T1A5",
+      "OT_TYPE": "ATTOTQA-MSK8VETU",
+      "OT_COMP": "ATTCOMPQA-MSKARXQU"
+    },
+    "consumer_eff_closed_retain": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "catalogs": {
+    "ATT-CODE": {
+      "id": "ATT-CODE",
+      "key": "wfh_half_qa_mskoo3jr",
+      "before_row": false,
+      "create": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/attendance/attendance-codes",
+        "ok": true,
+        "code": "wfh_half_qa_mskoo3jr"
+      },
+      "edit": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/attendance/attendance-codes",
+        "ok": true
+      },
+      "retire": {
+        "status": 201,
+        "method": "POST",
+        "url": "/api/hrm/attendance/attendance-codes/2edba255-005b-4eaf-98a0-6de0aae9961b/retire?company_id=main",
+        "ok": true
+      },
+      "f5_after_create": {
+        "row_visible": true
+      },
+      "f5_after_retire": {
+        "row_hidden": true
+      },
+      "fe_after_create": true,
+      "fe_after_edit": true,
+      "fe_after_retire": true,
+      "nest_seal_ok": true,
+      "verdict": "PASS"
+    },
+    "OT-TYPE": {
+      "id": "OT-TYPE",
+      "key": "ot_night_qa_mskoo3jr",
+      "before_row": false,
+      "create": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/attendance/ot-types",
+        "ok": true,
+        "code": "ot_night_qa_mskoo3jr"
+      },
+      "edit": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/attendance/ot-types",
+        "ok": true
+      },
+      "retire": {
+        "status": 201,
+        "method": "POST",
+        "url": "/api/hrm/attendance/ot-types/33b43a66-2b5e-480c-8d25-bb83db6d895b/retire?company_id=main",
+        "ok": true
+      },
+      "f5_after_create": {
+        "row_visible": true
+      },
+      "f5_after_retire": {
+        "row_hidden": true
+      },
+      "fe_after_create": true,
+      "fe_after_edit": true,
+      "fe_after_retire": true,
+      "nest_seal_ok": true,
+      "verdict": "PASS"
+    },
+    "OT-COMP": {
+      "id": "OT-COMP",
+      "key": "banked_hours_qa_mskoo3jr",
+      "before_row": false,
+      "create": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/attendance/ot-comp-types",
+        "ok": true,
+        "code": "banked_hours_qa_mskoo3jr"
+      },
+      "edit": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/attendance/ot-comp-types",
+        "ok": true
+      },
+      "retire": {
+        "status": 201,
+        "method": "POST",
+        "url": "/api/hrm/attendance/ot-comp-types/5639f3ff-130e-4600-b09c-b0e8330a33e3/retire?company_id=main",
+        "ok": true
+      },
+      "f5_after_create": {
+        "row_visible": true
+      },
+      "f5_after_retire": {
+        "row_hidden": true
+      },
+      "fe_after_create": true,
+      "fe_after_edit": true,
+      "fe_after_retire": true,
+      "nest_seal_ok": true,
+      "verdict": "PASS"
+    }
+  },
+  "cfg_sidebar": {
+    "shell": true,
+    "attendance_codes": true,
+    "ot_types": true,
+    "ot_comp_types": true,
+    "settings_tab_mode": "role-exact",
+    "verdict": "PASS"
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes?company_id=main&status=active",
+      "at": "2026-08-08T18:04:36.332Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes",
+      "at": "2026-08-08T18:04:40.263Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes?company_id=main&status=active",
+      "at": "2026-08-08T18:04:40.285Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes?company_id=main&status=active",
+      "at": "2026-08-08T18:04:42.647Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes",
+      "at": "2026-08-08T18:04:47.661Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes?company_id=main&status=active",
+      "at": "2026-08-08T18:04:47.692Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/attendance-codes/2edba255-005b-4eaf-98a0-6de0aae9961b/retire?company_id=main",
+      "at": "2026-08-08T18:04:53.000Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes?company_id=main&status=active",
+      "at": "2026-08-08T18:04:53.026Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes?company_id=main&status=active",
+      "at": "2026-08-08T18:04:55.032Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:00.180Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-types",
+      "at": "2026-08-08T18:05:04.177Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:04.200Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:06.446Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-types",
+      "at": "2026-08-08T18:05:11.438Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:11.461Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/ot-types/33b43a66-2b5e-480c-8d25-bb83db6d895b/retire?company_id=main",
+      "at": "2026-08-08T18:05:16.773Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:17.058Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:18.793Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-comp-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:23.847Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-comp-types",
+      "at": "2026-08-08T18:05:27.801Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-comp-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:27.818Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-comp-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:30.136Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-comp-types",
+      "at": "2026-08-08T18:05:35.152Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-comp-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:35.175Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/ot-comp-types/5639f3ff-130e-4600-b09c-b0e8330a33e3/retire?company_id=main",
+      "at": "2026-08-08T18:05:40.445Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-comp-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:40.462Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-comp-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:42.768Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-codes?company_id=main&status=active",
+      "at": "2026-08-08T18:05:52.260Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:53.709Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/ot-comp-types?company_id=main&status=active",
+      "at": "2026-08-08T18:05:55.308Z"
+    }
+  ],
+  "dual_write_hits": [],
+  "lvrule_hits": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/ATT-CODE-01-before.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/ATT-CODE-02-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/ATT-CODE-03-f5-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/ATT-CODE-04-after-edit.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/ATT-CODE-05-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/ATT-CODE-06-f5-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-TYPE-01-before.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-TYPE-02-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-TYPE-03-f5-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-TYPE-04-after-edit.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-TYPE-05-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-TYPE-06-f5-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-COMP-01-before.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-COMP-02-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-COMP-03-f5-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-COMP-04-after-edit.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-COMP-05-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/OT-COMP-06-f5-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/cfg-00-shell.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/cfg-attendance_codes.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/cfg-ot_types.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-att-code-ot-fe-admin-qa-fe-01/cfg-ot_comp_types.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-08T18:04:34.425Z",
+      "msg": "loginApi ok"
+    },
+    {
+      "at": "2026-08-08T18:04:35.074Z",
+      "msg": "goto Settings tab=att-attendance-codes catalog=ATT-CODE"
+    },
+    {
+      "at": "2026-08-08T18:04:40.196Z",
+      "msg": "create ATT-CODE key=wfh_half_qa_mskoo3jr"
+    },
+    {
+      "at": "2026-08-08T18:04:47.541Z",
+      "msg": "edit ATT-CODE key=wfh_half_qa_mskoo3jr"
+    },
+    {
+      "at": "2026-08-08T18:04:48.952Z",
+      "msg": "retire ATT-CODE key=wfh_half_qa_mskoo3jr"
+    },
+    {
+      "at": "2026-08-08T18:04:59.250Z",
+      "msg": "goto Settings tab=att-ot-types catalog=OT-TYPE"
+    },
+    {
+      "at": "2026-08-08T18:05:04.117Z",
+      "msg": "create OT-TYPE key=ot_night_qa_mskoo3jr"
+    },
+    {
+      "at": "2026-08-08T18:05:11.376Z",
+      "msg": "edit OT-TYPE key=ot_night_qa_mskoo3jr"
+    },
+    {
+      "at": "2026-08-08T18:05:12.738Z",
+      "msg": "retire OT-TYPE key=ot_night_qa_mskoo3jr"
+    },
+    {
+      "at": "2026-08-08T18:05:23.028Z",
+      "msg": "goto Settings tab=att-ot-comp-types catalog=OT-COMP"
+    },
+    {
+      "at": "2026-08-08T18:05:27.738Z",
+      "msg": "create OT-COMP key=banked_hours_qa_mskoo3jr"
+    },
+    {
+      "at": "2026-08-08T18:05:35.074Z",
+      "msg": "edit OT-COMP key=banked_hours_qa_mskoo3jr"
+    },
+    {
+      "at": "2026-08-08T18:05:36.440Z",
+      "msg": "retire OT-COMP key=banked_hours_qa_mskoo3jr"
+    },
+    {
+      "at": "2026-08-08T18:05:47.021Z",
+      "msg": "goto /hr/attendance → Thiết lập CFG sidebar spot"
+    }
+  ],
+  "ac": {
+    "AC-L0": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:04:34.332Z",
+      "summary": "hrm+xbos+portal 200"
+    },
+    "AC-ATT-CODE-CRUD-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:04:59.248Z",
+      "summary": "{\"create\":{\"status\":200,\"method\":\"PUT\",\"url\":\"/api/hrm/attendance/attendance-codes\",\"ok\":true,\"code\":\"wfh_half_qa_mskoo3jr\"},\"edit\":{\"status\":200,\"method\":\"PUT\",\"url\":\"/api/hrm/attendance/attendance-codes\",\"ok\":true},\"retire\":{\"status\":201,\"method\":\"POST\",\"url\":\"/api/hrm/attendance/attendance-codes/2edba255-005b-4eaf-98a0-6de0aae9961b/retire?company_id=main\",\"ok\":true},\"fe_after_create\":true,\"f5_create\":{\"row_visible\":true},\"fe_after_edit\":true,\"fe_after_retire\":true,\"f5_retire\":{\"row_hidden\":true},\"nest_seal_ok\":true}"
+    },
+    "AC-OT-TYPE-CRUD-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:05:23.026Z",
+      "summary": "{\"create\":{\"status\":200,\"method\":\"PUT\",\"url\":\"/api/hrm/attendance/ot-types\",\"ok\":true,\"code\":\"ot_night_qa_mskoo3jr\"},\"edit\":{\"status\":200,\"method\":\"PUT\",\"url\":\"/api/hrm/attendance/ot-types\",\"ok\":true},\"retire\":{\"status\":201,\"method\":\"POST\",\"url\":\"/api/hrm/attendance/ot-types/33b43a66-2b5e-480c-8d25-bb83db6d895b/retire?company_id=main\",\"ok\":true},\"fe_after_create\":true,\"f5_create\":{\"row_visible\":true},\"fe_after_edit\":true,\"fe_after_retire\":true,\"f5_retire\":{\"row_hidden\":true},\"nest_seal_ok\":true}"
+    },
+    "AC-OT-COMP-CRUD-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:05:47.017Z",
+      "summary": "{\"create\":{\"status\":200,\"method\":\"PUT\",\"url\":\"/api/hrm/attendance/ot-comp-types\",\"ok\":true,\"code\":\"banked_hours_qa_mskoo3jr\"},\"edit\":{\"status\":200,\"method\":\"PUT\",\"url\":\"/api/hrm/attendance/ot-comp-types\",\"ok\":true},\"retire\":{\"status\":201,\"method\":\"POST\",\"url\":\"/api/hrm/attendance/ot-comp-types/5639f3ff-130e-4600-b09c-b0e8330a33e3/retire?company_id=main\",\"ok\":true},\"fe_after_create\":true,\"f5_create\":{\"row_visible\":true},\"fe_after_edit\":true,\"fe_after_retire\":true,\"f5_retire\":{\"row_hidden\":true},\"nest_seal_ok\":true}"
+    },
+    "AC-CFG-SIDEBAR-MOUNT": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:05:56.421Z",
+      "summary": "{\"shell\":true,\"attendance_codes\":true,\"ot_types\":true,\"ot_comp_types\":true,\"settings_tab_mode\":\"role-exact\",\"verdict\":\"PASS\"}"
+    },
+    "AC-DENY-DUAL-WRITE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:05:56.423Z",
+      "summary": "no settings/catalogs mutate"
+    },
+    "AC-DENY-LVRULE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:05:56.424Z",
+      "summary": "no leave-rule mutate"
+    },
+    "AC-HONESTY": {
+      "verdict": "PASS",
+      "at": "2026-08-08T18:05:56.427Z",
+      "summary": "attendance_uat_ready=false · attendance_e2e_linkage_ready=false · C-SLICE-≠-MODULE · L1 RETAIN · consumer EFF CLOSED · no seed"
+    }
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-08T18:05:56.429Z"
+}

@@ -1,0 +1,508 @@
+{
+  "work_item_id": "PO-UAT-ATT-J06C-FULL-01",
+  "parent": "PO-UAT-ATT-QC-01 GWC — J-06c full mutate",
+  "startedAt": "2026-08-07T03:18:22.118Z",
+  "u65": "zero-seed · browser-only",
+  "attendance_uat_ready": false,
+  "WAIVE_L2": true,
+  "LV_02": "WAIVED_P1 — RETAIN — not claimed 🟢",
+  "Option_C": "cấm as SoT",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "CEO": "ceo@xe.vn",
+    "OU": "main",
+    "STAMP": "J06CF-IDKL2E",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "steps": {
+    "L0": {
+      "verdict": "PASS",
+      "summary": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "at": "2026-08-07T03:18:22.140Z"
+    },
+    "J06c-PICK": {
+      "verdict": "PASS",
+      "summary": "existing_submitted id=3934591a status=submitted",
+      "at": "2026-08-07T03:18:28.076Z"
+    },
+    "J-HRM-06c": {
+      "verdict": "PASS",
+      "summary": "sign×3 close×1 status=closed F5=closed",
+      "at": "2026-08-07T03:18:47.301Z"
+    },
+    "AC-01": {
+      "verdict": "PASS",
+      "summary": "mat=[\"2027-04-06\",\"2027-04-07\"] leave=2 F5=2",
+      "at": "2026-08-07T03:19:13.890Z"
+    },
+    "AC-02": {
+      "verdict": "PASS",
+      "summary": "cancel=201/HRM-LEAVE-205 markers 2→0 F5=0",
+      "at": "2026-08-07T03:19:25.638Z"
+    },
+    "AC-03": {
+      "verdict": "PASS",
+      "summary": "409 LOCKED HRM-ATT-SHEET-LOCKED day=2026-07-20",
+      "at": "2026-08-07T03:23:36.135Z",
+      "delta": true
+    },
+    "WAIVE_L2": {
+      "verdict": "RETAIN",
+      "summary": "WAIVED_P1 — not exercised / not claimed 🟢",
+      "at": "2026-08-07T03:19:44.859Z"
+    },
+    "HONESTY": {
+      "verdict": "PASS",
+      "summary": "attendance_uat_ready=false · WAIVE retained · no Option C",
+      "at": "2026-08-07T03:19:44.860Z"
+    }
+  },
+  "clicks": [
+    {
+      "step": "J06c-0",
+      "detail": "navigate sheets list",
+      "at": "2026-08-07T03:18:22.757Z"
+    },
+    {
+      "step": "S4-open",
+      "detail": "att-sheet-row-3934591a",
+      "at": "2026-08-07T03:18:28.079Z"
+    },
+    {
+      "step": "S-sign",
+      "detail": "att-sign-confirm-employee round 0",
+      "at": "2026-08-07T03:18:31.094Z"
+    },
+    {
+      "step": "S-sign",
+      "detail": "att-sign-confirm-direct_manager round 1",
+      "at": "2026-08-07T03:18:33.623Z"
+    },
+    {
+      "step": "S-sign",
+      "detail": "att-sign-confirm-hr_admin round 2",
+      "at": "2026-08-07T03:18:36.164Z"
+    },
+    {
+      "step": "S6-close",
+      "detail": "att-sign-close-sheet Chốt",
+      "at": "2026-08-07T03:18:38.777Z"
+    },
+    {
+      "step": "S7-f5",
+      "detail": "F5 after Chốt",
+      "at": "2026-08-07T03:18:42.365Z"
+    },
+    {
+      "step": "AC01-f5",
+      "detail": "reload for AC-01 F5",
+      "at": "2026-08-07T03:19:11.473Z"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-07T03:18:23.689Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-07T03:18:23.915Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-07T03:18:24.087Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T03:18:24.348Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-07T03:18:26.492Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets/3934591a-50ec-452b-940f-7f29ede50272/signatures?company_id=main",
+      "at": "2026-08-07T03:18:28.198Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-06-30&to_date=2026-07-06&page=1&page_size=100",
+      "at": "2026-08-07T03:18:28.299Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/attendance-sheets/3934591a-50ec-452b-940f-7f29ede50272/signatures?company_id=main",
+      "at": "2026-08-07T03:18:31.244Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets/3934591a-50ec-452b-940f-7f29ede50272/signatures?company_id=main",
+      "at": "2026-08-07T03:18:31.326Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-07T03:18:31.362Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/attendance-sheets/3934591a-50ec-452b-940f-7f29ede50272/signatures?company_id=main",
+      "at": "2026-08-07T03:18:33.778Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets/3934591a-50ec-452b-940f-7f29ede50272/signatures?company_id=main",
+      "at": "2026-08-07T03:18:33.867Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-07T03:18:33.905Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/attendance-sheets/3934591a-50ec-452b-940f-7f29ede50272/signatures?company_id=main",
+      "at": "2026-08-07T03:18:36.309Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets/3934591a-50ec-452b-940f-7f29ede50272/signatures?company_id=main",
+      "at": "2026-08-07T03:18:36.427Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-07T03:18:36.475Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/attendance-sheets/3934591a-50ec-452b-940f-7f29ede50272/close?company_id=main",
+      "at": "2026-08-07T03:18:38.915Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets/3934591a-50ec-452b-940f-7f29ede50272/signatures?company_id=main",
+      "at": "2026-08-07T03:18:39.012Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-07T03:18:39.054Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets/3934591a-50ec-452b-940f-7f29ede50272/signatures?company_id=main",
+      "at": "2026-08-07T03:18:39.119Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-07T03:18:42.870Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-07T03:18:42.927Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-07T03:18:42.995Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T03:18:43.152Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-07T03:18:45.770Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-07T03:18:47.711Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-07T03:18:47.758Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-07T03:18:47.881Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T03:18:48.091Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b&year=2026",
+      "at": "2026-08-07T03:18:54.319Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b&leave_type=LVT_01&year=2026",
+      "at": "2026-08-07T03:18:55.316Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/leave-requests",
+      "at": "2026-08-07T03:18:58.239Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T03:18:58.390Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b&year=2026",
+      "at": "2026-08-07T03:18:58.522Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b&leave_type=LVT_01&year=2026",
+      "at": "2026-08-07T03:18:58.523Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/leave-requests/2da6feac-5461-4216-9394-41f25e4f8508/approve",
+      "at": "2026-08-07T03:19:07.343Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-07T03:19:11.987Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-07T03:19:12.043Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-07T03:19:12.139Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T03:19:12.301Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/leave-requests/2da6feac-5461-4216-9394-41f25e4f8508/cancel",
+      "at": "2026-08-07T03:19:19.631Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T03:19:19.782Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-07T03:19:23.704Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-07T03:19:23.769Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-07T03:19:23.876Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-07T03:19:24.093Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-balance/panel?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b&year=2026",
+      "at": "2026-08-07T03:19:30.238Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-balance?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b&leave_type=LVT_01&year=2026",
+      "at": "2026-08-07T03:19:31.176Z"
+    },
+    {
+      "method": "POST",
+      "status": 409,
+      "url": "/api/hrm/attendance/leave-requests",
+      "at": "2026-08-07T03:19:34.280Z"
+    }
+  ],
+  "leave": {
+    "create": {
+      "status": 201,
+      "code": "HRM-LEAVE-201",
+      "id": "2da6feac-5461-4216-9394-41f25e4f8508"
+    },
+    "approve": {
+      "status": 201,
+      "code": "HRM-LEAVE-203",
+      "message": "Leave request approved",
+      "materialized_days": [
+        "2027-04-06",
+        "2027-04-07"
+      ]
+    },
+    "cancel": {
+      "status": 201,
+      "code": "HRM-LEAVE-205",
+      "requestStatus": "cancelled",
+      "via": "browser-network"
+    },
+    "lockCreate": {
+      "status": 201,
+      "code": "HRM-LEAVE-201",
+      "message": "Leave request created",
+      "url": "/api/hrm/attendance/leave-requests",
+      "id": "ca6af8b3-5e0b-400e-ae8b-7b1accd8637c"
+    },
+    "lockApprove": {
+      "status": 409,
+      "code": "HRM-ATT-SHEET-LOCKED",
+      "message": "Attendance sheet is closed; cannot materialize leave markers for 2026-07-20",
+      "url": "/api/hrm/attendance/leave-requests/ca6af8b3-5e0b-400e-ae8b-7b1accd8637c/approve"
+    }
+  },
+  "ac": {
+    "AC-ATT-LV-SHEET-01": "PASS",
+    "AC-ATT-LV-SHEET-02": "PASS",
+    "AC-ATT-LV-SHEET-03": "PASS",
+    "J-HRM-06c": "PASS"
+  },
+  "j06c": {
+    "sheetId": "3934591a-50ec-452b-940f-7f29ede50272",
+    "statusBefore": "submitted",
+    "statusAfter": "closed",
+    "submitPost2xx": 0,
+    "signaturesPost2xx": 3,
+    "closePost2xx": 1,
+    "signPanelVisible": true,
+    "closeEnabled": true,
+    "feClosedChip": true,
+    "f5Status": "closed",
+    "blocked": null,
+    "gap": null,
+    "pickReason": "existing_submitted",
+    "dataActiveSheetId": "3934591a-50ec-452b-940f-7f29ede50272"
+  },
+  "records": {
+    "afterApprove": {
+      "status": 200,
+      "leave_count": 2
+    },
+    "afterCancel": {
+      "status": 200,
+      "leave_count": 0
+    },
+    "afterCancelF5": {
+      "status": 200,
+      "leave_count": 0
+    },
+    "afterApproveF5": {
+      "status": 200,
+      "leave_count": 2
+    }
+  },
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Error creating leave request: ApiClientError: Leave request overlaps an existing pending or approved leave\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786068682361:67:15)\n    at async requestHrm (http://127.0"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/20-sheets-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/22-sheet-open.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/23-sign-panel.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/24-after-signs.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/25-after-close.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/26-after-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/01-ac01-after-approve.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/02-ac02-after-cancel.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/03-ac03-lock.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/03b-ac03-delta.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uat-att-j06c-full-01/03b-ac03-delta.png"
+  ],
+  "residual": [],
+  "obs": [],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T03:19:44.860Z",
+  "_leaveMode": "lock",
+  "ac03_delta": {
+    "stamp": "J06AC3-DQXDU",
+    "attempts": 1,
+    "verdict": "PASS"
+  }
+}

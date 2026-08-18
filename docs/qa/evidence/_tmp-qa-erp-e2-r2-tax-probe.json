@@ -1,0 +1,68 @@
+{
+  "work_item_id": "QA-ERP-E2-01-R2",
+  "url": "http://127.0.0.1:5173/hr/payroll?portal=1&tenantId=xevn&companyId=main",
+  "crash": false,
+  "bodyLen1": 136339,
+  "pageErrors": [],
+  "openTrace": {
+    "calcText": "Tính lương",
+    "steps": [
+      "mouse-click"
+    ],
+    "box": {
+      "x": 636.65625,
+      "y": 79,
+      "height": 44,
+      "width": 133.515625
+    },
+    "menuAfterClick": [
+      "Lập bảng lương",
+      "Danh sách bảng lương",
+      "Tạm ứng",
+      "Mẫu bảng lương",
+      "Bảng quyết toán thuế"
+    ],
+    "portals": [
+      {
+        "role": "combobox",
+        "state": "closed",
+        "text": "Tất cả đơn vị (rollup)"
+      },
+      {
+        "role": null,
+        "state": "closed",
+        "text": "Chính sách"
+      },
+      {
+        "role": null,
+        "state": "closed",
+        "text": "Dữ liệu tính lương"
+      },
+      {
+        "role": null,
+        "state": "open",
+        "text": "Tính lương"
+      },
+      {
+        "role": "menu",
+        "state": "open",
+        "text": "Lập bảng lươngDanh sách bảng lươngTạm ứngMẫu bảng lươngBảng quyết toán thuế"
+      }
+    ]
+  },
+  "clicked": {
+    "ok": true,
+    "text": "Bảng quyết toán thuế",
+    "count": 5
+  },
+  "body": {
+    "title": true,
+    "hideMsg": true,
+    "inventCta": false,
+    "mockIsland": false,
+    "sample": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn Tổng quan Thành phần lương Chính sách Dữ liệu tính lương Tính lương Chi trả lương Báo cáo Bảng quyết toán thuế Quy?t to�n thu? ch?a c� API ? kh�ng t?o d? li?u gi? tr�n m�n h�nh n�y. Khi c� endpoint, s? m? l?i form theo API_DESIGN (kh�ng invent). Trên 30",
+    "len": 352
+  },
+  "shot": "c:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-erp-e2-01\\r2-tax-hide-probe.png",
+  "pass": true
+}

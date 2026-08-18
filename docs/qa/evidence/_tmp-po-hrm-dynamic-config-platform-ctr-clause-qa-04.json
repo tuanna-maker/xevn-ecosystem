@@ -1,0 +1,714 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-CLAUSE-QA-04",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-CL-AC02-BE-01 + PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-CL-SNAPSHOT-BIND-FE-01",
+  "amend_dispatch": "2026-08-09T00:16:20+07",
+  "program": "PO-HRM-CONTINUOUS-W8-20260807",
+  "stamp": "CLQA4-KN5SCA",
+  "prior_ac01_stamp": "CLQA2-KMCG5L",
+  "prior_qa03_stamp": "CLQA3-KMJRGF",
+  "startedAt": "2026-08-08T17:22:20.218Z",
+  "u65": "zero-seed · issue spine · dual-bind + AC-02/03 post BE+FE peers",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "url_base": "http://127.0.0.1:5173"
+  },
+  "honesty": {
+    "contracts_printable_ready": false,
+    "seed_used": false,
+    "module_ctr_uat_claimed": false,
+    "c_slice": "C-SLICE-≠-MODULE"
+  },
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "ids": {
+    "clauseCode": "CL_IS_CLQA4-KN5SCA",
+    "clauseId": "700fecb8-4a07-4758-bb37-177832fd70bf",
+    "templateBindAfterSave": [
+      {
+        "at": "2026-08-08T17:22:48.842Z",
+        "method": "POST",
+        "url": "/api/hrm/contracts-insurance/contract-templates",
+        "has_top_clause_ids": true,
+        "has_layout_clause_ids": true,
+        "top_len": 0,
+        "nested_len": 0,
+        "ids_match": true,
+        "top_ids_snip": []
+      }
+    ],
+    "templateId": "f00c4b64-0403-49ab-b36d-18d9d3d8e352",
+    "templateCreateStatus": 201,
+    "registryWorkLocation": "Hà Nội — QA spine U65 QA04",
+    "contractCode": "HD-CLQA4-KN5SCA",
+    "contractId": "9cdc6ee6-0a71-4b73-89ae-c9f3e952a656",
+    "previewHasMarker": true,
+    "printVersionId": "3c130e8c-9b1c-4b82-a36b-3d959bb25ca2",
+    "snapshotBeforeJson": [
+      {
+        "code": "LEGAL_CTRQA-HPY05Q",
+        "body_vi": "Căn cứ Bộ luật Lao động 2019 — QA CTRQA-HPY05Q.",
+        "title_vi": "Căn cứ pháp lý QA CTRQA-HPY05Q",
+        "mandatory": false,
+        "sort_order": 0,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "JOB_CTRQA-HPY05Q",
+        "body_vi": "Mô tả công việc QA CTRQA-HPY05Q.",
+        "title_vi": "Công việc QA CTRQA-HPY05Q",
+        "mandatory": false,
+        "sort_order": 1,
+        "clause_group": "JOB_DUTIES",
+        "clause_version": 1
+      },
+      {
+        "code": "LEGAL_CTRQA-HQ0R2B",
+        "body_vi": "Căn cứ Bộ luật Lao động 2019 — QA CTRQA-HQ0R2B.",
+        "title_vi": "Căn cứ pháp lý QA CTRQA-HQ0R2B",
+        "mandatory": false,
+        "sort_order": 2,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "JOB_CTRQA-HQ0R2B",
+        "body_vi": "Mô tả công việc QA CTRQA-HQ0R2B.",
+        "title_vi": "Công việc QA CTRQA-HQ0R2B",
+        "mandatory": false,
+        "sort_order": 3,
+        "clause_group": "JOB_DUTIES",
+        "clause_version": 1
+      },
+      {
+        "code": "LEGAL_CTRQA-ICBUZ7",
+        "body_vi": "Căn cứ Bộ luật Lao động 2019 — QA CTRQA-ICBUZ7.",
+        "title_vi": "Căn cứ pháp lý QA CTRQA-ICBUZ7",
+        "mandatory": false,
+        "sort_order": 12,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "JOB_CTRQA-ICBUZ7",
+        "body_vi": "Mô tả công việc QA CTRQA-ICBUZ7.",
+        "title_vi": "Công việc QA CTRQA-ICBUZ7",
+        "mandatory": false,
+        "sort_order": 13,
+        "clause_group": "JOB_DUTIES",
+        "clause_version": 1
+      },
+      {
+        "code": "LEGAL_CTRQA-ICFFU2",
+        "body_vi": "Căn cứ Bộ luật Lao động 2019 — QA CTRQA-ICFFU2.",
+        "title_vi": "Căn cứ pháp lý QA CTRQA-ICFFU2",
+        "mandatory": false,
+        "sort_order": 14,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "JOB_CTRQA-ICFFU2",
+        "body_vi": "Mô tả công việc QA CTRQA-ICFFU2.",
+        "title_vi": "Công việc QA CTRQA-ICFFU2",
+        "mandatory": false,
+        "sort_order": 15,
+        "clause_group": "JOB_DUTIES",
+        "clause_version": 1
+      },
+      {
+        "code": "LEGAL_UATDND-ICL4R9",
+        "body_vi": "Nội dung UAT DnD UATDND-ICL4R9",
+        "title_vi": "Căn cứ pháp lý UAT UATDND-ICL4R9",
+        "mandatory": false,
+        "sort_order": 16,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "JOB_UATDND-ICL4R9",
+        "body_vi": "Nội dung UAT DnD UATDND-ICL4R9",
+        "title_vi": "Công việc UAT UATDND-ICL4R9",
+        "mandatory": false,
+        "sort_order": 17,
+        "clause_group": "JOB_DUTIES",
+        "clause_version": 1
+      },
+      {
+        "code": "LEGAL_UATDND-ICMSC8",
+        "body_vi": "Nội dung UAT DnD UATDND-ICMSC8",
+        "title_vi": "Căn cứ pháp lý UAT UATDND-ICMSC8",
+        "mandatory": false,
+        "sort_order": 18,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "JOB_UATDND-ICMSC8",
+        "body_vi": "Nội dung UAT DnD UATDND-ICMSC8",
+        "title_vi": "Công việc UAT UATDND-ICMSC8",
+        "mandatory": false,
+        "sort_order": 19,
+        "clause_group": "JOB_DUTIES",
+        "clause_version": 1
+      },
+      {
+        "code": "CL_IS_CLQA-KM4JR3",
+        "body_vi": "Freeze marker V1 CLQA-KM4JR3",
+        "title_vi": "QA ISSUE CLQA-KM4JR3",
+        "mandatory": false,
+        "sort_order": 30,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "CL_IS_CLQA2-KMCG5L",
+        "body_vi": "Freeze marker V2 BLOCKED CLQA2-KMCG5L",
+        "title_vi": "QA ISSUE CLQA2-KMCG5L",
+        "mandatory": false,
+        "sort_order": 33,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "CL_IS_CLQA3-KMJRGF",
+        "body_vi": "Freeze marker V2 BLOCKED CLQA3-KMJRGF",
+        "title_vi": "QA ISSUE spine CLQA3-KMJRGF",
+        "mandatory": false,
+        "sort_order": 34,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "CL_IS_CLQA4-KMVYKU",
+        "body_vi": "Freeze marker V1 CLQA4-KMVYKU",
+        "title_vi": "QA ISSUE spine CLQA4-KMVYKU",
+        "mandatory": false,
+        "sort_order": 35,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "CL_IS_CLQA4-KMZ54C",
+        "body_vi": "Freeze marker V1 CLQA4-KMZ54C",
+        "title_vi": "QA ISSUE spine CLQA4-KMZ54C",
+        "mandatory": false,
+        "sort_order": 36,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      },
+      {
+        "code": "CL_IS_CLQA4-KN5SCA",
+        "body_vi": "Freeze marker V1 CLQA4-KN5SCA",
+        "title_vi": "QA ISSUE spine CLQA4-KN5SCA",
+        "mandatory": false,
+        "sort_order": 37,
+        "clause_group": "LEGAL_BASIS",
+        "clause_version": 1
+      }
+    ]
+  },
+  "dual_bind": {
+    "requests": [
+      {
+        "at": "2026-08-08T17:22:48.842Z",
+        "method": "POST",
+        "url": "/api/hrm/contracts-insurance/contract-templates",
+        "has_top_clause_ids": true,
+        "has_layout_clause_ids": true,
+        "top_len": 0,
+        "nested_len": 0,
+        "ids_match": true,
+        "top_ids_snip": []
+      }
+    ],
+    "verdict": "FAIL",
+    "note": "Dual fields incomplete or empty / mismatched"
+  },
+  "snapshot_probe": {
+    "get": {
+      "status": 200,
+      "code": "HRM-CTR-VER-200",
+      "route": "/api/hrm/contracts-insurance/contracts/9cdc6ee6-0a71-4b73-89ae-c9f3e952a656/print-versions/3c130e8c-9b1c-4b82-a36b-3d959bb25ca2?company_id=main"
+    },
+    "codesInSnapshot": [
+      "LEGAL_CTRQA-HPY05Q",
+      "JOB_CTRQA-HPY05Q",
+      "LEGAL_CTRQA-HQ0R2B",
+      "JOB_CTRQA-HQ0R2B",
+      "LEGAL_CTRQA-ICBUZ7",
+      "JOB_CTRQA-ICBUZ7",
+      "LEGAL_CTRQA-ICFFU2",
+      "JOB_CTRQA-ICFFU2",
+      "LEGAL_UATDND-ICL4R9",
+      "JOB_UATDND-ICL4R9",
+      "LEGAL_UATDND-ICMSC8",
+      "JOB_UATDND-ICMSC8",
+      "CL_IS_CLQA-KM4JR3",
+      "CL_IS_CLQA2-KMCG5L",
+      "CL_IS_CLQA3-KMJRGF",
+      "CL_IS_CLQA4-KMVYKU",
+      "CL_IS_CLQA4-KMZ54C",
+      "CL_IS_CLQA4-KN5SCA"
+    ],
+    "hasClauseCode": true,
+    "bodyV1InSnapshot": true,
+    "jsonLen": 3596
+  },
+  "ac": {
+    "AC-PLT-CTR-CL-01": {
+      "summary": "Not re-tested — sealed CLQA2-KMCG5L",
+      "spec_ref": "QA-02",
+      "verdict": "RETAIN",
+      "at": "2026-08-08T17:22:20.223Z"
+    },
+    "AC-PLT-CTR-CL-02": {
+      "j_id": "J-HRM-CTR-CL-02",
+      "summary": "PATCH 409 HRM-CTR-CL-CODE-CONFLICT fe_soft={\"observed\":true,\"text\":\"Không lưu được điều khoản\\nActive issued clause body change requires POST …/activate (version bump) | Không lưu được điều khoản\",\"mentionsConflict\":true} dual_bind=FAIL",
+      "spec_ref": "BA-01 §4 AC-02 · BE-AC02-01 · FE-SNAPSHOT-BIND-01",
+      "patch_audit": {
+        "at": "2026-08-08T17:23:26.182Z",
+        "url": "/api/hrm/contracts-insurance/contract-clauses/700fecb8-4a07-4758-bb37-177832fd70bf?company_id=main",
+        "query_company_id": "main",
+        "body_has_company_id": false,
+        "body_vi_snippet": "Freeze marker V2 BLOCKED CLQA4-KN5SCA"
+      },
+      "verdict": "PASS",
+      "at": "2026-08-08T17:23:29.316Z"
+    },
+    "AC-PLT-CTR-CL-03": {
+      "j_id": "J-HRM-CTR-CL-03",
+      "summary": "immutable=true body still v1 in snapshot",
+      "spec_ref": "BA-01 §4 AC-03",
+      "verdict": "PASS",
+      "at": "2026-08-08T17:23:29.334Z"
+    },
+    "AC-PLT-CTR-CL-H": {
+      "summary": "contracts_printable_ready=false RETAIN",
+      "verdict": "PASS",
+      "at": "2026-08-08T17:23:29.353Z"
+    }
+  },
+  "j": {
+    "J-HRM-CTR-CL-02": {
+      "verdict": "PASS",
+      "at": "2026-08-08T17:23:29.319Z"
+    },
+    "J-HRM-CTR-CL-03": {
+      "verdict": "PASS",
+      "at": "2026-08-08T17:23:29.335Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-08T17:22:23.925Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-08T17:22:25.182Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-08T17:22:25.570Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-08T17:22:27.814Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-08T17:22:28.147Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-clauses",
+      "at": "2026-08-08T17:22:32.504Z",
+      "code": "HRM-CTR-CL-201",
+      "message": "Contract clause created",
+      "dataId": "700fecb8-4a07-4758-bb37-177832fd70bf"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-08T17:22:32.546Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-08T17:22:32.953Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-08T17:22:35.924Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-08T17:22:36.300Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-clauses/700fecb8-4a07-4758-bb37-177832fd70bf/activate?company_id=main",
+      "at": "2026-08-08T17:22:39.381Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clause activated",
+      "dataId": "700fecb8-4a07-4758-bb37-177832fd70bf"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-08T17:22:39.398Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-08T17:22:39.794Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-08T17:22:42.237Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-08T17:22:42.612Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-templates",
+      "at": "2026-08-08T17:22:48.883Z",
+      "code": "HRM-CTR-TPL-201",
+      "message": "Contract template created",
+      "dataId": "f00c4b64-0403-49ab-b36d-18d9d3d8e352"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-08T17:22:48.944Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-08T17:22:49.393Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contract-templates/f00c4b64-0403-49ab-b36d-18d9d3d8e352/activate?company_id=main",
+      "at": "2026-08-08T17:22:51.499Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract template activated",
+      "dataId": "f00c4b64-0403-49ab-b36d-18d9d3d8e352"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-08T17:22:51.565Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-08T17:22:51.905Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T17:22:54.917Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "at": "2026-08-08T17:22:56.829Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-08T17:22:57.122Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-08T17:22:57.544Z",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "at": "2026-08-08T17:23:00.721Z",
+      "code": "HRM-CON-201",
+      "message": "Contract created",
+      "dataId": "9cdc6ee6-0a71-4b73-89ae-c9f3e952a656"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T17:23:01.164Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T17:23:04.355Z",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main&status=active",
+      "at": "2026-08-08T17:23:09.584Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/pack-resolve?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-08T17:23:09.596Z",
+      "code": "HRM-CTR-PACK-200",
+      "message": "Contract pack resolved"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/9cdc6ee6-0a71-4b73-89ae-c9f3e952a656/print-versions?company_id=main",
+      "at": "2026-08-08T17:23:09.629Z",
+      "code": "HRM-CTR-VER-200",
+      "message": "Print versions listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main&status=active",
+      "at": "2026-08-08T17:23:09.894Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts/9cdc6ee6-0a71-4b73-89ae-c9f3e952a656/preview?company_id=main",
+      "at": "2026-08-08T17:23:14.088Z",
+      "code": "HRM-CTR-PREV-200",
+      "message": "Contract merge preview",
+      "can_issue": true
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts/9cdc6ee6-0a71-4b73-89ae-c9f3e952a656/print-versions?company_id=main",
+      "at": "2026-08-08T17:23:17.836Z",
+      "code": "HRM-CTR-VER-201",
+      "message": "Print version issued",
+      "dataId": "3c130e8c-9b1c-4b82-a36b-3d959bb25ca2",
+      "snapshotLen": 3596
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/9cdc6ee6-0a71-4b73-89ae-c9f3e952a656/print-versions?company_id=main",
+      "at": "2026-08-08T17:23:17.872Z",
+      "code": "HRM-CTR-VER-200",
+      "message": "Print versions listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-clauses?company_id=main",
+      "at": "2026-08-08T17:23:22.162Z",
+      "code": "HRM-CTR-CL-200",
+      "message": "Contract clauses listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contract-templates?company_id=main",
+      "at": "2026-08-08T17:23:22.528Z",
+      "code": "HRM-CTR-TPL-200",
+      "message": "Contract templates listed"
+    },
+    {
+      "method": "PATCH",
+      "status": 409,
+      "url": "/api/hrm/contracts-insurance/contract-clauses/700fecb8-4a07-4758-bb37-177832fd70bf?company_id=main",
+      "at": "2026-08-08T17:23:26.220Z",
+      "code": "HRM-CTR-CL-CODE-CONFLICT",
+      "message": "Active issued clause body change requires POST …/activate (version bump)"
+    }
+  ],
+  "patch_request_audit": [
+    {
+      "at": "2026-08-08T17:23:26.182Z",
+      "url": "/api/hrm/contracts-insurance/contract-clauses/700fecb8-4a07-4758-bb37-177832fd70bf?company_id=main",
+      "query_company_id": "main",
+      "body_has_company_id": false,
+      "body_vi_snippet": "Freeze marker V2 BLOCKED CLQA4-KN5SCA"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "pageErrors": [],
+  "fe_soft_block": {
+    "observed": true,
+    "text": "Không lưu được điều khoản\nActive issued clause body change requires POST …/activate (version bump) | Không lưu được điều khoản",
+    "mentionsConflict": true
+  },
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ctr-clause-qa-04/00-clauses.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ctr-clause-qa-04/01-contract-edit-spine.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ctr-clause-qa-04/02-preview.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ctr-clause-qa-04/03-after-issue.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-ctr-clause-qa-04/04-after-blocked-patch.png"
+  ],
+  "click_log": [
+    {
+      "step": "HARD_REFRESH_FE_BIND",
+      "at": "2026-08-08T17:22:27.124Z"
+    },
+    {
+      "step": "CLAUSE_ACTIVATED",
+      "at": "2026-08-08T17:22:41.270Z",
+      "codeIssue": "CL_IS_CLQA4-KN5SCA"
+    },
+    {
+      "step": "TEMPLATE_DND",
+      "at": "2026-08-08T17:22:48.797Z",
+      "clauseCode": "CL_IS_CLQA4-KN5SCA",
+      "clauseId": "700fecb8-4a07-4758-bb37-177832fd70bf"
+    },
+    {
+      "step": "TEMPLATE_SAVED",
+      "at": "2026-08-08T17:22:53.248Z",
+      "tplCode": "TPL_CLQA4-KN5SCA",
+      "createStatus": 201,
+      "dualBindCount": 1
+    },
+    {
+      "step": "CONTRACTS_LIST",
+      "at": "2026-08-08T17:22:56.596Z"
+    },
+    {
+      "step": "CONTRACT_CREATED",
+      "at": "2026-08-08T17:23:03.257Z",
+      "contractCode": "HD-CLQA4-KN5SCA",
+      "createdId": "9cdc6ee6-0a71-4b73-89ae-c9f3e952a656"
+    },
+    {
+      "step": "CLICK_PREVIEW",
+      "at": "2026-08-08T17:23:14.010Z"
+    },
+    {
+      "step": "CLICK_SAVE_VERSION",
+      "at": "2026-08-08T17:23:17.687Z"
+    }
+  ],
+  "blockers": [],
+  "residuals": [
+    {
+      "id": "R-CTR-CL-ISSUE-SPINE-U65",
+      "severity": "P1",
+      "status": "CLOSED",
+      "note": "QA-04 U65 AC-02/03 PASS post BE+FE peers"
+    },
+    {
+      "id": "R-CTR-CL-SNAPSHOT-BIND",
+      "severity": "P2",
+      "status": "OBS",
+      "note": "AC-02/03 PASS via pack-wide snapshot; dual_bind=FAIL (template DnD may flaky)"
+    }
+  ],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-08T17:23:29.688Z"
+}

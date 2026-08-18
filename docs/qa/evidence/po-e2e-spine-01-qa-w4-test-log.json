@@ -1,0 +1,130 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-PO-E2E-SPINE-01-QA-W4-20260803",
+  "work_item_id": "PO-E2E-SPINE-01-QA-W4",
+  "tester": {
+    "role": "qa",
+    "agent": "po-e2e-spine-01-qa-w4-browser"
+  },
+  "started_at": "2026-08-03T15:36:58.067Z",
+  "ended_at": "2026-08-03T15:37:25.113Z",
+  "environment": {
+    "portal_url": "http://127.0.0.1:5173",
+    "hrm_api": "http://127.0.0.1:28001/api/hrm",
+    "xbos_api": "http://127.0.0.1:28002/api/xbos",
+    "persona": "ceo@xe.vn",
+    "company_id": "main",
+    "cand_stamp": "SP4SDE70SZ",
+    "yctd_stamp": "SP2SDD8FM8",
+    "requisition_id": "34a421e7-33df-4c8b-b96c-559082b78086",
+    "notes": "U65 zero-seed · HP-04 after W3 Inbox approve · LV-03/04 not reopened"
+  },
+  "spec_ref": "PO_E2E_BUSINESS_SPINE_PROGRAM.md §E2E-SPINE-01 · HP-04 · J-REC-WF-04 · UF-HRM-12",
+  "hdsd_sot": "docs/qa/HDSD_REC_MENU_FUNCTION_INVENTORY.md CH07 §6 · §13",
+  "hdsd_align": true,
+  "u65_zero_seed": true,
+  "evidence_narrative": "docs/qa/evidence/po-e2e-spine-01-qa-w4.md",
+  "raw_harness": "docs/qa/evidence/_tmp-po-e2e-spine-01-qa-w4-browser.json",
+  "screens_dir": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w4-20260803",
+  "verdict": "fail",
+  "ack_status": "FAIL_TO_PM",
+  "ids": {
+    "requisitionId": "34a421e7-33df-4c8b-b96c-559082b78086",
+    "candidateId": null,
+    "employeeId": null
+  },
+  "create_error": {
+    "status": 400,
+    "code": "HRM-VAL-001",
+    "message": "property position should not exist; property rating should not exist; property expected_start_date should not exist; property nationality should not exist; property hometown should not exist; property marital_status should not exist"
+  },
+  "case_matrix": {
+    "A_fail_deep": "pass",
+    "B_success_hdsd": "fail",
+    "C_logic_br": "blocked"
+  },
+  "summary": {
+    "clicks": 12,
+    "idle_guard": "PASS",
+    "seed_used": false,
+    "steps_pass": 2,
+    "steps_warn": 0,
+    "steps_fail": 1,
+    "steps_skip": 2,
+    "create_status": 400,
+    "create_code": "HRM-VAL-001",
+    "hire_reached": false
+  },
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-03T15:36:58.067Z",
+      "action": "L0_PROBES",
+      "expected": "hrm-api + xbos-api + portal 200",
+      "actual": "hrm 200 · xbos 200 · portal 200",
+      "network": { "method": "GET", "url": "/api/hrm", "status": 200 },
+      "result": "pass"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-03T15:36:58.757Z",
+      "action": "OPEN_PORTAL",
+      "expected": "shell loads with ceo session",
+      "actual": "navigated http://127.0.0.1:5173",
+      "result": "pass",
+      "attachment": "screens/po-e2e-spine-01-qa-w4-20260803/00-shell.png"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-03T15:37:01.136Z",
+      "action": "HP04_CTX_REQUISITIONS",
+      "expected": "YCTD SP2SDD8FM8 / 34a421e7 visible after W3 approve",
+      "actual": "legacyUi=true reqId=34a421e7-33df-4c8b-b96c-559082b78086",
+      "network": { "method": "GET", "url": "/api/hrm/recruitment/requisitions", "status": 200 },
+      "result": "pass",
+      "attachment": "screens/po-e2e-spine-01-qa-w4-20260803/00-requisitions-context.png"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-03T15:37:04.944Z",
+      "action": "HP04_CANDIDATES_TAB",
+      "expected": "Ứng viên tab mounts (HDSD CH07 §6)",
+      "actual": "mount OK · empty honest",
+      "network": { "method": "GET", "url": "/api/hrm/recruitment/candidates-pool?company_id=main", "status": 200 },
+      "result": "pass",
+      "attachment": "screens/po-e2e-spine-01-qa-w4-20260803/01-candidates.png"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-03T15:37:10.231Z",
+      "action": "HP04_ADD_FILL_SAVE",
+      "expected": "Thêm ứng viên → Lưu → POST 2xx + row + F5",
+      "actual": "POST 400 HRM-VAL-001 forbidNonWhitelisted (position, rating, expected_start_date, nationality, hometown, marital_status) · toast Lỗi · F5 empty",
+      "network": {
+        "method": "POST",
+        "url": "/api/hrm/recruitment/candidates",
+        "status": 400,
+        "code": "HRM-VAL-001"
+      },
+      "result": "fail",
+      "attachment": "screens/po-e2e-spine-01-qa-w4-20260803/03-after-create.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-03T15:37:25.113Z",
+      "action": "HP04_HIRE_HP05",
+      "expected": "stage Đã tuyển → HireEmployeeLinkDialog → emp/contract if hire 2xx",
+      "actual": "skipped — create blocked",
+      "result": "blocked"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "R-PO-SPINE01-CAND-HIRE",
+      "severity": "P1",
+      "expected": "FE Thêm UV HDSD → 2xx → hire link",
+      "actual": "POST 400 HRM-VAL-001 whitelist mismatch CreateCandidateDto vs CandidateFormDialog",
+      "residual_wi": "PO-E2E-SPINE-01-BE-CAND-DTO-01"
+    }
+  ]
+}

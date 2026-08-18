@@ -1,0 +1,796 @@
+{
+  "work_item_id": "QA-HDSD-W5-SCOPE-01",
+  "program": "P-HDSD-ECOSYSTEM-03 · W5",
+  "startedAt": "2026-07-30T20:08:29.188Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "u65": "zero-seed"
+  },
+  "l0": {
+    "hrm-api": {
+      "ok": true,
+      "status": 200
+    },
+    "xbos-api": {
+      "ok": true,
+      "status": 200
+    },
+    "portal": {
+      "ok": true,
+      "status": 200
+    }
+  },
+  "tc": {
+    "memberLoginApi": {
+      "email": "du-lich.ceo@xe.vn",
+      "status": 201
+    },
+    "TC-XBOS-HDSD-M01": {
+      "tc_id": "TC-XBOS-HDSD-M01",
+      "uf": "UF-XBOS-11",
+      "persona": "du-lich.ceo@xe.vn",
+      "click_path": "/login → /command-center",
+      "network": {
+        "login": {
+          "tag": "member",
+          "method": "POST",
+          "status": 201,
+          "url": "/api/xbos/auth/login",
+          "at": "2026-07-30T20:08:31.877Z"
+        },
+        "gmu": {
+          "status": 403,
+          "body": "{\"success\":false,\"code\":\"XBOS-TENANT-403\",\"message\":\"Group member units require master tenant membership\",\"timestamp\":\"2026-07-30T20:08:29.627Z\"}",
+          "url": "/api/xbos/tenant-scope/group-member-units"
+        },
+        "kpiHolding": {
+          "status": 409,
+          "body": "{\"success\":false,\"code\":\"SCOPE_CONTEXT_MISMATCH\",\"message\":\"companyId mismatches token scope\",\"details\":{\"field\":\"companyId\",\"token\":\"main\",\"request\":\"holding\"},\"timestamp\":\"2026-07-30T20:08:29.633Z\"}",
+          "url": "/api/xbos/kpi-engine/rollup?companyId=holding"
+        },
+        "kpiMain": {
+          "status": 200,
+          "body": "{\"success\":true,\"code\":\"XBOS-KPI-202\",\"message\":\"KPI rollup loaded\",\"data\":{\"tenantId\":\"xe-du-lich\",\"companyId\":\"main\",\"rollupMode\":\"single\",\"companyIds\":[\"main\"],\"from\":\"2026-01-31\",\"to\":\"2026-07-30\",\"series\":[]},\"timestamp\":\"2026-07-30T20:08:29.645Z\"}",
+          "url": "/api/xbos/kpi-engine/rollup?companyId=main"
+        }
+      },
+      "fe": {
+        "scopeBanner": false,
+        "snip": "XeVN OS Command Center BOD Quản lý Nhân viên GROUP TÀI CHÍNH KẾ TOÁN NHÂN SỰ KINH DOANH VẬN HÀNH CÀI ĐẶT HỆ THỐNG Mở Việc cần xử lý 0 Việc đang xử lý (đã lọc phạm vi) TÀI CHÍNH: 0 KẾ TOÁN: 0 KINH DOANH: 0 NHÂN SỰ: 0 VẬN HÀNH: 0 Chỉ số KPI tập đoàn — Tổng hợp tập đoàn Cảnh báo (UC-CC-P0-09) Không có cảnh báo từ workflow, catalog-governance hoặc kpi-engine/portal-alerts. Cảnh báo hệ thốn"
+      },
+      "verdict": "🟢",
+      "detail": "GMU 403 · KPI holding 409 — scope negative PASS"
+    },
+    "TC-HRM-HDSD-M01": {
+      "tc_id": "TC-HRM-HDSD-M01",
+      "uf": "UF-HRM-13",
+      "persona": "du-lich.ceo@xe.vn",
+      "click_path": "/login → /command-center/hrm/employees (xe-du-lich/main)",
+      "network": {
+        "workspaceMeta": {
+          "status": 200,
+          "body": "{\"success\":true,\"code\":\"XBOS-CC-200\",\"message\":\"Workspace meta loaded\",\"data\":{\"asOf\":\"2026-07-30T09:56:09.330Z\",\"dataSyncNote\":null},\"timestamp\":\"2026-07-30T20:08:29.661Z\"}",
+          "url": "/api/xbos/command-center/workspace-meta?tenantId=xe-du-lich&companyId=main"
+        },
+        "hrmHolding": {
+          "status": 409,
+          "body": "{\"success\":false,\"code\":\"SCOPE_CONTEXT_MISMATCH\",\"message\":\"companyId mismatches token scope\",\"details\":{\"field\":\"companyId\",\"token\":\"main\",\"request\":\"holding\"},\"timestamp\":\"2026-07-30T20:08:29.651Z\"}",
+          "url": "/api/hrm/employees?company_id=holding"
+        },
+        "hrmEmbedGet": {
+          "tag": "member",
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+          "at": "2026-07-30T20:08:38.649Z"
+        }
+      },
+      "fe": {
+        "employeeHint": null,
+        "syncError": false,
+        "scopeBanner": false,
+        "snip": "XeVN OS Command Center BOD Quản lý Nhân viên GROUP TÀI CHÍNH KẾ TOÁN NHÂN SỰ KINH DOANH VẬN HÀNH CÀI ĐẶT HỆ THỐNG Mở HRM MENU CHÍNH Tổng quan NHÂN SỰ Nhân sự Hợp đồng Bảo hiểm Quyết định Tuyển dụng 3 Chấm công Tiền lương Đánh giá UniAI Công việc Quy trình & chính sách Dịch vụ nội bộ Công cụ & thiết bị Hồ sơ xe QUẢN TRỊ Phòng/Ban & Công ty Báo cáo Cấu hình HRM Hướng dẫn sử dụng",
+        "f5Token": true
+      },
+      "verdict": "🟢",
+      "detail": "holding employees 409 blocked · member embed OK · F5 token=true"
+    }
+  },
+  "contrast": {
+    "email": "ceo@xe.vn",
+    "gmu": {
+      "status": 200,
+      "body": "{\"success\":true,\"code\":\"XBOS-TENANT-200\",\"message\":\"Group member units loaded\",\"data\":{\"holding\":{\"tenant_id\":\"xevn\",\"name\":\"Tập đoàn XeVN\",\"short_name\":\"Tập đoàn\"},\"members\":[{\"tenant_id\":\"xe-tmdv\",\"tenant_name\":\"Công ty Cổ phần Thương mại và Dịch vụ X.E\",\"tenant_short_name\":\"X.E TM-DV\",\"id\":\"8f9d8915-eb40-48e1-a6e3-3",
+      "url": "/api/xbos/tenant-scope/group-member-units"
+    },
+    "kpiHolding": {
+      "status": 200,
+      "body": "{\"success\":true,\"code\":\"XBOS-KPI-202\",\"message\":\"KPI rollup loaded\",\"data\":{\"tenantId\":\"xevn\",\"companyId\":\"holding\",\"rollupMode\":\"group\",\"companyIds\":[\"holding\",\"main\",\"xe-tmdv\",\"xe-du-lich\",\"xe-vietnam\",\"visun\"],\"from\":\"2026-01-31\",\"to\":\"2026-07-30\",\"series\":[]},\"timestamp\":\"2026-07-30T20:08:43.836Z\"}",
+      "url": "/api/xbos/kpi-engine/rollup?companyId=holding"
+    },
+    "employeesMain": {
+      "status": 200,
+      "body": "{\"success\":true,\"code\":\"HRM-EMP-200\",\"message\":\"Employees listed\",\"data\":{\"total\":32,\"page\":1,\"page_size\":20,\"next_cursor\":\"MjAyNi0wNy0zMFQxNzowODozOC41MTc5NzNaCjU3ZDkwNWI4LTdhYjYtNGEwZC05ODVhLWUxNTEyMTExZjAxZg\",\"data\":[{\"id\":\"36e2b988-8188-426d-b111-eb799f697c5b\",\"company_id\":\"holding\",\"company_uuid\":\"10000000-0000-40",
+      "url": "/api/hrm/employees?company_id=main"
+    },
+    "groupHrmFe": {
+      "employeeHint": null,
+      "snip": "XeVN OS Command Center BOD Quản lý Nhân viên GROUP TÀI CHÍNH KẾ TOÁN NHÂN SỰ KINH DOANH VẬN HÀNH CÀI ĐẶT HỆ THỐNG Mở HRM MENU CHÍNH Tổng quan NHÂN SỰ Nhân sự Hợp đồng Bảo hiểm Quyết định Tuyển dụng 3 Chấm công Tiền lương Đánh giá UniAI Công việc Quy trình & chính sách Dịch vụ nội bộ Công cụ & "
+    },
+    "contrastValid": true
+  },
+  "network": [
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T20:08:29.948Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T20:08:30.786Z"
+    },
+    {
+      "tag": "member",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-07-30T20:08:31.877Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 403,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:08:32.197Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:08:32.198Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xe-du-lich&status=pending",
+      "at": "2026-07-30T20:08:32.198Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:32.198Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=du-lich.ceo%40xe.vn",
+      "at": "2026-07-30T20:08:32.198Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:32.198Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 403,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:08:32.198Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:08:32.198Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:32.199Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T20:08:32.209Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xe-du-lich&companyId=main&limit=20",
+      "at": "2026-07-30T20:08:32.223Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T20:08:34.539Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T20:08:34.542Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T20:08:34.576Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:08:34.721Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 403,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:08:34.728Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xe-du-lich&status=pending",
+      "at": "2026-07-30T20:08:34.729Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=du-lich.ceo%40xe.vn",
+      "at": "2026-07-30T20:08:34.729Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:34.729Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:34.729Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:08:34.735Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 403,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:08:34.735Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:34.737Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T20:08:34.739Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xe-du-lich&companyId=main&limit=20",
+      "at": "2026-07-30T20:08:34.750Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T20:08:37.175Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T20:08:37.179Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T20:08:37.198Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 403,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:08:37.366Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:08:37.366Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xe-du-lich&status=pending",
+      "at": "2026-07-30T20:08:37.366Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=du-lich.ceo%40xe.vn",
+      "at": "2026-07-30T20:08:37.366Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:37.366Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:37.367Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 403,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:08:37.367Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:08:37.367Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:37.371Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T20:08:37.382Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xe-du-lich&companyId=main&limit=20",
+      "at": "2026-07-30T20:08:37.404Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T20:08:37.887Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T20:08:37.890Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T20:08:38.374Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T20:08:38.649Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-30T20:08:38.649Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:08:38.686Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:08:38.750Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T20:08:41.292Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T20:08:41.295Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T20:08:41.313Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 403,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:08:41.449Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:08:41.449Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=du-lich.ceo%40xe.vn",
+      "at": "2026-07-30T20:08:41.449Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:41.449Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xe-du-lich&status=pending",
+      "at": "2026-07-30T20:08:41.449Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:41.449Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 403,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:08:41.450Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:08:41.450Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xe-du-lich&companyId=main",
+      "at": "2026-07-30T20:08:41.452Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T20:08:41.464Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xe-du-lich&companyId=main&limit=20",
+      "at": "2026-07-30T20:08:41.474Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T20:08:41.996Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T20:08:41.996Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T20:08:42.274Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T20:08:42.418Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-30T20:08:42.418Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:08:42.467Z"
+    },
+    {
+      "tag": "member",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:08:42.530Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T20:08:43.985Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T20:08:43.986Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T20:08:43.999Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T20:08:44.232Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:08:44.232Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T20:08:44.232Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T20:08:44.233Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-07-30T20:08:44.233Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:08:44.233Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T20:08:44.234Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T20:08:44.234Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T20:08:44.250Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T20:08:44.250Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-07-30T20:08:44.268Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T20:08:44.741Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T20:08:44.742Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T20:08:44.985Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T20:08:45.034Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T20:08:45.178Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-30T20:08:45.178Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:08:45.268Z"
+    },
+    {
+      "tag": "group",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T20:08:45.295Z"
+    }
+  ],
+  "consoleErrors": [
+    "[member] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[member] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[member] [tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (41ms): tenant-scope.group-member-units failed: Group member units require master tenant membership (HTTP 403)",
+    "[member] [tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (38ms): tenant-scope.group-member-units failed: Group member units require master tenant membership (HTTP 403)",
+    "[member] Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "[member] [catalog-governance.inbox] ✗ GET /api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn HTTP 409 (7ms): catalog-governance.inbox failed: tenantId mismatches token scope (HTTP 409)",
+    "[member] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[member] [tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (32ms): tenant-scope.group-member-units failed: Group member units require master tenant membership (HTTP 403)",
+    "[member] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[member] [tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (37ms): tenant-scope.group-member-units failed: Group member units require master tenant membership (HTTP 403)",
+    "[member] Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "[member] [catalog-governance.inbox] ✗ GET /api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn HTTP 409 (10ms): catalog-governance.inbox failed: tenantId mismatches token scope (HTTP 409)",
+    "[member] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[member] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[member] [tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (50ms): tenant-scope.group-member-units failed: Group member units require master tenant membership (HTTP 403)",
+    "[member] [tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (49ms): tenant-scope.group-member-units failed: Group member units require master tenant membership (HTTP 403)",
+    "[member] Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "[member] [catalog-governance.inbox] ✗ GET /api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn HTTP 409 (22ms): catalog-governance.inbox failed: tenantId mismatches token scope (HTTP 409)",
+    "[member] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[member] Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "[member] [tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (32ms): tenant-scope.group-member-units failed: Group member units require master tenant membership (HTTP 403)",
+    "[member] [tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (32ms): tenant-scope.group-member-units failed: Group member units require master tenant membership (HTTP 403)",
+    "[member] Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "[member] [catalog-governance.inbox] ✗ GET /api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn HTTP 409 (11ms): catalog-governance.inbox failed: tenantId mismatches token scope (HTTP 409)"
+  ],
+  "ack_status": "PASS_TO_PM",
+  "finishedAt": "2026-07-30T20:08:47.538Z"
+}

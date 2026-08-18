@@ -1,0 +1,644 @@
+{
+  "sheets": [
+    {
+      "name": "Kangatang",
+      "preview_rows": []
+    },
+    {
+      "name": "BCC ",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "CÔNG TY TNHH X.E VIỆT NAM"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "Address: Số 10, Ngõ 15 Đường Hoàng Liệt, Quận Hoàng Mai, Hà Nội"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "BẢNG CHẤM CÔNG LÁI XE",
+            "2026-06-01 00:00:00"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "Mã NV",
+            "Họ và tên",
+            "NGÀY TRONG THÁNG/ THỨ TRONG TUẦN",
+            "Tổng công",
+            "Số giờ hưởng 100%",
+            "Làm Thêm ngày thường 150%",
+            "Làm thêm ngày lễ 200%",
+            "Phép nghỉ mát",
+            "Nghỉ cưới, nghỉ tang",
+            "OT 100%",
+            "OT 150%",
+            "OT 200%",
+            "Công chuẩn"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=N5",
+            "=+C7+1",
+            "=+D7+1",
+            "=+E7+1",
+            "=+F7+1",
+            "=+G7+1",
+            "=+H7+1",
+            "=+I7+1",
+            "=+J7+1",
+            "=+K7+1",
+            "=+L7+1",
+            "=+M7+1",
+            "=+N7+1",
+            "=+O7+1",
+            "=+P7+1",
+            "=+Q7+1",
+            "=+R7+1",
+            "=+S7+1",
+            "=+T7+1",
+            "=+U7+1"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=+CHOOSE(WEEKDAY(C7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(D7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(E7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(F7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(G7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(H7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(I7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(J7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(K7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(L7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(M7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(N7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(O7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(P7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(Q7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(R7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(S7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(T7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(U7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(V7),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "LX DPNB",
+            "=COUNTIF(C9:AG9,\"X\")+COUNTIF(C9:AG9,\"-\")*0.5",
+            "=SUM(C9:AG9)",
+            "=COUNTIF(C9:AG9,\"LT\")",
+            "=COUNTIF(C9:AD9,\"LL\")",
+            "=COUNTIF(C9:AD9,\"NK\")",
+            "=COUNTIF(C9:AD9,\"HH\")",
+            "=COUNTIF(C9:AD9,\"HH\")",
+            "=COUNTIF(C9:AD9,\"LT\")",
+            "=COUNTIF(C9:AD9,\"HH\")"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "XE01385",
+            "Đặng Hồng Thuỷ",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "-",
+            "O",
+            "O",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "O"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "XE01468",
+            "Nguyễn Thanh Sơn",
+            "X",
+            "X",
+            "O",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "O",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "XE01479",
+            "Phạm Văn Đồng",
+            "X",
+            "O",
+            "O",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "O",
+            "O",
+            "X"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "XE01502",
+            "Vũ Văn Tuyến",
+            "X",
+            "O",
+            "O",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "O",
+            "O",
+            "O",
+            "X",
+            "X",
+            "X",
+            "O",
+            "O",
+            "X",
+            "X"
+          ]
+        },
+        {
+          "row": 14,
+          "cells": [
+            "XE01596",
+            "Phạm Viết Thắng",
+            "X",
+            "X",
+            "O",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "O",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "X",
+            "O",
+            "X",
+            "X"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "BC LƯỢT",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "BẢNG THEO DÕI SỐ LƯỢT LÁI XE DỰ PHÒNG 4 TỈNH"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "2026-06-01 00:00:00"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "Mã NV",
+            "Họ và tên",
+            "NGÀY TRONG THÁNG/ THỨ TRONG TUẦN",
+            "Tổng lượt",
+            "Lượt 5",
+            "Lượt 6",
+            "Lượt 7",
+            "Lượt 8"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=N2",
+            "=+C4+1",
+            "=+D4+1",
+            "=+E4+1",
+            "=+F4+1",
+            "=+G4+1",
+            "=+H4+1",
+            "=+I4+1",
+            "=+J4+1",
+            "=+K4+1",
+            "=+L4+1",
+            "=+M4+1",
+            "=+N4+1",
+            "=+O4+1",
+            "=+P4+1",
+            "=+Q4+1",
+            "=+R4+1",
+            "=+S4+1",
+            "=+T4+1",
+            "=+U4+1"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=+CHOOSE(WEEKDAY(C4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(D4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(E4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(F4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(G4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(H4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(I4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(J4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(K4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(L4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(M4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(N4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(O4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(P4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(Q4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(R4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(S4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(T4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(U4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")",
+            "=+CHOOSE(WEEKDAY(V4),\"C.Nhật\",\"T.Hai\",\"T.Ba\",\"T.Tư\",\"T.Năm\",\"T.Sáu\",\"T.Bảy\")"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "LX DPNB"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "XE01385",
+            "Đặng Hồng Thuỷ",
+            "6",
+            "3",
+            "3",
+            "5",
+            "5",
+            "6",
+            "6",
+            "1",
+            "2",
+            "3",
+            "6",
+            "6",
+            "6",
+            "6",
+            "4",
+            "5",
+            "6",
+            "3"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "XE01468",
+            "Nguyễn Thanh Sơn",
+            "6",
+            "2",
+            "5",
+            "5",
+            "6",
+            "6",
+            "4",
+            "6",
+            "3",
+            "6",
+            "7",
+            "7",
+            "5",
+            "5",
+            "6",
+            "4",
+            "6",
+            "7"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "XE01479",
+            "Phạm Văn Đồng",
+            "1",
+            "4",
+            "5",
+            "6",
+            "6",
+            "2",
+            "6",
+            "6",
+            "5",
+            "5",
+            "6",
+            "6",
+            "3",
+            "6",
+            "6",
+            "6",
+            "6",
+            "5"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "XE01502",
+            "Vũ Văn Tuyến",
+            "6",
+            "4",
+            "6",
+            "6",
+            "6",
+            "4",
+            "6",
+            "8",
+            "6",
+            "6",
+            "6",
+            "6",
+            "4",
+            "6",
+            "6",
+            "6",
+            "=SUM(C10:AG10)",
+            "=+COUNTIF(C10:AG10,\">4\")"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "XE01596",
+            "Phạm Viết Thắng",
+            "5",
+            "5",
+            "5",
+            "5",
+            "6",
+            "6",
+            "3",
+            "5",
+            "5",
+            "3",
+            "6",
+            "6",
+            "3",
+            "5",
+            "4",
+            "6",
+            "4",
+            "6"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "XE01402",
+            "Phạm Thanh Tùng",
+            "6",
+            "1",
+            "2",
+            "5",
+            "6",
+            "6",
+            "5",
+            "3",
+            "6",
+            "4",
+            "6",
+            "6",
+            "6",
+            "6",
+            "1",
+            "3",
+            "2",
+            "6"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Xe HĐ ",
+      "preview_rows": [
+        {
+          "row": 1,
+          "cells": [
+            "TỔNG HỢP XE HỢP ĐỒNG THÁNG 6/2026"
+          ]
+        },
+        {
+          "row": 2,
+          "cells": [
+            "STT",
+            "Mã NV",
+            "NGÀY ĐI",
+            "BIỂN SỐ",
+            "LÁI XE",
+            "THỜI GIAN",
+            "GIỜ VỀ BẾN",
+            "LỘ TRÌNH",
+            "Sỗ chỗ",
+            "DOANH THU",
+            "GHI CHÚ",
+            "Mã",
+            "Số ngày",
+            "HĐ nguyên chuyến được tính lương",
+            "Chú thích"
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "=ROW()-3",
+            "XE00812",
+            "2026-03-06 00:00:00",
+            "29E33201",
+            "Vũ Việt Hùng",
+            "21h45",
+            "sân bay- NB",
+            "2800000",
+            "HĐ nửa ngày"
+          ]
+        },
+        {
+          "row": 4,
+          "cells": [
+            "=ROW()-3",
+            "XE00282",
+            "2026-06-06 00:00:00",
+            "29E09655",
+            "Dương Văn Thọ",
+            "9h",
+            "HN- NB",
+            "1900000",
+            "lượt nội bài"
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "=ROW()-3",
+            "XE01596",
+            "2026-07-06 00:00:00",
+            "29K06303",
+            "Phạm Viết Thắng",
+            "13h30",
+            "NB- HN",
+            "1900000",
+            "lượt nội bài"
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "=ROW()-3",
+            "XE01596",
+            "2026-08-06 00:00:00",
+            "29K06303",
+            "Phạm Viết Thắng",
+            "7h",
+            "HN- NB",
+            "1900000",
+            "lượt nội bài"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "=ROW()-3",
+            "XE01468",
+            "2026-08-06 00:00:00",
+            "29K07846",
+            "Nguyễn Thanh Sơn",
+            "9h",
+            "HN- NB",
+            "2000000",
+            "lượt nội bài"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "=ROW()-3",
+            "XE00282",
+            "2026-10-06 00:00:00",
+            "29E09655",
+            "Dương Văn Thọ",
+            "14h",
+            "NB- HN",
+            "2000000",
+            "lượt nội bài"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "7",
+            "XE00195",
+            "2026-10-06 00:00:00",
+            "29E32476",
+            "Phan Đăng Quang",
+            "5h30",
+            "NB- sân bay",
+            "Hđ nửa ngày"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "=ROW()-3",
+            "XE00020",
+            "2026-10-06 00:00:00",
+            "29E32490",
+            "Lê Trọng Giáp",
+            "5h30",
+            "NB- sân bay",
+            "Hđ nửa ngày"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "=ROW()-3",
+            "XE00250",
+            "2026-11-06 00:00:00",
+            "29E33376",
+            "Lê Trung Kiên",
+            "7h",
+            "HN- NB",
+            "chở đội marketing đi khảo sát tính HĐ ngoại giao 1 ngà"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "=ROW()-3",
+            "XE00298",
+            "1900-04-20 00:00:00",
+            "29E08261",
+            "Phạm Thế Anh",
+            "7h30",
+            "NB- sân bay",
+            "2200000",
+            "lượt nội bài"
+          ]
+        }
+      ]
+    }
+  ]
+}

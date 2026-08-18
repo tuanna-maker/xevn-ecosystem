@@ -1,0 +1,142 @@
+{
+  "work_item_id": "PO-HRM-CTR-WORKSPACE-G4-EDIT-DEEPLINK-QA-01",
+  "stamp": "CTRWSG4ED-MSO2JT9Z",
+  "startedAt": "2026-08-11T02:56:27.450Z",
+  "url_required": "http://127.0.0.1:5173/command-center/hrm/contracts",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {},
+  "rows": {
+    "WS-G4-05": {
+      "verdict": "PASS",
+      "url": "http://127.0.0.1:5173/command-center/hrm/contracts"
+    },
+    "WS-G4-03-EDIT": {
+      "verdict": "PASS",
+      "editContractId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+      "editStep1": true,
+      "editModeAttr": true,
+      "editModeCount": 1,
+      "dialogParent": false,
+      "shellMode": "mutate",
+      "get": {
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2?company_id=main"
+      },
+      "getOk": true,
+      "url": "http://127.0.0.1:5173/command-center/hrm/contracts?workspace=edit&contractId=aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2"
+    }
+  },
+  "regression": {
+    "create": {
+      "verdict": "PASS",
+      "createStep1": true,
+      "createModeAttr": true,
+      "url": "http://127.0.0.1:5173/command-center/hrm/contracts?workspace=create"
+    },
+    "view": {
+      "verdict": "PASS",
+      "viewOk": true,
+      "get": {
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2?company_id=main"
+      }
+    }
+  },
+  "network": {
+    "edit_get": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2?company_id=main"
+    },
+    "view_get": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/contracts-insurance/contracts/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2?company_id=main"
+    }
+  },
+  "consoleErrors": [
+    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <div> p \n    at div\n    at Badge (http://127.0.0.1:5173/hr/src/components/ui/badge.tsx:37:18)\n    at p\n    at div\n    at d"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-edit-deeplink-qa-01/01-create-deeplink.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-edit-deeplink-qa-01/02-view-workspace.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-edit-deeplink-qa-01/03-edit-deeplink.png"
+  ],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "defects": [
+    {
+      "id": "DEF-CTR-G4-EDIT-DEEPLINK-P1",
+      "severity": "P1",
+      "note": "CC embed edit deep-link mounts workspace Step1 in edit mode",
+      "status": "CLOSED"
+    }
+  ],
+  "endedAt": "2026-08-11T02:56:47.469Z",
+  "prereq": {
+    "contracts": {
+      "status": 200,
+      "count": 2,
+      "first": {
+        "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2",
+        "company_id": "holding",
+        "employee_id": "22222222-2222-4222-8222-222222222222",
+        "contract_code": null,
+        "contract_type": "Hợp đồng 1 năm",
+        "start_date": "2026-07-10T17:00:00.000Z",
+        "end_date": "2026-08-29T17:00:00.000Z",
+        "status": "active",
+        "notes": null,
+        "position": null,
+        "position_key": null,
+        "department": "CHRO",
+        "department_key": null,
+        "signer_name": null,
+        "signer_position": null,
+        "signer_position_key": null,
+        "compensation_package_id": null,
+        "pack_code": null,
+        "template_id": null,
+        "template_code": null,
+        "signed_at": null,
+        "contract_name": null,
+        "work_arrangement": null,
+        "salary_ratio_percent": null,
+        "subject_type": null,
+        "candidate_id": null,
+        "requisition_id": null,
+        "contract_abstract": null,
+        "term_type": null,
+        "work_location": null,
+        "work_location_scope": null,
+        "job_description_text": null,
+        "probation_days": null,
+        "probation_end": null,
+        "license_class": null,
+        "driver_license_number": null,
+        "driver_license_issued_on": null,
+        "driver_license_issued_place": null,
+        "vehicle_plate": null,
+        "route_or_region": null,
+        "created_at": "2026-08-10T05:39:42.599Z",
+        "updated_at": "2026-08-10T05:39:42.599Z",
+        "employee_name": "Tran Thi B",
+        "employee_code": "NV002",
+        "candidate_name": null,
+        "signing_date": null,
+        "candidate_label": null,
+        "work_form_label_vi": null
+      }
+    }
+  }
+}

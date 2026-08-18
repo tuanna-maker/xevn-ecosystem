@@ -1,0 +1,410 @@
+{
+  "work_item_id": "QA-HDSD-BF-03-MUTATE-DEFER-01",
+  "program": "P-HDSD-ECOSYSTEM-03 · C-BF03-MUTATE-DEFER-01",
+  "startedAt": "2026-07-31T03:50:21.007Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed",
+    "stamp": "MD8EMR0V"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "tc": [
+    {
+      "id": "TC-HRM-HDSD-025",
+      "verdict": "🟡",
+      "detail": "§5.3 soft-delete createPOST=201 archive=none  f5Gone=false alertdialog miss url=http://127.0.0.1:5173/hr/employees/34ea08a2-4690-4dec-917f-f5386b8ab3e2",
+      "at": "2026-07-31T03:50:46.981Z",
+      "uf": "UF-HRM-01",
+      "clickPath": "Thêm NV → menu Xóa → Xóa nhân viên → F5",
+      "stamp": "MD8EMR0V"
+    },
+    {
+      "id": "TC-HRM-HDSD-041",
+      "verdict": "🟢",
+      "detail": "§2.5 Xóa HĐ createPOST=201 DELETE=200 f5=true ",
+      "at": "2026-07-31T03:51:08.822Z",
+      "uf": "UF-HRM-02",
+      "clickPath": "contracts trash → confirm Xóa → F5",
+      "http": 200,
+      "note": "disposable/list row — not TC-06 spine re-mutate create-assert"
+    },
+    {
+      "id": "TC-HRM-HDSD-049",
+      "verdict": "🟡",
+      "detail": "§3.6 Dialog BH open=true POST=POST 400 f5=true stillOpen=true API 400",
+      "at": "2026-07-31T03:51:29.542Z",
+      "uf": "UF-HRM-03",
+      "clickPath": "/hr/insurance → Thêm → fields → Lưu → F5",
+      "http": 400
+    }
+  ],
+  "journeys": [],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T03:50:22.633Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T03:50:22.688Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-31T03:50:22.835Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-31T03:50:22.972Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:50:22.983Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:50:23.153Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:50:25.846Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees",
+      "at": "2026-07-31T03:50:27.461Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-31T03:50:27.539Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T03:50:32.015Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T03:50:32.177Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-31T03:50:32.308Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-31T03:50:32.311Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:50:32.475Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:50:32.644Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50&keyword=QAMD8EMR0V",
+      "at": "2026-07-31T03:50:34.878Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/34ea08a2-4690-4dec-917f-f5386b8ab3e2?company_id=main",
+      "at": "2026-07-31T03:50:37.884Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/34ea08a2-4690-4dec-917f-f5386b8ab3e2/work-timeline?company_id=main",
+      "at": "2026-07-31T03:50:38.117Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:50:38.177Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T03:50:47.544Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T03:50:47.638Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:50:47.918Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T03:50:47.993Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T03:50:50.459Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:50:50.593Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/contracts",
+      "at": "2026-07-31T03:50:53.292Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T03:50:53.530Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T03:50:57.382Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T03:50:57.710Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:50:58.451Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T03:50:58.601Z"
+    },
+    {
+      "method": "DELETE",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/7433af9e-0ff6-4160-bdef-2cc5d750c1b3",
+      "at": "2026-07-31T03:51:04.067Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T03:51:04.716Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T03:51:05.844Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T03:51:05.923Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:51:06.096Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T03:51:06.142Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T03:51:09.540Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T03:51:09.702Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page_size=100",
+      "at": "2026-07-31T03:51:09.721Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/insurance-policy-participants?company_id=main",
+      "at": "2026-07-31T03:51:09.932Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:51:09.943Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-07-31T03:51:10.028Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T03:51:10.091Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=50",
+      "at": "2026-07-31T03:51:12.440Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&keyword=a&include_archived=false&page=1&page_size=50",
+      "at": "2026-07-31T03:51:14.916Z"
+    },
+    {
+      "method": "POST",
+      "status": 400,
+      "url": "/api/hrm/insurance-policy-participants",
+      "at": "2026-07-31T03:51:21.724Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T03:51:26.719Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page_size=100",
+      "at": "2026-07-31T03:51:26.805Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T03:51:26.917Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/insurance-policy-participants?company_id=main",
+      "at": "2026-07-31T03:51:27.093Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-31T03:51:27.128Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance?company_id=main&page=1&page_size=100",
+      "at": "2026-07-31T03:51:27.180Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-07-31T03:51:27.203Z"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/01-employee-created.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/02-employee-menu.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/03-soft-delete-confirm.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/06-contract-form.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/07-contracts-before-delete.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/08-contract-delete-confirm.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/09-contract-deleted.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/10-contract-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/11-insurance-mount.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/12-insurance-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/13-insurance-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hdsd-bf-03-mutate-defer-01-20260801/14-insurance-f5.png"
+  ],
+  "must_keep": {
+    "mutate": [
+      "TC-HDSD-06",
+      "TC-HDSD-07",
+      "TC-HDSD-08"
+    ],
+    "note": "disposable stamp rows only — no touch YCTD/leave spines; HĐ delete only QA-MD stamp"
+  },
+  "_softDeleteBodyHasConfirm": false,
+  "mustKeepVerified": {
+    "noYctdNav": true,
+    "noLeaveNav": true
+  },
+  "finishedAt": "2026-07-31T03:51:29.544Z",
+  "summary": {
+    "green": 1,
+    "yellow": 2,
+    "red": 0
+  }
+}

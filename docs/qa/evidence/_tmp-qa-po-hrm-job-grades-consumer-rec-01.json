@@ -1,0 +1,97 @@
+{
+  "work_item_id": "QA-PO-HRM-JOB-GRADES-CONSUMER-REC-01",
+  "stamp": "JGRECQA-MSNP1AX8",
+  "startedAt": "2026-08-10T20:38:08.836Z",
+  "u65": "zero-seed-browser-only",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "honesty": {
+    "settings_catalog_e2e_ready": false,
+    "uf_hrm_10_full": false,
+    "must_keep": [
+      "RECCHQC1"
+    ]
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0 (pre-run)"
+  },
+  "vitest": {
+    "file": "po-hrm-job-grades-consumer-rec-fe-01.test.ts",
+    "result": "4/4 (pre-run)"
+  },
+  "jest": {
+    "file": "po-hrm-job-grades-consumer-rec-be-01.spec.ts",
+    "result": "3/3 (pre-run)"
+  },
+  "jobGrades": {
+    "effBefore": 1,
+    "effAfter": 1,
+    "codes": [
+      "gqanow4ip"
+    ],
+    "syncUsed": false,
+    "feCreateUsed": false
+  },
+  "ac": {
+    "JOB-GRADES-EFF": {
+      "verdict": "PASS",
+      "summary": "existing EFF=1",
+      "at": "2026-08-10T20:38:11.489Z"
+    },
+    "AC-SET-CONSUMER-JG-REC-01-CREATE": {
+      "verdict": "PASS",
+      "summary": "POST 201 job_grade_key=gqanow4ip expected=gqanow4ip reason=",
+      "clickPath": "Tuyển dụng → YCTD → Tạo → hdsd-requisition-job-grade → Lưu",
+      "at": "2026-08-10T20:38:28.949Z"
+    },
+    "AC-SET-CONSUMER-JG-REC-01-F5": {
+      "verdict": "PASS",
+      "summary": "row=true listLabel=true detail=true detailTxt=Ngạch/bậc\n\nQA Ngạch JGRECQA-MSNOW4IP",
+      "at": "2026-08-10T20:38:34.897Z"
+    },
+    "AC-SET-CONSUMER-JG-REC-01-EDIT": {
+      "verdict": "PASS",
+      "summary": "skipped — single grade in catalog (create path sufficient)",
+      "at": "2026-08-10T20:38:34.897Z"
+    }
+  },
+  "network": [
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/requisitions",
+      "status": 201,
+      "at": "2026-08-10T20:38:24.391Z",
+      "body": {
+        "company_id": "main",
+        "title": "YCTD JG QA JGRECQA-MSNP1AX8",
+        "department": "DEPT_01",
+        "employment_type": "fidmzcr85emp",
+        "headcount": 1,
+        "job_template_id": "7bab3ec0-2990-402a-88ec-08493ede0bdc",
+        "headcount_mode": "out_of_plan",
+        "hire_reason": "new",
+        "out_of_plan_reason": "QA ngoài ĐB JGRECQA-MSNP1AX8",
+        "job_grade_key": "gqanow4ip"
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "ids": {
+    "selectedGradeCode": "gqanow4ip",
+    "selectedGradeLabel": null,
+    "requisitionId": "03b487cf-56df-4c12-8c7c-5f8a38a47cf9"
+  },
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "pm_dispatch_hint": null,
+  "endedAt": "2026-08-10T20:38:34.898Z"
+}

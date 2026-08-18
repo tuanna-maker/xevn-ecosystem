@@ -1,0 +1,124 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-PAYMENT-WIRE-QA-01",
+  "stamp": "PAYWIRE-MSIRGZEZ",
+  "started": "2026-08-07T09:47:28.716Z",
+  "ended": "2026-08-07T09:47:30.768Z",
+  "verdict": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "payroll_e2e_ready": false,
+  "persona": {
+    "email": "ceo@xe.vn",
+    "company_id": "main",
+    "sub": "ceo@xe.vn"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "period": {
+    "id": "38674cc1-2e7e-43a7-a244-8d30e069208b",
+    "label": "QA-CB-BAG-VARS2 PAYFECB-MSII9VYY",
+    "company_id": "holding",
+    "payslip_total": 1,
+    "processed_count": 1,
+    "unpaid_count": 1,
+    "processed_ids": [
+      "0f2967e7-cfb4-4b21-bffe-9ebd6c15e1c7"
+    ],
+    "list_code": "HRM-PAY-200"
+  },
+  "batchId": null,
+  "ac": {
+    "AC1_wire_201": {
+      "verdict": "FAIL",
+      "detail": {
+        "status": 500,
+        "code": "HRM-SYS-001",
+        "expected_payslips": 1,
+        "batchId": null
+      }
+    },
+    "AC2_rewire_idempotent": {
+      "verdict": "FAIL",
+      "detail": {
+        "status": 500,
+        "code": "HRM-SYS-001",
+        "sameBatch": true
+      }
+    },
+    "AC3_process_payslips_paid": {
+      "verdict": "FAIL",
+      "detail": "No batchId from wire"
+    },
+    "AC4_close_before_pay_005": {
+      "verdict": "PASS",
+      "detail": {
+        "status": 412,
+        "code": "HRM-PAY-005"
+      }
+    },
+    "AC5_close_after_paid_203": {
+      "verdict": "BLOCKED",
+      "detail": "AC3 failed — did not attempt close after pay"
+    },
+    "AC6_honesty": {
+      "verdict": "PASS",
+      "detail": "payroll_e2e_ready=false · no seed · no module UAT claim"
+    }
+  },
+  "steps": [
+    {
+      "name": "unauth_wire_probe",
+      "status": 401,
+      "code": "HRM-AUTH-001",
+      "note": "route live (not 404)"
+    },
+    {
+      "name": "find_processed_period",
+      "list_status": 200,
+      "list_code": "HRM-PAY-200",
+      "candidate_count": 2,
+      "eligible_count": 2,
+      "chosen": {
+        "id": "38674cc1-2e7e-43a7-a244-8d30e069208b",
+        "label": "QA-CB-BAG-VARS2 PAYFECB-MSII9VYY",
+        "processed_count": 1,
+        "unpaid_count": 1
+      }
+    },
+    {
+      "name": "wire1",
+      "status": 500,
+      "code": "HRM-SYS-001",
+      "summary": "{\"success\":false,\"code\":\"HRM-SYS-001\",\"message\":\"column e.department does not exist\",\"timestamp\":\"2026-08-07T09:47:30.402Z\"}"
+    },
+    {
+      "name": "wire2_rewire",
+      "status": 500,
+      "code": "HRM-SYS-001",
+      "summary": "{\"success\":false,\"code\":\"HRM-SYS-001\",\"message\":\"column e.department does not exist\",\"timestamp\":\"2026-08-07T09:47:30.458Z\"}"
+    },
+    {
+      "name": "close_before_pay",
+      "status": 412,
+      "code": "HRM-PAY-005",
+      "summary": "{\"success\":false,\"code\":\"HRM-PAY-005\",\"message\":\"Tất cả phiếu lương phải được chi trả (paid) trước khi chốt kỳ lương\",\"details\":{\"unpaid_payslip_count\":1,\"payroll_e2e_ready\":false},\"timestamp\":\"2026-08-07T09:47:30.767Z\"}"
+    }
+  ],
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed": false,
+    "module_uat_claim": false,
+    "amis_parity_done_claim": false
+  }
+}

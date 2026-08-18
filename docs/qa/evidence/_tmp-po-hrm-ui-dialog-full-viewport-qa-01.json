@@ -1,0 +1,92 @@
+{
+  "work_item_id": "QA-PO-HRM-UI-DIALOG-FULL-VIEWPORT-01",
+  "parent": "PO-HRM-UI-DIALOG-FULL-VIEWPORT-FE-01",
+  "stamp": "DLGFVP-MSN13PUC",
+  "startedAt": "2026-08-10T09:28:10.710Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0 (pre-run)"
+  },
+  "ufs": {
+    "UF-JD-ADD-FULL-VIEWPORT": {
+      "verdict": "PASS",
+      "note": "add=true parent=true wRatio=0.9 ≥0.85=true · 1296×810 vs 1440×900 · dndReady=true dndMoved=true dndStorm=false pos=true saveEnabled=true post=201",
+      "meta": {
+        "pass": true,
+        "onParent": true,
+        "wRatio": 0.9,
+        "hRatio": 0.9,
+        "note": "1296×810 vs 1440×900"
+      }
+    },
+    "UF-JD-VIEW-FULL-VIEWPORT": {
+      "verdict": "PASS",
+      "note": "view parent wRatio=0.9 · 1296×123",
+      "meta": {
+        "pass": true,
+        "onParent": true,
+        "wRatio": 0.9,
+        "note": "1296×123"
+      }
+    },
+    "UF-CTR-TPL-FULL-VIEWPORT-DND": {
+      "verdict": "PASS",
+      "note": "parent=true wRatio=0.9 · 1296×810 vs 1440×900 · canvasItems=0 dndStorm=false closed=true",
+      "meta": {
+        "tplMeasure": {
+          "pass": true,
+          "onParent": true,
+          "wRatio": 0.9,
+          "hRatio": 0.9,
+          "note": "1296×810 vs 1440×900"
+        },
+        "tplDnd": {
+          "canvasItems": 0,
+          "dndStorm": false
+        }
+      }
+    },
+    "UF-NO-DUP-SHELL": {
+      "verdict": "PASS",
+      "note": "header-ish count after JD close=2",
+      "meta": {}
+    }
+  },
+  "dnd_storms": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "network": [
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates",
+      "status": 201
+    }
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ui-dialog-full-viewport-qa-01/01-jd-add-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ui-dialog-full-viewport-qa-01/02-jd-view-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ui-dialog-full-viewport-qa-01/03-ctr-tpl-dialog.png"
+  ],
+  "defects": [],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "endedAt": "2026-08-10T09:28:44.911Z",
+  "viewPrereq": {
+    "createdSlug": "jdn13puc",
+    "hasViewAfterSave": true,
+    "savePost": {
+      "method": "POST",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates",
+      "status": 201
+    },
+    "submitEnabled": true
+  }
+}

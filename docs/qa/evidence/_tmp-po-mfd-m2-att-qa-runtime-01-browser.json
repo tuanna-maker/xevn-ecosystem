@@ -1,0 +1,4380 @@
+{
+  "work_item_id": "PO-MFD-M2-ATT-QA-RUNTIME-01",
+  "startedAt": "2026-08-04T08:32:59.696Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "read_only": true,
+  "uat_done": false,
+  "attendance_closed": false,
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "COMPANY": "main",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "portal_url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main",
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "surfaces": [
+    {
+      "id": "tab-overview",
+      "matrix": "1-5",
+      "menu_path": "Tổng quan",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 1393
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-sites?company_id=main",
+          "at": "2026-08-04T08:33:04.525Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:33:04.612Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:33:04.784Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:33:06.188Z"
+    },
+    {
+      "id": "att-clock-in",
+      "matrix": "6",
+      "menu_path": "Clock-In hub",
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 1055
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:33:07.509Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:33:07.509Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+          "at": "2026-08-04T08:33:07.558Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+          "at": "2026-08-04T08:33:07.658Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+          "at": "2026-08-04T08:33:07.822Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:33:08.932Z"
+    },
+    {
+      "id": "clock-manual",
+      "matrix": "7",
+      "menu_path": "Clock-In → Thủ công (spot open)",
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 1055
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:33:10.161Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+          "at": "2026-08-04T08:33:10.230Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+          "at": "2026-08-04T08:33:10.347Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+          "at": "2026-08-04T08:33:10.557Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:33:20.312Z"
+    },
+    {
+      "id": "clock-qr",
+      "matrix": "8",
+      "menu_path": "Clock-In → QR (shell spot)",
+      "partialHint": true,
+      "forceRuntime": null,
+      "runtime": "PARTIAL",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 1216
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-sites?company_id=main",
+          "at": "2026-08-04T08:33:21.387Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:33:21.552Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:33:21.582Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+          "at": "2026-08-04T08:33:21.582Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+          "at": "2026-08-04T08:33:21.904Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+          "at": "2026-08-04T08:33:21.922Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+          "at": "2026-08-04T08:33:30.929Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:33:31.695Z"
+    },
+    {
+      "id": "clock-face",
+      "matrix": "9",
+      "menu_path": "Clock-In → Khuôn mặt (GĐ2-HOLD spot)",
+      "forceRuntime": "GĐ2-HOLD",
+      "runtime": "GĐ2-HOLD",
+      "signals": {
+        "stub": true,
+        "gd2Hold": true,
+        "spinners": 2,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 2608
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+        "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+      ],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:33:32.755Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+          "at": "2026-08-04T08:33:32.811Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+          "at": "2026-08-04T08:33:32.966Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+          "at": "2026-08-04T08:33:33.174Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/face-data?company_id=main",
+          "at": "2026-08-04T08:33:41.980Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+          "at": "2026-08-04T08:33:41.987Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/face-data?company_id=main",
+          "at": "2026-08-04T08:33:42.307Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/face-data?company_id=main",
+          "at": "2026-08-04T08:33:42.632Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/face-data?company_id=main",
+          "at": "2026-08-04T08:33:42.912Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:33:43.024Z"
+    },
+    {
+      "id": "clock-gps",
+      "matrix": "10",
+      "menu_path": "Clock-In → GPS (spot open, no POST)",
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 1333
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:33:44.255Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:33:44.313Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+          "at": "2026-08-04T08:33:44.313Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+          "at": "2026-08-04T08:33:44.476Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+          "at": "2026-08-04T08:33:44.679Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+          "at": "2026-08-04T08:33:53.244Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:33:54.318Z"
+    },
+    {
+      "id": "att-sheets",
+      "matrix": "11-12",
+      "menu_path": "Bảng chấm công",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 527
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:33:55.427Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:33:55.661Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:33:55.847Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+          "at": "2026-08-04T08:33:55.876Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:33:57.281Z"
+    },
+    {
+      "id": "att-records",
+      "matrix": "13",
+      "menu_path": "Dữ liệu chấm công (list RO)",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 560
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:33:58.761Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+          "at": "2026-08-04T08:33:58.770Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+          "at": "2026-08-04T08:33:59.001Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:00.147Z"
+    },
+    {
+      "id": "att-weekly",
+      "matrix": "14",
+      "menu_path": "Chấm công tuần",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 440
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:01.296Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+          "at": "2026-08-04T08:34:01.544Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:01.558Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-03&to_date=2026-08-09&page=1&page_size=100",
+          "at": "2026-08-04T08:34:01.670Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:02.957Z"
+    },
+    {
+      "id": "att-summary",
+      "matrix": "15",
+      "menu_path": "Tổng hợp công",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 588
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:04.417Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+          "at": "2026-08-04T08:34:04.418Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+          "at": "2026-08-04T08:34:04.559Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:05.842Z"
+    },
+    {
+      "id": "shifts-list",
+      "matrix": "16",
+      "menu_path": "Ca → Danh sách ca",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 374
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:34:07.456Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:07.477Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:08.859Z"
+    },
+    {
+      "id": "shifts-schedule",
+      "matrix": "17",
+      "menu_path": "Ca → Lịch phân ca",
+      "partialHint": true,
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": true,
+        "gd2Hold": true,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 334
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:34:09.844Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:10.095Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:34:10.609Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:10.626Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:12.014Z",
+      "note": "SHIFTS-02 honesty featureInDev+GĐ2; NO_API roster"
+    },
+    {
+      "id": "shifts-overtime",
+      "matrix": "18",
+      "menu_path": "Ca → Ca làm thêm",
+      "partialHint": true,
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": true,
+        "gd2Hold": true,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 324
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:13.533Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:34:13.561Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:14.954Z",
+      "note": "SHIFTS-02 honesty featureInDev+GĐ2; NO_API roster"
+    },
+    {
+      "id": "req-leave",
+      "matrix": "19",
+      "menu_path": "Đơn → Nghỉ phép",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 743
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:34:15.989Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:16.231Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:16.810Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:34:17.243Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:18.244Z"
+    },
+    {
+      "id": "req-late-early",
+      "matrix": "20",
+      "menu_path": "Đơn → Đi muộn/về sớm",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 500
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:19.335Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:19.984Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/late-early-requests?company_id=main",
+          "at": "2026-08-04T08:34:20.057Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:21.385Z"
+    },
+    {
+      "id": "req-overtime",
+      "matrix": "21",
+      "menu_path": "Đơn → Làm thêm",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 991
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:22.611Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:23.012Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overtime-requests?company_id=main",
+          "at": "2026-08-04T08:34:23.170Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:24.408Z"
+    },
+    {
+      "id": "req-trip",
+      "matrix": "22",
+      "menu_path": "Đơn → Công tác",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 438
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:25.597Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:26.169Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/business-trip-requests?company_id=main",
+          "at": "2026-08-04T08:34:26.222Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:27.555Z"
+    },
+    {
+      "id": "req-update-att",
+      "matrix": "23",
+      "menu_path": "Đơn → Cập nhật công",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 2001
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:29.078Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/update-requests?company_id=main",
+          "at": "2026-08-04T08:34:29.229Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:30.485Z"
+    },
+    {
+      "id": "req-change-shift",
+      "matrix": "24",
+      "menu_path": "Đơn → Đổi ca",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 423
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:34:31.542Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:31.785Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:32.319Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+          "at": "2026-08-04T08:34:32.352Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:33.726Z"
+    },
+    {
+      "id": "req-leave-summary",
+      "matrix": "25",
+      "menu_path": "Đơn → TH nghỉ phép",
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 743
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:34.947Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:35.599Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:34:35.872Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:37.020Z"
+    },
+    {
+      "id": "req-comp-summary",
+      "matrix": "26",
+      "menu_path": "Đơn → TH nghỉ bù",
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 743
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:38.197Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:38.723Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:34:38.910Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:40.145Z"
+    },
+    {
+      "id": "req-leave-plan",
+      "matrix": "27",
+      "menu_path": "Đơn → Kế hoạch nghỉ",
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 743
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:41.143Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:41.912Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:34:42.163Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:43.366Z"
+    },
+    {
+      "id": "tab-leave",
+      "matrix": "28",
+      "menu_path": "Tab Nghỉ phép",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 743
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:44.486Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:34:44.809Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:45.924Z"
+    },
+    {
+      "id": "tab-reports",
+      "matrix": "29",
+      "menu_path": "Báo cáo (RO, no export click)",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 946
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:34:47.114Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:47.308Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&status=active&page=1&page_size=1",
+          "at": "2026-08-04T08:34:47.319Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:47.375Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-01&to_date=2026-08-31&page=1&page_size=100",
+          "at": "2026-08-04T08:34:47.487Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:47.540Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:48.692Z"
+    },
+    {
+      "id": "tab-settings",
+      "matrix": "shell",
+      "menu_path": "Thiết lập shell",
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 3186
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:49.702Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:34:49.765Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:34:49.957Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:51.118Z"
+    },
+    {
+      "id": "settings-Nhân-viên",
+      "matrix": "31",
+      "menu_path": "Thiết lập → Nhân viên",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 3186
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:34:52.359Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:52.573Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:34:52.573Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:52.712Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:34:52.918Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:54.423Z"
+    },
+    {
+      "id": "settings-Quy-định-chấm-công",
+      "matrix": "32",
+      "menu_path": "Thiết lập → Quy định chấm công",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 1077
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:55.444Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:34:55.516Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:34:55.994Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:34:57.380Z"
+    },
+    {
+      "id": "settings-Quy-định-làm-thêm",
+      "matrix": "40",
+      "menu_path": "Thiết lập → Quy định làm thêm",
+      "forceRuntime": "STUB_UI",
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 444
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:34:58.571Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:34:58.772Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:34:58.882Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:34:58.897Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:34:59.142Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:00.762Z"
+    },
+    {
+      "id": "settings-Quy-định-nghỉ",
+      "matrix": "41",
+      "menu_path": "Thiết lập → Quy định nghỉ",
+      "forceRuntime": "STUB_UI",
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 440
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:35:01.912Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:01.913Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:01.975Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:02.151Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:03.809Z"
+    },
+    {
+      "id": "settings-Quy-định-đi-muộn---về-sớ",
+      "matrix": "42",
+      "menu_path": "Thiết lập → Quy định đi muộn - về sớm",
+      "forceRuntime": "STUB_UI",
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 452
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:35:05.026Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:05.216Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:05.216Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:35:05.375Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:05.588Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:07.037Z"
+    },
+    {
+      "id": "settings-Quy-định-làm-đơn",
+      "matrix": "43",
+      "menu_path": "Thiết lập → Quy định làm đơn",
+      "forceRuntime": "STUB_UI",
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 443
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:35:08.144Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:08.145Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:08.212Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:08.398Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:10.078Z"
+    },
+    {
+      "id": "settings-Người-dùng",
+      "matrix": "44",
+      "menu_path": "Thiết lập → Người dùng",
+      "forceRuntime": "STUB_UI",
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": true,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 349
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:35:11.201Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:11.295Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:11.344Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:11.661Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:13.175Z"
+    },
+    {
+      "id": "settings-Vai-trò",
+      "matrix": "45",
+      "menu_path": "Thiết lập → Vai trò",
+      "forceRuntime": "STUB_UI",
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": true,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 346
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+          "at": "2026-08-04T08:35:14.216Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:35:14.483Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:14.507Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:14.507Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:14.844Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:16.365Z"
+    },
+    {
+      "id": "settings-Hệ-thống",
+      "matrix": "46",
+      "menu_path": "Thiết lập → Hệ thống",
+      "forceRuntime": "STUB_UI",
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": true,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 347
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:17.487Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:17.487Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:17.761Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:19.363Z"
+    },
+    {
+      "id": "rules-Chung",
+      "matrix": "32",
+      "menu_path": "Quy định → Chung",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 830
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:35:20.616Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:20.639Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:20.723Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:20.939Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:22.940Z"
+    },
+    {
+      "id": "rules-Số công chuẩn",
+      "matrix": "33",
+      "menu_path": "Quy định → Số công chuẩn",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 731
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:35:23.978Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:24.132Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:24.132Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:24.413Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:26.525Z"
+    },
+    {
+      "id": "rules-Tùy chỉnh bảng",
+      "matrix": "34",
+      "menu_path": "Quy định → Tùy chỉnh bảng công",
+      "requireNet": true,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 963
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:35:27.549Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:27.571Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:27.632Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:27.931Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:29.828Z"
+    },
+    {
+      "id": "rules-Máy chấm công",
+      "matrix": "35",
+      "menu_path": "Quy định → Máy chấm công",
+      "requireNet": false,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 1077
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:35:31.150Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:31.150Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:31.155Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:31.408Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:33.391Z"
+    },
+    {
+      "id": "rules-Chấm công trên",
+      "matrix": "36",
+      "menu_path": "Quy định → Chấm công trên ứng dụng",
+      "requireNet": false,
+      "runtime": "LIVE",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 1075
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:35:34.483Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:34.568Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:34.659Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:34.852Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:35:36.922Z"
+    },
+    {
+      "id": "rules-stub-37",
+      "matrix": "37",
+      "menu_path": "Quy định → Chấm công máy tính bảng",
+      "forceRuntime": "STUB_UI",
+      "clickError": null,
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 1077
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:35:37.919Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:35:37.973Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:35:38.229Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:36:08.722Z",
+      "note": "reprobe correct i18n → featureInDev STUB_UI; prior BROKEN=locator mismatch",
+      "reprobe": [
+        {
+          "label": "Máy tính bảng",
+          "clickError": null,
+          "stub": true,
+          "bodyLen": 513,
+          "snippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nTổng quan\nChấm công\nCa làm việc\nQuản lý đơn\nNghỉ phép\nBáo cáo\nThiết lập\nNhân viên"
+        },
+        {
+          "label": "Tự động chấm công",
+          "clickError": null,
+          "stub": true,
+          "bodyLen": 517,
+          "snippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nTổng quan\nChấm công\nCa làm việc\nQuản lý đơn\nNghỉ phép\nBáo cáo\nThiết lập\nNhân viên"
+        }
+      ]
+    },
+    {
+      "id": "rules-stub-38",
+      "matrix": "38",
+      "menu_path": "Quy định → Chấm công hộ",
+      "forceRuntime": "STUB_UI",
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": true,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": false,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 512
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:36:09.965Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:36:09.965Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:36:10.058Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:36:10.217Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:36:12.205Z"
+    },
+    {
+      "id": "rules-stub-39",
+      "matrix": "39",
+      "menu_path": "Quy định → Nhân viên tự động chấm công",
+      "forceRuntime": "STUB_UI",
+      "clickError": null,
+      "runtime": "STUB_UI",
+      "signals": {
+        "stub": false,
+        "gd2Hold": false,
+        "spinners": 0,
+        "hasTable": true,
+        "hasCard": false,
+        "depthErr": false,
+        "errorBanner": false,
+        "bodyLen": 1077
+      },
+      "newPageErrors": [],
+      "newConsoleErrors": [],
+      "networkBad": [],
+      "networkOk": [
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+          "at": "2026-08-04T08:36:13.231Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/work-shifts?company_id=main",
+          "at": "2026-08-04T08:36:13.323Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/attendance/leave-requests?company_id=main",
+          "at": "2026-08-04T08:36:13.412Z"
+        },
+        {
+          "status": 200,
+          "method": "GET",
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-04T08:36:13.715Z"
+        }
+      ],
+      "mutateUnexpected": [],
+      "probedAt": "2026-08-04T08:36:44.006Z",
+      "note": "reprobe correct i18n → featureInDev STUB_UI; prior BROKEN=locator mismatch",
+      "reprobe": [
+        {
+          "label": "Máy tính bảng",
+          "clickError": null,
+          "stub": true,
+          "bodyLen": 513,
+          "snippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nTổng quan\nChấm công\nCa làm việc\nQuản lý đơn\nNghỉ phép\nBáo cáo\nThiết lập\nNhân viên"
+        },
+        {
+          "label": "Tự động chấm công",
+          "clickError": null,
+          "stub": true,
+          "bodyLen": 517,
+          "snippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nTổng quan\nChấm công\nCa làm việc\nQuản lý đơn\nNghỉ phép\nBáo cáo\nThiết lập\nNhân viên"
+        }
+      ]
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "networkBad": [],
+  "networkOk": [
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:33:01.657Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:33:01.767Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:33:02.172Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:33:02.225Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:33:02.318Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:33:02.539Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:33:03.935Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:33:04.194Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:33:04.414Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:33:04.525Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:33:04.612Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:33:04.784Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:33:06.726Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:33:06.812Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:33:07.026Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:33:07.131Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:33:07.222Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:33:07.509Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:33:07.509Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:33:07.558Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T08:33:07.658Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "at": "2026-08-04T08:33:07.822Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:33:09.394Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:33:09.496Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:33:09.578Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:33:09.643Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:33:09.719Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:33:09.910Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:33:10.161Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:33:10.230Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "at": "2026-08-04T08:33:10.347Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T08:33:10.557Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:33:20.939Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:33:21.038Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:33:21.102Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:33:21.387Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:33:21.552Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:33:21.582Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:33:21.582Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T08:33:21.904Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "at": "2026-08-04T08:33:21.922Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T08:33:30.929Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:33:32.133Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:33:32.177Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:33:32.245Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:33:32.298Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:33:32.394Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:33:32.578Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:33:32.755Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:33:32.811Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T08:33:32.966Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "at": "2026-08-04T08:33:33.174Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-08-04T08:33:41.980Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T08:33:41.987Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-08-04T08:33:42.307Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-08-04T08:33:42.632Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/face-data?company_id=main",
+      "at": "2026-08-04T08:33:42.912Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:33:43.447Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:33:43.557Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:33:43.747Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:33:43.814Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:33:43.875Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:33:44.255Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:33:44.313Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:33:44.313Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T08:33:44.476Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "at": "2026-08-04T08:33:44.679Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "at": "2026-08-04T08:33:53.244Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:33:54.817Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:33:54.875Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:33:55.119Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:33:55.225Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:33:55.427Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:33:55.661Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:33:55.847Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:33:55.876Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:33:57.835Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:33:57.957Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:33:57.969Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:33:58.011Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:33:58.100Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:33:58.297Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:33:58.761Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:33:58.770Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "at": "2026-08-04T08:33:59.001Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:00.605Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:00.748Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:00.937Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:01.022Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:01.098Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:01.296Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:34:01.544Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:01.558Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-03&to_date=2026-08-09&page=1&page_size=100",
+      "at": "2026-08-04T08:34:01.670Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:03.328Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:03.408Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:03.565Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:03.636Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:03.680Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:03.866Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:04.417Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main",
+      "at": "2026-08-04T08:34:04.418Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-04&to_date=2026-08-04&page=1&page_size=100",
+      "at": "2026-08-04T08:34:04.559Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:06.259Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:06.481Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:06.539Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:06.588Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:06.651Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:06.774Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:34:07.456Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:07.477Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:09.424Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:09.671Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:09.779Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:09.815Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:09.844Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:10.095Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:34:10.609Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:10.626Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:12.318Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:12.456Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:12.565Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:12.630Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:12.688Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:12.867Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:13.533Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:34:13.561Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:15.452Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:15.565Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:15.746Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:15.810Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:15.989Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:16.231Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:16.810Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:34:17.243Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:18.692Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:18.813Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:18.959Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:19.016Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:19.080Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:19.335Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:19.984Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/late-early-requests?company_id=main",
+      "at": "2026-08-04T08:34:20.057Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:21.868Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:22.016Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:22.125Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:22.228Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:22.350Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:22.611Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:23.012Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overtime-requests?company_id=main",
+      "at": "2026-08-04T08:34:23.170Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:25.056Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:25.173Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:25.174Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:25.253Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:25.314Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:25.597Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:26.169Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/business-trip-requests?company_id=main",
+      "at": "2026-08-04T08:34:26.222Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:27.841Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:27.958Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:28.049Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:28.112Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:28.182Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:28.390Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:29.078Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/update-requests?company_id=main",
+      "at": "2026-08-04T08:34:29.229Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:30.930Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:31.087Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:31.335Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:31.434Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:31.542Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:31.785Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:32.319Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/shift-change-requests?company_id=main",
+      "at": "2026-08-04T08:34:32.352Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:34.212Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:34.319Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:34.537Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:34.608Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:34.684Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:34.947Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:35.599Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:34:35.872Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:37.504Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:37.612Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:37.856Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:37.934Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:37.996Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:38.197Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:38.723Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:34:38.910Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:40.506Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:40.596Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:40.810Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:40.873Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:40.952Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:41.143Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:41.912Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:34:42.163Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:43.665Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:43.732Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:43.897Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:43.954Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:44.009Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:44.179Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:44.486Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:34:44.809Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:46.485Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:46.585Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:46.835Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:46.980Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:47.114Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:47.308Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&status=active&page=1&page_size=1",
+      "at": "2026-08-04T08:34:47.319Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:47.375Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-01&to_date=2026-08-31&page=1&page_size=100",
+      "at": "2026-08-04T08:34:47.487Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:47.540Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:49.014Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:49.087Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:49.230Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:49.305Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:49.375Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:49.546Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:49.702Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:34:49.765Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:34:49.957Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:51.903Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:52.004Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:52.051Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:52.170Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:52.359Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:52.573Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:34:52.573Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:52.712Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:34:52.918Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:54.723Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:54.823Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:54.964Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:55.026Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:55.082Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:55.250Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:55.444Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:34:55.516Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:34:55.994Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:34:57.907Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:34:57.985Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:34:58.324Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:34:58.461Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:34:58.571Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:34:58.772Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:34:58.882Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:34:58.897Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:34:59.142Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:01.088Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:01.268Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:01.426Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:01.515Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:01.638Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:01.912Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:01.913Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:01.975Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:02.151Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:04.406Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:04.628Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:04.743Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:04.869Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:05.026Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:05.216Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:05.216Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:05.375Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:05.588Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:07.338Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:07.496Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:07.705Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:07.797Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:07.891Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:08.144Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:08.145Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:08.212Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:08.398Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:10.624Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:10.758Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:10.783Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:10.888Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:10.963Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:11.201Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:11.295Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:11.344Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:11.661Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:13.610Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:13.757Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:14.035Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:14.117Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:14.216Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:14.483Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:14.507Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:14.507Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:14.844Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:16.700Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:16.774Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:16.899Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:16.962Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:17.029Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:17.207Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:17.487Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:17.487Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:17.761Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:19.814Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:19.932Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:20.183Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:20.250Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:20.359Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:20.616Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:20.639Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:20.723Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:20.939Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:23.362Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:23.453Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:23.691Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:23.747Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:23.805Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:23.978Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:24.132Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:24.132Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:24.413Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:26.923Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:27.047Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:27.065Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:27.169Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:27.261Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:27.549Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:27.571Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:27.632Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:27.931Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:30.322Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:30.457Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:30.717Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:30.787Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:30.885Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:31.150Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:31.150Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:31.155Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:31.408Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:33.867Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:33.943Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:34.127Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:34.199Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:34.274Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:34.483Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:34.568Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:34.659Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:34.852Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:35:37.212Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:35:37.277Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:35:37.441Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:35:37.492Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:35:37.539Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:35:37.694Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:35:37.919Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:35:37.973Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:35:38.229Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:36:09.228Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:36:09.324Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:36:09.514Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:36:09.563Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:36:09.693Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:36:09.965Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:36:09.965Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:36:10.058Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:36:10.217Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "at": "2026-08-04T08:36:12.519Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-04T08:36:12.625Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/rules?company_id=main",
+      "at": "2026-08-04T08:36:12.707Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-sites?company_id=main",
+      "at": "2026-08-04T08:36:12.797Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-08-04T08:36:12.895Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T08:36:13.231Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/work-shifts?company_id=main",
+      "at": "2026-08-04T08:36:13.323Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-08-04T08:36:13.412Z"
+    },
+    {
+      "status": 200,
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T08:36:13.715Z"
+    }
+  ],
+  "mutateBlocked": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-qa-runtime-01/rules-stub-37.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m2-att-qa-runtime-01/rules-stub-39.png"
+  ],
+  "rollup": {
+    "probeCount": 42,
+    "counts": {
+      "LIVE": 28,
+      "PARTIAL": 1,
+      "GĐ2-HOLD": 1,
+      "STUB_UI": 12
+    },
+    "networkOkTotal": 379,
+    "networkBadTotal": 0,
+    "unexpectedMutates": 0,
+    "pageErrorsTotal": 0,
+    "note": "post-classify #37/#39/#17/#18"
+  },
+  "endedAt": "2026-08-04T08:36:44.097Z"
+}

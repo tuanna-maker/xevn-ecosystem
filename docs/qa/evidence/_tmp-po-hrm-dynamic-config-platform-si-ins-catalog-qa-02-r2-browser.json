@@ -1,0 +1,701 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INS-CATALOG-QA-02",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INS-CATALOG-FE-01",
+  "prior_retain": {
+    "qa_01": "SIINSQA-MSJA2Z7H",
+    "qc_01": "GWC L1 — do not reopen"
+  },
+  "program": "PO-HRM-CONTINUOUS-W8-20260807",
+  "startedAt": "2026-08-07T18:54:26.773Z",
+  "stamp": "SIINSQA2-MSJB0DY7",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "apiCompanyId": "main"
+  },
+  "u65": "zero-seed · browser-only · FE after 2xx/4xx + F5 · L1 probe ≠ 🟢 UF",
+  "hdsd_align": "Settings → Loại BH / SI type · Bảo hiểm policy master · Hồ sơ NV tab insurance enrollment",
+  "honesty": {
+    "contracts_printable_ready": false,
+    "hrm_personnel_uat_ready": false,
+    "seed_used": false,
+    "deny_module_si_ctr_uat": true,
+    "deny_reopen_l1_qa01_qc01": true,
+    "c_slice_ne_module": true,
+    "seals_retain": [
+      "SIINSQA-MSJA2Z7H",
+      "QC-01 GWC L1",
+      "CTR legal-print",
+      "SI enrollment EMP-BE-02",
+      "EMP",
+      "DEC",
+      "PAY",
+      "ATT",
+      "REC",
+      "EXT",
+      "LIST-TOTALS"
+    ]
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "SI_KEY": "hr_si_cat_msjb0dy7",
+    "SI_LABEL": "Loại BH QA SI msjb0dy7",
+    "INVENT_KEY": "zz_invent_si_msjb0dy7",
+    "POL_CODE": "POL-SIQA2-MSJB0DY7"
+  },
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "ac": {
+    "L0-STACK": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:54:26.795Z",
+      "summary": "portal 200 · hrm 200 · xbos 200"
+    },
+    "AC-PLT-SI-INS-01d": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:54:39.478Z",
+      "summary": "Admin CREATE PUT → 200 key=hr_si_cat_msjb0dy7 · F5 row=true · F-SI-CAT-TYP",
+      "network": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/contracts-insurance/insurance-types",
+        "id": "bf148e38-2879-4b18-a007-2e929176e32f",
+        "insuranceTypeKey": "hr_si_cat_msjb0dy7"
+      }
+    },
+    "AC-PLT-SI-INS-01-PICKER-SOT": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:54:44.216Z",
+      "summary": "EFF count=9 · GET effective Network status=200 url=/api/hrm/contracts-insurance/insurance-types/effective?company_id=main · MD-alone=false",
+      "probes": {
+        "status": 200,
+        "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+        "hitsSinceInsNav": 1,
+        "settingsCatalogInsuranceTypesHits": 0
+      }
+    },
+    "AC-PLT-SI-INS-01c": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:54:44.216Z",
+      "summary": "EFF=9 live REF/Nest — empty soft path not forced (no wipe) · CTA wire present=false · U65 no seed",
+      "emptyCtaPolicyVisible": false,
+      "note": "peer ATT/PAY pattern — empty not forced when live density ≥1"
+    },
+    "AC-PLT-SI-INS-01-POLICY": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:54:55.702Z",
+      "summary": "Policy CREATE POST → 201 type=hr_si_cat_msjb0dy7 · picker=true · F5 sees code/type=true · insurerPicked=true",
+      "probes": {
+        "status": 201,
+        "code": "HRM-INS-POL-201",
+        "type": "hr_si_cat_msjb0dy7",
+        "policy_code": "POL-SIQA2-MSJB0DY7",
+        "insurerPicked": true,
+        "policyPicked": true
+      }
+    },
+    "AC-PLT-SI-INS-01b-POLICY": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:54:59.254Z",
+      "summary": "Invent zz_invent_si_msjb0dy7: FE picker blocked=false · POST status=400 code=HRM-INS-TYPE-KEY",
+      "fe": {
+        "blocked": false,
+        "reason": "no combobox"
+      },
+      "api": {
+        "status": 400,
+        "code": "HRM-INS-TYPE-KEY",
+        "message": "insurance_type 'zz_invent_si_msjb0dy7' is not in effective insurance-type catalog (free-text SoT forbidden)"
+      }
+    },
+    "AC-PLT-SI-INS-01-ENROLL-SOT": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:55:05.123Z",
+      "summary": "Enrollment dialog picker=true · GET effective status=200 · anyEffHit=true · emptyCTA=false",
+      "probes": {
+        "status": 200,
+        "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+        "hits": 1
+      }
+    },
+    "AC-PLT-SI-INS-01-ENROLLMENT": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:55:17.362Z",
+      "summary": "Enrollment POST → 201 type=hr_si_cat_msjb0dy7 · F5 evidence=true",
+      "probes": {
+        "status": 201,
+        "code": "HRM-EINS-201",
+        "message": "Employee insurance created",
+        "req_type": "hr_si_cat_msjb0dy7",
+        "req_start_date": "2026-08-01",
+        "req_end_date": "2026-12-31",
+        "type": "hr_si_cat_msjb0dy7"
+      },
+      "f5ok": true
+    },
+    "AC-PLT-SI-INS-01b-ENROLLMENT": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:55:22.090Z",
+      "summary": "Invent enroll: FE blocked=false · API status=400 code=HRM-INS-TYPE-KEY",
+      "fe": {
+        "blocked": false,
+        "reason": "no combobox"
+      },
+      "api": {
+        "status": 400,
+        "code": "HRM-INS-TYPE-KEY",
+        "note": "type=accident enum-allowed; expect KEY if ∉ EFF (L1 retain path)"
+      },
+      "free": null
+    },
+    "MUST_KEEP-CTR-SMOKE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:55:24.807Z",
+      "summary": "CTR/legal-print surface smoke load (no mutate) · tabVisible=false · seals RETAIN"
+    },
+    "AC-PLT-SI-INS-01H": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:55:24.808Z",
+      "summary": "contracts_printable_ready=false · hrm_personnel_uat_ready=false · L1 SIINSQA-MSJA2Z7H RETAIN · QC-01 GWC L1 RETAIN · CTR/enrollment seals RETAIN · C-SLICE-≠-MODULE · DENY SI/CTR UAT · zero-seed"
+    },
+    "AC-PLT-SI-INS-01": {
+      "verdict": "PASS",
+      "at": "2026-08-07T18:55:24.809Z",
+      "summary": "Aggregate consumers: policy=PASS enroll=PASS pickerSoT=PASS enrollSoT=PASS"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types?company_id=main&status=active",
+      "at": "2026-08-07T18:54:28.007Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:54:28.142Z"
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types",
+      "at": "2026-08-07T18:54:32.914Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types?company_id=main&status=active",
+      "at": "2026-08-07T18:54:32.928Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:54:33.088Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:54:33.246Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types?company_id=main&status=active",
+      "at": "2026-08-07T18:54:34.219Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types?company_id=main&status=active",
+      "at": "2026-08-07T18:54:35.608Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:54:35.751Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:54:40.022Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-08-07T18:54:40.253Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/contracts-insurance/insurance-policies",
+      "at": "2026-08-07T18:54:49.675Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-08-07T18:54:50.016Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:54:51.434Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-08-07T18:54:51.628Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:54:56.188Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-policies?company_id=main",
+      "at": "2026-08-07T18:54:56.400Z"
+    },
+    {
+      "method": "POST",
+      "status": 400,
+      "url": "/api/hrm/contracts-insurance/insurance-policies",
+      "at": "2026-08-07T18:54:59.253Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:55:00.011Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T18:55:00.024Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/90b0b35e-6eb5-46cd-8c56-f0804f55242a?company_id=main",
+      "at": "2026-08-07T18:55:00.200Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T18:55:00.203Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/4542a7a1-8300-4d79-a417-a4c51d27533b?company_id=main",
+      "at": "2026-08-07T18:55:00.203Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/aebdb4da-1e38-46a9-8e9e-353a81799792?company_id=main",
+      "at": "2026-08-07T18:55:00.206Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/876740a8-a0ec-43c6-bcec-bd666ffe02f3?company_id=main",
+      "at": "2026-08-07T18:55:00.213Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employee-insurances",
+      "at": "2026-08-07T18:55:07.681Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T18:55:07.857Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/876740a8-a0ec-43c6-bcec-bd666ffe02f3?company_id=main",
+      "at": "2026-08-07T18:55:08.032Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/90b0b35e-6eb5-46cd-8c56-f0804f55242a?company_id=main",
+      "at": "2026-08-07T18:55:08.032Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/4542a7a1-8300-4d79-a417-a4c51d27533b?company_id=main",
+      "at": "2026-08-07T18:55:08.036Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T18:55:08.036Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/816b4c5c-89a3-4ed0-b901-e18fb77fb8f2?company_id=main",
+      "at": "2026-08-07T18:55:08.042Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/aebdb4da-1e38-46a9-8e9e-353a81799792?company_id=main",
+      "at": "2026-08-07T18:55:08.049Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:55:09.533Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T18:55:09.552Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/4542a7a1-8300-4d79-a417-a4c51d27533b?company_id=main",
+      "at": "2026-08-07T18:55:09.730Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T18:55:09.730Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/876740a8-a0ec-43c6-bcec-bd666ffe02f3?company_id=main",
+      "at": "2026-08-07T18:55:09.732Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/90b0b35e-6eb5-46cd-8c56-f0804f55242a?company_id=main",
+      "at": "2026-08-07T18:55:09.733Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/816b4c5c-89a3-4ed0-b901-e18fb77fb8f2?company_id=main",
+      "at": "2026-08-07T18:55:09.736Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/aebdb4da-1e38-46a9-8e9e-353a81799792?company_id=main",
+      "at": "2026-08-07T18:55:09.743Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:55:14.695Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T18:55:14.705Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/aebdb4da-1e38-46a9-8e9e-353a81799792?company_id=main",
+      "at": "2026-08-07T18:55:14.891Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/90b0b35e-6eb5-46cd-8c56-f0804f55242a?company_id=main",
+      "at": "2026-08-07T18:55:14.894Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/876740a8-a0ec-43c6-bcec-bd666ffe02f3?company_id=main",
+      "at": "2026-08-07T18:55:14.895Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/816b4c5c-89a3-4ed0-b901-e18fb77fb8f2?company_id=main",
+      "at": "2026-08-07T18:55:14.898Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/4542a7a1-8300-4d79-a417-a4c51d27533b?company_id=main",
+      "at": "2026-08-07T18:55:14.898Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T18:55:14.901Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "at": "2026-08-07T18:55:18.023Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances?company_id=main&employee_id=0500220b-f289-40df-b07e-86316285439b",
+      "at": "2026-08-07T18:55:18.033Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/aebdb4da-1e38-46a9-8e9e-353a81799792?company_id=main",
+      "at": "2026-08-07T18:55:18.208Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/816b4c5c-89a3-4ed0-b901-e18fb77fb8f2?company_id=main",
+      "at": "2026-08-07T18:55:18.210Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/0e9472ba-808c-4d25-9ada-cc983122e9c5?company_id=main",
+      "at": "2026-08-07T18:55:18.211Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/876740a8-a0ec-43c6-bcec-bd666ffe02f3?company_id=main",
+      "at": "2026-08-07T18:55:18.213Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/4542a7a1-8300-4d79-a417-a4c51d27533b?company_id=main",
+      "at": "2026-08-07T18:55:18.214Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employee-insurances/90b0b35e-6eb5-46cd-8c56-f0804f55242a?company_id=main",
+      "at": "2026-08-07T18:55:18.221Z"
+    },
+    {
+      "method": "POST",
+      "status": 400,
+      "url": "/api/hrm/employee-insurances",
+      "at": "2026-08-07T18:55:22.089Z"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/01-settings-si-insurance-types.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/02-after-admin-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/03-settings-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/04-insurance-page.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/05-policy-type-picked.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/06-after-policy-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/07-policy-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/08-employee-insurance-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/09-enrollment-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/10-after-enrollment-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/11-enrollment-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-si-ins-catalog-qa-02/12-ctr-smoke.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T18:54:26.877Z",
+      "msg": "loginApi ok"
+    },
+    {
+      "at": "2026-08-07T18:54:27.422Z",
+      "msg": "goto /hr/settings?tab=si-insurance-types (01d)"
+    },
+    {
+      "at": "2026-08-07T18:54:32.870Z",
+      "msg": "click Tạo loại BH key=hr_si_cat_msjb0dy7"
+    },
+    {
+      "at": "2026-08-07T18:54:39.478Z",
+      "msg": "goto /hr/insurance policy master"
+    },
+    {
+      "at": "2026-08-07T18:54:59.255Z",
+      "msg": "enrollment on employee profile tab=insurance"
+    },
+    {
+      "at": "2026-08-07T18:55:22.090Z",
+      "msg": "must_keep smoke CTR legal-print tab load"
+    }
+  ],
+  "probes": {
+    "effBaseline": {
+      "status": 200,
+      "count": 8,
+      "keys": [
+        "hr_si_cat_msja2z7h",
+        "bhxh_bh28ftqj0",
+        "bhxh_bh28fyuyu",
+        "bhxh_dto8gcijv",
+        "bhxh_qa",
+        "hr_si_cat_msjaj04x",
+        "hr_si_cat_msjat97d",
+        "hr_si_cat_msjawcnm"
+      ],
+      "retain_l1_open_key": true
+    },
+    "upsert": {
+      "status": 200,
+      "method": "PUT",
+      "url": "/api/hrm/contracts-insurance/insurance-types",
+      "id": "bf148e38-2879-4b18-a007-2e929176e32f",
+      "insuranceTypeKey": "hr_si_cat_msjb0dy7"
+    },
+    "effNetworkPolicy": {
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "hitsSinceInsNav": 1,
+      "settingsCatalogInsuranceTypesHits": 0
+    },
+    "effective": {
+      "status": 200,
+      "count": 9,
+      "hasNewKey": true,
+      "sampleKeys": [
+        "hr_si_cat_msja2z7h",
+        "bhxh_bh28ftqj0",
+        "bhxh_bh28fyuyu",
+        "bhxh_dto8gcijv",
+        "bhxh_qa",
+        "hr_si_cat_msjaj04x",
+        "hr_si_cat_msjat97d",
+        "hr_si_cat_msjawcnm",
+        "hr_si_cat_msjb0dy7"
+      ]
+    },
+    "insurer": {
+      "status": 404,
+      "insurerKey": null,
+      "sample": [],
+      "pickedFromUi": "bao_viet_qa\nBao Viet QA"
+    },
+    "policyCreate": {
+      "status": 201,
+      "code": "HRM-INS-POL-201",
+      "type": "hr_si_cat_msjb0dy7",
+      "policy_code": "POL-SIQA2-MSJB0DY7",
+      "insurerPicked": true,
+      "policyPicked": true
+    },
+    "inventFePolicy": {
+      "blocked": false,
+      "reason": "no combobox"
+    },
+    "inventPolicyApi": {
+      "status": 400,
+      "code": "HRM-INS-TYPE-KEY",
+      "message": "insurance_type 'zz_invent_si_msjb0dy7' is not in effective insurance-type catalog (free-text SoT forbidden)"
+    },
+    "employee": {
+      "status": 200,
+      "id": "0500220b-f289-40df-b07e-86316285439b",
+      "code": "UAT-0100"
+    },
+    "effNetworkEnrollment": {
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/insurance-types/effective?company_id=main",
+      "hits": 1
+    },
+    "enrollmentDateFill": {
+      "count": 2,
+      "start": "01/08/2026",
+      "end": "31/12/2026"
+    },
+    "enrollmentSaveEnabled": {
+      "saveEnabled": true,
+      "enrPicked": true,
+      "enrPickKey": "hr_si_cat_msjb0dy7"
+    },
+    "enrollmentCreate": {
+      "status": 201,
+      "code": "HRM-EINS-201",
+      "message": "Employee insurance created",
+      "req_type": "hr_si_cat_msjb0dy7",
+      "req_start_date": "2026-08-01",
+      "req_end_date": "2026-12-31",
+      "type": "hr_si_cat_msjb0dy7"
+    },
+    "inventFeEnrollment": {
+      "blocked": false,
+      "reason": "no combobox"
+    },
+    "inventEnrollmentApi": {
+      "status": 400,
+      "code": "HRM-INS-TYPE-KEY",
+      "note": "type=accident enum-allowed; expect KEY if ∉ EFF (L1 retain path)"
+    },
+    "ctrSmoke": {
+      "tabVisible": false,
+      "url": "http://127.0.0.1:5173/hr/settings?portal=1&tenantId=xevn&companyId=main&_=1786128922091"
+    }
+  },
+  "residuals": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "closed_residuals": [
+    {
+      "id": "R-PLT-SI-INS-03",
+      "status": "CLOSED",
+      "note": "FE pickers Network GET …/insurance-types/effective — not Settings MD-alone SoT"
+    }
+  ],
+  "endedAt": "2026-08-07T18:55:24.809Z",
+  "failIds": []
+}

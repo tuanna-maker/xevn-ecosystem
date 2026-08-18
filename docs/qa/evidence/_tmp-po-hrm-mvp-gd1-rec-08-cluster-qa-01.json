@@ -1,0 +1,476 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-REC-08-CLUSTER-QA-01",
+  "startedAt": "2026-08-08T22:02:09.709Z",
+  "stamp": "REC08QA-MSKX5N59",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser FE dashboard/reports · Network 2xx · F5",
+  "hdsd_align": true,
+  "hdsd_inventory": [
+    "Tuyển dụng → Dashboard",
+    "Tuyển dụng → Reports (module)",
+    "/reports recruitment"
+  ],
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "deny_module_rec_uat": true,
+    "deny_nest_rec_dual": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "portal": 200,
+    "srcMtime": "2026-08-08T21:38:40.7502477Z",
+    "distMtime": "2026-08-08T21:57:58.7586294Z",
+    "stale_dist": false
+  },
+  "l1": {
+    "yearOk": {
+      "status": 200,
+      "code": "HRM-REC-DASH-200",
+      "metrics": {
+        "planned_need": 45,
+        "filled_count": 0,
+        "in_pipeline_count": 13,
+        "gap_count": 45,
+        "completion_pct": 0,
+        "enough_people_status": "in_progress",
+        "enough_people_eta": "2026-08",
+        "enough_people_eta_label": "Dự kiến đủ người: 08/2026",
+        "empty_guide": null,
+        "open_yctd_count": 22,
+        "by_yctd_len": 24,
+        "funnel_keys": [
+          "cv",
+          "screening",
+          "interview",
+          "offer",
+          "onboard"
+        ]
+      },
+      "forbiddenHits": []
+    },
+    "rangeOk": {
+      "status": 200,
+      "code": "HRM-REC-DASH-200"
+    },
+    "badYear": {
+      "status": 400,
+      "code": "HRM-REC-DASH-PERIOD-400",
+      "message": "Thiếu kỳ lọc — cần year hoặc from+to (yyyy-MM)"
+    },
+    "badRange": {
+      "status": 400,
+      "code": "HRM-REC-DASH-PERIOD-400"
+    },
+    "scopeBad": {
+      "status": 409,
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    "dualRec": {
+      "status": 404,
+      "code": "HRM-DATA-404"
+    },
+    "postDeny": {
+      "status": 405,
+      "code": "HRM-REC-DASH-METHOD-405"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "code": "HRM-REC-DASH-200",
+      "url": "/api/hrm/recruitment/dashboard?company_id=main&year=2027&include=yctd",
+      "bodySnippet": {
+        "planned_need": 0,
+        "filled_count": 0,
+        "in_pipeline_count": 13,
+        "gap_count": 0,
+        "completion_pct": null,
+        "enough_people_status": "no_plan",
+        "enough_people_eta": null,
+        "empty_guide": "NO_APPROVED_HEADCOUNT",
+        "funnel_keys": [
+          "cv",
+          "screening",
+          "interview",
+          "offer",
+          "onboard"
+        ],
+        "by_yctd_len": 18
+      },
+      "at": "2026-08-08T22:02:39.439Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-08-cluster-qa-01/01-dashboard-loaded.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-08-cluster-qa-01/02-dashboard-after-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-08-cluster-qa-01/03-dashboard-range.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-08-cluster-qa-01/04-yctd-detail.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-08-cluster-qa-01/05-module-reports.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-08-cluster-qa-01/06-cc-reports.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-08-cluster-qa-01/07-invalid-period.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-08-cluster-qa-01/08-empty-or-year.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-08T22:02:09.710Z",
+      "msg": "start",
+      "stamp": "REC08QA-MSKX5N59"
+    },
+    {
+      "at": "2026-08-08T22:02:10.830Z",
+      "msg": "goto recruitment dashboard",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=dashboard&_=1786226530830"
+    },
+    {
+      "at": "2026-08-08T22:02:22.398Z",
+      "msg": "goto recruitment dashboard",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=dashboard&_=1786226542398"
+    },
+    {
+      "at": "2026-08-08T22:02:32.581Z",
+      "msg": "goto recruitment dashboard",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=dashboard&_=1786226552581"
+    }
+  ],
+  "ac": {
+    "L1-DASH-YEAR": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:10.419Z",
+      "summary": "GET year → 200 HRM-REC-DASH-200",
+      "metrics": {
+        "planned_need": 45,
+        "filled_count": 0,
+        "in_pipeline_count": 13,
+        "gap_count": 45,
+        "completion_pct": 0,
+        "enough_people_status": "in_progress",
+        "enough_people_eta": "2026-08",
+        "enough_people_eta_label": "Dự kiến đủ người: 08/2026",
+        "empty_guide": null,
+        "open_yctd_count": 22,
+        "by_yctd_len": 24,
+        "funnel_keys": [
+          "cv",
+          "screening",
+          "interview",
+          "offer",
+          "onboard"
+        ]
+      }
+    },
+    "L1-DASH-RANGE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:10.420Z",
+      "summary": "GET from-to → 200 HRM-REC-DASH-200"
+    },
+    "L1-PERIOD-400": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:10.420Z",
+      "summary": "400 HRM-REC-DASH-PERIOD-400"
+    },
+    "L1-SCOPE-409": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:10.421Z",
+      "summary": "409 SCOPE_CONTEXT_MISMATCH (SCOPE_CONTEXT_MISMATCH acceptable)"
+    },
+    "L1-DENY-REC-DUAL": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:10.421Z",
+      "summary": "GET /rec/dashboard → 404 (no Nest dual SoT)"
+    },
+    "L1-O10-NO-CB": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:10.421Z",
+      "summary": "forbiddenHits=[]"
+    },
+    "L1-FUNNEL-5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:10.422Z",
+      "summary": "funnel keys=[\"cv\",\"screening\",\"interview\",\"offer\",\"onboard\"]"
+    },
+    "AC-REC-08-09": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:10.424Z",
+      "summary": "Nest-only bind · aggregator/report formula DENY",
+      "audit": {
+        "nest_panel_wired": true,
+        "hook_get_dashboard": true,
+        "include_yctd": true,
+        "clear_on_error": true,
+        "no_campaign_drill": true,
+        "no_cost_ui_panel": true,
+        "aggregator_disabled": true,
+        "report_builder_denied": true,
+        "module_reports_nest": true,
+        "cc_reports_nest": true
+      }
+    },
+    "AC-REC-08-01": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:13.706Z",
+      "summary": "panel=true GET=200 HRM-REC-DASH-200 url has dash_* after sync",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=dashboard&_=1786226530830&dash_mode=year&dash_year=2026",
+      "kpis": {
+        "planned": "45",
+        "filled": "0",
+        "pipeline": "13",
+        "gap": "45",
+        "pct": "0%",
+        "openYctd": "22",
+        "etaLabel": "Dự kiến đủ người: 08/2026",
+        "eta": "2026-08"
+      }
+    },
+    "AC-REC-08-02": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:13.708Z",
+      "summary": "Network 200 HRM-REC-DASH-200; KPI bind + enough_people card",
+      "bodySnippet": {
+        "planned_need": 45,
+        "filled_count": 0,
+        "in_pipeline_count": 13,
+        "gap_count": 45,
+        "completion_pct": 0,
+        "enough_people_status": "in_progress",
+        "enough_people_eta": "2026-08",
+        "empty_guide": null,
+        "funnel_keys": [
+          "cv",
+          "screening",
+          "interview",
+          "offer",
+          "onboard"
+        ],
+        "by_yctd_len": 24
+      },
+      "kpis": {
+        "planned": "45",
+        "filled": "0",
+        "pipeline": "13",
+        "gap": "45",
+        "pct": "0%",
+        "openYctd": "22",
+        "etaLabel": "Dự kiến đủ người: 08/2026",
+        "eta": "2026-08"
+      }
+    },
+    "AC-REC-08-03": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:13.709Z",
+      "summary": "planned=45 pct=0 empty=null guideUI=false"
+    },
+    "AC-REC-08-04": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:13.710Z",
+      "summary": "UI funnel keys visible=[\"cv\",\"screening\",\"interview\",\"offer\",\"onboard\"]"
+    },
+    "AC-REC-08-05": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:13.710Z",
+      "summary": "enough card + eta_label=\"Dự kiến đủ người: 08/2026\" eta=2026-08"
+    },
+    "AC-REC-08-02-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:18.068Z",
+      "summary": "F5 retain filter urlBefore=http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=dashboard&_=1786226530830&dash_mode=year& → http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=dashboard&_=1786226530830&dash_mode=year&dash_year=2026 GET 200 HRM-REC-DASH-200",
+      "kpisF5": {
+        "planned": "45",
+        "filled": "0",
+        "pipeline": "13",
+        "gap": "45",
+        "pct": "0%",
+        "openYctd": "22",
+        "etaLabel": "Dự kiến đủ người: 08/2026",
+        "eta": "2026-08"
+      },
+      "urlWithYear": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=dashboard&_=1786226530830&dash_mode=year&dash_year=2026"
+    },
+    "AC-REC-08-01-RANGE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:20.176Z",
+      "summary": "range filter GET=200 HRM-REC-DASH-200 url=http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=dashboard&_=1786226530830&dash_mode=range&dash_from=2026-01&dash_to=2026-06"
+    },
+    "AC-REC-08-06": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:26.149Z",
+      "summary": "click YCTD row → detail GET 200 HRM-REC-200 (campaignPrimary=false)",
+      "testid": "rec-dash-yctd-row-e7529d70-2c31-4e2e-91c5-2970d3050079",
+      "rowText": "QA BOD AC02b05 REC02BODQA2-MSKX3U8H\topen_for_hire\tNgoài định biên\t1\t0\t0\t—",
+      "urlDetail": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=dashboard&_=1786226530830&dash_mode=range&dash_from=2026-01&dash_to=2026-06",
+      "campaignPrimary": false,
+      "campaignRoute": false,
+      "detailUi": true,
+      "detailGet": {
+        "method": "GET",
+        "status": 200,
+        "code": "HRM-REC-200",
+        "url": "/api/hrm/recruitment/requisitions/e7529d70-2c31-4e2e-91c5-2970d3050079?company_id=holding",
+        "bodySnippet": null,
+        "at": "2026-08-08T22:02:21.258Z"
+      },
+      "yctdDetailOk": true
+    },
+    "AC-REC-08-07": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:26.152Z",
+      "summary": "out_of_plan/mode visible in drill table",
+      "hasOut": true
+    },
+    "AC-REC-08-08": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:26.155Z",
+      "summary": "UI cost/C&B leak=false API forbidden=[]"
+    },
+    "AC-REC-08-10": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:32.580Z",
+      "summary": "module GET=200 HRM-REC-DASH-200 ui=true; cc GET=200 HRM-REC-DASH-200; sameSemanticsYear=true",
+      "moduleNums": {
+        "planned_need": 45,
+        "filled_count": 0,
+        "in_pipeline_count": 13,
+        "gap_count": 45,
+        "completion_pct": 0,
+        "enough_people_status": "in_progress",
+        "enough_people_eta": "2026-08",
+        "empty_guide": null,
+        "funnel_keys": [
+          "cv",
+          "screening",
+          "interview",
+          "offer",
+          "onboard"
+        ],
+        "by_yctd_len": 0
+      },
+      "ccSnippet": {
+        "planned_need": 45,
+        "filled_count": 0,
+        "in_pipeline_count": 13,
+        "gap_count": 45,
+        "completion_pct": 0,
+        "enough_people_status": "in_progress",
+        "enough_people_eta": "2026-08",
+        "empty_guide": null,
+        "funnel_keys": [
+          "cv",
+          "screening",
+          "interview",
+          "offer",
+          "onboard"
+        ],
+        "by_yctd_len": 0
+      }
+    },
+    "AC-REC-08-EX-01": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:38.498Z",
+      "summary": "invalid from>to → errCard=false toast=false afterPlanned=— staleRisk=false",
+      "goodKpis": {
+        "planned": "45",
+        "filled": "0",
+        "pipeline": "13",
+        "gap": "45",
+        "pct": "0%",
+        "openYctd": "22",
+        "etaLabel": "Dự kiến đủ người: 08/2026",
+        "eta": "2026-08"
+      }
+    },
+    "AC-REC-08-EX-04": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:40.920Z",
+      "summary": "empty_guide UI=true code=NO_APPROVED_HEADCOUNT status=no_plan",
+      "snippet": {
+        "planned_need": 0,
+        "filled_count": 0,
+        "in_pipeline_count": 13,
+        "gap_count": 0,
+        "completion_pct": null,
+        "enough_people_status": "no_plan",
+        "enough_people_eta": null,
+        "empty_guide": "NO_APPROVED_HEADCOUNT",
+        "funnel_keys": [
+          "cv",
+          "screening",
+          "interview",
+          "offer",
+          "onboard"
+        ],
+        "by_yctd_len": 18
+      }
+    },
+    "AC-REC-08-ALT-STATUS": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:40.969Z",
+      "summary": "enough_people_status=in_progress"
+    },
+    "AC-REC-08-EX-02": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:40.970Z",
+      "summary": "L1 scope mismatch 409 SCOPE_CONTEXT_MISMATCH; FE maps SCOPE_CONTEXT_MISMATCH + HRM-SCOPE-409 VI"
+    },
+    "AC-REC-08-EX-05": {
+      "verdict": "PASS",
+      "at": "2026-08-08T22:02:40.971Z",
+      "summary": "Nest /rec/dashboard 404 — physical /recruitment/dashboard* only"
+    }
+  },
+  "journeys": {
+    "J-HRM-REC-DASH-01": {
+      "verdict": "PASS",
+      "path": "Dashboard → by_yctd row → YCTD detail (J-HRM-05) · DENY Campaign",
+      "testid": "rec-dash-yctd-row-e7529d70-2c31-4e2e-91c5-2970d3050079",
+      "rowText": "QA BOD AC02b05 REC02BODQA2-MSKX3U8H\topen_for_hire\tNgoài định biên\t1\t0\t0\t—",
+      "urlDetail": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=dashboard&_=1786226530830&dash_mode=range&dash_from=2026-01&dash_to=2026-06",
+      "campaignPrimary": false,
+      "campaignRoute": false,
+      "detailUi": true,
+      "detailGet": {
+        "method": "GET",
+        "status": 200,
+        "code": "HRM-REC-200",
+        "url": "/api/hrm/recruitment/requisitions/e7529d70-2c31-4e2e-91c5-2970d3050079?company_id=holding",
+        "bodySnippet": null,
+        "at": "2026-08-08T22:02:21.258Z"
+      },
+      "yctdDetailOk": true
+    },
+    "J-HRM-05": {
+      "verdict": "PASS",
+      "note": "opened from dashboard drill"
+    }
+  },
+  "defects": [],
+  "code_audit": {
+    "nest_panel_wired": true,
+    "hook_get_dashboard": true,
+    "include_yctd": true,
+    "clear_on_error": true,
+    "no_campaign_drill": true,
+    "no_cost_ui_panel": true,
+    "aggregator_disabled": true,
+    "report_builder_denied": true,
+    "module_reports_nest": true,
+    "cc_reports_nest": true
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-08T22:02:41.183Z",
+  "fail_list": []
+}

@@ -1,0 +1,138 @@
+{
+  "work_item_id": "QA-HRM-BUILD-01-RET",
+  "program": "INC-HRM-DASH-500-01",
+  "startedAt": "2026-07-30T15:34:47.063Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed"
+  },
+  "hrmRuntime": {
+    "pid": "3568",
+    "commandLine": "\"C:\\Program Files\\nodejs\\node.exe\" dist-uat-w6/main.js",
+    "port": 28001,
+    "mode": "dist-uat-w6-freeze"
+  },
+  "distSpine": {
+    "apps/api/hrm-api/dist/main.js": true,
+    "apps/api/hrm-api/dist/common/http-exception.filter.js": true,
+    "apps/api/hrm-api/dist/spreadsheet/spreadsheet-template.service.js": true
+  },
+  "l0": {
+    "qc_dev_stack": {
+      "exit": 0,
+      "stdoutTail": "skipped — pre-validated HRM+XBOS+portal 200"
+    },
+    "qc_fe_be_health": {
+      "exit": 0,
+      "stdoutTail": "oding\\projects\\xevn-ecosystem\n> node ./scripts/qc-fe-be-api-health.mjs\n\nqc-fe-be-api-health — stack + HRM routes (console 500 class)\n\nINFO  portal-base  http://127.0.0.1:5173\n\nPASS  hrm-api-health  HTTP 200  http://127.0.0.1:28001/api/hrm/\nPASS  xbos-api-health  HTTP 200  http://127.0.0.1:28002/api/xbos\nPASS  web-portal  HTTP 200  http://127.0.0.1:5173\nPASS  portal-login  token ok\nPASS  hrm-employees-direct  HTTP 200  http://127.0.0.1:28001/api/hrm/employees?page_size=5&company_id=main\nPASS  hrm-catalog-sync-direct  HTTP 200  http://127.0.0.1:28001/api/hrm/catalog-sync\nPASS  portal-proxy-hrm-employees  HTTP 200  http://127.0.0.1:5173/api/hrm/employees?page_size=5&company_id=main\nPASS  portal-proxy-hrm-catalog  HTTP 200  http://127.0.0.1:5173/api/hrm/catalog-sync\n\n=== Summary: ALL PASS ===\n"
+    }
+  },
+  "routes": {
+    "dashboard": {
+      "network": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/operating-units"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/company-subscription?company_id=main"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees/summary?company_id=main"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/operations/reports/summary?company_id=main"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/payroll/payslips?company_id=main"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/contracts-insurance/contracts/expiring?company_id=main&days=30"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/attendance/leave-requests?company_id=main"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/attendance/overview?company_id=main&year=2026"
+        }
+      ],
+      "banner": false,
+      "snippet": "XeVN OS Command Center BOD Quản lý Nhân viên GROUP TÀI CHÍNH KẾ TOÁN NHÂN SỰ KINH DOANH VẬN HÀNH CÀI ĐẶT HỆ THỐNG Mở HRM MENU CHÍNH Tổng quan NHÂN SỰ Nhân sự Hợp đồng Bảo hiểm Quyết định Tuyển dụng 3 "
+    },
+    "employees": {
+      "network": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/operating-units"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/company-subscription?company_id=main"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/settings-catalogs"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/settings-catalogs"
+        }
+      ],
+      "banner": false,
+      "snippet": "XeVN OS Command Center BOD Quản lý Nhân viên GROUP TÀI CHÍNH KẾ TOÁN NHÂN SỰ KINH DOANH VẬN HÀNH CÀI ĐẶT HỆ THỐNG Mở HRM MENU CHÍNH Tổng quan NHÂN SỰ Nhân sự Hợp đồng Bảo hiểm Quyết định Tuyển dụng 3 "
+    }
+  },
+  "hardFails": [],
+  "verdict": "PASS_TO_PM",
+  "finishedAt": "2026-07-30T15:35:31.657Z"
+}

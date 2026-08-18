@@ -1,0 +1,45 @@
+﻿{
+    "work_item_id":  "PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-CL-AC02-DEVOPS-01",
+    "stamp":  "CTRCLAC02DEVOPS-002309",
+    "probed_at":  "2026-08-09T00:23:09.2809506+07:00",
+    "listener_pid":  21448,
+    "listener_start":  "2026-08-09T00:22:14.7289212+07:00",
+    "uptime_sec":  54,
+    "health_status":  200,
+    "health_body":  {
+                        "success":  true,
+                        "code":  "HRM-HEALTH-200",
+                        "message":  "HRM service is healthy",
+                        "data":  {
+                                     "service":  "hrm-api",
+                                     "status":  "ok"
+                                 },
+                        "timestamp":  "2026-08-08T17:23:09.197Z"
+                    },
+    "dist_mtime":  "2026-08-09T00:22:57.6504466+07:00",
+    "dist_len":  93252,
+    "src_mtime":  "2026-08-09T00:10:49.7074975+07:00",
+    "ac02_markers":  [
+                         "jsonb_array_elements",
+                         "expandHrmTextCompanyIds"
+                     ],
+    "qc_dev_stack":  {
+                         "xbos":  200,
+                         "hrm":  200,
+                         "portal":  200,
+                         "uv_noise":  true
+                     },
+    "ack_status":  "READY_FOR_QA",
+    "next_owner":  "qa",
+    "next_work_item":  "PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-CLAUSE-QA-04",
+    "must_keep":  [
+                      "printable=false",
+                      "C-SLICE"
+                  ],
+    "forbidden":  [
+                      "seed",
+                      "flip printable",
+                      "migrate destructive",
+                      "product code change"
+                  ]
+}

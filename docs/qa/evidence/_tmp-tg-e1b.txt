@@ -1,0 +1,1 @@
+﻿[xevn-ecosystem] E1-B CLOSED (QC GWC). E1-A FE fix xong → QA R2 đang chạy. E2 chờ E1-A.

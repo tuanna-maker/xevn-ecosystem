@@ -1,0 +1,3 @@
+﻿[xevn-ecosystem] P-CC-01 JWT residual CLOSED (QC GWC).
+expiresInSec=jwt_delta=86400 trên nip.io.
+HOLD_DEPLOY — không claim Phase1/PROD.

@@ -1,0 +1,4 @@
+﻿[xevn-ecosystem] Wave B QA PASS:
+• PermissionFallback
+• EmptyState (Dashboard + Contracts)
+→ QC đang gate. HOLD_DEPLOY.

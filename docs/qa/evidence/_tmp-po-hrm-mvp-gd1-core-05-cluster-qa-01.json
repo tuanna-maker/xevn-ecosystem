@@ -1,0 +1,1136 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-CORE-05-CLUSTER-QA-01",
+  "program": "PO-HRM-MVP-GD1-CONTINUOUS",
+  "uc_ids": [
+    "UC-BP-CORE-05"
+  ],
+  "stamp": "CORE05QA-MSLGFOXU",
+  "startedAt": "2026-08-09T07:01:51.309Z",
+  "cite_seals": {
+    "core03": "CORE03QC1-MSLFJH0K",
+    "core02b": "CORE02BQC1-MSLEFQC1",
+    "core09d": "CORE09DQC1-MSLDR8I3",
+    "empplat": "EMPPLATQA-MSIZXHIM",
+    "emptok": "EMPTOKQA-MSJ290VB",
+    "peers": [
+      "CORE03QC1-MSLFJH0K",
+      "CORE02BQC1-MSLEFQC1",
+      "CORE09DQC1-MSLDR8I3",
+      "CORE09CQC1-MSLBXMUT",
+      "CORE09BQC1-MSLB05DZ",
+      "CORE09AQC1-MSLA4LX9",
+      "CORE08QC1-MSL9BFFE",
+      "CORE02QC1-MSL80DU6",
+      "CORE01QC1-MSL6WMS7"
+    ]
+  },
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "apiCompanyId": "holding"
+  },
+  "u65": "zero-seed-browser-j-hrm-core-05",
+  "honesty": {
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "contracts_printable_ready": false,
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "deny_crud_eq_core05_done": true,
+    "deny_core06_07_printable_closed8_done": true,
+    "nest_core_deny": true,
+    "reopen_j_core_03_02b_09d_to_01": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "ASSET_NAME": "TS CORE-05 QA mslgfoxu",
+    "ASSET_CODE": "AST-C05-mslgfoxu",
+    "SERIAL_A": "SN-C05-mslgfoxu-A"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "src_dist": {
+    "src_profile_service": true,
+    "dist_profile_service": true,
+    "src_serial_conflict": true,
+    "dist_serial_conflict": true,
+    "src_delete_forbidden": true,
+    "dist_delete_forbidden": true,
+    "src_bb_cols": true,
+    "dist_bb_cols": true,
+    "src_controller_assets": true,
+    "nest_core_controller_ast_absent": true
+  },
+  "fe_spot": {
+    "assets_component": true,
+    "profile_assets_tab": true,
+    "physical_assets_path": true,
+    "deny_nest_core_assets_path": true,
+    "confirm_bb_cta": true,
+    "soft_return_action": true,
+    "serial_toast_map": true,
+    "notes_not_bb": true,
+    "hdsd_hooks": true
+  },
+  "seal_cites": {
+    "core03": {
+      "path": "docs/qa/evidence/po-hrm-mvp-gd1-core-03-cluster-qc-01.md",
+      "needle": "CORE03QC1-MSLFJH0K",
+      "cited": true
+    },
+    "core02b": {
+      "path": "docs/qa/evidence/po-hrm-mvp-gd1-core-02b-cluster-qc-01.md",
+      "needle": "CORE02BQC1-MSLEFQC1",
+      "cited": true
+    },
+    "core09d": {
+      "path": "docs/qa/evidence/po-hrm-mvp-gd1-core-09d-cluster-qc-01.md",
+      "needle": "CORE09DQC1-MSLDR8I3",
+      "cited": true
+    },
+    "empplat": {
+      "path": "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-qa-01.md",
+      "needle": "EMPPLATQA-MSIZXHIM",
+      "cited": true
+    },
+    "emptok": {
+      "path": "docs/qa/evidence/po-hrm-dynamic-config-platform-merge-token-emp-qa-01.md",
+      "needle": "EMPTOKQA-MSJ290VB",
+      "cited": true
+    },
+    "fe01": {
+      "path": "docs/qa/evidence/po-hrm-mvp-gd1-core-05-cluster-fe-01.md",
+      "needle": "READY_FOR_QA",
+      "cited": true
+    },
+    "be01": {
+      "path": "docs/qa/evidence/po-hrm-mvp-gd1-core-05-cluster-be-01.md",
+      "needle": "READY_FOR_QA",
+      "cited": true
+    },
+    "peers_must_keep": [
+      {
+        "stamp": "CORE03QC1-MSLFJH0K",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE02BQC1-MSLEFQC1",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE09DQC1-MSLDR8I3",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE09CQC1-MSLBXMUT",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE09BQC1-MSLB05DZ",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE09AQC1-MSLA4LX9",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE08QC1-MSL9BFFE",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE02QC1-MSL80DU6",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE01QC1-MSL6WMS7",
+        "reopen": false,
+        "note": "must_keep cite only"
+      }
+    ]
+  },
+  "hdsd_align": {
+    "menu_path": "HRM → Hồ sơ NV → tab Tài sản (employee.tabs.assets)",
+    "ui_labels": [
+      "Thêm cấp phát",
+      "Xác nhận nhận",
+      "Thu hồi (đổi trạng thái)",
+      "Đang sử dụng",
+      "Ghi chú không thay biên bản bàn giao"
+    ],
+    "data_hdsd": [
+      "hdsd-emp-assets",
+      "hdsd-emp-assets-add",
+      "hdsd-emp-assets-save",
+      "hdsd-emp-assets-confirm-bb",
+      "hdsd-emp-assets-soft-return",
+      "hdsd-emp-assets-serial",
+      "hdsd-emp-assets-notes"
+    ],
+    "client_hdsd_chapter": "CH11 reports «Công cụ dụng cụ» (stats) · Profile Tài sản = in-app hdsd hooks (no dedicated CH assets chapter invent)"
+  },
+  "l1": {
+    "assets_list": {
+      "status": 200,
+      "code": "HRM-EMP-PROFILE-200",
+      "total": 0,
+      "sample": "{\"total\":0,\"data\":[]}"
+    },
+    "nest_core_assets": {
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "message": "Cannot GET /api/hrm/core/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=holding&page=1&page_size=5",
+      "status": 200,
+      "at": "2026-08-09T07:01:51.937Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:01:52.419Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets",
+      "status": 404,
+      "at": "2026-08-09T07:01:52.423Z",
+      "nest_core": true,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T07:01:53.721Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:01:53.858Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:01:54.488Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T07:01:54.741Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:01:55.029Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 500,
+      "at": "2026-08-09T07:01:59.508Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:01.645Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:02.643Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:03.648Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:04.639Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:05.647Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:06.651Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:07.636Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:08.629Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T07:02:09.423Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:09.523Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:09.961Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T07:02:10.169Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:10.473Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:14.860Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T07:02:15.210Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:15.316Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:15.717Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T07:02:15.937Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:16.250Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 500,
+      "at": "2026-08-09T07:02:21.428Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets",
+      "status": 400,
+      "at": "2026-08-09T07:02:21.609Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:22.181Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    }
+  ],
+  "nest_core_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets",
+      "status": 404,
+      "at": "2026-08-09T07:01:52.423Z",
+      "nest_core": true,
+      "assets": true,
+      "employees": true
+    }
+  ],
+  "nest_core_sot_non404": [],
+  "assets_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:01:52.419Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets",
+      "status": 404,
+      "at": "2026-08-09T07:01:52.423Z",
+      "nest_core": true,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:01:55.029Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 500,
+      "at": "2026-08-09T07:01:59.508Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:01.645Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:02.643Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:03.648Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:04.639Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:05.647Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:06.651Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:07.636Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:08.629Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:10.473Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:14.860Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:16.250Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 500,
+      "at": "2026-08-09T07:02:21.428Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets",
+      "status": 400,
+      "at": "2026-08-09T07:02:21.609Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:22.181Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    }
+  ],
+  "employees_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=holding&page=1&page_size=5",
+      "status": 200,
+      "at": "2026-08-09T07:01:51.937Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:01:52.419Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets",
+      "status": 404,
+      "at": "2026-08-09T07:01:52.423Z",
+      "nest_core": true,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:01:54.488Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:01:55.029Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 500,
+      "at": "2026-08-09T07:01:59.508Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:01.645Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:02.643Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:03.648Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:04.639Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:05.647Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:06.651Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:07.636Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:08.629Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:09.961Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:10.473Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:14.860Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:15.717Z",
+      "nest_core": false,
+      "assets": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T07:02:16.250Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+      "status": 500,
+      "at": "2026-08-09T07:02:21.428Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets",
+      "status": 400,
+      "at": "2026-08-09T07:02:21.609Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T07:02:22.181Z",
+      "nest_core": false,
+      "assets": true,
+      "employees": true
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Error adding asset: ApiClientError: invalid input syntax for type date: \"\"\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786258503725:69:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786258503725:122:26)\n    at async addAsset (http://127.0.0.1:5173/hr/src/hooks/useEmployeeAssets.ts?t=1786258",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Error adding asset: ApiClientError: invalid input syntax for type date: \"\"\n    at parseHrmJson (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786258503725:69:15)\n    at async requestHrm (http://127.0.0.1:5173/hr/src/integrations/hrmApi.ts?t=1786258503725:122:26)\n    at async addAsset (http://127.0.0.1:5173/hr/src/hooks/useEmployeeAssets.ts?t=1786258"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-05-cluster-qa-01/01-assets-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-05-cluster-qa-01/02-add-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-05-cluster-qa-01/03-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-05-cluster-qa-01/04-create-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-05-cluster-qa-01/07-serial-conflict.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-05-cluster-qa-01/09-done.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-09T07:01:51.429Z",
+      "msg": "L0",
+      "hrm": {
+        "status": 200,
+        "ok": true
+      },
+      "xbos": {
+        "status": 200,
+        "ok": true
+      },
+      "portal": {
+        "status": 200,
+        "ok": true
+      }
+    },
+    {
+      "at": "2026-08-09T07:01:51.517Z",
+      "msg": "LOGIN",
+      "via": "http://127.0.0.1:5173/api/xbos/auth/login"
+    },
+    {
+      "at": "2026-08-09T07:01:51.937Z",
+      "msg": "EMP",
+      "companyId": "holding",
+      "employeeId": "2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "employee_code": "HIRE-HOLDIN-MSL5T540DDDE8E"
+    },
+    {
+      "at": "2026-08-09T07:01:52.900Z",
+      "msg": "J-01 create asset"
+    },
+    {
+      "at": "2026-08-09T07:02:14.930Z",
+      "msg": "J-02 BB confirm"
+    },
+    {
+      "at": "2026-08-09T07:02:14.930Z",
+      "msg": "J-03 serial conflict"
+    },
+    {
+      "at": "2026-08-09T07:02:22.182Z",
+      "msg": "J-04 soft return + DELETE forbidden"
+    },
+    {
+      "at": "2026-08-09T07:02:22.183Z",
+      "msg": "J-05 seals + nest deny"
+    }
+  ],
+  "probes": {
+    "emp": {
+      "companyId": "holding",
+      "employeeId": "2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "employee_code": "HIRE-HOLDIN-MSL5T540DDDE8E"
+    },
+    "assets_url": "http://127.0.0.1:5173/hr/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?tab=assets",
+    "assets_panel_open": true,
+    "create": {
+      "postNetwork": {
+        "method": "POST",
+        "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+        "status": 500,
+        "at": "2026-08-09T07:01:59.508Z",
+        "nest_core": false,
+        "assets": true,
+        "employees": true
+      },
+      "toast": "invalid input syntax for type date: \"\"",
+      "listStatus": 200,
+      "row": null
+    },
+    "createF5": {
+      "status": 200,
+      "found": false,
+      "statusVal": null,
+      "statusLabelVi": null,
+      "handoverConfirmed": null
+    },
+    "serialDup": {
+      "network": {
+        "method": "POST",
+        "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+        "status": 500,
+        "at": "2026-08-09T07:01:59.508Z",
+        "nest_core": false,
+        "assets": true,
+        "employees": true
+      },
+      "toast": "invalid input syntax for type date: \"\""
+    },
+    "serialDupApi": {
+      "status": 400,
+      "code": "HRM-VAL-001",
+      "message": "company_id must be shorter than or equal to 64 characters; company_id must be a string"
+    },
+    "serialDupF5": {
+      "assignedCount": 0
+    },
+    "j05": {
+      "nest_core_assets_404": true,
+      "nest_core_ast_sot_non404": 0,
+      "physical_assets_hits": 18,
+      "sealsOk": true,
+      "distLive": true,
+      "feOk": true,
+      "honesty": {
+        "hrm_personnel_uat_ready": false,
+        "employees_e2e_linkage_ready": false,
+        "contracts_printable_ready": false,
+        "recruitment_uat_ready": false,
+        "jd_dynamic_done": false,
+        "seed_used": false,
+        "c_slice_ne_module": true,
+        "deny_crud_eq_core05_done": true,
+        "deny_core06_07_printable_closed8_done": true,
+        "nest_core_deny": true,
+        "reopen_j_core_03_02b_09d_to_01": false
+      }
+    }
+  },
+  "journeys": {
+    "J-HRM-CORE-05-01": {
+      "verdict": "FAIL",
+      "at": "2026-08-09T07:02:14.929Z",
+      "summary": "panel=true POST 500 id=undefined status=undefined label=undefined F5=false ui=false nest_core_ast=0 empty_ok=true",
+      "post": {
+        "method": "POST",
+        "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+        "status": 500,
+        "at": "2026-08-09T07:01:59.508Z",
+        "nest_core": false,
+        "assets": true,
+        "employees": true
+      },
+      "f5": {
+        "status": 200,
+        "found": false,
+        "statusVal": null,
+        "statusLabelVi": null,
+        "handoverConfirmed": null
+      },
+      "create": {
+        "postNetwork": {
+          "method": "POST",
+          "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+          "status": 500,
+          "at": "2026-08-09T07:01:59.508Z",
+          "nest_core": false,
+          "assets": true,
+          "employees": true
+        },
+        "toast": "invalid input syntax for type date: \"\"",
+        "listStatus": 200,
+        "row": null
+      }
+    },
+    "J-HRM-CORE-05-02": {
+      "verdict": "FAIL",
+      "at": "2026-08-09T07:02:14.930Z",
+      "summary": "PATCH undefined notes≠BB=undefined confirmed=undefined docId=undefined==undefined nest=0",
+      "patch": null
+    },
+    "J-HRM-CORE-05-03": {
+      "verdict": "FAIL",
+      "at": "2026-08-09T07:02:22.182Z",
+      "summary": "dup POST 500 code=HRM-VAL-001 toast=invalid input syntax for type date: \"\" assignedSameSerial=0 fe_map=true",
+      "browser": {
+        "network": {
+          "method": "POST",
+          "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/assets?company_id=main",
+          "status": 500,
+          "at": "2026-08-09T07:01:59.508Z",
+          "nest_core": false,
+          "assets": true,
+          "employees": true
+        },
+        "toast": "invalid input syntax for type date: \"\""
+      },
+      "api": {
+        "status": 400,
+        "code": "HRM-VAL-001",
+        "message": "company_id must be shorter than or equal to 64 characters; company_id must be a string"
+      },
+      "f5": {
+        "assignedCount": 0
+      }
+    },
+    "J-HRM-CORE-05-04": {
+      "verdict": "FAIL",
+      "at": "2026-08-09T07:02:22.183Z",
+      "summary": "DELETE undefined/undefined soft PATCH undefined F5 status=undefined"
+    },
+    "J-HRM-CORE-05-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T07:02:22.239Z",
+      "summary": "nest404=true sot_non404=0 physical=18 seals=true distLive=true feOk=true honesty=false C-SLICE",
+      "nest_core_assets_404": true,
+      "nest_core_ast_sot_non404": 0,
+      "physical_assets_hits": 18,
+      "sealsOk": true,
+      "distLive": true,
+      "feOk": true,
+      "honesty": {
+        "hrm_personnel_uat_ready": false,
+        "employees_e2e_linkage_ready": false,
+        "contracts_printable_ready": false,
+        "recruitment_uat_ready": false,
+        "jd_dynamic_done": false,
+        "seed_used": false,
+        "c_slice_ne_module": true,
+        "deny_crud_eq_core05_done": true,
+        "deny_core06_07_printable_closed8_done": true,
+        "nest_core_deny": true,
+        "reopen_j_core_03_02b_09d_to_01": false
+      }
+    }
+  },
+  "residuals": [
+    {
+      "id": "R-J-HRM-CORE-05-01",
+      "sev": "P0",
+      "journey": "J-HRM-CORE-05-01",
+      "summary": "panel=true POST 500 id=undefined status=undefined label=undefined F5=false ui=false nest_core_ast=0 empty_ok=true"
+    },
+    {
+      "id": "R-J-HRM-CORE-05-02",
+      "sev": "P0",
+      "journey": "J-HRM-CORE-05-02",
+      "summary": "PATCH undefined notes≠BB=undefined confirmed=undefined docId=undefined==undefined nest=0"
+    },
+    {
+      "id": "R-J-HRM-CORE-05-03",
+      "sev": "P0",
+      "journey": "J-HRM-CORE-05-03",
+      "summary": "dup POST 500 code=HRM-VAL-001 toast=invalid input syntax for type date: \"\" assignedSameSerial=0 fe_map=true"
+    },
+    {
+      "id": "R-J-HRM-CORE-05-04",
+      "sev": "P0",
+      "journey": "J-HRM-CORE-05-04",
+      "summary": "DELETE undefined/undefined soft PATCH undefined F5 status=undefined"
+    }
+  ],
+  "defects": [
+    {
+      "id": "R-CORE-05-CREATE",
+      "sev": "P0",
+      "note": "create did not persist — cannot continue J-02..04"
+    }
+  ],
+  "overall": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-09T07:02:22.469Z"
+}

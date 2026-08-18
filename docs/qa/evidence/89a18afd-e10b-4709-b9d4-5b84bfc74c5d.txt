@@ -1,0 +1,2714 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	deleted:    docs/qa/evidence/api-restart-post-scope-20260522.md
+	renamed:    docs/qa/evidence/hrm-fidelity-be-20260523.md -> docs/qa/evidence/archive/2026-05/hrm-fidelity-be-20260523.md
+	renamed:    docs/qa/evidence/hrm-fidelity-be-scope-20260523.md -> docs/qa/evidence/archive/2026-05/hrm-fidelity-be-scope-20260523.md
+	renamed:    docs/qa/evidence/hrm-fidelity-fe-20260523.md -> docs/qa/evidence/archive/2026-05/hrm-fidelity-fe-20260523.md
+	renamed:    docs/qa/evidence/hrm-fidelity-qa-baseline-20260523.md -> docs/qa/evidence/archive/2026-05/hrm-fidelity-qa-baseline-20260523.md
+	renamed:    docs/qa/evidence/hrm-fidelity-qa-retest-20260523.md -> docs/qa/evidence/archive/2026-05/hrm-fidelity-qa-retest-20260523.md
+	renamed:    docs/qa/evidence/hrm-fidelity-qa-scope-20260523.md -> docs/qa/evidence/archive/2026-05/hrm-fidelity-qa-scope-20260523.md
+	renamed:    docs/qa/evidence/hrm-menu-density-verify-20260523.md -> docs/qa/evidence/archive/2026-05/hrm-menu-density-verify-20260523.md
+	renamed:    docs/qa/evidence/p1-r1-be-att-01-20260529.md -> docs/qa/evidence/archive/2026-05/p1-r1-be-att-01-20260529.md
+	renamed:    docs/qa/evidence/p1-r1-qc-01-20260529.md -> docs/qa/evidence/archive/2026-05/p1-r1-qc-01-20260529.md
+	renamed:    docs/qa/evidence/p1-r1-tm-01-20260529.md -> docs/qa/evidence/archive/2026-05/p1-r1-tm-01-20260529.md
+	renamed:    docs/qa/evidence/p1-r1-tm-01-r1-20260529.md -> docs/qa/evidence/archive/2026-05/p1-r1-tm-01-r1-20260529.md
+	renamed:    docs/qa/evidence/p1-s1-be-01-catalog-20260523.md -> docs/qa/evidence/archive/2026-05/p1-s1-be-01-catalog-20260523.md
+	renamed:    docs/qa/evidence/pilot-business-flow-20260522.md -> docs/qa/evidence/archive/2026-05/pilot-business-flow-20260522.md
+	renamed:    docs/qa/evidence/qc-hrm-fidelity-gfid08-20260523.md -> docs/qa/evidence/archive/2026-05/qc-hrm-fidelity-gfid08-20260523.md
+	renamed:    docs/qa/evidence/qc-scrum-s0-hrm-embed-20260523.md -> docs/qa/evidence/archive/2026-05/qc-scrum-s0-hrm-embed-20260523.md
+	renamed:    docs/qa/evidence/s1-fe-debt-qa-retest-20260523.md -> docs/qa/evidence/archive/2026-05/s1-fe-debt-qa-retest-20260523.md
+	renamed:    docs/qa/evidence/sprint-pulse-s1-20260522.md -> docs/qa/evidence/archive/2026-05/sprint-pulse-s1-20260522.md
+	deleted:    docs/qa/evidence/fe-be-health-20260524.md
+	deleted:    docs/qa/evidence/hdsd-command-validation-20260522.md
+	deleted:    docs/qa/evidence/hrm-api-employee-by-id-20260523.md
+	deleted:    docs/qa/evidence/hrm-auth-portal-only-20260524.md
+	deleted:    docs/qa/evidence/hrm-be-quality-audit-20260524.md
+	deleted:    docs/qa/evidence/hrm-be-w1-clean-gate-20260524.md
+	deleted:    docs/qa/evidence/hrm-embed-contracts-fix-20260522.md
+	deleted:    docs/qa/evidence/hrm-embed-d6-kpi-rollup-20260522.md
+	deleted:    docs/qa/evidence/hrm-embed-employee-detail-20260522.md
+	deleted:    docs/qa/evidence/hrm-embed-employees-fix-20260522.md
+	deleted:    docs/qa/evidence/hrm-embed-fe-audit-20260522.md
+	deleted:    docs/qa/evidence/hrm-embed-fe-audit-20260523.md
+	deleted:    docs/qa/evidence/hrm-embed-fe-audit-20260524.md
+	deleted:    docs/qa/evidence/hrm-embed-fe-audit-20260525.md
+	deleted:    docs/qa/evidence/hrm-embed-fe-audit-20260529.md
+	deleted:    docs/qa/evidence/hrm-embed-fe-audit-20260530.md
+	deleted:    docs/qa/evidence/hrm-embed-fe-audit-20260531.md
+	deleted:    docs/qa/evidence/hrm-embed-s0-pcc05-08-20260523.md
+	deleted:    docs/qa/evidence/hrm-fe-quality-audit-20260524.md
+	deleted:    docs/qa/evidence/hrm-fe-w1-clean-gate-20260524.md
+	deleted:    docs/qa/evidence/hrm-full-quality-audit-20260524.md
+	deleted:    docs/qa/evidence/hrm-qa-full-audit-20260524.md
+	deleted:    docs/qa/evidence/hrm-qa-w1-clean-gate-20260524.md
+	deleted:    docs/qa/evidence/hrm-qc-w1-clean-gate-20260524.md
+	deleted:    docs/qa/evidence/hrm-realistic-data-reset-20260524.md
+	deleted:    docs/qa/evidence/hrm-tm-review-20260524.md
+	deleted:    docs/qa/evidence/p1-100-be-w1-20260529.md
+	deleted:    docs/qa/evidence/p1-100-fe-w1-20260529.md
+	deleted:    docs/qa/evidence/p1-100-g2-01-20260529.md
+	deleted:    docs/qa/evidence/p1-100-qa-fe-w1-20260529.md
+	deleted:    docs/qa/evidence/p1-100-qa-g2-01-20260529.md
+	deleted:    docs/qa/evidence/p1-100-qa-w1-20260529.md
+	deleted:    docs/qa/evidence/p1-100-qa-w2-20260530.md
+	deleted:    docs/qa/evidence/p1-100-qc-g2-01-20260530.md
+	deleted:    docs/qa/evidence/p1-bnd-be-01-20260529.md
+	deleted:    docs/qa/evidence/p1-bnd-do-01-20260529.md
+	deleted:    docs/qa/evidence/p1-bnd-fe-01-20260529.md
+	deleted:    docs/qa/evidence/p1-close-be-a2-20260525.md
+	deleted:    docs/qa/evidence/p1-close-be-c1-20260525.md
+	deleted:    docs/qa/evidence/p1-close-be-c2-20260525.md
+	deleted:    docs/qa/evidence/p1-close-be-w1b-20260525.md
+	deleted:    docs/qa/evidence/p1-close-be-w2-20260525.md
+	deleted:    docs/qa/evidence/p1-close-be-w3-20260525.md
+	deleted:    docs/qa/evidence/p1-close-be-w4-20260525.md
+	deleted:    docs/qa/evidence/p1-close-be-w5-20260525.md
+	deleted:    docs/qa/evidence/p1-close-fe-a2-20260525.md
+	deleted:    docs/qa/evidence/p1-close-fe-c2-20260525.md
+	deleted:    docs/qa/evidence/p1-close-fe-w1b-20260525.md
+	deleted:    docs/qa/evidence/p1-close-fe-w2-20260525.md
+	deleted:    docs/qa/evidence/p1-close-fe-w3-20260525.md
+	deleted:    docs/qa/evidence/p1-close-fe-w4-20260525.md
+	deleted:    docs/qa/evidence/p1-close-fe-w5-20260525.md
+	deleted:    docs/qa/evidence/p1-close-fe-w5b-20260525.md
+	deleted:    docs/qa/evidence/p1-close-qa-w1-20260525.md
+	deleted:    docs/qa/evidence/p1-close-qa-w1b-20260525.md
+	deleted:    docs/qa/evidence/p1-close-qa-w2-20260525.md
+	deleted:    docs/qa/evidence/p1-close-qa-w3-20260525.md
+	deleted:    docs/qa/evidence/p1-close-qa-w4-20260525.md
+	deleted:    docs/qa/evidence/p1-close-qa-w5-20260525.md
+	deleted:    docs/qa/evidence/p1-close-qa-w5b-20260525.md
+	deleted:    docs/qa/evidence/p1-ex-ba-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-ba-02-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-ba-waiver-01-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-be-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-be-02-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-be-fe-https-attendance-08-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-be-hotfix-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-03-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-04-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-05-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-06-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-07-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-08-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-09-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-attendance-contract-01-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-browser-auth-01-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-browser-auth-02-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-be-https-catalog-sync-10-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-be-ins-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-be-p1-02-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-be-p1scope-01-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-dev-https-01-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-dev-https-02-r1-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-do-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-do-data-03-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-do-hrbp-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-do-prod-02-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-do-prodqc-01-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-do-tls-01-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-fe-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-fe-02-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-fe-be-https-attendance-residual-03-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-fe-be-https-residual-03-r2-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-fe-be-https-residual-03-r3-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-fe-be-https-residual-03-r4-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-fe-be-https-residual-03-r5-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-fe-https-allowed-hosts-01-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-fe-https-attendance-fallback-01-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-fe-https-attendance-fallback-02-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-fe-https-emp-profile-10-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-fe-https-j-hrm-06-attendance-blank-01-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-fe-https-j-hrm-06-scope-01-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-fe-https-jwt-embed-01-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-fe-p1-03-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-fe-p1-04-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-pm-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qa-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qa-01-r3-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qa-01-r4-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qa-02-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qa-02-r2-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qa-03-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qa-03-r1-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qa-04-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-fe-p1-03-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-fe-p1-04-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-r1-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-r10-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-r2-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-r3-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-r4-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-r5-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-r6-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-r7-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-r8-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-01-r9-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-attendance-08-r1-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-attendance-fallback-01-r1-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-attendance-fallback-02-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-attendance-fallback-03-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-browser-01-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-browser-01-r2-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-browser-01-r3-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-browser-01-r4-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-browser-01-r5-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-browser-01-r5-r2-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-browser-01b-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-browser-auth-01c-r1-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-browser-auth-02-r1-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-browser-auth-02-r2-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-j-cc-03-01-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-j-hrm-06-01-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-j-hrm-06-01-r1-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-j-hrm-06-01-r2-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-j-hrm-06-01-r3-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-j-hrm-06-01-r4-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-j-hrm-06-01-r5-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-j-hrm-06-01-r6-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-l25-data-journey-01-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-p-cc-01-jwt-01-20260529.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-residual-03-r1-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-residual-03-r2-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-residual-03-r2-prep-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-residual-03-r3-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-residual-03-r4-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-residual-03-r4-20260530.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-residual-03-r5-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-https-residual-03-r5-r1-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qa-p1-02-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-p1scope-01-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qa-tm-r1-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qc-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qc-02-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qc-03-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-qc-04-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qc-05-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-01-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-auth-02-r1-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-browser-01-r5-r2-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-l25-journey-01-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-residual-03-r1-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-residual-03-r2-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-residual-03-r3-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-residual-03-r4-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-residual-03-r4-20260531.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-residual-03-r5-r1-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-qc-https-wave-consolidate-01-20260528.md
+	deleted:    docs/qa/evidence/p1-ex-sa-01-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-sa-02-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-sa-03-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-sa-04-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-tm-02-20260526.md
+	deleted:    docs/qa/evidence/p1-ex-tm-03-20260527.md
+	deleted:    docs/qa/evidence/p1-ex-tm-04-20260527.md
+	deleted:    docs/qa/evidence/p1-fix-raci-scope-01-20260526.md
+	deleted:    docs/qa/evidence/p1-fix-raci-seed-02-20260526.md
+	deleted:    docs/qa/evidence/p1-g9-qa-01-20260529.md
+	deleted:    docs/qa/evidence/p1-mob-apk-01-20260529.md
+	deleted:    docs/qa/evidence/p1-mob-apk-01-be-02-20260529.md
+	deleted:    docs/qa/evidence/p1-mob-apk-01-fe-02-20260529.md
+	deleted:    docs/qa/evidence/p1-mob-apk-01-qa-20260529.md
+	deleted:    docs/qa/evidence/p1-mob-apk-01-qa-r1-20260529.md
+	deleted:    docs/qa/evidence/p1-mob-apk-01-qa-r2-20260529.md
+	deleted:    docs/qa/evidence/p1-mob-apk-01-qc-01-20260529.md
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/01-launch.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/02-after-login.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/03-login-retry.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/04-login-clipboard.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/05-home.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/06-https-login.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/07-after-allow.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/08-dashboard.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/ui-home.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/ui-login.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/ui-now.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/ui-post.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/ui-post2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/ui3.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/ui6.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/ui7.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r1-screens/ui8.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/01-launch.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/01-launch.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/02-dashboard.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/02-email.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/02-email.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/03-home.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/03-password.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/03-password.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/04-checkin.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/04-post-login-0.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/04-post-login-0.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/04-post-login-1.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/04-post-login-1.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/04-post-login-2.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/04-post-login-2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/04-post-login-3.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/04-post-login-3.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/05-home.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/05-home.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/05-requests.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/06-checkin.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/06-checkin.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/06-leave-list.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/07-more.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/07-requests.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/07-requests.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/08-leave-list.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/08-leave-list.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/08-payslip.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/09-approvals.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/09-leave-list2.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/09-leave-list2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/10-leave-detail.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/10-leave-detail.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/11-tabs.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/11-tabs.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/12-more.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/12-more.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/13-payroll.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/13-payroll.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/14-payslip-list.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/14-payslip-list.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/15-payslip-detail.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/15-payslip-detail.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/16-more2.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/16-more2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/17-approvals.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/17-approvals.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/after-ok.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/alert-check.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j01.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j01.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j02.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j02.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j03a.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j03a.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j03b.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j03b.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j03c.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j03c.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j03d.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j03d.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j04a.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j04a.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j04b.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j04b.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j04c.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j04c.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j04d.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j04d.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j05a.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j05a.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j05b.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-j05b.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-post-0.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-post-0.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-post-1.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-post-1.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-post-2.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/clean-post-2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-01-login.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j01-home.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j01-home.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j02-checkin.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j02-checkin.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j03-leave-create.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j03-leave-create.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j03-leave-list.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j03-leave-list.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j04-more.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j04-payroll.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j04-payroll.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j04-payslip-detail.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j04-payslip-detail.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j04-payslip-list.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j04-payslip-list.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j05-approvals.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j05-approvals.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-j05-more.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/final-perm.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j01-dashboard.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j01-dashboard.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j02-checkin.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j02-checkin.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j03-leave-create.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j03-leave-create.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j03-leave-detail.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j03-leave-detail.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j03-leave-list.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j03-leave-list.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j03-leave-list2.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j03-leave-list2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j03-requests-root.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j03-requests-root.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-final-settings.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-final-settings.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-more-menu.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-more-menu.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-more-scroll.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-only-settings.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-only-settings.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-only-start.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-only-start.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payroll-final.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payroll-final.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payroll-v2.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payroll-v2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payroll.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payroll.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-detail-final.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-detail-final.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-detail-v2.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-detail-v2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-detail.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-detail.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-list-final.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-list-final.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-list-v2.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-list-v2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-list.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-payslip-list.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-r3-settings-bottom.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-r3-settings-bottom.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-r3-settings-top.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-r3-settings-top.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-r4-settings.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-r4-settings.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-r5-home.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-r5-home.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-r5-settings.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-r5-settings.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-detail.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-detail.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-more-scroll.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-more-scroll.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-more.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-more.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-payroll.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-payroll.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-payslips.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-payslips.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-start.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-retry-start.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-tab-more.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j04-tab-more.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-approvals-final.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-approvals-final.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-approvals-v2.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-approvals-v2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-approvals.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-approvals.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-final-settings.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-final-settings.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-more-back.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-more-back.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-more-scroll.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-retry-approvals.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/j05-retry-approvals.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-after-notif.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-home-final.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-home-final.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j01-home.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j01-home.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j04-more.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j04-payroll.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j04-payroll.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j04-payslip-detail.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j04-payslip-detail.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j04-payslip-list.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j04-payslip-list.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j05-approvals.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j05-approvals.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-j05-more.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-jmob02-checkin.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-jmob02-checkin.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-jmob03-requests.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-jmob03-requests.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-0.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-0.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-1.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-1.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-2.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-3.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-3.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-4.png
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-4.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/r2-login-state.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/tap-luong.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/tap-phe.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/tmp-home.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/tmp-more.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/tmp-more2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-01-launch.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-approvals.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-checkin.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-home.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-leave.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-more.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-more2.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-more3.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-payslip.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-perm.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-post-login.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-postlogin.xml
+	deleted:    docs/qa/evidence/p1-mob-apk-01-r2-screens/ui-requests.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-apk-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w10-be-scope-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w10-device-01-20260531.json
+	deleted:    docs/qa/evidence/p1-p100-w10-device-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w10-device-02-20260531.json
+	deleted:    docs/qa/evidence/p1-p100-w10-device-02-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w10-device-03-20260531.json
+	deleted:    docs/qa/evidence/p1-p100-w10-device-03-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/tmp-leave.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/tmp-more.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/tmp-nav.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/tmp-payroll.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-approvals-after.png
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-approvals-after.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-approvals.png
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-approvals.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-approve-confirm.png
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-approve-confirm.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d03-leave-detail-final.png
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d03-leave-detail-final.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d03-leave-detail.png
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d03-leave-detail.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d03-leave-list.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d03-requests.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d04-more.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d04-payroll.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d04-payslip-detail-v2.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d04-payslip-detail.png
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d04-payslip-detail.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d04-payslip-list-v2.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-d04-payslip-list.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-home.png
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-home.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-leave-list.png
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-leave-list.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-login.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-more.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-more3.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-payroll.png
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-payroll.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-payslip-list.png
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-payslip-list.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-device-screens/w10-requests-tab.xml
+	deleted:    docs/qa/evidence/p1-p100-w10-mob-fix-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w10-mob-pay-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w10-qa-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w10-qc-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w10-tm-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w11-qa-02-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w11-qc-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w12-be-seed-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w12-qa-seed-01-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w12-qc-final-20260531.md
+	deleted:    docs/qa/evidence/p1-p100-w13-qa-01-20260531.md
+	deleted:    docs/qa/evidence/p1-qa-fix-raci-01-20260526.md
+	deleted:    docs/qa/evidence/p1-qual-be-seed-01-20260530.md
+	deleted:    docs/qa/evidence/p1-qual-be-seed-01-probe-20260530.json
+	deleted:    docs/qa/evidence/p1-qual-be-w3-scope-20260530.md
+	deleted:    docs/qa/evidence/p1-qual-fe-w2-20260530.md
+	deleted:    docs/qa/evidence/p1-qual-fe-w3-20260530.md
+	deleted:    docs/qa/evidence/p1-qual-qa-01-20260530.md
+	deleted:    docs/qa/evidence/p1-qual-qa-fe-w2-20260530.md
+	deleted:    docs/qa/evidence/p1-qual-qa-fe-w2-smoke-log-20260530.json
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-20260530.md
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-probe-20260530.json
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-approvals.png
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-approvals.xml
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-home.png
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-home.xml
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-leave-detail.png
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-leave-detail.xml
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-leave-list.png
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-leave-list.xml
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-login.xml
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-more.xml
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-payroll.png
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-payroll.xml
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-payslip-list.png
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-payslip-list.xml
+	deleted:    docs/qa/evidence/p1-qual-qa-mob-01-screens/mob01-requests-tab.xml
+	deleted:    docs/qa/evidence/p1-qual-qa-w3-20260530.md
+	deleted:    docs/qa/evidence/p1-qual-qa-w3-smoke-20260530.json
+	deleted:    docs/qa/evidence/p1-qual-qa-w4-20260530.md
+	deleted:    docs/qa/evidence/p1-qual-qa-w4-probe-20260530.json
+	deleted:    docs/qa/evidence/p1-qual-qc-program-02-20260530.md
+	deleted:    docs/qa/evidence/p1-qual-tm-01-20260530.md
+	deleted:    docs/qa/evidence/p1-r1-be-01-20260529.md
+	deleted:    docs/qa/evidence/p1-r1-do-01-20260529.md
+	deleted:    docs/qa/evidence/p1-r1-qa-01-20260529.md
+	deleted:    docs/qa/evidence/p1-r2-be-uat-p6-01-20260529.md
+	deleted:    docs/qa/evidence/p1-r2-qa-01-20260529.md
+	deleted:    docs/qa/evidence/p1-r2-qa-01-r1-20260529.md
+	deleted:    docs/qa/evidence/p1-r2-qa-02-20260529.md
+	deleted:    docs/qa/evidence/p1-r2-qa-03-20260529.md
+	deleted:    docs/qa/evidence/p1-r2-qc-01-20260529.md
+	deleted:    docs/qa/evidence/p1-r2-qc-01-r1-20260529.md
+	deleted:    docs/qa/evidence/p1-r3-be-cors-01-20260529.md
+	deleted:    docs/qa/evidence/p1-r3-do-01-20260529.md
+	deleted:    docs/qa/evidence/p1-r3-do-01-b1-20260529.md
+	deleted:    docs/qa/evidence/p1-r3-do-01-b3-20260529.md
+	deleted:    docs/qa/evidence/p1-r3-qa-01-r1-20260529.md
+	deleted:    docs/qa/evidence/p1-r3-qa-01-r2-cors-20260529.md
+	deleted:    docs/qa/evidence/p1-r3-qa-01-r3-cors-20260529.md
+	deleted:    docs/qa/evidence/p1-r3-qc-01-20260529.md
+	deleted:    docs/qa/evidence/p1-r3-qc-01-r1-20260529.md
+	deleted:    docs/qa/evidence/p1-r4-qc-01-20260529.md
+	deleted:    docs/qa/evidence/p1-resid-c-mob-header-20260530.md
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-20260530.md
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-device-20260530.json
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-approvals.png
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-approvals.xml
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-home.xml
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-leave-list.png
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-leave-list.xml
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-login.xml
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-more.xml
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-more2.xml
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-payroll.png
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-payroll.xml
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-payslip-list.png
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-payslip-list.xml
+	deleted:    docs/qa/evidence/p1-resid-c-qa-01-screens/residc-requests-tab.xml
+	deleted:    docs/qa/evidence/p1-resid-c-qa-02-20260530.md
+	deleted:    docs/qa/evidence/p1-resid-c-qa-02-probe-20260530.json
+	deleted:    docs/qa/evidence/p1-resid-c-qa-03-20260530.md
+	deleted:    docs/qa/evidence/p1-resid-c-qa-03-probe-20260530.json
+	deleted:    docs/qa/evidence/p1-resid-c-qc-01-20260530.md
+	deleted:    docs/qa/evidence/p1-resid-c-qc-02-20260530.md
+	deleted:    docs/qa/evidence/p1-resid-c01-20260530.md
+	deleted:    docs/qa/evidence/p1-resid-c01-fe-20260530.md
+	deleted:    docs/qa/evidence/p1-resid-c01-upload-probe-20260530.json
+	deleted:    docs/qa/evidence/p1-resid-c02-20260530.md
+	deleted:    docs/qa/evidence/p1-resid-c03-20260530.md
+	deleted:    docs/qa/evidence/p1-resid-c03-jmob-probe-20260530.json
+	deleted:    docs/qa/evidence/p1-resid-c03-probe-20260530.json
+	deleted:    docs/qa/evidence/p1-resid-c09-20260530.md
+	deleted:    docs/qa/evidence/p1-s1-be-02-kpi-engine-20260523.md
+	deleted:    docs/qa/evidence/p1-s1-be-03-org-rbac-20260523.md
+	deleted:    docs/qa/evidence/p1-s1-be-04-audit-alerts-20260523.md
+	deleted:    docs/qa/evidence/p1-s1-be-05-eco-master-02-20260523.md
+	deleted:    docs/qa/evidence/p1-s1-fe-01-cc-kpi-strict-20260523.md
+	deleted:    docs/qa/evidence/p1-s1-fe-02-workflow-canvas-20260523.md
+	deleted:    docs/qa/evidence/p1-s1-fe-03-dept-templates-20260524.md
+	deleted:    docs/qa/evidence/p1-s1-qa-01-20260524.md
+	deleted:    docs/qa/evidence/p1-s1-qa-batch-20260524.md
+	deleted:    docs/qa/evidence/p1-s1-qa-be-01-catalog-20260523.md
+	deleted:    docs/qa/evidence/p1-s1-qa-fe-03-20260524.md
+	deleted:    docs/qa/evidence/p1-s1-qa-retest-view-20260524.md
+	deleted:    docs/qa/evidence/p1-s1-tm-01-review-20260524.md
+	deleted:    docs/qa/evidence/p1-s2-be-c6-20260524.md
+	deleted:    docs/qa/evidence/p1-s2-be-defects-20260524.md
+	deleted:    docs/qa/evidence/p1-s2-be-wave-01-20260524.md
+	deleted:    docs/qa/evidence/p1-s2-fe-01-action-buttons-20260524.md
+	deleted:    docs/qa/evidence/p1-s2-qa-01-20260524.md
+	deleted:    docs/qa/evidence/p1-s2-qa-02-20260524.md
+	deleted:    docs/qa/evidence/p1-s2-qc-01-20260524.md
+	deleted:    docs/qa/evidence/p1-s2-tm-01-review-20260524.md
+	deleted:    docs/qa/evidence/p1-s3-be-01-20260523.md
+	deleted:    docs/qa/evidence/p1-s3-fe-01-hrm-embed-api-audit-20260523.md
+	deleted:    docs/qa/evidence/p1-s3-qa-01-20260524.md
+	deleted:    docs/qa/evidence/p1-s3-qc-01-20260524.md
+	deleted:    docs/qa/evidence/p1-s4-do-01-20260524.md
+	deleted:    docs/qa/evidence/p1-s4-qa-01-20260524.md
+	deleted:    docs/qa/evidence/p1-s5-be-ar-inf-map-20260524.md
+	deleted:    docs/qa/evidence/p1-s5-be-wave-final-20260524.md
+	deleted:    docs/qa/evidence/p1-s5-qa-01-20260524.md
+	deleted:    docs/qa/evidence/p1-s5-qa-02-20260524.md
+	deleted:    docs/qa/evidence/p1-s5-qc-01-20260524.md
+	deleted:    docs/qa/evidence/p1-s5-qc-02-20260525.md
+	deleted:    docs/qa/evidence/p1-s5-sa-01-20260526.md
+	deleted:    docs/qa/evidence/p1-s5-tm-01-review-20260526.md
+	deleted:    docs/qa/evidence/p1-supa-be-01-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-be-02-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-be-03-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-do-01-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-fe-01-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-fe-02-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-fe-03-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-qa-01-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-qa-02-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-qa-03-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-qa-03-r1-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-qa-04-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-qc-01-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-qc-02-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-qc-03-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-qc-04-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-w4-be-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-w4-do-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-w4-do-r2-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-w4-fe-20260529.md
+	deleted:    docs/qa/evidence/p1-supa-w4-fe-r2-20260529.md
+	deleted:    docs/qa/evidence/p1-today-be-lead-backlog-20260524.md
+	deleted:    docs/qa/evidence/p1-today-fe-a-20260524.md
+	deleted:    docs/qa/evidence/p1-today-ta-gap-plan-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-be-a1-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-be-c1-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-do-b1-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-fe-a2-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-fe-c2-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-qa-1-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-qa-c1-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-qa-c1-retest-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-qa-eod-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-qa-g4-20260524.md
+	deleted:    docs/qa/evidence/p1-u18-qc-eod-20260524.md
+	deleted:    docs/qa/evidence/phase1-product-completeness-fe-20260524.md
+	deleted:    docs/qa/evidence/phase1-view-completeness-20260523.md
+	deleted:    docs/qa/evidence/phase1-view-gaps-be-20260524.md
+	deleted:    docs/qa/evidence/portal-auth-token-20260522.md
+	deleted:    docs/qa/evidence/portal-ui-density-90-20260522.md
+	deleted:    docs/qa/evidence/qc-hrm-embed-regression-20260522.md
+	deleted:    docs/qa/evidence/qc-https-j-cc-03-01-20260529.md
+	deleted:    docs/qa/evidence/qc-https-j-hrm-06-01-r6-20260529.md
+	deleted:    docs/qa/evidence/qc-https-p-cc-01-jwt-01-20260529.md
+	deleted:    docs/qa/evidence/qc-local-pilot-20260522.md
+	deleted:    docs/qa/evidence/s1-fe-embed-debt-20260523.md
+	deleted:    docs/qa/evidence/scrum-s0-mobile-smoke-20260523.md
+	deleted:    docs/qa/evidence/scrum-s0-pilot-20260523.md
+	deleted:    docs/qa/evidence/scrum-s0-pilot-retest-20260523.md
+	deleted:    docs/qa/evidence/sprint-pulse-s1-20260523.md
+	deleted:    docs/qa/evidence/u18-c1-d01-20260524.md
+	deleted:    docs/qa/evidence/u18-hrm-emp-scope-fix-20260524.md
+	deleted:    docs/qa/evidence/uc-373-test-run-20260522.md
+	deleted:    docs/qa/evidence/vps-deploy-smoke-20260522.md
+	renamed:    scripts/tmp-cc-legal-entity-crud-probe.mjs -> scripts/qa/xbos-cc-legal-entity-crud-probe.mjs
+	renamed:    scripts/tmp-cc-legal-entity-member-save-probe.mjs -> scripts/qa/xbos-cc-legal-entity-member-save-probe.mjs
+	deleted:    scripts/tmp-c-w2qc-01-crud-matrix-close.mjs
+	deleted:    scripts/tmp-count-g2-overrides.mjs
+	deleted:    scripts/tmp-do-xbos-kpi-rollup-smoke.mjs
+	deleted:    scripts/tmp-fe-deploy-hr-smoke.mjs
+	deleted:    scripts/tmp-g4-export-debug.mjs
+	deleted:    scripts/tmp-p1-100-qa-fe-w1-smoke.mjs
+	deleted:    scripts/tmp-p1-100-qa-g2-01-probe.mjs
+	deleted:    scripts/tmp-p1-100-qa-seed-pool-candidate.mjs
+	deleted:    scripts/tmp-p1-100-top20-partial.mjs
+	deleted:    scripts/tmp-p1-bnd-qa-fe-smoke.mjs
+	deleted:    scripts/tmp-p1-close-be-a2-probes.mjs
+	deleted:    scripts/tmp-p1-close-be-c1-probes.mjs
+	deleted:    scripts/tmp-p1-close-be-c2-probes.mjs
+	deleted:    scripts/tmp-p1-close-be-c2-promote.mjs
+	deleted:    scripts/tmp-p1-close-be-w2-probes.mjs
+	deleted:    scripts/tmp-p1-close-be-w3-probes.mjs
+	deleted:    scripts/tmp-p1-close-be-w4-probes.mjs
+	deleted:    scripts/tmp-p1-close-be-w5-probes.mjs
+	deleted:    scripts/tmp-p1-close-qa-w1b-l2.mjs
+	deleted:    scripts/tmp-p1-close-qa-w2-l2.mjs
+	deleted:    scripts/tmp-p1-close-qa-w3-count.mjs
+	deleted:    scripts/tmp-p1-close-qa-w3-l2.mjs
+	deleted:    scripts/tmp-p1-close-qa-w5b-promote.mjs
+	deleted:    scripts/tmp-p1-close-qa-w5b-raci-probes.mjs
+	deleted:    scripts/tmp-p1-ex-do-seed-attendance-https-10-repair.mjs
+	deleted:    scripts/tmp-p1-ex-do-seed-attendance-https-10.mjs
+	deleted:    scripts/tmp-p1-ex-do-seed-contracts-https-09.mjs
+	deleted:    scripts/tmp-p1-ex-do-seed-https-09-repair.mjs
+	deleted:    scripts/tmp-p1-ex-qa-fe-p1-03-probe.mjs
+	deleted:    scripts/tmp-p1-ex-qa-https-01-probe.mjs
+	deleted:    scripts/tmp-p1-ex-qa-https-residual-03-r4-probe.mjs
+	deleted:    scripts/tmp-p1-ex-qa-j-hrm-06-r3-browser.mjs
+	deleted:    scripts/tmp-p1-fix-raci-scope-01-probe.mjs
+	deleted:    scripts/tmp-p1-hrm-crud-qa-w1b-contract.mjs
+	deleted:    scripts/tmp-p1-inc-p0-hrm-dash-01-qa-r2-probe.mjs
+	deleted:    scripts/tmp-p1-mob-apk-01-qa-r1-probe.mjs
+	deleted:    scripts/tmp-p1-mob-apk-01-qa-r2-device.mjs
+	deleted:    scripts/tmp-p1-mob-apk-01-r2-ui-list.mjs
+	deleted:    scripts/tmp-p1-mob-apk-01-r2-ui-match.mjs
+	deleted:    scripts/tmp-p1-mob-apk-01-r2-ui-parse.mjs
+	deleted:    scripts/tmp-p1-mob-ui-adb.mjs
+	deleted:    scripts/tmp-p1-p100-w10-device-01.mjs
+	deleted:    scripts/tmp-p1-qual-be-seed-01-probe.mjs
+	deleted:    scripts/tmp-p1-qual-qa-fe-w2-route-probe.mjs
+	deleted:    scripts/tmp-p1-qual-qa-fe-w2-smoke.mjs
+	deleted:    scripts/tmp-p1-qual-qa-mob-01-device.mjs
+	deleted:    scripts/tmp-p1-qual-qa-mob-01-probe.mjs
+	deleted:    scripts/tmp-p1-qual-qa-w3-smoke.mjs
+	deleted:    scripts/tmp-p1-qual-qa-w4-probe.mjs
+	deleted:    scripts/tmp-p1-resid-c-qa-01-device.mjs
+	deleted:    scripts/tmp-p1-resid-c-qa-02-probe.mjs
+	deleted:    scripts/tmp-p1-resid-c01-upload-probe.mjs
+	deleted:    scripts/tmp-p1-resid-c03-jmob-probe.mjs
+	deleted:    scripts/tmp-p1-resid-c03-probe.mjs
+	deleted:    scripts/tmp-p1-supa-qa-03-browser.mjs
+	deleted:    scripts/tmp-p1-supa-qa-03-smoke.mjs
+	deleted:    scripts/tmp-p1-u18-qa-1-probes.mjs
+	deleted:    scripts/tmp-p1-u18-qa-c1-probes.mjs
+	deleted:    scripts/tmp-p1-u18-qa-g4-verify.mjs
+	deleted:    scripts/tmp-patch-vps-kpi-controller.mjs
+	deleted:    scripts/tmp-u18-c1-d01-probe.mjs
+	deleted:    scripts/tmp-w1-hrm-clean-gate-probes.mjs
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .cursor/hooks.json
+	modified:   .cursor/hooks/pm-dispatch-hint.mjs
+	modified:   .cursor/hooks/subagent-stop.mjs
+	modified:   .cursor/rules/business-flow-zero-defect-gate.mdc
+	modified:   .cursor/rules/pm-autonomous-orchestration.mdc
+	modified:   .cursor/rules/pm-hook-must-task.mdc
+	modified:   .cursor/rules/pm-phase1-director-orchestration.mdc
+	modified:   .cursor/skills/client-delivery-docs/PROJECT_PROFILE.md
+	modified:   .cursor/team/AGENT_MESSAGE_BUS.md
+	modified:   .cursor/team/PM_INCIDENT_QUEUE.json
+	modified:   .cursor/team/PM_ORCHESTRATION_MODE
+	modified:   .cursor/team/PM_ORCHESTRATION_README.md
+	modified:   .cursor/team/TEMPLATE_REMINDERS.md
+	modified:   .cursor/team/inbox/pm-watchdog-state.json
+	modified:   .cursor/team/inbox/subagent-stop.jsonl
+	modified:   .cursor/templates/PM_ORCHESTRATE_DEFAULT.md
+	modified:   .cursorrules
+	modified:   .gitignore
+	modified:   apps/api/hrm-api/.env.example
+	modified:   apps/api/hrm-api/package.json
+	modified:   apps/api/hrm-api/src/app.module.ts
+	modified:   apps/api/hrm-api/src/attendance/attendance.controller.spec.ts
+	modified:   apps/api/hrm-api/src/attendance/attendance.controller.ts
+	modified:   apps/api/hrm-api/src/attendance/attendance.service.spec.ts
+	modified:   apps/api/hrm-api/src/attendance/attendance.service.ts
+	modified:   apps/api/hrm-api/src/attendance/dto/create-leave-request.dto.ts
+	modified:   apps/api/hrm-api/src/attendance/leave-requests.service.spec.ts
+	modified:   apps/api/hrm-api/src/attendance/leave-requests.service.ts
+	modified:   apps/api/hrm-api/src/auth/mobile-auth.service.spec.ts
+	modified:   apps/api/hrm-api/src/auth/mobile-auth.service.ts
+	modified:   apps/api/hrm-api/src/catalog-extensions/catalog-extensions.controller.ts
+	modified:   apps/api/hrm-api/src/catalog-extensions/catalog-extensions.service.spec.ts
+	modified:   apps/api/hrm-api/src/catalog-extensions/catalog-extensions.service.ts
+	modified:   apps/api/hrm-api/src/catalog-sync/catalog-sync.controller.spec.ts
+	modified:   apps/api/hrm-api/src/catalog-sync/catalog-sync.controller.ts
+	modified:   apps/api/hrm-api/src/catalog-sync/catalog-sync.service.ts
+	modified:   apps/api/hrm-api/src/common/hrm-list-scope.spec.ts
+	modified:   apps/api/hrm-api/src/common/hrm-list-scope.ts
+	modified:   apps/api/hrm-api/src/common/hrm-query-validation-regression.spec.ts
+	modified:   apps/api/hrm-api/src/common/scope-context.spec.ts
+	modified:   apps/api/hrm-api/src/common/scope-context.ts
+	modified:   apps/api/hrm-api/src/contracts-insurance/contracts-insurance.service.spec.ts
+	modified:   apps/api/hrm-api/src/contracts-insurance/contracts-insurance.service.ts
+	modified:   apps/api/hrm-api/src/decisions/decisions.service.spec.ts
+	modified:   apps/api/hrm-api/src/decisions/decisions.service.ts
+	modified:   apps/api/hrm-api/src/employee-metadata/dto/submit-employee-metadata-change.dto.ts
+	modified:   apps/api/hrm-api/src/employee-metadata/employee-metadata.repository.ts
+	modified:   apps/api/hrm-api/src/employee-metadata/employee-metadata.service.ts
+	modified:   apps/api/hrm-api/src/employees/dto/create-employee.dto.ts
+	modified:   apps/api/hrm-api/src/employees/dto/get-employee.query.dto.ts
+	modified:   apps/api/hrm-api/src/employees/dto/list-employees.query.dto.ts
+	modified:   apps/api/hrm-api/src/employees/dto/update-employee.dto.ts
+	modified:   apps/api/hrm-api/src/employees/employees.controller.spec.ts
+	modified:   apps/api/hrm-api/src/employees/employees.controller.ts
+	modified:   apps/api/hrm-api/src/employees/employees.service.spec.ts
+	modified:   apps/api/hrm-api/src/employees/employees.service.ts
+	modified:   apps/api/hrm-api/src/notifications/hrm-inbox.service.ts
+	modified:   apps/api/hrm-api/src/operations/operations.controller.spec.ts
+	modified:   apps/api/hrm-api/src/operations/operations.service.spec.ts
+	modified:   apps/api/hrm-api/src/operations/operations.service.ts
+	modified:   apps/api/hrm-api/src/payroll/payroll.service.spec.ts
+	modified:   apps/api/hrm-api/src/payroll/payroll.service.ts
+	modified:   apps/api/hrm-api/src/recruitment/recruitment.controller.spec.ts
+	modified:   apps/api/hrm-api/src/recruitment/recruitment.controller.ts
+	modified:   apps/api/hrm-api/src/recruitment/recruitment.service.spec.ts
+	modified:   apps/api/hrm-api/src/recruitment/recruitment.service.ts
+	modified:   apps/api/hrm-api/src/settings-catalogs/dto/append-extension-items.dto.ts
+	modified:   apps/api/hrm-api/src/settings-catalogs/settings-catalogs.controller.spec.ts
+	modified:   apps/api/hrm-api/src/settings-catalogs/settings-catalogs.controller.ts
+	modified:   apps/api/hrm-api/src/settings-catalogs/settings-catalogs.service.spec.ts
+	modified:   apps/api/hrm-api/src/settings-catalogs/settings-catalogs.service.ts
+	modified:   apps/api/hrm-api/src/settings-catalogs/xbos-catalog-workflow.bridge.ts
+	modified:   apps/api/hrm-api/src/spreadsheet/spreadsheet.controller.ts
+	modified:   apps/api/hrm-api/src/spreadsheet/spreadsheet.service.ts
+	modified:   apps/api/xbos-api/src/app.module.ts
+	modified:   apps/api/xbos-api/src/auth/auth.service.spec.ts
+	modified:   apps/api/xbos-api/src/auth/auth.service.ts
+	modified:   apps/api/xbos-api/src/business-master/business-master.controller.spec.ts
+	modified:   apps/api/xbos-api/src/business-master/business-master.controller.ts
+	modified:   apps/api/xbos-api/src/business-master/business-master.service.ts
+	modified:   apps/api/xbos-api/src/catalog-governance/catalog-governance.controller.spec.ts
+	modified:   apps/api/xbos-api/src/catalog-governance/catalog-governance.controller.ts
+	modified:   apps/api/xbos-api/src/catalog-governance/catalog-governance.service.ts
+	modified:   apps/api/xbos-api/src/common/tenant.constants.ts
+	modified:   apps/api/xbos-api/src/common/xbos-group-legal-scope.spec.ts
+	modified:   apps/api/xbos-api/src/infrastructure/dto/upsert-infrastructure-settings.dto.ts
+	modified:   apps/api/xbos-api/src/infrastructure/infrastructure.controller.spec.ts
+	modified:   apps/api/xbos-api/src/infrastructure/infrastructure.service.ts
+	modified:   apps/api/xbos-api/src/legal-entity-profile/legal-entity-profile.controller.spec.ts
+	modified:   apps/api/xbos-api/src/legal-entity-profile/legal-entity-profile.controller.ts
+	modified:   apps/api/xbos-api/src/legal-entity-profile/legal-entity-profile.service.ts
+	modified:   apps/api/xbos-api/src/org-foundation/org-foundation.controller.spec.ts
+	modified:   apps/api/xbos-api/src/org-foundation/org-foundation.controller.ts
+	modified:   apps/api/xbos-api/src/org-foundation/org-foundation.service.ts
+	modified:   apps/api/xbos-api/src/tenant-scope/tenant-scope.controller.spec.ts
+	modified:   apps/api/xbos-api/src/tenant-scope/tenant-scope.controller.ts
+	modified:   apps/api/xbos-api/src/tenant-scope/tenant-scope.service.spec.ts
+	modified:   apps/api/xbos-api/src/tenant-scope/tenant-scope.service.ts
+	modified:   apps/api/xbos-api/src/workflow-engine/workflow-catalog.constants.ts
+	modified:   apps/api/xbos-api/src/workflow-engine/workflow-engine.service.ts
+	modified:   apps/api/xbos-api/tsconfig.build.json
+	modified:   apps/mobile/hrm-mobile/.env.example
+	modified:   apps/mobile/hrm-mobile/App.tsx
+	modified:   apps/mobile/hrm-mobile/android/app/src/main/AndroidManifest.xml
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-hdpi/___node_modules_pnpm_reactnavigationelements1331_reactnavigationnative6118_reactnative0745_babel_ka2s7wzriqkarhojnsnynb6lsa_node_modules_reactnavigation_elements_src_assets_backicon.png
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-mdpi/___node_modules_pnpm_reactnative0745_babelcore7290_babelpresetenv7295_babelcore7290__typesreact18279_react1820_node_modules_reactnative_libraries_logbox_ui_logboximages_alerttriangle.png
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-mdpi/___node_modules_pnpm_reactnative0745_babelcore7290_babelpresetenv7295_babelcore7290__typesreact18279_react1820_node_modules_reactnative_libraries_logbox_ui_logboximages_chevronleft.png
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-mdpi/___node_modules_pnpm_reactnative0745_babelcore7290_babelpresetenv7295_babelcore7290__typesreact18279_react1820_node_modules_reactnative_libraries_logbox_ui_logboximages_chevronright.png
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-mdpi/___node_modules_pnpm_reactnative0745_babelcore7290_babelpresetenv7295_babelcore7290__typesreact18279_react1820_node_modules_reactnative_libraries_logbox_ui_logboximages_close.png
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-mdpi/___node_modules_pnpm_reactnative0745_babelcore7290_babelpresetenv7295_babelcore7290__typesreact18279_react1820_node_modules_reactnative_libraries_logbox_ui_logboximages_loader.png
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-mdpi/___node_modules_pnpm_reactnavigationelements1331_reactnavigationnative6118_reactnative0745_babel_ka2s7wzriqkarhojnsnynb6lsa_node_modules_reactnavigation_elements_src_assets_backicon.png
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-mdpi/___node_modules_pnpm_reactnavigationelements1331_reactnavigationnative6118_reactnative0745_babel_ka2s7wzriqkarhojnsnynb6lsa_node_modules_reactnavigation_elements_src_assets_backiconmask.png
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-xhdpi/___node_modules_pnpm_reactnavigationelements1331_reactnavigationnative6118_reactnative0745_babel_ka2s7wzriqkarhojnsnynb6lsa_node_modules_reactnavigation_elements_src_assets_backicon.png
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-xxhdpi/___node_modules_pnpm_reactnavigationelements1331_reactnavigationnative6118_reactnative0745_babel_ka2s7wzriqkarhojnsnynb6lsa_node_modules_reactnavigation_elements_src_assets_backicon.png
+	deleted:    apps/mobile/hrm-mobile/android/app/src/main/res/drawable-xxxhdpi/___node_modules_pnpm_reactnavigationelements1331_reactnavigationnative6118_reactnative0745_babel_ka2s7wzriqkarhojnsnynb6lsa_node_modules_reactnavigation_elements_src_assets_backicon.png
+	modified:   apps/mobile/hrm-mobile/app.json
+	modified:   apps/mobile/hrm-mobile/assets/adaptive-icon.png
+	modified:   apps/mobile/hrm-mobile/assets/icon.png
+	modified:   apps/mobile/hrm-mobile/assets/splash.png
+	modified:   apps/mobile/hrm-mobile/babel.config.js
+	modified:   apps/mobile/hrm-mobile/expo-env.d.ts
+	modified:   apps/mobile/hrm-mobile/index.ts
+	modified:   apps/mobile/hrm-mobile/metro.config.js
+	modified:   apps/mobile/hrm-mobile/package.json
+	modified:   apps/mobile/hrm-mobile/scripts/build-apk.cjs
+	modified:   apps/mobile/hrm-mobile/src/components/OfflineSync.tsx
+	modified:   apps/mobile/hrm-mobile/src/context/AuthContext.tsx
+	modified:   apps/mobile/hrm-mobile/src/context/RealtimeContext.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/attendance/AttendanceHistoryScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/attendance/CheckInScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/attendance/CreateLeaveRequestScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/attendance/CreateUpdateRequestScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/attendance/LeaveRequestDetailScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/attendance/LeaveRequestsListScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/attendance/ManagerApprovalsScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/attendance/UpdateRequestDetailScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/attendance/UpdateRequestsScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/auth/LoginScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/auth/ScopeScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/contracts/ContractsScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/dashboard/DashboardScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/notifications/InAppNotificationsScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/operations/OperationsScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/payroll/PayrollSummaryScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/payroll/PayslipDetailScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/payroll/PayslipListScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/profile/ProfileScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/features/settings/SettingsScreen.tsx
+	modified:   apps/mobile/hrm-mobile/src/i18n/vi.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/__tests__/companyWireScope.test.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/__tests__/hrmApiClient.test.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/__tests__/mapApiError.test.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/__tests__/pushRegistration.test.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/companyWireScope.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/hrmApiClient.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/hrmEmployees.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/mapApiError.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/offlineQueue.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/pushRegistration.ts
+	modified:   apps/mobile/hrm-mobile/src/integrations/types.ts
+	modified:   apps/mobile/hrm-mobile/src/navigation/RootNavigator.tsx
+	modified:   apps/mobile/hrm-mobile/src/navigation/types.ts
+	modified:   apps/mobile/hrm-mobile/src/storage/keys.ts
+	modified:   apps/mobile/hrm-mobile/vitest.config.ts
+	modified:   apps/web/hrm/public/favicon.png
+	modified:   apps/web/hrm/src/App.tsx
+	modified:   apps/web/hrm/src/components/company/CompanyManagement.tsx
+	modified:   apps/web/hrm/src/components/company/CompanyMembersManagement.tsx
+	modified:   apps/web/hrm/src/components/dashboard/ExpiringContractsAlert.tsx
+	modified:   apps/web/hrm/src/components/employee/EmployeeAvatarUpload.tsx
+	modified:   apps/web/hrm/src/components/employee/EmployeeJobList.tsx
+	modified:   apps/web/hrm/src/components/employee/EmployeeSalary.tsx
+	modified:   apps/web/hrm/src/components/employee/EmployeeSkillsRadarChart.tsx
+	modified:   apps/web/hrm/src/components/employee/EmployeeWorkHistory.tsx
+	modified:   apps/web/hrm/src/components/insurance/AddInsuranceDialog.tsx
+	modified:   apps/web/hrm/src/components/layout/AppLayout.tsx
+	modified:   apps/web/hrm/src/components/layout/AppSidebar.tsx
+	modified:   apps/web/hrm/src/components/recruitment/CandidateDetailView.tsx
+	modified:   apps/web/hrm/src/components/recruitment/RecruitmentBarChart.tsx
+	modified:   apps/web/hrm/src/components/recruitment/RecruitmentLineChart.tsx
+	modified:   apps/web/hrm/src/components/recruitment/jobPostingsPortal.test.ts
+	modified:   apps/web/hrm/src/components/reports/OverviewReportTab.tsx
+	modified:   apps/web/hrm/src/components/settings/MetadataQueueTab.tsx
+	modified:   apps/web/hrm/src/components/settings/SettingsCatalogsTab.tsx
+	modified:   apps/web/hrm/src/hooks/useAttendanceRecords.ts
+	modified:   apps/web/hrm/src/hooks/useContracts.ts
+	modified:   apps/web/hrm/src/hooks/useEmployee.test.ts
+	modified:   apps/web/hrm/src/hooks/useEmployee.ts
+	modified:   apps/web/hrm/src/hooks/useEmployees.ts
+	modified:   apps/web/hrm/src/hooks/useInsuranceList.test.ts
+	modified:   apps/web/hrm/src/hooks/useInsuranceList.ts
+	modified:   apps/web/hrm/src/hooks/useLeaveRequests.test.ts
+	modified:   apps/web/hrm/src/hooks/useLeaveRequests.ts
+	modified:   apps/web/hrm/src/hooks/useLeaveRequestsData.ts
+	modified:   apps/web/hrm/src/hooks/useMetadataQueue.ts
+	modified:   apps/web/hrm/src/hooks/usePayrollPayslips.ts
+	modified:   apps/web/hrm/src/hooks/useReportsData.ts
+	modified:   apps/web/hrm/src/hooks/useTasks.test.ts
+	modified:   apps/web/hrm/src/hooks/useTasks.ts
+	modified:   apps/web/hrm/src/i18n/locales/en.json
+	modified:   apps/web/hrm/src/i18n/locales/vi.json
+	modified:   apps/web/hrm/src/integrations/hrmApi.ts
+	modified:   apps/web/hrm/src/integrations/hrmMobileAuth.ts
+	modified:   apps/web/hrm/src/lib/formatHrmDate.ts
+	modified:   apps/web/hrm/src/lib/hrmListScope.test.ts
+	modified:   apps/web/hrm/src/lib/hrmListScope.ts
+	modified:   apps/web/hrm/src/lib/hrmSpreadsheetScope.test.ts
+	modified:   apps/web/hrm/src/lib/hrmSpreadsheetScope.ts
+	modified:   apps/web/hrm/src/lib/portalEmbedSessionBridge.ts
+	modified:   apps/web/hrm/src/main.tsx
+	modified:   apps/web/hrm/src/pages/Attendance.tsx
+	modified:   apps/web/hrm/src/pages/Contracts.tsx
+	modified:   apps/web/hrm/src/pages/Dashboard.tsx
+	modified:   apps/web/hrm/src/pages/EmployeeProfile.tsx
+	modified:   apps/web/hrm/src/pages/Employees.tsx
+	modified:   apps/web/hrm/src/pages/Insurance.tsx
+	modified:   apps/web/hrm/src/pages/Login.tsx
+	modified:   apps/web/hrm/src/pages/Payroll.tsx
+	modified:   apps/web/hrm/src/pages/Recruitment.tsx
+	modified:   apps/web/hrm/src/pages/Reports.tsx
+	modified:   apps/web/web-portal/index.html
+	modified:   apps/web/web-portal/src/components/auth/RequireAuth.tsx
+	modified:   apps/web/web-portal/src/components/common/index.ts
+	modified:   apps/web/web-portal/src/components/layout/Sidebar.tsx
+	modified:   apps/web/web-portal/src/components/org/OrgGradeOrgChart.tsx
+	modified:   apps/web/web-portal/src/contexts/AuthContext.tsx
+	modified:   apps/web/web-portal/src/contexts/GlobalFilterContext.tsx
+	modified:   apps/web/web-portal/src/data/command-center-mock.ts
+	modified:   apps/web/web-portal/src/data/dept-system-foundation-catalog.ts
+	modified:   apps/web/web-portal/src/hooks/useCommandCenterKpiRail.ts
+	modified:   apps/web/web-portal/src/hooks/useCompanyFilterOptions.ts
+	modified:   apps/web/web-portal/src/hooks/useDeptSystemTemplates.ts
+	modified:   apps/web/web-portal/src/hooks/useKpiDashboardSnapshot.ts
+	modified:   apps/web/web-portal/src/integrations/assetRegistryApi.ts
+	modified:   apps/web/web-portal/src/integrations/authSession.test.ts
+	modified:   apps/web/web-portal/src/integrations/authSession.ts
+	modified:   apps/web/web-portal/src/integrations/businessMasterApi.ts
+	modified:   apps/web/web-portal/src/integrations/capabilityActionRegistry.test.ts
+	modified:   apps/web/web-portal/src/integrations/capabilityActionRegistry.ts
+	modified:   apps/web/web-portal/src/integrations/commandCenterCatalogApi.ts
+	modified:   apps/web/web-portal/src/integrations/commandCenterInboxApi.ts
+	modified:   apps/web/web-portal/src/integrations/commandCenterScope.test.ts
+	modified:   apps/web/web-portal/src/integrations/commandCenterScope.ts
+	modified:   apps/web/web-portal/src/integrations/deptSystemTemplatesApi.test.ts
+	modified:   apps/web/web-portal/src/integrations/deptSystemTemplatesApi.ts
+	modified:   apps/web/web-portal/src/integrations/groupHrCatalogApi.ts
+	modified:   apps/web/web-portal/src/integrations/identityScope.test.ts
+	modified:   apps/web/web-portal/src/integrations/identityScope.ts
+	modified:   apps/web/web-portal/src/integrations/infrastructureApi.ts
+	modified:   apps/web/web-portal/src/integrations/legalEntityProfileApi.ts
+	modified:   apps/web/web-portal/src/integrations/orgFoundationApi.ts
+	modified:   apps/web/web-portal/src/integrations/portalAlertMappers.ts
+	modified:   apps/web/web-portal/src/integrations/workflowEngineApi.ts
+	modified:   apps/web/web-portal/src/integrations/workflowMapper.test.ts
+	modified:   apps/web/web-portal/src/integrations/workflowMapper.ts
+	modified:   apps/web/web-portal/src/integrations/xbosHttp.test.ts
+	modified:   apps/web/web-portal/src/integrations/xbosHttp.ts
+	modified:   apps/web/web-portal/src/main.tsx
+	modified:   apps/web/web-portal/src/modules/hrm/HrmCollapsibleSidebar.tsx
+	modified:   apps/web/web-portal/src/modules/hrm/HrmEmbedScopeBar.tsx
+	modified:   apps/web/web-portal/src/modules/hrm/HrmSidebar.tsx
+	modified:   apps/web/web-portal/src/modules/hrm/HrmWorkspacePanel.tsx
+	modified:   apps/web/web-portal/src/modules/hrm/HrmWorkspaceRoute.tsx
+	modified:   apps/web/web-portal/src/modules/hrm/commandCenterUrl.test.ts
+	modified:   apps/web/web-portal/src/modules/hrm/commandCenterUrl.ts
+	modified:   apps/web/web-portal/src/modules/hrm/hrmApiClient.test.ts
+	modified:   apps/web/web-portal/src/modules/hrm/hrmApiClient.ts
+	modified:   apps/web/web-portal/src/modules/hrm/hrmEmbedNavStorage.ts
+	modified:   apps/web/web-portal/src/modules/hrm/mock-data.ts
+	modified:   apps/web/web-portal/src/modules/hrm/paths.test.ts
+	modified:   apps/web/web-portal/src/modules/hrm/paths.ts
+	modified:   apps/web/web-portal/src/pages/auth/LoginPage.tsx
+	modified:   apps/web/web-portal/src/pages/command-center/CatalogGovernancePanel.tsx
+	modified:   apps/web/web-portal/src/pages/command-center/CommandCenterModuleRail.tsx
+	modified:   apps/web/web-portal/src/pages/command-center/CommandCenterPage.tsx
+	modified:   apps/web/web-portal/src/pages/command-center/CompanyRaciPanel.tsx
+	modified:   apps/web/web-portal/src/pages/command-center/WorkflowTaskDetailDrawer.test.tsx
+	modified:   apps/web/web-portal/src/pages/command-center/WorkflowTaskDetailDrawer.tsx
+	modified:   apps/web/web-portal/src/pages/command-center/WorkspaceLayout.tsx
+	modified:   apps/web/web-portal/src/pages/command-center/settings-form-pattern.tsx
+	modified:   apps/web/web-portal/src/pages/command-center/workspace-rail-context.tsx
+	modified:   apps/web/web-portal/src/pages/customers/CustomersPage.tsx
+	modified:   apps/web/web-portal/src/pages/dashboard/ExecutiveDashboardPage.tsx
+	modified:   apps/web/web-portal/src/pages/hr/HRPage.tsx
+	modified:   apps/web/web-portal/src/pages/partners/PartnersPage.tsx
+	modified:   apps/web/web-portal/src/pages/settings/ExpenseCategoriesSettingsPage.tsx
+	modified:   apps/web/web-portal/src/pages/settings/KPIMetricsSettingsPage.tsx
+	modified:   apps/web/web-portal/src/pages/settings/PositionsSettingsPage.tsx
+	modified:   apps/web/web-portal/src/pages/settings/VehicleTypesSettingsPage.tsx
+	modified:   apps/web/web-portal/src/pages/settings/VendorsSettingsPage.tsx
+	modified:   apps/web/web-portal/src/utils/apiLogger.ts
+	modified:   apps/web/web-portal/src/utils/commandCenterStrictMode.test.ts
+	modified:   apps/web/web-portal/src/utils/commandCenterStrictMode.ts
+	modified:   apps/web/x-bos-core/index.html
+	modified:   apps/web/x-bos-core/src/components/layout/Sidebar.tsx
+	modified:   apps/web/x-bos-core/src/integrations/xbosApi.ts
+	modified:   apps/web/x-bos-core/src/main.tsx
+	modified:   apps/web/x-bos-core/src/store/useXbosStore.ts
+	modified:   deploy/nginx/xevn-ecosystem-vhost.conf
+	modified:   deploy/xevn-ecosystem/.env.example
+	modified:   deploy/xevn-ecosystem/deploy.sh
+	modified:   deploy/xevn-ecosystem/docker-compose.yml
+	modified:   docs/client-delivery/01_BRD_XeVN_OS.html
+	modified:   docs/client-delivery/02_SRS_XeVN_OS.html
+	modified:   docs/client-delivery/03_HUONG_DAN_SU_DUNG_VA_CHAY_THU_XEVN.md
+	modified:   docs/client-delivery/README.md
+	modified:   docs/client-delivery/SRS_UC_OVERRIDE_BACKLOG.md
+	modified:   docs/ecosystem/ACTION_BUTTON_INVENTORY.md
+	modified:   docs/ecosystem/BRD_TONG_HOP_HE_SINH_THAI_XEVN.md
+	modified:   docs/ecosystem/FE_MOCK_TO_API_AUDIT.md
+	modified:   docs/hrm/SRS.md
+	modified:   docs/ops/DEPLOY_GUIDE.md
+	deleted:    docs/ops/evidence/tmp-plink-fix-output.txt
+	deleted:    docs/ops/evidence/tmp-plink-fix2-output.txt
+	deleted:    docs/ops/evidence/tmp-plink-fix3-output.txt
+	deleted:    docs/ops/evidence/tmp-plink-fix4-output.txt
+	deleted:    docs/ops/evidence/tmp-plink-fix5-output.txt
+	deleted:    docs/ops/evidence/tmp-plink-output.txt
+	modified:   docs/program/AGENT_MESSAGE_BUS.md
+	modified:   docs/program/EVIDENCE_INDEX.md
+	modified:   docs/program/PHASE1_MASTER_TODO.md
+	modified:   docs/program/PHASE1_SPRINT_RUNNER.json
+	modified:   docs/program/PM_AUTONOMOUS_CHARTER.md
+	modified:   docs/program/PM_ORCHESTRATION_PLAYBOOK.md
+	modified:   docs/program/PM_ORCHESTRATION_STATE.json
+	modified:   docs/program/PROGRAM_JOURNEY_MAP.md
+	modified:   docs/program/PROJECT_STATUS_REPORT.md
+	modified:   docs/program/SERVICE_READINESS_UAT_PRODUCTION.md
+	modified:   docs/program/SPRINT_STATUS_AT_A_GLANCE.md
+	modified:   docs/program/TEAM_LIVE_STATUS.md
+	modified:   docs/program/TEAM_USER_REQUIREMENTS.md
+	modified:   docs/program/TEAM_WORKING_NOW.md
+	modified:   docs/program/UAT_PRODUCTION_OPERATING_PLAN.md
+	modified:   docs/program/USER_SERVICE_STATUS.md
+	modified:   docs/program/knowledge/PM_ORCHESTRATION_KB.md
+	modified:   docs/qa/PHASE1_GATE_REPORT.md
+	modified:   docs/qa/PILOT_BUSINESS_FLOW_BA_TRACE.md
+	modified:   docs/qa/PILOT_BUSINESS_FLOW_MATRIX.md
+	modified:   docs/qa/evidence/system-integration-uat-report.json
+	modified:   docs/qa/evidence/uc-373-coverage.json
+	modified:   package.json
+	modified:   pnpm-lock.yaml
+	modified:   scripts/build-brd-xevn-html.mjs
+	modified:   scripts/build-srs-xevn-html.mjs
+	modified:   scripts/dev/repair-xbos-legacy-catalog-constraints.sql
+	modified:   scripts/lib/hrm-xbos-catalog-defs.mjs
+	modified:   scripts/lib/srs-bateco-body.mjs
+	modified:   scripts/lib/uat-workforce.mjs
+	modified:   scripts/qa/xbos-cc-legal-entity-crud-probe.mjs
+	modified:   scripts/qa/xbos-cc-legal-entity-member-save-probe.mjs
+	modified:   scripts/qc-dev-stack.mjs
+	modified:   scripts/seed-business-master-settings-placeholders.mjs
+	modified:   scripts/seed-hrm-contracts-density.mjs
+	modified:   scripts/seed-hrm-satellite-from-workforce.mjs
+	modified:   scripts/seed-tourism-portal-users.mjs
+	modified:   scripts/seed-workflow-inbox-sample.mjs
+	modified:   scripts/verify-hrm-menu-data-density.mjs
+	modified:   scripts/verify-qc-evidence-pack.mjs
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.cursor/hooks/subagent-start.mjs
+	.cursor/permissions.json
+	.cursor/rules/pm-clarify-before-dispatch.mdc
+	.cursor/rules/pm-continuous-dispatch.mdc
+	.cursor/rules/pm-dispatch-same-turn.mdc
+	.cursor/rules/pm-fix-dispatch-no-postmortem.mdc
+	.cursor/rules/pm-full-scope-roadmap-accountability.mdc
+	.cursor/rules/pm-idle-detection-and-recovery.mdc
+	.cursor/rules/pm-lock-task-same-turn-u43.mdc
+	.cursor/rules/pm-own-domain-delegate-execution.mdc
+	.cursor/rules/pm-self-directed-scope-orchestration.mdc
+	.cursor/rules/pm-srs-first-no-overwrite.mdc
+	.cursor/rules/pm-subagent-health-recovery.mdc
+	.cursor/rules/pm-zero-stop-until-milestone.mdc
+	.cursor/rules/qa-fe-outside-browser-gate.mdc
+	.cursor/rules/sponsor-zero-seed-fe-only-lock.mdc
+	.cursor/sandbox.json
+	adb-kb-login.xml
+	apps/api/hrm-api/src/attendance/dto/get-attendance-record.query.dto.ts
+	apps/api/hrm-api/src/attendance/dto/get-leave-balance.query.dto.ts
+	apps/api/hrm-api/src/attendance/leave-balance.service.spec.ts
+	apps/api/hrm-api/src/attendance/leave-balance.service.ts
+	apps/api/hrm-api/src/catalog-sync/p1-web-acceptance-be-sync401.spec.ts
+	apps/api/hrm-api/src/catalog-sync/p1-web-acceptance-xbos-sync-url.spec.ts
+	apps/api/hrm-api/src/common/hrm-catalog-sync-scope.spec.ts
+	apps/api/hrm-api/src/common/hrm-catalog-sync-scope.ts
+	apps/api/hrm-api/src/common/p1-ex-https-hrm-probe-l2.spec.ts
+	apps/api/hrm-api/src/common/p1-g3-jmob-05-persona-nv2-fix.spec.ts
+	apps/api/hrm-api/src/common/p1-g6-field-01-mob-parity.spec.ts
+	apps/api/hrm-api/src/common/p1-phase1-be-mob-jmob-04-05.spec.ts
+	apps/api/hrm-api/src/employee-metadata/p1-web-acceptance-metadata-company-uuid.spec.ts
+	apps/api/hrm-api/src/employees/employee-directory.spec.ts
+	apps/api/hrm-api/src/employees/employee-directory.ts
+	apps/api/hrm-api/src/employees/employee-directory.types.ts
+	apps/api/hrm-api/src/employees/employee-update-policy.spec.ts
+	apps/api/hrm-api/src/employees/employee-update-policy.ts
+	apps/api/hrm-api/src/employees/p1-hrm-hrbp-emp-patch-01.spec.ts
+	apps/api/hrm-api/src/employees/p1-phase1-be-emp-create-parity.spec.ts
+	apps/api/hrm-api/src/home/
+	apps/api/hrm-api/src/notifications/hrm-inbox.service.spec.ts
+	apps/api/hrm-api/src/operating-units/
+	apps/api/hrm-api/src/recruitment/dto/get-job-requisition.query.dto.ts
+	apps/api/hrm-api/src/recruitment/dto/update-job-requisition.dto.ts
+	apps/api/hrm-api/src/recruitment/p1-phase1-be-crud-rd-parity.spec.ts
+	apps/api/hrm-api/src/recruitment/p1-phase1-be-rec-patch.spec.ts
+	apps/api/hrm-api/src/recruitment/p1-web-acceptance-rec-patch-notes.spec.ts
+	apps/api/hrm-api/src/settings-catalogs/p1-browser-e2e-cat-s2s-auth-8088.spec.ts
+	apps/api/hrm-api/src/settings-catalogs/p1-browser-e2e-inbox-spawn-cat.spec.ts
+	apps/api/hrm-api/src/settings-catalogs/p1-web-acceptance-extension-items.spec.ts
+	apps/api/xbos-api/migrations/README.md
+	apps/api/xbos-api/src/auth/pilot-membership.bootstrap.spec.ts
+	apps/api/xbos-api/src/auth/pilot-membership.bootstrap.ts
+	apps/api/xbos-api/src/auth/pilot-portal-users.constants.ts
+	apps/api/xbos-api/src/business-master/p1-web-acceptance-cc-catalog.spec.ts
+	apps/api/xbos-api/src/catalog-governance/p1-browser-e2e-cat-inbox-assignee-8088.spec.ts
+	apps/api/xbos-api/src/catalog-governance/p1-browser-e2e-inbox-spawn-cat.spec.ts
+	apps/api/xbos-api/src/common/resolve-hrm-api-base-url.spec.ts
+	apps/api/xbos-api/src/common/resolve-hrm-api-base-url.ts
+	apps/api/xbos-api/src/infrastructure/dto/infrastructure.dto.spec.ts
+	apps/api/xbos-api/src/infrastructure/infrastructure.service.spec.ts
+	apps/api/xbos-api/src/legal-entity-profile/legal-entity-profile.service.spec.ts
+	apps/api/xbos-api/src/org-foundation/org-foundation.dept-tree-overview.integration.spec.ts
+	apps/api/xbos-api/src/org-foundation/org-foundation.legal-scope-crud.integration.spec.ts
+	apps/api/xbos-api/src/org-foundation/p1-web-acceptance-org-units-scope.spec.ts
+	apps/api/xbos-api/src/platform/xbos-db-write-audit.interceptor.spec.ts
+	apps/api/xbos-api/src/platform/xbos-db-write-audit.interceptor.ts
+	apps/api/xbos-api/src/workflow-engine/p1-browser-e2e-inbox-spawn-wf.spec.ts
+	apps/mobile/hrm-mobile/android/app/src/main/assets/
+	apps/mobile/hrm-mobile/android/app/src/main/res/drawable/notification_icon.xml
+	apps/mobile/hrm-mobile/assets/fonts/
+	apps/mobile/hrm-mobile/assets/lottie/
+	apps/mobile/hrm-mobile/assets/xevn-logo.png
+	apps/mobile/hrm-mobile/mob-ux17-home-scrolled.xml
+	apps/mobile/hrm-mobile/mob-ux17-home-top.xml
+	apps/mobile/hrm-mobile/qa-login-check.xml
+	apps/mobile/hrm-mobile/qa-perm-dismiss.xml
+	apps/mobile/hrm-mobile/qa-team-pre.xml
+	apps/mobile/hrm-mobile/qa-team-tab.xml
+	apps/mobile/hrm-mobile/src/bootstrap/
+	apps/mobile/hrm-mobile/src/components/app/
+	apps/mobile/hrm-mobile/src/components/attendance/
+	apps/mobile/hrm-mobile/src/components/auth/
+	apps/mobile/hrm-mobile/src/components/brand/
+	apps/mobile/hrm-mobile/src/components/home/
+	apps/mobile/hrm-mobile/src/components/navigation/
+	apps/mobile/hrm-mobile/src/components/primitives/
+	apps/mobile/hrm-mobile/src/components/profile/
+	apps/mobile/hrm-mobile/src/components/team/
+	apps/mobile/hrm-mobile/src/components/ui/
+	apps/mobile/hrm-mobile/src/config/__tests__/
+	apps/mobile/hrm-mobile/src/config/qaLogin.ts
+	apps/mobile/hrm-mobile/src/features/journey/
+	apps/mobile/hrm-mobile/src/features/team/
+	apps/mobile/hrm-mobile/src/hooks/useDeferredSwipeMount.ts
+	apps/mobile/hrm-mobile/src/hooks/useQaLoginDeepLink.ts
+	apps/mobile/hrm-mobile/src/i18n/__tests__/
+	apps/mobile/hrm-mobile/src/i18n/hrmCalendarLocale.ts
+	apps/mobile/hrm-mobile/src/i18n/leaveTypes.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/dashboardEssLoad.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/hrmEmployeeDirectory.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/hrmEmployees.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/hrmFileUpload.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/hrmHomeSummary.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/hrmLeaveBalance.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/hrmOperatingUnits.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/hrmTeamDirectory.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/leaveRequests.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/mobileAuthSession.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/p1-phase1-mob-p5-jwt.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/payrollPayslips.test.ts
+	apps/mobile/hrm-mobile/src/integrations/__tests__/qaLoginDeepLink.test.ts
+	apps/mobile/hrm-mobile/src/integrations/dashboardEssLoad.ts
+	apps/mobile/hrm-mobile/src/integrations/hrmEmployeeDirectory.ts
+	apps/mobile/hrm-mobile/src/integrations/hrmFileUpload.ts
+	apps/mobile/hrm-mobile/src/integrations/hrmHomeSummary.ts
+	apps/mobile/hrm-mobile/src/integrations/hrmLeaveBalance.ts
+	apps/mobile/hrm-mobile/src/integrations/hrmListScope.ts
+	apps/mobile/hrm-mobile/src/integrations/hrmOperatingUnits.ts
+	apps/mobile/hrm-mobile/src/integrations/hrmTeamDirectory.ts
+	apps/mobile/hrm-mobile/src/integrations/leaveRequests.ts
+	apps/mobile/hrm-mobile/src/integrations/mobileAuthSession.ts
+	apps/mobile/hrm-mobile/src/integrations/payrollPayslips.ts
+	apps/mobile/hrm-mobile/src/integrations/qaLoginDeepLink.ts
+	apps/mobile/hrm-mobile/src/navigation/__tests__/
+	apps/mobile/hrm-mobile/src/navigation/checkInFab.ts
+	apps/mobile/hrm-mobile/src/navigation/fabPrimaryActions.ts
+	apps/mobile/hrm-mobile/src/navigation/mainTabIa.ts
+	apps/mobile/hrm-mobile/src/navigation/profileStackNav.ts
+	apps/mobile/hrm-mobile/src/navigation/useForceHomeTabOnResize.ts
+	apps/mobile/hrm-mobile/src/navigation/useQaMatrixHomeLock.ts
+	apps/mobile/hrm-mobile/src/theme/
+	apps/mobile/hrm-mobile/src/utils/__tests__/
+	apps/mobile/hrm-mobile/src/utils/attendanceCalendarMarkers.ts
+	apps/mobile/hrm-mobile/src/utils/attendanceTimelineBadge.ts
+	apps/mobile/hrm-mobile/src/utils/attendanceUpdateTypes.ts
+	apps/mobile/hrm-mobile/src/utils/checkInLocation.ts
+	apps/mobile/hrm-mobile/src/utils/companyDisplayVi.ts
+	apps/mobile/hrm-mobile/src/utils/dashboardEss.ts
+	apps/mobile/hrm-mobile/src/utils/dashboardHome.ts
+	apps/mobile/hrm-mobile/src/utils/dashboardHub.ts
+	apps/mobile/hrm-mobile/src/utils/dashboardHubCelebrate.ts
+	apps/mobile/hrm-mobile/src/utils/dashboardPersonaLayout.ts
+	apps/mobile/hrm-mobile/src/utils/formatHrm.ts
+	apps/mobile/hrm-mobile/src/utils/hapticFeedback.ts
+	apps/mobile/hrm-mobile/src/utils/homeActionGrid.ts
+	apps/mobile/hrm-mobile/src/utils/homePortal.ts
+	apps/mobile/hrm-mobile/src/utils/homeScrollBudget.ts
+	apps/mobile/hrm-mobile/src/utils/hrmImagePicker.ts
+	apps/mobile/hrm-mobile/src/utils/inboxNotificationCopy.ts
+	apps/mobile/hrm-mobile/src/utils/journeyTimeline.ts
+	apps/mobile/hrm-mobile/src/utils/leaveAttachment.ts
+	apps/mobile/hrm-mobile/src/utils/leaveAttachmentPicker.ts
+	apps/mobile/hrm-mobile/src/utils/leaveDetailLoad.ts
+	apps/mobile/hrm-mobile/src/utils/leaveListGrouping.ts
+	apps/mobile/hrm-mobile/src/utils/leaveRequest.ts
+	apps/mobile/hrm-mobile/src/utils/mobilePersona.ts
+	apps/mobile/hrm-mobile/src/utils/operationsLabels.ts
+	apps/mobile/hrm-mobile/src/utils/payslipDisplayVi.ts
+	apps/mobile/hrm-mobile/src/utils/payslipHero.ts
+	apps/mobile/hrm-mobile/src/utils/profileEssFields.ts
+	apps/mobile/hrm-mobile/src/utils/profileQuickActions.ts
+	apps/mobile/hrm-mobile/src/utils/profileTabs.ts
+	apps/mobile/hrm-mobile/src/utils/profileTask.ts
+	apps/mobile/hrm-mobile/src/utils/profileWorkMetrics.ts
+	apps/mobile/hrm-mobile/src/utils/resolveHrmAvatarUrl.ts
+	apps/mobile/hrm-mobile/src/utils/scopeError.ts
+	apps/mobile/hrm-mobile/src/utils/scopeScreenCopy.ts
+	apps/mobile/hrm-mobile/src/utils/swipeRowActions.ts
+	apps/mobile/hrm-mobile/src/utils/teamDirectory.ts
+	apps/mobile/hrm-mobile/src/utils/teamDirectoryDetail.ts
+	apps/mobile/hrm-mobile/vendor/node-stub.js
+	apps/web/hrm/public/xevn-logo.png
+	apps/web/hrm/src/components/common/HrmRouteFallback.tsx
+	apps/web/hrm/src/components/employee/EmployeeSkillsRadarChart.test.tsx
+	apps/web/hrm/src/components/hrm/HrmOperatingUnitFilter.tsx
+	apps/web/hrm/src/components/payroll/PayrollPayslipsApiTab.tsx
+	apps/web/hrm/src/components/recruitment/JobRequisitionsTab.tsx
+	apps/web/hrm/src/contexts/HrmOperatingUnitFilterContext.tsx
+	apps/web/hrm/src/hooks/useContracts.binding.test.ts
+	apps/web/hrm/src/hooks/useEmployees.pageSize.test.ts
+	apps/web/hrm/src/hooks/useLeaveRequestsData.test.ts
+	apps/web/hrm/src/hooks/useRecruitmentDashboard.ts
+	apps/web/hrm/src/hooks/useWeeklyAttendanceSummary.ts
+	apps/web/hrm/src/integrations/tenantScopeApi.test.ts
+	apps/web/hrm/src/integrations/tenantScopeApi.ts
+	apps/web/hrm/src/lib/attendanceDashboardAggregator.test.ts
+	apps/web/hrm/src/lib/attendanceDashboardAggregator.ts
+	apps/web/hrm/src/lib/catalogDisplayLabels.ts
+	apps/web/hrm/src/lib/formatHrmDate.test.ts
+	apps/web/hrm/src/lib/hrmMetadataCompany.test.ts
+	apps/web/hrm/src/lib/hrmMetadataCompany.ts
+	apps/web/hrm/src/lib/hrmOperatingUnits.test.ts
+	apps/web/hrm/src/lib/hrmOperatingUnits.ts
+	apps/web/hrm/src/lib/hrmSettingsCatalogItem.test.ts
+	apps/web/hrm/src/lib/hrmSettingsCatalogItem.ts
+	apps/web/hrm/src/lib/insuranceParticipantLink.test.ts
+	apps/web/hrm/src/lib/insuranceParticipantLink.ts
+	apps/web/hrm/src/lib/insuranceSummary.test.ts
+	apps/web/hrm/src/lib/insuranceSummary.ts
+	apps/web/hrm/src/lib/jobRequisitionUi.test.ts
+	apps/web/hrm/src/lib/jobRequisitionUi.ts
+	apps/web/hrm/src/lib/recruitmentDashboardAggregator.test.ts
+	apps/web/hrm/src/lib/recruitmentDashboardAggregator.ts
+	apps/web/hrm/src/lib/safeRandomUuid.test.ts
+	apps/web/hrm/src/lib/safeRandomUuid.ts
+	apps/web/hrm/src/pages/EmployeeMetadataPage.tsx
+	apps/web/hrm/src/pages/Employees.smoke.test.ts
+	apps/web/hrm/src/pages/SettingsCatalogsPage.tsx
+	apps/web/web-portal/public/
+	apps/web/web-portal/src/components/common/ConfirmDialog.test.tsx
+	apps/web/web-portal/src/components/common/ConfirmDialog.tsx
+	apps/web/web-portal/src/components/common/MutationButton.tsx
+	apps/web/web-portal/src/components/common/NavTransitionShell.tsx
+	apps/web/web-portal/src/components/common/navTransitionTiming.ts
+	apps/web/web-portal/src/components/common/useConfirmDialog.tsx
+	apps/web/web-portal/src/components/common/useNavTransitionShell.test.ts
+	apps/web/web-portal/src/components/common/useNavTransitionShell.ts
+	apps/web/web-portal/src/components/org/OrgGradeOrgChart.test.tsx
+	apps/web/web-portal/src/components/org/OrgGradeOrgChartEditor.tsx
+	apps/web/web-portal/src/data/command-center-dev-seed.test.ts
+	apps/web/web-portal/src/data/command-center-dev-seed.ts
+	apps/web/web-portal/src/data/command-center-persona-filters.ts
+	apps/web/web-portal/src/data/command-center-rail-catalog.ts
+	apps/web/web-portal/src/data/command-center-types.ts
+	apps/web/web-portal/src/data/portal-dev-seed.test.ts
+	apps/web/web-portal/src/data/portal-dev-seed.ts
+	apps/web/web-portal/src/hooks/useCommandCenterKpiRail.test.ts
+	apps/web/web-portal/src/hooks/useCompanyFilterOptions.test.ts
+	apps/web/web-portal/src/integrations/commandCenterCatalogApi.test.ts
+	apps/web/web-portal/src/integrations/commandCenterInboxApi.test.ts
+	apps/web/web-portal/src/integrations/groupHrCatalogApi.test.ts
+	apps/web/web-portal/src/integrations/infraSiteConsumerContext.test.ts
+	apps/web/web-portal/src/integrations/infraSiteConsumerContext.ts
+	apps/web/web-portal/src/integrations/infrastructureEntityKeyResolver.test.ts
+	apps/web/web-portal/src/integrations/infrastructureEntityKeyResolver.ts
+	apps/web/web-portal/src/integrations/infrastructureFieldsConfigUx.test.ts
+	apps/web/web-portal/src/integrations/infrastructureFieldsConfigUx.ts
+	apps/web/web-portal/src/integrations/legalEntityProfileApi.test.ts
+	apps/web/web-portal/src/integrations/legalEntityProfileScope.test.ts
+	apps/web/web-portal/src/integrations/legalEntityProfileScope.ts
+	apps/web/web-portal/src/integrations/metadataConsumerResolver.test.ts
+	apps/web/web-portal/src/integrations/metadataConsumerResolver.ts
+	apps/web/web-portal/src/integrations/orgFoundationApi.dept-tree.test.ts
+	apps/web/web-portal/src/integrations/raciMatrixCellPersist.test.ts
+	apps/web/web-portal/src/integrations/raciMatrixCellPersist.ts
+	apps/web/web-portal/src/integrations/workflowEngineApi.inbox.test.ts
+	apps/web/web-portal/src/lib/
+	apps/web/web-portal/src/modules/hrm/mock-data.test.ts
+	apps/web/web-portal/src/pages/command-center/FoundationCategoryWizard.tsx
+	apps/web/web-portal/src/pages/command-center/foundationCategoryList.test.ts
+	apps/web/web-portal/src/pages/command-center/foundationCategoryList.ts
+	apps/web/web-portal/src/pages/command-center/shareholderRowUpdate.test.ts
+	apps/web/web-portal/src/pages/command-center/shareholderRowUpdate.ts
+	apps/web/web-portal/src/utils/catalogDisplayLabels.test.ts
+	apps/web/web-portal/src/utils/catalogDisplayLabels.ts
+	apps/web/web-portal/src/utils/orgGradeLayout.test.ts
+	apps/web/web-portal/src/utils/orgGradeLayout.ts
+	apps/web/web-portal/src/utils/portalStrictMode.test.ts
+	apps/web/web-portal/src/utils/portalStrictMode.ts
+	apps/web/web-portal/src/utils/tenantScopeStrictMode.test.ts
+	apps/web/web-portal/src/utils/tenantScopeStrictMode.ts
+	apps/web/web-portal/src/utils/viNumberFormat.test.ts
+	apps/web/web-portal/src/utils/viNumberFormat.ts
+	apps/web/web-portal/src/utils/workflowDisplayLabels.test.ts
+	apps/web/web-portal/src/utils/workflowDisplayLabels.ts
+	apps/web/x-bos-core/public/
+	apps/web/x-bos-core/src/lib/safeRandomUuid.ts
+	assets/brand/
+	clean.xml
+	cold.xml
+	debug.keystore
+	dev-jwt.xml
+	docs/architecture/ADR-METADATA-APPLY-CONSUMERS-DELTA-20260620.md
+	docs/architecture/PHASE1_SCOPE_PARITY_AUDIT.md
+	docs/client/
+	docs/decisions/ADR-HRM-MOBILE-UI-PRIMITIVES.md
+	docs/decisions/ADR-HRM-MOBILE-W7-DATA-EXTENSIONS.md
+	docs/hrm/HRM_DASHBOARD_DATA_QUALITY_RULES.md
+	docs/hrm/MOBILE_W7_DATA_CONTRACTS.md
+	docs/hrm/MOBILE_W7_SRS_DELTA.md
+	docs/hrm/MOBILE_W7_TECHSPEC_DELTA.md
+	docs/ops/CURSOR_AGENT_DEPLOY_AUTO_RUN.md
+	docs/ops/LOCAL_DEV_STACK_L0.md
+	docs/ops/SEED_SQL_SOT.md
+	docs/ops/evidence/p1-cc-devops-member-legal-browser-deploy-20260604.md
+	docs/ops/evidence/p1-cc-devops-member-legal-browser-put-01-20260604.md
+	docs/ops/evidence/p1-cc-devops-member-legal-save-01-20260604.md
+	docs/ops/evidence/p1-cc-devops-portal-fe-content-type-01-20260604.md
+	docs/ops/evidence/p1-cc-xbos-legal-test-deploy-20260604.md
+	docs/ops/evidence/p1-deploy-8088-be-probe-20260620.json
+	docs/ops/evidence/p1-deploy-8088-browser-e2e-prep-20260620.md
+	docs/ops/evidence/p1-deploy-8088-fe-probe-20260620.json
+	docs/ops/evidence/p1-deploy-8088-rail-catalog-20260620.md
+	docs/ops/evidence/p1-deploy-8088-web-uat-20260620.md
+	docs/ops/evidence/p1-deploy-cat-inbox-assignee-8088-20260620.md
+	docs/ops/evidence/p1-deploy-cat-inbox-r6-8088-20260620.md
+	docs/ops/evidence/p1-deploy-cat-inbox-r6-probe-8088-20260620.json
+	docs/ops/evidence/p1-deploy-cat-s2s-auth-8088-20260620.md
+	docs/ops/evidence/p1-deploy-hrm-wave2-fe-8088-20260620.md
+	docs/ops/evidence/p1-deploy-inbox-spawn-8088-20260620.md
+	docs/ops/evidence/p1-deploy-inbox-spawn-probe-8088-20260620.json
+	docs/ops/evidence/p1-deploy-member-session-8088-20260620.md
+	docs/ops/evidence/p1-deploy-raci-07-8088-20260620.md
+	docs/ops/evidence/p1-deploy-uf14-8088-20260620.md
+	docs/ops/evidence/p1-deploy-ui-label-fidelity-8088-20260620.md
+	docs/ops/evidence/p1-ex-be-https-p-cc-01-jwt-01-20260604.md
+	docs/ops/evidence/p1-hrm-embed-pscp-8088-20260620.md
+	docs/ops/evidence/p1-phase1-devops-uat-mob-seed-20260604.json
+	docs/ops/evidence/p1-phase1-devops-uat-mob-seed-20260604.md
+	docs/ops/evidence/p1-phase1-do-crud-parity-deploy-20260604.md
+	docs/ops/evidence/p1-phase1-do-hrm-emp-deploy-20260604.md
+	docs/ops/evidence/p1-phase1-do-hrm-scope-s5-02-20260605.md
+	docs/ops/evidence/p1-phase1-do-mob-jmob-deploy-20260604.md
+	docs/ops/evidence/p1-phase1-do-mob-pending-parity-20260604.json
+	docs/ops/evidence/p1-phase1-do-mob-pending-parity-20260604.md
+	docs/ops/evidence/p1-phase1-do-stack-r1-dev-hrm-api-20260604.md
+	docs/ops/evidence/p1-phase1-do-stack-stability-20260604.md
+	docs/ops/evidence/p1-phase1-do-wf-member-seed-20260606.md
+	docs/ops/evidence/p1-phase1-do-xbos-be-scope-deploy-20260604.md
+	docs/ops/evidence/p1-s5-do-g5-01-20260605.md
+	docs/ops/evidence/p1-s5-do-jxbos-02-deploy-20260605.md
+	docs/ops/evidence/vps-deploy-20260603.md
+	docs/program/DISK_CLEANUP_20260620.md
+	docs/program/HRM_WAVE_EXECUTION_PLAN.md
+	docs/program/HRM_XBOS_PRODUCT_INTEGRITY_PROGRAM.md
+	docs/program/MOBILE_APPLE_HIG_ESS_PROGRAM.md
+	docs/program/MOBILE_CHROME_DEDUP_RULES.md
+	docs/program/MOBILE_ESS_SECONDARY_SCREEN_POLISH.md
+	docs/program/MOBILE_HOME_HUB_AC_DELTA.md
+	docs/program/MOBILE_HOME_HUB_UX_RESEARCH.md
+	docs/program/MOBILE_HOME_PORTAL_AC_DELTA.md
+	docs/program/MOBILE_HOME_RESPONSIVE_PROGRAM.md
+	docs/program/MOBILE_HRM_BENCHMARK_TOP_APPS.md
+	docs/program/MOBILE_HRM_ESS_UX_BENCHMARK.md
+	docs/program/MOBILE_IOS_UX_INHERITANCE_PLAN.md
+	docs/program/MOBILE_PARTNER_READINESS_ASSESSMENT.md
+	docs/program/MOBILE_PERSONA_UX_MATRIX.md
+	docs/program/MOBILE_PRODUCT_SANITIZATION_AUDIT.md
+	docs/program/MOBILE_UI_LAYOUT_COMPOSITION_AUDIT.md
+	docs/program/MOBILE_UI_LIBRARY_DECISION.md
+	docs/program/MOBILE_W7_GAP_ORCHESTRATION.md
+	docs/program/MOBILE_WEB_PROFILE_AVATAR_GAP_AUDIT.md
+	docs/program/MOBILE_XEVN_DESIGN_SYSTEM_DIRECTION.md
+	docs/program/P1-INFRA-FOUNDATION-CATEGORY-UX-PROGRAM.md
+	docs/program/P1-METADATA-APPLY-PROPAGATION-PROGRAM.md
+	docs/program/P1_BROWSER_ACCEPTANCE_PARALLEL_PLAN.md
+	docs/program/PHASE1_CLOSE_WAVE_PLAN.md
+	docs/program/PHASE1_CLOSURE_REMAINING.md
+	docs/program/PHASE1_CRUD_ACCEPTANCE_MATRIX.md
+	docs/program/PHASE1_PRODUCT_COMPLETION_PMP_PLAN.md
+	docs/program/PHASE1_PRODUCT_COMPLETION_TODO.md
+	docs/program/PHASE1_PRODUCT_EXCELLENCE_ORCHESTRATION.md
+	docs/program/PHASE1_UIUX_REAUDIT_SPONSOR_20260620.md
+	docs/program/PM_CLOSED_WORK_ITEMS.json
+	docs/program/PM_FIDELITY_STATUS.json
+	docs/program/PM_OPEN_BACKLOG.json
+	docs/program/PM_PENDING_PIPELINE.json
+	docs/program/PM_RESUME_CHECKPOINT.md
+	docs/program/PM_SUBAGENT_RECOVERY.json
+	docs/program/REPO_HYGIENE_CLEANUP_PROGRAM.md
+	docs/program/TEAM_ORG_AND_KNOWLEDGE_LOOP.md
+	docs/program/WEB_UAT_DEV8088_WAVE.md
+	docs/program/XBOS_CC_BUSINESS_MENTAL_MODEL.md
+	docs/program/XBOS_CC_WAVE_EXECUTION_PLAN.md
+	docs/program/evidence/p1-phase1-ba-docs-mempwd-01-20260604.md
+	docs/program/evidence/pcomp-w6-pm-01-20260607.md
+	docs/program/evidence/pcomp-w6-uat-session-pack-20260609.md
+	docs/program/governance/p1-cc-shr-ratio-ux-ba-delta-20260620.md
+	docs/program/governance/p1-fe-post-mutation-ac-ba-delta-20260620.md
+	docs/program/governance/p1-hrm-dq-data-contract-20260607.md
+	docs/program/governance/p1-prod-int-ba-d-01-20260607.md
+	docs/program/governance/p1-prod-int-ba-p-01-20260607.md
+	docs/program/governance/p1-prod-int-sa-01-20260607.md
+	docs/program/governance/pcomp-w0-ba-d-01-20260607.md
+	docs/program/governance/pcomp-w0-sa-01-20260607.md
+	docs/program/governance/pcomp-w7-ba-data-01-20260607.md
+	docs/program/governance/pcomp-w7-sa-skim-01-20260607.md
+	docs/program/sprints/S5_RETRO.md
+	docs/program/sprints/S5_SPRINT_BACKLOG.md
+	docs/qa/CONSOLE_ERROR_SWEEP_8088.md
+	docs/qa/METADATA_APPLY_PROPAGATION_MATRIX.md
+	docs/qa/P1_BROWSER_E2E_XBOS_HRM_WAVE.md
+	docs/qa/PILOT_TEST_ACCOUNTS.md
+	docs/qa/QA_DEVICE_SCREENSHOT_STANDARD.md
+	docs/qa/UIUX_INTERACTION_AUDIT_MATRIX_8088.md
+	docs/qa/USER_FLOW_OPERABILITY_MATRIX.md
+	docs/qa/USER_FLOW_SRS_TRACE_DELTA.md
+	docs/qa/evidence/Bao_cao_auto_test_XBOS_local_20260606.xlsx
+	docs/qa/evidence/README.md
+	docs/qa/evidence/archive/2026-05/api-restart-post-scope-20260522.md
+	docs/qa/evidence/archive/2026-05/fe-be-health-20260524.md
+	docs/qa/evidence/archive/2026-05/hdsd-command-validation-20260522.md
+	docs/qa/evidence/archive/2026-05/hrm-api-employee-by-id-20260523.md
+	docs/qa/evidence/archive/2026-05/hrm-auth-portal-only-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-be-quality-audit-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-be-w1-clean-gate-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-contracts-fix-20260522.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-d6-kpi-rollup-20260522.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-employee-detail-20260522.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-employees-fix-20260522.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-fe-audit-20260522.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-fe-audit-20260523.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-fe-audit-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-fe-audit-20260525.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-fe-audit-20260529.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-fe-audit-20260530.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-fe-audit-20260531.md
+	docs/qa/evidence/archive/2026-05/hrm-embed-s0-pcc05-08-20260523.md
+	docs/qa/evidence/archive/2026-05/hrm-fe-quality-audit-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-fe-w1-clean-gate-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-full-quality-audit-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-qa-full-audit-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-qa-w1-clean-gate-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-qc-w1-clean-gate-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-realistic-data-reset-20260524.md
+	docs/qa/evidence/archive/2026-05/hrm-tm-review-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-100-be-w1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-100-fe-w1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-100-g2-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-100-qa-fe-w1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-100-qa-g2-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-100-qa-w1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-100-qa-w2-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-100-qc-g2-01-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-bnd-be-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-bnd-do-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-bnd-fe-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-close-be-a2-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-be-c1-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-be-c2-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-be-w1b-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-be-w2-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-be-w3-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-be-w4-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-be-w5-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-fe-a2-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-fe-c2-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-fe-w1b-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-fe-w2-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-fe-w3-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-fe-w4-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-fe-w5-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-fe-w5b-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-qa-w1-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-qa-w1b-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-qa-w2-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-qa-w3-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-qa-w4-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-qa-w5-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-close-qa-w5b-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-ex-ba-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-ba-02-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-ba-waiver-01-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-02-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-fe-https-attendance-08-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-hotfix-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-03-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-04-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-05-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-06-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-07-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-08-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-09-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-attendance-contract-01-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-browser-auth-01-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-browser-auth-02-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-https-catalog-sync-10-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-ins-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-p1-02-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-be-p1scope-01-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-dev-https-01-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-dev-https-02-r1-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-do-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-do-data-03-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-do-hrbp-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-do-prod-02-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-do-prodqc-01-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-do-tls-01-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-02-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-be-https-attendance-residual-03-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-be-https-residual-03-r2-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-be-https-residual-03-r3-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-be-https-residual-03-r4-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-be-https-residual-03-r5-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-https-allowed-hosts-01-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-https-attendance-fallback-01-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-https-attendance-fallback-02-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-https-emp-profile-10-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-https-j-hrm-06-attendance-blank-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-https-j-hrm-06-scope-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-https-jwt-embed-01-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-p1-03-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-fe-p1-04-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-pm-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-01-r3-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-01-r4-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-02-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-02-r2-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-03-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-03-r1-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-04-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-fe-p1-03-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-fe-p1-04-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-r1-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-r10-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-r2-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-r3-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-r4-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-r5-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-r6-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-r7-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-r8-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-01-r9-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-attendance-08-r1-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-attendance-fallback-01-r1-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-attendance-fallback-02-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-attendance-fallback-03-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-browser-01-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-browser-01-r2-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-browser-01-r3-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-browser-01-r4-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-browser-01-r5-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-browser-01-r5-r2-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-browser-01b-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-browser-auth-01c-r1-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-browser-auth-02-r1-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-browser-auth-02-r2-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-j-cc-03-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-j-hrm-06-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-j-hrm-06-01-r1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-j-hrm-06-01-r2-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-j-hrm-06-01-r3-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-j-hrm-06-01-r4-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-j-hrm-06-01-r5-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-j-hrm-06-01-r6-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-l25-data-journey-01-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-p-cc-01-jwt-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-residual-03-r1-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-residual-03-r2-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-residual-03-r2-prep-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-residual-03-r3-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-residual-03-r4-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-residual-03-r4-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-residual-03-r5-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-https-residual-03-r5-r1-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-p1-02-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-p1scope-01-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qa-tm-r1-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-02-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-03-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-04-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-05-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-01-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-auth-02-r1-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-browser-01-r5-r2-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-l25-journey-01-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-residual-03-r1-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-residual-03-r2-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-residual-03-r3-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-residual-03-r4-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-residual-03-r4-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-residual-03-r5-r1-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-qc-https-wave-consolidate-01-20260528.md
+	docs/qa/evidence/archive/2026-05/p1-ex-sa-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-sa-02-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-sa-03-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-sa-04-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-tm-02-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-ex-tm-03-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-ex-tm-04-20260527.md
+	docs/qa/evidence/archive/2026-05/p1-fix-raci-scope-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-fix-raci-seed-02-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-g9-qa-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-mob-apk-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-mob-apk-01-be-02-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-mob-apk-01-fe-02-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-mob-apk-01-qa-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-mob-apk-01-qa-r1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-mob-apk-01-qa-r2-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-mob-apk-01-qc-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-apk-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-be-scope-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-device-01-20260531.json
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-device-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-device-02-20260531.json
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-device-02-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-device-03-20260531.json
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-device-03-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-mob-fix-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-mob-pay-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-qa-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-qc-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w10-tm-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w11-qa-02-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w11-qc-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w12-be-seed-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w12-qa-seed-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w12-qc-final-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-p100-w13-qa-01-20260531.md
+	docs/qa/evidence/archive/2026-05/p1-qa-fix-raci-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-qual-be-seed-01-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-qual-be-seed-01-probe-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-qual-be-w3-scope-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-qual-fe-w2-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-qual-fe-w3-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-qual-qa-01-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-qual-qa-fe-w2-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-qual-qa-fe-w2-smoke-log-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-qual-qa-mob-01-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-qual-qa-mob-01-probe-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-qual-qa-w3-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-qual-qa-w3-smoke-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-qual-qa-w4-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-qual-qa-w4-probe-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-qual-qc-program-02-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-qual-tm-01-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-r1-be-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r1-do-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r1-qa-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r2-be-uat-p6-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r2-qa-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r2-qa-01-r1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r2-qa-02-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r2-qa-03-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r2-qc-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r2-qc-01-r1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r3-be-cors-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r3-do-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r3-do-01-b1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r3-do-01-b3-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r3-qa-01-r1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r3-qa-01-r2-cors-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r3-qa-01-r3-cors-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r3-qc-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r3-qc-01-r1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-r4-qc-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c-mob-header-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c-qa-01-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c-qa-01-device-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-resid-c-qa-02-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c-qa-02-probe-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-resid-c-qa-03-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c-qa-03-probe-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-resid-c-qc-01-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c-qc-02-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c01-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c01-fe-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c01-upload-probe-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-resid-c02-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c03-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-resid-c03-jmob-probe-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-resid-c03-probe-20260530.json
+	docs/qa/evidence/archive/2026-05/p1-resid-c09-20260530.md
+	docs/qa/evidence/archive/2026-05/p1-s1-be-02-kpi-engine-20260523.md
+	docs/qa/evidence/archive/2026-05/p1-s1-be-03-org-rbac-20260523.md
+	docs/qa/evidence/archive/2026-05/p1-s1-be-04-audit-alerts-20260523.md
+	docs/qa/evidence/archive/2026-05/p1-s1-be-05-eco-master-02-20260523.md
+	docs/qa/evidence/archive/2026-05/p1-s1-fe-01-cc-kpi-strict-20260523.md
+	docs/qa/evidence/archive/2026-05/p1-s1-fe-02-workflow-canvas-20260523.md
+	docs/qa/evidence/archive/2026-05/p1-s1-fe-03-dept-templates-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s1-qa-01-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s1-qa-batch-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s1-qa-be-01-catalog-20260523.md
+	docs/qa/evidence/archive/2026-05/p1-s1-qa-fe-03-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s1-qa-retest-view-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s1-tm-01-review-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s2-be-c6-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s2-be-defects-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s2-be-wave-01-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s2-fe-01-action-buttons-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s2-qa-01-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s2-qa-02-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s2-qc-01-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s2-tm-01-review-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s3-be-01-20260523.md
+	docs/qa/evidence/archive/2026-05/p1-s3-fe-01-hrm-embed-api-audit-20260523.md
+	docs/qa/evidence/archive/2026-05/p1-s3-qa-01-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s3-qc-01-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s4-do-01-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s4-qa-01-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s5-be-ar-inf-map-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s5-be-wave-final-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s5-qa-01-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s5-qa-02-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s5-qc-01-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-s5-qc-02-20260525.md
+	docs/qa/evidence/archive/2026-05/p1-s5-sa-01-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-s5-tm-01-review-20260526.md
+	docs/qa/evidence/archive/2026-05/p1-supa-be-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-be-02-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-be-03-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-do-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-fe-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-fe-02-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-fe-03-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-qa-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-qa-02-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-qa-03-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-qa-03-r1-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-qa-04-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-qc-01-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-qc-02-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-qc-03-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-qc-04-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-w4-be-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-w4-do-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-w4-do-r2-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-w4-fe-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-supa-w4-fe-r2-20260529.md
+	docs/qa/evidence/archive/2026-05/p1-today-be-lead-backlog-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-today-fe-a-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-today-ta-gap-plan-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-be-a1-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-be-c1-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-do-b1-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-fe-a2-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-fe-c2-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-qa-1-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-qa-c1-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-qa-c1-retest-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-qa-eod-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-qa-g4-20260524.md
+	docs/qa/evidence/archive/2026-05/p1-u18-qc-eod-20260524.md
+	docs/qa/evidence/archive/2026-05/phase1-product-completeness-fe-20260524.md
+	docs/qa/evidence/archive/2026-05/phase1-view-completeness-20260523.md
+	docs/qa/evidence/archive/2026-05/phase1-view-gaps-be-20260524.md
+	docs/qa/evidence/archive/2026-05/portal-auth-token-20260522.md
+	docs/qa/evidence/archive/2026-05/portal-ui-density-90-20260522.md
+	docs/qa/evidence/archive/2026-05/qc-hrm-embed-regression-20260522.md
+	docs/qa/evidence/archive/2026-05/qc-https-j-cc-03-01-20260529.md
+	docs/qa/evidence/archive/2026-05/qc-https-j-hrm-06-01-r6-20260529.md
+	docs/qa/evidence/archive/2026-05/qc-https-p-cc-01-jwt-01-20260529.md
+	docs/qa/evidence/archive/2026-05/qc-local-pilot-20260522.md
+	docs/qa/evidence/archive/2026-05/s1-fe-embed-debt-20260523.md
+	docs/qa/evidence/archive/2026-05/screens/
+	docs/qa/evidence/archive/2026-05/scrum-s0-mobile-smoke-20260523.md
+	docs/qa/evidence/archive/2026-05/scrum-s0-pilot-20260523.md
+	docs/qa/evidence/archive/2026-05/scrum-s0-pilot-retest-20260523.md
+	docs/qa/evidence/archive/2026-05/sprint-pulse-s1-20260523.md
+	docs/qa/evidence/archive/2026-05/u18-c1-d01-20260524.md
+	docs/qa/evidence/archive/2026-05/u18-hrm-emp-scope-fix-20260524.md
+	docs/qa/evidence/archive/2026-05/uc-373-test-run-20260522.md
+	docs/qa/evidence/archive/2026-05/vps-deploy-smoke-20260522.md
+	docs/qa/evidence/c-w8qc-pack-02-20260609.md
+	docs/qa/evidence/d-mob-deploy-parity-01-20260609.md
+	docs/qa/evidence/d-mob-deploy-parity-01-probe.json
+	docs/qa/evidence/d-mob-home-summary-400-01-20260609.md
+	docs/qa/evidence/d-mob-parity-leave-slug-01-20260609.md
+	docs/qa/evidence/d-mob-parity-leave-slug-01-probe.json
+	docs/qa/evidence/d-mob-ux-10d-be-merge-20260609.md
+	docs/qa/evidence/d-mob-ux-10d-qa-20260609.md
+	docs/qa/evidence/d-mob-ux-10d-seed-20260609.md
+	docs/qa/evidence/d-mob-ux09-ia-01-20260609.md
+	docs/qa/evidence/d-mob-ux09-ia-01-qa-20260609.json
+	docs/qa/evidence/d-mob-ux09-ia-01-qa-20260609.md
+	docs/qa/evidence/d-mob-w7-5-directory-deploy-20260609.md
+	docs/qa/evidence/d-w8-ess-promise-01-20260608.md
+	docs/qa/evidence/d-w8-ess-promise-01-20260609.md
+	docs/qa/evidence/hrm-embed-fe-audit-20260606.md
+	docs/qa/evidence/mob-apk-unify-r1-20260609.md
+	docs/qa/evidence/mob-apk-unify-r1-device-20260609.md
+	docs/qa/evidence/mob-apk-unify-r1-device-probe.json
+	docs/qa/evidence/mob-ecosystem-uat-20260609.md
+	docs/qa/evidence/mob-parity-01-20260609-probe.json
+	docs/qa/evidence/mob-parity-01-20260609.md
+	docs/qa/evidence/mob-parity-01-r3-20260609-probe.json
+	docs/qa/evidence/mob-parity-01-r3-20260609.md
+	docs/qa/evidence/mob-parity-01-r4-20260609-probe.json
+	docs/qa/evidence/mob-parity-01-r4-20260609.md
+	docs/qa/evidence/mob-phase1-device-batch-20260609.json
+	docs/qa/evidence/mob-phase1-device-batch-20260609.md
+	docs/qa/evidence/mob-test-01-20260609.md
+	docs/qa/evidence/mob-ux-03-global-20260609.md
+	docs/qa/evidence/mob-ux-03-global-qa-device-20260609.json
+	docs/qa/evidence/mob-ux-03-global-qa-device-20260609.md
+	docs/qa/evidence/mob-ux-08-p0-20260609.md
+	docs/qa/evidence/mob-ux-08-p0-qa-device-20260609.json
+	docs/qa/evidence/mob-ux-08-p0-qa-device-20260609.md
+	docs/qa/evidence/mob-ux-08-team-20260609.md
+	docs/qa/evidence/mob-ux-08-team-qa-device-20260609.json
+	docs/qa/evidence/mob-ux-08-team-qa-device-20260609.md
+	docs/qa/evidence/mob-ux-09-profile-tabs-20260609.md
+	docs/qa/evidence/mob-ux-09-profile-tabs-qa-20260609.json
+	docs/qa/evidence/mob-ux-09-profile-tabs-qa-20260609.md
+	docs/qa/evidence/mob-ux-10-p0-20260609.md
+	docs/qa/evidence/mob-ux-10-p0-qa-device-20260609.json
+	docs/qa/evidence/mob-ux-10-p0-qa-device-20260609.md
+	docs/qa/evidence/mob-ux-10a-20260609.md
+	docs/qa/evidence/mob-ux-10a-qa-device-20260609.json
+	docs/qa/evidence/mob-ux-10a-qa-device-20260609.md
+	docs/qa/evidence/mob-ux-10c-20260609.md
+	docs/qa/evidence/mob-ux-10d-20260609.md
+	docs/qa/evidence/mob-ux-10d-qa-device-20260609.json
+	docs/qa/evidence/mob-ux-10d-qa-device-20260609.md
+	docs/qa/evidence/mob-ux-10d-qa-r2-20260609.md
+	docs/qa/evidence/mob-ux-10d-screens/
+	docs/qa/evidence/mob-ux-11a-10c-qa-device-20260609.json
+	docs/qa/evidence/mob-ux-11a-10c-qa-device-20260609.md
+	docs/qa/evidence/mob-ux-11a-20260609.md
+	docs/qa/evidence/mob-ux-11d-20260609.md
+	docs/qa/evidence/mob-ux-11d-device-20260609.json
+	docs/qa/evidence/mob-ux-11d-device-20260609.md
+	docs/qa/evidence/mob-ux-11f-20260609.md
+	docs/qa/evidence/mob-ux-11f-qa-device-20260609.json
+	docs/qa/evidence/mob-ux-11f-qa-device-20260609.md
+	docs/qa/evidence/mob-ux-11f-qa-r2-finish.json
+	docs/qa/evidence/mob-ux-12-apk-freeze-20260609.md
+	docs/qa/evidence/mob-ux-12-freeze-qa-20260609.json
+	docs/qa/evidence/mob-ux-12-freeze-qa-20260609.md
+	docs/qa/evidence/mob-ux-12a-20260609.md
+	docs/qa/evidence/mob-ux-12a-qa-device-20260609.json
+	docs/qa/evidence/mob-ux-12a-qa-device-20260609.md
+	docs/qa/evidence/mob-ux-12a-qa-finish-20260609.json
+	docs/qa/evidence/mob-ux-12b-20260609.md
+	docs/qa/evidence/mob-ux-12b-qa-20260609.json
+	docs/qa/evidence/mob-ux-12b-qa-20260609.md
+	docs/qa/evidence/mob-ux-12c-20260609.md
+	docs/qa/evidence/mob-ux-12c-qa-20260609.json
+	docs/qa/evidence/mob-ux-12c-qa-20260609.md
+	docs/qa/evidence/mob-ux-12d-20260609.md
+	docs/qa/evidence/mob-ux-12d-be-contracts-20260609.md
+	docs/qa/evidence/mob-ux-12d-deploy-20260609.md
+	docs/qa/evidence/mob-ux-12d-qa-20260609.json
+	docs/qa/evidence/mob-ux-12d-qa-20260609.md
+	docs/qa/evidence/mob-ux-12d-qa-r2-20260609.json
+	docs/qa/evidence/mob-ux-12d-qa-r2-20260609.md
+	docs/qa/evidence/mob-ux-13-unified-qa-20260609.md
+	docs/qa/evidence/mob-ux-13a-20260609.md
+	docs/qa/evidence/mob-ux-13b-20260609.md
+	docs/qa/evidence/mob-ux-13c-20260609.md
+	docs/qa/evidence/mob-ux-13d-20260609.md
+	docs/qa/evidence/mob-ux-13e-20260609.md
+	docs/qa/evidence/mob-ux-13f-20260609.md
+	docs/qa/evidence/mob-ux-13g-20260609.md
+	docs/qa/evidence/mob-ux-14-apk-02-20260609.md
+	docs/qa/evidence/mob-ux-14-r3-20260609.md
+	docs/qa/evidence/mob-ux-14-r4-20260609.md
+	docs/qa/evidence/mob-ux-14-r5-20260609.md
+	docs/qa/evidence/mob-ux-14-r6-20260609.md
+	docs/qa/evidence/mob-ux-14-r6-device-20260609.md
+	docs/qa/evidence/mob-ux-14-unified-qa-20260609.md
+	docs/qa/evidence/mob-ux-14-unified-qa-r2-20260609.md
+	docs/qa/evidence/mob-ux-14-unified-qa-r3-20260609.md
+	docs/qa/evidence/mob-ux-14-unified-qa-r4-20260609.md
+	docs/qa/evidence/mob-ux-14-unified-qa-r5-20260609.md
+	docs/qa/evidence/mob-ux-14a-20260609.md
+	docs/qa/evidence/mob-ux-14b-20260609.md
+	docs/qa/evidence/mob-ux-14c-20260609.md
+	docs/qa/evidence/mob-ux-14d-matrix-20260609.json
+	docs/qa/evidence/mob-ux-14d-matrix-20260609.md
+	docs/qa/evidence/mob-ux-14e-20260609.md
+	docs/qa/evidence/mob-ux-15-product-audit-20260609.md
+	docs/qa/evidence/mob-ux-15a-20260609.md
+	docs/qa/evidence/mob-ux-15a-qa-device-20260609.json
+	docs/qa/evidence/mob-ux-15a-qa-device-20260609.md
+	docs/qa/evidence/mob-ux-15b-20260609.md
+	docs/qa/evidence/mob-ux-15c-20260609.md
+	docs/qa/evidence/mob-ux-15d-20260609.md
+	docs/qa/evidence/mob-ux-16-dev-20260609.md
+	docs/qa/evidence/mob-ux-16-ila-capture-20260609.json
+	docs/qa/evidence/mob-ux-16-ila-r3-capture-20260609.json
+	docs/qa/evidence/mob-ux-16-ila-scorecard-20260609.md
+	docs/qa/evidence/mob-ux-16-ila-scorecard-r2-20260609.md
+	docs/qa/evidence/mob-ux-16-ila-scorecard-r3-20260609.md
+	docs/qa/evidence/mob-ux-16-r7-dev-20260609.md
+	docs/qa/evidence/mob-ux-16d-dev-20260609.md
+	docs/qa/evidence/mob-ux-17-home-no-announcements-20260609.md
+	docs/qa/evidence/mob-ux-17-home-no-announcements-qa-20260609.json
+	docs/qa/evidence/mob-ux-17-home-no-announcements-qa-20260609.md
+	docs/qa/evidence/mob-ux-17-home-no-announcements-qa-r2-20260609.md
+	docs/qa/evidence/mob-ux-17-rebuild-20260609.md
+	docs/qa/evidence/mob-ux-18-apk-build-20260616.md
+	docs/qa/evidence/mob-ux-18-chrome-20260609.md
+	docs/qa/evidence/mob-ux-18-chrome-qa-20260609.json
+	docs/qa/evidence/mob-ux-18-chrome-qa-20260609.md
+	docs/qa/evidence/mob-ux-18-chrome-qa-20260616.md
+	docs/qa/evidence/mob-w7-5-directory-be-20260609.md
+	docs/qa/evidence/mob-w7-5-directory-nipio-device-20260609.json
+	docs/qa/evidence/mob-w7-5-directory-nipio-device-20260609.md
+	docs/qa/evidence/mob-w7-5-directory-nipio-device-rerun-20260609.json
+	docs/qa/evidence/mob-w7-5-directory-nipio-device-rerun-20260609.md
+	docs/qa/evidence/mob-w7-5-directory-pagesize-fix-20260609.md
+	docs/qa/evidence/mob-w7-5-directory-qa-20260609.md
+	docs/qa/evidence/mob-white-screen-20260616-7z-list.txt
+	docs/qa/evidence/mob-white-screen-20260616-logcat-60s.txt
+	docs/qa/evidence/mob-white-screen-20260616-logcat-airplane.txt
+	docs/qa/evidence/mob-white-screen-20260616-logcat-offline.txt
+	docs/qa/evidence/mob-white-screen-20260616-logcat.txt
+	docs/qa/evidence/mob-white-screen-20260616-qa-retest.md
+	docs/qa/evidence/mob-white-screen-20260616.md
+	docs/qa/evidence/mob-white-screen-device-20260616-arm64-followup.md
+	docs/qa/evidence/mob-white-screen-device-20260616-arm64-qa-r1.md
+	docs/qa/evidence/mob-white-screen-device-20260616-focus.txt
+	docs/qa/evidence/mob-white-screen-device-20260616-logcat.txt
+	docs/qa/evidence/mob-white-screen-device-20260616-logcat2.txt
+	docs/qa/evidence/mob-white-screen-device-20260616-reactnativejs.txt
+	docs/qa/evidence/mob-white-screen-device-20260616-resumed.txt
+	docs/qa/evidence/mob-white-screen-device-20260616.md
+	docs/qa/evidence/p0-cc-l25-fe-01-20260604.md
+	docs/qa/evidence/p1-browser-e2e-cat-inbox-assignee-8088-be-20260620.md
+	docs/qa/evidence/p1-browser-e2e-cat-inbox-spawn-r6-be-20260620.md
+	docs/qa/evidence/p1-browser-e2e-cat-s2s-auth-8088-be-20260620.md
+	docs/qa/evidence/p1-browser-e2e-hrm-wave-8088-r2-20260620.md
+	docs/qa/evidence/p1-browser-e2e-hrm-wave-8088-r3-20260620.md
+	docs/qa/evidence/p1-browser-e2e-hrm-wave-8088-r4-20260620.md
+	docs/qa/evidence/p1-browser-e2e-hrm-wave-8088-r5-20260620.md
+	docs/qa/evidence/p1-browser-e2e-hrm-wave-8088-r6-20260620.md
+	docs/qa/evidence/p1-browser-e2e-inbox-spawn-be-20260620.md
+	docs/qa/evidence/p1-browser-e2e-qc-final-8088-20260620.md
+	docs/qa/evidence/p1-browser-e2e-qc-final-r2-8088-20260620.md
+	docs/qa/evidence/p1-browser-e2e-qc-final-r3-8088-20260620.md
+	docs/qa/evidence/p1-browser-e2e-raci-07-fe-20260620.md
+	docs/qa/evidence/p1-browser-e2e-uf09-8088-r6-20260620.md
+	docs/qa/evidence/p1-browser-e2e-uf09-8088-r6-retest-20260620.md
+	docs/qa/evidence/p1-browser-e2e-uf09-uf15-8088-r7-20260620.md
+	docs/qa/evidence/p1-browser-e2e-uf09-uf15-8088-r7-final-20260620.md
+	docs/qa/evidence/p1-browser-e2e-uf14-scope-409-be-20260620.md
+	docs/qa/evidence/p1-browser-e2e-uf15-8088-r6-20260620.md
+	docs/qa/evidence/p1-browser-e2e-uf15-8088-r6-retest-20260620.md
+	docs/qa/evidence/p1-browser-e2e-xbos-hrm-20260620.md
+	docs/qa/evidence/p1-browser-e2e-xbos-r5-8088-20260620.md
+	docs/qa/evidence/p1-browser-e2e-xbos-wave-8088-qc-close-20260620.md
+	docs/qa/evidence/p1-cat-approve-scope-8088-be-20260620.md
+	docs/qa/evidence/p1-cc-be-member-legal-browser-put-01-20260604.md
+	docs/qa/evidence/p1-cc-be-member-legal-save-01-20260604.md
+	docs/qa/evidence/p1-cc-fe-member-legal-content-type-01-20260604.md
+	docs/qa/evidence/p1-cc-qa-member-legal-save-01-20260604.md
+	docs/qa/evidence/p1-cc-qa-member-legal-save-l25-20260604.md
+	docs/qa/evidence/p1-cc-shr-ratio-ux-fe-20260620.md
+	docs/qa/evidence/p1-cc-shr-ratio-ux-qa-20260620.md
+	docs/qa/evidence/p1-cc-xbos-legal-entity-test-gap-20260604.md
+	docs/qa/evidence/p1-deploy-8088-u31-20260606.md
+	docs/qa/evidence/p1-deploy-nipio-r3-20260609-probe.json
+	docs/qa/evidence/p1-deploy-nipio-r3-20260609.md
+	docs/qa/evidence/p1-deploy-nipio-r4-20260609-probe.json
+	docs/qa/evidence/p1-deploy-nipio-r4-20260609.md
+	docs/qa/evidence/p1-deploy-nipio-r5-20260609-probe.json
+	docs/qa/evidence/p1-deploy-nipio-r5-20260609.md
+	docs/qa/evidence/p1-dept-ref-sync-fe-20260606.md
+	docs/qa/evidence/p1-dept-ref-sync-qa-20260606.md
+	docs/qa/evidence/p1-dept-templates-scope-fix-20260606.md
+	docs/qa/evidence/p1-ex-be-https-hrm-probe-01-20260603.md
+	docs/qa/evidence/p1-ex-be-https-p-cc-01-jwt-20260605.md
+	docs/qa/evidence/p1-ex-qa-https-p-cc-01-jwt-01-20260604.md
+	docs/qa/evidence/p1-ex-qa-https-post-deploy-20260603.md
+	docs/qa/evidence/p1-ex-qa-https-residual-03-r3-20260605.md
+	docs/qa/evidence/p1-ex-qa-jwt-close-20260605.md
+	docs/qa/evidence/p1-ex-qc-https-post-deploy-20260603.md
+	docs/qa/evidence/p1-ex-qc-https-residual-03-r3-r1-20260605.md
+	docs/qa/evidence/p1-ex-qc-jwt-close-20260605.md
+	docs/qa/evidence/p1-g3-g6-ecosystem-r2-20260609.md
+	docs/qa/evidence/p1-g3-jmob-05-persona-nv2-fix-20260609.md
+	docs/qa/evidence/p1-g3-jmob-05-strict-20260609.json
+	docs/qa/evidence/p1-g3-jmob-05-strict-20260609.md
+	docs/qa/evidence/p1-g3-jmob-05-strict-r2-20260609.json
+	docs/qa/evidence/p1-g3-jmob-05-strict-r2-20260609.md
+	docs/qa/evidence/p1-g3-jmob-05-strict-r3-20260609.json
+	docs/qa/evidence/p1-g3-jmob-05-strict-r3-20260609.md
+	docs/qa/evidence/p1-g3-jmob-05-strict-r3-probe.json
+	docs/qa/evidence/p1-g3-jmob-05-strict-r4-20260609.json
+	docs/qa/evidence/p1-g3-jmob-05-strict-r4-20260609.md
+	docs/qa/evidence/p1-g3-jmob-l25-batch-20260609.json
+	docs/qa/evidence/p1-g3-jmob-l25-batch-20260609.md
+	docs/qa/evidence/p1-g3-jmob-l25-supplement-20260609.json
+	docs/qa/evidence/p1-g4-carry-bundle-20260609.md
+	docs/qa/evidence/p1-g4-carry-qa-20260609.json
+	docs/qa/evidence/p1-g4-carry-qa-20260609.md
+	docs/qa/evidence/p1-g4-carry-regress-20260609.json
+	docs/qa/evidence/p1-g4-carry-regress-20260609.md
+	docs/qa/evidence/p1-g6-field-01-be-20260609.md
+	docs/qa/evidence/p1-g6-field-02-be-20260609.md
+	docs/qa/evidence/p1-gap-act-03-wf-reject-deploy-8088-20260620.md
+	docs/qa/evidence/p1-gap-act-03-wf-reject-fe-20260620.md
+	docs/qa/evidence/p1-gap-act-03-wf-reject-qa-r2-20260620.md
+	docs/qa/evidence/p1-gap-act-03-wf-reject-qa-r3-20260620.md
+	docs/qa/evidence/p1-gap-act-06-ins-link-fe-20260620.md
+	docs/qa/evidence/p1-gap-act-06-ins-link-qa-20260620.md
+	docs/qa/evidence/p1-ghr-sync-perf-be-20260606.md
+	docs/qa/evidence/p1-ghr-sync-qa-retest-20260606.md
+	docs/qa/evidence/p1-ghr-sync-scope-fe-20260606.md
+	docs/qa/evidence/p1-handoff-qc-20260605.md
+	docs/qa/evidence/p1-hrm-con-notes-persist-20260620-qa.md
+	docs/qa/evidence/p1-hrm-con-notes-persist-20260620.md
+	docs/qa/evidence/p1-hrm-dq-rec-audit-20260607.md
+	docs/qa/evidence/p1-hrm-dq-rec-mock-fe-20260607.md
+	docs/qa/evidence/p1-hrm-h1-7-fe-fix-20260606.md
+	docs/qa/evidence/p1-hrm-h10-fidelity-20260606.md
+	docs/qa/evidence/p1-hrm-h10-fidelity-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h12-j04-fix-20260606.md
+	docs/qa/evidence/p1-hrm-h12-j04-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h12-journey-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h12-p2-fe-20260606.md
+	docs/qa/evidence/p1-hrm-h13-ac-fid-slugs-20260606.md
+	docs/qa/evidence/p1-hrm-h13-ac-fid-slugs-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h13-ins-summary-20260606.md
+	docs/qa/evidence/p1-hrm-h13-ins-summary-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h14-ac-fid-04-ins-20260606.md
+	docs/qa/evidence/p1-hrm-h14-ac-fid-04-ins-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h15-ac-fid-05-att-20260606.md
+	docs/qa/evidence/p1-hrm-h15-ac-fid-05-att-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h16-ac-fid-06-leave-20260606.md
+	docs/qa/evidence/p1-hrm-h16-ac-fid-06-leave-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h17-ac-fid-07-pay-20260606.md
+	docs/qa/evidence/p1-hrm-h17-ac-fid-07-pay-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h18-ac-fid-08-payslip-20260606.md
+	docs/qa/evidence/p1-hrm-h18-ac-fid-08-payslip-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h19-ac-fid-09-rec-20260606.md
+	docs/qa/evidence/p1-hrm-h19-ac-fid-09-rec-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h20-ac-fid-10-cat-20260606.md
+	docs/qa/evidence/p1-hrm-h20-ac-fid-10-cat-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h21-ac-fid-11-meta-20260606.md
+	docs/qa/evidence/p1-hrm-h21-ac-fid-11-meta-qa-20260607.md
+	docs/qa/evidence/p1-hrm-h21-h23-fidelity-qa-probe-20260607.json
+	docs/qa/evidence/p1-hrm-h22-ac-fid-12-ops-20260606.md
+	docs/qa/evidence/p1-hrm-h22-ac-fid-12-ops-qa-20260607.md
+	docs/qa/evidence/p1-hrm-h23-ac-fid-13-perf-20260606.md
+	docs/qa/evidence/p1-hrm-h23-ac-fid-13-perf-qa-20260607.md
+	docs/qa/evidence/p1-hrm-h24-ac-fid-14-rbac-20260607.md
+	docs/qa/evidence/p1-hrm-h24-ac-fid-14-rbac-probe-20260607.json
+	docs/qa/evidence/p1-hrm-h25-ac-fid-15-ui-20260607.md
+	docs/qa/evidence/p1-hrm-h25-ac-fid-15-ui-probe-20260607.json
+	docs/qa/evidence/p1-hrm-h26-ac-fid-16-lineage-20260607.md
+	docs/qa/evidence/p1-hrm-h26-ac-fid-16-lineage-fix-20260607.md
+	docs/qa/evidence/p1-hrm-h26-ac-fid-16-lineage-probe-20260607.json
+	docs/qa/evidence/p1-hrm-h26-ac-fid-16-lineage-qa-20260607.md
+	docs/qa/evidence/p1-hrm-h8-mobile-ux-20260606.md
+	docs/qa/evidence/p1-hrm-h8-mobile-ux-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h8b-mobile-tabs-20260606.md
+	docs/qa/evidence/p1-hrm-h8b-mobile-tabs-qa-20260606.md
+	docs/qa/evidence/p1-hrm-h8c-mobile-rest-20260606.md
+	docs/qa/evidence/p1-hrm-h8c-mobile-rest-qa-20260606.md
+	docs/qa/evidence/p1-hrm-hrbp-emp-patch-20260620-qa-probe.json
+	docs/qa/evidence/p1-hrm-hrbp-emp-patch-20260620-qa.md
+	docs/qa/evidence/p1-hrm-hrbp-emp-patch-20260620.md
+	docs/qa/evidence/p1-hrm-inc-api-500-be-20260607.md
+	docs/qa/evidence/p1-hrm-inc-leave-ref-fe-20260607.md
+	docs/qa/evidence/p1-hrm-inc-qa-20260607.md
+	docs/qa/evidence/p1-hrm-member-session-403-8088-fe-20260620.md
+	docs/qa/evidence/p1-hrm-member-ui-login-8088-be-20260620.md
+	docs/qa/evidence/p1-hrm-mob-func-audit-20260606.md
+	docs/qa/evidence/p1-hrm-mob-func-audit-probe-20260606.json
+	docs/qa/evidence/p1-hrm-pagesize-crypto-8088-fe-20260620.md
+	docs/qa/evidence/p1-hrm-r-h10-01-seed-20260606.md
+	docs/qa/evidence/p1-hrm-r-h10-01-seed-qa-20260606.md
+	docs/qa/evidence/p1-hrm-tasks-fix-20260606.md
+	docs/qa/evidence/p1-hrm-web-audit-20260606.md
+	docs/qa/evidence/p1-hrm-web-retest-20260606.md
+	docs/qa/evidence/p1-infra-fcat-consumer-20260621.md
+	docs/qa/evidence/p1-infra-fcat-list-bug-qa-20260620.md
+	docs/qa/evidence/p1-infra-fcat-qc-20260620.md
+	docs/qa/evidence/p1-infra-fcat-wizard-fe-20260620.md
+	docs/qa/evidence/p1-infra-fcat-wizard-qa-20260620.md
+	docs/qa/evidence/p1-l0-stack-20260609.md
+	docs/qa/evidence/p1-l0-stack-qa-20260609.md
+	docs/qa/evidence/p1-l0-w6-pack-20260609.md
+	docs/qa/evidence/p1-leave-balance-device-01-20260609.md
+	docs/qa/evidence/p1-metadata-apply-deploy-8088-20260620.md
+	docs/qa/evidence/p1-metadata-apply-qa-8088-20260620.md
+	docs/qa/evidence/p1-metadata-apply-ux-fe-20260620.md
+	docs/qa/evidence/p1-metadata-consumer-parity-fe-20260620.md
+	docs/qa/evidence/p1-metadata-mu-infra-entry-fe-20260620.md
+	docs/qa/evidence/p1-metadata-mu-infra-entry-qa-20260620.md
+	docs/qa/evidence/p1-p0-fe-version-publish-404-20260605.md
+	docs/qa/evidence/p1-p0-fe-xbos-8088-ux-01-20260606.md
+	docs/qa/evidence/p1-p0-qa-xbos-8088-full-20260605.md
+	docs/qa/evidence/p1-p0-qa-xbos-8088-ret-20260606.md
+	docs/qa/evidence/p1-phase1-be-contracts-ratio-20260605.md
+	docs/qa/evidence/p1-phase1-be-crud-parity-main-20260604.md
+	docs/qa/evidence/p1-phase1-be-crud-rd-parity-20260606.md
+	docs/qa/evidence/p1-phase1-be-emp-create-parity-20260604.md
+	docs/qa/evidence/p1-phase1-be-git-parity-20260605.md
+	docs/qa/evidence/p1-phase1-be-jxbos-02-pull-20260605.md
+	docs/qa/evidence/p1-phase1-be-mob-jmob-04-05-20260604.md
+	docs/qa/evidence/p1-phase1-be-rec-patch-20260606.md
+	docs/qa/evidence/p1-phase1-be-scope-crud-20260604.md
+	docs/qa/evidence/p1-phase1-be-scope-p0-s5-02-20260605.md
+	docs/qa/evidence/p1-phase1-be-scope-p0-s5-20260605.md
+	docs/qa/evidence/p1-phase1-device-wave-20260609.md
+	docs/qa/evidence/p1-phase1-fe-memcc-20260605.md
+	docs/qa/evidence/p1-phase1-fe-mob-jmob-04-05-20260604.md
+	docs/qa/evidence/p1-phase1-fe-mob-push-token-20260604.md
+	docs/qa/evidence/p1-phase1-fe-wf-inbox-20260604.md
+	docs/qa/evidence/p1-phase1-mob-p5-jwt-20260605.md
+	docs/qa/evidence/p1-phase1-mob-p5-jwt-qa-20260605.md
+	docs/qa/evidence/p1-phase1-qa-contracts-ratio-20260605.md
+	docs/qa/evidence/p1-phase1-qa-crud-journey-03-20260604.md
+	docs/qa/evidence/p1-phase1-qa-crud-matrix-20260604.md
+	docs/qa/evidence/p1-phase1-qa-crud-matrix-gaps-20260605-probe.json
+	docs/qa/evidence/p1-phase1-qa-crud-matrix-gaps-20260605.md
+	docs/qa/evidence/p1-phase1-qa-crud-matrix-retest-20260606-probe.json
+	docs/qa/evidence/p1-phase1-qa-crud-matrix-retest-20260606.md
+	docs/qa/evidence/p1-phase1-qa-crud-rd-retest-20260606-probe.json
+	docs/qa/evidence/p1-phase1-qa-crud-rd-retest-20260606.md
+	docs/qa/evidence/p1-phase1-qa-full-rbac-20260604.md
+	docs/qa/evidence/p1-phase1-qa-hrm-emp-group-crud-20260604.md
+	docs/qa/evidence/p1-phase1-qa-member-ceo-crud-20260604.md
+	docs/qa/evidence/p1-phase1-qa-member-persona-nipio-20260604.md
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604-probe.json
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604-r1-probe.json
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604-r1.md
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604-r2-probe-3001.txt
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604-r2-probe-nipio.json
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604-r2.md
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604-r3-probe-nipio.json
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604-r3.md
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604-r4-probe-nipio.json
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604-r4.md
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-20260604.md
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-api-uat0001.json
+	docs/qa/evidence/p1-phase1-qa-mob-jmob-pilot-probe-20260604.json
+	docs/qa/evidence/p1-phase1-qa-mob-pending-parity-20260604.json
+	docs/qa/evidence/p1-phase1-qa-mob-pending-parity-20260604.md
+	docs/qa/evidence/p1-phase1-qa-program-gate-03-20260605.md
+	docs/qa/evidence/p1-phase1-qa-raci-regress-20260604.md
+	docs/qa/evidence/p1-phase1-qa-rec-patch-retest-20260606.md
+	docs/qa/evidence/p1-phase1-qa-scope-crud-journey-20260604.md
+	docs/qa/evidence/p1-phase1-qa-scope-p0-s5-02-20260605.md
+	docs/qa/evidence/p1-phase1-qa-scope-p0-s5-20260605.md
+	docs/qa/evidence/p1-phase1-qa-stack-l0-20260604.md
+	docs/qa/evidence/p1-phase1-qa-stack-l2-20260604.md
+	docs/qa/evidence/p1-phase1-qa-wf-inbox-20260604.md
+	docs/qa/evidence/p1-phase1-qa-wf-member-retest-20260606.md
+	docs/qa/evidence/p1-phase1-qc-contracts-ratio-20260605.md
+	docs/qa/evidence/p1-phase1-qc-crud-gate-20260604.md
+	docs/qa/evidence/p1-phase1-qc-crud-journey-03-20260604.md
+	docs/qa/evidence/p1-phase1-qc-crud-journey-20260604.md
+	docs/qa/evidence/p1-phase1-qc-crud-matrix-gaps-20260605.md
+	docs/qa/evidence/p1-phase1-qc-crud-parity-gate-01-20260604.md
+	docs/qa/evidence/p1-phase1-qc-full-rbac-20260604.md
+	docs/qa/evidence/p1-phase1-qc-full-rbac-r2-20260604.md
+	docs/qa/evidence/p1-phase1-qc-hrm-emp-group-crud-20260604.md
+	docs/qa/evidence/p1-phase1-qc-mob-jmob-20260604.md
+	docs/qa/evidence/p1-phase1-qc-mob-p5-jwt-20260605.md
+	docs/qa/evidence/p1-phase1-qc-program-gate-03-20260605.md
+	docs/qa/evidence/p1-phase1-qc-rbac-c04-close-20260604.md
+	docs/qa/evidence/p1-phase1-qc-stack-l0-20260604.md
+	docs/qa/evidence/p1-phase1-qc-wf-inbox-20260604.md
+	docs/qa/evidence/p1-portal-crypto-uuid-8088-fe-20260620.md
+	docs/qa/evidence/p1-prod-int-be-01-20260607.md
+	docs/qa/evidence/p1-prod-int-be-02-20260607.md
+	docs/qa/evidence/p1-prod-int-be-03-20260607.md
+	docs/qa/evidence/p1-prod-int-be-04-20260607.md
+	docs/qa/evidence/p1-prod-int-fe-01-20260607.md
+	docs/qa/evidence/p1-prod-int-qa-01-20260607.md
+	docs/qa/evidence/p1-prod-int-qa-01-probe-20260607.json
+	docs/qa/evidence/p1-prod-int-qa-02-20260607.md
+	docs/qa/evidence/p1-prod-int-qa-03-20260607.md
+	docs/qa/evidence/p1-prod-int-qa-03-probe-20260607.json
+	docs/qa/evidence/p1-prod-int-qa-04-20260607.md
+	docs/qa/evidence/p1-prod-int-qa-04-probe-20260607.json
+	docs/qa/evidence/p1-qa-8088-l25-cc-rail-20260620.md
+	docs/qa/evidence/p1-qa-false-pass-infra-settings-20260606.md
+	docs/qa/evidence/p1-qa-u31-dept-infra-retest-20260606.md
+	docs/qa/evidence/p1-qa-u31-vps-retest-20260606.md
+	docs/qa/evidence/p1-qa-uf14-8088-retest-20260620.md
+	docs/qa/evidence/p1-qa-ui-label-browser-8088-20260620.md
+	docs/qa/evidence/p1-qa-ui-label-browser-8088-r2-20260620.md
+	docs/qa/evidence/p1-qa-ui-label-browser-8088-r3-20260620.md
+	docs/qa/evidence/p1-s5-qa-02-20260605.md
+	docs/qa/evidence/p1-s5-qa-g5-01-20260605.md
+	docs/qa/evidence/p1-s5-qa-jxbos-02-retest-20260605.md
+	docs/qa/evidence/p1-s5-qc-01-20260605.md
+	docs/qa/evidence/p1-s5-qc-g5-01-20260605.md
+	docs/qa/evidence/p1-s5-qc-g5-jxbos-02-20260605.md
+	docs/qa/evidence/p1-s5-qc-pre-01-20260605.md
+	docs/qa/evidence/p1-s5-qc-scope-p0-02-20260605.md
+	docs/qa/evidence/p1-s5-tm-01-20260605.md
+	docs/qa/evidence/p1-screen-action-map-qa-20260620.md
+	docs/qa/evidence/p1-screen-action-qc-slice-01-20260620.md
+	docs/qa/evidence/p1-screen-action-registry-fe-20260620.md
+	docs/qa/evidence/p1-seed-jmob-05-20260609.md
+	docs/qa/evidence/p1-u31-portal-sync-smoke-20260606.md
+	docs/qa/evidence/p1-u31-qa-l2-dept-scope-20260606.md
+	docs/qa/evidence/p1-uf-xbos-05-holding-shr-qa-20260620.md
+	docs/qa/evidence/p1-uf-xbos-06-devops-8088-20260620.md
+	docs/qa/evidence/p1-uf-xbos-06-legal-doc-file-be-20260620.md
+	docs/qa/evidence/p1-ui-label-fidelity-8088-fe-20260620.md
+	docs/qa/evidence/p1-ui-label-fidelity-8088-w2-fe-20260620.md
+	docs/qa/evidence/p1-uiux-audit-8088-r1-20260620.md
+	docs/qa/evidence/p1-uiux-fe-foundation-01-qc-r2-20260620.md
+	docs/qa/evidence/p1-uiux-fe-foundation-02-8088-20260620.md
+	docs/qa/evidence/p1-uiux-fe-foundation-8088-20260620.md
+	docs/qa/evidence/p1-uiux-fe-hrm-02-8088-20260620.md
+	docs/qa/evidence/p1-uiux-foundation-be-403-8088-20260620.md
+	docs/qa/evidence/p1-user-flow-web-qc-8088-20260620.md
+	docs/qa/evidence/p1-user-flow-web-qc-8088-c2-regate-20260620.md
+	docs/qa/evidence/p1-ux-defer-uf-batch-8088-20260620.md
+	docs/qa/evidence/p1-vendor-delete-f5-8088-be-20260620.md
+	docs/qa/evidence/p1-w6-qa-memcc-20260605.md
+	docs/qa/evidence/p1-w8-qa-g8-20260605.md
+	docs/qa/evidence/p1-w8-qc-g8-20260605.md
+	docs/qa/evidence/p1-web-acceptance-be-fix-20260620.md
+	docs/qa/evidence/p1-web-acceptance-be-fix-wave02-20260620.md
+	docs/qa/evidence/p1-web-acceptance-be-qa-8088-20260620.md
+	docs/qa/evidence/p1-web-acceptance-be-sync401-20260620.md
+	docs/qa/evidence/p1-web-acceptance-close-01-r2-20260620.md
+	docs/qa/evidence/p1-web-acceptance-close-01-r3-20260620.md
+	docs/qa/evidence/p1-web-acceptance-close-20260620-probe.json
+	docs/qa/evidence/p1-web-acceptance-close-20260620.md
+	docs/qa/evidence/p1-web-acceptance-fe-fix-20260620.md
+	docs/qa/evidence/p1-web-acceptance-fe-fix-r3-20260620.md
+	docs/qa/evidence/p1-xbos-holding-shr-fix-20260616.md
+	docs/qa/evidence/p1-xbos-holding-shr-fix-20260620-qa.md
+	docs/qa/evidence/p1-xbos-holding-shr-fix-20260620.md
+	docs/qa/evidence/p1-xbos-w0-stack-20260606.md
+	docs/qa/evidence/p1-xbos-w1-legal-audit-20260606.md
+	docs/qa/evidence/p1-xbos-w1-shr-fix-20260606.md
+	docs/qa/evidence/p1-xbos-w1-shr-qa-retest-20260606.md
+	docs/qa/evidence/p1-xbos-w2-infra-audit-20260606.md
+	docs/qa/evidence/p1-xbos-w2-infra-fix-20260606.md
+	docs/qa/evidence/p1-xbos-w2-infra-qa-retest-20260606.md
+	docs/qa/evidence/p1-xbos-w3-dept-regression-20260606.md
+	docs/qa/evidence/p1-xbos-w4-dept-be-fix-20260606.md
+	docs/qa/evidence/p1-xbos-w4-dept-dup-fe-fix-20260606.md
+	docs/qa/evidence/p1-xbos-w4-dept-fe-fix-20260606.md
+	docs/qa/evidence/p1-xbos-w4-dept-holding-be-fix-20260606.md
+	docs/qa/evidence/p1-xbos-w4-dept-tree-audit-20260606.md
+	docs/qa/evidence/p1-xbos-w4-dept-tree-retest-20260606.md
+	docs/qa/evidence/p1-xbos-w5-hrm-cat-audit-20260606.md
+	docs/qa/evidence/p1-xbos-w5-hrm-cat-be-fix-20260606.md
+	docs/qa/evidence/p1-xbos-w5-hrm-cat-qa-retest-20260606.md
+	docs/qa/evidence/p1-xbos-w6-rbac-audit-20260606.md
+	docs/qa/evidence/p1-xbos-w7-wf-audit-20260606.md
+	docs/qa/evidence/p1-xbos-w7-wf-fe-fix-20260606.md
+	docs/qa/evidence/p1-xbos-w7-wf-qa-retest-20260606.md
+	docs/qa/evidence/p1-xbos-w8-cat-scope-be-20260606.md
+	docs/qa/evidence/p1-xbos-w8-cat-seed-fe-20260606.md
+	docs/qa/evidence/p1-xbos-w8-catalogs-audit-20260606.md
+	docs/qa/evidence/p1-xbos-w8-catalogs-qa-retest-20260606.md
+	docs/qa/evidence/p1-xbos-w9-asset-audit-20260606.md
+	docs/qa/evidence/pcomp-l0-stack-01-20260609.md
+	docs/qa/evidence/pcomp-program-gate-01-20260609.md
+	docs/qa/evidence/pcomp-program-gate-01-l1-20260609.md
+	docs/qa/evidence/pcomp-program-gate-01-l2-20260609.md
+	docs/qa/evidence/pcomp-program-gate-01-l3-20260609.md
+	docs/qa/evidence/pcomp-w0-mock-matrix-20260607.md
+	docs/qa/evidence/pcomp-w1-fe-01-20260607.md
+	docs/qa/evidence/pcomp-w1-fe-02-20260607.md
+	docs/qa/evidence/pcomp-w1-fe-03-20260607.md
+	docs/qa/evidence/pcomp-w1-qa-01-20260607.md
+	docs/qa/evidence/pcomp-w1-qa-02-20260607.md
+	docs/qa/evidence/pcomp-w1-qc-01-20260607.md
+	docs/qa/evidence/pcomp-w1-qc-02-20260607.md
+	docs/qa/evidence/pcomp-w2-fe-01-20260607.md
+	docs/qa/evidence/pcomp-w2-fe-02-20260607.md
+	docs/qa/evidence/pcomp-w2-fe-04-20260607.md
+	docs/qa/evidence/pcomp-w2-fe-05-20260607.md
+	docs/qa/evidence/pcomp-w2-fe-06-20260607.md
+	docs/qa/evidence/pcomp-w2-fe-07-20260607.md
+	docs/qa/evidence/pcomp-w2-qa-01-20260607.md
+	docs/qa/evidence/pcomp-w2-qa-02-20260607.md
+	docs/qa/evidence/pcomp-w2-qa-03-20260607.md
+	docs/qa/evidence/pcomp-w2-qa-04-20260607.md
+	docs/qa/evidence/pcomp-w2-qa-05-20260607.md
+	docs/qa/evidence/pcomp-w2-qa-06-20260607.md
+	docs/qa/evidence/pcomp-w2-qc-02-20260607.md
+	docs/qa/evidence/pcomp-w2-qc-03-20260607.md
+	docs/qa/evidence/pcomp-w2-qc-04-20260607.md
+	docs/qa/evidence/pcomp-w2-qc-05-20260607.md
+	docs/qa/evidence/pcomp-w2-qc-06-20260607.md
+	docs/qa/evidence/pcomp-w3-be-04-20260607.md
+	docs/qa/evidence/pcomp-w3-be-05-20260607.md
+	docs/qa/evidence/pcomp-w3-fe-01-20260607.md
+	docs/qa/evidence/pcomp-w3-qa-01-20260607.md
+	docs/qa/evidence/pcomp-w3-qa-03-20260607.md
+	docs/qa/evidence/pcomp-w3-qa-03-probe-20260607.json
+	docs/qa/evidence/pcomp-w3-qa-04-20260607.md
+	docs/qa/evidence/pcomp-w3-qa-04-gint02-probe-20260607.json
+	docs/qa/evidence/pcomp-w3-qa-04-probe-20260607.json
+	docs/qa/evidence/pcomp-w3-qa-05-20260607.md
+	docs/qa/evidence/pcomp-w3-qa-05-gint02-probe-20260607.json
+	docs/qa/evidence/pcomp-w3-qa-05-probe-20260607.json
+	docs/qa/evidence/pcomp-w3-qc-01-20260607.md
+	docs/qa/evidence/pcomp-w4-be-hub-04a-20260607.md
+	docs/qa/evidence/pcomp-w4-do-avt-file-01-20260607.md
+	docs/qa/evidence/pcomp-w4-do-avt-web-01-20260607.md
+	docs/qa/evidence/pcomp-w4-do-avt-web-02-20260607.md
+	docs/qa/evidence/pcomp-w4-do-avt-web-03-20260607.md
+	docs/qa/evidence/pcomp-w4-fe-ds-01-20260607.md
+	docs/qa/evidence/pcomp-w4-fe-employees-filter-01-20260607.md
+	docs/qa/evidence/pcomp-w4-fe-spec-01-20260607.md
+	docs/qa/evidence/pcomp-w4-javt-02-qa-20260609.json
+	docs/qa/evidence/pcomp-w4-mob-01-20260607.md
+	docs/qa/evidence/pcomp-w4-mob-fullstack-apk-01-20260607.md
+	docs/qa/evidence/pcomp-w4-mob-header-03b-20260607.md
+	docs/qa/evidence/pcomp-w4-mob-leave-meta-01-20260607.md
+	docs/qa/evidence/pcomp-w4-mob-ux-01-20260607.md
+	docs/qa/evidence/pcomp-w4-mob-ux-02-20260607.md
+	docs/qa/evidence/pcomp-w4-mob-ux-02b-20260607.md
+	docs/qa/evidence/pcomp-w4-mob-ux-03-20260607.md
+	docs/qa/evidence/pcomp-w4-mob-ux-03b-20260607.md
+	docs/qa/evidence/pcomp-w4-mob-ux-04a-20260607.md
+	docs/qa/evidence/pcomp-w4-mob-ux-safe-01-20260607.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-01-be-20260607.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-01-fe-20260607.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-01-mob-20260607.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-01-qa-web-20260607.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-01-qa-web-display-20260607.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-01-qa-web-display-r2-20260607.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-01-qa-web-display-r3-20260607.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-01-qa-web-display-r4-20260607.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-mob-javt-02-20260609.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-mob-javt-02-qa-20260609.md
+	docs/qa/evidence/pcomp-w4-profile-avatar-mob-javt-03-20260609.md
+	docs/qa/evidence/pcomp-w4-qa-01-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-01-probe-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-device-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-device-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-header-03b-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-header-03b-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-jmob05-r3-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-jmob05-r3-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-mux-01-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-mux-02-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-mux-02-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-mux-02b-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-mux-02b-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-mux-03-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-mux-03-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-mux-03b-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-mux-03b-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-mux-04a-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-mux-04a-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-mux-04a-hub-api.json
+	docs/qa/evidence/pcomp-w4-qa-persona-01-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-persona-01-20260607.md
+	docs/qa/evidence/pcomp-w4-qa-persona-01-probe-nipio.json
+	docs/qa/evidence/pcomp-w4-qa-safe-persona-r2-20260607.json
+	docs/qa/evidence/pcomp-w4-qa-safe-persona-r2-20260607.md
+	docs/qa/evidence/pcomp-w4-qc-01-20260607.md
+	docs/qa/evidence/pcomp-w4-qc-avatar-display-r4-20260607.md
+	docs/qa/evidence/pcomp-w4-qc-mux-02-20260607.md
+	docs/qa/evidence/pcomp-w4-qc-mux-02b-20260607.md
+	docs/qa/evidence/pcomp-w4-qc-mux-03-20260607.md
+	docs/qa/evidence/pcomp-w4-qc-safe-u47-20260607.md
+	docs/qa/evidence/pcomp-w4-seed-leave-pending-01-20260607.md
+	docs/qa/evidence/pcomp-w5-do-01-20260607.md
+	docs/qa/evidence/pcomp-w5-do-01-20260608.md
+	docs/qa/evidence/pcomp-w5-do-01-20260609.md
+	docs/qa/evidence/pcomp-w5-qa-01-20260607.md
+	docs/qa/evidence/pcomp-w5-qa-01-int-probe-20260607.json
+	docs/qa/evidence/pcomp-w5-qc-01-20260607.md
+	docs/qa/evidence/pcomp-w5-tm-01-20260607.md
+	docs/qa/evidence/pcomp-w7-be-04b-01-20260607.md
+	docs/qa/evidence/pcomp-w7-be-04b-01-r2-20260607.md
+	docs/qa/evidence/pcomp-w7-be-leave-doc-20260609.md
+	docs/qa/evidence/pcomp-w7-be-tasks-slug-01-20260607.md
+	docs/qa/evidence/pcomp-w7-do-home-summary-01-20260607.md
+	docs/qa/evidence/pcomp-w7-do-pilot-restore-01-20260607.md
+	docs/qa/evidence/pcomp-w7-do-tasks-slug-01-20260607.md
+	docs/qa/evidence/pcomp-w7-leave-bal-be-20260609.md
+	docs/qa/evidence/pcomp-w7-leave-bal-build-fix-20260608.md
+	docs/qa/evidence/pcomp-w7-leave-bal-deploy-20260608.md
+	docs/qa/evidence/pcomp-w7-mob-apk-04b-r3-20260607.md
+	docs/qa/evidence/pcomp-w7-mob-avt-native-01-20260607.md
+	docs/qa/evidence/pcomp-w7-mob-batch-20260609.md
+	docs/qa/evidence/pcomp-w7-mob-batch-qa-20260609.json
+	docs/qa/evidence/pcomp-w7-mob-batch-qa-20260609.md
+	docs/qa/evidence/pcomp-w7-mob-batch-qa-r2-20260609.json
+	docs/qa/evidence/pcomp-w7-mob-batch-qa-r2-20260609.md
+	docs/qa/evidence/pcomp-w7-mob-batch-qa-r2-manual-20260609.json
+	docs/qa/evidence/pcomp-w7-mob-batch-qa-r3-20260609.md
+	docs/qa/evidence/pcomp-w7-mob-batch-qa-r3-final-20260609.json
+	docs/qa/evidence/pcomp-w7-mob-batch-qa-r3-final-20260609.md
+	docs/qa/evidence/pcomp-w7-mob-device-login-01-20260607.md
+	docs/qa/evidence/pcomp-w7-mob-hub-jmob08-09-20260607.json
+	docs/qa/evidence/pcomp-w7-mob-hub-jmob08-09-20260607.md
+	docs/qa/evidence/pcomp-w7-mob-leave-bal-20260608.md
+	docs/qa/evidence/pcomp-w7-mob-leave-bal-qa-20260608.md
+	docs/qa/evidence/pcomp-w7-mob-leave-bal-qa-r2-20260608.md
+	docs/qa/evidence/pcomp-w7-mob-login-ux-01-20260607.md
+	docs/qa/evidence/pcomp-w7-mob-login-ux-01-qa-20260607.md
+	docs/qa/evidence/pcomp-w7-mob-login-ux-01-screens/
+	docs/qa/evidence/pcomp-w7-mob-ux-04b-20260607.md
+	docs/qa/evidence/pcomp-w7-mob-whos-detail-01-20260609.md
+	docs/qa/evidence/pcomp-w7-mob-whos-out-01-20260608.md
+	docs/qa/evidence/pcomp-w7-mob-whos-out-02-20260608.md
+	docs/qa/evidence/pcomp-w7-qa-04b-01-20260607.md
+	docs/qa/evidence/pcomp-w7-qa-04b-01-probe.json
+	docs/qa/evidence/pcomp-w7-qa-04b-01-r2-20260607.md
+	docs/qa/evidence/pcomp-w7-qa-close-01-20260607.json
+	docs/qa/evidence/pcomp-w7-qa-close-01-20260607.md
+	docs/qa/evidence/pcomp-w7-qa-home-summary-01-20260607.md
+	docs/qa/evidence/pcomp-w7-qa-home-summary-01-probe.json
+	docs/qa/evidence/pcomp-w7-qa-home-summary-01-r2-20260607.md
+	docs/qa/evidence/pcomp-w7-qa-hub-04b-probe.json
+	docs/qa/evidence/pcomp-w7-qa-hub-04b-r3-20260607.md
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-02-20260607.json
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-02-20260607.md
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-02-r2-20260608.json
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-02-r2-20260608.md
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-02-screens/
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-03-20260607.json
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-03-r2-20260608.json
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-03-r2-20260608.md
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-04-20260608.json
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-04-20260609.json
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-04-20260609.md
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-05-20260609.json
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-05-20260609.md
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-05-detail-rerun-20260609.json
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-05-detail-rerun-20260609.md
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-05-rerun-20260609.json
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-05-rerun-20260609.md
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-20260607.md
+	docs/qa/evidence/pcomp-w7-qa-hub-r3-probe.json
+	docs/qa/evidence/pcomp-w7-qc-04b-01-20260607.md
+	docs/qa/evidence/pcomp-w7-qc-avt-02-20260607.md
+	docs/qa/evidence/pcomp-w7-qc-hub-04b-r3-20260607.md
+	docs/qa/evidence/pcomp-w7-qc-hub-r3-05-detail-20260609.md
+	docs/qa/evidence/pcomp-w8-mob-bal-ui-01-20260609.md
+	docs/qa/evidence/pcomp-w8-mob-ess-dash-01-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-ess-dash-01-qa-20260608.json
+	docs/qa/evidence/pcomp-w8-mob-ess-dash-01-qa-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-ess-dash-01-qa-r3-20260608.json
+	docs/qa/evidence/pcomp-w8-mob-ess-dash-01-qa-r3-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-ess-dash-device-20260608.json
+	docs/qa/evidence/pcomp-w8-mob-ess-dash-qc-01-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-ess-leave-01-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-ess-leave-01-device-probe.json
+	docs/qa/evidence/pcomp-w8-mob-ess-leave-01-qa-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-ess-leave-01-r3-20260609.json
+	docs/qa/evidence/pcomp-w8-mob-ess-leave-01-r3-20260609.md
+	docs/qa/evidence/pcomp-w8-mob-ess-leave-01-r3-supplement.json
+	docs/qa/evidence/pcomp-w8-mob-home-portal-01-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-home-portal-apk-01-20260609.md
+	docs/qa/evidence/pcomp-w8-mob-home-portal-apk-02-20260609.md
+	docs/qa/evidence/pcomp-w8-mob-home-portal-qc-01-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-home-portal-qc-02-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-portal-device-20260608.json
+	docs/qa/evidence/pcomp-w8-mob-portal-jmob11-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-portal-jmob14-20260608.json
+	docs/qa/evidence/pcomp-w8-mob-portal-jmob14-20260608.md
+	docs/qa/evidence/pcomp-w8-mob-residual-r4-01-20260609.json
+	docs/qa/evidence/pcomp-w8-mob-residual-r4-01-20260609.md
+	docs/qa/evidence/pcomp-w8-mob-u57-logo-01-20260609.md
+	docs/qa/evidence/pcomp-w8-mob-u57-logo-01-qa-device-20260609.json
+	docs/qa/evidence/pcomp-w8-mob-u57-logo-01-qa-device-20260609.md
+	docs/qa/evidence/pcomp-w8-mob-ui-qa-01-device-20260609.json
+	docs/qa/evidence/pcomp-w8-mob-ui-qa-01-device-20260609.md
+	docs/qa/evidence/pcomp-w8-mob-zenhr-fab-01-20260608.md
+	docs/qa/evidence/qc-d-mob-ux-10d-api-20260609.md
+	docs/qa/evidence/qc-d-mob-ux09-ia-01-20260609.md
+	docs/qa/evidence/qc-mob-apk-unify-r1-20260609.md
+	docs/qa/evidence/qc-mob-partner-01-20260609.md
+	docs/qa/evidence/qc-mob-ux-03-global-20260609.md
+	docs/qa/evidence/qc-mob-ux-08-p0-20260609.md
+	docs/qa/evidence/qc-mob-ux-08-team-20260609.md
+	docs/qa/evidence/qc-mob-ux-09-profile-tabs-20260609.md
+	docs/qa/evidence/qc-mob-ux-10-p0-20260609.md
+	docs/qa/evidence/qc-mob-ux-10a-20260609.md
+	docs/qa/evidence/qc-mob-ux-10d-20260609.md
+	docs/qa/evidence/qc-mob-ux-11a-10c-20260609.md
+	docs/qa/evidence/qc-mob-ux-11d-20260609.md
+	docs/qa/evidence/qc-mob-ux-11f-20260609.md
+	docs/qa/evidence/qc-mob-ux-12-freeze-20260609.md
+	docs/qa/evidence/qc-mob-ux-12a-20260609.md
+	docs/qa/evidence/qc-mob-ux-13-20260609.md
+	docs/qa/evidence/qc-mob-ux-15-20260609.md
+	docs/qa/evidence/qc-mob-ux-16-20260609.md
+	docs/qa/evidence/qc-mob-ux-17-20260609.md
+	docs/qa/evidence/qc-mob-ux-18-20260616.md
+	docs/qa/evidence/qc-mob-ux-18-recheck-20260616.md
+	docs/qa/evidence/qc-mob-w7-5-directory-final-20260609.md
+	docs/qa/evidence/qc-mob-white-screen-20260616.md
+	docs/qa/evidence/qc-p1-cc-member-legal-save-l25-20260604.md
+	docs/qa/evidence/qc-p1-dept-ref-sync-20260606.md
+	docs/qa/evidence/qc-p1-g6-20260609.md
+	docs/qa/evidence/qc-p1-g6-r2-20260609.md
+	docs/qa/evidence/qc-p1-hrm-dq-rec-gate-20260607.md
+	docs/qa/evidence/qc-p1-hrm-fidelity-batch-04-09-20260606.md
+	docs/qa/evidence/qc-p1-hrm-fidelity-batch-04-13-20260606.md
+	docs/qa/evidence/qc-p1-hrm-fidelity-final-20260607.md
+	docs/qa/evidence/qc-p1-hrm-fidelity-final-r2-20260607.md
+	docs/qa/evidence/qc-p1-hrm-fidelity-regate-11-13-20260607.md
+	docs/qa/evidence/qc-p1-hrm-h1-7-20260606.md
+	docs/qa/evidence/qc-p1-hrm-h11-closeout-20260606.md
+	docs/qa/evidence/qc-p1-hrm-h11-regate-20260606.md
+	docs/qa/evidence/qc-p1-hrm-h13-regate-20260606.md
+	docs/qa/evidence/qc-p1-metadata-apply-8088-20260620.md
+	docs/qa/evidence/qc-p1-metadata-path-b-close-20260620.md
+	docs/qa/evidence/qc-p1-phase1-batch-closeout-20260606.md
+	docs/qa/evidence/qc-p1-phase1-crud-rd-parity-20260606.md
+	docs/qa/evidence/qc-p1-phase1-pre-close-20260609.md
+	docs/qa/evidence/qc-p1-prod-int-gate-20260607.md
+	docs/qa/evidence/qc-p1-prod-int-gate-r2-20260607.md
+	docs/qa/evidence/qc-p1-prod-int-gate-r3-20260607.md
+	docs/qa/evidence/qc-p1-u31-dept-scope-20260606.md
+	docs/qa/evidence/qc-p1-uiux-fe-hrm-02-8088-20260620.md
+	docs/qa/evidence/qc-p1-uiux-foundation-combined-8088-20260620.md
+	docs/qa/evidence/qc-p1-ux-defer-uf-batch-8088-20260620.md
+	docs/qa/evidence/qc-p1-w6-memcc-close-20260605.md
+	docs/qa/evidence/qc-p1-xbos-w1-20260606.md
+	docs/qa/evidence/qc-p1-xbos-w2-20260606.md
+	docs/qa/evidence/qc-p1-xbos-w3-20260606.md
+	docs/qa/evidence/qc-p1-xbos-w4-20260606.md
+	docs/qa/evidence/qc-p1-xbos-w5-hrm-cat-20260606.md
+	docs/qa/evidence/qc-p1-xbos-w6-20260606.md
+	docs/qa/evidence/qc-p1-xbos-w7-20260606.md
+	docs/qa/evidence/qc-p1-xbos-w8-20260606.md
+	docs/qa/evidence/qc-p1-xbos-w9-20260606.md
+	docs/qa/evidence/qc-pcomp-w7-mob-batch-20260609.md
+	docs/qa/evidence/qc-pcomp-w8-mob-ess-leave-01-r3-20260609.md
+	docs/qa/evidence/qc-pcomp-w8-mob-residual-r4-01-20260609.md
+	docs/qa/evidence/qc-pcomp-w8-mob-ui-qc-01-20260609.md
+	docs/qa/evidence/qc-r-dir-detail-01-20260609.md
+	docs/qa/evidence/qc-user-flow-web-l0-20260620.md
+	docs/qa/evidence/qc-user-flow-web-l0-r1-20260620.md
+	docs/qa/evidence/r-dir-detail-01-20260609.md
+	docs/qa/evidence/r-dir-detail-01-qa-device-20260609.md
+	docs/qa/evidence/r-dir-detail-01-screens/
+	docs/qa/evidence/r-w7-mob-leave-nav-01-20260609.md
+	docs/qa/evidence/r-w7-mob-leave-nav-01-r2-20260609.md
+	docs/qa/evidence/r-w7-mob-leave-nav-01-r3-20260609.md
+	docs/qa/evidence/r-w7-mob-leave-nav-01-r4-20260609.md
+	docs/qa/evidence/repo-hygiene-cleanup-20260620.md
+	docs/qa/evidence/repo-hygiene-qc-w5-20260620.md
+	docs/qa/evidence/repo-hygiene-sql-w4-20260620.md
+	docs/qa/evidence/repo-hygiene-w3-stats.json
+	docs/qa/evidence/screen-action-catalog-map-20260620.md
+	docs/qa/evidence/screenshots/
+	docs/qa/evidence/uf15-r6-extension-post.png
+	docs/qa/evidence/uf15-r6-f5-persist.png
+	docs/qa/evidence/user-flow-e2e-audit-20260616-probe.json
+	docs/qa/evidence/user-flow-e2e-audit-20260616.md
+	docs/qa/evidence/user-flow-web-qa-l0-20260616.md
+	docs/qa/evidence/user-flow-web-qa-l0-supplement-probe.json
+	docs/qa/evidence/web-portal-vitest-run-local.json
+	docs/qa/evidence/xbos-jest-run-local.json
+	docs/qa/evidence/xbos-local-auto-test-summary-20260606.json
+	docs/xbos/INFRA_FOUNDATION_CATEGORY_WIZARD_UX.md
+	final-home.xml
+	hub.xml
+	hub2.xml
+	inline-check.xml
+	launch2.xml
+	manual.xml
+	migrations/hrm/0014_company_slug_map_display_name.sql
+	now-screen.xml
+	now.xml
+	postboot.xml
+	qa-login-check.xml
+	qa-now.xml
+	qa-perm-dismiss.xml
+	scripts/README.md
+	scripts/audit-mobile-qc-png-refs.mjs
+	scripts/export-xbos-local-auto-test-report.mjs
+	scripts/lib/hrm-catalog-lineage.mjs
+	scripts/lib/hrm-company-slug-map.mjs
+	scripts/lib/hrm-contract-cohort.mjs
+	scripts/lib/hrm-scope-parity-audit.mjs
+	scripts/lib/pm-backlog-scan.mjs
+	scripts/lib/pm-pipeline-recovery.mjs
+	scripts/lib/pm-subagent-recovery.mjs
+	scripts/lib/pm-subagent-status.mjs
+	scripts/lib/pm-work-item-id.mjs
+	scripts/ops/repo-hygiene-w3-archive.mjs
+	scripts/pm-idle-check.mjs
+	scripts/pm-recover-pipeline.mjs
+	scripts/pm-scan-open-backlog.mjs
+	scripts/pm-subagent-recover.mjs
+	scripts/pm-subagent-status.mjs
+	scripts/qa-mobile-home-responsive-matrix.mjs
+	scripts/qa-mobile-login-intent.mjs
+	scripts/qa/p1-deploy-cat-inbox-r6-probe-8088.mjs
+	scripts/qa/p1-deploy-inbox-spawn-probe-8088.mjs
+	scripts/qa/vps-cat-inbox-assignee-hotfix.mjs
+	scripts/qa/vps-cat-inbox-assignee-hotfix.sh
+	scripts/seed-hrm-attendance-density.mjs
+	scripts/seed-hrm-catalog-density.mjs
+	scripts/seed-hrm-catalog-lineage-fix.mjs
+	scripts/seed-hrm-company-slug-map.mjs
+	scripts/seed-hrm-insurance-density.mjs
+	scripts/seed-hrm-leave-density.mjs
+	scripts/seed-hrm-metadata-density.mjs
+	scripts/seed-hrm-operations-density.mjs
+	scripts/seed-hrm-payroll-density.mjs
+	scripts/seed-hrm-payslip-density.mjs
+	scripts/seed-hrm-performance-density.mjs
+	scripts/seed-hrm-recruitment-density.mjs
+	scripts/seed-hrm-uat-mob-attendance-pills.mjs
+	scripts/seed-hrm-uat-mob-hub-qual.mjs
+	scripts/seed-hrm-uat-mob-pilot-qual.mjs
+	scripts/seed-workflow-member-inbox.mjs
+	scripts/stack-stability-login-probe.mjs
+	scripts/verify-hrm-xbos-integrity.mjs
+	scripts/verify-mobile-chrome-dedup.mjs
+	scripts/verify-mobile-layout-composition.mjs
+	scripts/verify-mobile-user-copy.mjs
+	scripts/verify-product-completion.mjs
+	scripts/vps-post-hrm-be-mob-pilot-qual.sh
+	smoke-home.xml
+	smoke-home2.xml
+

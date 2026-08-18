@@ -1,0 +1,630 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-REC-04-CLUSTER-QA-01",
+  "startedAt": "2026-08-09T00:03:27.910Z",
+  "stamp": "REC04QA-MSL1HN1M",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser Quét kho · Network 2xx · F5",
+  "hdsd_align": true,
+  "hdsd_inventory": [
+    "Tuyển dụng → Yêu cầu tuyển (YCTD)",
+    "Chi tiết → Mở quét kho",
+    "Tìm trong kho / Hoàn tất quét / Bỏ qua quét",
+    "Lưu cờ pipeline posted (không Campaign)"
+  ],
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "deny_module_rec_uat": true,
+    "deny_campaign_rec03": true,
+    "deny_nest_rec_dual": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "portal": 200,
+    "xbos": 200
+  },
+  "l1": {
+    "nest_rec": {
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "message": "Cannot GET /api/hrm/rec/candidates-pool?company_id=main"
+    },
+    "scan_route": {
+      "status": 404,
+      "code": "HRM-REC-404",
+      "message": "Resource not found"
+    },
+    "open_for_hire_count": 6,
+    "pool_scan": {
+      "status": 200,
+      "code": "HRM-REC-CP-200",
+      "message": "Candidates pool listed",
+      "total": 0
+    },
+    "posted_before_scan": {
+      "status": 400,
+      "code": "HRM-REC-CV-SCAN-REQUIRED",
+      "message": "Chưa quét kho nội bộ hoặc chưa bỏ qua có lý do — không đặt posted"
+    },
+    "skip_empty": {
+      "status": 400,
+      "code": "HRM-REC-CV-SCAN-SKIP-REASON",
+      "message": "Nhập lý do bỏ qua quét kho nội bộ",
+      "yctd": "ca8041fd-27d3-40b0-a0f9-a42a4799c4d0"
+    },
+    "verdict": {
+      "routeLive": true,
+      "nestDeny": true,
+      "postedGate": true,
+      "poolOk": true,
+      "skipReason": true,
+      "pass": true
+    },
+    "campaign_invent": {
+      "present": false
+    }
+  },
+  "network": [
+    {
+      "at": "2026-08-09T00:03:31.825Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "code": "HRM-REC-CP-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:03:31.871Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "code": "HRM-REC-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:03:35.627Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=holding&requisition_id=ca8041fd-27d3-40b0-a0f9-a42a4799c4d0&for=internal_scan&position_code=CEO&skill=logistics&experience=2+n%C4%83m+v%E1%BA%ADn+h%C3%A0nh",
+      "code": "HRM-REC-CP-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:03:38.215Z",
+      "status": 201,
+      "method": "POST",
+      "path": "/api/hrm/recruitment/requisitions/ca8041fd-27d3-40b0-a0f9-a42a4799c4d0/internal-scan?company_id=holding",
+      "code": "HRM-REC-200",
+      "snippet": {
+        "id": "ca8041fd-27d3-40b0-a0f9-a42a4799c4d0",
+        "flags": {
+          "posted": false,
+          "has_cv": false,
+          "interview_started": false,
+          "cv_intake_allowed": true,
+          "posted_at": null,
+          "has_cv_at": null,
+          "interview_started_at": null,
+          "internal_scan_done": true,
+          "internal_scan_skipped": false,
+          "internal_scan_at": "2026-08-09T00:03:38.179Z",
+          "internal_scan_skip_reason": null
+        }
+      }
+    },
+    {
+      "at": "2026-08-09T00:03:38.693Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "code": "HRM-REC-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:03:41.642Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "code": "HRM-REC-CP-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:03:41.732Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "code": "HRM-REC-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:04:15.931Z",
+      "status": 200,
+      "method": "PATCH",
+      "path": "/api/hrm/recruitment/requisitions/ca8041fd-27d3-40b0-a0f9-a42a4799c4d0/pipeline-flags?company_id=holding",
+      "code": "HRM-REC-200",
+      "snippet": {
+        "id": "ca8041fd-27d3-40b0-a0f9-a42a4799c4d0",
+        "flags": {
+          "posted": true,
+          "has_cv": false,
+          "interview_started": false,
+          "cv_intake_allowed": true,
+          "posted_at": "2026-08-09T00:04:15.904Z",
+          "has_cv_at": null,
+          "interview_started_at": null,
+          "internal_scan_done": true,
+          "internal_scan_skipped": false,
+          "internal_scan_at": "2026-08-09T00:03:38.179Z",
+          "internal_scan_skip_reason": null
+        }
+      }
+    },
+    {
+      "at": "2026-08-09T00:04:16.456Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "code": "HRM-REC-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:04:18.694Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "code": "HRM-REC-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:04:18.720Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "code": "HRM-REC-CP-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:04:23.012Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "code": "HRM-REC-CP-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:04:23.079Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "code": "HRM-REC-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:04:27.497Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "code": "HRM-REC-CP-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:04:27.579Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "code": "HRM-REC-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:04:32.463Z",
+      "status": 201,
+      "method": "POST",
+      "path": "/api/hrm/recruitment/requisitions/c2a9b362-4a79-422a-a6f8-b3111077c3da/internal-scan?company_id=holding",
+      "code": "HRM-REC-200",
+      "snippet": {
+        "id": "c2a9b362-4a79-422a-a6f8-b3111077c3da",
+        "flags": {
+          "posted": false,
+          "has_cv": false,
+          "interview_started": false,
+          "cv_intake_allowed": true,
+          "posted_at": null,
+          "has_cv_at": null,
+          "interview_started_at": null,
+          "internal_scan_done": false,
+          "internal_scan_skipped": true,
+          "internal_scan_at": "2026-08-09T00:04:32.428Z",
+          "internal_scan_skip_reason": "QA skip REC04 REC04QA-MSL1HN1M — kho không ưu tiên kênh nội bộ"
+        }
+      }
+    },
+    {
+      "at": "2026-08-09T00:04:32.945Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "code": "HRM-REC-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:04:35.605Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "code": "HRM-REC-CP-200",
+      "snippet": null
+    },
+    {
+      "at": "2026-08-09T00:04:35.689Z",
+      "status": 200,
+      "method": "GET",
+      "path": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "code": "HRM-REC-200",
+      "snippet": null
+    }
+  ],
+  "nest_rec_hits": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-04-cluster-qa-01/01-requisitions.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-04-cluster-qa-01/02-detail-before-scan.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-04-cluster-qa-01/03-scan-results.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-04-cluster-qa-01/04-detail-after-complete-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-04-cluster-qa-01/05-posted-after-scan-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-04-cluster-qa-01/06-posted-before-scan-blocked.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-04-cluster-qa-01/07-skip-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-04-cluster-qa-01/08-final.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-09T00:03:30.552Z",
+      "msg": "J-01 start",
+      "id": "ca8041fd-27d3-40b0-a0f9-a42a4799c4d0",
+      "title": "QA L1 IN NOMONTH mskv8qfa"
+    },
+    {
+      "at": "2026-08-09T00:04:15.330Z",
+      "msg": "J-04 after-complete posted"
+    },
+    {
+      "at": "2026-08-09T00:04:22.088Z",
+      "msg": "J-04 before-scan FE+BE gate",
+      "title": "QA BOD AC02b05 REC02BODQA-MSKWBO57"
+    },
+    {
+      "at": "2026-08-09T00:04:26.596Z",
+      "msg": "J-03 skip",
+      "id": "c2a9b362-4a79-422a-a6f8-b3111077c3da",
+      "title": "QA FE IN REC02QA-MSKV6ETH"
+    }
+  ],
+  "journeys": {
+    "J-HRM-REC-CV-04-01": {
+      "verdict": "PASS",
+      "at": "2026-08-09T00:03:37.730Z",
+      "summary": "poolHits=1 status=200 results=true emptyOrRows=true nestDual=false",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions&_=1786233810552",
+      "network": [
+        {
+          "at": "2026-08-09T00:03:35.627Z",
+          "status": 200,
+          "method": "GET",
+          "path": "/api/hrm/recruitment/candidates-pool?company_id=holding&requisition_id=ca8041fd-27d3-40b0-a0f9-a42a4799c4d0&for=internal_scan&position_code=CEO&skill=logistics&experience=2+n%C4%83m+v%E1%BA%ADn+h%C3%A0nh",
+          "code": "HRM-REC-CP-200",
+          "snippet": null
+        }
+      ],
+      "click_path": [
+        "login ceo@xe.vn",
+        "Tuyển dụng → YCTD",
+        "Chi tiết «QA L1 IN NOMONTH mskv8qfa»",
+        "Mở quét kho",
+        "skill+exp → Tìm trong kho"
+      ]
+    },
+    "J-HRM-REC-CV-04-02": {
+      "verdict": "PASS",
+      "at": "2026-08-09T00:04:15.319Z",
+      "summary": "completeOk=true attached=false flagsDone=true doneUi=true codes=HRM-REC-200",
+      "flags": {
+        "posted": false,
+        "has_cv": false,
+        "interview_started": false,
+        "cv_intake_allowed": true,
+        "posted_at": null,
+        "has_cv_at": null,
+        "interview_started_at": null,
+        "internal_scan_done": true,
+        "internal_scan_skipped": false,
+        "internal_scan_at": "2026-08-09T00:03:38.179Z",
+        "internal_scan_skip_reason": null
+      },
+      "network": [
+        {
+          "at": "2026-08-09T00:03:38.215Z",
+          "status": 201,
+          "method": "POST",
+          "path": "/api/hrm/recruitment/requisitions/ca8041fd-27d3-40b0-a0f9-a42a4799c4d0/internal-scan?company_id=holding",
+          "code": "HRM-REC-200",
+          "snippet": {
+            "id": "ca8041fd-27d3-40b0-a0f9-a42a4799c4d0",
+            "flags": {
+              "posted": false,
+              "has_cv": false,
+              "interview_started": false,
+              "cv_intake_allowed": true,
+              "posted_at": null,
+              "has_cv_at": null,
+              "interview_started_at": null,
+              "internal_scan_done": true,
+              "internal_scan_skipped": false,
+              "internal_scan_at": "2026-08-09T00:03:38.179Z",
+              "internal_scan_skip_reason": null
+            }
+          }
+        }
+      ],
+      "click_path": [
+        "… Tìm trong kho",
+        "0 hits path",
+        "Hoàn tất quét",
+        "F5 → Chi tiết badge/vết"
+      ]
+    },
+    "J-HRM-REC-CV-04-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T00:04:26.595Z",
+      "summary": "beforeBlocked=true beforeCode=null postedOk=true fPosted.posted=true campaignDeny=true gateHintBeforeComplete=false",
+      "flags": {
+        "posted": true,
+        "has_cv": false,
+        "interview_started": false,
+        "cv_intake_allowed": true,
+        "posted_at": "2026-08-09T00:04:15.904Z",
+        "has_cv_at": null,
+        "interview_started_at": null,
+        "internal_scan_done": true,
+        "internal_scan_skipped": false,
+        "internal_scan_at": "2026-08-09T00:03:38.179Z",
+        "internal_scan_skip_reason": null
+      },
+      "network": [
+        {
+          "at": "2026-08-09T00:04:15.931Z",
+          "status": 200,
+          "method": "PATCH",
+          "path": "/api/hrm/recruitment/requisitions/ca8041fd-27d3-40b0-a0f9-a42a4799c4d0/pipeline-flags?company_id=holding",
+          "code": "HRM-REC-200",
+          "snippet": {
+            "id": "ca8041fd-27d3-40b0-a0f9-a42a4799c4d0",
+            "flags": {
+              "posted": true,
+              "has_cv": false,
+              "interview_started": false,
+              "cv_intake_allowed": true,
+              "posted_at": "2026-08-09T00:04:15.904Z",
+              "has_cv_at": null,
+              "interview_started_at": null,
+              "internal_scan_done": true,
+              "internal_scan_skipped": false,
+              "internal_scan_at": "2026-08-09T00:03:38.179Z",
+              "internal_scan_skip_reason": null
+            }
+          }
+        }
+      ],
+      "click_path": [
+        "posted trước quét → FE/BE SCAN-REQUIRED",
+        "sau complete → check posted → Lưu cờ",
+        "F5 posted; UI không Campaign"
+      ]
+    },
+    "J-HRM-REC-CV-04-03": {
+      "verdict": "PASS",
+      "at": "2026-08-09T00:04:39.160Z",
+      "summary": "id=c2a9b362-4a79-422a-a6f8-b3111077c3da emptyBlocked=true skipOk=true skipFlags=true reasonUi=true l1Skip=HRM-REC-CV-SCAN-SKIP-REASON fSkip.skipped=true",
+      "flags": {
+        "posted": false,
+        "has_cv": false,
+        "interview_started": false,
+        "cv_intake_allowed": true,
+        "posted_at": null,
+        "has_cv_at": null,
+        "interview_started_at": null,
+        "internal_scan_done": false,
+        "internal_scan_skipped": true,
+        "internal_scan_at": "2026-08-09T00:04:32.428Z",
+        "internal_scan_skip_reason": "QA skip REC04 REC04QA-MSL1HN1M — kho không ưu tiên kênh nội bộ"
+      },
+      "skipBodyFlags": {
+        "posted": false,
+        "has_cv": false,
+        "interview_started": false,
+        "cv_intake_allowed": true,
+        "posted_at": null,
+        "has_cv_at": null,
+        "interview_started_at": null,
+        "internal_scan_done": false,
+        "internal_scan_skipped": true,
+        "internal_scan_at": "2026-08-09T00:04:32.428Z",
+        "internal_scan_skip_reason": "QA skip REC04 REC04QA-MSL1HN1M — kho không ưu tiên kênh nội bộ"
+      },
+      "network": [
+        {
+          "at": "2026-08-09T00:04:32.463Z",
+          "status": 201,
+          "method": "POST",
+          "path": "/api/hrm/recruitment/requisitions/c2a9b362-4a79-422a-a6f8-b3111077c3da/internal-scan?company_id=holding",
+          "code": "HRM-REC-200",
+          "snippet": {
+            "id": "c2a9b362-4a79-422a-a6f8-b3111077c3da",
+            "flags": {
+              "posted": false,
+              "has_cv": false,
+              "interview_started": false,
+              "cv_intake_allowed": true,
+              "posted_at": null,
+              "has_cv_at": null,
+              "interview_started_at": null,
+              "internal_scan_done": false,
+              "internal_scan_skipped": true,
+              "internal_scan_at": "2026-08-09T00:04:32.428Z",
+              "internal_scan_skip_reason": "QA skip REC04 REC04QA-MSL1HN1M — kho không ưu tiên kênh nội bộ"
+            }
+          }
+        }
+      ],
+      "click_path": [
+        "Chi tiết id=c2a9b362-4a79-422a-a6f8-b3111077c3da",
+        "Mở quét kho → Bỏ qua quét…",
+        "Xác nhận không lý do → toast/400 SKIP-REASON",
+        "Nhập lý do → Xác nhận → F5"
+      ]
+    }
+  },
+  "defects": [],
+  "fixtures": {
+    "open": [
+      {
+        "id": "e7529d70-2c31-4e2e-91c5-2970d3050079",
+        "title": "QA BOD AC02b05 REC02BODQA2-MSKX3U8H",
+        "company_id": "holding",
+        "flags": {
+          "posted": true,
+          "has_cv": false,
+          "interview_started": false,
+          "cv_intake_allowed": true,
+          "posted_at": "2026-08-08T23:57:56.114Z",
+          "has_cv_at": null,
+          "interview_started_at": null,
+          "internal_scan_done": false,
+          "internal_scan_skipped": false,
+          "internal_scan_at": null,
+          "internal_scan_skip_reason": null
+        }
+      },
+      {
+        "id": "e87330f3-55e2-4f0d-9fbc-097c0ffb9926",
+        "title": "QA BOD AC02b05 REC02BODQA-MSKWIO4O",
+        "company_id": "holding",
+        "flags": {
+          "posted": true,
+          "has_cv": false,
+          "interview_started": false,
+          "cv_intake_allowed": true,
+          "posted_at": "2026-08-09T00:01:25.522Z",
+          "has_cv_at": null,
+          "interview_started_at": null,
+          "internal_scan_done": false,
+          "internal_scan_skipped": true,
+          "internal_scan_at": "2026-08-09T00:01:42.190Z",
+          "internal_scan_skip_reason": "QA skip REC04 REC04QA-MSL1DZK5 — kho không ưu tiên kênh nội bộ"
+        }
+      },
+      {
+        "id": "68d5e84c-493f-4581-bb07-21af0d249970",
+        "title": "QA BOD AC02b05 REC02BODQA-MSKWBO57",
+        "company_id": "holding",
+        "flags": {
+          "posted": false,
+          "has_cv": false,
+          "interview_started": false,
+          "cv_intake_allowed": true,
+          "posted_at": null,
+          "has_cv_at": null,
+          "interview_started_at": null,
+          "internal_scan_done": false,
+          "internal_scan_skipped": false,
+          "internal_scan_at": null,
+          "internal_scan_skip_reason": null
+        }
+      },
+      {
+        "id": "ca8041fd-27d3-40b0-a0f9-a42a4799c4d0",
+        "title": "QA L1 IN NOMONTH mskv8qfa",
+        "company_id": "holding",
+        "flags": {
+          "posted": false,
+          "has_cv": false,
+          "interview_started": false,
+          "cv_intake_allowed": true,
+          "posted_at": null,
+          "has_cv_at": null,
+          "interview_started_at": null,
+          "internal_scan_done": false,
+          "internal_scan_skipped": false,
+          "internal_scan_at": null,
+          "internal_scan_skip_reason": null
+        }
+      },
+      {
+        "id": "c2a9b362-4a79-422a-a6f8-b3111077c3da",
+        "title": "QA FE IN REC02QA-MSKV6ETH",
+        "company_id": "holding",
+        "flags": {
+          "posted": false,
+          "has_cv": false,
+          "interview_started": false,
+          "cv_intake_allowed": true,
+          "posted_at": null,
+          "has_cv_at": null,
+          "interview_started_at": null,
+          "internal_scan_done": false,
+          "internal_scan_skipped": false,
+          "internal_scan_at": null,
+          "internal_scan_skip_reason": null
+        }
+      },
+      {
+        "id": "695079eb-afb4-4959-ad16-8721e72fb143",
+        "title": "QA L1 OUT REC02QA-MSKV6ETH",
+        "company_id": "holding",
+        "flags": {
+          "posted": true,
+          "has_cv": false,
+          "interview_started": false,
+          "cv_intake_allowed": true,
+          "posted_at": "2026-08-08T21:06:59.377Z",
+          "has_cv_at": null,
+          "interview_started_at": null,
+          "internal_scan_done": false,
+          "internal_scan_skipped": false,
+          "internal_scan_at": null,
+          "internal_scan_skip_reason": null
+        }
+      }
+    ],
+    "unscanned": [
+      {
+        "id": "68d5e84c-493f-4581-bb07-21af0d249970",
+        "title": "QA BOD AC02b05 REC02BODQA-MSKWBO57",
+        "company_id": "holding"
+      },
+      {
+        "id": "ca8041fd-27d3-40b0-a0f9-a42a4799c4d0",
+        "title": "QA L1 IN NOMONTH mskv8qfa",
+        "company_id": "holding"
+      },
+      {
+        "id": "c2a9b362-4a79-422a-a6f8-b3111077c3da",
+        "title": "QA FE IN REC02QA-MSKV6ETH",
+        "company_id": "holding"
+      }
+    ]
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T00:04:39.446Z"
+}

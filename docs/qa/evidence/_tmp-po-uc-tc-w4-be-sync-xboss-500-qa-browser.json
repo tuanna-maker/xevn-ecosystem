@@ -1,0 +1,195 @@
+{
+  "work_item_id": "PO-UC-TC-W4-BE-SYNC-XBOSS-500-QA",
+  "startedAt": "2026-08-04T03:01:59.869Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "hdsd_inventory": [
+    "Login UI ceo@xe.vn / Xevn@2026",
+    "HRM → Danh mục cài đặt /hr/settings-catalogs?portal=1&companyId=main",
+    "Nút Đồng bộ từ XBOS → POST …/settings-catalogs/sync-from-xbos",
+    "≠ Áp dụng danh mục (apply-to-members) · ≠ Sao chép (clone)",
+    "Toast pulled count · F5 list still populated"
+  ],
+  "must_keep": {
+    "applyPanelNotUsedAsSyncPass": true,
+    "clonePanelNotUsedAsSyncPass": true,
+    "leaveL2Untouched": true,
+    "zeroSeed": true
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "steps": {
+    "L0": {
+      "summary": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "verdict": "PASS",
+      "at": "2026-08-04T03:01:59.896Z"
+    },
+    "LOGIN": {
+      "summary": "url=http://127.0.0.1:5173/command-center",
+      "verdict": "PASS",
+      "at": "2026-08-04T03:02:06.586Z"
+    },
+    "TC-XBOS-DM-HRM-10-OPEN-HP-001": {
+      "summary": "hasSync=true noCompany=false onApply=false onClone=false url=http://127.0.0.1:5173/hr/settings-catalogs?portal=1&tenantId=xevn&companyId=main",
+      "verdict": "PASS",
+      "at": "2026-08-04T03:02:11.687Z"
+    },
+    "TC-UC-HRM-06-OPEN-HP-001": {
+      "summary": "same surface UF-HRM-10 /settings-catalogs",
+      "verdict": "PASS",
+      "at": "2026-08-04T03:02:11.688Z"
+    },
+    "TC-XBOS-DM-HRM-10-ACT-HP-001": {
+      "summary": "status=201 code=HRM-SET-201 pulledKeys=74 applyHits=0 cloneHits=0 toast=true",
+      "verdict": "PASS",
+      "at": "2026-08-04T03:02:23.598Z"
+    },
+    "TC-UC-HRM-06-ACT-HP-001": {
+      "summary": "consumer same path · toast_or_pulled=true",
+      "verdict": "PASS",
+      "at": "2026-08-04T03:02:23.600Z"
+    },
+    "FE_TOAST_PULLED": {
+      "summary": "toast=\"Đã kéo 74 danh mục vào HRM\" pulled=74",
+      "verdict": "PASS",
+      "at": "2026-08-04T03:02:23.601Z"
+    },
+    "TC-XBOS-DM-HRM-10-RELOAD-HP-001": {
+      "summary": "GET2xx=3 sample=200:HRM-SET-200:/api/hrm/settings-catalogs|200:HRM-SET-200:/api/hrm/settings-catalogs bodyHasCatalog=true",
+      "verdict": "PASS",
+      "at": "2026-08-04T03:02:29.565Z"
+    },
+    "TC-UC-HRM-06-RELOAD-HP-001": {
+      "summary": "F5 catalogs still load after pull",
+      "verdict": "PASS",
+      "at": "2026-08-04T03:02:29.566Z"
+    },
+    "NET_NO_APPLY_CLONE": {
+      "summary": "apply=0 clone=0",
+      "verdict": "PASS",
+      "at": "2026-08-04T03:02:29.567Z"
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-04T03:02:06.466Z",
+      "msg": "UI_LOGIN",
+      "note": "status=201 code=XBOS-AUTH-200 url=http://127.0.0.1:5173/command-center"
+    },
+    {
+      "at": "2026-08-04T03:02:06.592Z",
+      "msg": "NAV_SETTINGS_CATALOGS",
+      "url": "http://127.0.0.1:5173/hr/settings-catalogs?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-04T03:02:11.817Z",
+      "msg": "CLICK_DONG_BO_XBOS"
+    },
+    {
+      "at": "2026-08-04T03:02:23.592Z",
+      "msg": "SYNC_RESPONSE",
+      "note": "status=201 code=HRM-SET-201 pulled=74"
+    }
+  ],
+  "network": [
+    {
+      "method": "POST",
+      "status": 201,
+      "phase": "response",
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-04T03:02:02.515Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Đăng nhập thành công"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T03:02:07.737Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview",
+      "catalogCount": 76
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs/sync-from-xbos",
+      "at": "2026-08-04T03:02:20.990Z",
+      "code": "HRM-SET-201",
+      "message": "XBOS catalogs pulled into HRM",
+      "pulledKeysCount": 74,
+      "pulledKeysSample": [
+        "activity_capability_map",
+        "allowance_types",
+        "attendance_update_types",
+        "benefit_price_policies",
+        "branches",
+        "candidate_sources",
+        "candidate_statuses",
+        "company_form_presets"
+      ],
+      "skippedKeys": 0
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T03:02:21.207Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview",
+      "catalogCount": 76
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/settings-catalogs/sync-from-xbos",
+      "at": "2026-08-04T03:02:23.591Z",
+      "code": "HRM-SET-201",
+      "pulledKeysCount": 74,
+      "skippedKeys": 0,
+      "message": "XBOS catalogs pulled into HRM",
+      "phase": "waitForResponse"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "phase": "response",
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-04T03:02:24.549Z",
+      "code": "HRM-SET-200",
+      "message": "Settings catalogs overview",
+      "catalogCount": 76
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-be-sync-xboss-500-qa/01-after-login.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-be-sync-xboss-500-qa/02-settings-open.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-be-sync-xboss-500-qa/03-sync-after.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-be-sync-xboss-500-qa/04-sync-f5.png"
+  ],
+  "residuals": [],
+  "toast_text": "Đã kéo 74 danh mục vào HRM",
+  "sync_body": {
+    "code": "HRM-SET-201",
+    "message": "XBOS catalogs pulled into HRM",
+    "pulledKeys": 74,
+    "skippedKeys": 0
+  },
+  "endedAt": "2026-08-04T03:02:29.568Z",
+  "overall": "PASS"
+}

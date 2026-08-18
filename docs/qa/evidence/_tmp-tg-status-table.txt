@@ -1,0 +1,18 @@
+﻿[xevn-ecosystem] Trả lời TG-INTAKE-1785228993334 — bảng việc hiện tại
+
+| Ai | Đang làm gì | WI / trạng thái |
+|----|-------------|-----------------|
+| Cursor-PM | Điều phối + sync Telegram | U74 Wave B CHỐT · HOLD_DEPLOY |
+| Claude-PM | SoT docs Wave B (EmptyState/PermissionFallback/i18n) | PEER-UX-WAVE-B-EXEC-01 — peer docs |
+| Dev-FE | EmptyState SoT wire Dashboard+Contracts | D-UX-EMPTY-STATE-FE-01 READY → QA |
+| Dev-FE | PermissionFallback SoT + CMND compact | D-UX-PERMISSION-FALLBACK-FE-01 READY → QA |
+| QA | Retest PermissionFallback | QA-UX-PERMISSION-FALLBACK-01 in flight |
+| QA | Retest EmptyState | QA-UX-EMPTY-STATE-01 in flight |
+| Cohort trước | UX-09 · P0-c · Profile C2 | QC GWC CLOSED |
+
+Cách 2 chiều ổn định:
+1) Máy local chỉ chạy 1 lệnh: pnpm run pm:telegram (vừa kill 7 bridge trùng → Conflict)
+2) Bạn nhắn @xevn_project_bot → inbox OPEN → Cursor-PM phải trả lời lại Telegram (không chỉ Cursor)
+3) Mọi milestone PM sẽ send Telegram + chat Cursor
+
+Xin lỗi vì tin này vào inbox rồi mà chưa reply — PM đang wave QA, hook wake chưa bắt kịp.

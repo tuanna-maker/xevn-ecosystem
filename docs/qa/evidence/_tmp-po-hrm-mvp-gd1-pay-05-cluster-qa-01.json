@@ -1,0 +1,121 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-PAY-05-CLUSTER-QA-01",
+  "stamp": "PAY05QA1-MSMDU2I5",
+  "be_handoff": "docs/qa/evidence/po-hrm-mvp-gd1-pay-05-cluster-be-01.md",
+  "startedAt": "2026-08-09T22:36:49.384Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-api-primary-cfg-settings-not-payroll-seed",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "ne_pay05_done": true,
+    "ne_pay_module_uat": true,
+    "c_slice": true,
+    "seed_used": false,
+    "cfg_via_settings": true
+  },
+  "must_keep": [
+    "PAY01QC1-MSMBGWC1",
+    "PAY02QC1-MSMC4GWC1",
+    "PAY03QC1-MSMDDGWC1",
+    "PAY04QC1-MSMCR4GWC1"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "PASS"
+  },
+  "l1": {
+    "be_jest_pay05": "PASS (79)",
+    "be_jest_regression": "cite BE-01 bundle · delegate PAY03QA1-MSMDDHP3/PAY04QA1-MSMCR401 · PAY03 gtgc + PAY04 split specs in bundle"
+  },
+  "nest_core_pay": [],
+  "setup": {
+    "login": "ok",
+    "si_cfg_probe": {
+      "list_status": 200,
+      "active_count": 5
+    },
+    "periodId": "e33ff409-a7c1-490f-af9f-a3b7dece2922"
+  },
+  "journeys": {
+    "J-HRM-PAY-05-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:36:56.015Z",
+      "summary": "POST process si_* override → 403 HRM-PAY-SI-403",
+      "ac": "AC-PAY-05-DENY-MANUAL"
+    },
+    "J-HRM-PAY-05-03": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:37:04.555Z",
+      "summary": "segments scanned — no si_* on segment DTO · splitSample=none · SPLIT-409 cite jest",
+      "ac": "AC-PAY-05-SPLIT-ONCE",
+      "must_keep": "PAY04QC1-MSMCR4GWC1"
+    },
+    "J-HRM-PAY-03-03": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:37:04.574Z",
+      "summary": "regression POST gtgc override → 403 HRM-PAY-GTCG-403",
+      "must_keep": "PAY03QC1-MSMDDGWC1"
+    },
+    "J-HRM-PAY-01-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:37:04.837Z",
+      "summary": "regression POST process → 412 HRM-PAY-ATT-412",
+      "must_keep": "PAY01QC1-MSMBGWC1"
+    },
+    "J-HRM-PAY-04-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:37:04.837Z",
+      "summary": "L1 contract: pay-payslip-split.service.spec HRM-PAY-SPLIT-409 in PAY-05 jest bundle",
+      "must_keep": "PAY04QC1-MSMCR4GWC1"
+    },
+    "J-HRM-PAY-04-08": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:37:04.838Z",
+      "summary": "must_keep PAY01+PAY02+PAY03+PAY04 seals · nest /core payroll hits=0"
+    },
+    "J-HRM-PAY-05-05": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:37:04.839Z",
+      "summary": "L1 jest failOnMissingCfg → HRM-SET-SI-412-MISSING · live U65 stops at ATT-412 before SI (no payroll seed to strip CFG)",
+      "ac": "AC-PAY-05-412"
+    },
+    "J-HRM-PAY-05-02": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-09T22:37:04.839Z",
+      "summary": "L1 applyPaySiCeiling min(base,ceiling) once · live E2E process+SI preview HOLD U65 (no closed bind in fresh period)",
+      "ac": "AC-PAY-05-BASE · CEILING"
+    },
+    "J-HRM-PAY-05-06": {
+      "verdict": "PASS",
+      "at": "2026-08-09T22:37:05.077Z",
+      "summary": "L2.5 list 200 → GET 3a5333f7-237e-4157-bade-39c4b98a3fa9 200 · SI DTO keys present",
+      "ac": "AC-PAY-05-DISPLAY"
+    }
+  },
+  "payslip_scan": {
+    "list_status": 200,
+    "scanned": 120,
+    "sampleId": "3a5333f7-237e-4157-bade-39c4b98a3fa9",
+    "siFieldProbe": {
+      "consolidatedInsuranceBaseVnd": 0,
+      "siEmployeeAmountVnd": 0,
+      "siEmployerAmountVnd": 0,
+      "segmentCount": 0,
+      "segments": []
+    },
+    "l25_fields_present": true
+  },
+  "defects": [],
+  "overall": null,
+  "ack_status": null,
+  "endedAt": null
+}

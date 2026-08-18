@@ -1,0 +1,121 @@
+{
+  "STAMP": "QA-W6-SHR-2MS86H",
+  "afterFill": [
+    "on",
+    "QA-W6-SHR-2MS86H",
+    "07912345678",
+    "01.25",
+    "2.500.000"
+  ],
+  "body": {
+    "hasStamp": false,
+    "toast": true,
+    "snip": "XeVN OS\n\nCommand Center\n\nBOD\nQuản lý\nNhân viên\nGROUP\nTÀI CHÍNH\nKẾ TOÁN\nNHÂN SỰ\nKINH DOANH\nVẬN HÀNH\nCÀI ĐẶT HỆ THỐNG\nMở\nCài đặt hệ thống\n\nChọn nhóm cấu hình\n\nThiết lập công ty\nĐơn vị thành viên\nHạ tầng cơ sở\nHệ thống Phòng/Ban\nPhòng/Ban pháp nhân\nDanh mục hồ sơ nhân sự\nDuyệt danh mục HRM\nÁp dụng danh mục HRM\nHệ thống phân quyền\nHệ thống quy trình\nYêu cầu tài sản\nHệ thống văn bản/Quy định\nHệ thống đo lường/Tiền tệ\nThiết lập hệ thống giá\nDanh sách pháp nhân\nĐơn vị thành viên - TẬP ĐOÀN\n\nĐã lưu cổ đông lên hệ thống.\n\nThêm mới đơn vị\nHồ sơ pháp nhân\nThông tin theo Giấy chứng nhận ĐKKD Việt Nam\nHồ sơ pháp nhân\nNhiệm vụ & RACI\nKhối Cấu trúc & Phân cấp\nCấp bậc thực thể\nCông ty mẹ\nCông ty con\nCông ty liên kết\nĐơn vị trực thuộc\nKhối Định danh & Trụ sở\nTên tiếng Việt\nTên tiếng nước ngoài\nTên viết tắt\nMã số doanh nghiệp\nVốn điều lệ (VNĐ)\nNơi cấp\nLoại hình doanh nghiệp\nCông ty cổ phần\nCông ty TNHH 2 "
+  },
+  "net": [
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/src/pages/command-center/shareholderRowUpdate.ts",
+      "code": null,
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 404,
+      "url": "/api/xbos/org-foundation/legal-entities/xbos-group-holding-root/documents",
+      "code": "XBOS-DOC-404",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "code": "XBOS-ORG-200",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "code": "XBOS-ORG-200",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "code": "XBOS-ORG-200",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "code": "XBOS-ORG-200",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/20109cf3-0621-4921-baf7-f820be944731/documents",
+      "code": "XBOS-DOC-200",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/20109cf3-0621-4921-baf7-f820be944731/shareholders",
+      "code": "XBOS-SHR-200",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "code": "XBOS-ORG-200",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/20109cf3-0621-4921-baf7-f820be944731/documents",
+      "code": "XBOS-DOC-200",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/20109cf3-0621-4921-baf7-f820be944731/shareholders",
+      "code": "XBOS-SHR-200",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities/20109cf3-0621-4921-baf7-f820be944731/shareholders",
+      "code": "XBOS-SHR-200",
+      "body": null
+    },
+    {
+      "m": "GET",
+      "status": 200,
+      "url": "/api/xbos/org-foundation/legal-entities",
+      "code": "XBOS-ORG-200",
+      "body": null
+    },
+    {
+      "m": "POST",
+      "status": 201,
+      "url": "/api/xbos/org-foundation/legal-entities/20109cf3-0621-4921-baf7-f820be944731/shareholders",
+      "code": "XBOS-SHR-201",
+      "body": "{\"holderName\":\"QA-W6-SHR-2MS86H\",\"identityCode\":\"07912345678\",\"ratioPercent\":1.25,\"contributedValue\":2500000}"
+    }
+  ],
+  "apiHas": true,
+  "names": [
+    "anh Nam",
+    "anh Dũng",
+    "QA-W6-SHR-2MS86H"
+  ]
+}

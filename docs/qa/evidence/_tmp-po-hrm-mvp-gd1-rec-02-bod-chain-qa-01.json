@@ -1,0 +1,1537 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-REC-02-BOD-CHAIN-QA-01",
+  "startedAt": "2026-08-08T21:44:17.893Z",
+  "stamp": "REC02BODQA-MSKWIO4O",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser FE YCTD BOD-chain · Network 2xx · F5",
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "deny_module_rec_uat": true,
+    "deny_nest_rec_dual": true
+  },
+  "deferred": {
+    "ALT-03": "CFG BOD on in_plan — not tested as FAIL",
+    "XBOS-multi-actor-inbox": "full multi-actor inbox persona — not tested as FAIL"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "portal": 200,
+    "srcMtime": "2026-08-08T21:14:49.1312374Z",
+    "distMtime": "2026-08-08T21:19:31.7598620Z",
+    "stale_dist": false
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:44:25.845Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:44:26.206Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:44:26.250Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:44:26.250Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:44:26.284Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:26.326Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:44:26.490Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main&bindable=true",
+      "at": "2026-08-08T21:44:28.059Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:44:28.389Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates/b284e4cd-63df-4723-9f31-755d8ea2ae96?company_id=main&preview=yctd",
+      "at": "2026-08-08T21:44:28.505Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:29.864Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:44:32.014Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:44:32.335Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:44:32.360Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:44:32.369Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:44:32.384Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:32.491Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:44:32.683Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main&bindable=true",
+      "at": "2026-08-08T21:44:34.589Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:44:34.885Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates/b284e4cd-63df-4723-9f31-755d8ea2ae96?company_id=main&preview=yctd",
+      "at": "2026-08-08T21:44:34.989Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:35.131Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:44:38.598Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:44:38.923Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:44:38.934Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:44:38.963Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:44:38.972Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:39.063Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:44:39.199Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main&bindable=true",
+      "at": "2026-08-08T21:44:40.925Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:44:41.222Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates/b284e4cd-63df-4723-9f31-755d8ea2ae96?company_id=main&preview=yctd",
+      "at": "2026-08-08T21:44:41.334Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:42.736Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:44:43.615Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:44:43.991Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:44:44.014Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:44:44.025Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:44:44.034Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:44.126Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:44:44.309Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:44:45.846Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions/c2a9b362-4a79-422a-a6f8-b3111077c3da?company_id=holding",
+      "at": "2026-08-08T21:44:46.035Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:46.103Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:46.572Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions/c2a9b362-4a79-422a-a6f8-b3111077c3da/transitions?company_id=holding",
+      "at": "2026-08-08T21:44:48.344Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:44:48.748Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:49.258Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:44:50.966Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:44:51.315Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:44:51.319Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:44:51.345Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:44:51.367Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:51.445Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:44:51.555Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:44:53.581Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions/c2a9b362-4a79-422a-a6f8-b3111077c3da?company_id=holding",
+      "at": "2026-08-08T21:44:53.765Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:53.867Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:54.347Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:44:56.567Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:44:56.970Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:44:56.970Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:44:56.988Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:44:57.023Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:44:57.127Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:44:57.360Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main&bindable=true",
+      "at": "2026-08-08T21:44:58.911Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:44:59.231Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates/b284e4cd-63df-4723-9f31-755d8ea2ae96?company_id=main&preview=yctd",
+      "at": "2026-08-08T21:44:59.326Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions",
+      "at": "2026-08-08T21:45:03.153Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:03.733Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions/e87330f3-55e2-4f0d-9fbc-097c0ffb9926/submit-workflow?company_id=holding",
+      "at": "2026-08-08T21:45:06.416Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:06.889Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:45:08.222Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:45:08.585Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:45:08.599Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:45:08.604Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:45:08.637Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:45:08.721Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:08.852Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:45:10.495Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions/e87330f3-55e2-4f0d-9fbc-097c0ffb9926?company_id=holding",
+      "at": "2026-08-08T21:45:10.693Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions/e87330f3-55e2-4f0d-9fbc-097c0ffb9926/transitions?company_id=holding",
+      "at": "2026-08-08T21:45:12.864Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:13.379Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:45:15.506Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:45:15.878Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:45:15.887Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:45:15.893Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:45:15.899Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:45:16.043Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:16.172Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:45:18.085Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions/e87330f3-55e2-4f0d-9fbc-097c0ffb9926?company_id=holding",
+      "at": "2026-08-08T21:45:18.337Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions/e87330f3-55e2-4f0d-9fbc-097c0ffb9926/transitions?company_id=holding",
+      "at": "2026-08-08T21:45:20.627Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:21.277Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:45:23.161Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:45:23.525Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:45:23.529Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:45:23.555Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:45:23.576Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:45:23.753Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:23.862Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:45:25.728Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions/e87330f3-55e2-4f0d-9fbc-097c0ffb9926?company_id=holding",
+      "at": "2026-08-08T21:45:25.912Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:45:28.726Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:45:29.079Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:45:29.085Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:45:29.091Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:45:29.145Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:45:29.276Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:29.395Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main&bindable=true",
+      "at": "2026-08-08T21:45:31.046Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:45:31.337Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates/b284e4cd-63df-4723-9f31-755d8ea2ae96?company_id=main&preview=yctd",
+      "at": "2026-08-08T21:45:31.442Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions",
+      "at": "2026-08-08T21:45:34.897Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:35.433Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions/ef210e09-8176-45b7-bc6c-defa66d808b1/submit-workflow?company_id=holding",
+      "at": "2026-08-08T21:45:37.866Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:38.334Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:45:39.580Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:45:39.995Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:45:39.997Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:45:40.016Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:45:40.022Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:45:40.119Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:40.314Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:45:41.813Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions/ef210e09-8176-45b7-bc6c-defa66d808b1?company_id=holding",
+      "at": "2026-08-08T21:45:42.023Z"
+    },
+    {
+      "method": "POST",
+      "status": 500,
+      "url": "/api/hrm/recruitment/requisitions/ef210e09-8176-45b7-bc6c-defa66d808b1/transitions?company_id=holding",
+      "at": "2026-08-08T21:45:44.459Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:45:46.940Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:45:47.330Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:45:47.351Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:45:47.362Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:45:47.380Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:45:47.464Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:47.639Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:45:49.428Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions/ef210e09-8176-45b7-bc6c-defa66d808b1?company_id=holding",
+      "at": "2026-08-08T21:45:49.649Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:45:52.270Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:45:52.663Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:45:52.674Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:45:52.681Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:45:52.697Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:45:52.841Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:52.956Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main&bindable=true",
+      "at": "2026-08-08T21:45:54.620Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:45:54.951Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates/b284e4cd-63df-4723-9f31-755d8ea2ae96?company_id=main&preview=yctd",
+      "at": "2026-08-08T21:45:55.111Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:45:56.777Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/requisitions",
+      "at": "2026-08-08T21:46:30.928Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:46:31.398Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:46:33.173Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:46:33.517Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:46:33.555Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:46:33.601Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:46:33.632Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:46:33.739Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:46:33.875Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:46:35.460Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:46:35.558Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions/e1ad73e4-ce3b-4e4a-ae0b-51357a9ac6e8?company_id=holding",
+      "at": "2026-08-08T21:46:35.644Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:46:36.036Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:46:38.510Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:46:38.869Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:46:38.901Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:46:38.904Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:46:38.930Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:46:39.085Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:46:39.218Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:46:41.095Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:46:41.170Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions/e1ad73e4-ce3b-4e4a-ae0b-51357a9ac6e8?company_id=holding",
+      "at": "2026-08-08T21:46:41.289Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:46:41.659Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:46:44.044Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:46:44.422Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:46:44.428Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:46:44.435Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:46:44.452Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:46:44.598Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:46:44.679Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:46:46.527Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:46:46.914Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:46:46.927Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:46:46.946Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:46:46.946Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:46:47.050Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/headcount-proposals?company_id=main",
+      "at": "2026-08-08T21:46:47.106Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:46:49.171Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main&bindable=true",
+      "at": "2026-08-08T21:46:49.177Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:46:49.286Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-08T21:46:49.464Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates/b284e4cd-63df-4723-9f31-755d8ea2ae96?company_id=main&preview=yctd",
+      "at": "2026-08-08T21:46:49.586Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:46:51.274Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:46:51.657Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:46:51.657Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:46:51.694Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:46:51.725Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:46:51.830Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T21:46:51.946Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T21:46:53.701Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T21:46:54.128Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T21:46:54.136Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T21:46:54.148Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T21:46:54.178Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T21:46:54.334Z"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/01-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/02-cell-picker.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/03-deep-link-cell.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/06-ac02d-after-approve.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/07-ac02d-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/08-ac02b-after-submit.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/09-ac02b-after-tphr.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/10-ac02b-f5-approved-blocked.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/11-ac02b-after-bod.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/12-ac02b-f5-open.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/13-alt01-after-reject.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/14-alt01-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/15-alt02-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/16-alt02-detail.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/17-alt02-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/18-o5-proposals.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-02-bod-chain-qa-01/19-must-keep-dinhbien.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-08T21:44:24.651Z",
+      "msg": "fixtures",
+      "free": 0,
+      "pendingInPlan": 2,
+      "jd": "b284e4cd-63df-4723-9f31-755d8ea2ae96",
+      "emp": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "nullMode": 14
+    },
+    {
+      "at": "2026-08-08T21:44:25.026Z",
+      "msg": "CELL-PICKER start"
+    },
+    {
+      "at": "2026-08-08T21:44:38.133Z",
+      "msg": "AC-02d start"
+    },
+    {
+      "at": "2026-08-08T21:44:43.122Z",
+      "msg": "AC-02d fallback existing pending",
+      "title": "QA FE IN REC02QA-MSKV6ETH",
+      "id": "c2a9b362-4a79-422a-a6f8-b3111077c3da"
+    },
+    {
+      "at": "2026-08-08T21:44:55.997Z",
+      "msg": "AC-02b-05 start"
+    },
+    {
+      "at": "2026-08-08T21:45:28.145Z",
+      "msg": "ALT-01 start"
+    },
+    {
+      "at": "2026-08-08T21:45:51.770Z",
+      "msg": "ALT-02 start"
+    },
+    {
+      "at": "2026-08-08T21:46:43.561Z",
+      "msg": "must_keep regression"
+    }
+  ],
+  "ac": {
+    "L0": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:44:18.394Z",
+      "summary": "{\"hrm\":200,\"portal\":200,\"srcMtime\":\"2026-08-08T21:14:49.1312374Z\",\"distMtime\":\"2026-08-08T21:19:31.7598620Z\",\"stale_dist\":false}"
+    },
+    "CELL-PICKER": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:44:31.032Z",
+      "summary": "tag=button role=combobox rawInput=false human=true label=0402ba25Vận hành · Giám đốc Nhân sự · T8/2026 · SL 8 · QA ĐB CELL HCELLQA-MSKU39 mono=0402ba25-e172-46a6-b9b1-e0bd455d9422",
+      "cellPick": {
+        "ok": true,
+        "label": "0402ba25Vận hành · Giám đốc Nhân sự · T8/2026 · SL 8 · QA ĐB CELL HCELLQA-MSKU39UX",
+        "monoId": "0402ba25-e172-46a6-b9b1-e0bd455d9422",
+        "isRawInput": false,
+        "humanReadable": true
+      },
+      "pickerTag": "button"
+    },
+    "CELL-PICKER-DEEPLINK": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:44:37.729Z",
+      "summary": "{\"deepCellId\":\"0402ba25-e172-46a6-b9b1-e0bd455d9422\",\"monoDeep\":\"0402ba25-e172-46a6-b9b1-e0bd455d9422\",\"modeOk\":true,\"triggerHasCell\":true}",
+      "deepCellId": "0402ba25-e172-46a6-b9b1-e0bd455d9422",
+      "monoDeep": "0402ba25-e172-46a6-b9b1-e0bd455d9422",
+      "modeOk": true,
+      "triggerHasCell": true
+    },
+    "AC-02d": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:44:55.996Z",
+      "summary": "path=existing_pending create=undefined submit=undefined SHORT=SHORT approve=201 open=true F5=true title=QA FE IN REC02QA-MSKV6ETH",
+      "create02d": null,
+      "submit02d": null,
+      "approve02d": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/recruitment/requisitions/c2a9b362-4a79-422a-a6f8-b3111077c3da/transitions?company_id=holding",
+        "at": "2026-08-08T21:44:48.344Z"
+      },
+      "chainShort": [
+        "SHORT"
+      ],
+      "title": "QA FE IN REC02QA-MSKV6ETH",
+      "ac02dPath": "existing_pending",
+      "pick02d": {
+        "ok": false,
+        "reason": "no_trigger"
+      }
+    },
+    "AC-02b-05": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:45:28.144Z",
+      "summary": "create=201 LONG=true/true submit=201 TP/HR=201 approved+block=true/true F5block=true BOD=201 open=true F5open=true",
+      "title": "QA BOD AC02b05 REC02BODQA-MSKWIO4O"
+    },
+    "ALT-01": {
+      "verdict": "FAIL",
+      "at": "2026-08-08T21:45:51.769Z",
+      "summary": "create=201 submit=201 reject=500 reason=false F5=false",
+      "title": "QA BOD ALT01 REC02BODQA-MSKWIO4O",
+      "rejectHit": {
+        "method": "POST",
+        "status": 500,
+        "url": "/api/hrm/recruitment/requisitions/ef210e09-8176-45b7-bc6c-defa66d808b1/transitions?company_id=holding",
+        "at": "2026-08-08T21:45:44.459Z"
+      }
+    },
+    "ALT-02": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:46:43.559Z",
+      "summary": "empPick=true label=UAT-0100UAT NV 0100 · UAT-0100 create=201 detail=true F5=true",
+      "title": "QA BOD ALT02 REC02BODQA-MSKWIO4O",
+      "empPick": {
+        "ok": true,
+        "label": "UAT-0100UAT NV 0100 · UAT-0100",
+        "monoId": "",
+        "isRawInput": false,
+        "humanReadable": true
+      }
+    },
+    "O4-CLASSIFY-BANNER": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:46:45.988Z",
+      "summary": "nullModeRows=14 listBanner=true"
+    },
+    "O5-PROPOSALS-REDIRECT": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:46:50.815Z",
+      "summary": "deprecate=true cta=true dualPersistPosts=0"
+    },
+    "DENY-NEST-REC": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:46:55.995Z",
+      "summary": "GET /api/hrm/rec/recruitment-requests → 404 HRM-DATA-404"
+    },
+    "MUSTKEEP-UF12-JD-REC01-NO-CAMPAIGN": {
+      "verdict": "PASS",
+      "at": "2026-08-08T21:46:55.996Z",
+      "summary": "uf12=true dinhBien=true noCampaign=true jd=true"
+    }
+  },
+  "journeys": {
+    "AC-02d": {
+      "title": "QA FE IN REC02QA-MSKV6ETH",
+      "ac02dPath": "existing_pending",
+      "create02d": null,
+      "submit02d": null,
+      "approve02d": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/recruitment/requisitions/c2a9b362-4a79-422a-a6f8-b3111077c3da/transitions?company_id=holding",
+        "at": "2026-08-08T21:44:48.344Z"
+      },
+      "chainShort": [
+        "SHORT"
+      ],
+      "f5OpenHire": true,
+      "verdict": "PASS"
+    },
+    "AC-02b-05": {
+      "title": "QA BOD AC02b05 REC02BODQA-MSKWIO4O",
+      "chainLong": true,
+      "tpHrApprove": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/recruitment/requisitions/e87330f3-55e2-4f0d-9fbc-097c0ffb9926/transitions?company_id=holding",
+        "at": "2026-08-08T21:45:12.864Z"
+      },
+      "cvBlockedAfterTpHr": true,
+      "f5ApprovedBlocked": true,
+      "bodApprove": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/recruitment/requisitions/e87330f3-55e2-4f0d-9fbc-097c0ffb9926/transitions?company_id=holding",
+        "at": "2026-08-08T21:45:20.627Z"
+      },
+      "f5OpenAfterBod": true,
+      "verdict": "PASS"
+    },
+    "ALT-01": {
+      "title": "QA BOD ALT01 REC02BODQA-MSKWIO4O",
+      "rejectHit": {
+        "method": "POST",
+        "status": 500,
+        "url": "/api/hrm/recruitment/requisitions/ef210e09-8176-45b7-bc6c-defa66d808b1/transitions?company_id=holding",
+        "at": "2026-08-08T21:45:44.459Z"
+      },
+      "reasonVisible": false,
+      "f5Reason": false,
+      "verdict": "FAIL"
+    },
+    "ALT-02": {
+      "title": "QA BOD ALT02 REC02BODQA-MSKWIO4O",
+      "empPick": {
+        "ok": true,
+        "label": "UAT-0100UAT NV 0100 · UAT-0100",
+        "monoId": "",
+        "isRawInput": false,
+        "humanReadable": true
+      },
+      "replaceVisible": true,
+      "f5Replace": true,
+      "verdict": "PASS"
+    },
+    "must_keep": {
+      "uf12": true,
+      "dinhBien": true,
+      "noCampaign": true,
+      "nest404": true,
+      "o4Verdict": "PASS",
+      "o5Pass": true
+    }
+  },
+  "defects": [
+    {
+      "id": "R-REC-02-ALT-01",
+      "severity": "P0",
+      "summary": "ALT-01 FAIL reject=500 reason=false f5=false. BE reject transitions SQL/type error (unused $2 actorId in values) — HRM-SYS-001",
+      "owner": "dev-be",
+      "at": "2026-08-08T21:45:51.770Z"
+    }
+  ],
+  "fixtures": {
+    "freeCells": [],
+    "freeCount": 0,
+    "pendingInPlan": [
+      {
+        "id": "ca8041fd-27d3-40b0-a0f9-a42a4799c4d0",
+        "title": "QA L1 IN NOMONTH mskv8qfa",
+        "status": "pending_approval",
+        "company_id": "holding",
+        "matrix": "hrm_requisition_short"
+      },
+      {
+        "id": "c2a9b362-4a79-422a-a6f8-b3111077c3da",
+        "title": "QA FE IN REC02QA-MSKV6ETH",
+        "status": "pending_approval",
+        "company_id": "holding",
+        "matrix": "hrm_requisition_short"
+      }
+    ],
+    "jd": {
+      "id": "b284e4cd-63df-4723-9f31-755d8ea2ae96",
+      "code": "JD-QA-QAH1BVIR",
+      "title": "QA JD Dynamic QAH1BVIR"
+    },
+    "emp": {
+      "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "name": "Nguyễn Văn QA M3 987275",
+      "code": "QA-M3-987275"
+    },
+    "nullModeCount": 14,
+    "requisitionCount": 32
+  },
+  "overall": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-08T21:46:56.221Z",
+  "deferred_note": "ALT-03 CFG BOD on in_plan + full XBOS multi-actor inbox persona — recorded NOT FAIL"
+}

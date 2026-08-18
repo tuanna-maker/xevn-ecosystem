@@ -1,0 +1,436 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-PERIOD-BIND-QA-02",
+  "startedAt": "2026-08-07T10:37:59.599Z",
+  "u65": "zero-seed · browser-only · AC-PAY-TPL-03",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "STAMP": "PAYBINDQA2-IT9Y27",
+    "TPL_CODE": "qa_bind_paybindqa2_it9y27",
+    "TPL_NAME": "Mẫu bind QA PAYBINDQA2-IT9Y27",
+    "PERIOD_NAME": "Bảng lương QA PAYBINDQA2-IT9Y27",
+    "PERIOD_MONTH": 3,
+    "PERIOD_YEAR": 2026
+  },
+  "prior": {
+    "fe": "PO-HRM-AMIS-PARITY-PAY-PERIOD-BIND-FE-01 READY_FOR_QA"
+  },
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "payroll_e2e_ready_claimed": false,
+    "seed_used": false,
+    "pack_is_not_mau": true
+  },
+  "l0": {
+    "portal": {
+      "status": 200,
+      "ok": true
+    },
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "ac": {
+    "AC0_SETTINGS_ACTIVE_TPL": {
+      "summary": "Active mẫu qa_bind_paybindqa2_it9y27 ready (created=true)",
+      "tpl": {
+        "created": true,
+        "code": "qa_bind_paybindqa2_it9y27",
+        "name": "Mẫu bind QA PAYBINDQA2-IT9Y27",
+        "createPost": {
+          "method": "POST",
+          "status": 201,
+          "url": "/api/hrm/payroll/pay-sheet-templates",
+          "at": "2026-08-07T10:38:06.293Z",
+          "code": "HRM-PAY-TPL-201",
+          "message": "Pay sheet template created",
+          "dataId": "ae095766-118d-403c-b3ff-9738b42fd4f1"
+        },
+        "rowVisible": true
+      },
+      "click_path": "settings-tab-pay-sheet-tpl → create mẫu active",
+      "verdict": "PASS",
+      "at": "2026-08-07T10:38:08.259Z"
+    },
+    "AC1_DIALOG_PACK_NEQ_MAU": {
+      "summary": "Create dialog shows pay-period-pay-sheet-tpl-alias-note pack≠mẫu",
+      "aliasText": "Gói thành phần enroll (salary-templates) khác mẫu bảng lương kỳ (pay-sheet-templates). Chọn mẫu từ Cài đặt → Mẫu bảng lương (/pay-sheet-templates), không phải gói enroll Tính lương.",
+      "click_path": "payroll-tab-calculate → Danh sách bảng lương → Lập bảng lương",
+      "verdict": "PASS",
+      "at": "2026-08-07T10:38:18.698Z"
+    },
+    "AC2_POST_PERIOD_BIND": {
+      "summary": "POST periods 201 HRM-PAY-201 paySheetTemplateId present · no salary-templates SoT",
+      "periodPost": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/payroll/periods",
+        "at": "2026-08-07T10:38:23.037Z",
+        "code": "HRM-PAY-201",
+        "message": "Payroll period created",
+        "dataId": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "paySheetTemplateId": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshotTemplateName": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z",
+        "end_date": "2026-03-30T17:00:00.000Z"
+      },
+      "periodBody": {
+        "method": "POST",
+        "url": "/api/hrm/payroll/periods",
+        "body": {
+          "paySheetTemplateId": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+          "period_label": "Bảng lương QA PAYBINDQA2-IT9Y27",
+          "keys": [
+            "company_id",
+            "period_label",
+            "start_date",
+            "end_date",
+            "paySheetTemplateId"
+          ]
+        },
+        "at": "2026-08-07T10:38:21.689Z"
+      },
+      "snapshotName": "Mẫu SRC02 SRCSRC02-ISBDZW",
+      "click_path": "hdsd-pay-period-create-submit",
+      "verdict": "PASS",
+      "at": "2026-08-07T10:38:25.214Z"
+    },
+    "AC3_ROW_TPL_AFTER_CREATE": {
+      "summary": "List API snapshot=\"Mẫu SRC02 SRCSRC02-ISBDZW\" row=\"Mẫu SRC02 SRCSRC02-ISBDZW\"",
+      "rowTplText": "Mẫu SRC02 SRCSRC02-ISBDZW",
+      "listHit": {
+        "id": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "pay_sheet_template_id": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshot_name": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z"
+      },
+      "listApiOk": true,
+      "filterSet": {
+        "ok": true,
+        "via": "select-inplace",
+        "month": 3,
+        "year": 2026
+      },
+      "periodId": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+      "click_path": "list after POST + pay-batch-period-filter",
+      "verdict": "PASS",
+      "at": "2026-08-07T10:38:35.305Z"
+    },
+    "AC4_DETAIL_TPL_SUBTITLE": {
+      "summary": "Detail subtitle: 03/2026 • 0 nhân viên • Mẫu: Mẫu SRC02 SRCSRC02-ISBDZW",
+      "detailText": "03/2026 • 0 nhân viên • Mẫu: Mẫu SRC02 SRCSRC02-ISBDZW",
+      "click_path": "click pay-batch-row → detail header Mẫu:",
+      "verdict": "PASS",
+      "at": "2026-08-07T10:38:37.391Z"
+    },
+    "AC5_F5_ROW_TPL_PERSIST": {
+      "summary": "F5: list snapshot=\"Mẫu SRC02 SRCSRC02-ISBDZW\" row=\"Mẫu SRC02 SRCSRC02-ISBDZW\"",
+      "rowTplAfterF5": "Mẫu SRC02 SRCSRC02-ISBDZW",
+      "listHitF5": {
+        "id": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "pay_sheet_template_id": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshot_name": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z"
+      },
+      "listApiF5Ok": true,
+      "periodStillThere": true,
+      "click_path": "F5 -> reopen batches list -> pay-batch-period-filter",
+      "verdict": "PASS",
+      "at": "2026-08-07T10:38:49.668Z"
+    },
+    "AC6_PACK_ENROLL_REGRESSION": {
+      "summary": "Enroll tab still pack-only banner",
+      "click_path": "calc-template enroll · pay-salary-template-pack-alias-note",
+      "verdict": "PASS",
+      "at": "2026-08-07T10:38:54.528Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "at": "2026-08-07T10:38:03.430Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/pay-sheet-templates",
+      "at": "2026-08-07T10:38:06.293Z",
+      "code": "HRM-PAY-TPL-201",
+      "message": "Pay sheet template created",
+      "dataId": "ae095766-118d-403c-b3ff-9738b42fd4f1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main",
+      "at": "2026-08-07T10:38:06.376Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T10:38:10.127Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 30
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T10:38:13.337Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 30
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/pay-sheet-templates?company_id=main&status=active&active_only=true",
+      "at": "2026-08-07T10:38:17.777Z",
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet templates listed"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/periods",
+      "at": "2026-08-07T10:38:23.037Z",
+      "code": "HRM-PAY-201",
+      "message": "Payroll period created",
+      "dataId": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+      "paySheetTemplateId": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+      "snapshotTemplateName": "Mẫu SRC02 SRCSRC02-ISBDZW",
+      "start_date": "2026-02-28T17:00:00.000Z",
+      "end_date": "2026-03-30T17:00:00.000Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T10:38:23.317Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 31,
+      "listHit": {
+        "id": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "pay_sheet_template_id": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshot_name": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T10:38:23.833Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 31,
+      "listHit": {
+        "id": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "pay_sheet_template_id": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshot_name": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T10:38:28.006Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 31,
+      "listHit": {
+        "id": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "pay_sheet_template_id": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshot_name": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T10:38:33.721Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 31,
+      "listHit": {
+        "id": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "pay_sheet_template_id": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshot_name": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T10:38:38.469Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 31,
+      "listHit": {
+        "id": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "pay_sheet_template_id": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshot_name": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T10:38:42.693Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 31,
+      "listHit": {
+        "id": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "pay_sheet_template_id": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshot_name": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T10:38:48.161Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 31,
+      "listHit": {
+        "id": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "pay_sheet_template_id": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshot_name": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-08-07T10:38:50.926Z",
+      "code": "HRM-PAY-200",
+      "message": "Payroll periods listed",
+      "listCount": 31,
+      "listHit": {
+        "id": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+        "pay_sheet_template_id": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "snapshot_name": "Mẫu SRC02 SRCSRC02-ISBDZW",
+        "start_date": "2026-02-28T17:00:00.000Z"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-templates?company_id=main",
+      "at": "2026-08-07T10:38:52.561Z",
+      "code": "HRM-PAY-200",
+      "message": "Salary templates listed"
+    }
+  ],
+  "requestBodies": [
+    {
+      "method": "POST",
+      "url": "/api/hrm/payroll/pay-sheet-templates",
+      "body": {
+        "keys": [
+          "company_id",
+          "code",
+          "name",
+          "status",
+          "isDefault",
+          "applicabilityScope"
+        ]
+      },
+      "at": "2026-08-07T10:38:06.201Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/payroll/periods",
+      "body": {
+        "paySheetTemplateId": "f7728741-6894-469f-a015-ea3bf7bf6ade",
+        "period_label": "Bảng lương QA PAYBINDQA2-IT9Y27",
+        "keys": [
+          "company_id",
+          "period_label",
+          "start_date",
+          "end_date",
+          "paySheetTemplateId"
+        ]
+      },
+      "at": "2026-08-07T10:38:21.689Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-period-bind-qa-02/01-settings-active-template.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-period-bind-qa-02/02-payroll-batches-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-period-bind-qa-02/03-create-dialog-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-period-bind-qa-02/04-after-create-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-period-bind-qa-02/05-detail-subtitle.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-period-bind-qa-02/06-after-f5-list.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T10:37:59.716Z",
+      "msg": "login_api_ok"
+    },
+    {
+      "at": "2026-08-07T10:37:59.716Z",
+      "msg": "free_period_slot",
+      "note": "{\"month\":3,\"year\":2026,\"source\":\"env\"}"
+    },
+    {
+      "at": "2026-08-07T10:38:21.632Z",
+      "msg": "tpl_picked",
+      "note": "{\"pickedOk\":true,\"TPL_CODE\":\"qa_bind_paybindqa2_it9y27\",\"pickedLabel\":\"Mẫu bind QA PAYBINDQA2-IT9Y27\"}"
+    },
+    {
+      "at": "2026-08-07T10:38:25.213Z",
+      "msg": "period_slot_realign",
+      "note": "{\"start_date\":\"2026-02-28T17:00:00.000Z\",\"PERIOD_MONTH\":3,\"PERIOD_YEAR\":2026}"
+    },
+    {
+      "at": "2026-08-07T10:38:35.256Z",
+      "msg": "period_filter_set",
+      "note": "{\"ok\":true,\"via\":\"select-inplace\",\"month\":3,\"year\":2026}"
+    },
+    {
+      "at": "2026-08-07T10:38:49.620Z",
+      "msg": "period_filter_set_f5",
+      "note": "{\"ok\":true,\"via\":\"select-inplace\",\"month\":3,\"year\":2026}"
+    }
+  ],
+  "residuals": [],
+  "ids": {
+    "periodId": "47d43fe6-30d3-41ca-a3ea-e7bf3ffb84a6",
+    "tplCode": "qa_bind_paybindqa2_it9y27",
+    "tplName": "Mẫu bind QA PAYBINDQA2-IT9Y27"
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T10:38:54.529Z"
+}

@@ -1,0 +1,985 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-QA-01",
+  "parent": "PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01",
+  "stamp": "PAYINPQA-MSIRS9L7",
+  "lane": "L1_API_smoke",
+  "u65": "zero-seed · API product path · cấm payroll_e2e_ready flip · cấm seed",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "browser_uf": false,
+    "module_uat": false,
+    "seed_used": false
+  },
+  "account": "ceo@xe.vn",
+  "company_id": "main",
+  "startedAt": "2026-08-07T09:56:15.116Z",
+  "steps": [
+    {
+      "name": "L0_hrm_health",
+      "at": "2026-08-07T09:56:15.156Z",
+      "status": 200,
+      "ok": true,
+      "note": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"t"
+    },
+    {
+      "name": "stale_dist_probe_timesheet-binds",
+      "at": "2026-08-07T09:56:15.161Z",
+      "status": 401,
+      "ok": true,
+      "note": "route live (auth required)",
+      "body": "{\"success\":false,\"code\":\"HRM-AUTH-001\",\"message\":\"Unauthorized payroll access\",\"timestamp\":\"2026-08-07T09:56:15.161Z\"}",
+      "routeLive": true
+    },
+    {
+      "name": "stale_dist_probe_input-lines",
+      "at": "2026-08-07T09:56:15.169Z",
+      "status": 401,
+      "ok": true,
+      "note": "route live (auth required)",
+      "body": "{\"success\":false,\"code\":\"HRM-AUTH-001\",\"message\":\"Unauthorized payroll access\",\"timestamp\":\"2026-08-07T09:56:15.169Z\"}",
+      "routeLive": true
+    },
+    {
+      "name": "dist_file_present",
+      "at": "2026-08-07T09:56:15.170Z",
+      "ok": true,
+      "path": "apps/api/hrm-api/dist/payroll/pay-period-input-pack.service.js"
+    },
+    {
+      "name": "login_ceo",
+      "at": "2026-08-07T09:56:16.624Z",
+      "status": 201,
+      "ok": true,
+      "sub": "ceo@xe.vn"
+    },
+    {
+      "name": "login_publisher",
+      "at": "2026-08-07T09:56:16.625Z",
+      "status": 201,
+      "ok": true,
+      "sub": "admin@xe.vn"
+    },
+    {
+      "name": "list_attendance_sheets",
+      "at": "2026-08-07T09:56:16.704Z",
+      "status": 200,
+      "code": "HRM-AS-200",
+      "total": 5,
+      "closed": 4,
+      "open": 1,
+      "closedSample": [
+        {
+          "id": "ae71f0b0-a3cb-43ab-9f5f-f42004add657",
+          "status": "closed",
+          "start": "2026-08-31T17:00:00.000Z",
+          "end": "2026-09-29T17:00:00.000Z",
+          "name": "QA-BP-ATT-SIGN-DRAFT-SUBMIT-01",
+          "companyId": "holding"
+        },
+        {
+          "id": "642a4713-b0ee-4802-a1d9-2fe650cbc17f",
+          "status": "closed",
+          "start": "2026-06-30T17:00:00.000Z",
+          "end": "2026-07-30T17:00:00.000Z",
+          "name": "QA-SHEET-MFD-M2 01/07/2026–31/07/2026",
+          "companyId": "holding"
+        },
+        {
+          "id": "3934591a-50ec-452b-940f-7f29ede50272",
+          "status": "closed",
+          "start": "2026-06-30T17:00:00.000Z",
+          "end": "2026-07-30T17:00:00.000Z",
+          "name": "QA-SHEET-MFD-M2 01/07/2026-31/07/2026",
+          "companyId": "holding"
+        }
+      ]
+    },
+    {
+      "name": "list_salary_components",
+      "at": "2026-08-07T09:56:17.447Z",
+      "status": 200,
+      "count": 6,
+      "base": {
+        "id": "4a8b7dc4-cc62-4463-92ca-0c860d05016f",
+        "code": "base",
+        "name": "SRC base"
+      },
+      "other": {
+        "id": "13b7668b-1416-40e0-bd4d-128d0bccca30",
+        "code": "D",
+        "name": "cơ bản"
+      },
+      "advance": null
+    },
+    {
+      "name": "ensure_component_other_income",
+      "at": "2026-08-07T09:56:17.840Z",
+      "status": 201,
+      "code": "HRM-SC-201",
+      "id": "2d825597-d619-42db-82d6-0eacf07f3580",
+      "note": "Salary component created",
+      "dataSummary": "{\"id\":\"2d825597-d619-42db-82d6-0eacf07f3580\",\"company_id\":\"holding\",\"code\":\"other_income\",\"name\":\"Thu nhập khác\",\"category_id\":null,\"component_type\":\"luong\",\"nature\":\"income\",\"value_type\":\"currency\",\"is_taxable\":false,\"is_insurance_base\":false,\"formula\":null,\"default_value\":\"0\",\"min_value\":null,\"max_value\":null,\"description\":null,\"applied_to\":\"all\",\"is_active\":true,\"sort_order\":0,\"created_at\":\"2026-08-07T09:56:27.678Z\",\"updated_at\":\"2026-08-07T09:56:27.678Z\",\"default_formula_definition_id\":null,\"archived_at\":null,\"is_system\":false,\"formula_legacy_hint\":null,\"formula_sot\":\"deprecated\",\"payroll_e2e_ready\":false}",
+      "typeKey": "luong"
+    },
+    {
+      "name": "ensure_component_tam_ung",
+      "at": "2026-08-07T09:56:18.248Z",
+      "status": 201,
+      "code": "HRM-SC-201",
+      "id": "7feac59b-314b-4ff7-8c75-4f1a5047cd7e",
+      "note": "Salary component created",
+      "dataSummary": "{\"id\":\"7feac59b-314b-4ff7-8c75-4f1a5047cd7e\",\"company_id\":\"holding\",\"code\":\"tam_ung\",\"name\":\"Tạm ứng\",\"category_id\":null,\"component_type\":\"thue\",\"nature\":\"deduction\",\"value_type\":\"currency\",\"is_taxable\":false,\"is_insurance_base\":false,\"formula\":null,\"default_value\":\"0\",\"min_value\":null,\"max_value\":null,\"description\":null,\"applied_to\":\"all\",\"is_active\":true,\"sort_order\":0,\"created_at\":\"2026-08-07T09:56:28.086Z\",\"updated_at\":\"2026-08-07T09:56:28.086Z\",\"default_formula_definition_id\":null,\"archived_at\":null,\"is_system\":false,\"formula_legacy_hint\":null,\"formula_sot\":\"deprecated\",\"payroll_e2e_ready\":false}",
+      "typeKey": "thue"
+    },
+    {
+      "name": "list_employees",
+      "at": "2026-08-07T09:56:18.332Z",
+      "status": 200,
+      "count": 100,
+      "preferred": {
+        "id": "3796d949-4513-45c0-88fa-33030a062b17",
+        "code": "HLD-0001",
+        "name": "Nguyễn Văn An"
+      }
+    },
+    {
+      "name": "create_draft_period",
+      "at": "2026-08-07T09:56:18.811Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods",
+      "status": 409,
+      "code": "HRM-PAY-002",
+      "message": "Payroll period overlaps with existing period",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-002\",\"message\":\"Payroll period overlaps with existing period\",\"timestamp\":\"2026-08-07T09:56:18.811Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-002",
+        "message": "Payroll period overlaps with existing period",
+        "timestamp": "2026-08-07T09:56:18.811Z"
+      },
+      "bounds": {
+        "y": 2026,
+        "m": 7,
+        "start": "2026-07-01",
+        "end": "2026-07-31",
+        "ymd": "2026-07-01"
+      },
+      "sheetId": "642a4713-b0ee-4802-a1d9-2fe650cbc17f"
+    },
+    {
+      "name": "reuse_draft_period_on_overlap",
+      "at": "2026-08-07T09:56:19.231Z",
+      "status": 200,
+      "periodId": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+      "matchStatus": "draft",
+      "matchStart": "2026-06-30T17:00:00.000Z",
+      "matchLabel": "QA-PAY-HIRE-04-1786012073589",
+      "note": "Payroll period overlaps with existing period",
+      "periodCount": 23
+    },
+    {
+      "name": "bind_open_sheet_neg",
+      "at": "2026-08-07T09:56:19.383Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/timesheet-binds",
+      "status": 412,
+      "code": "HRM-PAY-ATT-412",
+      "message": "Attendance sheet must be closed before bind to payroll period",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-ATT-412\",\"message\":\"Attendance sheet must be closed before bind to payroll period\",\"timestamp\":\"2026-08-07T09:56:19.384Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-ATT-412",
+        "message": "Attendance sheet must be closed before bind to payroll period",
+        "timestamp": "2026-08-07T09:56:19.384Z"
+      }
+    },
+    {
+      "name": "post_timesheet_bind_closed",
+      "at": "2026-08-07T09:56:19.520Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/timesheet-binds",
+      "status": 409,
+      "code": "HRM-PAY-INP-409-DUP",
+      "message": "Active timesheet bind already exists for this period and sheet",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-INP-409-DUP\",\"message\":\"Active timesheet bind already exists for this period and sheet\",\"timestamp\":\"2026-08-07T09:56:19.520Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-INP-409-DUP",
+        "message": "Active timesheet bind already exists for this period and sheet",
+        "timestamp": "2026-08-07T09:56:19.520Z"
+      },
+      "displayLabel": null,
+      "timesheetStatus": null,
+      "sysBugCodeCol": false
+    },
+    {
+      "name": "post_timesheet_bind_dup",
+      "at": "2026-08-07T09:56:19.648Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/timesheet-binds",
+      "status": 409,
+      "code": "HRM-PAY-INP-409-DUP",
+      "message": "Active timesheet bind already exists for this period and sheet",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-INP-409-DUP\",\"message\":\"Active timesheet bind already exists for this period and sheet\",\"timestamp\":\"2026-08-07T09:56:19.648Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-INP-409-DUP",
+        "message": "Active timesheet bind already exists for this period and sheet",
+        "timestamp": "2026-08-07T09:56:19.648Z"
+      }
+    },
+    {
+      "name": "list_timesheet_binds",
+      "at": "2026-08-07T09:56:19.788Z",
+      "method": "GET",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/timesheet-binds?company_id=main",
+      "status": 500,
+      "code": "HRM-SYS-001",
+      "message": "column s.code does not exist",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-SYS-001\",\"message\":\"column s.code does not exist\",\"timestamp\":\"2026-08-07T09:56:19.788Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-SYS-001",
+        "message": "column s.code does not exist",
+        "timestamp": "2026-08-07T09:56:19.788Z"
+      },
+      "count": 0,
+      "row": null,
+      "bindDisplayOk": false
+    },
+    {
+      "name": "process_eligibility_after_bind",
+      "at": "2026-08-07T09:56:20.981Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/process?company_id=main",
+      "status": 409,
+      "code": "HRM-PAY-ENROLL-REQUIRED",
+      "message": "No eligible employee to enroll into payroll period",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-ENROLL-REQUIRED\",\"message\":\"No eligible employee to enroll into payroll period\",\"timestamp\":\"2026-08-07T09:56:20.981Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-ENROLL-REQUIRED",
+        "message": "No eligible employee to enroll into payroll period",
+        "timestamp": "2026-08-07T09:56:20.981Z"
+      },
+      "att412": false,
+      "processEligOk": true,
+      "note": "PASS if not ATT-412 (VARS/FORMULA 412 acceptable for XFER eligibility)"
+    },
+    {
+      "name": "create_pay_sheet_tpl",
+      "at": "2026-08-07T09:56:21.073Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/pay-sheet-templates",
+      "status": 201,
+      "code": "HRM-PAY-TPL-201",
+      "message": "Pay sheet template created",
+      "dataSummary": "{\"id\":\"2c8fe542-69c2-4ef8-8634-63b816922712\",\"companyId\":\"holding\",\"code\":\"qa_inp_msirse45\",\"name\":\"QA InputPack TPL PAYINPQA-MSIRS9L7\",\"description\":null,\"status\":\"active\",\"isDefault\":false,\"applicabilityScope\":\"company\",\"ouId\":null,\"positionKey\":null,\"employeeId\":null,\"archivedAt\":null,\"createdBy\":\"ceo@xe.vn\",\"updatedBy\":\"ceo@xe.vn\",\"createdAt\":\"2026-08-07 09:56:30.912313+00\",\"updatedAt\":\"2026-08-07 09:56:30.912313+00\"}",
+      "data": {
+        "id": "2c8fe542-69c2-4ef8-8634-63b816922712",
+        "companyId": "holding",
+        "code": "qa_inp_msirse45",
+        "name": "QA InputPack TPL PAYINPQA-MSIRS9L7",
+        "description": null,
+        "status": "active",
+        "isDefault": false,
+        "applicabilityScope": "company",
+        "ouId": null,
+        "positionKey": null,
+        "employeeId": null,
+        "archivedAt": null,
+        "createdBy": "ceo@xe.vn",
+        "updatedBy": "ceo@xe.vn",
+        "createdAt": "2026-08-07 09:56:30.912313+00",
+        "updatedAt": "2026-08-07 09:56:30.912313+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-201",
+        "message": "Pay sheet template created",
+        "data": {
+          "id": "2c8fe542-69c2-4ef8-8634-63b816922712",
+          "companyId": "holding",
+          "code": "qa_inp_msirse45",
+          "name": "QA InputPack TPL PAYINPQA-MSIRS9L7",
+          "description": null,
+          "status": "active",
+          "isDefault": false,
+          "applicabilityScope": "company",
+          "ouId": null,
+          "positionKey": null,
+          "employeeId": null,
+          "archivedAt": null,
+          "createdBy": "ceo@xe.vn",
+          "updatedBy": "ceo@xe.vn",
+          "createdAt": "2026-08-07 09:56:30.912313+00",
+          "updatedAt": "2026-08-07 09:56:30.912313+00"
+        },
+        "timestamp": "2026-08-07T09:56:21.074Z"
+      },
+      "tplId": "2c8fe542-69c2-4ef8-8634-63b816922712",
+      "tplCode": "qa_inp_msirse45"
+    },
+    {
+      "name": "put_tpl_lines",
+      "at": "2026-08-07T09:56:21.298Z",
+      "method": "PUT",
+      "path": "/api/hrm/payroll/pay-sheet-templates/2c8fe542-69c2-4ef8-8634-63b816922712/lines",
+      "status": 200,
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template lines replaced",
+      "dataSummary": "{\"templateId\":\"2c8fe542-69c2-4ef8-8634-63b816922712\",\"lines\":[{\"id\":\"f7231cc7-5350-4706-84d3-98601777a0d4\",\"templateId\":\"2c8fe542-69c2-4ef8-8634-63b816922712\",\"companyId\":\"holding\",\"componentId\":\"4a8b7dc4-cc62-4463-92ca-0c860d05016f\",\"componentCode\":\"base\",\"displayLabel\":\"SRC base\",\"sortOrder\":10,\"groupKey\":null,\"isVisible\":true,\"isIdentityOrTotal\":false,\"formulaOverrideDefinitionId\":null,\"formulaOverrideJson\":null,\"formulaOverrideCode\":null,\"formulaOverrideVersion\":null,\"archivedAt\":null,\"createdAt\":\"2026-08-07 09:56:31.030092+00\",\"updatedAt\":\"2026-08-07 09:56:31.030092+00\"},{\"id\":\"585123c5-d331-4579-84f2-2caa1331873a\",\"templateId\":\"2c8fe542-69c2-4ef8-8634-63b816922712\",\"companyId\":\"holding\",\"componentId\":\"2d825597-d619-42db-82d6-0eacf07f3580\",\"componentCode\":\"other_income\",\"displayLabel\"…",
+      "data": {
+        "templateId": "2c8fe542-69c2-4ef8-8634-63b816922712",
+        "lines": [
+          {
+            "id": "f7231cc7-5350-4706-84d3-98601777a0d4",
+            "templateId": "2c8fe542-69c2-4ef8-8634-63b816922712",
+            "companyId": "holding",
+            "componentId": "4a8b7dc4-cc62-4463-92ca-0c860d05016f",
+            "componentCode": "base",
+            "displayLabel": "SRC base",
+            "sortOrder": 10,
+            "groupKey": null,
+            "isVisible": true,
+            "isIdentityOrTotal": false,
+            "formulaOverrideDefinitionId": null,
+            "formulaOverrideJson": null,
+            "formulaOverrideCode": null,
+            "formulaOverrideVersion": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 09:56:31.030092+00",
+            "updatedAt": "2026-08-07 09:56:31.030092+00"
+          },
+          {
+            "id": "585123c5-d331-4579-84f2-2caa1331873a",
+            "templateId": "2c8fe542-69c2-4ef8-8634-63b816922712",
+            "companyId": "holding",
+            "componentId": "2d825597-d619-42db-82d6-0eacf07f3580",
+            "componentCode": "other_income",
+            "displayLabel": "Thu nhập khác",
+            "sortOrder": 20,
+            "groupKey": null,
+            "isVisible": true,
+            "isIdentityOrTotal": false,
+            "formulaOverrideDefinitionId": null,
+            "formulaOverrideJson": null,
+            "formulaOverrideCode": null,
+            "formulaOverrideVersion": null,
+            "archivedAt": null,
+            "createdAt": "2026-08-07 09:56:31.045255+00",
+            "updatedAt": "2026-08-07 09:56:31.045255+00"
+          }
+        ]
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-200",
+        "message": "Pay sheet template lines replaced",
+        "data": {
+          "templateId": "2c8fe542-69c2-4ef8-8634-63b816922712",
+          "lines": [
+            {
+              "id": "f7231cc7-5350-4706-84d3-98601777a0d4",
+              "templateId": "2c8fe542-69c2-4ef8-8634-63b816922712",
+              "companyId": "holding",
+              "componentId": "4a8b7dc4-cc62-4463-92ca-0c860d05016f",
+              "componentCode": "base",
+              "displayLabel": "SRC base",
+              "sortOrder": 10,
+              "groupKey": null,
+              "isVisible": true,
+              "isIdentityOrTotal": false,
+              "formulaOverrideDefinitionId": null,
+              "formulaOverrideJson": null,
+              "formulaOverrideCode": null,
+              "formulaOverrideVersion": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 09:56:31.030092+00",
+              "updatedAt": "2026-08-07 09:56:31.030092+00"
+            },
+            {
+              "id": "585123c5-d331-4579-84f2-2caa1331873a",
+              "templateId": "2c8fe542-69c2-4ef8-8634-63b816922712",
+              "companyId": "holding",
+              "componentId": "2d825597-d619-42db-82d6-0eacf07f3580",
+              "componentCode": "other_income",
+              "displayLabel": "Thu nhập khác",
+              "sortOrder": 20,
+              "groupKey": null,
+              "isVisible": true,
+              "isIdentityOrTotal": false,
+              "formulaOverrideDefinitionId": null,
+              "formulaOverrideJson": null,
+              "formulaOverrideCode": null,
+              "formulaOverrideVersion": null,
+              "archivedAt": null,
+              "createdAt": "2026-08-07 09:56:31.045255+00",
+              "updatedAt": "2026-08-07 09:56:31.045255+00"
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T09:56:21.299Z"
+      }
+    },
+    {
+      "name": "bind_sheet_template",
+      "at": "2026-08-07T09:56:21.407Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/bind-sheet-template",
+      "status": 201,
+      "code": "HRM-PAY-TPL-200",
+      "message": "Pay sheet template bound to period",
+      "dataSummary": "{\"id\":\"9a5ec612-a4cb-4408-bdd8-f92306bf64f7\",\"company_id\":\"main\",\"period_label\":\"QA-PAY-HIRE-04-1786012073589\",\"start_date\":\"2026-07-01\",\"end_date\":\"2026-07-31\",\"status\":\"draft\",\"pay_sheet_template_id\":\"2c8fe542-69c2-4ef8-8634-63b816922712\",\"sheet_template_snapshot_json\":{\"columns\":[{\"sort_order\":10,\"display_label\":\"SRC base\",\"component_code\":\"base\",\"override_applied\":false,\"formula_definition_id\":null},{\"sort_order\":20,\"display_label\":\"Thu nhập khác\",\"component_code\":\"other_income\",\"override_applied\":false,\"formula_definition_id\":null}],\"bound_at\":\"2026-08-07T09:56:21.399Z\",\"template_id\":\"2c8fe542-69c2-4ef8-8634-63b816922712\",\"template_code\":\"qa_inp_msirse45\",\"template_name\":\"QA InputPack TPL PAYINPQA-MSIRS9L7\"},\"processed_at\":null,\"closed_at\":null,\"created_at\":\"2026-08-06 10:28:12.112747…",
+      "data": {
+        "id": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+        "company_id": "main",
+        "period_label": "QA-PAY-HIRE-04-1786012073589",
+        "start_date": "2026-07-01",
+        "end_date": "2026-07-31",
+        "status": "draft",
+        "pay_sheet_template_id": "2c8fe542-69c2-4ef8-8634-63b816922712",
+        "sheet_template_snapshot_json": {
+          "columns": [
+            {
+              "sort_order": 10,
+              "display_label": "SRC base",
+              "component_code": "base",
+              "override_applied": false,
+              "formula_definition_id": null
+            },
+            {
+              "sort_order": 20,
+              "display_label": "Thu nhập khác",
+              "component_code": "other_income",
+              "override_applied": false,
+              "formula_definition_id": null
+            }
+          ],
+          "bound_at": "2026-08-07T09:56:21.399Z",
+          "template_id": "2c8fe542-69c2-4ef8-8634-63b816922712",
+          "template_code": "qa_inp_msirse45",
+          "template_name": "QA InputPack TPL PAYINPQA-MSIRS9L7"
+        },
+        "processed_at": null,
+        "closed_at": null,
+        "created_at": "2026-08-06 10:28:12.112747+00",
+        "updated_at": "2026-08-07 09:56:31.24506+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-TPL-200",
+        "message": "Pay sheet template bound to period",
+        "data": {
+          "id": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+          "company_id": "main",
+          "period_label": "QA-PAY-HIRE-04-1786012073589",
+          "start_date": "2026-07-01",
+          "end_date": "2026-07-31",
+          "status": "draft",
+          "pay_sheet_template_id": "2c8fe542-69c2-4ef8-8634-63b816922712",
+          "sheet_template_snapshot_json": {
+            "columns": [
+              {
+                "sort_order": 10,
+                "display_label": "SRC base",
+                "component_code": "base",
+                "override_applied": false,
+                "formula_definition_id": null
+              },
+              {
+                "sort_order": 20,
+                "display_label": "Thu nhập khác",
+                "component_code": "other_income",
+                "override_applied": false,
+                "formula_definition_id": null
+              }
+            ],
+            "bound_at": "2026-08-07T09:56:21.399Z",
+            "template_id": "2c8fe542-69c2-4ef8-8634-63b816922712",
+            "template_code": "qa_inp_msirse45",
+            "template_name": "QA InputPack TPL PAYINPQA-MSIRS9L7"
+          },
+          "processed_at": null,
+          "closed_at": null,
+          "created_at": "2026-08-06 10:28:12.112747+00",
+          "updated_at": "2026-08-07 09:56:31.24506+00"
+        },
+        "timestamp": "2026-08-07T09:56:21.407Z"
+      }
+    },
+    {
+      "name": "enroll_employee",
+      "at": "2026-08-07T09:56:22.010Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/enroll",
+      "status": 400,
+      "code": "HRM-PAY-ENROLL-EMPTY",
+      "message": "Không có nhân viên đủ điều kiện để đưa vào kỳ lương",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-ENROLL-EMPTY\",\"message\":\"Không có nhân viên đủ điều kiện để đưa vào kỳ lương\",\"timestamp\":\"2026-08-07T09:56:22.010Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-ENROLL-EMPTY",
+        "message": "Không có nhân viên đủ điều kiện để đưa vào kỳ lương",
+        "timestamp": "2026-08-07T09:56:22.010Z"
+      },
+      "employeeId": "3796d949-4513-45c0-88fa-33030a062b17"
+    },
+    {
+      "name": "enroll_employee_auto_fallback",
+      "at": "2026-08-07T09:56:22.570Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/enroll",
+      "status": 400,
+      "code": "HRM-PAY-ENROLL-EMPTY",
+      "message": "Không có nhân viên đủ điều kiện để đưa vào kỳ lương",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-ENROLL-EMPTY\",\"message\":\"Không có nhân viên đủ điều kiện để đưa vào kỳ lương\",\"timestamp\":\"2026-08-07T09:56:22.570Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-ENROLL-EMPTY",
+        "message": "Không có nhân viên đủ điều kiện để đưa vào kỳ lương",
+        "timestamp": "2026-08-07T09:56:22.570Z"
+      }
+    },
+    {
+      "name": "get_emp_compensation",
+      "at": "2026-08-07T09:56:22.580Z",
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "summary": "null"
+    },
+    {
+      "name": "post_input_line_other_income",
+      "at": "2026-08-07T09:56:22.800Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/input-lines",
+      "status": 201,
+      "code": "HRM-PAY-INP-201",
+      "message": "Period input line created",
+      "dataSummary": "{\"id\":\"a85e5a21-8aa1-4426-9939-3e55b4468db8\",\"companyId\":\"main\",\"periodId\":\"9a5ec612-a4cb-4408-bdd8-f92306bf64f7\",\"employeeId\":\"3796d949-4513-45c0-88fa-33030a062b17\",\"employeeDisplayName\":\"Nguyễn Văn An\",\"componentCode\":\"other_income\",\"componentDisplayLabel\":\"other_income\",\"amount\":750000,\"quantity\":null,\"sourceKind\":\"other_income\",\"sourceRef\":null,\"effectiveDate\":null,\"note\":\"QA SRC-03 PAYINPQA-MSIRS9L7\",\"archivedAt\":null,\"createdAt\":\"2026-08-07 09:56:32.539023+00\",\"updatedAt\":\"2026-08-07 09:56:32.539023+00\"}",
+      "data": {
+        "id": "a85e5a21-8aa1-4426-9939-3e55b4468db8",
+        "companyId": "main",
+        "periodId": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+        "employeeId": "3796d949-4513-45c0-88fa-33030a062b17",
+        "employeeDisplayName": "Nguyễn Văn An",
+        "componentCode": "other_income",
+        "componentDisplayLabel": "other_income",
+        "amount": 750000,
+        "quantity": null,
+        "sourceKind": "other_income",
+        "sourceRef": null,
+        "effectiveDate": null,
+        "note": "QA SRC-03 PAYINPQA-MSIRS9L7",
+        "archivedAt": null,
+        "createdAt": "2026-08-07 09:56:32.539023+00",
+        "updatedAt": "2026-08-07 09:56:32.539023+00"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-INP-201",
+        "message": "Period input line created",
+        "data": {
+          "id": "a85e5a21-8aa1-4426-9939-3e55b4468db8",
+          "companyId": "main",
+          "periodId": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+          "employeeId": "3796d949-4513-45c0-88fa-33030a062b17",
+          "employeeDisplayName": "Nguyễn Văn An",
+          "componentCode": "other_income",
+          "componentDisplayLabel": "other_income",
+          "amount": 750000,
+          "quantity": null,
+          "sourceKind": "other_income",
+          "sourceRef": null,
+          "effectiveDate": null,
+          "note": "QA SRC-03 PAYINPQA-MSIRS9L7",
+          "archivedAt": null,
+          "createdAt": "2026-08-07 09:56:32.539023+00",
+          "updatedAt": "2026-08-07 09:56:32.539023+00"
+        },
+        "timestamp": "2026-08-07T09:56:22.800Z"
+      },
+      "displayName": "Nguyễn Văn An",
+      "displayLabel": "other_income",
+      "sourceKind": "other_income",
+      "amount": 750000
+    },
+    {
+      "name": "list_input_lines",
+      "at": "2026-08-07T09:56:23.153Z",
+      "method": "GET",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/input-lines?company_id=main&source_kind=other_income",
+      "status": 200,
+      "code": "HRM-PAY-INP-200",
+      "message": "Period input lines listed",
+      "dataSummary": "{\"items\":[{\"id\":\"a85e5a21-8aa1-4426-9939-3e55b4468db8\",\"companyId\":\"main\",\"periodId\":\"9a5ec612-a4cb-4408-bdd8-f92306bf64f7\",\"employeeId\":\"3796d949-4513-45c0-88fa-33030a062b17\",\"employeeDisplayName\":\"Nguyễn Văn An\",\"componentCode\":\"other_income\",\"componentDisplayLabel\":\"other_income\",\"amount\":750000,\"quantity\":null,\"sourceKind\":\"other_income\",\"sourceRef\":null,\"effectiveDate\":null,\"note\":\"QA SRC-03 PAYINPQA-MSIRS9L7\",\"archivedAt\":null,\"createdAt\":\"2026-08-07 09:56:32.539023+00\",\"updatedAt\":\"2026-08-07 09:56:32.539023+00\"},{\"id\":\"2361672d-1859-406d-818e-cd02f9408f40\",\"companyId\":\"main\",\"periodId\":\"9a5ec612-a4cb-4408-bdd8-f92306bf64f7\",\"employeeId\":\"3796d949-4513-45c0-88fa-33030a062b17\",\"employeeDisplayName\":\"Nguyễn Văn An\",\"componentCode\":\"D\",\"componentDisplayLabel\":\"D\",\"amount\":750000,\"quant…",
+      "data": {
+        "items": [
+          {
+            "id": "a85e5a21-8aa1-4426-9939-3e55b4468db8",
+            "companyId": "main",
+            "periodId": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+            "employeeId": "3796d949-4513-45c0-88fa-33030a062b17",
+            "employeeDisplayName": "Nguyễn Văn An",
+            "componentCode": "other_income",
+            "componentDisplayLabel": "other_income",
+            "amount": 750000,
+            "quantity": null,
+            "sourceKind": "other_income",
+            "sourceRef": null,
+            "effectiveDate": null,
+            "note": "QA SRC-03 PAYINPQA-MSIRS9L7",
+            "archivedAt": null,
+            "createdAt": "2026-08-07 09:56:32.539023+00",
+            "updatedAt": "2026-08-07 09:56:32.539023+00"
+          },
+          {
+            "id": "2361672d-1859-406d-818e-cd02f9408f40",
+            "companyId": "main",
+            "periodId": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+            "employeeId": "3796d949-4513-45c0-88fa-33030a062b17",
+            "employeeDisplayName": "Nguyễn Văn An",
+            "componentCode": "D",
+            "componentDisplayLabel": "D",
+            "amount": 750000,
+            "quantity": null,
+            "sourceKind": "other_income",
+            "sourceRef": null,
+            "effectiveDate": null,
+            "note": "QA SRC-03 PAYINPQA-MSIRPF9T",
+            "archivedAt": null,
+            "createdAt": "2026-08-07 09:54:17.447159+00",
+            "updatedAt": "2026-08-07 09:54:17.447159+00"
+          }
+        ]
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-PAY-INP-200",
+        "message": "Period input lines listed",
+        "data": {
+          "items": [
+            {
+              "id": "a85e5a21-8aa1-4426-9939-3e55b4468db8",
+              "companyId": "main",
+              "periodId": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+              "employeeId": "3796d949-4513-45c0-88fa-33030a062b17",
+              "employeeDisplayName": "Nguyễn Văn An",
+              "componentCode": "other_income",
+              "componentDisplayLabel": "other_income",
+              "amount": 750000,
+              "quantity": null,
+              "sourceKind": "other_income",
+              "sourceRef": null,
+              "effectiveDate": null,
+              "note": "QA SRC-03 PAYINPQA-MSIRS9L7",
+              "archivedAt": null,
+              "createdAt": "2026-08-07 09:56:32.539023+00",
+              "updatedAt": "2026-08-07 09:56:32.539023+00"
+            },
+            {
+              "id": "2361672d-1859-406d-818e-cd02f9408f40",
+              "companyId": "main",
+              "periodId": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+              "employeeId": "3796d949-4513-45c0-88fa-33030a062b17",
+              "employeeDisplayName": "Nguyễn Văn An",
+              "componentCode": "D",
+              "componentDisplayLabel": "D",
+              "amount": 750000,
+              "quantity": null,
+              "sourceKind": "other_income",
+              "sourceRef": null,
+              "effectiveDate": null,
+              "note": "QA SRC-03 PAYINPQA-MSIRPF9T",
+              "archivedAt": null,
+              "createdAt": "2026-08-07 09:54:17.447159+00",
+              "updatedAt": "2026-08-07 09:54:17.447159+00"
+            }
+          ]
+        },
+        "timestamp": "2026-08-07T09:56:23.153Z"
+      },
+      "count": 2,
+      "displayReady": {
+        "employeeDisplayName": "Nguyễn Văn An",
+        "componentDisplayLabel": "other_income",
+        "sourceKind": "other_income",
+        "amount": 750000
+      }
+    },
+    {
+      "name": "process_period_src03",
+      "at": "2026-08-07T09:56:24.875Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/periods/9a5ec612-a4cb-4408-bdd8-f92306bf64f7/process?company_id=main",
+      "status": 409,
+      "code": "HRM-PAY-ENROLL-REQUIRED",
+      "message": "No eligible employee to enroll into payroll period",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PAY-ENROLL-REQUIRED\",\"message\":\"No eligible employee to enroll into payroll period\",\"timestamp\":\"2026-08-07T09:56:24.875Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PAY-ENROLL-REQUIRED",
+        "message": "No eligible employee to enroll into payroll period",
+        "timestamp": "2026-08-07T09:56:24.875Z"
+      }
+    },
+    {
+      "name": "list_advance_requests",
+      "at": "2026-08-07T09:56:25.386Z",
+      "status": 200,
+      "code": "HRM-ADV-200",
+      "count": 1,
+      "sample": [
+        {
+          "id": "73f5ce43-5dca-4a9d-81ea-4ba1d8ee10f1",
+          "status": "paid",
+          "name": "QA Adv Bridge PAYINPQA-MSIRPF9T",
+          "salary_period": "PAYINPQA-MSIRPF9T"
+        }
+      ]
+    },
+    {
+      "name": "create_advance_header_only",
+      "at": "2026-08-07T09:56:26.074Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/advance-requests",
+      "status": 201,
+      "code": "HRM-ADV-201",
+      "message": "Advance request created",
+      "dataSummary": "{\"id\":\"cf15606e-c861-4c10-be02-e97b2bf37f72\",\"company_id\":\"holding\",\"name\":\"QA Adv Bridge PAYINPQA-MSIRS9L7\",\"salary_period\":\"PAYINPQA-MSIRS9L7\",\"department\":null,\"position\":null,\"employee_count\":0,\"total_amount\":\"0\",\"status\":\"pending\",\"current_approval_level\":1,\"approval_steps\":null,\"created_by\":null,\"created_at\":\"2026-08-07T09:56:35.911Z\",\"updated_at\":\"2026-08-07T09:56:35.911Z\"}",
+      "data": {
+        "id": "cf15606e-c861-4c10-be02-e97b2bf37f72",
+        "company_id": "holding",
+        "name": "QA Adv Bridge PAYINPQA-MSIRS9L7",
+        "salary_period": "PAYINPQA-MSIRS9L7",
+        "department": null,
+        "position": null,
+        "employee_count": 0,
+        "total_amount": "0",
+        "status": "pending",
+        "current_approval_level": 1,
+        "approval_steps": null,
+        "created_by": null,
+        "created_at": "2026-08-07T09:56:35.911Z",
+        "updated_at": "2026-08-07T09:56:35.911Z"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-ADV-201",
+        "message": "Advance request created",
+        "data": {
+          "id": "cf15606e-c861-4c10-be02-e97b2bf37f72",
+          "company_id": "holding",
+          "name": "QA Adv Bridge PAYINPQA-MSIRS9L7",
+          "salary_period": "PAYINPQA-MSIRS9L7",
+          "department": null,
+          "position": null,
+          "employee_count": 0,
+          "total_amount": "0",
+          "status": "pending",
+          "current_approval_level": 1,
+          "approval_steps": null,
+          "created_by": null,
+          "created_at": "2026-08-07T09:56:35.911Z",
+          "updated_at": "2026-08-07T09:56:35.911Z"
+        },
+        "timestamp": "2026-08-07T09:56:26.074Z"
+      }
+    },
+    {
+      "name": "approve_empty_advance",
+      "at": "2026-08-07T09:56:26.502Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/advance-requests/cf15606e-c861-4c10-be02-e97b2bf37f72/approve",
+      "status": 201,
+      "code": "HRM-ADV-203",
+      "message": "Advance request approved",
+      "dataSummary": "{\"id\":\"cf15606e-c861-4c10-be02-e97b2bf37f72\",\"company_id\":\"holding\",\"name\":\"QA Adv Bridge PAYINPQA-MSIRS9L7\",\"salary_period\":\"PAYINPQA-MSIRS9L7\",\"department\":null,\"position\":null,\"employee_count\":0,\"total_amount\":\"0\",\"status\":\"approved\",\"current_approval_level\":1,\"approval_steps\":null,\"created_by\":null,\"created_at\":\"2026-08-07T09:56:35.911Z\",\"updated_at\":\"2026-08-07T09:56:36.339Z\"}",
+      "data": {
+        "id": "cf15606e-c861-4c10-be02-e97b2bf37f72",
+        "company_id": "holding",
+        "name": "QA Adv Bridge PAYINPQA-MSIRS9L7",
+        "salary_period": "PAYINPQA-MSIRS9L7",
+        "department": null,
+        "position": null,
+        "employee_count": 0,
+        "total_amount": "0",
+        "status": "approved",
+        "current_approval_level": 1,
+        "approval_steps": null,
+        "created_by": null,
+        "created_at": "2026-08-07T09:56:35.911Z",
+        "updated_at": "2026-08-07T09:56:36.339Z"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-ADV-203",
+        "message": "Advance request approved",
+        "data": {
+          "id": "cf15606e-c861-4c10-be02-e97b2bf37f72",
+          "company_id": "holding",
+          "name": "QA Adv Bridge PAYINPQA-MSIRS9L7",
+          "salary_period": "PAYINPQA-MSIRS9L7",
+          "department": null,
+          "position": null,
+          "employee_count": 0,
+          "total_amount": "0",
+          "status": "approved",
+          "current_approval_level": 1,
+          "approval_steps": null,
+          "created_by": null,
+          "created_at": "2026-08-07T09:56:35.911Z",
+          "updated_at": "2026-08-07T09:56:36.339Z"
+        },
+        "timestamp": "2026-08-07T09:56:26.502Z"
+      }
+    },
+    {
+      "name": "mark_paid_missing_period_id",
+      "at": "2026-08-07T09:56:26.511Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/advance-requests/cf15606e-c861-4c10-be02-e97b2bf37f72/mark-paid",
+      "status": 400,
+      "code": "HRM-VAL-001",
+      "message": "payrollPeriodId must be a UUID",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-VAL-001\",\"message\":\"payrollPeriodId must be a UUID\",\"timestamp\":\"2026-08-07T09:56:26.511Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-VAL-001",
+        "message": "payrollPeriodId must be a UUID",
+        "timestamp": "2026-08-07T09:56:26.511Z"
+      }
+    },
+    {
+      "name": "mark_paid_with_period_empty_emps",
+      "at": "2026-08-07T09:56:27.241Z",
+      "method": "POST",
+      "path": "/api/hrm/payroll/advance-requests/cf15606e-c861-4c10-be02-e97b2bf37f72/mark-paid",
+      "status": 201,
+      "code": "HRM-ADV-205",
+      "message": "Advance request marked paid",
+      "dataSummary": "{\"id\":\"cf15606e-c861-4c10-be02-e97b2bf37f72\",\"company_id\":\"holding\",\"name\":\"QA Adv Bridge PAYINPQA-MSIRS9L7\",\"salary_period\":\"PAYINPQA-MSIRS9L7\",\"department\":null,\"position\":null,\"employee_count\":0,\"total_amount\":\"0\",\"status\":\"paid\",\"current_approval_level\":1,\"approval_steps\":null,\"created_by\":null,\"created_at\":\"2026-08-07T09:56:35.911Z\",\"updated_at\":\"2026-08-07T09:56:36.882Z\",\"bridgedInputLineIds\":[],\"failedEmployees\":[]}",
+      "data": {
+        "id": "cf15606e-c861-4c10-be02-e97b2bf37f72",
+        "company_id": "holding",
+        "name": "QA Adv Bridge PAYINPQA-MSIRS9L7",
+        "salary_period": "PAYINPQA-MSIRS9L7",
+        "department": null,
+        "position": null,
+        "employee_count": 0,
+        "total_amount": "0",
+        "status": "paid",
+        "current_approval_level": 1,
+        "approval_steps": null,
+        "created_by": null,
+        "created_at": "2026-08-07T09:56:35.911Z",
+        "updated_at": "2026-08-07T09:56:36.882Z",
+        "bridgedInputLineIds": [],
+        "failedEmployees": []
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-ADV-205",
+        "message": "Advance request marked paid",
+        "data": {
+          "id": "cf15606e-c861-4c10-be02-e97b2bf37f72",
+          "company_id": "holding",
+          "name": "QA Adv Bridge PAYINPQA-MSIRS9L7",
+          "salary_period": "PAYINPQA-MSIRS9L7",
+          "department": null,
+          "position": null,
+          "employee_count": 0,
+          "total_amount": "0",
+          "status": "paid",
+          "current_approval_level": 1,
+          "approval_steps": null,
+          "created_by": null,
+          "created_at": "2026-08-07T09:56:35.911Z",
+          "updated_at": "2026-08-07T09:56:36.882Z",
+          "bridgedInputLineIds": [],
+          "failedEmployees": []
+        },
+        "timestamp": "2026-08-07T09:56:27.241Z"
+      }
+    }
+  ],
+  "ac": {
+    "AC-AMIS-ATT-XFER-01": {
+      "ok": false,
+      "verdict": "FAIL",
+      "note": "BE defect: bind INSERT ok (dup=409/HRM-PAY-INP-409-DUP) but display GET/LIST 500 (HRM-PAY-INP-409-DUP: Active timesheet bind already exists for this period and sheet) · openNeg=HRM-PAY-ATT-412 · processElig=true process=409/HRM-PAY-ENROLL-REQUIRED"
+    },
+    "AC-PAY-SRC-03": {
+      "ok": false,
+      "verdict": "FAIL",
+      "note": "inputCrud=true process=409/HRM-PAY-ENROLL-REQUIRED period_input_lines=0 inputLine=a85e5a21-8aa1-4426-9939-3e55b4468db8"
+    },
+    "VAL-INP-ADV-01": {
+      "ok": false,
+      "verdict": "FAIL",
+      "note": "BLOCKED: no advance_request_employees in env; contract probe requiresPeriod=true markEmpty=true bridged=[]"
+    },
+    "honesty": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "payroll_e2e_ready=false · no seed"
+    }
+  },
+  "residual": [
+    {
+      "id": "R-PAY-SRC-03-PROCESS",
+      "note": "Input line CRUD PASS but process did not yield source_tier=period_input (409/HRM-PAY-ENROLL-REQUIRED)",
+      "owner": "dev-be"
+    },
+    {
+      "id": "R-PAY-ADV-EMP-API-ABSENT",
+      "note": "Nest has no POST advance-request employees (FE: API thêm NV chưa có). Cannot product-path populate advance_request_employees without seed. VAL-INP-ADV-01 BLOCKED for live mark-paid bridge.",
+      "owner": "dev-be"
+    },
+    {
+      "id": "R-VAL-INP-ADV-01-NO-EMP-ROWS",
+      "note": "mark-paid EXPAND payrollPeriodId enforced=true; empty emp bridge=true — need Nest add-employee API or existing rows for full AC",
+      "owner": "dev-be"
+    }
+  ],
+  "ids": {
+    "periodId": "9a5ec612-a4cb-4408-bdd8-f92306bf64f7",
+    "closedSheetId": "642a4713-b0ee-4802-a1d9-2fe650cbc17f",
+    "sheetBounds": {
+      "y": 2026,
+      "m": 7,
+      "start": "2026-07-01",
+      "end": "2026-07-31",
+      "ymd": "2026-07-01"
+    },
+    "openSheetNeg": {
+      "status": 412,
+      "code": "HRM-PAY-ATT-412",
+      "ok": true
+    },
+    "bindId": null,
+    "bindInserted": true,
+    "tplId": "2c8fe542-69c2-4ef8-8634-63b816922712",
+    "inputLineId": "a85e5a21-8aa1-4426-9939-3e55b4468db8"
+  },
+  "overall": {
+    "verdict": "FAIL",
+    "ack_status": "FAIL_TO_PM",
+    "ac": {
+      "AC-AMIS-ATT-XFER-01": "FAIL",
+      "AC-PAY-SRC-03": "FAIL",
+      "VAL-INP-ADV-01": "FAIL"
+    }
+  },
+  "endedAt": "2026-08-07T09:56:27.242Z"
+}

@@ -1,0 +1,63 @@
+{
+  "steps": [
+    {
+      "t": "2026-08-05T10:04:00.252Z",
+      "m": "url_node",
+      "x": 540,
+      "y": 2064,
+      "text": "http://14.225.217.232:3001"
+    },
+    {
+      "t": "2026-08-05T10:04:07.883Z",
+      "m": "base_filled",
+      "text": "http://14.225.217.232:3001",
+      "ok": false
+    },
+    {
+      "t": "2026-08-05T10:04:07.884Z",
+      "m": "retry_clipboard_2"
+    },
+    {
+      "t": "2026-08-05T10:04:15.894Z",
+      "m": "base_filled_2",
+      "text": "http://14.225.217.232:3001",
+      "ok": false
+    },
+    {
+      "t": "2026-08-05T10:04:31.753Z",
+      "m": "login_filled",
+      "email": "uat.nv0001@xe.vn",
+      "ok": true
+    }
+  ],
+  "LOCAL_BASE": "http://10.0.2.2:28001",
+  "EMAIL": "uat.nv0001@xe.vn",
+  "base_url_field_text": "http://14.225.217.232:3001",
+  "base_ui_local": false,
+  "email_text": "uat.nv0001@xe.vn",
+  "email_ok": true,
+  "login_home": false,
+  "hosts": [
+    "http://14.225.217.232:3001"
+  ],
+  "host_local": false,
+  "pilot_leak": true,
+  "hrm_sample": [
+    "08-05 17:05:03.471 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/employees?company_id=holding&page=1&page_size=100 x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:03.595 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/employees?company_id=holding&page=1&page_size=100 x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:03.674 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/attendance/leave-requests?company_id=holding&status=approved&page=1&page_size=200 x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.036 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/employees/3796d949-4513-45c0-88fa-33030a062b17?company_id=holding x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.036 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/operating-units x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.037 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/employees/3796d949-4513-45c0-88fa-33030a062b17?company_id=holding x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.038 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/operating-units x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.042 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/employees?company_id=holding&page=1&page_size=30&status=active&view=directory x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.044 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/attendance/records?company_id=6efaa5d6-a4a8-4bfd-805a-3c4f003e4013&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=500&employee_id=3796d949-4513-45c0-88fa-33030a062b17 x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.048 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/payroll/payslips?company_id=holding&employee_id=3796d949-4513-45c0-88fa-33030a062b17 x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.175 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/employees?company_id=holding&page=2&page_size=30&status=active&view=directory x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.187 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/employees/3796d949-4513-45c0-88fa-33030a062b17?company_id=holding x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.187 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/attendance/records?company_id=6efaa5d6-a4a8-4bfd-805a-3c4f003e4013&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=200&employee_id=3796d949-4513-45c0-88fa-33030a062b17 x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.838 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/attendance/records?company_id=6efaa5d6-a4a8-4bfd-805a-3c4f003e4013&employee_id=3796d949-4513-45c0-88fa-33030a062b17&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=10 x-company-id=holding Authorization=Bearer …",
+    "08-05 17:05:04.839 15122 15155 I ReactNativeJS: [HRM-MOB] GET http://14.225.217.232:3001/api/hrm/attendance/leave-requests?company_id=6efaa5d6-a4a8-4bfd-805a-3c4f003e4013&employee_id=3796d949-4513-45c0-88fa-33030a062b17 x-company-id=holding Authorization=Bearer …"
+  ],
+  "ack": "FAIL_TO_PM"
+}

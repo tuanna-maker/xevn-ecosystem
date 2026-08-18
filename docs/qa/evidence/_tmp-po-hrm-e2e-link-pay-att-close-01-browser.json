@@ -1,0 +1,228 @@
+{
+  "work_item_id": "PO-HRM-E2E-LINK-PAY-ATT-CLOSE-01",
+  "parent": "PO-HRM-E2E-LINK-PAY-HIRE-QA-05",
+  "u65": "zero-seed",
+  "hdsd_align": "Chấm công → Bảng chấm công → tạo/mở kỳ → gửi chờ ký → ký NV/QL/HCNS → Chốt → Tiền lương → Thêm NV",
+  "honesty": {
+    "payroll_e2e_ready": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5175",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "payrollTarget": {
+    "month": 1,
+    "year": 2026
+  },
+  "attPeriod": {
+    "start": "01/01/2026",
+    "end": "28/01/2026"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "clicks": [
+    {
+      "step": "S0",
+      "detail": "goto http://127.0.0.1:5175/hr/attendance",
+      "at": "2026-08-06T10:43:23.915Z"
+    },
+    {
+      "step": "S1",
+      "detail": "menu Bảng chấm công",
+      "at": "2026-08-06T10:43:27.047Z"
+    },
+    {
+      "step": "S2-create-attempt",
+      "detail": "no matching sheet — FE create",
+      "at": "2026-08-06T10:43:29.299Z"
+    },
+    {
+      "step": "S2-create",
+      "detail": "att-sheets-add",
+      "at": "2026-08-06T10:43:29.300Z"
+    },
+    {
+      "step": "S3-create",
+      "detail": "dialog Lưu/Tạo bảng",
+      "at": "2026-08-06T10:43:30.695Z"
+    },
+    {
+      "step": "S0",
+      "detail": "goto http://127.0.0.1:5175/hr/attendance",
+      "at": "2026-08-06T10:43:36.373Z"
+    },
+    {
+      "step": "S1",
+      "detail": "menu Bảng chấm công",
+      "at": "2026-08-06T10:43:39.318Z"
+    },
+    {
+      "step": "S4-open",
+      "detail": "first row fallback",
+      "at": "2026-08-06T10:43:41.590Z"
+    },
+    {
+      "step": "P0",
+      "detail": "goto payroll http://127.0.0.1:5175/hr/payroll",
+      "at": "2026-08-06T10:43:48.655Z"
+    },
+    {
+      "step": "P1",
+      "detail": "tab Tính lương",
+      "at": "2026-08-06T10:43:52.815Z"
+    },
+    {
+      "step": "P2",
+      "detail": "open/create payroll Tháng 1/2026",
+      "at": "2026-08-06T10:43:53.418Z"
+    },
+    {
+      "step": "P3",
+      "detail": "click payroll row QA-PAY-FE05-1786012680812",
+      "at": "2026-08-06T10:43:53.494Z"
+    },
+    {
+      "step": "P3-fallback",
+      "detail": "first payroll row",
+      "at": "2026-08-06T10:43:53.500Z"
+    },
+    {
+      "step": "P4",
+      "detail": "Thêm nhân viên → eligibility dialog",
+      "at": "2026-08-06T10:44:03.507Z"
+    }
+  ],
+  "att": {
+    "apiListStatus": 200,
+    "apiSheetSummary": [
+      {
+        "id": "ae71f0b0-a3cb-43ab-9f5f-f42004add657",
+        "status": "closed",
+        "name": "QA-BP-ATT-SIGN-DRAFT-SUBMIT-01",
+        "period_start": "2026-08-31T17:00:00.000Z"
+      },
+      {
+        "id": "642a4713-b0ee-4802-a1d9-2fe650cbc17f",
+        "status": "closed",
+        "name": "QA-SHEET-MFD-M2 01/07/2026–31/07/2026",
+        "period_start": "2026-06-30T17:00:00.000Z"
+      },
+      {
+        "id": "3934591a-50ec-452b-940f-7f29ede50272",
+        "status": "submitted",
+        "name": "QA-SHEET-MFD-M2 01/07/2026-31/07/2026",
+        "period_start": "2026-06-30T17:00:00.000Z"
+      }
+    ],
+    "pickReason": "no_payroll_month_sheet",
+    "createPost2xx": true,
+    "activeSheetId": "a5c698e5-221a-4d29-a5ac-ab81f35a3996",
+    "statusBefore": "draft",
+    "rowIdx": 0,
+    "signPanelVisible": true,
+    "signaturesGet2xx": 1,
+    "signaturesPost2xx": 0,
+    "canCloseAfterSign": false,
+    "closeEnabled": false,
+    "closeBlocked": "close_btn_disabled",
+    "missingRoles": [
+      "employee",
+      "direct_manager",
+      "hr_admin"
+    ],
+    "statusAfter": "draft"
+  },
+  "pay": {
+    "periodListStatus": 200,
+    "targetPeriodId": "f3866096-b5db-4cc6-9070-e2a5ea6d25b7",
+    "targetPeriodLabel": "QA-PAY-FE05-1786012680812",
+    "payrollNavError": "locator.click: Timeout 10000ms exceeded.\nCall log:\n  - waiting for locator('[data-testid=\"pay-batches-precision\"] tbody tr, table tbody tr').first()\n    - locator resolved to <tr class=\"border-b borde",
+    "detailOpen": false,
+    "addEmpMissing": true,
+    "eligibleCount": 0,
+    "enrollSkipped": "eligible_count=0 after att close attempt"
+  },
+  "network": {
+    "att": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/attendance/attendance-sheets?company_id=main"
+      },
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5175/api/hrm/attendance/attendance-sheets"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/attendance/attendance-sheets?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/attendance/attendance-sheets?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/attendance/attendance-sheets/ae71f0b0-a3cb-43ab-9f5f-f42004add657/signatures?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/attendance/attendance-sheets?company_id=main"
+      }
+    ],
+    "pay": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/payslips?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/salary-templates?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5175/api/hrm/payroll/periods?company_id=main"
+      }
+    ],
+    "enrollBodies": []
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "criteria": {
+    "attClose": "FAIL",
+    "j_hrm_06c": "FAIL",
+    "eligible": "BLOCKED",
+    "ac04": "FAIL",
+    "ac05": "NOT RUN",
+    "payrollLink": "BLOCKED"
+  },
+  "residuals": [
+    {
+      "id": "R-ATT-SIGN-CLOSE-INCOMPLETE",
+      "sev": "P0",
+      "owner": "dev-fe",
+      "note": "closeEnabled=false canClose=false missing=[\"employee\",\"direct_manager\",\"hr_admin\"]"
+    }
+  ],
+  "verdict": "FAIL_TO_PM",
+  "ack_status": "FAIL_TO_PM",
+  "startedAt": "2026-08-06T10:43:23.439Z",
+  "endedAt": "2026-08-06T10:44:03.510Z",
+  "completion_report": "- **Closed:** L0 PASS; U65 browser chain executed with 14 logged FE clicks.\n- **Attendance:** close NOT achieved — statusAfter=draft.\n- **Payroll:** eligible_count=0; AC-04=FAIL; AC-05=NOT RUN.\n- **Honesty:** payroll_e2e_ready=false.",
+  "next_owner": "dev-fe",
+  "next_dispatch_prompt": "work_item_id: PO-HRM-E2E-LINK-PAY-ATT-CLOSE-FE-02\nfrom_role: pm\nto_role: dev-fe\nread_first: docs/qa/evidence/po-hrm-e2e-link-pay-att-close-01.md\nresiduals: R-ATT-SIGN-CLOSE-INCOMPLETE\nexit: fix + READY_FOR_QA retest PO-HRM-E2E-LINK-PAY-ATT-CLOSE-01"
+}

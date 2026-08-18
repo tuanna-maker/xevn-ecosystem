@@ -1,0 +1,106 @@
+{
+  "work_item_id": "QA-UX-D5-01",
+  "also_covers": "QA-UX-UX03-01 retest must_keep Payroll",
+  "startedAt": "2026-07-28T07:25:41.218Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "hold_deploy": true
+  },
+  "steps": [
+    {
+      "id": "L0-portal",
+      "ok": true,
+      "detail": "http://127.0.0.1:5173",
+      "at": "2026-07-28T07:25:41.219Z"
+    },
+    {
+      "id": "login",
+      "ok": true,
+      "detail": "token ok · company main",
+      "at": "2026-07-28T07:25:41.339Z"
+    },
+    {
+      "id": "UF-D5-payroll-mount",
+      "ok": true,
+      "detail": "rootLen=3017290 tUndefined=false pageErrors=[]",
+      "at": "2026-07-28T07:25:45.775Z"
+    },
+    {
+      "id": "UF-D5-tax-settlement",
+      "ok": true,
+      "detail": "via=menuitem rootLen=18311 taxVisible=true crash=false",
+      "at": "2026-07-28T07:25:48.382Z"
+    },
+    {
+      "id": "UF-D5-components-tab",
+      "ok": true,
+      "detail": "opened Thành phần lương",
+      "at": "2026-07-28T07:25:53.088Z"
+    },
+    {
+      "id": "UF-D5-add-dialog-open",
+      "ok": true,
+      "detail": "opened=true dialog={\"open\":true,\"title\":\"Thêm mới thành phần lương\",\"textPreview\":\"Thêm mới thành phần lương\\nMã thành phần *\\n\\nChỉ sử dụng chữ in hoa, số và dấu gạch dưới (_)\\n\\nTên thành phần *\\nLoại thành phần *\\nChọn loại thành phần\\nChấm công\\nLương\\nBảo hiểm - Công đoàn\\nPhụ cấp\\nThưởng\\nThuế\\nKhấu trừ\\nThu nhập khác\\nTrợ cấp\\nDoanh số\\nKPI\\nSản phẩm\\nTổng hợp\\nTính chất\\nThu nhập\\nThu nhập\\nKhấu trừ\\nKhác\\nChịu thuế\\nKhông chịu thuế\\nKiểu giá trị\\nTiền tệ\\nTiền tệ\\nSố\\nPhần trăm\\nCông thức\\n\\nNhập công thức bắt đầu bằng \\\"=\\\". Gõ mã thành phần để xem gợi ý.\\n\\nMô tả\\nHủy bỏ\\nThêm mới\\nClose\",\"hasFormMessage\":true}",
+      "at": "2026-07-28T07:25:54.057Z"
+    },
+    {
+      "id": "UF-D5-empty-submit-fieldErrors",
+      "ok": true,
+      "detail": "msgs=[\"Mã thành phần không được để trống\",\"Tên thành phần không được để trống\",\"Vui lòng chọn loại thành phần\"] bodyHasVi=true",
+      "at": "2026-07-28T07:25:55.139Z"
+    },
+    {
+      "id": "UF-D5-dialog-stack-hint",
+      "ok": true,
+      "detail": "title=Thêm mới thành phần lương formItemMessage=3 manualDestructiveP=3",
+      "at": "2026-07-28T07:25:55.213Z"
+    },
+    {
+      "id": "UF-D5-zod-rhf-live-wiring",
+      "ok": true,
+      "detail": "RHF FormMessage present on live SalaryComponentsTab Add dialog",
+      "at": "2026-07-28T07:25:55.214Z"
+    },
+    {
+      "id": "UF-D5-valid-submit-attempt",
+      "ok": true,
+      "detail": "dialogOpen=true residualMsgs=[\"Mã thành phần đã tồn tại\"] (API/mock; no seed)",
+      "at": "2026-07-28T07:25:57.078Z"
+    },
+    {
+      "id": "UF-UX03-clock-in-mustkeep",
+      "ok": true,
+      "detail": "wizardVisible=true tErr=false",
+      "at": "2026-07-28T07:26:01.432Z"
+    },
+    {
+      "id": "UF-UX03-contracts-search-smoke",
+      "ok": true,
+      "detail": "before=10 afterNeg=1 restored=10",
+      "at": "2026-07-28T07:26:05.657Z"
+    },
+    {
+      "id": "console-no-t-undefined",
+      "ok": true,
+      "detail": "tUndefined=false pageErrors=0",
+      "at": "2026-07-28T07:26:05.743Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-d5-01\\01-payroll-mount.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-d5-01\\02-tax-settlement.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-d5-01\\03-components-tab.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-d5-01\\04-add-dialog.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-d5-01\\05-empty-submit-errors.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-d5-01\\06-valid-attempt.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-d5-01\\07-clock-in.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-d5-01\\08-contracts.png"
+  ],
+  "finishedAt": "2026-07-28T07:26:05.744Z",
+  "verdict": "PASS",
+  "hardFails": []
+}

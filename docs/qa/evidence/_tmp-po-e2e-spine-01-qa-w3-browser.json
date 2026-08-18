@@ -1,0 +1,763 @@
+{
+  "work_item_id": "PO-E2E-SPINE-01-QA-W3",
+  "program": "PO-E2E-BIZ-SPINE-01",
+  "spine": "E2E-SPINE-01",
+  "focus": "HP-03 · J-REC-WF-03 · UF-XBOS-08",
+  "startedAt": "2026-08-03T15:29:28.901Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed",
+    "companyId": "main",
+    "legacyStamp": "SP2SDD8FM8",
+    "newStamp": "SP3SDDXE85",
+    "prior_be": "PO-E2E-SPINE-01-BE-INBOX-01"
+  },
+  "l0": {
+    "portal": 200,
+    "hrm_api": 200,
+    "xbos_api": 200
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T15:29:29.869Z",
+      "action": "open_portal",
+      "url": "http://127.0.0.1:5173"
+    },
+    {
+      "at": "2026-08-03T15:29:32.000Z",
+      "action": "goto_cc",
+      "url": "http://127.0.0.1:5173/command-center/inbox"
+    },
+    {
+      "at": "2026-08-03T15:29:35.652Z",
+      "action": "click_locator",
+      "text": "/SP2SDD8F|HireToPay|YCTD HireToPay|SP2SDD8FM8|SP3SDDXE85/i",
+      "url": "http://127.0.0.1:5173/command-center/inbox"
+    },
+    {
+      "at": "2026-08-03T15:29:37.278Z",
+      "action": "click_role",
+      "text": "/Duyệt|Phê duyệt|Approve|Hoàn thành|Xử lý/i",
+      "url": "http://127.0.0.1:5173/command-center/inbox"
+    },
+    {
+      "at": "2026-08-03T15:29:40.319Z",
+      "action": "click_locator",
+      "text": "/Xác nhận|Duyệt|OK|Đồng ý/i",
+      "url": "http://127.0.0.1:5173/command-center/inbox"
+    },
+    {
+      "at": "2026-08-03T15:29:42.904Z",
+      "action": "f5_inbox"
+    }
+  ],
+  "steps": {
+    "L0": {
+      "url": "http://127.0.0.1:5173",
+      "clickPath": [
+        "probe"
+      ],
+      "network": [],
+      "f5": null,
+      "spec_ref": "L0 stack",
+      "summary": "portal=200 hrm=200 xbos=200",
+      "verdict": "🟢",
+      "at": "2026-08-03T15:29:31.944Z"
+    },
+    "HP03_SCAN1": {
+      "url": "http://127.0.0.1:5173/command-center/inbox",
+      "clickPath": [
+        "/command-center/inbox"
+      ],
+      "network": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+          "at": "2026-08-03T15:29:32.236Z",
+          "taskCount": 32,
+          "hasLegacy": true,
+          "hasNew": false,
+          "sampleTitles": [
+            "Phê duyệt yêu cầu tuyển dụng HRM · YCTD HireToPay SP2SDD8FM8",
+            "Phê duyệt đơn nghỉ phép HRM",
+            "Tuyển dụng nhân sự",
+            "Tuyển dụng nhân sự",
+            "Tuyển dụng nhân sự",
+            "Phê duyệt đơn nghỉ phép HRM",
+            "Phê duyệt đơn nghỉ phép HRM",
+            "Phê duyệt đơn nghỉ phép HRM"
+          ]
+        }
+      ],
+      "f5": null,
+      "spec_ref": "J-REC-WF-03 · UF-XBOS-08",
+      "summary": "hit=true source=legacy stamp=SP2SDD8FM8 priorRec=true empty=false",
+      "taskSamples": [
+        {
+          "at": "2026-08-03T15:29:32.263Z",
+          "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+          "status": 200,
+          "count": 32,
+          "sample": [
+            {
+              "id": "f01d0f12-ab70-4967-90c3-4fa8746312d9",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Phê duyệt yêu cầu tuyển dụng HRM · YCTD HireToPay SP2SDD8FM8",
+              "subject_title": "YCTD HireToPay SP2SDD8FM8",
+              "display_title": "Phê duyệt yêu cầu tuyển dụng HRM · YCTD HireToPay SP2SDD8FM8",
+              "instance_id": "5590cbb1-80ff-4c1b-af72-4a78ce3a3782"
+            },
+            {
+              "id": "55718625-3e92-4807-98c5-cadf2cffdb4e",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+              "display_title": "Phê duyệt đơn nghỉ phép HRM",
+              "instance_id": "0f2877f0-acba-4220-81cf-08c1f8097133"
+            },
+            {
+              "id": "f1062f37-3898-4c7d-a3bb-a8f59b14c420",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Tuyển dụng nhân sự",
+              "display_title": "Tuyển dụng nhân sự",
+              "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+            },
+            {
+              "id": "a0813de7-e5d5-482c-9bd8-33b1b4adcd2c",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Tuyển dụng nhân sự",
+              "display_title": "Tuyển dụng nhân sự",
+              "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+            },
+            {
+              "id": "15c2fead-26da-46df-b5bd-dbc4d10c233c",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Tuyển dụng nhân sự",
+              "display_title": "Tuyển dụng nhân sự",
+              "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+            },
+            {
+              "id": "4c26284f-6418-4a23-bc81-68c34c815d0f",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+              "display_title": "Phê duyệt đơn nghỉ phép HRM",
+              "instance_id": "3424491e-a67e-48bc-8939-8fa82c4c492b"
+            },
+            {
+              "id": "1908744e-4411-41dc-ab9d-ce7918fdb768",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+              "display_title": "Phê duyệt đơn nghỉ phép HRM",
+              "instance_id": "092bd2c9-7e12-4e88-9db7-5d0ff4237602"
+            },
+            {
+              "id": "0d6de630-8698-4f87-9ab5-3602028f3089",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+              "display_title": "Phê duyệt đơn nghỉ phép HRM",
+              "instance_id": "2b4b7d20-b641-41c2-b558-3ea514eb434b"
+            },
+            {
+              "id": "4daa1cbc-e4c8-4907-a399-32668afa45f4",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+              "display_title": "Phê duyệt đơn nghỉ phép HRM",
+              "instance_id": "0111b0cc-df43-489c-adf7-4e0f8bd61ab2"
+            },
+            {
+              "id": "e6d8e926-f174-4aee-b2c0-09e88f4773fb",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+              "display_title": "Phê duyệt đơn nghỉ phép HRM",
+              "instance_id": "7ffca94e-deb6-42a9-b488-101bb5cc39ce"
+            },
+            {
+              "id": "d748e9bc-7716-4887-a41e-dd51b3a30e7c",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+              "display_title": "Phê duyệt đơn nghỉ phép HRM",
+              "instance_id": "692215a0-e7e0-4ffe-bc56-930b12402205"
+            },
+            {
+              "id": "58d55187-0f4c-485b-b22c-5a269ea5f26d",
+              "assignee": "ceo@xe.vn",
+              "company_id": "holding",
+              "status": "pending",
+              "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+              "display_title": "Phê duyệt đơn nghỉ phép HRM",
+              "instance_id": "83fdc40d-e37f-426d-b6a3-b52b8aa99bd5"
+            }
+          ]
+        }
+      ],
+      "bodySample": "XeVN\nT\n\nPhạm vi làm việc\n\nTập đoàn XeVN\n\nCông ty chính · Tập đoàn · CEO Tập đoàn\n\nC\n\nCEO Tập đoàn\n\nCEO Tập đoàn\n\nXeVN OS\n\nCommand Center · Hộp thư\n\nTổng quan CC\nTải lại\nViệc cần xử lý\n\nNguồn: GET /api/xbos/workflow-engine/tasks · assignee ceo@xe.vn\n\nTrung bình\nxbos-workflow · hrm\n\nPhê duyệt yêu cầu tuyển dụng HRM · YCTD HireToPay SP2SDD8FM8\n\nYêu cầu tuyển dụng\n\nNgười nhận: ceo@xe.vn\n\nMở chi tiết\nXử lý nhanh\nTrung bình\nxbos-workflow · hrm\n\nPhê duyệt đơn nghỉ phép HRM\n\nNghỉ phép\n\nNgười nhận: ceo@xe.vn\n\nMở chi tiết\nXử lý nhanh\nTrung bình\nxbos-workflow · business\n\nTuyển dụng nhân sự\n\nDuyệt định ng",
+      "verdict": "🟢",
+      "at": "2026-08-03T15:29:35.612Z"
+    },
+    "HP03": {
+      "url": "http://127.0.0.1:5173/command-center/inbox",
+      "clickPath": [
+        "/command-center/inbox",
+        "open SP2SDD8FM8",
+        "Duyệt",
+        "F5"
+      ],
+      "network": [
+        {
+          "method": "POST",
+          "status": 201,
+          "url": "/api/xbos/workflow-engine/tasks/f01d0f12-ab70-4967-90c3-4fa8746312d9/complete",
+          "at": "2026-08-03T15:29:37.463Z",
+          "approvePath": true,
+          "code": "XBOS-WF-200"
+        }
+      ],
+      "f5": true,
+      "spec_ref": "HP-03 · J-REC-WF-03 · UF-XBOS-08",
+      "gap": null,
+      "summary": "thisWave=true source=legacy stamp=SP2SDD8FM8 approveOk=true stillPending=false",
+      "stampSource": "legacy",
+      "matchedStamp": "SP2SDD8FM8",
+      "approveOk": true,
+      "stillPending": false,
+      "verdict": "🟢",
+      "at": "2026-08-03T15:29:45.515Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-03T15:29:29.940Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-08-03T15:29:29.942Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-03T15:29:29.947Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-08-03T15:29:32.019Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-03T15:29:32.025Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-03T15:29:32.062Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:29:32.236Z",
+      "taskCount": 32,
+      "hasLegacy": true,
+      "hasNew": false,
+      "sampleTitles": [
+        "Phê duyệt yêu cầu tuyển dụng HRM · YCTD HireToPay SP2SDD8FM8",
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Tuyển dụng nhân sự",
+        "Tuyển dụng nhân sự",
+        "Tuyển dụng nhân sự",
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Phê duyệt đơn nghỉ phép HRM"
+      ]
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/workflow-engine/tasks/f01d0f12-ab70-4967-90c3-4fa8746312d9/complete",
+      "at": "2026-08-03T15:29:37.463Z",
+      "approvePath": true,
+      "code": "XBOS-WF-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:29:37.480Z",
+      "taskCount": 31,
+      "hasLegacy": false,
+      "hasNew": false,
+      "sampleTitles": [
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Tuyển dụng nhân sự",
+        "Tuyển dụng nhân sự",
+        "Tuyển dụng nhân sự",
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Phê duyệt đơn nghỉ phép HRM"
+      ]
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-08-03T15:29:42.921Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-03T15:29:42.930Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-03T15:29:42.949Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-08-03T15:29:43.010Z",
+      "taskCount": 31,
+      "hasLegacy": false,
+      "hasNew": false,
+      "sampleTitles": [
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Tuyển dụng nhân sự",
+        "Tuyển dụng nhân sự",
+        "Tuyển dụng nhân sự",
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Phê duyệt đơn nghỉ phép HRM",
+        "Phê duyệt đơn nghỉ phép HRM"
+      ]
+    }
+  ],
+  "taskGetSamples": [
+    {
+      "at": "2026-08-03T15:29:32.263Z",
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "status": 200,
+      "count": 32,
+      "sample": [
+        {
+          "id": "f01d0f12-ab70-4967-90c3-4fa8746312d9",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt yêu cầu tuyển dụng HRM · YCTD HireToPay SP2SDD8FM8",
+          "subject_title": "YCTD HireToPay SP2SDD8FM8",
+          "display_title": "Phê duyệt yêu cầu tuyển dụng HRM · YCTD HireToPay SP2SDD8FM8",
+          "instance_id": "5590cbb1-80ff-4c1b-af72-4a78ce3a3782"
+        },
+        {
+          "id": "55718625-3e92-4807-98c5-cadf2cffdb4e",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "0f2877f0-acba-4220-81cf-08c1f8097133"
+        },
+        {
+          "id": "f1062f37-3898-4c7d-a3bb-a8f59b14c420",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Tuyển dụng nhân sự",
+          "display_title": "Tuyển dụng nhân sự",
+          "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+        },
+        {
+          "id": "a0813de7-e5d5-482c-9bd8-33b1b4adcd2c",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Tuyển dụng nhân sự",
+          "display_title": "Tuyển dụng nhân sự",
+          "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+        },
+        {
+          "id": "15c2fead-26da-46df-b5bd-dbc4d10c233c",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Tuyển dụng nhân sự",
+          "display_title": "Tuyển dụng nhân sự",
+          "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+        },
+        {
+          "id": "4c26284f-6418-4a23-bc81-68c34c815d0f",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "3424491e-a67e-48bc-8939-8fa82c4c492b"
+        },
+        {
+          "id": "1908744e-4411-41dc-ab9d-ce7918fdb768",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "092bd2c9-7e12-4e88-9db7-5d0ff4237602"
+        },
+        {
+          "id": "0d6de630-8698-4f87-9ab5-3602028f3089",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "2b4b7d20-b641-41c2-b558-3ea514eb434b"
+        },
+        {
+          "id": "4daa1cbc-e4c8-4907-a399-32668afa45f4",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "0111b0cc-df43-489c-adf7-4e0f8bd61ab2"
+        },
+        {
+          "id": "e6d8e926-f174-4aee-b2c0-09e88f4773fb",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "7ffca94e-deb6-42a9-b488-101bb5cc39ce"
+        },
+        {
+          "id": "d748e9bc-7716-4887-a41e-dd51b3a30e7c",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "692215a0-e7e0-4ffe-bc56-930b12402205"
+        },
+        {
+          "id": "58d55187-0f4c-485b-b22c-5a269ea5f26d",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "83fdc40d-e37f-426d-b6a3-b52b8aa99bd5"
+        }
+      ]
+    },
+    {
+      "at": "2026-08-03T15:29:37.496Z",
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "status": 200,
+      "count": 31,
+      "sample": [
+        {
+          "id": "55718625-3e92-4807-98c5-cadf2cffdb4e",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "0f2877f0-acba-4220-81cf-08c1f8097133"
+        },
+        {
+          "id": "f1062f37-3898-4c7d-a3bb-a8f59b14c420",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Tuyển dụng nhân sự",
+          "display_title": "Tuyển dụng nhân sự",
+          "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+        },
+        {
+          "id": "a0813de7-e5d5-482c-9bd8-33b1b4adcd2c",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Tuyển dụng nhân sự",
+          "display_title": "Tuyển dụng nhân sự",
+          "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+        },
+        {
+          "id": "15c2fead-26da-46df-b5bd-dbc4d10c233c",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Tuyển dụng nhân sự",
+          "display_title": "Tuyển dụng nhân sự",
+          "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+        },
+        {
+          "id": "4c26284f-6418-4a23-bc81-68c34c815d0f",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "3424491e-a67e-48bc-8939-8fa82c4c492b"
+        },
+        {
+          "id": "1908744e-4411-41dc-ab9d-ce7918fdb768",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "092bd2c9-7e12-4e88-9db7-5d0ff4237602"
+        },
+        {
+          "id": "0d6de630-8698-4f87-9ab5-3602028f3089",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "2b4b7d20-b641-41c2-b558-3ea514eb434b"
+        },
+        {
+          "id": "4daa1cbc-e4c8-4907-a399-32668afa45f4",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "0111b0cc-df43-489c-adf7-4e0f8bd61ab2"
+        },
+        {
+          "id": "e6d8e926-f174-4aee-b2c0-09e88f4773fb",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "7ffca94e-deb6-42a9-b488-101bb5cc39ce"
+        },
+        {
+          "id": "d748e9bc-7716-4887-a41e-dd51b3a30e7c",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "692215a0-e7e0-4ffe-bc56-930b12402205"
+        },
+        {
+          "id": "58d55187-0f4c-485b-b22c-5a269ea5f26d",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "83fdc40d-e37f-426d-b6a3-b52b8aa99bd5"
+        },
+        {
+          "id": "36414a15-f963-4ce9-8f1a-0261015c42a4",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "ecb9cd01-da7a-44e1-b6b8-947230c40905"
+        }
+      ]
+    },
+    {
+      "at": "2026-08-03T15:29:43.029Z",
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "status": 200,
+      "count": 31,
+      "sample": [
+        {
+          "id": "55718625-3e92-4807-98c5-cadf2cffdb4e",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "0f2877f0-acba-4220-81cf-08c1f8097133"
+        },
+        {
+          "id": "f1062f37-3898-4c7d-a3bb-a8f59b14c420",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Tuyển dụng nhân sự",
+          "display_title": "Tuyển dụng nhân sự",
+          "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+        },
+        {
+          "id": "a0813de7-e5d5-482c-9bd8-33b1b4adcd2c",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Tuyển dụng nhân sự",
+          "display_title": "Tuyển dụng nhân sự",
+          "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+        },
+        {
+          "id": "15c2fead-26da-46df-b5bd-dbc4d10c233c",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Tuyển dụng nhân sự",
+          "display_title": "Tuyển dụng nhân sự",
+          "instance_id": "6e1140cc-30e1-40b7-8dc4-d31da80035c3"
+        },
+        {
+          "id": "4c26284f-6418-4a23-bc81-68c34c815d0f",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "3424491e-a67e-48bc-8939-8fa82c4c492b"
+        },
+        {
+          "id": "1908744e-4411-41dc-ab9d-ce7918fdb768",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "092bd2c9-7e12-4e88-9db7-5d0ff4237602"
+        },
+        {
+          "id": "0d6de630-8698-4f87-9ab5-3602028f3089",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "2b4b7d20-b641-41c2-b558-3ea514eb434b"
+        },
+        {
+          "id": "4daa1cbc-e4c8-4907-a399-32668afa45f4",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "0111b0cc-df43-489c-adf7-4e0f8bd61ab2"
+        },
+        {
+          "id": "e6d8e926-f174-4aee-b2c0-09e88f4773fb",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "7ffca94e-deb6-42a9-b488-101bb5cc39ce"
+        },
+        {
+          "id": "d748e9bc-7716-4887-a41e-dd51b3a30e7c",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "692215a0-e7e0-4ffe-bc56-930b12402205"
+        },
+        {
+          "id": "58d55187-0f4c-485b-b22c-5a269ea5f26d",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "83fdc40d-e37f-426d-b6a3-b52b8aa99bd5"
+        },
+        {
+          "id": "36414a15-f963-4ce9-8f1a-0261015c42a4",
+          "assignee": "ceo@xe.vn",
+          "company_id": "holding",
+          "status": "pending",
+          "workflow_name": "Phê duyệt đơn nghỉ phép HRM",
+          "display_title": "Phê duyệt đơn nghỉ phép HRM",
+          "instance_id": "ecb9cd01-da7a-44e1-b6b8-947230c40905"
+        }
+      ]
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    {
+      "at": "2026-08-03T15:29:31.944Z",
+      "name": "00-shell",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w3-20260803/00-shell.png"
+    },
+    {
+      "at": "2026-08-03T15:29:35.585Z",
+      "name": "03-inbox-pass1",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w3-20260803/03-inbox-pass1.png"
+    },
+    {
+      "at": "2026-08-03T15:29:37.249Z",
+      "name": "03-inbox-detail",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w3-20260803/03-inbox-detail.png"
+    },
+    {
+      "at": "2026-08-03T15:29:45.494Z",
+      "name": "03-inbox-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w3-20260803/03-inbox-f5.png"
+    }
+  ],
+  "ids": {
+    "requisitionId": null,
+    "workflowInstanceId": null,
+    "approvedTaskId": null
+  },
+  "stampSource": "legacy",
+  "matchedStamp": "SP2SDD8FM8",
+  "inboxThisWave": true,
+  "approveOk": true,
+  "seed_used": false,
+  "finishedAt": "2026-08-03T15:29:45.516Z",
+  "click_count": 6,
+  "idle_guard": {
+    "qa_idle_viewport": "PASS",
+    "click_count": 6
+  },
+  "ack_status": "PASS_TO_PM"
+}

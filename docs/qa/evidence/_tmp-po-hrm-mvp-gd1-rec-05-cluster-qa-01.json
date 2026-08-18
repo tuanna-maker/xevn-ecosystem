@@ -1,0 +1,267 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-REC-05-CLUSTER-QA-01",
+  "stamp": "REC05QA-MSL2GK3E",
+  "startedAt": "2026-08-09T00:30:37.050Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "seed_used": false,
+    "c_slice_ne_module": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "l1": {
+    "probes": [
+      {
+        "method": "GET",
+        "path": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+        "status": 200,
+        "snippet": "{\"success\":true,\"code\":\"HRM-REC-STG-200\",\"message\":\"Effective pipeline stages listed\",\"data\":{\"total\":4,\"data\":[{\"id\":\"debe15de-ea76-4943-9417-19ac76369c63\",\"companyId\":\"holding\",\"stageKey\":\"hr_custom_stage_07\",\"nameVi\":",
+        "cannot": false
+      },
+      {
+        "method": "POST",
+        "path": "/api/hrm/recruitment/candidates/00000000-0000-4000-8000-000000000001/transitions",
+        "status": 404,
+        "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/recruitment/candidates/00000000-0000-4000-8000-000000000001/transitions\",\"timestamp\":\"2026-08-09T00:30:37.198Z\"}",
+        "cannot": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/hrm/recruitment/candidates/00000000-0000-4000-8000-000000000001/stage-history?company_id=main",
+        "status": 404,
+        "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot GET /api/hrm/recruitment/candidates/00000000-0000-4000-8000-000000000001/stage-history?company_id=main\",\"timestamp\":\"2026-08-09T00:30:37.214Z\"}",
+        "cannot": true
+      },
+      {
+        "method": "POST",
+        "path": "/api/hrm/rec/candidates/00000000-0000-4000-8000-000000000001/transitions",
+        "status": 404,
+        "snippet": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot POST /api/hrm/rec/candidates/00000000-0000-4000-8000-000000000001/transitions\",\"timestamp\":\"2026-08-09T00:30:37.230Z\"}",
+        "cannot": true
+      }
+    ],
+    "transitions_live": false,
+    "history_live": false,
+    "nest_rec_deny": true,
+    "eff_ok": true
+  },
+  "build": {
+    "ok": false,
+    "exit": 1,
+    "skipped": true,
+    "error": "TS2345 listCandidateStageHistory query.company_id optional vs resolveHrmListScope(string) — sealed prior run"
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/",
+      "at": "2026-08-09T00:30:38.684Z",
+      "recruitment": false,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/",
+      "at": "2026-08-09T00:30:38.684Z",
+      "recruitment": false,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/operating-units",
+      "at": "2026-08-09T00:30:39.038Z",
+      "recruitment": false,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-09T00:30:39.066Z",
+      "recruitment": false,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/dashboard?company_id=main&year=2026&include=yctd",
+      "at": "2026-08-09T00:30:39.468Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-09T00:30:39.469Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-09T00:30:39.469Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-09T00:30:39.469Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-09T00:30:39.469Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/operating-units",
+      "at": "2026-08-09T00:30:42.046Z",
+      "recruitment": false,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/company-subscription?company_id=main",
+      "at": "2026-08-09T00:30:42.092Z",
+      "recruitment": false,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/dashboard?company_id=main&year=2026&include=yctd",
+      "at": "2026-08-09T00:30:42.369Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-09T00:30:42.369Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-09T00:30:42.369Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-09T00:30:42.369Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-09T00:30:42.369Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-09T00:30:42.414Z",
+      "recruitment": true,
+      "nest_rec": false
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates?company_id=main&page=1&page_size=500",
+      "at": "2026-08-09T00:30:42.414Z",
+      "recruitment": true,
+      "nest_rec": false
+    }
+  ],
+  "nest_rec_hits": [],
+  "consoleErrors": [
+    "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <div> p \n    at div\n    at Badge (http://127.0.0.1:5173/hr/src/components/ui/badge.tsx:37:18)\n    at p\n    at div\n    at div\n    at http://127.0.0.1:5173/hr/node_"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-rec-05-cluster-qa-01\\01-candidates.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-hrm-mvp-gd1-rec-05-cluster-qa-01\\02-transition-dialog.png"
+  ],
+  "click_log": [
+    "open /hr/recruitment",
+    "click Ứng viên",
+    "click Tất cả ứng viên",
+    "click YCTD stage picker"
+  ],
+  "journeys": {
+    "J-HRM-REC-STG-05-02": {
+      "id": "J-HRM-REC-STG-05-02",
+      "verdict": "BLOCKED",
+      "notes": [
+        "BLOCKED — POST …/transitions Cannot POST (dist not LIVE)"
+      ]
+    },
+    "J-HRM-REC-STG-05-03": {
+      "id": "J-HRM-REC-STG-05-03",
+      "verdict": "BLOCKED",
+      "notes": [
+        "BLOCKED — BE transitions not LIVE; cannot assert REJECT-REASON 400 + F5"
+      ]
+    },
+    "J-HRM-REC-STG-05-04": {
+      "id": "J-HRM-REC-STG-05-04",
+      "verdict": "BLOCKED",
+      "notes": [
+        "BLOCKED — BE transitions not LIVE; reverse CFG + multi-YCTD not executable",
+        "nest_rec_browser_hits=0",
+        "DENY reopen J-CV-04 (not executed)",
+        "DENY pool-as-FR-05 (Lane A picker only asserted)"
+      ]
+    },
+    "J-HRM-REC-STG-05-01": {
+      "id": "J-HRM-REC-STG-05-01",
+      "verdict": "FAIL",
+      "notes": [
+        "dialog open",
+        "no EFF GET after open"
+      ]
+    }
+  },
+  "defects": [
+    {
+      "id": "R-REC-05-BE-BUILD-TS2345",
+      "severity": "P0",
+      "owner": "dev-be",
+      "note": "TS2345 listCandidateStageHistory query.company_id optional vs resolveHrmListScope(string) — sealed prior run",
+      "file": "apps/api/hrm-api/src/recruitment/recruitment.service.ts:2501",
+      "fix_hint": "listCandidateStageHistory: pass query.company_id ?? '' (or require company_id on ListCandidateStageHistoryQueryDto) to satisfy resolveHrmListScope(requestedCompanyId: string); rebuild+restart dist; seal POST transitions + GET stage-history not Cannot *"
+    },
+    {
+      "id": "R-REC-05-BE-ROUTES-NOT-LIVE",
+      "severity": "P0",
+      "owner": "dev-be",
+      "note": "Running dist lacks POST …/candidates/:id/transitions and GET …/stage-history (Cannot * 404 HRM-DATA-404) while EFF LIVE — stale/unbuildable dist after BE-01 READY claim"
+    }
+  ],
+  "overall": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-09T00:30:55.148Z",
+  "nest_rec_hits_count": 0,
+  "recruitment_path_ok": true
+}

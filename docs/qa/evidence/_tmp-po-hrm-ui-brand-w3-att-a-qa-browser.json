@@ -1,0 +1,497 @@
+{
+  "work_item_id": "PO-HRM-UI-BRAND-W3-ATT-A-QA",
+  "startedAt": "2026-08-05T03:23:15.145Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "inventory": [
+    "S01",
+    "S02",
+    "S03",
+    "S09",
+    "S10",
+    "S11",
+    "S12",
+    "S20",
+    "S21",
+    "S22"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "themeContrastStrict": null,
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/rules?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/work-sites?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/attendance-sheets?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&employee_id=646306df-f4a6-4199-bf99-9ea8a3ff8584&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&employee_id=646306df-f4a6-4199-bf99-9ea8a3ff8584&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&employee_id=646306df-f4a6-4199-bf99-9ea8a3ff8584&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&employee_id=646306df-f4a6-4199-bf99-9ea8a3ff8584&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&employee_id=646306df-f4a6-4199-bf99-9ea8a3ff8584&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&employee_id=646306df-f4a6-4199-bf99-9ea8a3ff8584&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&employee_id=646306df-f4a6-4199-bf99-9ea8a3ff8584&from_date=2026-08-05&to_date=2026-08-05&page=1&page_size=1"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/records?company_id=main&page=1&page_size=100"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/face-data?company_id=main"
+    }
+  ],
+  "attendancePosts": [],
+  "consoleErrors": [
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "Error loading face recognition models: SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+  ],
+  "pageErrors": [],
+  "steps": {
+    "l0": {
+      "status": "PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "at": "2026-08-05T03:23:15.169Z"
+    },
+    "login": {
+      "status": "PASS",
+      "note": "HTTP 201",
+      "at": "2026-08-05T03:23:15.258Z"
+    },
+    "overview": {
+      "status": "PASS",
+      "note": "S01–S03+S09",
+      "at": "2026-08-05T03:23:18.966Z"
+    },
+    "manual": {
+      "status": "PASS",
+      "note": "S11–S12",
+      "at": "2026-08-05T03:23:24.062Z"
+    },
+    "gps": {
+      "status": "PASS",
+      "note": "S20–S21",
+      "at": "2026-08-05T03:23:29.372Z"
+    },
+    "face": {
+      "status": "PASS",
+      "note": "honesty stub",
+      "at": "2026-08-05T03:23:31.583Z"
+    }
+  },
+  "checks": {
+    "S01_overview_root": {
+      "pass": true
+    },
+    "S03_cta": {
+      "pass": true,
+      "text": "Chấm công ngay",
+      "backgroundColor": "rgb(30, 64, 175)",
+      "nearPrimary": true,
+      "notOrange": true
+    },
+    "S02_kpi_sharp": {
+      "pass": true,
+      "paleLabelCount": 0,
+      "sample": [
+        {
+          "text": "Tổng quan",
+          "fontSize": "17.5px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "700"
+        },
+        {
+          "text": "Đi muộn, về sớm",
+          "fontSize": "15px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        },
+        {
+          "text": "0",
+          "fontSize": "31.5px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "700"
+        },
+        {
+          "text": "Thực tế đã nghỉ",
+          "fontSize": "15px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        },
+        {
+          "text": "4",
+          "fontSize": "31.5px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "700"
+        },
+        {
+          "text": "Kế hoạch nghỉ",
+          "fontSize": "15px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        }
+      ],
+      "kpiTitles": [
+        {
+          "text": "Đi muộn, về sớm",
+          "fontSize": "15px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        },
+        {
+          "text": "Thực tế đã nghỉ",
+          "fontSize": "15px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        },
+        {
+          "text": "Kế hoạch nghỉ",
+          "fontSize": "15px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        },
+        {
+          "text": "Tình hình nghỉ theo thời gian",
+          "fontSize": "14px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        },
+        {
+          "text": "Tình hình nghỉ theo phòng ban",
+          "fontSize": "14px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        },
+        {
+          "text": "Phân tích loại nghỉ",
+          "fontSize": "14px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        },
+        {
+          "text": "Danh sách đi muộn, về sớm",
+          "fontSize": "14px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        },
+        {
+          "text": "1 lần",
+          "fontSize": "15px",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "600"
+        }
+      ]
+    },
+    "S09_leave_panel": {
+      "pass": true,
+      "visible": true
+    },
+    "S10_method_selector": {
+      "pass": true,
+      "wizardOk": true,
+      "selectorOk": true,
+      "manualSelected": true,
+      "iconBg": "rgb(30, 64, 175)",
+      "borderColor": "rgb(30, 64, 175)",
+      "methodPrimary": true,
+      "methodOrange": false
+    },
+    "S11_manual_widget": {
+      "pass": true,
+      "checkinVisible": true,
+      "backgroundColor": "rgb(30, 64, 175)",
+      "checkinPrimary": true
+    },
+    "S12_manual_confirm": {
+      "pass": true,
+      "dialogOpened": true,
+      "hasSurface": true,
+      "titleStyle": {
+        "fontSize": "17.5px",
+        "fontWeight": "600",
+        "color": "rgb(17, 24, 39)",
+        "text": "Xác nhận Check-in"
+      },
+      "brandBar": {
+        "bg": "rgb(30, 64, 175)",
+        "height": "3px",
+        "content": "\"\""
+      },
+      "brandBarNearPrimary": true,
+      "paleHits": 0
+    },
+    "S22_today_records": {
+      "pass": true
+    },
+    "S20_gps_widget": {
+      "pass": true,
+      "gpsOk": true,
+      "gpsHasCoords": true,
+      "snippet": "Chấm công GPS\n10:23:26\nThứ Tư, 05/08/2026\nVĩ độ (Latitude)\n21.028511°\nKinh độ (Longitude)\n105.804817°\nĐộ chính xác\n10m\nĐộ cao\nN/A\nHướng\nN/A\nChất lượng tín hiệu:\nRất chính xác (<10m)\nĐiểm trung chuyển "
+    },
+    "S21_gps_confirm": {
+      "pass": true,
+      "hasSurface": true,
+      "paleHits": 0,
+      "sample": [
+        {
+          "text": "QA-IM-W4B1E63RYV",
+          "color": "rgb(75, 85, 99)"
+        },
+        {
+          "text": "Thời gian",
+          "color": "rgb(75, 85, 99)"
+        },
+        {
+          "text": "Điểm trung chuyển Bus Cầu Giấy, Láng Thư",
+          "color": "rgb(75, 85, 99)"
+        },
+        {
+          "text": "Loại chấm công",
+          "color": "rgb(75, 85, 99)"
+        },
+        {
+          "text": "Ghi chú (tùy chọn)",
+          "color": "rgb(75, 85, 99)"
+        }
+      ]
+    },
+    "GPS_latlon_network": {
+      "pass": true,
+      "latLonOnPost": true,
+      "note": "Retest gps-wire: POST has lat/lon; 400 HRM-ATT-GEO-001",
+      "latitude": 21.028511,
+      "longitude": 105.804817
+    },
+    "Face_hold_honesty": {
+      "pass": true,
+      "bannerOk": true,
+      "panelOk": true,
+      "bannerText": "Tính năng đang được phát triển\nChấm công khuôn mặt đang phát triển (GĐ2) — không ghi nhận chấm công thành công từ màn này.",
+      "face_live_claimed": false
+    },
+    "QR_skip": {
+      "pass": true,
+      "note": "SKIP W3-ATT-E — not claimed LIVE"
+    }
+  },
+  "failReasons": [],
+  "screens": [
+    "evidence/screens/po-hrm-ui-brand-w3-att-a-qa/01-overview-kpi-cta.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-a-qa/02-clock-in-method-selector.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-a-qa/03-manual-confirm-dialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-a-qa/04-gps-widget.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-a-qa/05-gps-confirm-dialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-att-a-qa/06-face-hold-banner.png"
+  ],
+  "residuals": [
+    {
+      "id": "W3-ATT-G1",
+      "note": "FaceIDScanner chrome text-muted-foreground inside hold — P2 honesty batch (non-blocking)"
+    },
+    {
+      "id": "W3-ATT-E",
+      "note": "QR + charts remaster out of scope this slice"
+    }
+  ],
+  "honesty": {
+    "face_live_claimed": false,
+    "attendance_closed_claimed": false,
+    "remaster_program_done_claimed": false
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-05T03:28:08.335Z",
+  "criticalFail": [],
+  "gpsWireRetest": "docs/qa/evidence/_tmp-po-hrm-ui-brand-w3-att-a-qa-gps-wire.json"
+}

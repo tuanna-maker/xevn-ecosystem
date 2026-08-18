@@ -1,0 +1,174 @@
+{
+  "work_item_id": "QA-PO-HRM-WH-POSITION-PICKER-01",
+  "ac_id": "AC-SET-CONSUMER-JT-WH-01",
+  "stamp": "WHPOS1-MSNL78LF",
+  "startedAt": "2026-08-10T18:50:47.291Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "settings_catalog_e2e_ready": false,
+    "deny_flip": true,
+    "uf_hrm_10_full": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "exit 0 (pre-run)"
+  },
+  "vitest": {
+    "file": "po-hrm-settings-consumer-jt-wh-fe-01.test.ts",
+    "result": "4/4 (pre-run)"
+  },
+  "jest": {
+    "file": "po-hrm-settings-consumer-jt-wh-be-01.spec.ts",
+    "result": "4/4 (pre-run)"
+  },
+  "catalogs": {
+    "jobTitlesEff": 5,
+    "sampleCodes": [
+      "ceo",
+      "CHRO",
+      "dev_dead",
+      "DRIVER_LEAD",
+      "OPS_MANAGER"
+    ]
+  },
+  "employee": {
+    "id": "33333333-3333-4333-8333-333333333333",
+    "name": "Le Van C"
+  },
+  "browser": {
+    "lastList": {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/33333333-3333-4333-8333-333333333333/work-timeline?company_id=main",
+      "at": "2026-08-10T18:51:01.309Z",
+      "requestBody": null,
+      "count": 1,
+      "sample": [
+        {
+          "id": "2c6ad4dd-1845-44c0-8ffc-58ac86c9205a",
+          "position_key": "ceo",
+          "position": "giám đốc"
+        }
+      ]
+    },
+    "screens": [
+      "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-wh-position-picker-01/01-profile.png",
+      "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-wh-position-picker-01/02-wh-dialog.png",
+      "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-wh-position-picker-01/03-after-save.png",
+      "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-po-hrm-wh-position-picker-01/04-f5.png"
+    ],
+    "lastMutate": {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees/33333333-3333-4333-8333-333333333333/work-timeline?company_id=main",
+      "at": "2026-08-10T18:50:58.141Z",
+      "requestBody": {
+        "event_date": "2026-08-10",
+        "title": "QA QTCT WHPOS1-MSNL78LF",
+        "description": null,
+        "event_type": "position",
+        "status": "current",
+        "contract_code": null,
+        "notes": null,
+        "position_key": "ceo",
+        "position": "giám đốc",
+        "department_key": "DEPT_01",
+        "department": "Nhân sự"
+      },
+      "position_key": "ceo",
+      "position": "giám đốc",
+      "code": "HRM-EMP-PROFILE-201"
+    },
+    "pickerMounted": true,
+    "noFreeTextPosition": true,
+    "pick": {
+      "ok": true,
+      "label": "giám đốc",
+      "dataCode": "giám đốc ceo"
+    },
+    "mutateStatus": 201,
+    "requestPositionKey": "ceo",
+    "responsePositionKey": "ceo",
+    "feLabelAfterSave": true,
+    "f5RowHasCatalogLabel": true,
+    "emptyCatalogCta": false
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/33333333-3333-4333-8333-333333333333/work-timeline?company_id=main",
+      "at": "2026-08-10T18:50:49.284Z",
+      "requestBody": null,
+      "count": 0,
+      "sample": []
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees/33333333-3333-4333-8333-333333333333/work-timeline?company_id=main",
+      "at": "2026-08-10T18:50:58.141Z",
+      "requestBody": {
+        "event_date": "2026-08-10",
+        "title": "QA QTCT WHPOS1-MSNL78LF",
+        "description": null,
+        "event_type": "position",
+        "status": "current",
+        "contract_code": null,
+        "notes": null,
+        "position_key": "ceo",
+        "position": "giám đốc",
+        "department_key": "DEPT_01",
+        "department": "Nhân sự"
+      },
+      "position_key": "ceo",
+      "position": "giám đốc",
+      "code": "HRM-EMP-PROFILE-201"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/33333333-3333-4333-8333-333333333333/work-timeline?company_id=main",
+      "at": "2026-08-10T18:50:58.408Z",
+      "requestBody": null,
+      "count": 1,
+      "sample": [
+        {
+          "id": "2c6ad4dd-1845-44c0-8ffc-58ac86c9205a",
+          "position_key": "ceo",
+          "position": "giám đốc"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/33333333-3333-4333-8333-333333333333/work-timeline?company_id=main",
+      "at": "2026-08-10T18:51:01.309Z",
+      "requestBody": null,
+      "count": 1,
+      "sample": [
+        {
+          "id": "2c6ad4dd-1845-44c0-8ffc-58ac86c9205a",
+          "position_key": "ceo",
+          "position": "giám đốc"
+        }
+      ]
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "endedAt": "2026-08-10T18:51:04.816Z"
+}

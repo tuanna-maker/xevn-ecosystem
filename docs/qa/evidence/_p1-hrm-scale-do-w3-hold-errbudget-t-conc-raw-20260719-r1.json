@@ -1,0 +1,87 @@
+{
+  "work_item_id": "P1-HRM-SCALE-W3-T-CONC",
+  "generatedAt": "2026-07-19T09:27:57.027Z",
+  "target": "http://127.0.0.1:8088",
+  "hrm_base": "http://127.0.0.1:3101/api/hrm",
+  "adr_targets": {
+    "T_CONC": "1000 VU × 5min, error <1%, list p95 <2s",
+    "T_P95_LIST_ms": 2000,
+    "T_P95_SUM_ms": 1000
+  },
+  "stages": [
+    {
+      "vus": 1000,
+      "hold_ms": 300000,
+      "aborted": false,
+      "overall": {
+        "total": 182898,
+        "ok": 181065,
+        "failed": 1833,
+        "errorRate": 0.01002197946396352,
+        "rate429": 0,
+        "rate5xx": 0,
+        "statusCounts": {
+          "0": 1833,
+          "200": 181065
+        },
+        "p50_ms": 468,
+        "p95_ms": 1313,
+        "p99_ms": 2574,
+        "max_ms": 5771,
+        "min_ms": 12,
+        "throughput_rps": 600.9936712604247,
+        "duration_sec": 304.33
+      },
+      "list": {
+        "n": 121604,
+        "p50_ms": 475,
+        "p95_ms": 1333,
+        "p99_ms": 2604
+      },
+      "summary": {
+        "n": 61294,
+        "p50_ms": 453,
+        "p95_ms": 1279,
+        "p99_ms": 2535
+      },
+      "gates": {
+        "error_budget_ok": false,
+        "p95_list_ok": true,
+        "abort_triggered": false
+      },
+      "post_health": [
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/",
+          "status": 200,
+          "ms": 3,
+          "ok": true
+        },
+        {
+          "url": "http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main",
+          "status": 200,
+          "ms": 32,
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "measured_ceiling_vu": null,
+  "max_passing_vu": null,
+  "blocked_reason": null,
+  "t_conc_met": false,
+  "post_test_health": [
+    {
+      "url": "http://127.0.0.1:3101/api/hrm/",
+      "status": 200,
+      "ms": 3,
+      "ok": true
+    },
+    {
+      "url": "http://127.0.0.1:3101/api/hrm/employees?page=1&page_size=5&company_id=main",
+      "status": 200,
+      "ms": 32,
+      "ok": true
+    }
+  ],
+  "u65_note": "NFR probe only — not UF browser acceptance"
+}

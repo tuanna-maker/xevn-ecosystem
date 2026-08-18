@@ -1,0 +1,58 @@
+{
+  "submitter": {
+    "email": "uat.nv0003@xe.vn",
+    "emp": "2680f15f-02b6-44e1-8b42-92a6aaeb7bfb",
+    "code": "UAT-0003",
+    "uuid": "10000000-0000-4000-8000-000000000001"
+  },
+  "approver": {
+    "email": "uat.nv0001@xe.vn",
+    "emp": "3796d949-4513-45c0-88fa-33030a062b17",
+    "code": "HLD-0001",
+    "uuid": "10000000-0000-4000-8000-000000000001",
+    "roles": [
+      "employee",
+      "manager"
+    ],
+    "is_manager": true,
+    "jwt_roles": [
+      "employee",
+      "manager"
+    ]
+  },
+  "subordinate_manager_id": "3796d949-4513-45c0-88fa-33030a062b17",
+  "hierarchy_ok": true,
+  "holding_uuid_ok": true,
+  "leave_pending_mgr": 2,
+  "from_sub_pending": [
+    "ac9db485-5d4f-4d77-9d25-114b157f70cf"
+  ],
+  "known_leave_alive": true,
+  "home_is_manager": true,
+  "home_manager_pending": {
+    "total_count": 2,
+    "leave_count": 2,
+    "update_count": 0,
+    "preview": [
+      {
+        "id": "ac9db485-5d4f-4d77-9d25-114b157f70cf",
+        "kind": "leave_request",
+        "employee_name": "UAT NV 0003",
+        "title": "Duyệt đơn nghỉ — UAT NV 0003",
+        "subtitle": "Mon Aug 03 2026 00:00:00 GMT+0700 (Indochina Time) – Mon Aug 03 2026 00:00:00 GMT+0700 (Indochina Time) · unpaid",
+        "entity_id": "ac9db485-5d4f-4d77-9d25-114b157f70cf",
+        "created_at": "2026-08-03T15:53:17.177Z"
+      },
+      {
+        "id": "70461e4d-fb7a-4456-9d53-39c9dba6539b",
+        "kind": "leave_request",
+        "employee_name": "UAT NV 0020",
+        "title": "Duyệt đơn nghỉ — UAT NV 0020",
+        "subtitle": "Tue Oct 12 2027 00:00:00 GMT+0700 (Indochina Time) – Sat Oct 16 2027 00:00:00 GMT+0700 (Indochina Time) · LVT_02",
+        "entity_id": "70461e4d-fb7a-4456-9d53-39c9dba6539b",
+        "created_at": "2026-08-03T15:09:17.749Z"
+      }
+    ]
+  },
+  "manager_unlock_ok": true
+}

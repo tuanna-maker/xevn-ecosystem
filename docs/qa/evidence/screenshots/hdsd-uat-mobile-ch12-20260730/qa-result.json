@@ -1,0 +1,22 @@
+{
+  "work_item_id": "QA-HDSD-MOB-CH12-01",
+  "date": "2026-07-30",
+  "verdict": {
+    "home": true,
+    "leave": true,
+    "checkin": false,
+    "payslip": true,
+    "profile": true,
+    "approvals": true,
+    "notifications": true,
+    "team": true
+  },
+  "tc_mob": {
+    "TC-MOB-01": "🟢",
+    "TC-MOB-02": "🔴",
+    "TC-MOB-03": "🟢",
+    "TC-MOB-04": "🟢",
+    "TC-MOB-05": "🟢"
+  },
+  "pass": false
+}

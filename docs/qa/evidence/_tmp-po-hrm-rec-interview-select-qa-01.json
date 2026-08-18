@@ -1,0 +1,60 @@
+{
+  "work_item_id": "PO-HRM-REC-INTERVIEW-SELECT-QA-01",
+  "startedAt": "2026-08-06T08:38:16.859Z",
+  "portal": "http://127.0.0.1:5173",
+  "account": "ceo@xe.vn",
+  "u65": true,
+  "mutates": 0,
+  "clickPath": [
+    "goto /login",
+    "login ceo@xe.vn submit",
+    "http://127.0.0.1:5173/command-center/hrm/recruitment?tab=interviews&companyId=main&tenantId=xevn&_qa=…",
+    "click [data-testid=recruitment-nav-interviews]",
+    "click menu Lịch phỏng vấn",
+    "open row menu: Tuấn tuanna@unicomhub.com SA Vòng 1 07/08/2026 09:00 (60 phút) Trực tiếp - Đã lên lịch Chờ kết quả ",
+    "click first interview row (detail fallback)"
+  ],
+  "phases": {
+    "list": {
+      "tabPrecisionVisible": true,
+      "finalUrl": "http://127.0.0.1:5173/command-center/hrm/recruitment?tab=interviews&_qa=1786005498542"
+    },
+    "interview_select": {
+      "openedUpdate": false,
+      "rowSnippet": "Tuấn tuanna@unicomhub.com SA Vòng 1 07/08/2026 09:00 (60 phút) Trực tiếp - Đã lên lịch Chờ kết quả ",
+      "ratingOpened": false,
+      "ratingTriggerText": null,
+      "optionTexts": [],
+      "selectedNoRating": false,
+      "selectedStar": false,
+      "finalUrl": "http://127.0.0.1:5173/command-center/hrm/recruitment?tab=interviews&_qa=1786005498542",
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "consoleWarnings": 0,
+      "classCounts": {
+        "selectItemEmpty": 0,
+        "getDialogPortalContainer": 0,
+        "LayoutDashboard": 0,
+        "dragHandle": 0,
+        "uniqueKey": 0,
+        "ReferenceError": 0,
+        "TypeError": 0,
+        "Uncaught": 0
+      },
+      "pageErrorMessages": [],
+      "consoleErrorSample": [],
+      "selectItemEmptySample": [],
+      "screenshots": [
+        "docs/qa/evidence/po-hrm-rec-interview-select-qa-01/01-interviews-list.png",
+        "docs/qa/evidence/po-hrm-rec-interview-select-qa-01/02-update-dialog.png",
+        "docs/qa/evidence/po-hrm-rec-interview-select-qa-01/03-after-rating-select.png"
+      ],
+      "verdict": "FAIL"
+    }
+  },
+  "claims_denied": [
+    "recruitment_uat_ready",
+    "one-active-interview-BR"
+  ],
+  "endedAt": "2026-08-06T08:38:29.238Z"
+}

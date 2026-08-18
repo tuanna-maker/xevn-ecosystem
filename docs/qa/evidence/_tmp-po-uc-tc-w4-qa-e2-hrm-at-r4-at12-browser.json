@@ -1,0 +1,293 @@
+{
+  "work_item_id": "PO-UC-TC-W4-QA-E2-HRM-AT-R4-AT12-L1",
+  "startedAt": "2026-08-04T05:35:31.312Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "ba_triage": "EXPECTED_NO_CTA for ceo@ as L1 — persona QL trực tiếp",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "MGR_EMAIL": "uat.nv0002@xe.vn",
+    "NV_EMAIL": "uat.nv0007@xe.vn",
+    "COMPANY": "trsport",
+    "TENANT": "xevn",
+    "STAMP": "W4R4AT12-E85ER4",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    },
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    }
+  },
+  "uc": {
+    "HRM-AT-12": {
+      "verdict": "PARTIAL",
+      "note": "L1 approve EVIDENCED (2xx + x-company-id=trsport + FE/F5 Đã duyệt); L2 SPEC_GAP; ceo@ not used as L1",
+      "l1": {
+        "status": 201,
+        "code": "HRM-LEAVE-203",
+        "id": "e03051f1-be68-475d-a096-9381fe1aaf93",
+        "requestStatus": "approved",
+        "xCompanyId": "trsport"
+      },
+      "l2": "SPEC_GAP",
+      "persona": "uat.nv0002@xe.vn",
+      "createPersona": "nv",
+      "stamp": "W4R4AT12-E85ER4",
+      "xCompanyId": "trsport",
+      "at": "2026-08-04T05:36:28.621Z"
+    }
+  },
+  "steps": {
+    "l0": {
+      "summary": "{\"hrm\":{\"status\":200,\"url\":\"http://127.0.0.1:28001/api/hrm\"},\"xbos\":{\"status\":200,\"url\":\"http://127.0.0.1:28002/api/xbos\"},\"portal\":{\"status\":200,\"url\":\"http://127.0.0.1:5173\"}}",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:35:31.355Z"
+    },
+    "login_mgr": {
+      "summary": "mgr=uat.nv0002@xe.vn company=trsport roles=[\"employee\",\"manager\"] emp=VTH-0002",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:35:31.566Z"
+    },
+    "login_nv": {
+      "summary": "nv=uat.nv0007@xe.vn company=trsport roles=[\"employee\"] emp=VTH-0007",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:35:31.567Z"
+    },
+    "precond_report_link": {
+      "summary": "report VTH-0007 manager_id=293b5900-8f99-4a97-878b-26270fb01827",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:35:31.596Z"
+    },
+    "precond_fe_create_nv": {
+      "summary": "NV FE create id=e03051f1-be68-475d-a096-9381fe1aaf93 status=201 code=HRM-LEAVE-201",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:35:57.725Z"
+    },
+    "at12_l2_ladder": {
+      "summary": "Leave L2 ladder AS-IS 1 bước — SPEC_GAP — not invented PASS (BA HOLD)",
+      "verdict": "SPEC_GAP",
+      "at": "2026-08-04T05:35:57.763Z"
+    },
+    "at12_open_leave": {
+      "summary": "persona=uat.nv0002@xe.vn leaveTab=true",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:36:10.914Z"
+    },
+    "at12_open_pending_tab": {
+      "summary": "tabLabel=Chờ duyệt (2) via=locator (regex allows optional (n))",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:36:13.049Z"
+    },
+    "at12_approve_cta": {
+      "summary": "approveBtnCount=2 testIds=[\"hdsd-leave-list-approve\",\"hdsd-leave-list-approve\"] stamp=W4R4AT12-E85ER4",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:36:13.054Z"
+    },
+    "at12_l1_scope_header": {
+      "summary": "x-company-id=trsport expect=trsport not_main=true",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:36:15.673Z"
+    },
+    "at12_l1_appr": {
+      "summary": "clicked=true status=201 code=HRM-LEAVE-203 x-company-id=trsport requestStatus=approved",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:36:15.674Z"
+    },
+    "at12_fe_status_immediate": {
+      "summary": "Đã duyệt visible after click=true apiStatus=approved",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:36:15.679Z"
+    },
+    "at12_f5": {
+      "summary": "stampSeen=false approvedOnFe=true apiStatus=approved x-company-id=trsport",
+      "verdict": "PASS",
+      "at": "2026-08-04T05:36:28.620Z"
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-04T05:35:31.314Z",
+      "msg": "START",
+      "note": "STAMP=W4R4AT12-E85ER4 mgr=uat.nv0002@xe.vn nv=uat.nv0007@xe.vn"
+    },
+    {
+      "at": "2026-08-04T05:35:32.919Z",
+      "msg": "GOTO_NV",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=trsport"
+    },
+    {
+      "at": "2026-08-04T05:35:58.360Z",
+      "msg": "GOTO_MGR_APPROVE",
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=trsport"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=trsport",
+      "at": "2026-08-04T05:35:36.729Z",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=trsport&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T05:35:40.082Z",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=trsport&include_archived=false&page=1&page_size=50",
+      "at": "2026-08-04T05:35:50.037Z",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/leave-requests",
+      "at": "2026-08-04T05:35:56.802Z",
+      "xCompanyId": "main",
+      "code": "HRM-LEAVE-201",
+      "id": "e03051f1-be68-475d-a096-9381fe1aaf93"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=trsport",
+      "at": "2026-08-04T05:35:56.956Z",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=trsport",
+      "at": "2026-08-04T05:36:01.897Z",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=trsport&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T05:36:05.316Z",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/attendance/leave-requests/e03051f1-be68-475d-a096-9381fe1aaf93/approve",
+      "at": "2026-08-04T05:36:13.181Z",
+      "xCompanyId": "trsport",
+      "code": "HRM-LEAVE-203"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=trsport",
+      "at": "2026-08-04T05:36:17.512Z",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=trsport&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-04T05:36:20.570Z",
+      "xCompanyId": "main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=trsport&include_archived=false&page=1&page_size=50",
+      "at": "2026-08-04T05:36:25.274Z",
+      "xCompanyId": "main"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e2-hrm-at-r4-at12/01-nv-mount.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e2-hrm-at-r4-at12/01b-nv-leave.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e2-hrm-at-r4-at12/02-nv-create-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e2-hrm-at-r4-at12/03-nv-filled.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e2-hrm-at-r4-at12/04-nv-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e2-hrm-at-r4-at12/05-mgr-mount.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e2-hrm-at-r4-at12/06-mgr-leave.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e2-hrm-at-r4-at12/07-mgr-cho-duyet.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e2-hrm-at-r4-at12/08-mgr-after-duyet.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w4-qa-e2-hrm-at-r4-at12/09-mgr-f5.png"
+  ],
+  "ids": {
+    "leaveId": "e03051f1-be68-475d-a096-9381fe1aaf93",
+    "nvEmployeeId": "b06422c0-f640-45d1-8cab-cb4a609848d6",
+    "nvCode": "VTH-0007",
+    "mgrEmployeeId": "293b5900-8f99-4a97-878b-26270fb01827"
+  },
+  "leaveCreateBody": {
+    "status": 201,
+    "code": "HRM-LEAVE-201",
+    "id": "e03051f1-be68-475d-a096-9381fe1aaf93",
+    "status_field": "pending",
+    "xCompanyId": "main"
+  },
+  "leaveApproveBody": {
+    "status": 201,
+    "code": "HRM-LEAVE-203",
+    "id": "e03051f1-be68-475d-a096-9381fe1aaf93",
+    "requestStatus": "approved",
+    "xCompanyId": "trsport"
+  },
+  "leaveApproveHeaders": {
+    "x-company-id": "trsport"
+  },
+  "createPersona": "nv",
+  "pendingTabLabel": "Chờ duyệt (2)",
+  "approveBtnCount": 2,
+  "f5Status": {
+    "stampSeen": false,
+    "approvedOnFe": true,
+    "feApprovedImmediate": true,
+    "requestStatus": "approved",
+    "xCompanyId": "trsport",
+    "f5Ok": true
+  },
+  "residuals": [],
+  "hdsd_inventory": [
+    {
+      "surface": "/hr/attendance (NV)",
+      "found": true,
+      "used": "AT-12 precond create"
+    },
+    {
+      "surface": "Nghỉ phép → Chờ duyệt (n)",
+      "found": true,
+      "used": "AT-12 L1 Duyệt"
+    }
+  ],
+  "endedAt": "2026-08-04T05:36:31.029Z",
+  "persona_note": "L1 HP = uat.nv0002@trsport (QL trực tiếp). uat.nv0001@holding blocked by FE coerce holding→main 409 — not ceo@ EXPECTED_NO_CTA.",
+  "seat_verdict": "PASS",
+  "claims": {
+    "at12_l1": true,
+    "at12_l2": false,
+    "leave_l2_pass": false,
+    "at07_reopened": false,
+    "ceo_as_l1": false,
+    "uat_done": false
+  }
+}

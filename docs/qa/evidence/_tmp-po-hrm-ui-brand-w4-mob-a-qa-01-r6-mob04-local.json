@@ -1,0 +1,32 @@
+{
+  "email": "uat.nv0010@xe.vn",
+  "local_base": "http://10.0.2.2:28001",
+  "steps": [
+    {
+      "t": "2026-08-05T09:45:45.118Z",
+      "m": "base_filled",
+      "text": "http://14.225.217.232:3001",
+      "emailOk": false
+    },
+    {
+      "t": "2026-08-05T09:46:01.437Z",
+      "m": "login_filled",
+      "email": "uat.nv0010@xe.vn",
+      "ok": true
+    },
+    {
+      "t": "2026-08-05T09:46:51.360Z",
+      "m": "post_login",
+      "home": false,
+      "local": false,
+      "pilot": true
+    }
+  ],
+  "base_url_field_text": "http://14.225.217.232:3001",
+  "email_field_not_url": false,
+  "email_text": "uat.nv0010@xe.vn",
+  "email_ok": true,
+  "home": false,
+  "login_used_local": false,
+  "login_used_pilot": true
+}

@@ -1,0 +1,116 @@
+{
+  "url": "http://127.0.0.1:5173/command-center/hrm/contracts",
+  "frames": [
+    {
+      "url": "http://127.0.0.1:5173/command-center/hrm/contracts",
+      "name": ""
+    },
+    {
+      "url": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main&_v=1785810976033",
+      "name": ""
+    }
+  ],
+  "iframes": [
+    {
+      "src": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main&_v=1785810976033",
+      "id": ""
+    }
+  ],
+  "buttons": [
+    {
+      "text": "",
+      "testid": null,
+      "aria": "Thông báo",
+      "disabled": false
+    },
+    {
+      "text": "C\n\nCEO Tập đoàn\n\nCEO Tập đoàn",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "BOD",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "Quản lý",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "Nhân viên",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "GROUP",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "TÀI CHÍNH",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "KẾ TOÁN",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "NHÂN SỰ",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "KINH DOANH",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "VẬN HÀNH",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "CÀI ĐẶT HỆ THỐNG",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "Mở",
+      "testid": null,
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "",
+      "testid": null,
+      "aria": "Thu gọn menu HRM",
+      "disabled": false
+    },
+    {
+      "text": "",
+      "testid": null,
+      "aria": "Thu gọn menu HRM",
+      "disabled": false
+    }
+  ],
+  "testids": [
+    "portal-brand-mark",
+    "portal-membership-static"
+  ],
+  "body": "XeVN\nT\n\nPhạm vi làm việc\n\nTập đoàn XeVN\n\nCông ty chính · Tập đoàn · CEO Tập đoàn\n\nC\n\nCEO Tập đoàn\n\nCEO Tập đoàn\n\nXeVN OS\n\nCommand Center\n\nBOD\nQuản lý\nNhân viên\nGROUP\nTÀI CHÍNH\nKẾ TOÁN\nNHÂN SỰ\nKINH DOANH\nVẬN HÀNH\nCÀI ĐẶT HỆ THỐNG\nMở\nHRM\n\nMENU CHÍNH\n\nTổng quan\n\nNHÂN SỰ\n\nNhân sự\nHợp đồng\nBảo hiểm\nQuyết định\nTuyển dụng\n3\nChấm công\nTiền lương\nĐánh giá\nUniAI\nCông việc\nQuy trình & chính sách\nDịch vụ nội bộ\nCông cụ & thiết bị\nHồ sơ xe\n\nQUẢN TRỊ\n\nPhòng/Ban & Công ty\nBáo cáo\nCấu hình HRM\nHướng dẫn sử dụng"
+}

@@ -1,0 +1,103 @@
+{
+  "work_item_id": "PO-HRM-CTR-WORKSPACE-G4-REC-HIRE-FE-CHAIN-QA-01-RETEST",
+  "prior_defect": "DEF-REC-ACCEPT-OFFER-CTA-OFFER-STAGE",
+  "stamp": "CTRG4HIRE-RT-MSO7MLR1",
+  "startedAt": "2026-08-11T05:18:35.759Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "contracts_printable_ready": false,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "prereq": {
+    "candidates_count": 5,
+    "with_employee_id": 0,
+    "accept_target": {
+      "id": "9120c6c1-1bf3-42d9-8c1f-7150f7cfc624",
+      "name": "UV Kênh QA RECCHQA-MSNK95YR",
+      "status": "offer"
+    }
+  },
+  "rows": {},
+  "journeys": {},
+  "network": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/",
+      "status": 200,
+      "at": "2026-08-11T05:18:38.357Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/",
+      "status": 200,
+      "at": "2026-08-11T05:18:38.357Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-11T05:18:38.987Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:18:39.128Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:18:39.705Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/dashboard?company_id=main&year=2026&include=yctd",
+      "status": 200,
+      "at": "2026-08-11T05:18:39.705Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/candidates-pool?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:18:40.410Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/job-templates?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:18:40.431Z"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "status": 200,
+      "at": "2026-08-11T05:18:40.582Z"
+    }
+  ],
+  "steps_attempted": [
+    "Goto http://127.0.0.1:5173/command-center/hrm/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates&candidateId=9120c6c1-1bf3-42d9-8c1f-7150f7cfc624",
+    "Click recruitment-nav-candidates",
+    "Recruitment UI ready: true",
+    "Open detail row for undefined"
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-workspace-g4-rec-hire-fe-chain-retest-01/01-after-candidates-tab.png"
+  ],
+  "defects": [],
+  "ack_status": "FAIL_TO_PM",
+  "overall": "FAIL",
+  "endedAt": "2026-08-11T05:21:01.973Z",
+  "fatal": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('table tbody tr').first().locator('button').first()\n"
+}

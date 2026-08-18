@@ -1,0 +1,175 @@
+{
+  "work_item_id": "W1-B-02-EMP-QA-RET2",
+  "layer": "browser-U65-HDSD",
+  "hdsd_align": true,
+  "u65": "zero-seed",
+  "startedAt": "2026-08-03T13:23:19.393Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:8080",
+    "EMAIL": "ceo@xe.vn"
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T13:23:19.461Z",
+      "action": "API_LOGIN_POST",
+      "url": "http://127.0.0.1:5173/api/xbos/auth/login"
+    },
+    {
+      "at": "2026-08-03T13:23:19.499Z",
+      "action": "API_LOGIN_OK",
+      "status": 201
+    },
+    {
+      "at": "2026-08-03T13:23:20.220Z",
+      "action": "NAV_GOTO_PORTAL_OR_HRM",
+      "url": "http://127.0.0.1:5173/"
+    },
+    {
+      "at": "2026-08-03T13:23:23.172Z",
+      "action": "NAV_FALLBACK_EMPLOYEES_URL",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main",
+      "reason": "menu miss or not on /employees"
+    },
+    {
+      "at": "2026-08-03T13:23:27.659Z",
+      "action": "ASSERT_LIST_RENDER",
+      "rootChild": 0,
+      "rowCount": 0,
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-03T13:23:27.660Z",
+      "action": "RETRY_HRM_DIRECT",
+      "url": "http://127.0.0.1:8080/hr/"
+    },
+    {
+      "at": "2026-08-03T13:23:27.660Z",
+      "action": "NAV_GOTO_PORTAL_OR_HRM",
+      "url": "http://127.0.0.1:8080/hr/"
+    },
+    {
+      "at": "2026-08-03T13:23:30.469Z",
+      "action": "NAV_FALLBACK_EMPLOYEES_URL",
+      "url": "http://127.0.0.1:8080/hr/employees?portal=1&tenantId=xevn&companyId=main",
+      "reason": "menu miss or not on /employees"
+    },
+    {
+      "at": "2026-08-03T13:23:34.642Z",
+      "action": "ASSERT_LIST_RENDER",
+      "rootChild": 0,
+      "rowCount": 0,
+      "url": "http://127.0.0.1:8080/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    }
+  ],
+  "ac": {},
+  "case_matrix": {},
+  "network": [
+    {
+      "at": "2026-08-03T13:23:20.652Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded"
+      }
+    },
+    {
+      "at": "2026-08-03T13:23:20.686Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "bodySnippet": {
+        "code": "XBOS-AUTH-200",
+        "message": "Session loaded"
+      }
+    }
+  ],
+  "consoleErrors": [
+    {
+      "at": "2026-08-03T13:23:23.535Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T13:23:23.700Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T13:23:27.781Z",
+      "text": "[vite] Internal Server Error\nFailed to resolve import \"@/lib/hrmDialogPortalA11y\" from \"src/components/ui/dialog.tsx\". Does the file exist?\n    at TransformPluginContext._formatError (file:///C:/Users/ADMIN/OneDrive/Ta%CC%80i%20li%C3%AA%CC%A3u/Vibe%20Coding/projects/xevn-ecosyste"
+    },
+    {
+      "at": "2026-08-03T13:23:27.836Z",
+      "text": "[vite] Internal Server Error\nFailed to resolve import \"@/lib/embedWorkingContext\" from \"src/components/hrm/HrmOperatingUnitFilter.tsx\". Does the file exist?\n    at TransformPluginContext._formatError (file:///C:/Users/ADMIN/OneDrive/Ta%CC%80i%20li%C3%AA%CC%A3u/Vibe%20Coding/proje"
+    },
+    {
+      "at": "2026-08-03T13:23:27.857Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T13:23:30.566Z",
+      "text": "[vite] Internal Server Error\nFailed to resolve import \"@/lib/embedWorkingContext\" from \"src/components/hrm/HrmOperatingUnitFilter.tsx\". Does the file exist?\n    at TransformPluginContext._formatError (file:///C:/Users/ADMIN/OneDrive/Ta%CC%80i%20li%C3%AA%CC%A3u/Vibe%20Coding/proje"
+    },
+    {
+      "at": "2026-08-03T13:23:30.567Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T13:23:30.605Z",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "at": "2026-08-03T13:23:30.608Z",
+      "text": "[vite] Internal Server Error\nFailed to resolve import \"@/lib/hrmDialogPortalA11y\" from \"src/components/ui/dialog.tsx\". Does the file exist?\n    at TransformPluginContext._formatError (file:///C:/Users/ADMIN/OneDrive/Ta%CC%80i%20li%C3%AA%CC%A3u/Vibe%20Coding/projects/xevn-ecosyste"
+    }
+  ],
+  "pageErrors": [],
+  "screens": [
+    {
+      "at": "2026-08-03T13:23:23.137Z",
+      "name": "00-shell",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-02-emp-qa-ret2-20260803/00-shell.png"
+    },
+    {
+      "at": "2026-08-03T13:23:27.627Z",
+      "name": "01-employees-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-02-emp-qa-ret2-20260803/01-employees-list.png"
+    },
+    {
+      "at": "2026-08-03T13:23:30.442Z",
+      "name": "00-shell",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-02-emp-qa-ret2-20260803/00-shell.png"
+    },
+    {
+      "at": "2026-08-03T13:23:34.619Z",
+      "name": "01-employees-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-02-emp-qa-ret2-20260803/01-employees-list.png"
+    }
+  ],
+  "journeys": [],
+  "boot": {
+    "http://127.0.0.1:5173/hr/src/App.tsx": {
+      "status": 200,
+      "fleetErr": false,
+      "resolveErr": false
+    },
+    "http://127.0.0.1:8080/hr/src/App.tsx": {
+      "status": 200,
+      "fleetErr": false,
+      "resolveErr": false
+    },
+    "http://127.0.0.1:8080/hr/src/pages/Fleet.tsx": {
+      "status": 200,
+      "fleetErr": false,
+      "resolveErr": false
+    }
+  },
+  "idle_guard": {
+    "qa_idle_viewport": "FAIL",
+    "note": "Clicks logged but app never mounted — not idle; FE defect"
+  },
+  "fatal": "Error: whitescreen empty #root after menu+URL — FE boot residual",
+  "finishedAt": "2026-08-03T13:23:34.642Z",
+  "overall": "FAIL"
+}

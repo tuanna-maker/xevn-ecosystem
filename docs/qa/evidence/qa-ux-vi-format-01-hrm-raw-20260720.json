@@ -1,0 +1,83 @@
+{
+  "work_item_id": "QA-UX-VI-FORMAT-01",
+  "startedAt": "2026-07-20T09:02:53.206Z",
+  "persona": "ceo@xe.vn",
+  "console": [
+    {
+      "type": "error",
+      "text": "[tenant-scope.accessible] ✗ GET /api/xbos/tenant-scope/accessible (13ms): tenant-scope.accessible: Không kết nối được XBOS API. Chạy `pnpm dev:xbos-api` (cổng 28002) và kiểm tra VITE_DEV_PROXY_XBOS_API."
+    },
+    {
+      "type": "error",
+      "text": "[tenant-scope.accessible] ✗ GET /api/xbos/tenant-scope/accessible (14ms): tenant-scope.accessible: Không kết nối được XBOS API. Chạy `pnpm dev:xbos-api` (cổng 28002) và kiểm tra VITE_DEV_PROXY_XBOS_API."
+    },
+    {
+      "type": "error",
+      "text": "[tenant-scope.accessible] ✗ GET /api/xbos/tenant-scope/accessible (12ms): tenant-scope.accessible: Không kết nối được XBOS API. Chạy `pnpm dev:xbos-api` (cổng 28002) và kiểm tra VITE_DEV_PROXY_XBOS_API."
+    },
+    {
+      "type": "error",
+      "text": "[tenant-scope.accessible] ✗ GET /api/xbos/tenant-scope/accessible (6ms): tenant-scope.accessible: Không kết nối được XBOS API. Chạy `pnpm dev:xbos-api` (cổng 28002) và kiểm tra VITE_DEV_PROXY_XBOS_API."
+    },
+    {
+      "type": "warning",
+      "text": "⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition."
+    },
+    {
+      "type": "error",
+      "text": "The above error occurred in the <EmployeeCompensationPanel> component:\n\n    at EmployeeCompensationPanel (http://127.0.0.1:5173/hr/src/components/employee/EmployeeCompensationPanel.tsx?t=1784536406206:81:45)\n    at div\n    at http://127.0.0.1:5173/hr/node_modules/.vite/deps/chunk-VHMBS25I.js?v=5fd83e07:149:13\n    at Presence (http://127.0.0.1:5173/hr/node_modules/.vite/deps/chunk-LB2HECTG.js?v=5fd83e07:24:11)\n    at http://127.0.0.1:5173/hr/node_modules/.vite/deps/@radix-ui_react-tabs.js?v=84433"
+    },
+    {
+      "type": "warning",
+      "text": "⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition."
+    },
+    {
+      "type": "warning",
+      "text": "⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition."
+    },
+    {
+      "type": "warning",
+      "text": "⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition."
+    }
+  ],
+  "pageErrors": [
+    "TypeError: Cannot read properties of undefined (reading 'map')",
+    "TypeError: Cannot read properties of undefined (reading 'map')",
+    "TypeError: Cannot read properties of undefined (reading 'map')"
+  ],
+  "samples": {
+    "compensation": {
+      "before_hop_ok": true,
+      "before_snippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\nHoàng Văn An\nDVU-0005\nChỉnh sửa\nThông tin chung\nCông việc\nHợp đồng\nLương & Phụ cấp\nThêm\nHợp đồng\nĐãi ngộ\nLịch sử\n\n1\n\nTổng hợp đồng\n\n1\n\nĐang hiệu lực\n\n0\n\nChờ duyệt\n\n0\n\nHết hạn\n\nDanh sách hợp đồng\nThêm hợp đồng\nMã hợp đồng\tLoại hợp đồng\tNgày hiệu lực\tNgày hết hạn\tFile\tTrạng thái\tThao tác\nHD-F8224BB8\tHDLD_KTH\t01/01/2022\t31/12/2030\t-\t\nHiệu lực\t",
+      "after_dai_snippet": "",
+      "after_root_len": 0,
+      "blank_after_dai": true,
+      "date_seen_on_contracts": true,
+      "hired_date_profile": true,
+      "verdict": "RED"
+    },
+    "payroll_spot": {
+      "iframe_ok": true,
+      "vi_money_inputs": 0,
+      "snippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\nTổng quan\nThành phần lương\nChính sách\nDữ liệu tính lương\nTính lương\nChi trả lương\nBáo cáo\nDanh sách bảng lương\n\n1834 / 1834 bản ghi\n\nMã NV\tHọ và tên\tKỳ lương\tThực lĩnh\tTrạng thái\t\nDVU-0005\tHoàng Văn An\tKỳ lương 05/2026 — services\t17.190.000 ₫\tĐã xử lý\t\n\nDVU-0010\tĐặng Văn An\tKỳ lương 05/2026 — services\t15.390.000 ₫\tĐã xử lý\t\n\nDVU-0015\tDương Văn An\tKỳ lương 05/2026 — services\t14.220.000 ₫\tĐã xử lý\t\n\nDVU-0020\tPhạm Thị An\tKỳ lương 05/2026 — services\t16.020.000 ₫\tĐã xử lý\t\n\nDVU-0030\tNgô Thị An\tKỳ lương 05/2026 — services\t15.5",
+      "verdict": "YELLOW"
+    },
+    "insurance_spot": {
+      "iframe_ok": true,
+      "vi_money_inputs": 0,
+      "snippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\nThêm bảo hiểm\n\nHiển thị 100 / 1043 bản ghi — tổng từ API; số liệu BHXH/BHYT/BHTN theo bản ghi đã tải\n\nTải thêm\nCảnh báo thẻ BHYT sắp hết hạn\n23 khẩn cấp\nCó 23 nhân viên có thẻ BHYT sẽ hết hạn trong 30 ngày tới. Vui lòng kiểm tra và gia hạn kịp thời.\nNK\nNgô Kim Bình\n(VTH-0302)\nSố BHYT: BH-VTH-0302-ACFID04\n•\nNhân sự\n30/03/2026\nĐã hết hạn\nXem\nLK\nLý Kim Chi\n(TCN-0464)\nSố BHYT: BH-TCN-0464-ACFID04\n•\nVận hành\n31/03/2026\nĐã hết hạn\nXem\nLK\nLý Kim An\n(TCN-0144)\nSố BHYT: BH-TCN-0144-ACFID04\n•\nVận hành\n01/04/2026\nĐã hết hạn\nXem\nĐĐ\n",
+      "verdict": "YELLOW"
+    },
+    "recruitment_spot": {
+      "iframe_ok": true,
+      "snippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\nDashboard\nYêu cầu tuyển dụng\nThư viện JD\nTin Tuyển dụng\nỨng viên\nĐề xuất\nChiến dịch\nPhỏng vấn\nĐánh giá\nKế hoạch\nBáo cáo\nDashboard Tuyển dụng\nTạo tin tuyển dụng\nDashboard\nBoard tuyển dụng\nPipeline ứng viên (6 giai đoạn)\nTổng: 5\n\nChờ CV / Mới\n\n5\n\nSàng lọc\n\n0\n\nPhỏng vấn\n\n0\n\nĐề nghị\n\n0\n\nĐã tuyển\n\n0\n\nTừ chối\n\n0\n\nChỉ tiêu\n\nKhông có dữ liệu\n\nCV Ứng tuyển\n\n5\n\nĐã phỏng vấn\n\n0\n\nĐã tuyển\n\n0\n\nKhông có dữ liệu\nBiểu đồ tuyển dụng\n08/2025\n09/2025\n10/2025\n11/2025\n12/2025\n01/2026\n02/2026\n03/2026\n04/2026\n05/2026\n06/2026\n07/2026\n0\n2\n4\n6\n8\n",
+      "verdict": "YELLOW"
+    }
+  },
+  "defects": [
+    "P0: Click tab Đãi ngộ blanks HRM iframe body (compensation panel crash/unmount) — cannot complete AC-UX-NUM typing/Network/F5"
+  ],
+  "finishedAt": "2026-07-20T09:03:19.783Z",
+  "ack_status": "FAIL_TO_PM",
+  "unit_tests": "vitest 18/18 PASS (viMoneyInput + viNumberFormat + formatDisplayDate + compensationLines) — not sufficient for U65 alone"
+}

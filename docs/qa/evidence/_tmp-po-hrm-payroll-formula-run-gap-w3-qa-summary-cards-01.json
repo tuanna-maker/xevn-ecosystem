@@ -1,0 +1,223 @@
+{
+  "work_item_id": "PO-HRM-PAYROLL-FORMULA-RUN-GAP-W3-QA-SUMMARY-CARDS-01",
+  "parent": "PO-HRM-PAYROLL-FORMULA-RUN-GAP-W3-FE-SUMMARY-CARDS-01",
+  "stamp": "PAYW3SUMQA-MSIWD3MS",
+  "resume_chunk": "K6.5",
+  "u65": "zero-seed",
+  "journey_l25": "J-HRM-07",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "formula_LIVE": false,
+    "seed_used": false,
+    "module_uat_claim": false,
+    "process_post_gwc_reopened": false,
+    "tdz_reopened": false,
+    "src_reopened": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "target": {
+    "preferPeriodId": "cf38deac-8b64-474d-9aee-b34249c0f5a1",
+    "skipProcessed": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+    "month": 8,
+    "year": 2026,
+    "periodId": "cf38deac-8b64-474d-9aee-b34249c0f5a1",
+    "status": "processed",
+    "employee_count": 1,
+    "resolvedMonth": 8,
+    "resolvedYear": 2026
+  },
+  "clicks": [
+    {
+      "step": "P0",
+      "detail": "goto http://127.0.0.1:5173/hr/payroll",
+      "at": "2026-08-07T12:04:26.984Z"
+    },
+    {
+      "step": "P0b",
+      "detail": "menu Danh sách bảng lương",
+      "at": "2026-08-07T12:04:30.767Z"
+    },
+    {
+      "step": "filter",
+      "detail": "pay-batch-period-option-8-2026",
+      "at": "2026-08-07T12:04:32.422Z"
+    },
+    {
+      "step": "open",
+      "detail": "pay-batch-row-cf38deac-8b64-474d-9aee-b34249c0f5a1",
+      "at": "2026-08-07T12:04:35.924Z"
+    },
+    {
+      "step": "F5",
+      "detail": "reload detail",
+      "at": "2026-08-07T12:04:42.130Z"
+    },
+    {
+      "step": "P0",
+      "detail": "goto http://127.0.0.1:5173/hr/payroll",
+      "at": "2026-08-07T12:04:45.023Z"
+    },
+    {
+      "step": "P0b",
+      "detail": "menu Danh sách bảng lương",
+      "at": "2026-08-07T12:04:48.383Z"
+    },
+    {
+      "step": "filter",
+      "detail": "pay-batch-period-option-8-2026",
+      "at": "2026-08-07T12:04:49.952Z"
+    },
+    {
+      "step": "open",
+      "detail": "pay-batch-row-cf38deac-8b64-474d-9aee-b34249c0f5a1",
+      "at": "2026-08-07T12:04:52.824Z"
+    }
+  ],
+  "criteria": {
+    "AC_Cards_F5": "PASS",
+    "line_nonzero": "PASS",
+    "cards_nonzero": "PASS",
+    "cards_match_api": "PASS",
+    "cards_match_line_ui": "PASS",
+    "data_totals_source": "PASS",
+    "tdz_cleared": "PASS",
+    "honesty_locked": "PASS",
+    "not_d92d3bbb_proof": "PASS",
+    "process_ready_false": "N/A_no_process_this_run"
+  },
+  "cards": {
+    "beforeF5": {
+      "source": "line_aggregate",
+      "grossText": "12.345.000 ₫",
+      "netText": "12.345.000 ₫",
+      "dedText": "0 ₫",
+      "empText": "1",
+      "gross": 12345000,
+      "net": 12345000,
+      "deduction": 0,
+      "empCount": 1
+    },
+    "afterF5": {
+      "source": "line_aggregate",
+      "grossText": "12.345.000 ₫",
+      "netText": "12.345.000 ₫",
+      "dedText": "0 ₫",
+      "empText": "1",
+      "gross": 12345000,
+      "net": 12345000,
+      "deduction": 0,
+      "empCount": 1
+    }
+  },
+  "payslip": {
+    "api": {
+      "status": 200,
+      "count": 1,
+      "apiGross": 12345000,
+      "apiNet": 12345000,
+      "sample": [
+        {
+          "id": "e511d61e-d8b4-499a-8d36-30eadffa69dc",
+          "gross": 12345000,
+          "net": 12345000,
+          "employee_code": "UAT-0100"
+        }
+      ]
+    },
+    "beforeF5": {
+      "visible": true,
+      "textSample": "Mã NV\tHọ và tên\tPhòng ban\tLương cơ bản\tPhụ cấp\tThưởng\tKhấu trừ\tLương Net\nUAT-0100\t\n0\nUAT NV 0100\n\t-\t12.345.000 ₫\t0 ₫\t0 ₫\t0 ₫\t12.345.000 ₫",
+      "moneyMatches": [
+        12345000,
+        12345000
+      ],
+      "hasNonZero": true,
+      "maxLineAmount": 12345000,
+      "sumGuess": 24690000
+    },
+    "afterF5": {
+      "visible": true,
+      "textSample": "Mã NV\tHọ và tên\tPhòng ban\tLương cơ bản\tPhụ cấp\tThưởng\tKhấu trừ\tLương Net\nUAT-0100\t\n0\nUAT NV 0100\n\t-\t12.345.000 ₫\t0 ₫\t0 ₫\t0 ₫\t12.345.000 ₫",
+      "moneyMatches": [
+        12345000,
+        12345000
+      ],
+      "hasNonZero": true,
+      "maxLineAmount": 12345000,
+      "sumGuess": 24690000
+    }
+  },
+  "network": [
+    {
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/payroll/payslips?company_id=main&period_id=cf38deac-8b64-474d-9aee-b34249c0f5a1",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/payroll/payslips?company_id=main&period_id=cf38deac-8b64-474d-9aee-b34249c0f5a1",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "/api/hrm/payroll/payslips?company_id=main&period_id=cf38deac-8b64-474d-9aee-b34249c0f5a1",
+      "status": 200,
+      "method": "GET"
+    }
+  ],
+  "pageErrors": [],
+  "tdzErrors": [],
+  "consoleErrors": [],
+  "startedAt": "2026-08-07T12:04:25.761Z",
+  "stack": {
+    "hrmReadyMs": 249,
+    "periodsStatus": 200
+  },
+  "login": {
+    "ok": true,
+    "email": "ceo@xe.vn"
+  },
+  "api": {
+    "periodsStatus": 200,
+    "periodCount": 31,
+    "periodsCode": "HRM-PAY-200"
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "finishedAt": "2026-08-07T12:04:59.487Z"
+}

@@ -1,0 +1,60 @@
+{
+  "work_item_id": "PO-HRM-BP-ATT-SIGN-QA-03",
+  "u65_zero_seed": true,
+  "commit": "dc930c5",
+  "startedAt": "2026-08-05T08:21:09.775Z",
+  "network": [
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets?company_id=main",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets/642a4713-b0ee-4802-a1d9-2fe650cbc17f/submit?company_id=main",
+      "status": 404,
+      "method": "POST"
+    },
+    {
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets?company_id=main",
+      "status": 200,
+      "method": "GET"
+    }
+  ],
+  "pageErrors": [],
+  "findings": {
+    "loginApi": true,
+    "apiSheetsStatus": 200,
+    "apiSheetCount": 0,
+    "apiSheetStatuses": [],
+    "draftRowIndex": 0,
+    "holdDraftBeforeSubmit": true,
+    "submitBtnVisible": true,
+    "submitPost2xx": 0,
+    "submitPostAny": [
+      {
+        "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets/642a4713-b0ee-4802-a1d9-2fe650cbc17f/submit?company_id=main",
+        "status": 404,
+        "method": "POST"
+      }
+    ],
+    "holdDraftAfterSubmit": true,
+    "attSignPanelVisible": false,
+    "signaturesGet2xx": 0,
+    "listHasChoKy": false,
+    "attSignPanelAfterF5": false,
+    "holdDraftAfterF5": true
+  },
+  "ac": {
+    "AC-ATT-SIGN-UF-01": "red",
+    "AC-ATT-SIGN-UF-02": "blocked",
+    "AC-ATT-SIGN-UF-03": "blocked",
+    "AC-ATT-SIGN-UF-04": "blocked",
+    "AC-ATT-SIGN-UF-05": "blocked",
+    "AC-ATT-SIGN-UF-06": "blocked",
+    "AC-ATT-SIGN-UF-07": "not_run"
+  },
+  "signSteps": [],
+  "j_hrm_06c": "red",
+  "verdictHint": "FAIL_SUBMIT",
+  "finishedAt": "2026-08-05T08:22:03.065Z"
+}

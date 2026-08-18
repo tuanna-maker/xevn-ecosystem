@@ -1,0 +1,505 @@
+{
+  "work_item_id": "QA-HDSD-W2A-SCOPE-PARITY-01",
+  "program": "P-HDSD-QA-SRS-01",
+  "persona": "ceo@xe.vn",
+  "u65": "zero-seed browser-only",
+  "startedAt": "2026-07-30T16:24:59.808Z",
+  "l0": {
+    "hrm-api": {
+      "ok": true,
+      "status": 200
+    },
+    "hrm-standalone": {
+      "ok": true,
+      "status": 200
+    }
+  },
+  "w2a": {
+    "apis": {
+      "catalog-sync": {
+        "status": 200,
+        "url": "/api/hrm/catalog-sync"
+      },
+      "employees": {
+        "status": 200,
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+      },
+      "employees/summary": {
+        "status": 200,
+        "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+      },
+      "settings-catalogs": {
+        "status": 200,
+        "url": "/api/hrm/settings-catalogs"
+      }
+    },
+    "scope409Count": 0,
+    "jHrm01": {
+      "clickPath": "http://127.0.0.1:8080/hr/employees → click row",
+      "rowClick": {
+        "ok": true,
+        "text": "VTH-0007APhan Văn Anuat.nv0007@xe.vnCông ty Cổ phần Thương mại và Dịch vụ X.E30/7/2026Đang làm việc"
+      },
+      "detailGet": {
+        "status": 200,
+        "url": "/api/hrm/employees/b06422c0-f640-45d1-8cab-cb4a609848d6/work-timeline?company_id=main"
+      },
+      "finalUrl": "http://127.0.0.1:8080/hr/employees/b06422c0-f640-45d1-8cab-cb4a609848d6",
+      "scopeBanner": false,
+      "verdict": "🟢 PASS"
+    },
+    "login": {
+      "loginNet": {
+        "tag": "w2a",
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/auth/mobile/login",
+        "at": "2026-07-30T16:25:02.472Z"
+      },
+      "storage": {
+        "token": true,
+        "tenant": "xevn",
+        "company": "main",
+        "url": "http://127.0.0.1:8080/hr"
+      },
+      "url": "http://127.0.0.1:8080/hr"
+    },
+    "routes": {
+      "employees-list": {
+        "url": "http://127.0.0.1:8080/hr/employees",
+        "apis": {
+          "catalog-sync": {
+            "status": 200,
+            "url": "/api/hrm/catalog-sync"
+          },
+          "employees": {
+            "status": 200,
+            "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+          },
+          "employees/summary": {
+            "status": 200,
+            "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+          },
+          "settings-catalogs": {
+            "status": 200,
+            "url": "/api/hrm/settings-catalogs"
+          }
+        },
+        "scope409Urls": [],
+        "all409": 0,
+        "body": {
+          "scopeBanner": false,
+          "syncError": false,
+          "snippet": "XeVN HRM MENU CHÍNH Tổng quan Nhân sự Tuyển dụng 3 Chấm công Tính lương Đánh giá UniAI Công việc Quy trình & Quy định Dịch vụ nội bộ Công cụ dụng cụ Hồ sơ xe QUẢN LÝ Công ty Báo cáo Cài đặt Hướng dẫn sử dụng Nhân viên main portal 🇻🇳 Tiếng Việt Toggle theme 3 C ceo@xe.vn roles.portal Đồng bộ danh mụcĐã kết nối Đã kết nối. Có 1 danh mục đã đồng bộ "
+        }
+      },
+      "headcount": {
+        "url": "http://127.0.0.1:8080/hr/company",
+        "apis": {
+          "catalog-sync": {
+            "status": 200,
+            "url": "/api/hrm/catalog-sync"
+          },
+          "employees": null,
+          "employees/summary": null,
+          "settings-catalogs": null
+        },
+        "scope409Urls": [],
+        "all409": 0,
+        "body": {
+          "scopeBanner": false,
+          "syncError": false,
+          "snippet": "XeVN HRM MENU CHÍNH Tổng quan Nhân sự Tuyển dụng 3 Chấm công Tính lương Đánh giá UniAI Công việc Quy trình & Quy định Dịch vụ nội bộ Công cụ dụng cụ Hồ sơ xe QUẢN LÝ Công ty Báo cáo Cài đặt Hướng dẫn sử dụng Công ty main portal 🇻🇳 Tiếng Việt Toggle theme 3 C ceo@xe.vn roles.portal Đồng bộ danh mụcĐã kết nối Đã kết nối. Có 1 danh mục đã đồng bộ từ"
+        }
+      },
+      "settings": {
+        "url": "http://127.0.0.1:8080/hr/settings",
+        "apis": {
+          "catalog-sync": {
+            "status": 200,
+            "url": "/api/hrm/catalog-sync"
+          },
+          "employees": null,
+          "employees/summary": null,
+          "settings-catalogs": null
+        },
+        "scope409Urls": [],
+        "all409": 0,
+        "body": {
+          "scopeBanner": false,
+          "syncError": false,
+          "snippet": "XeVN HRM MENU CHÍNH Tổng quan Nhân sự Tuyển dụng 3 Chấm công Tính lương Đánh giá UniAI Công việc Quy trình & Quy định Dịch vụ nội bộ Công cụ dụng cụ Hồ sơ xe QUẢN LÝ Công ty Báo cáo Cài đặt Hướng dẫn sử dụng Cài đặt main portal 🇻🇳 Tiếng Việt Toggle theme 3 C ceo@xe.vn roles.portal Đồng bộ danh mụcĐã kết nối Đã kết nối. Có 1 danh mục đã đồng bộ từ"
+        }
+      }
+    }
+  },
+  "w2b": {
+    "apis": {
+      "catalog-sync": null,
+      "employees": {
+        "status": 200,
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+      },
+      "employees/summary": {
+        "status": 200,
+        "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+      },
+      "settings-catalogs": {
+        "status": 200,
+        "url": "/api/hrm/settings-catalogs"
+      }
+    },
+    "scope409Count": 0,
+    "employees": {
+      "url": "http://127.0.0.1:5173/command-center/hrm/employees",
+      "apis": {
+        "catalog-sync": null,
+        "employees": {
+          "status": 200,
+          "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+        },
+        "employees/summary": {
+          "status": 200,
+          "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+        },
+        "settings-catalogs": {
+          "status": 200,
+          "url": "/api/hrm/settings-catalogs"
+        }
+      },
+      "scope409Urls": [],
+      "all409": 0,
+      "body": {
+        "scopeBanner": false,
+        "syncError": false,
+        "snippet": "XeVN OS Command Center BOD Quản lý Nhân viên GROUP TÀI CHÍNH KẾ TOÁN NHÂN SỰ KINH DOANH VẬN HÀNH CÀI ĐẶT HỆ THỐNG Mở HRM MENU CHÍNH Tổng quan NHÂN SỰ Nhân sự Hợp đồng Bảo hiểm Quyết định Tuyển dụng 3 Chấm công Tiền lương Đánh giá UniAI Công việc Quy trình & chính sách Dịch vụ nội bộ Công cụ & thiết bị Hồ sơ xe QUẢN TRỊ Phòng/Ban & Công ty B"
+      }
+    },
+    "settings": {
+      "apis": {
+        "catalog-sync": null,
+        "employees": {
+          "status": 200,
+          "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+        },
+        "employees/summary": {
+          "status": 200,
+          "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+        },
+        "settings-catalogs": {
+          "status": 200,
+          "url": "/api/hrm/settings-catalogs"
+        }
+      },
+      "scope409Urls": [],
+      "all409": 0
+    }
+  },
+  "network": [
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 401,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T16:25:00.703Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/auth/mobile/login",
+      "at": "2026-07-30T16:25:02.472Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T16:25:02.590Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T16:25:02.605Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main",
+      "at": "2026-07-30T16:25:02.737Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operations/reports/summary?company_id=main",
+      "at": "2026-07-30T16:25:02.737Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T16:25:02.761Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/leave-requests?company_id=main",
+      "at": "2026-07-30T16:25:02.787Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/attendance/overview?company_id=main&year=2026",
+      "at": "2026-07-30T16:25:02.797Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts/expiring?company_id=main&days=30",
+      "at": "2026-07-30T16:25:02.820Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T16:25:07.906Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T16:25:07.922Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T16:25:08.083Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-30T16:25:08.084Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T16:25:08.141Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T16:25:08.205Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T16:25:11.583Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T16:25:11.607Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T16:25:15.340Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T16:25:15.361Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/catalog-sync",
+      "at": "2026-07-30T16:25:19.080Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T16:25:19.100Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T16:25:19.215Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-30T16:25:19.215Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T16:25:19.265Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T16:25:19.332Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/b06422c0-f640-45d1-8cab-cb4a609848d6?company_id=main",
+      "at": "2026-07-30T16:25:22.549Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/b06422c0-f640-45d1-8cab-cb4a609848d6/work-timeline?company_id=main",
+      "at": "2026-07-30T16:25:22.631Z"
+    },
+    {
+      "tag": "w2a",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T16:25:22.656Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T16:25:25.768Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T16:25:25.771Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T16:25:26.177Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T16:25:26.238Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-30T16:25:26.507Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-07-30T16:25:26.507Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T16:25:26.574Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T16:25:26.603Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T16:25:29.289Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T16:25:29.289Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T16:25:29.581Z"
+    },
+    {
+      "tag": "w2b",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T16:25:29.660Z"
+    }
+  ],
+  "consoleErrors": [
+    "[w2a] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[w2a] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[w2a] Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "[w2a] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[w2a] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[w2a] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[w2a] Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "[w2a] Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "verdict": "PASS_TO_PM",
+  "parity": {
+    "w2aEmployees": 200,
+    "w2bEmployees": 200,
+    "w2aCatalogSync": 200,
+    "match": true
+  },
+  "finishedAt": "2026-07-30T16:25:31.496Z"
+}

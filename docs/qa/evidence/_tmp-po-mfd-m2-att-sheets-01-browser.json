@@ -1,0 +1,184 @@
+{
+  "work_item_id": "PO-MFD-M2-ATT-SHEETS-01",
+  "startedAt": "2026-08-04T06:14:11.852Z",
+  "u65": "zero-seed",
+  "hdsd_align": "Attendance → Bảng công / sheets",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "steps": {
+    "login": {
+      "http": 201,
+      "companyId": "main"
+    },
+    "landed": {
+      "url": "http://127.0.0.1:5173/hr/attendance?portal=1&tenantId=xevn&companyId=main"
+    },
+    "list": {
+      "runtime": "LIVE",
+      "titleVisible": true,
+      "emptyCopy": false,
+      "addVisible": true,
+      "syncError": false,
+      "listGets": [
+        {
+          "status": 200,
+          "code": "HRM-AS-200"
+        }
+      ],
+      "rowCountHint": "1"
+    },
+    "storm10s": {
+      "sheetGets": 0,
+      "recordsGets": 0,
+      "ok": true
+    },
+    "create": {
+      "runtime": "LIVE",
+      "posts": [
+        {
+          "status": 201,
+          "code": "HRM-AS-201",
+          "id": "3934591a-50ec-452b-940f-7f29ede50272",
+          "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets"
+        }
+      ],
+      "rowAfterCreate": true,
+      "periodVisible": false,
+      "dialogClosed": true
+    },
+    "f5": {
+      "rowAfterF5": true
+    },
+    "grid": {
+      "weeklyTitle": true,
+      "errorBanner": false,
+      "spinnerCount": 0,
+      "recordsGets": [
+        {
+          "status": 200,
+          "url": "http://127.0.0.1:5173/api/hrm/attendance/records?company_id=main&from_date=2026-06-30&to_date=2026-07-06&page=1&page_size=100",
+          "t": 1785824082520
+        }
+      ],
+      "runtime": "LIVE"
+    },
+    "payroll": {
+      "url": "http://127.0.0.1:5173/hr/payroll?portal=1&tenantId=xevn&companyId=main",
+      "clickedDataMenu": true,
+      "clickedAttItem": true,
+      "payrollSeesSheet": true,
+      "payrollSeesPeriod": true,
+      "payrollGetOk": true,
+      "recentSheetGets": [
+        {
+          "status": 200,
+          "code": "HRM-AS-200"
+        }
+      ],
+      "note": "Payroll → Dữ liệu tính lương → Chấm công · PayrollAttendanceTab · GET attendance-sheets",
+      "runtime": "LIVE"
+    }
+  },
+  "sheetGets": [
+    {
+      "status": 200,
+      "code": "HRM-AS-200",
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets?company_id=main",
+      "t": 1785824058716
+    },
+    {
+      "status": 200,
+      "code": "HRM-AS-200",
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets?company_id=main",
+      "t": 1785824073417
+    },
+    {
+      "status": 200,
+      "code": "HRM-AS-200",
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets?company_id=main",
+      "t": 1785824079368
+    },
+    {
+      "status": 200,
+      "code": "HRM-AS-200",
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets?company_id=main",
+      "t": 1785824087493
+    }
+  ],
+  "sheetPosts": [
+    {
+      "status": 201,
+      "code": "HRM-AS-201",
+      "id": "3934591a-50ec-452b-940f-7f29ede50272",
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets"
+    }
+  ],
+  "recordsGets": [
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/records?company_id=main&from_date=2026-06-30&to_date=2026-07-06&page=1&page_size=100",
+      "t": 1785824082520
+    },
+    {
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/attendance/records?company_id=main&page=1&page_size=100",
+      "t": 1785824087615
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "networkBad": [],
+  "surfaces": {
+    "row11_list": {
+      "runtime": "LIVE",
+      "titleVisible": true,
+      "emptyCopy": false,
+      "addVisible": true,
+      "syncError": false,
+      "listGets": [
+        {
+          "status": 200,
+          "code": "HRM-AS-200"
+        }
+      ],
+      "rowCountHint": "1"
+    },
+    "row12_modal": {
+      "dialogTitle": true,
+      "saveVisible": true,
+      "cancelVisible": true,
+      "monthlyRadioVisible": true
+    },
+    "row12_create": {
+      "runtime": "LIVE",
+      "posts": [
+        {
+          "status": 201,
+          "code": "HRM-AS-201",
+          "id": "3934591a-50ec-452b-940f-7f29ede50272",
+          "url": "http://127.0.0.1:5173/api/hrm/attendance/attendance-sheets"
+        }
+      ],
+      "rowAfterCreate": true,
+      "periodVisible": false,
+      "dialogClosed": true
+    }
+  },
+  "criteria": {},
+  "failReasons": [],
+  "residuals": [],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "uat_done": false,
+  "endedAt": "2026-08-04T06:14:50.055Z"
+}

@@ -1,0 +1,90 @@
+{
+  "work_item_id": "PO-HRM-CTR-WORKSPACE-G4-WS-G4-07-CONFIRM-QA-01",
+  "stamp": "CTRG4G07-MSO6B4UU",
+  "startedAt": "2026-08-11T04:41:41.054Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "contracts_printable_ready": false,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "rows": {
+    "WS-G4-07": {
+      "verdict": "PASS",
+      "mandatoryId": "f7387d0a-1ea5-471e-a506-18005e28cf71",
+      "msgOk": true,
+      "cancelKeeps": true,
+      "acceptRemoves": true,
+      "dialogShown": true,
+      "cancelMsg": "Điều khoản này là bắt buộc theo mẫu. Bạn có chắc muốn gỡ khỏi hợp đồng?",
+      "acceptMsg": "Điều khoản này là bắt buộc theo mẫu. Bạn có chắc muốn gỡ khỏi hợp đồng?"
+    }
+  },
+  "ac": {
+    "AC-CTR-DND-02": {
+      "verdict": "PASS",
+      "mandatoryId": "f7387d0a-1ea5-471e-a506-18005e28cf71",
+      "cancelKeeps": true,
+      "acceptRemoves": true,
+      "dialogShown": true
+    },
+    "AC-WS-06": {
+      "verdict": "PASS",
+      "note": "DnD + Gỡ mandatory confirm"
+    }
+  },
+  "journeys": {
+    "J-HRM-CTR-CREATE-02": {
+      "verdict": "PASS",
+      "ws_g4_07": "PASS"
+    }
+  },
+  "confirm": {
+    "mandatoryClauseId": "f7387d0a-1ea5-471e-a506-18005e28cf71",
+    "settingsPrep": {
+      "ok": true,
+      "prep": "settings_mandatory_flip",
+      "patchStatus": 200,
+      "ids": [
+        "f7387d0a-1ea5-471e-a506-18005e28cf71"
+      ]
+    },
+    "dialogOnCancel": {
+      "type": "confirm",
+      "message": "Điều khoản này là bắt buộc theo mẫu. Bạn có chắc muốn gỡ khỏi hợp đồng?",
+      "dismissed": true
+    },
+    "dialogOnAccept": {
+      "type": "confirm",
+      "message": "Điều khoản này là bắt buộc theo mẫu. Bạn có chắc muốn gỡ khỏi hợp đồng?",
+      "accepted": true
+    },
+    "countBefore": 1,
+    "countAfterCancel": 1,
+    "countAfterAccept": 0,
+    "silentRemoveOnMandatory": false,
+    "mandatoryIdsFromApi": 1
+  },
+  "dnd_storms": [],
+  "consoleErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-g4-ws-g4-07-confirm-01/00-settings-mandatory-prep.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-g4-ws-g4-07-confirm-01/01-step2-canvas.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-g4-ws-g4-07-confirm-01/02-after-cancel-dismiss.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-ctr-g4-ws-g4-07-confirm-01/03-after-accept-remove.png"
+  ],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "defects": [],
+  "endedAt": "2026-08-11T04:42:04.802Z"
+}

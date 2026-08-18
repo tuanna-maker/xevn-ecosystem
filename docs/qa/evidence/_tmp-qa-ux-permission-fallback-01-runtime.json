@@ -1,0 +1,138 @@
+{
+  "work_item_id": "QA-UX-PERMISSION-FALLBACK-01",
+  "startedAt": "2026-07-28T08:57:41.804Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:8080",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "hold_deploy": true
+  },
+  "steps": [
+    {
+      "id": "UF-PF-source-wiring",
+      "ok": true,
+      "detail": "{\"fallbackCount\":5,\"viewSalaryGates\":5,\"silentNull\":false,\"compactCmnd\":true,\"sotOk\":true,\"bypassKept\":true}",
+      "at": "2026-07-28T08:57:41.806Z"
+    },
+    {
+      "id": "login-api",
+      "ok": true,
+      "detail": "email=ceo@xe.vn",
+      "at": "2026-07-28T08:57:42.182Z"
+    },
+    {
+      "id": "J-HRM-list",
+      "ok": true,
+      "detail": "employees list loaded",
+      "at": "2026-07-28T08:57:47.195Z"
+    },
+    {
+      "id": "J-HRM-01-detail",
+      "ok": true,
+      "detail": "profile=true id=dbdbece0-6572-401a-b4eb-56781493a75f url=http://127.0.0.1:5173/hr/employees/dbdbece0-6572-401a-b4eb-56781493a75f",
+      "at": "2026-07-28T08:57:50.791Z"
+    },
+    {
+      "id": "must_keep-C2-groups",
+      "ok": true,
+      "detail": "{\"groups\":true,\"core\":true,\"hr\":true,\"career\":true,\"personal\":true}",
+      "at": "2026-07-28T08:57:50.853Z"
+    },
+    {
+      "id": "UF-PF-general-cards-ceo",
+      "ok": true,
+      "detail": "{\"financial\":true,\"insurance\":true,\"cmnd\":true,\"fallbackCount\":0,\"blank\":false}",
+      "at": "2026-07-28T08:57:51.690Z"
+    },
+    {
+      "id": "UF-PF-salary-ceo-nonblank",
+      "ok": true,
+      "detail": "{\"fallback\":false,\"hasSalaryish\":true,\"blankRoot\":false,\"textSample\":\"QA Dept Persist W6QA QA238502 Chỉnh sửa Thông tin chung Công việc Hợp đồng Lương & Phụ cấp Nhân sự Sự nghiệp Cá nhân Chư\"}",
+      "at": "2026-07-28T08:57:52.993Z"
+    },
+    {
+      "id": "UF-PF-insurance-ceo-nonblank",
+      "ok": true,
+      "detail": "insurancePanelNonBlank=true",
+      "at": "2026-07-28T08:57:54.734Z"
+    },
+    {
+      "id": "UF-PF-deny-live",
+      "ok": true,
+      "detail": "BLOCKED-ENV portal bypass by design; keep R-C2-01 P3; live=null",
+      "at": "2026-07-28T08:58:25.384Z"
+    },
+    {
+      "id": "must_keep-C1-clock-in",
+      "ok": true,
+      "detail": "wizard=true methodOrManual=true",
+      "at": "2026-07-28T08:58:29.260Z"
+    },
+    {
+      "id": "must_keep-payroll-mount",
+      "ok": true,
+      "detail": "root=3017290",
+      "at": "2026-07-28T08:58:32.988Z"
+    },
+    {
+      "id": "must_keep-D5-zod-add",
+      "ok": true,
+      "detail": "msgs=[\"Mã thành phần không được để trống\",\"Tên thành phần không được để trống\",\"Vui lòng chọn loại thành phần\"]",
+      "at": "2026-07-28T08:58:38.247Z"
+    },
+    {
+      "id": "must_keep-P0c-advance-cancel-reopen",
+      "ok": true,
+      "detail": "closed=true reopen={\"open\":true,\"inputs\":[\"\",\"Tháng 7/2026\"]}",
+      "at": "2026-07-28T08:58:45.637Z"
+    },
+    {
+      "id": "console-no-TypeError",
+      "ok": true,
+      "detail": "count=0",
+      "at": "2026-07-28T08:58:45.734Z"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": [],
+  "network": {
+    "employeeGets": [
+      {
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/employees/summary?company_id=main&include_archived=true"
+      },
+      {
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/employees/dbdbece0-6572-401a-b4eb-56781493a75f?company_id=main"
+      },
+      {
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/employees/dbdbece0-6572-401a-b4eb-56781493a75f/work-timeline?company_id=main"
+      }
+    ]
+  },
+  "screens": [
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-permission-fallback-01\\01-employees-list.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-permission-fallback-01\\02-profile.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-permission-fallback-01\\03-general-cards.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-permission-fallback-01\\04-salary-tab.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-permission-fallback-01\\05-insurance-tab.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-permission-fallback-01\\06-deny-attempt.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-permission-fallback-01\\07-clock-in.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-permission-fallback-01\\08-payroll-d5.png",
+    "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\qa-ux-permission-fallback-01\\09-advance-reopen.png"
+  ],
+  "employeeId": "dbdbece0-6572-401a-b4eb-56781493a75f",
+  "residual": {
+    "R-C2-01": "P3 KEEP — deny persona BLOCKED-ENV (portal bypass)"
+  },
+  "_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjZW9AeGUudm4iLCJlbWFpbCI6ImNlb0B4ZS52biIsInRlbmFudElkIjoieGV2biIsImNvbXBhbnlJZCI6Im1haW4iLCJyb2xlQ29kZSI6Imdyb3VwX2NlbyIsImlzcyI6Inhldm4taW50ZXJuYWwiLCJhdWQiOiJ4ZXZuLWFwaSIsImlhdCI6MTc4NTIyOTA2MiwiZXhwIjoxNzg1MzE1NDYyfQ.mqsQICJr5iyftqefMuym0xckv3qGhwRDEWzSsXUQoL0",
+  "finishedAt": "2026-07-28T08:58:45.734Z",
+  "failed": [],
+  "hardFails": [],
+  "verdict": "PASS"
+}

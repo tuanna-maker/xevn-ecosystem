@@ -1,0 +1,526 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-REC-01-CLUSTER-QA-01",
+  "startedAt": "2026-08-08T19:50:08.689Z",
+  "stamp": "RECQA-MSKSFV8Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser FE Định biên · Network 2xx · F5",
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "deny_module_rec_uat": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "portal": 200
+  },
+  "l1": {
+    "file": {
+      "stamp": "RECQAKS25S5",
+      "planId": "1bed6827-6c83-4a32-81e6-1addc8dc96cc",
+      "out": [
+        {
+          "k": "CREATE",
+          "v": {
+            "status": 201,
+            "code": "HRM-REC-PLAN-201",
+            "id": "1bed6827-6c83-4a32-81e6-1addc8dc96cc"
+          }
+        },
+        {
+          "k": "LIST_PARITY",
+          "v": {
+            "status": 200,
+            "inList": true,
+            "total": 5
+          }
+        },
+        {
+          "k": "GET_PARITY",
+          "v": {
+            "status": 200,
+            "code": "HRM-REC-PLAN-200",
+            "sameId": true,
+            "need_hire": 5,
+            "cell_status": "need_hire",
+            "lifecycle": "open",
+            "cell_id": "e3c9fd62-a20b-4246-a5cf-532c5ac19c9a"
+          }
+        },
+        {
+          "k": "PUT",
+          "v": {
+            "status": 200,
+            "code": "HRM-REC-PLAN-200",
+            "need_hire": 7
+          }
+        },
+        {
+          "k": "SPAWN_NOT_APPROVED",
+          "v": {
+            "status": 409,
+            "code": "HRM-HC-SPAWN-PLAN-NOT-APPROVED",
+            "message": "Chỉ định biên đã duyệt mới được sinh YCTD tự động"
+          }
+        },
+        {
+          "k": "APPROVE",
+          "v": {
+            "status": 200,
+            "code": "HRM-REC-PLAN-200",
+            "data": {
+              "id": "1bed6827-6c83-4a32-81e6-1addc8dc96cc",
+              "company_id": "holding",
+              "title": "QA ĐB RECQAKS25S5",
+              "start_month": 1,
+              "end_month": 12,
+              "year": 2026,
+              "note": null,
+              "status": "approved",
+              "creator_id": null,
+              "creator_name": "QA REC",
+              "created_at": "2026-08-08T19:39:29.194Z",
+              "updated_at": "2026-08-08T19:39:32.164Z",
+              "workflow_instance_id": null,
+              "wf_callback_fingerprint": null,
+              "submitted_by_dept_key": null,
+              "approved_at": "2026-08-08T19:39:32.164Z",
+              "approved_by": "ceo@xe.vn",
+              "activation_mode": "on_approve",
+              "planId": "1bed6827-6c83-4a32-81e6-1addc8dc96cc",
+              "approved_cell_count": 1
+            }
+          }
+        },
+        {
+          "k": "CELL_LOCK",
+          "v": {
+            "lifecycle": "need_hire_approved",
+            "need_hire": 7,
+            "cell_id": "e1b6e6ae-158c-42dc-9cc8-867a14635b4c",
+            "planStatus": "approved"
+          }
+        },
+        {
+          "k": "PUT_LOCKED",
+          "v": {
+            "status": 409,
+            "code": "HRM-HC-CELL-LOCKED",
+            "message": "Ô Cần tuyển đã duyệt — không được chỉnh số lượng/trạng thái (thiếu quyền override)"
+          }
+        },
+        {
+          "k": "SPAWN1",
+          "v": {
+            "status": 201,
+            "code": "HRM-HC-SPAWN-200",
+            "created": 0,
+            "skipped": 0,
+            "data": {
+              "created": [],
+              "skipped_duplicate": []
+            }
+          }
+        },
+        {
+          "k": "SPAWN2",
+          "v": {
+            "status": 201,
+            "code": "HRM-HC-SPAWN-200",
+            "created": 0,
+            "skipped": 0,
+            "data": {
+              "created": [],
+              "skipped_duplicate": []
+            }
+          }
+        },
+        {
+          "k": "INVENT_DENY",
+          "v": {
+            "rec_headcount_plans": 404,
+            "rec_headcount_underscore": 404
+          }
+        },
+        {
+          "k": "U19_ROLLUP_GET",
+          "v": {
+            "listCompany": "trsport",
+            "status": 200,
+            "code": "HRM-REC-PLAN-200",
+            "idMatch": true
+          }
+        }
+      ]
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T19:50:10.145Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T19:50:10.434Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T19:50:10.442Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T19:50:10.461Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T19:50:10.467Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T19:50:10.601Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/recruitment-plans",
+      "at": "2026-08-08T19:50:18.959Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T19:50:19.422Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T19:50:22.153Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T19:50:22.425Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T19:50:22.433Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T19:50:22.457Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T19:50:22.472Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T19:50:22.597Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/recruitment-plans/372208d5-8f82-4b3f-97b5-d9375b0f8bcf/submit-workflow?company_id=main",
+      "at": "2026-08-08T19:50:27.930Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T19:50:28.380Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T19:50:31.037Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T19:50:31.327Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T19:50:31.340Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T19:50:31.379Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T19:50:31.390Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T19:50:31.527Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/recruitment-plans/372208d5-8f82-4b3f-97b5-d9375b0f8bcf/spawn-requests?company_id=main",
+      "at": "2026-08-08T19:50:35.894Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T19:50:36.318Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/recruitment/recruitment-plans/372208d5-8f82-4b3f-97b5-d9375b0f8bcf/spawn-requests?company_id=main",
+      "at": "2026-08-08T19:50:38.513Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T19:50:38.955Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/pipeline-stages/effective?company_id=main",
+      "at": "2026-08-08T19:50:40.766Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-08T19:50:41.048Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-08T19:50:41.049Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-08T19:50:41.054Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-08T19:50:41.077Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-08T19:50:41.212Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-08T19:50:41.311Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-01-cluster-qa-01/01-plans-tab.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-01-cluster-qa-01/02-create-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-01-cluster-qa-01/03-after-save.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-01-cluster-qa-01/04-after-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-01-cluster-qa-01/05-plan-detail.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-01-cluster-qa-01/07-after-spawn1.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-01-cluster-qa-01/08-after-spawn2.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-01-cluster-qa-01/09-yctd-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-rec-01-cluster-qa-01/10-yctd-detail.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-08T19:50:08.690Z",
+      "msg": "start"
+    },
+    {
+      "at": "2026-08-08T19:50:08.820Z",
+      "msg": "loginApi ok"
+    },
+    {
+      "at": "2026-08-08T19:50:09.254Z",
+      "msg": "goto plans",
+      "urlPlans": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=plans&_=1786218609254"
+    },
+    {
+      "at": "2026-08-08T19:50:14.793Z",
+      "msg": "filled need_hire m8=5 (pre-catalog)"
+    },
+    {
+      "at": "2026-08-08T19:50:16.834Z",
+      "msg": "filled need_hire m8=5 (post-catalog)"
+    },
+    {
+      "at": "2026-08-08T19:50:29.779Z",
+      "msg": "API approve for spawn UI",
+      "id": "372208d5-8f82-4b3f-97b5-d9375b0f8bcf",
+      "status": "pending_approval"
+    }
+  ],
+  "ac": {
+    "L0": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:08.712Z",
+      "summary": "{\"hrm\":200,\"portal\":200}"
+    },
+    "L1-INVENT-DENY": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:08.725Z",
+      "summary": "GET /rec/headcount-plans → 404 (expect 404)"
+    },
+    "J-HRM-REC-HC-01-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:13.273Z",
+      "summary": "Định biên tab visible=true titleTestId=1"
+    },
+    "AC-REC-HC-01-ALT-03": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:14.663Z",
+      "summary": "needHireInputs=12 ns=0 dx=0 headerNeedHire=true"
+    },
+    "AC-REC-HC-01-CATALOG": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:16.771Z",
+      "summary": "pickers=2 keyboardPicked=2"
+    },
+    "AC-REC-HC-01b-SAVE": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:20.601Z",
+      "summary": "POST recruitment-plans → 201 /api/hrm/recruitment/recruitment-plans",
+      "network": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/recruitment/recruitment-plans",
+        "at": "2026-08-08T19:50:18.959Z"
+      }
+    },
+    "AC-REC-HC-01b-FE-AFTER-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:21.605Z",
+      "summary": "list shows title count=1"
+    },
+    "AC-REC-HC-01b-F5": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:25.391Z",
+      "summary": "F5 title count=1"
+    },
+    "AC-REC-HC-01c-SUBMIT": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:29.335Z",
+      "summary": "submit-workflow → 201",
+      "network": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/recruitment/recruitment-plans/372208d5-8f82-4b3f-97b5-d9375b0f8bcf/submit-workflow?company_id=main",
+        "at": "2026-08-08T19:50:27.930Z"
+      }
+    },
+    "AC-REC-HC-01d-APPROVE-O4": {
+      "verdict": "NOTE_BLOCKED",
+      "at": "2026-08-08T19:50:29.337Z",
+      "summary": "Approve btn ABSENT after Gửi duyệt (pending_approval) — U65 XBOS inbox without seed not forced; L1 PATCH approve covered separately"
+    },
+    "J-HRM-REC-HC-01b-APPROVE-BRIDGE": {
+      "verdict": "PASS_WITH_OBS",
+      "at": "2026-08-08T19:50:34.992Z",
+      "summary": "FE approve blocked by pending_approval; used API PATCH then FE spawn click (U65 spawn still FE)"
+    },
+    "AC-REC-HC-01b-01-SPAWN": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:37.638Z",
+      "summary": "spawn1 → 201; toast=",
+      "network": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/recruitment/recruitment-plans/372208d5-8f82-4b3f-97b5-d9375b0f8bcf/spawn-requests?company_id=main",
+        "at": "2026-08-08T19:50:35.894Z"
+      }
+    },
+    "AC-REC-HC-01b-ALT-01-IDEMPOTENT": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:40.251Z",
+      "summary": "spawn2 → 201; skipToast=false; toast=",
+      "network": {
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/recruitment/recruitment-plans/372208d5-8f82-4b3f-97b5-d9375b0f8bcf/spawn-requests?company_id=main",
+        "at": "2026-08-08T19:50:38.513Z"
+      },
+      "skipHint": false
+    },
+    "J-HRM-05-MUSTKEEP": {
+      "verdict": "PASS",
+      "at": "2026-08-08T19:50:45.661Z",
+      "summary": "YCTD list rows=16; detailUrl=http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions&_=1786218640252"
+    },
+    "AC-REC-HC-01b-ALT-02-QTY-DRIFT": {
+      "verdict": "NOTE_BLOCKED",
+      "at": "2026-08-08T19:50:45.663Z",
+      "summary": "O3 optional — AlertDialog not triggered this run (approved cell edit locked on FE)"
+    }
+  },
+  "journeys": {
+    "J-HRM-REC-HC-01": "PASS_WITH_OBS",
+    "J-HRM-REC-HC-01b": "PASS_WITH_OBS"
+  },
+  "defects": [
+    {
+      "id": "R-REC-HC-PUT-LOCKED-WIPE",
+      "severity": "P0",
+      "summary": "PUT upsert after approve: replacePlanDepartments DELETE departments before assertCellUnlockedForMutate → 409 HRM-HC-CELL-LOCKED but grid positions wiped (spawn eligible empty).",
+      "owner": "dev-be",
+      "at": "2026-08-08T19:50:45.664Z"
+    }
+  ],
+  "overall": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-08T19:50:45.664Z"
+}

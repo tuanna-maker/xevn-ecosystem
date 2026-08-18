@@ -1,0 +1,2049 @@
+=== pscp sync apps/web/web-portal -> VPS ===
+.env.example              | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+.env.local                | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+.eslintrc.cjs             | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+ApiLoadBanner-DX0_nvB7.js | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+Badge-8wWNR3Ao.js         | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+businessMasterApi-BJu7SJk | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+BusinessMasterSettingsPag | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+Button-Y2nLvvIG.js        | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+CapabilityActionButton-C5 | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%CapabilityActionButton-C5 | 18 kB |  18.6 kB/s | ETA: 00:00:00 | 100%
+CatalogGovernancePage-BP_ | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+charts-vendor-DkFXOyhr.js | 4 kB |   4.0 kB/s | ETA: 00:01:03 |   1%charts-vendor-DkFXOyhr.js | 258 kB | 258.1 kB/s | ETA: 00:00:00 | 100%
+CommandCenterPage-BWFkLIO | 4 kB |   4.0 kB/s | ETA: 00:01:21 |   1%CommandCenterPage-BWFkLIO | 330 kB | 330.2 kB/s | ETA: 00:00:00 | 100%
+Container-Cr_AKoaK.js     | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+CustomersPage-Gqwaskyz.js | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+DataTable-CBJKkANB.js     | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+DepartmentsSettingsPage-D | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+ExecutiveDashboardLayout- | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+ExecutiveDashboardPage-Bz | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  27%ExecutiveDashboardPage-Bz | 14 kB |  14.4 kB/s | ETA: 00:00:00 | 100%
+ExpenseCategoriesSettings | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  26%ExpenseCategoriesSettings | 15 kB |  15.0 kB/s | ETA: 00:00:00 | 100%
+hrmApiClient-Bd_KCjBS.js  | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+HrmWorkspaceRoute-CZMFNFL | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+HRPage-DmloNQry.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  91%HRPage-DmloNQry.js        | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+index-27B2wsDD.js         | 4 kB |   4.0 kB/s | ETA: 00:00:05 |  15%index-27B2wsDD.js         | 26 kB |  26.1 kB/s | ETA: 00:00:00 | 100%
+index-D9pPhE_t.css        | 4 kB |   4.0 kB/s | ETA: 00:00:14 |   6%index-D9pPhE_t.css        | 61 kB |  62.0 kB/s | ETA: 00:00:00 | 100%
+InfoBanner-D4RP4G9K.js    | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+InfoCard-BY7BP3r1.js      | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+KPIDashboardPage-xqdaUOsk | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  42%KPIDashboardPage-xqdaUOsk | 9 kB |   9.5 kB/s | ETA: 00:00:00 | 100%
+kpiEngineApi-CLzo-olj.js  | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+KpiFormulasSettingsPage-D | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+KPIMetricsSettingsPage-B2 | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  33%KPIMetricsSettingsPage-B2 | 12 kB |  12.0 kB/s | ETA: 00:00:00 | 100%
+KPIPolicyPage-BfcWa6sC.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  65%KPIPolicyPage-BfcWa6sC.js | 6 kB |   6.1 kB/s | ETA: 00:00:00 | 100%
+LoginPage-DmQNR-C6.js     | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+MainLayout-q_f5NsZS.js    | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  28%MainLayout-q_f5NsZS.js    | 14 kB |  14.0 kB/s | ETA: 00:00:00 | 100%
+OrganizationPage-C-70xkzW | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+orgFoundationApi-CoXmsJYO | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  67%orgFoundationApi-CoXmsJYO | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+PageHeader-Cnsnrnh5.js    | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+PartnersPage-BhQe8yD-.js  | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+paths-Y6OLhCKK.js         | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+portal-flow-2jnBxRzp.js   | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+portalStrictMode-CpTcLW0R | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+positionRbacApi-BygxHrdU. | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+PositionsSettingsPage-JRH | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%PositionsSettingsPage-JRH | 8 kB |   8.6 kB/s | ETA: 00:00:00 | 100%
+RegionsSettingsPage-B2NCM | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+Section-CgKhATXM.js       | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+settings-form-pattern-B0L | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+StatCard-Uv3ozsk-.js      | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+UnifiedShellPage-6MvfprTN | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+useCompanyFilterOptions-V | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+useConfirmDialog-CZngf_pv | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+useKpiDashboardSnapshot-C | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+useNavTransitionShell-BTe | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+VehicleTypesSettingsPage- | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  18%VehicleTypesSettingsPage- | 21 kB |  21.6 kB/s | ETA: 00:00:00 | 100%
+vendor-DlwvHkgp.js        | 4 kB |   4.0 kB/s | ETA: 00:01:32 |   1%vendor-DlwvHkgp.js        | 374 kB | 374.5 kB/s | ETA: 00:00:00 | 100%
+VendorsSettingsPage-D3scp | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  24%VendorsSettingsPage-D3scp | 16 kB |  16.2 kB/s | ETA: 00:00:00 | 100%
+workflow-vendor-BHKkN3Ix. | 4 kB |   4.0 kB/s | ETA: 00:00:06 |  14%workflow-vendor-BHKkN3Ix. | 28 kB |  28.0 kB/s | ETA: 00:00:00 | 100%
+favicon.png               | 4 kB |   4.0 kB/s | ETA: 00:00:32 |   2%favicon.png               | 134 kB | 134.5 kB/s | ETA: 00:00:00 | 100%
+index.html                | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+xevn-logo.png             | 4 kB |   4.0 kB/s | ETA: 00:00:32 |   2%xevn-logo.png             | 134 kB | 134.5 kB/s | ETA: 00:00:00 | 100%
+eslint.config.cjs         | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+index.html                | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+acorn                     | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+acorn.CMD                 | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+acorn.ps1                 | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+autoprefixer              | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+autoprefixer.CMD          | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+autoprefixer.ps1          | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+eslint                    | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+eslint.CMD                | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+eslint.ps1                | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+jiti                      | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+jiti.CMD                  | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+jiti.ps1                  | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+tailwind                  | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+tailwind.CMD              | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+tailwind.ps1              | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+tailwindcss               | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+tailwindcss.CMD           | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+tailwindcss.ps1           | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+terser                    | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+terser.CMD                | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+terser.ps1                | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+tsc                       | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+tsc.CMD                   | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+tsc.ps1                   | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+tsserver                  | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+tsserver.CMD              | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+tsserver.ps1              | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+vite                      | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+vite.CMD                  | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+vite.ps1                  | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+vitest                    | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+vitest.CMD                | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+vitest.ps1                | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+yaml                      | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+yaml.CMD                  | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+yaml.ps1                  | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+pscp: apps\web\web-portal/node_modules/.ignored_autoprefixer: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_dagre: Cannot open file
+
+eslint.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  73%eslint.js                 | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+ecma-version.js           | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+globals.js                | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+replacements.json         | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+rule-type-list.json       | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+api.js                    | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+formatters-meta.json      | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+html.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%html.js                   | 12 kB |  12.2 kB/s | ETA: 00:00:00 | 100%
+json-with-metadata.js     | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+json.js                   | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+stylish.js                | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+hash.js                   | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+lint-result-cache.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%lint-result-cache.js      | 7 kB |   7.1 kB/s | ETA: 00:00:00 | 100%
+cli.js                    | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  28%cli.js                    | 13 kB |  13.9 kB/s | ETA: 00:00:00 | 100%
+config-loader.js          | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  17%config-loader.js          | 22 kB |  22.5 kB/s | ETA: 00:00:00 | 100%
+config.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  17%config.js                 | 22 kB |  22.3 kB/s | ETA: 00:00:00 | 100%
+default-config.js         | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+flat-config-array.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  60%flat-config-array.js      | 6 kB |   6.6 kB/s | ETA: 00:00:00 | 100%
+flat-config-schema.js     | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%flat-config-schema.js     | 15 kB |  15.6 kB/s | ETA: 00:00:00 | 100%
+config-api.js             | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+eslint-helpers.js         | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%eslint-helpers.js         | 43 kB |  43.8 kB/s | ETA: 00:00:00 | 100%
+eslint.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%eslint.js                 | 40 kB |  40.0 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+worker.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  76%worker.js                 | 5 kB |   5.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%index.js                  | 10 kB |  10.4 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+source-code.js            | 4 kB |   4.0 kB/s | ETA: 00:00:07 |  12%source-code.js            | 32 kB |  32.9 kB/s | ETA: 00:00:00 | 100%
+backward-token-comment-cu | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+backward-token-cursor.js  | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+cursor.js                 | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+cursors.js                | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+decorative-cursor.js      | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+filter-cursor.js          | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+forward-token-comment-cur | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+forward-token-cursor.js   | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  18%index.js                  | 21 kB |  21.1 kB/s | ETA: 00:00:00 | 100%
+limit-cursor.js           | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+padded-token-cursor.js    | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+skip-cursor.js            | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+utils.js                  | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+validate-language-options | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  87%validate-language-options | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+apply-disable-directives. | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%apply-disable-directives. | 18 kB |  18.6 kB/s | ETA: 00:00:00 | 100%
+code-path-analyzer.js     | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  19%code-path-analyzer.js     | 20 kB |  20.6 kB/s | ETA: 00:00:00 | 100%
+code-path-segment.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%code-path-segment.js      | 7 kB |   7.6 kB/s | ETA: 00:00:00 | 100%
+code-path-state.js        | 4 kB |   4.0 kB/s | ETA: 00:00:16 |   5%code-path-state.js        | 69 kB |  69.9 kB/s | ETA: 00:00:00 | 100%
+code-path.js              | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  42%code-path.js              | 9 kB |   9.5 kB/s | ETA: 00:00:00 | 100%
+debug-helpers.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  70%debug-helpers.js          | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+fork-context.js           | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  33%fork-context.js           | 12 kB |  12.0 kB/s | ETA: 00:00:00 | 100%
+id-generator.js           | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+esquery.js                | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  43%esquery.js                | 9 kB |   9.1 kB/s | ETA: 00:00:00 | 100%
+file-context.js           | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+file-report.js            | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%file-report.js            | 18 kB |  18.1 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+interpolate.js            | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+linter.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:11 |   8%linter.js                 | 48 kB |  48.0 kB/s | ETA: 00:00:00 | 100%
+rule-fixer.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%rule-fixer.js             | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+source-code-fixer.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  97%source-code-fixer.js      | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+source-code-traverser.js  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  41%source-code-traverser.js  | 9 kB |   9.6 kB/s | ETA: 00:00:00 | 100%
+source-code-visitor.js    | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+timing.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  86%timing.js                 | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+vfile.js                  | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+options.js                | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%options.js                | 11 kB |  11.7 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+rule-tester.js            | 4 kB |   4.0 kB/s | ETA: 00:00:13 |   6%rule-tester.js            | 59 kB |  59.3 kB/s | ETA: 00:00:00 | 100%
+accessor-pairs.js         | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%accessor-pairs.js         | 10 kB |  10.9 kB/s | ETA: 00:00:00 | 100%
+array-bracket-newline.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  50%array-bracket-newline.js  | 7 kB |   7.9 kB/s | ETA: 00:00:00 | 100%
+array-bracket-spacing.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  50%array-bracket-spacing.js  | 7 kB |   7.9 kB/s | ETA: 00:00:00 | 100%
+array-callback-return.js  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%array-callback-return.js  | 12 kB |  12.9 kB/s | ETA: 00:00:00 | 100%
+array-element-newline.js  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%array-element-newline.js  | 8 kB |   8.9 kB/s | ETA: 00:00:00 | 100%
+arrow-body-style.js       | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%arrow-body-style.js       | 10 kB |  10.1 kB/s | ETA: 00:00:00 | 100%
+arrow-parens.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%arrow-parens.js           | 6 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+arrow-spacing.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  88%arrow-spacing.js          | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+block-scoped-var.js       | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+block-spacing.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  79%block-spacing.js          | 5 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+brace-style.js            | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  53%brace-style.js            | 7 kB |   7.4 kB/s | ETA: 00:00:00 | 100%
+callback-return.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%callback-return.js        | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+camelcase.js              | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%camelcase.js              | 10 kB |  10.1 kB/s | ETA: 00:00:00 | 100%
+capitalized-comments.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%capitalized-comments.js   | 9 kB |   9.1 kB/s | ETA: 00:00:00 | 100%
+class-methods-use-this.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%class-methods-use-this.js | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+comma-dangle.js           | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  35%comma-dangle.js           | 11 kB |  11.4 kB/s | ETA: 00:00:00 | 100%
+comma-spacing.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%comma-spacing.js          | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+comma-style.js            | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%comma-style.js            | 10 kB |  10.0 kB/s | ETA: 00:00:00 | 100%
+complexity.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%complexity.js             | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+computed-property-spacing | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%computed-property-spacing | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+consistent-return.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%consistent-return.js      | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+consistent-this.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%consistent-this.js        | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+constructor-super.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  33%constructor-super.js      | 11 kB |  11.8 kB/s | ETA: 00:00:00 | 100%
+curly.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%curly.js                  | 11 kB |  11.5 kB/s | ETA: 00:00:00 | 100%
+default-case-last.js      | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+default-case.js           | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+default-param-last.js     | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+dot-location.js           | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+dot-notation.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%dot-notation.js           | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+eol-last.js               | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+eqeqeq.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  84%eqeqeq.js                 | 4 kB |   4.8 kB/s | ETA: 00:00:00 | 100%
+for-direction.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  95%for-direction.js          | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+func-call-spacing.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  49%func-call-spacing.js      | 8 kB |   8.1 kB/s | ETA: 00:00:00 | 100%
+func-name-matching.js     | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%func-name-matching.js     | 8 kB |   8.6 kB/s | ETA: 00:00:00 | 100%
+func-names.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  73%func-names.js             | 5 kB |   5.4 kB/s | ETA: 00:00:00 | 100%
+func-style.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  76%func-style.js             | 5 kB |   5.2 kB/s | ETA: 00:00:00 | 100%
+function-call-argument-ne | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  97%function-call-argument-ne | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+function-paren-newline.js | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%function-paren-newline.js | 9 kB |  10.0 kB/s | ETA: 00:00:00 | 100%
+generator-star-spacing.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%generator-star-spacing.js | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+getter-return.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%getter-return.js          | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+global-require.js         | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+grouped-accessor-pairs.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%grouped-accessor-pairs.js | 7 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+guard-for-in.js           | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+handle-callback-err.js    | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+id-blacklist.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%id-blacklist.js           | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+id-denylist.js            | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%id-denylist.js            | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+id-length.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%id-length.js              | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+id-match.js               | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%id-match.js               | 8 kB |   9.0 kB/s | ETA: 00:00:00 | 100%
+implicit-arrow-linebreak. | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+indent-legacy.js          | 4 kB |   4.0 kB/s | ETA: 00:00:07 |  11%indent-legacy.js          | 34 kB |  34.9 kB/s | ETA: 00:00:00 | 100%
+indent.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:15 |   6%indent.js                 | 64 kB |  64.9 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%index.js                  | 17 kB |  17.5 kB/s | ETA: 00:00:00 | 100%
+init-declarations.js      | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+jsx-quotes.js             | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+key-spacing.js            | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  19%key-spacing.js            | 20 kB |  20.8 kB/s | ETA: 00:00:00 | 100%
+keyword-spacing.js        | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  20%keyword-spacing.js        | 19 kB |  19.9 kB/s | ETA: 00:00:00 | 100%
+line-comment-position.js  | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+linebreak-style.js        | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+lines-around-comment.js   | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  26%lines-around-comment.js   | 15 kB |  15.1 kB/s | ETA: 00:00:00 | 100%
+lines-around-directive.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  58%lines-around-directive.js | 6 kB |   6.9 kB/s | ETA: 00:00:00 | 100%
+lines-between-class-membe | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%lines-between-class-membe | 9 kB |   9.9 kB/s | ETA: 00:00:00 | 100%
+logical-assignment-operat | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%logical-assignment-operat | 18 kB |  18.6 kB/s | ETA: 00:00:00 | 100%
+max-classes-per-file.js   | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+max-depth.js              | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+max-len.js                | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%max-len.js                | 13 kB |  13.3 kB/s | ETA: 00:00:00 | 100%
+max-lines-per-function.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  67%max-lines-per-function.js | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+max-lines.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  93%max-lines.js              | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+max-nested-callbacks.js   | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+max-params.js             | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+max-statements-per-line.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  60%max-statements-per-line.j | 6 kB |   6.6 kB/s | ETA: 00:00:00 | 100%
+max-statements.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  89%max-statements.js         | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+multiline-comment-style.j | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%multiline-comment-style.j | 17 kB |  18.0 kB/s | ETA: 00:00:00 | 100%
+multiline-ternary.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  62%multiline-ternary.js      | 6 kB |   6.4 kB/s | ETA: 00:00:00 | 100%
+new-cap.js                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%new-cap.js                | 7 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+new-parens.js             | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+newline-after-var.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%newline-after-var.js      | 8 kB |   8.6 kB/s | ETA: 00:00:00 | 100%
+newline-before-return.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%newline-before-return.js  | 6 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+newline-per-chained-call. | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+no-alert.js               | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+no-array-constructor.js   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  82%no-array-constructor.js   | 4 kB |   4.9 kB/s | ETA: 00:00:00 | 100%
+no-async-promise-executor | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-await-in-loop.js       | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-bitwise.js             | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+no-buffer-constructor.js  | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-caller.js              | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-case-declarations.js   | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-catch-shadow.js        | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+no-class-assign.js        | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+no-compare-neg-zero.js    | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+no-cond-assign.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  84%no-cond-assign.js         | 4 kB |   4.7 kB/s | ETA: 00:00:00 | 100%
+no-confusing-arrow.js     | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+no-console.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  63%no-console.js             | 6 kB |   6.3 kB/s | ETA: 00:00:00 | 100%
+no-const-assign.js        | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-constant-binary-expres | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%no-constant-binary-expres | 17 kB |  17.7 kB/s | ETA: 00:00:00 | 100%
+no-constant-condition.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  91%no-constant-condition.js  | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+no-constructor-return.js  | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+no-continue.js            | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-control-regex.js       | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+no-debugger.js            | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-delete-var.js          | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-div-regex.js           | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+no-dupe-args.js           | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+no-dupe-class-members.js  | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+no-dupe-else-if.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  97%no-dupe-else-if.js        | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+no-dupe-keys.js           | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+no-duplicate-case.js      | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-duplicate-imports.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%no-duplicate-imports.js   | 9 kB |   9.8 kB/s | ETA: 00:00:00 | 100%
+no-else-return.js         | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%no-else-return.js         | 13 kB |  13.3 kB/s | ETA: 00:00:00 | 100%
+no-empty-character-class. | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+no-empty-function.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%no-empty-function.js      | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+no-empty-pattern.js       | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-empty-static-block.js  | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+no-empty.js               | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+no-eq-null.js             | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-eval.js                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%no-eval.js                | 7 kB |   7.6 kB/s | ETA: 00:00:00 | 100%
+no-ex-assign.js           | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+no-extend-native.js       | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  75%no-extend-native.js       | 5 kB |   5.3 kB/s | ETA: 00:00:00 | 100%
+no-extra-bind.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%no-extra-bind.js          | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+no-extra-boolean-cast.js  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%no-extra-boolean-cast.js  | 10 kB |  10.3 kB/s | ETA: 00:00:00 | 100%
+no-extra-label.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  96%no-extra-label.js         | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+no-extra-parens.js        | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%no-extra-parens.js        | 42 kB |  42.6 kB/s | ETA: 00:00:00 | 100%
+no-extra-semi.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  88%no-extra-semi.js          | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+no-fallthrough.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  58%no-fallthrough.js         | 6 kB |   6.8 kB/s | ETA: 00:00:00 | 100%
+no-floating-decimal.js    | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+no-func-assign.js         | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-global-assign.js       | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-implicit-coercion.js   | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%no-implicit-coercion.js   | 12 kB |  12.3 kB/s | ETA: 00:00:00 | 100%
+no-implicit-globals.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  88%no-implicit-globals.js    | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+no-implied-eval.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  94%no-implied-eval.js        | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+no-import-assign.js       | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  66%no-import-assign.js       | 6 kB |   6.0 kB/s | ETA: 00:00:00 | 100%
+no-inline-comments.js     | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+no-inner-declarations.js  | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+no-invalid-regexp.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%no-invalid-regexp.js      | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+no-invalid-this.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  91%no-invalid-this.js        | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+no-irregular-whitespace.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%no-irregular-whitespace.j | 7 kB |   7.7 kB/s | ETA: 00:00:00 | 100%
+no-iterator.js            | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-label-var.js           | 2 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+no-labels.js              | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+no-lone-blocks.js         | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+no-lonely-if.js           | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+no-loop-func.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%no-loop-func.js           | 7 kB |   7.1 kB/s | ETA: 00:00:00 | 100%
+no-loss-of-precision.js   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  55%no-loss-of-precision.js   | 7 kB |   7.2 kB/s | ETA: 00:00:00 | 100%
+no-magic-numbers.js       | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%no-magic-numbers.js       | 10 kB |  10.3 kB/s | ETA: 00:00:00 | 100%
+no-misleading-character-c | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%no-misleading-character-c | 15 kB |  16.0 kB/s | ETA: 00:00:00 | 100%
+no-mixed-operators.js     | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%no-mixed-operators.js     | 6 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+no-mixed-requires.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%no-mixed-requires.js      | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+no-mixed-spaces-and-tabs. | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+no-multi-assign.js        | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+no-multi-spaces.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  89%no-multi-spaces.js        | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+no-multi-str.js           | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+no-multiple-empty-lines.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  73%no-multiple-empty-lines.j | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+no-native-reassign.js     | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+no-negated-condition.js   | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-negated-in-lhs.js      | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+no-nested-ternary.js      | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+no-new-func.js            | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+no-new-native-nonconstruc | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-new-object.js          | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-new-require.js         | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+no-new-symbol.js          | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-new-wrappers.js        | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+no-new.js                 | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+no-nonoctal-decimal-escap | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  89%no-nonoctal-decimal-escap | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+no-obj-calls.js           | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-object-constructor.js  | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+no-octal-escape.js        | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-octal.js               | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-param-reassign.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%no-param-reassign.js      | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+no-path-concat.js         | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+no-plusplus.js            | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+no-process-env.js         | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+no-process-exit.js        | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-promise-executor-retur | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%no-promise-executor-retur | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+no-proto.js               | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-prototype-builtins.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  86%no-prototype-builtins.js  | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+no-redeclare.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%no-redeclare.js           | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+no-regex-spaces.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  77%no-regex-spaces.js        | 5 kB |   5.2 kB/s | ETA: 00:00:00 | 100%
+no-restricted-exports.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%no-restricted-exports.js  | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+no-restricted-globals.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  65%no-restricted-globals.js  | 6 kB |   6.1 kB/s | ETA: 00:00:00 | 100%
+no-restricted-imports.js  | 4 kB |   4.0 kB/s | ETA: 00:00:05 |  16%no-restricted-imports.js  | 24 kB |  24.7 kB/s | ETA: 00:00:00 | 100%
+no-restricted-modules.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  66%no-restricted-modules.js  | 5 kB |   6.0 kB/s | ETA: 00:00:00 | 100%
+no-restricted-properties. | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%no-restricted-properties. | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+no-restricted-syntax.js   | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-return-assign.js       | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+no-return-await.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  91%no-return-await.js        | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+no-script-url.js          | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+no-self-assign.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  87%no-self-assign.js         | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+no-self-compare.js        | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-sequences.js           | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+no-setter-return.js       | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%no-setter-return.js       | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+no-shadow-restricted-name | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+no-shadow.js              | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  20%no-shadow.js              | 19 kB |  19.1 kB/s | ETA: 00:00:00 | 100%
+no-spaced-func.js         | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+no-sparse-arrays.js       | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+no-sync.js                | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-tabs.js                | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-template-curly-in-stri | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+no-ternary.js             | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-this-before-super.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%no-this-before-super.js   | 8 kB |   8.8 kB/s | ETA: 00:00:00 | 100%
+no-throw-literal.js       | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-trailing-spaces.js     | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  67%no-trailing-spaces.js     | 5 kB |   6.0 kB/s | ETA: 00:00:00 | 100%
+no-unassigned-vars.js     | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+no-undef-init.js          | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-undef.js               | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+no-undefined.js           | 2 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+no-underscore-dangle.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  42%no-underscore-dangle.js   | 9 kB |   9.3 kB/s | ETA: 00:00:00 | 100%
+no-unexpected-multiline.j | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+no-unmodified-loop-condit | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%no-unmodified-loop-condit | 10 kB |  10.2 kB/s | ETA: 00:00:00 | 100%
+no-unneeded-ternary.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%no-unneeded-ternary.js    | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+no-unreachable-loop.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  80%no-unreachable-loop.js    | 4 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+no-unreachable.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  54%no-unreachable.js         | 7 kB |   7.3 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-finally.js      | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-negation.js     | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-optional-chaini | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  76%no-unsafe-optional-chaini | 5 kB |   5.3 kB/s | ETA: 00:00:00 | 100%
+no-unused-expressions.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  74%no-unused-expressions.js  | 5 kB |   5.4 kB/s | ETA: 00:00:00 | 100%
+no-unused-labels.js       | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+no-unused-private-class-m | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%no-unused-private-class-m | 12 kB |  12.3 kB/s | ETA: 00:00:00 | 100%
+no-unused-vars.js         | 4 kB |   4.0 kB/s | ETA: 00:00:10 |   8%no-unused-vars.js         | 47 kB |  47.7 kB/s | ETA: 00:00:00 | 100%
+no-use-before-define.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  33%no-use-before-define.js   | 11 kB |  11.8 kB/s | ETA: 00:00:00 | 100%
+no-useless-assignment.js  | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%no-useless-assignment.js  | 19 kB |  19.0 kB/s | ETA: 00:00:00 | 100%
+no-useless-backreference. | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  53%no-useless-backreference. | 7 kB |   7.5 kB/s | ETA: 00:00:00 | 100%
+no-useless-call.js        | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+no-useless-catch.js       | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+no-useless-computed-key.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%no-useless-computed-key.j | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+no-useless-concat.js      | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+no-useless-constructor.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%no-useless-constructor.js | 7 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+no-useless-escape.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  37%no-useless-escape.js      | 10 kB |  10.8 kB/s | ETA: 00:00:00 | 100%
+no-useless-rename.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  83%no-useless-rename.js      | 4 kB |   4.8 kB/s | ETA: 00:00:00 | 100%
+no-useless-return.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%no-useless-return.js      | 11 kB |  11.7 kB/s | ETA: 00:00:00 | 100%
+no-var.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%no-var.js                 | 12 kB |  12.5 kB/s | ETA: 00:00:00 | 100%
+no-void.js                | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+no-warning-comments.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%no-warning-comments.js    | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+no-whitespace-before-prop | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+no-with.js                | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+nonblock-statement-body-p | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%nonblock-statement-body-p | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+object-curly-newline.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%object-curly-newline.js   | 9 kB |   9.9 kB/s | ETA: 00:00:00 | 100%
+object-curly-spacing.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%object-curly-spacing.js   | 10 kB |  10.1 kB/s | ETA: 00:00:00 | 100%
+object-property-newline.j | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+object-shorthand.js       | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%object-shorthand.js       | 18 kB |  18.1 kB/s | ETA: 00:00:00 | 100%
+one-var-declaration-per-l | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+one-var.js                | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%one-var.js                | 18 kB |  18.7 kB/s | ETA: 00:00:00 | 100%
+operator-assignment.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  54%operator-assignment.js    | 7 kB |   7.4 kB/s | ETA: 00:00:00 | 100%
+operator-linebreak.js     | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%operator-linebreak.js     | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+padded-blocks.js          | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%padded-blocks.js          | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+padding-line-between-stat | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  24%padding-line-between-stat | 16 kB |  16.6 kB/s | ETA: 00:00:00 | 100%
+prefer-arrow-callback.js  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%prefer-arrow-callback.js  | 11 kB |  11.6 kB/s | ETA: 00:00:00 | 100%
+prefer-const.js           | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%prefer-const.js           | 15 kB |  15.7 kB/s | ETA: 00:00:00 | 100%
+prefer-destructuring.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%prefer-destructuring.js   | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+prefer-exponentiation-ope | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  60%prefer-exponentiation-ope | 6 kB |   6.6 kB/s | ETA: 00:00:00 | 100%
+prefer-named-capture-grou | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  81%prefer-named-capture-grou | 4 kB |   4.9 kB/s | ETA: 00:00:00 | 100%
+prefer-numeric-literals.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  90%prefer-numeric-literals.j | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+prefer-object-has-own.js  | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+prefer-object-spread.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  43%prefer-object-spread.js   | 9 kB |   9.3 kB/s | ETA: 00:00:00 | 100%
+prefer-promise-reject-err | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  88%prefer-promise-reject-err | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+prefer-reflect.js         | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+prefer-regex-literals.js  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  28%prefer-regex-literals.js  | 14 kB |  14.0 kB/s | ETA: 00:00:00 | 100%
+prefer-rest-params.js     | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+prefer-spread.js          | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+prefer-template.js        | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%prefer-template.js        | 10 kB |  10.3 kB/s | ETA: 00:00:00 | 100%
+preserve-caught-error.js  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%preserve-caught-error.js  | 15 kB |  15.9 kB/s | ETA: 00:00:00 | 100%
+quote-props.js            | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%quote-props.js            | 9 kB |   9.9 kB/s | ETA: 00:00:00 | 100%
+quotes.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  37%quotes.js                 | 10 kB |  10.7 kB/s | ETA: 00:00:00 | 100%
+radix.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  80%radix.js                  | 4 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+require-atomic-updates.js | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%require-atomic-updates.js | 9 kB |   9.1 kB/s | ETA: 00:00:00 | 100%
+require-await.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  89%require-await.js          | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+require-unicode-regexp.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%require-unicode-regexp.js | 7 kB |   7.6 kB/s | ETA: 00:00:00 | 100%
+require-yield.js          | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+rest-spread-spacing.js    | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+semi-spacing.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  55%semi-spacing.js           | 7 kB |   7.2 kB/s | ETA: 00:00:00 | 100%
+semi-style.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%semi-style.js             | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+semi.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%semi.js                   | 13 kB |  13.0 kB/s | ETA: 00:00:00 | 100%
+sort-imports.js           | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  47%sort-imports.js           | 8 kB |   8.4 kB/s | ETA: 00:00:00 | 100%
+sort-keys.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%sort-keys.js              | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+sort-vars.js              | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+space-before-blocks.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%space-before-blocks.js    | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+space-before-function-par | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%space-before-function-par | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+space-in-parens.js        | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%space-in-parens.js        | 9 kB |   9.1 kB/s | ETA: 00:00:00 | 100%
+space-infix-ops.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  70%space-infix-ops.js        | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+space-unary-ops.js        | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%space-unary-ops.js        | 10 kB |  10.4 kB/s | ETA: 00:00:00 | 100%
+spaced-comment.js         | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%spaced-comment.js         | 10 kB |  11.0 kB/s | ETA: 00:00:00 | 100%
+strict.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  43%strict.js                 | 9 kB |   9.1 kB/s | ETA: 00:00:00 | 100%
+switch-colon-spacing.js   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  87%switch-colon-spacing.js   | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+symbol-description.js     | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+template-curly-spacing.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  94%template-curly-spacing.js | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+template-tag-spacing.js   | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+unicode-bom.js            | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+use-isnan.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%use-isnan.js              | 6 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+ast-utils.js              | 4 kB |   4.0 kB/s | ETA: 00:00:19 |   4%ast-utils.js              | 81 kB |  81.7 kB/s | ETA: 00:00:00 | 100%
+char-source.js            | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%char-source.js            | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+fix-tracker.js            | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+keywords.js               | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+lazy-loading-rule-map.js  | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+regular-expressions.js    | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+is-combining-character.js | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+is-emoji-modifier.js      | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+is-regional-indicator-sym | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+is-surrogate-pair.js      | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+valid-typeof.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  96%valid-typeof.js           | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+vars-on-top.js            | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  95%vars-on-top.js            | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+wrap-iife.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  59%wrap-iife.js              | 6 kB |   6.8 kB/s | ETA: 00:00:00 | 100%
+wrap-regex.js             | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+yield-star-spacing.js     | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+yoda.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  42%yoda.js                   | 9 kB |   9.5 kB/s | ETA: 00:00:00 | 100%
+parser-service.js         | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+processor-service.js      | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+suppressions-service.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%suppressions-service.js   | 8 kB |   8.5 kB/s | ETA: 00:00:00 | 100%
+warning-service.js        | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+ajv.js                    | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+assert.js                 | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+ast-utils.js              | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+deep-merge-arrays.js      | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+directives.js             | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+flags.js                  | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+logging.js                | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+message-counts.js         | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+naming.js                 | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+option-utils.js           | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+relative-module-resolver. | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+runtime-info.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  79%runtime-info.js           | 5 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+serialization.js          | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+severity.js               | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+stats.js                  | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+string-utils.js           | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+text-table.js             | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+translate-cli-options.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%translate-cli-options.js  | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+traverser.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  84%traverser.js              | 4 kB |   4.7 kB/s | ETA: 00:00:00 | 100%
+config-api.d.ts           | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:08 |  10%index.d.ts                | 39 kB |  39.4 kB/s | ETA: 00:00:00 | 100%
+rules.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:30 |   3%rules.d.ts                | 127 kB | 127.7 kB/s | ETA: 00:00:00 | 100%
+universal.d.ts            | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+use-at-your-own-risk.d.ts | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+universal.js              | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+unsupported-api.js        | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+all-matched-files-ignored | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+config-file-missing.js    | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+config-plugin-missing.js  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+config-serialize-function | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+eslintrc-incompat.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%eslintrc-incompat.js      | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+eslintrc-plugins.js       | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+extend-config-missing.js  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+failed-to-read-json.js    | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+file-not-found.js         | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+invalid-rule-options.js   | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+invalid-rule-severity.js  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-config-found.js        | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+plugin-conflict.js        | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+plugin-invalid.js         | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+plugin-missing.js         | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+rule-unsupported-language | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+shared.js                 | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+whitespace-found.js       | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+package.json              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%package.json              | 7 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  19%README.md                 | 20 kB |  20.4 kB/s | ETA: 00:00:00 | 100%
+eslint-plugin-react-hooks | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+eslint-plugin-react-hooks | 4 kB |   4.0 kB/s | ETA: 00:08:18 |   0%eslint-plugin-react-hooks | 1996 kB | 1996.3 kB/s | ETA: 00:00:00 | 100%
+eslint-plugin-react-hooks | 4 kB |   4.0 kB/s | ETA: 00:08:16 |   0%eslint-plugin-react-hooks | 1991 kB | 1991.9 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  98%README.md                 | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%index.js                  | 12 kB |  13.0 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%README.md                 | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+pscp: apps\web\web-portal/node_modules/.ignored_jsdom: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_lucide-react: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_postcss: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_react: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_react-dom: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_react-router-dom: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_recharts: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_tailwindcss: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_typescript: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_vite: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/.ignored_vitest: Cannot open file
+
+results.json              | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.cjs                 | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%index.cjs                 | 43 kB |  43.0 kB/s | ETA: 00:00:00 | 100%
+index.d.cts               | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%index.d.cts               | 6 kB |   6.9 kB/s | ETA: 00:00:00 | 100%
+posix.cjs                 | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%posix.cjs                 | 41 kB |  42.0 kB/s | ETA: 00:00:00 | 100%
+windows.cjs               | 4 kB |   4.0 kB/s | ETA: 00:00:12 |   7%windows.cjs               | 53 kB |  53.2 kB/s | ETA: 00:00:00 | 100%
+types.cts                 | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%index.d.ts                | 6 kB |   6.9 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%index.js                  | 42 kB |  42.4 kB/s | ETA: 00:00:00 | 100%
+posix.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%posix.js                  | 41 kB |  41.5 kB/s | ETA: 00:00:00 | 100%
+windows.js                | 4 kB |   4.0 kB/s | ETA: 00:00:12 |   7%windows.js                | 52 kB |  52.8 kB/s | ETA: 00:00:00 | 100%
+types.d.ts                | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+types.ts                  | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%LICENSE                   | 11 kB |  11.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  24%README.md                 | 16 kB |  16.7 kB/s | ETA: 00:00:00 | 100%
+index.cjs                 | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  23%index.cjs                 | 16 kB |  16.8 kB/s | ETA: 00:00:00 | 100%
+index.d.cts               | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+types.cts                 | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  23%index.js                  | 16 kB |  16.8 kB/s | ETA: 00:00:00 | 100%
+types.d.ts                | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+types.ts                  | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%LICENSE                   | 11 kB |  11.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  86%README.md                 | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+types.d.cts               | 4 kB |   4.0 kB/s | ETA: 00:00:08 |  10%types.d.cts               | 37 kB |  37.1 kB/s | ETA: 00:00:00 | 100%
+types.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:08 |  10%types.d.ts                | 37 kB |  37.1 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%LICENSE                   | 11 kB |  11.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+index.cjs                 | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%index.cjs                 | 13 kB |  13.0 kB/s | ETA: 00:00:00 | 100%
+index.d.cts               | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%index.d.cts               | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+types.cts                 | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%index.d.ts                | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%index.js                  | 12 kB |  13.0 kB/s | ETA: 00:00:00 | 100%
+types.d.ts                | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+types.ts                  | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%LICENSE                   | 11 kB |  11.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%README.md                 | 9 kB |   9.0 kB/s | ETA: 00:00:00 | 100%
+index.cjs                 | 4 kB |   4.0 kB/s | ETA: 00:00:05 |  15%index.cjs                 | 25 kB |  25.5 kB/s | ETA: 00:00:00 | 100%
+index.d.cts               | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%index.d.cts               | 12 kB |  12.3 kB/s | ETA: 00:00:00 | 100%
+types.cts                 | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%index.d.ts                | 12 kB |  12.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:05 |  15%index.js                  | 25 kB |  25.4 kB/s | ETA: 00:00:00 | 100%
+types.d.ts                | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+types.ts                  | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%LICENSE                   | 11 kB |  11.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%README.md                 | 11 kB |  11.6 kB/s | ETA: 00:00:00 | 100%
+errors.d.ts               | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+fsx.d.ts                  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  50%fsx.d.ts                  | 7 kB |   7.9 kB/s | ETA: 00:00:00 | 100%
+hfs.d.ts                  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%hfs.d.ts                  | 13 kB |  13.2 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+path.d.ts                 | 3 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%LICENSE                   | 11 kB |  11.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+errors.js                 | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+hfs.js                    | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  17%hfs.js                    | 22 kB |  22.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+path.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%path.js                   | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+node-fsx.d.ts             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%node-fsx.d.ts             | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+node-hfs.d.ts             | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  49%node-hfs.d.ts             | 8 kB |   8.1 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%LICENSE                   | 11 kB |  11.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+node-hfs.js               | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%node-hfs.js               | 13 kB |  13.2 kB/s | ETA: 00:00:00 | 100%
+pscp: apps\web\web-portal/node_modules/@testing-library/.ignored_jest-dom: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/@testing-library/.ignored_react: Cannot open file
+
+CHANGELOG.md              | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+index.mjs                 | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+jest-globals.js           | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+jest-globals.mjs          | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+matchers-35e4d3bd.mjs     | 4 kB |   4.0 kB/s | ETA: 00:00:13 |   6%matchers-35e4d3bd.mjs     | 57 kB |  57.9 kB/s | ETA: 00:00:00 | 100%
+matchers-98b869c1.js      | 4 kB |   4.0 kB/s | ETA: 00:00:13 |   6%matchers-98b869c1.js      | 58 kB |  58.7 kB/s | ETA: 00:00:00 | 100%
+matchers.js               | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+matchers.mjs              | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+vitest.js                 | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+vitest.mjs                | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+jest-globals.d.ts         | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+jest-globals.js           | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+matchers.d.ts             | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+matchers.js               | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:22 |   4%README.md                 | 92 kB |  92.7 kB/s | ETA: 00:00:00 | 100%
+bun.d.ts                  | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+jest-globals.d.ts         | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+jest.d.ts                 | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+matchers-standalone.d.ts  | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+matchers.d.ts             | 4 kB |   4.0 kB/s | ETA: 00:00:08 |  10%matchers.d.ts             | 36 kB |  36.6 kB/s | ETA: 00:00:00 | 100%
+vitest.d.ts               | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+bun-custom-expect-types.t | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+bun-types.test.ts         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  79%bun-types.test.ts         | 5 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+tsconfig.json             | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+jest-custom-expect-types. | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+jest-types.test.ts        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  79%jest-types.test.ts        | 5 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+tsconfig.json             | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+jest-globals-custom-expec | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+jest-globals-types.test.t | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  79%jest-globals-types.test.t | 5 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+tsconfig.json             | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+tsconfig.json             | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+vitest-custom-expect-type | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+vitest-types.test.ts      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  79%vitest-types.test.ts      | 5 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+vitest.d.ts               | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+vitest.js                 | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+CHANGELOG.md              | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+react.cjs.js              | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  24%react.cjs.js              | 16 kB |  16.3 kB/s | ETA: 00:00:00 | 100%
+react.esm.js              | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  26%react.esm.js              | 14 kB |  15.0 kB/s | ETA: 00:00:00 | 100%
+react.pure.cjs.js         | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  26%react.pure.cjs.js         | 15 kB |  15.0 kB/s | ETA: 00:00:00 | 100%
+react.pure.esm.js         | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  29%react.pure.esm.js         | 13 kB |  13.7 kB/s | ETA: 00:00:00 | 100%
+react.pure.umd.js         | 4 kB |   4.0 kB/s | ETA: 00:02:03 |   0%react.pure.umd.js         | 498 kB | 498.3 kB/s | ETA: 00:00:00 | 100%
+react.pure.umd.js.map     | 4 kB |   4.0 kB/s | ETA: 00:04:25 |   0%react.pure.umd.js.map     | 1067 kB | 1067.4 kB/s | ETA: 00:00:00 | 100%
+react.pure.umd.min.js     | 4 kB |   4.0 kB/s | ETA: 00:00:54 |   1%react.pure.umd.min.js     | 223 kB | 223.6 kB/s | ETA: 00:00:00 | 100%
+react.pure.umd.min.js.map | 4 kB |   4.0 kB/s | ETA: 00:03:11 |   0%react.pure.umd.min.js.map | 770 kB | 770.6 kB/s | ETA: 00:00:00 | 100%
+react.umd.js              | 4 kB |   4.0 kB/s | ETA: 00:02:07 |   0%react.umd.js              | 514 kB | 515.0 kB/s | ETA: 00:00:00 | 100%
+react.umd.js.map          | 4 kB |   4.0 kB/s | ETA: 00:04:26 |   0%react.umd.js.map          | 1069 kB | 1069.8 kB/s | ETA: 00:00:00 | 100%
+react.umd.min.js          | 4 kB |   4.0 kB/s | ETA: 00:00:54 |   1%react.umd.min.js          | 223 kB | 223.9 kB/s | ETA: 00:00:00 | 100%
+react.umd.min.js.map      | 4 kB |   4.0 kB/s | ETA: 00:03:12 |   0%react.umd.min.js.map      | 772 kB | 772.4 kB/s | ETA: 00:00:00 | 100%
+act-compat.js             | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+config.js                 | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+fire-event.js             | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+pure.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  37%pure.js                   | 10 kB |  10.7 kB/s | ETA: 00:00:00 | 100%
+dont-cleanup-after-each.j | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+pure.d.ts                 | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+pure.js                   | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:18 |   5%README.md                 | 76 kB |  76.4 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%index.d.ts                | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+pure.d.ts                 | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+pscp: apps\web\web-portal/node_modules/@types/.ignored_dagre: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/@types/.ignored_react: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/@types/.ignored_react-dom: Cannot open file
+
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  83%index.d.ts                | 4 kB |   4.8 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+canary.d.ts               | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%canary.d.ts               | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+experimental.d.ts         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  74%experimental.d.ts         | 5 kB |   5.3 kB/s | ETA: 00:00:00 | 100%
+global.d.ts               | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  55%global.d.ts               | 7 kB |   7.2 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:46 |   2%index.d.ts                | 190 kB | 190.8 kB/s | ETA: 00:00:00 | 100%
+jsx-dev-runtime.d.ts      | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+jsx-runtime.d.ts          | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%package.json              | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+canary.d.ts               | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%canary.d.ts               | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+experimental.d.ts         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  74%experimental.d.ts         | 5 kB |   5.3 kB/s | ETA: 00:00:00 | 100%
+global.d.ts               | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  55%global.d.ts               | 7 kB |   7.2 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:46 |   2%index.d.ts                | 189 kB | 190.0 kB/s | ETA: 00:00:00 | 100%
+jsx-dev-runtime.d.ts      | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+jsx-runtime.d.ts          | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+canary.d.ts               | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  63%canary.d.ts               | 6 kB |   6.3 kB/s | ETA: 00:00:00 | 100%
+client.d.ts               | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+experimental.d.ts         | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  84%index.d.ts                | 4 kB |   4.7 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+server.d.ts               | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  85%server.d.ts               | 4 kB |   4.7 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  28%index.d.ts                | 14 kB |  14.0 kB/s | ETA: 00:00:00 | 100%
+pscp: apps\web\web-portal/node_modules/@typescript-eslint/.ignored_eslint-plugin: Cannot open file
+
+pscp: apps\web\web-portal/node_modules/@typescript-eslint/.ignored_parser: Cannot open file
+
+eslint-recommended-raw.d. | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+eslint-recommended-raw.js | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+all.d.ts                  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%all.d.ts                  | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+all.js                    | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%all.js                    | 8 kB |   9.0 kB/s | ETA: 00:00:00 | 100%
+base.d.ts                 | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+base.js                   | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+disable-type-checked.d.ts | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+disable-type-checked.js   | 3 kB |   4.0 kB/s | ETA: 00:00:00 | 100%
+eslint-recommended.d.ts   | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+eslint-recommended.js     | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+recommended-type-checked- | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+recommended-type-checked- | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+recommended-type-checked. | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+recommended-type-checked. | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+recommended.d.ts          | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+recommended.js            | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+strict-type-checked-only. | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+strict-type-checked-only. | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+strict-type-checked.d.ts  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  79%strict-type-checked.d.ts  | 5 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+strict-type-checked.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  73%strict-type-checked.js    | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+strict.d.ts               | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+strict.js                 | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+stylistic-type-checked-on | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+stylistic-type-checked-on | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+stylistic-type-checked.d. | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+stylistic-type-checked.js | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+stylistic.d.ts            | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+stylistic.js              | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+all.d.ts                  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+all.js                    | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%all.js                    | 10 kB |  10.2 kB/s | ETA: 00:00:00 | 100%
+base.d.ts                 | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+base.js                   | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+disable-type-checked.d.ts | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+disable-type-checked.js   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%disable-type-checked.js   | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+eslint-recommended.d.ts   | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+eslint-recommended.js     | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+recommended-type-checked- | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+recommended-type-checked- | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+recommended-type-checked. | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+recommended-type-checked. | 3 kB |   4.0 kB/s | ETA: 00:00:00 | 100%
+recommended.d.ts          | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+recommended.js            | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+strict-type-checked-only. | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+strict-type-checked-only. | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  89%strict-type-checked-only. | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+strict-type-checked.d.ts  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+strict-type-checked.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%strict-type-checked.js    | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+strict.d.ts               | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+strict.js                 | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+stylistic-type-checked-on | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+stylistic-type-checked-on | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+stylistic-type-checked.d. | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+stylistic-type-checked.js | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+stylistic.d.ts            | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+stylistic.js              | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:19 |   4%index.d.ts                | 80 kB |  80.2 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+raw-plugin.d.ts           | 4 kB |   4.0 kB/s | ETA: 00:00:18 |   5%raw-plugin.d.ts           | 76 kB |  76.4 kB/s | ETA: 00:00:00 | 100%
+raw-plugin.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  60%raw-plugin.js             | 6 kB |   6.6 kB/s | ETA: 00:00:00 | 100%
+adjacent-overload-signatu | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+adjacent-overload-signatu | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  80%adjacent-overload-signatu | 4 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+array-type.d.ts           | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+array-type.js             | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%array-type.js             | 9 kB |   9.9 kB/s | ETA: 00:00:00 | 100%
+await-thenable.d.ts       | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+await-thenable.js         | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%await-thenable.js         | 10 kB |  10.5 kB/s | ETA: 00:00:00 | 100%
+ban-ts-comment.d.ts       | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+ban-ts-comment.js         | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  42%ban-ts-comment.js         | 9 kB |   9.5 kB/s | ETA: 00:00:00 | 100%
+ban-tslint-comment.d.ts   | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+ban-tslint-comment.js     | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+class-literal-property-st | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+class-literal-property-st | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  58%class-literal-property-st | 6 kB |   6.9 kB/s | ETA: 00:00:00 | 100%
+class-methods-use-this.d. | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+class-methods-use-this.js | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  47%class-methods-use-this.js | 8 kB |   8.4 kB/s | ETA: 00:00:00 | 100%
+consistent-generic-constr | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+consistent-generic-constr | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  66%consistent-generic-constr | 6 kB |   6.1 kB/s | ETA: 00:00:00 | 100%
+consistent-indexed-object | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+consistent-indexed-object | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  33%consistent-indexed-object | 12 kB |  12.0 kB/s | ETA: 00:00:00 | 100%
+consistent-return.d.ts    | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+consistent-return.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  74%consistent-return.js      | 5 kB |   5.3 kB/s | ETA: 00:00:00 | 100%
+consistent-type-assertion | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+consistent-type-assertion | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  33%consistent-type-assertion | 12 kB |  12.1 kB/s | ETA: 00:00:00 | 100%
+consistent-type-definitio | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+consistent-type-definitio | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%consistent-type-definitio | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+consistent-type-exports.d | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+consistent-type-exports.j | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  24%consistent-type-exports.j | 16 kB |  16.1 kB/s | ETA: 00:00:00 | 100%
+consistent-type-imports.d | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+consistent-type-imports.j | 4 kB |   4.0 kB/s | ETA: 00:00:07 |  11%consistent-type-imports.j | 33 kB |  33.7 kB/s | ETA: 00:00:00 | 100%
+default-param-last.d.ts   | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+default-param-last.js     | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+dot-notation.d.ts         | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+dot-notation.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%dot-notation.js           | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+shared.d.ts               | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+shared.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  88%shared.js                 | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+explicit-function-return- | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+explicit-function-return- | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%explicit-function-return- | 7 kB |   7.6 kB/s | ETA: 00:00:00 | 100%
+explicit-member-accessibi | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+explicit-member-accessibi | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  29%explicit-member-accessibi | 13 kB |  13.7 kB/s | ETA: 00:00:00 | 100%
+explicit-module-boundary- | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+explicit-module-boundary- | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  23%explicit-module-boundary- | 17 kB |  17.3 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:08 |  10%index.d.ts                | 38 kB |  38.6 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  20%index.js                  | 19 kB |  19.8 kB/s | ETA: 00:00:00 | 100%
+init-declarations.d.ts    | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+init-declarations.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  93%init-declarations.js      | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+max-params.d.ts           | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+max-params.js             | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+member-ordering.d.ts      | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+member-ordering.js        | 4 kB |   4.0 kB/s | ETA: 00:00:06 |  13%member-ordering.js        | 30 kB |  30.5 kB/s | ETA: 00:00:00 | 100%
+method-signature-style.d. | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+method-signature-style.js | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%method-signature-style.js | 8 kB |   8.9 kB/s | ETA: 00:00:00 | 100%
+enums.d.ts                | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+enums.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%enums.js                  | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+format.d.ts               | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+format.js                 | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+parse-options.d.ts        | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+parse-options.js          | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+schema.d.ts               | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+schema.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%schema.js                 | 8 kB |   8.8 kB/s | ETA: 00:00:00 | 100%
+shared.d.ts               | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+shared.js                 | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+types.d.ts                | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+types.js                  | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+validator.d.ts            | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+validator.js              | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  31%validator.js              | 12 kB |  12.8 kB/s | ETA: 00:00:00 | 100%
+naming-convention.d.ts    | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+naming-convention.js      | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  17%naming-convention.js      | 23 kB |  23.3 kB/s | ETA: 00:00:00 | 100%
+no-array-constructor.d.ts | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+no-array-constructor.js   | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+no-array-delete.d.ts      | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-array-delete.js        | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+no-base-to-string.d.ts    | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-base-to-string.js      | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  28%no-base-to-string.js      | 14 kB |  14.2 kB/s | ETA: 00:00:00 | 100%
+no-confusing-non-null-ass | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-confusing-non-null-ass | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  62%no-confusing-non-null-ass | 6 kB |   6.4 kB/s | ETA: 00:00:00 | 100%
+no-confusing-void-express | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+no-confusing-void-express | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%no-confusing-void-express | 17 kB |  17.5 kB/s | ETA: 00:00:00 | 100%
+no-deprecated.d.ts        | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-deprecated.js          | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%no-deprecated.js          | 18 kB |  18.3 kB/s | ETA: 00:00:00 | 100%
+no-dupe-class-members.d.t | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-dupe-class-members.js  | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+no-duplicate-enum-values. | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+no-duplicate-enum-values. | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+no-duplicate-type-constit | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-duplicate-type-constit | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  41%no-duplicate-type-constit | 9 kB |   9.7 kB/s | ETA: 00:00:00 | 100%
+no-dynamic-delete.d.ts    | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+no-dynamic-delete.js      | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+no-empty-function.d.ts    | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-empty-function.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  80%no-empty-function.js      | 4 kB |   4.9 kB/s | ETA: 00:00:00 | 100%
+no-empty-interface.d.ts   | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-empty-interface.js     | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  97%no-empty-interface.js     | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+no-empty-object-type.d.ts | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+no-empty-object-type.js   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  59%no-empty-object-type.js   | 6 kB |   6.8 kB/s | ETA: 00:00:00 | 100%
+no-explicit-any.d.ts      | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-explicit-any.js        | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%no-explicit-any.js        | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+no-extra-non-null-asserti | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-extra-non-null-asserti | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+no-extraneous-class.d.ts  | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+no-extraneous-class.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  80%no-extraneous-class.js    | 4 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+no-floating-promises.d.ts | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+no-floating-promises.js   | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%no-floating-promises.js   | 17 kB |  17.4 kB/s | ETA: 00:00:00 | 100%
+no-for-in-array.d.ts      | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+no-for-in-array.js        | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+no-implied-eval.d.ts      | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-implied-eval.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  65%no-implied-eval.js        | 6 kB |   6.1 kB/s | ETA: 00:00:00 | 100%
+no-import-type-side-effec | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-import-type-side-effec | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-inferrable-types.d.ts  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-inferrable-types.js    | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  48%no-inferrable-types.js    | 8 kB |   8.2 kB/s | ETA: 00:00:00 | 100%
+no-invalid-this.d.ts      | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-invalid-this.js        | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+no-invalid-void-type.d.ts | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+no-invalid-void-type.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  42%no-invalid-void-type.js   | 9 kB |   9.5 kB/s | ETA: 00:00:00 | 100%
+no-loop-func.d.ts         | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+no-loop-func.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  50%no-loop-func.js           | 7 kB |   7.9 kB/s | ETA: 00:00:00 | 100%
+no-loss-of-precision.d.ts | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+no-loss-of-precision.js   | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+no-magic-numbers.d.ts     | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+no-magic-numbers.js       | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  42%no-magic-numbers.js       | 9 kB |   9.5 kB/s | ETA: 00:00:00 | 100%
+no-meaningless-void-opera | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-meaningless-void-opera | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  96%no-meaningless-void-opera | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+no-misused-new.d.ts       | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-misused-new.js         | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+no-misused-promises.d.ts  | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-misused-promises.js    | 4 kB |   4.0 kB/s | ETA: 00:00:07 |  11%no-misused-promises.js    | 35 kB |  35.2 kB/s | ETA: 00:00:00 | 100%
+no-misused-spread.d.ts    | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+no-misused-spread.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%no-misused-spread.js      | 10 kB |  10.9 kB/s | ETA: 00:00:00 | 100%
+no-mixed-enums.d.ts       | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+no-mixed-enums.js         | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  47%no-mixed-enums.js         | 8 kB |   8.4 kB/s | ETA: 00:00:00 | 100%
+no-namespace.d.ts         | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-namespace.js           | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+no-non-null-asserted-null | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-non-null-asserted-null | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+no-non-null-asserted-opti | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-non-null-asserted-opti | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+no-non-null-assertion.d.t | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-non-null-assertion.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  99%no-non-null-assertion.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 | 100%
+no-redeclare.d.ts         | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-redeclare.js           | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%no-redeclare.js           | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+no-redundant-type-constit | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-redundant-type-constit | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%no-redundant-type-constit | 18 kB |  18.8 kB/s | ETA: 00:00:00 | 100%
+no-require-imports.d.ts   | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-require-imports.js     | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  87%no-require-imports.js     | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+no-restricted-imports.d.t | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+no-restricted-imports.js  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%no-restricted-imports.js  | 8 kB |   8.9 kB/s | ETA: 00:00:00 | 100%
+no-restricted-types.d.ts  | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+no-restricted-types.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%no-restricted-types.js    | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+no-shadow.d.ts            | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+no-shadow.js              | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  17%no-shadow.js              | 22 kB |  22.8 kB/s | ETA: 00:00:00 | 100%
+no-this-alias.d.ts        | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-this-alias.js          | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+no-type-alias.d.ts        | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-type-alias.js          | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%no-type-alias.js          | 11 kB |  11.6 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-boolean-li | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-boolean-li | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%no-unnecessary-boolean-li | 11 kB |  11.5 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-condition. | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-condition. | 4 kB |   4.0 kB/s | ETA: 00:00:07 |  12%no-unnecessary-condition. | 33 kB |  33.1 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-parameter- | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-parameter- | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  60%no-unnecessary-parameter- | 6 kB |   6.6 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-qualifier. | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-qualifier. | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  59%no-unnecessary-qualifier. | 6 kB |   6.8 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-template-e | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-template-e | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  24%no-unnecessary-template-e | 16 kB |  16.6 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-type-argum | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-type-argum | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  48%no-unnecessary-type-argum | 8 kB |   8.3 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-type-asser | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-type-asser | 4 kB |   4.0 kB/s | ETA: 00:00:08 |  10%no-unnecessary-type-asser | 38 kB |  38.0 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-type-const | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-type-const | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  81%no-unnecessary-type-const | 4 kB |   4.9 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-type-conve | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-type-conve | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%no-unnecessary-type-conve | 15 kB |  15.9 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-type-param | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unnecessary-type-param | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  19%no-unnecessary-type-param | 20 kB |  20.6 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-argument.d.ts   | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-argument.js     | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  33%no-unsafe-argument.js     | 12 kB |  12.0 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-assignment.d.ts | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-assignment.js   | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  26%no-unsafe-assignment.js   | 15 kB |  15.2 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-call.d.ts       | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-call.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  67%no-unsafe-call.js         | 5 kB |   6.0 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-declaration-mer | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-declaration-mer | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-enum-comparison | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-enum-comparison | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  48%no-unsafe-enum-comparison | 8 kB |   8.3 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-function-type.d | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-function-type.j | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-member-access.d | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-member-access.j | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  48%no-unsafe-member-access.j | 8 kB |   8.3 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-return.d.ts     | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-return.js       | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%no-unsafe-return.js       | 9 kB |   9.0 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-type-assertion. | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-type-assertion. | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%no-unsafe-type-assertion. | 6 kB |   6.9 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-unary-minus.d.t | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-unary-minus.js  | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+no-unused-expressions.d.t | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+no-unused-expressions.js  | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+no-unused-private-class-m | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-unused-private-class-m | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-unused-vars.d.ts       | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+no-unused-vars.js         | 4 kB |   4.0 kB/s | ETA: 00:00:11 |   8%no-unused-vars.js         | 49 kB |  49.9 kB/s | ETA: 00:00:00 | 100%
+no-use-before-define.d.ts | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+no-use-before-define.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%no-use-before-define.js   | 11 kB |  11.1 kB/s | ETA: 00:00:00 | 100%
+no-useless-constructor.d. | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+no-useless-constructor.js | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-useless-default-assign | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-useless-default-assign | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  27%no-useless-default-assign | 14 kB |  14.5 kB/s | ETA: 00:00:00 | 100%
+no-useless-empty-export.d | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+no-useless-empty-export.j | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-var-requires.d.ts      | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+no-var-requires.js        | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+no-wrapper-object-types.d | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+no-wrapper-object-types.j | 2 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+non-nullable-type-asserti | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+non-nullable-type-asserti | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%non-nullable-type-asserti | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+only-throw-error.d.ts     | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+only-throw-error.js       | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%only-throw-error.js       | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+parameter-properties.d.ts | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+parameter-properties.js   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  58%parameter-properties.js   | 6 kB |   6.9 kB/s | ETA: 00:00:00 | 100%
+prefer-as-const.d.ts      | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+prefer-as-const.js        | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+prefer-destructuring.d.ts | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+prefer-destructuring.js   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  50%prefer-destructuring.js   | 7 kB |   7.8 kB/s | ETA: 00:00:00 | 100%
+prefer-enum-initializers. | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+prefer-enum-initializers. | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+prefer-find.d.ts          | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+prefer-find.js            | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  33%prefer-find.js            | 11 kB |  11.8 kB/s | ETA: 00:00:00 | 100%
+prefer-for-of.d.ts        | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+prefer-for-of.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  80%prefer-for-of.js          | 4 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+prefer-function-type.d.ts | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+prefer-function-type.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%prefer-function-type.js   | 8 kB |   8.8 kB/s | ETA: 00:00:00 | 100%
+prefer-includes.d.ts      | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+prefer-includes.js        | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%prefer-includes.js        | 10 kB |  10.0 kB/s | ETA: 00:00:00 | 100%
+prefer-literal-enum-membe | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+prefer-literal-enum-membe | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  77%prefer-literal-enum-membe | 5 kB |   5.2 kB/s | ETA: 00:00:00 | 100%
+prefer-namespace-keyword. | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+prefer-namespace-keyword. | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+prefer-nullish-coalescing | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+prefer-nullish-coalescing | 4 kB |   4.0 kB/s | ETA: 00:00:06 |  13%prefer-nullish-coalescing | 30 kB |  30.5 kB/s | ETA: 00:00:00 | 100%
+analyzeChain.d.ts         | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+analyzeChain.js           | 4 kB |   4.0 kB/s | ETA: 00:00:06 |  14%analyzeChain.js           | 28 kB |  28.5 kB/s | ETA: 00:00:00 | 100%
+checkNullishAndReport.d.t | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+checkNullishAndReport.js  | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+compareNodes.d.ts         | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+compareNodes.js           | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  27%compareNodes.js           | 14 kB |  14.5 kB/s | ETA: 00:00:00 | 100%
+gatherLogicalOperands.d.t | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+gatherLogicalOperands.js  | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%gatherLogicalOperands.js  | 17 kB |  18.0 kB/s | ETA: 00:00:00 | 100%
+PreferOptionalChainOption | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+PreferOptionalChainOption | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+prefer-optional-chain.d.t | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+prefer-optional-chain.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%prefer-optional-chain.js  | 7 kB |   7.6 kB/s | ETA: 00:00:00 | 100%
+prefer-promise-reject-err | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+prefer-promise-reject-err | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%prefer-promise-reject-err | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+prefer-readonly-parameter | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+prefer-readonly-parameter | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  91%prefer-readonly-parameter | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+prefer-readonly.d.ts      | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+prefer-readonly.js        | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  20%prefer-readonly.js        | 19 kB |  19.4 kB/s | ETA: 00:00:00 | 100%
+prefer-reduce-type-parame | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+prefer-reduce-type-parame | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  83%prefer-reduce-type-parame | 4 kB |   4.8 kB/s | ETA: 00:00:00 | 100%
+prefer-regexp-exec.d.ts   | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+prefer-regexp-exec.js     | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  51%prefer-regexp-exec.js     | 7 kB |   7.8 kB/s | ETA: 00:00:00 | 100%
+prefer-return-this-type.d | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+prefer-return-this-type.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  66%prefer-return-this-type.j | 5 kB |   6.0 kB/s | ETA: 00:00:00 | 100%
+prefer-string-starts-ends | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+prefer-string-starts-ends | 4 kB |   4.0 kB/s | ETA: 00:00:05 |  16%prefer-string-starts-ends | 24 kB |  24.3 kB/s | ETA: 00:00:00 | 100%
+prefer-ts-expect-error.d. | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+prefer-ts-expect-error.js | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+promise-function-async.d. | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+promise-function-async.js | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%promise-function-async.js | 9 kB |   9.9 kB/s | ETA: 00:00:00 | 100%
+related-getter-setter-pai | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+related-getter-setter-pai | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+require-array-sort-compar | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+require-array-sort-compar | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+require-await.d.ts        | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+require-await.js          | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  33%require-await.js          | 12 kB |  12.1 kB/s | ETA: 00:00:00 | 100%
+restrict-plus-operands.d. | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+restrict-plus-operands.js | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%restrict-plus-operands.js | 9 kB |   9.8 kB/s | ETA: 00:00:00 | 100%
+restrict-template-express | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+restrict-template-express | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  83%restrict-template-express | 4 kB |   4.8 kB/s | ETA: 00:00:00 | 100%
+return-await.d.ts         | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+return-await.js           | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%return-await.js           | 15 kB |  15.8 kB/s | ETA: 00:00:00 | 100%
+sort-type-constituents.d. | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+sort-type-constituents.js | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  37%sort-type-constituents.js | 10 kB |  10.7 kB/s | ETA: 00:00:00 | 100%
+strict-boolean-expression | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+strict-boolean-expression | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%strict-boolean-expression | 41 kB |  41.1 kB/s | ETA: 00:00:00 | 100%
+strict-void-return.d.ts   | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+strict-void-return.js     | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  23%strict-void-return.js     | 17 kB |  17.0 kB/s | ETA: 00:00:00 | 100%
+switch-exhaustiveness-che | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+switch-exhaustiveness-che | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  29%switch-exhaustiveness-che | 13 kB |  13.5 kB/s | ETA: 00:00:00 | 100%
+triple-slash-reference.d. | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+triple-slash-reference.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%triple-slash-reference.js | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+typedef.d.ts              | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+typedef.js                | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%typedef.js                | 10 kB |  10.5 kB/s | ETA: 00:00:00 | 100%
+unbound-method.d.ts       | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+unbound-method.js         | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  28%unbound-method.js         | 14 kB |  14.2 kB/s | ETA: 00:00:00 | 100%
+unified-signatures.d.ts   | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+unified-signatures.js     | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  19%unified-signatures.js     | 20 kB |  20.1 kB/s | ETA: 00:00:00 | 100%
+use-unknown-in-catch-call | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+use-unknown-in-catch-call | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  31%use-unknown-in-catch-call | 12 kB |  12.8 kB/s | ETA: 00:00:00 | 100%
+assertionFunctionUtils.d. | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+assertionFunctionUtils.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  88%assertionFunctionUtils.js | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+astUtils.d.ts             | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+astUtils.js               | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  66%astUtils.js               | 6 kB |   6.0 kB/s | ETA: 00:00:00 | 100%
+baseTypeUtils.d.ts        | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+baseTypeUtils.js          | 3 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+classScopeAnalyzer.d.ts   | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+classScopeAnalyzer.js     | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  18%classScopeAnalyzer.js     | 21 kB |  21.8 kB/s | ETA: 00:00:00 | 100%
+extractComputedName.d.ts  | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+extractComputedName.js    | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+types.d.ts                | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+types.js                  | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+collectUnusedVariables.d. | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+collectUnusedVariables.js | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  16%collectUnusedVariables.js | 23 kB |  23.8 kB/s | ETA: 00:00:00 | 100%
+createRule.d.ts           | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+createRule.js             | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+escapeRegExp.d.ts         | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+escapeRegExp.js           | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+explicitReturnTypeUtils.d | 2 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+explicitReturnTypeUtils.j | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  49%explicitReturnTypeUtils.j | 8 kB |   8.1 kB/s | ETA: 00:00:00 | 100%
+getBaseTypesOfClassMember | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+getBaseTypesOfClassMember | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+getConstraintInfo.d.ts    | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+getConstraintInfo.js      | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+getESLintCoreRule.d.ts    | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+getESLintCoreRule.js      | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+getFixOrSuggest.d.ts      | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+getFixOrSuggest.js        | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+getForStatementHeadLoc.d. | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+getForStatementHeadLoc.js | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+getFunctionHeadLoc.d.ts   | 3 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+getFunctionHeadLoc.js     | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  66%getFunctionHeadLoc.js     | 5 kB |   6.0 kB/s | ETA: 00:00:00 | 100%
+getMemberHeadLoc.d.ts     | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+getMemberHeadLoc.js       | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+getOperatorPrecedence.d.t | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+getOperatorPrecedence.js  | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%getOperatorPrecedence.js  | 18 kB |  18.9 kB/s | ETA: 00:00:00 | 100%
+getParentFunctionNode.d.t | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+getParentFunctionNode.js  | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+getStaticStringValue.d.ts | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+getStaticStringValue.js   | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+getStringLength.d.ts      | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+getStringLength.js        | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+getTextWithParentheses.d. | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+getTextWithParentheses.js | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+getThisExpression.d.ts    | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+getThisExpression.js      | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+getValueOfLiteralType.d.t | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+getValueOfLiteralType.js  | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+getWrappedCode.d.ts       | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+getWrappedCode.js         | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+getWrappingFixer.d.ts     | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+getWrappingFixer.js       | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  53%getWrappingFixer.js       | 7 kB |   7.5 kB/s | ETA: 00:00:00 | 100%
+hasOverloadSignatures.d.t | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+hasOverloadSignatures.js  | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+isArrayMethodCallWithPred | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+isArrayMethodCallWithPred | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+isAssignee.d.ts           | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+isAssignee.js             | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+isHigherPrecedenceThanAwa | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+isHigherPrecedenceThanAwa | 2 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+isNodeEqual.d.ts          | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+isNodeEqual.js            | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+isNullLiteral.d.ts        | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+isNullLiteral.js          | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+isPromiseAggregatorMethod | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+isPromiseAggregatorMethod | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+isStartOfExpressionStatem | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+isStartOfExpressionStatem | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+isTypeImport.d.ts         | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+isTypeImport.js           | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+isUndefinedIdentifier.d.t | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+isUndefinedIdentifier.js  | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+misc.d.ts                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  81%misc.d.ts                 | 4 kB |   4.9 kB/s | ETA: 00:00:00 | 100%
+misc.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  43%misc.js                   | 9 kB |   9.2 kB/s | ETA: 00:00:00 | 100%
+needsPrecedingSemiColon.d | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+needsPrecedingSemiColon.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  93%needsPrecedingSemiColon.j | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+needsToBeAwaited.d.ts     | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+needsToBeAwaited.js       | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+objectIterators.d.ts      | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+objectIterators.js        | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+promiseUtils.d.ts         | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+promiseUtils.js           | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+rangeToLoc.d.ts           | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+rangeToLoc.js             | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+referenceContainsTypePred | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+referenceContainsTypePred | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+referenceContainsTypeQuer | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+referenceContainsTypeQuer | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+scopeUtils.d.ts           | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+scopeUtils.js             | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+skipChainExpression.d.ts  | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+skipChainExpression.js    | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+truthinessUtils.d.ts      | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+truthinessUtils.js        | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+types.d.ts                | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+types.js                  | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+walkStatements.d.ts       | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+walkStatements.js         | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+eslint                    | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+eslint.CMD                | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+eslint.ps1                | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+tsc                       | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+tsc.CMD                   | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+tsc.ps1                   | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+tsserver                  | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+tsserver.CMD              | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+tsserver.ps1              | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+package.json              | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+raw-plugin.d.ts           | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+rules.d.ts                | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+parser.d.ts               | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+parser.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%parser.js                 | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+eslint                    | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+eslint.CMD                | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+eslint.ps1                | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+tsc                       | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+tsc.CMD                   | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+tsc.ps1                   | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+tsserver                  | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+tsserver.CMD              | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+tsserver.ps1              | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+pscp: apps\web\web-portal/node_modules/@vitejs/.ignored_plugin-react: Cannot open file
+
+index.cjs                 | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  29%index.cjs                 | 13 kB |  13.7 kB/s | ETA: 00:00:00 | 100%
+index.d.cts               | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%index.js                  | 12 kB |  12.5 kB/s | ETA: 00:00:00 | 100%
+refresh-runtime.js        | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  19%refresh-runtime.js        | 20 kB |  20.9 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+vite                      | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+vite.CMD                  | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+vite.ps1                  | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  86%README.md                 | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+.tonic_example.js         | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+ajv.bundle.js             | 4 kB |   4.0 kB/s | ETA: 00:01:05 |   1%ajv.bundle.js             | 266 kB | 266.8 kB/s | ETA: 00:00:00 | 100%
+ajv.min.js                | 4 kB |   4.0 kB/s | ETA: 00:00:28 |   3%ajv.min.js                | 116 kB | 116.6 kB/s | ETA: 00:00:00 | 100%
+ajv.min.js.map            | 4 kB |   4.0 kB/s | ETA: 00:00:35 |   2%ajv.min.js.map            | 145 kB | 145.6 kB/s | ETA: 00:00:00 | 100%
+ajv.d.ts                  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%ajv.d.ts                  | 13 kB |  13.0 kB/s | ETA: 00:00:00 | 100%
+ajv.js                    | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%ajv.js                    | 15 kB |  15.5 kB/s | ETA: 00:00:00 | 100%
+cache.js                  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+async.js                  | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+equal.js                  | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+error_classes.js          | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+formats.js                | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  33%formats.js                | 11 kB |  11.8 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  37%index.js                  | 10 kB |  10.6 kB/s | ETA: 00:00:00 | 100%
+resolve.js                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%resolve.js                | 7 kB |   7.7 kB/s | ETA: 00:00:00 | 100%
+rules.js                  | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+schema_obj.js             | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+ucs2length.js             | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+util.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  58%util.js                   | 6 kB |   6.8 kB/s | ETA: 00:00:00 | 100%
+data.js                   | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+definition_schema.js      | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+allOf.jst                 | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+anyOf.jst                 | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+coerce.def                | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+comment.jst               | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+const.jst                 | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+contains.jst              | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+custom.jst                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  82%custom.jst                | 4 kB |   4.8 kB/s | ETA: 00:00:00 | 100%
+defaults.def              | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+definitions.def           | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+dependencies.jst          | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+enum.jst                  | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+errors.def                | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  49%errors.def                | 8 kB |   8.1 kB/s | ETA: 00:00:00 | 100%
+format.jst                | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+if.jst                    | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+items.jst                 | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+missing.def               | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+multipleOf.jst            | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+not.jst                   | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+oneOf.jst                 | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+pattern.jst               | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+properties.jst            | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  53%properties.jst            | 7 kB |   7.5 kB/s | ETA: 00:00:00 | 100%
+propertyNames.jst         | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+ref.jst                   | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+required.jst              | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+uniqueItems.jst           | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+validate.jst              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  53%validate.jst              | 7 kB |   7.5 kB/s | ETA: 00:00:00 | 100%
+_limit.jst                | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+_limitItems.jst           | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+_limitLength.jst          | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+_limitProperties.jst      | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+allOf.js                  | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+anyOf.js                  | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+comment.js                | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+const.js                  | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+contains.js               | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+custom.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  41%custom.js                 | 9 kB |   9.5 kB/s | ETA: 00:00:00 | 100%
+dependencies.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  53%dependencies.js           | 7 kB |   7.5 kB/s | ETA: 00:00:00 | 100%
+enum.js                   | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+format.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  73%format.js                 | 5 kB |   5.4 kB/s | ETA: 00:00:00 | 100%
+if.js                     | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  98%if.js                     | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+items.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  65%items.js                  | 6 kB |   6.1 kB/s | ETA: 00:00:00 | 100%
+multipleOf.js             | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+not.js                    | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+oneOf.js                  | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+pattern.js                | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+properties.js             | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  27%properties.js             | 14 kB |  14.8 kB/s | ETA: 00:00:00 | 100%
+propertyNames.js          | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+ref.js                    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  86%ref.js                    | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+required.js               | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  33%required.js               | 12 kB |  12.1 kB/s | ETA: 00:00:00 | 100%
+uniqueItems.js            | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+validate.js               | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  20%validate.js               | 19 kB |  19.5 kB/s | ETA: 00:00:00 | 100%
+_limit.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  55%_limit.js                 | 7 kB |   7.2 kB/s | ETA: 00:00:00 | 100%
+_limitItems.js            | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+_limitLength.js           | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+_limitProperties.js       | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+keyword.js                | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+data.json                 | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+json-schema-draft-04.json | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  94%json-schema-draft-04.json | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+json-schema-draft-06.json | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%json-schema-draft-06.json | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+json-schema-draft-07.json | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  83%json-schema-draft-07.json | 4 kB |   4.8 kB/s | ETA: 00:00:00 | 100%
+json-schema-secure.json   | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:20 |   4%README.md                 | 84 kB |  84.8 kB/s | ETA: 00:00:00 | 100%
+.eslintrc.yml             | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+bundle.js                 | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+compile-dots.js           | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+info                      | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+prepare-tests             | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+publish-built-version     | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+travis-gh-pages           | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+autoprefixer              | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+prefixes.js               | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  17%prefixes.js               | 23 kB |  23.4 kB/s | ETA: 00:00:00 | 100%
+at-rule.js                | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+autoprefixer.d.ts         | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+autoprefixer.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  97%autoprefixer.js           | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+brackets.js               | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+browsers.js               | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+declaration.js            | 3 kB |   4.0 kB/s | ETA: 00:00:00 | 100%
+align-content.js          | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+align-items.js            | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+align-self.js             | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+animation.js              | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+appearance.js             | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+autofill.js               | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+backdrop-filter.js        | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+background-clip.js        | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+background-size.js        | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+block-logical.js          | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+border-image.js           | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+border-radius.js          | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+break-props.js            | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+cross-fade.js             | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+display-flex.js           | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+display-grid.js           | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+file-selector-button.js   | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+filter-value.js           | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+filter.js                 | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+flex-basis.js             | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+flex-direction.js         | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+flex-flow.js              | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+flex-grow.js              | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+flex-shrink.js            | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+flex-spec.js              | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+flex-wrap.js              | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+flex.js                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+fullscreen.js             | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+gradient.js               | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%gradient.js               | 10 kB |  10.4 kB/s | ETA: 00:00:00 | 100%
+grid-area.js              | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+grid-column-align.js      | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+grid-end.js               | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+grid-row-align.js         | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+grid-row-column.js        | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+grid-rows-columns.js      | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+grid-start.js             | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+grid-template-areas.js    | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+grid-template.js          | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+grid-utils.js             | 4 kB |   4.0 kB/s | ETA: 00:00:06 |  14%grid-utils.js             | 28 kB |  28.5 kB/s | ETA: 00:00:00 | 100%
+image-rendering.js        | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+image-set.js              | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+inline-logical.js         | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+intrinsic.js              | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+justify-content.js        | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+mask-border.js            | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+mask-composite.js         | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+order.js                  | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+overscroll-behavior.js    | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+pixelated.js              | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+place-self.js             | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+placeholder-shown.js      | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+placeholder.js            | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+print-color-adjust.js     | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+text-decoration-skip-ink. | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+text-decoration.js        | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+text-emphasis-position.js | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+transform-decl.js         | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+user-select.js            | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+writing-mode.js           | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+info.js                   | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+old-selector.js           | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+old-value.js              | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+prefixer.js               | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+prefixes.js               | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  31%prefixes.js               | 12 kB |  12.8 kB/s | ETA: 00:00:00 | 100%
+processor.js              | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  19%processor.js              | 21 kB |  21.0 kB/s | ETA: 00:00:00 | 100%
+resolution.js             | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+selector.js               | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+supports.js               | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%supports.js               | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+transition.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  50%transition.js             | 7 kB |   8.0 kB/s | ETA: 00:00:00 | 100%
+utils.js                  | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+value.js                  | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+vendor.js                 | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+browserslist              | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+browserslist.CMD          | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+browserslist.ps1          | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.d.ts.map            | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+index.js.map              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  97%index.js.map              | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.d.ts.map            | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+index.js.map              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  98%index.js.map              | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+LICENSE.md                | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+index.d.ts.map            | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  59%index.js                  | 6 kB |   6.7 kB/s | ETA: 00:00:00 | 100%
+index.js.map              | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  29%index.js.map              | 13 kB |  13.5 kB/s | ETA: 00:00:00 | 100%
+package.json              | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+index.d.ts.map            | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%index.js                  | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+index.js.map              | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  29%index.js.map              | 13 kB |  13.5 kB/s | ETA: 00:00:00 | 100%
+package.json              | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+.eslintrc.json            | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+.jshintrc                 | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+.travis.yml               | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+bower.json                | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+dagre.core.js             | 4 kB |   4.0 kB/s | ETA: 00:00:19 |   4%dagre.core.js             | 81 kB |  81.1 kB/s | ETA: 00:00:00 | 100%
+dagre.core.min.js         | 4 kB |   4.0 kB/s | ETA: 00:00:15 |   5%dagre.core.min.js         | 67 kB |  67.5 kB/s | ETA: 00:00:00 | 100%
+dagre.js                  | 4 kB |   4.0 kB/s | ETA: 00:01:17 |   1%dagre.js                  | 315 kB | 315.0 kB/s | ETA: 00:00:00 | 100%
+dagre.min.js              | 4 kB |   4.0 kB/s | ETA: 00:01:08 |   1%dagre.min.js              | 277 kB | 277.2 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+karma.conf.js             | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+karma.core.conf.js        | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+acyclic.js                | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+add-border-segments.js    | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+coordinate-system.js      | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+list.js                   | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+debug.js                  | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+graphlib.js               | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+greedy-fas.js             | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+layout.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  33%layout.js                 | 12 kB |  12.1 kB/s | ETA: 00:00:00 | 100%
+lodash.js                 | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+nesting-graph.js          | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+normalize.js              | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+add-subgraph-constraints. | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+barycenter.js             | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+build-layer-graph.js      | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+cross-count.js            | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+init-order.js             | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+resolve-conflicts.js      | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+sort-subgraph.js          | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+sort.js                   | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+parent-dummy-chains.js    | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+bk.js                     | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%bk.js                     | 11 kB |  11.6 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+feasible-tree.js          | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+network-simplex.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%network-simplex.js        | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+util.js                   | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+util.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  70%util.js                   | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+version.js                | 0 kB |   0.0 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+eslint.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  73%eslint.js                 | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+ecma-version.js           | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+globals.js                | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+replacements.json         | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+rule-type-list.json       | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+api.js                    | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+formatters-meta.json      | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+html.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%html.js                   | 12 kB |  12.2 kB/s | ETA: 00:00:00 | 100%
+json-with-metadata.js     | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+json.js                   | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+stylish.js                | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+hash.js                   | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+lint-result-cache.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%lint-result-cache.js      | 7 kB |   7.1 kB/s | ETA: 00:00:00 | 100%
+cli.js                    | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  28%cli.js                    | 13 kB |  13.9 kB/s | ETA: 00:00:00 | 100%
+config-loader.js          | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  17%config-loader.js          | 22 kB |  22.5 kB/s | ETA: 00:00:00 | 100%
+config.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  17%config.js                 | 22 kB |  22.3 kB/s | ETA: 00:00:00 | 100%
+default-config.js         | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+flat-config-array.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  60%flat-config-array.js      | 6 kB |   6.6 kB/s | ETA: 00:00:00 | 100%
+flat-config-schema.js     | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%flat-config-schema.js     | 15 kB |  15.6 kB/s | ETA: 00:00:00 | 100%
+config-api.js             | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+eslint-helpers.js         | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%eslint-helpers.js         | 43 kB |  43.8 kB/s | ETA: 00:00:00 | 100%
+eslint.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%eslint.js                 | 40 kB |  40.0 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+worker.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  76%worker.js                 | 5 kB |   5.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%index.js                  | 10 kB |  10.4 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+source-code.js            | 4 kB |   4.0 kB/s | ETA: 00:00:07 |  12%source-code.js            | 32 kB |  32.9 kB/s | ETA: 00:00:00 | 100%
+backward-token-comment-cu | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+backward-token-cursor.js  | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+cursor.js                 | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+cursors.js                | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+decorative-cursor.js      | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+filter-cursor.js          | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+forward-token-comment-cur | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+forward-token-cursor.js   | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  18%index.js                  | 21 kB |  21.1 kB/s | ETA: 00:00:00 | 100%
+limit-cursor.js           | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+padded-token-cursor.js    | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+skip-cursor.js            | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+utils.js                  | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+validate-language-options | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  87%validate-language-options | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+apply-disable-directives. | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%apply-disable-directives. | 18 kB |  18.6 kB/s | ETA: 00:00:00 | 100%
+code-path-analyzer.js     | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  19%code-path-analyzer.js     | 20 kB |  20.6 kB/s | ETA: 00:00:00 | 100%
+code-path-segment.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%code-path-segment.js      | 7 kB |   7.6 kB/s | ETA: 00:00:00 | 100%
+code-path-state.js        | 4 kB |   4.0 kB/s | ETA: 00:00:16 |   5%code-path-state.js        | 69 kB |  69.9 kB/s | ETA: 00:00:00 | 100%
+code-path.js              | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  42%code-path.js              | 9 kB |   9.5 kB/s | ETA: 00:00:00 | 100%
+debug-helpers.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  70%debug-helpers.js          | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+fork-context.js           | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  33%fork-context.js           | 12 kB |  12.0 kB/s | ETA: 00:00:00 | 100%
+id-generator.js           | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+esquery.js                | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  43%esquery.js                | 9 kB |   9.1 kB/s | ETA: 00:00:00 | 100%
+file-context.js           | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+file-report.js            | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%file-report.js            | 18 kB |  18.1 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+interpolate.js            | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+linter.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:11 |   8%linter.js                 | 48 kB |  48.0 kB/s | ETA: 00:00:00 | 100%
+rule-fixer.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%rule-fixer.js             | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+source-code-fixer.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  97%source-code-fixer.js      | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+source-code-traverser.js  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  41%source-code-traverser.js  | 9 kB |   9.6 kB/s | ETA: 00:00:00 | 100%
+source-code-visitor.js    | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+timing.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  86%timing.js                 | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+vfile.js                  | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+options.js                | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%options.js                | 11 kB |  11.7 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+rule-tester.js            | 4 kB |   4.0 kB/s | ETA: 00:00:13 |   6%rule-tester.js            | 59 kB |  59.3 kB/s | ETA: 00:00:00 | 100%
+accessor-pairs.js         | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%accessor-pairs.js         | 10 kB |  10.9 kB/s | ETA: 00:00:00 | 100%
+array-bracket-newline.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  50%array-bracket-newline.js  | 7 kB |   7.9 kB/s | ETA: 00:00:00 | 100%
+array-bracket-spacing.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  50%array-bracket-spacing.js  | 7 kB |   7.9 kB/s | ETA: 00:00:00 | 100%
+array-callback-return.js  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%array-callback-return.js  | 12 kB |  12.9 kB/s | ETA: 00:00:00 | 100%
+array-element-newline.js  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%array-element-newline.js  | 8 kB |   8.9 kB/s | ETA: 00:00:00 | 100%
+arrow-body-style.js       | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%arrow-body-style.js       | 10 kB |  10.1 kB/s | ETA: 00:00:00 | 100%
+arrow-parens.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%arrow-parens.js           | 6 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+arrow-spacing.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  88%arrow-spacing.js          | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+block-scoped-var.js       | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+block-spacing.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  79%block-spacing.js          | 5 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+brace-style.js            | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  53%brace-style.js            | 7 kB |   7.4 kB/s | ETA: 00:00:00 | 100%
+callback-return.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%callback-return.js        | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+camelcase.js              | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%camelcase.js              | 10 kB |  10.1 kB/s | ETA: 00:00:00 | 100%
+capitalized-comments.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%capitalized-comments.js   | 9 kB |   9.1 kB/s | ETA: 00:00:00 | 100%
+class-methods-use-this.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%class-methods-use-this.js | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+comma-dangle.js           | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  35%comma-dangle.js           | 11 kB |  11.4 kB/s | ETA: 00:00:00 | 100%
+comma-spacing.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%comma-spacing.js          | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+comma-style.js            | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%comma-style.js            | 10 kB |  10.0 kB/s | ETA: 00:00:00 | 100%
+complexity.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%complexity.js             | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+computed-property-spacing | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%computed-property-spacing | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+consistent-return.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%consistent-return.js      | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+consistent-this.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%consistent-this.js        | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+constructor-super.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  33%constructor-super.js      | 11 kB |  11.8 kB/s | ETA: 00:00:00 | 100%
+curly.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%curly.js                  | 11 kB |  11.5 kB/s | ETA: 00:00:00 | 100%
+default-case-last.js      | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+default-case.js           | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+default-param-last.js     | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+dot-location.js           | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+dot-notation.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%dot-notation.js           | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+eol-last.js               | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+eqeqeq.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  84%eqeqeq.js                 | 4 kB |   4.8 kB/s | ETA: 00:00:00 | 100%
+for-direction.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  95%for-direction.js          | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+func-call-spacing.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  49%func-call-spacing.js      | 8 kB |   8.1 kB/s | ETA: 00:00:00 | 100%
+func-name-matching.js     | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%func-name-matching.js     | 8 kB |   8.6 kB/s | ETA: 00:00:00 | 100%
+func-names.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  73%func-names.js             | 5 kB |   5.4 kB/s | ETA: 00:00:00 | 100%
+func-style.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  76%func-style.js             | 5 kB |   5.2 kB/s | ETA: 00:00:00 | 100%
+function-call-argument-ne | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  97%function-call-argument-ne | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+function-paren-newline.js | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%function-paren-newline.js | 9 kB |  10.0 kB/s | ETA: 00:00:00 | 100%
+generator-star-spacing.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%generator-star-spacing.js | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+getter-return.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%getter-return.js          | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+global-require.js         | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+grouped-accessor-pairs.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%grouped-accessor-pairs.js | 7 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+guard-for-in.js           | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+handle-callback-err.js    | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+id-blacklist.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%id-blacklist.js           | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+id-denylist.js            | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%id-denylist.js            | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+id-length.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%id-length.js              | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+id-match.js               | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%id-match.js               | 8 kB |   9.0 kB/s | ETA: 00:00:00 | 100%
+implicit-arrow-linebreak. | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+indent-legacy.js          | 4 kB |   4.0 kB/s | ETA: 00:00:07 |  11%indent-legacy.js          | 34 kB |  34.9 kB/s | ETA: 00:00:00 | 100%
+indent.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:15 |   6%indent.js                 | 64 kB |  64.9 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%index.js                  | 17 kB |  17.5 kB/s | ETA: 00:00:00 | 100%
+init-declarations.js      | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+jsx-quotes.js             | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+key-spacing.js            | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  19%key-spacing.js            | 20 kB |  20.8 kB/s | ETA: 00:00:00 | 100%
+keyword-spacing.js        | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  20%keyword-spacing.js        | 19 kB |  19.9 kB/s | ETA: 00:00:00 | 100%
+line-comment-position.js  | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+linebreak-style.js        | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+lines-around-comment.js   | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  26%lines-around-comment.js   | 15 kB |  15.1 kB/s | ETA: 00:00:00 | 100%
+lines-around-directive.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  58%lines-around-directive.js | 6 kB |   6.9 kB/s | ETA: 00:00:00 | 100%
+lines-between-class-membe | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%lines-between-class-membe | 9 kB |   9.9 kB/s | ETA: 00:00:00 | 100%
+logical-assignment-operat | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%logical-assignment-operat | 18 kB |  18.6 kB/s | ETA: 00:00:00 | 100%
+max-classes-per-file.js   | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+max-depth.js              | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+max-len.js                | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%max-len.js                | 13 kB |  13.3 kB/s | ETA: 00:00:00 | 100%
+max-lines-per-function.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  67%max-lines-per-function.js | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+max-lines.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  93%max-lines.js              | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+max-nested-callbacks.js   | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+max-params.js             | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+max-statements-per-line.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  60%max-statements-per-line.j | 6 kB |   6.6 kB/s | ETA: 00:00:00 | 100%
+max-statements.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  89%max-statements.js         | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+multiline-comment-style.j | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%multiline-comment-style.j | 17 kB |  18.0 kB/s | ETA: 00:00:00 | 100%
+multiline-ternary.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  62%multiline-ternary.js      | 6 kB |   6.4 kB/s | ETA: 00:00:00 | 100%
+new-cap.js                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%new-cap.js                | 7 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+new-parens.js             | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+newline-after-var.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%newline-after-var.js      | 8 kB |   8.6 kB/s | ETA: 00:00:00 | 100%
+newline-before-return.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%newline-before-return.js  | 6 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+newline-per-chained-call. | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+no-alert.js               | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+no-array-constructor.js   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  82%no-array-constructor.js   | 4 kB |   4.9 kB/s | ETA: 00:00:00 | 100%
+no-async-promise-executor | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-await-in-loop.js       | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-bitwise.js             | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+no-buffer-constructor.js  | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-caller.js              | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-case-declarations.js   | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-catch-shadow.js        | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+no-class-assign.js        | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+no-compare-neg-zero.js    | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+no-cond-assign.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  84%no-cond-assign.js         | 4 kB |   4.7 kB/s | ETA: 00:00:00 | 100%
+no-confusing-arrow.js     | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+no-console.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  63%no-console.js             | 6 kB |   6.3 kB/s | ETA: 00:00:00 | 100%
+no-const-assign.js        | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-constant-binary-expres | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%no-constant-binary-expres | 17 kB |  17.7 kB/s | ETA: 00:00:00 | 100%
+no-constant-condition.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  91%no-constant-condition.js  | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+no-constructor-return.js  | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+no-continue.js            | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-control-regex.js       | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+no-debugger.js            | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-delete-var.js          | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-div-regex.js           | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+no-dupe-args.js           | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+no-dupe-class-members.js  | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+no-dupe-else-if.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  97%no-dupe-else-if.js        | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+no-dupe-keys.js           | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+no-duplicate-case.js      | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-duplicate-imports.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%no-duplicate-imports.js   | 9 kB |   9.8 kB/s | ETA: 00:00:00 | 100%
+no-else-return.js         | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%no-else-return.js         | 13 kB |  13.3 kB/s | ETA: 00:00:00 | 100%
+no-empty-character-class. | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+no-empty-function.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%no-empty-function.js      | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+no-empty-pattern.js       | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-empty-static-block.js  | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+no-empty.js               | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+no-eq-null.js             | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-eval.js                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%no-eval.js                | 7 kB |   7.6 kB/s | ETA: 00:00:00 | 100%
+no-ex-assign.js           | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+no-extend-native.js       | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  75%no-extend-native.js       | 5 kB |   5.3 kB/s | ETA: 00:00:00 | 100%
+no-extra-bind.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%no-extra-bind.js          | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+no-extra-boolean-cast.js  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%no-extra-boolean-cast.js  | 10 kB |  10.3 kB/s | ETA: 00:00:00 | 100%
+no-extra-label.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  96%no-extra-label.js         | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+no-extra-parens.js        | 4 kB |   4.0 kB/s | ETA: 00:00:09 |   9%no-extra-parens.js        | 42 kB |  42.6 kB/s | ETA: 00:00:00 | 100%
+no-extra-semi.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  88%no-extra-semi.js          | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+no-fallthrough.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  58%no-fallthrough.js         | 6 kB |   6.8 kB/s | ETA: 00:00:00 | 100%
+no-floating-decimal.js    | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+no-func-assign.js         | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-global-assign.js       | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-implicit-coercion.js   | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%no-implicit-coercion.js   | 12 kB |  12.3 kB/s | ETA: 00:00:00 | 100%
+no-implicit-globals.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  88%no-implicit-globals.js    | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+no-implied-eval.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  94%no-implied-eval.js        | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+no-import-assign.js       | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  66%no-import-assign.js       | 6 kB |   6.0 kB/s | ETA: 00:00:00 | 100%
+no-inline-comments.js     | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+no-inner-declarations.js  | 3 kB |   3.1 kB/s | ETA: 00:00:00 | 100%
+no-invalid-regexp.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%no-invalid-regexp.js      | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+no-invalid-this.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  91%no-invalid-this.js        | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+no-irregular-whitespace.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%no-irregular-whitespace.j | 7 kB |   7.7 kB/s | ETA: 00:00:00 | 100%
+no-iterator.js            | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-label-var.js           | 2 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+no-labels.js              | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+no-lone-blocks.js         | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+no-lonely-if.js           | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+no-loop-func.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%no-loop-func.js           | 7 kB |   7.1 kB/s | ETA: 00:00:00 | 100%
+no-loss-of-precision.js   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  55%no-loss-of-precision.js   | 7 kB |   7.2 kB/s | ETA: 00:00:00 | 100%
+no-magic-numbers.js       | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%no-magic-numbers.js       | 10 kB |  10.3 kB/s | ETA: 00:00:00 | 100%
+no-misleading-character-c | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%no-misleading-character-c | 15 kB |  16.0 kB/s | ETA: 00:00:00 | 100%
+no-mixed-operators.js     | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%no-mixed-operators.js     | 6 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+no-mixed-requires.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%no-mixed-requires.js      | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+no-mixed-spaces-and-tabs. | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+no-multi-assign.js        | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+no-multi-spaces.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  89%no-multi-spaces.js        | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+no-multi-str.js           | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+no-multiple-empty-lines.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  73%no-multiple-empty-lines.j | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+no-native-reassign.js     | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+no-negated-condition.js   | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-negated-in-lhs.js      | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+no-nested-ternary.js      | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+no-new-func.js            | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+no-new-native-nonconstruc | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-new-object.js          | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-new-require.js         | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+no-new-symbol.js          | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-new-wrappers.js        | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+no-new.js                 | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+no-nonoctal-decimal-escap | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  89%no-nonoctal-decimal-escap | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+no-obj-calls.js           | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-object-constructor.js  | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+no-octal-escape.js        | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-octal.js               | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-param-reassign.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%no-param-reassign.js      | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+no-path-concat.js         | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+no-plusplus.js            | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+no-process-env.js         | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+no-process-exit.js        | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-promise-executor-retur | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  61%no-promise-executor-retur | 6 kB |   6.5 kB/s | ETA: 00:00:00 | 100%
+no-proto.js               | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-prototype-builtins.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  86%no-prototype-builtins.js  | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+no-redeclare.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%no-redeclare.js           | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+no-regex-spaces.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  77%no-regex-spaces.js        | 5 kB |   5.2 kB/s | ETA: 00:00:00 | 100%
+no-restricted-exports.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%no-restricted-exports.js  | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+no-restricted-globals.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  65%no-restricted-globals.js  | 6 kB |   6.1 kB/s | ETA: 00:00:00 | 100%
+no-restricted-imports.js  | 4 kB |   4.0 kB/s | ETA: 00:00:05 |  16%no-restricted-imports.js  | 24 kB |  24.7 kB/s | ETA: 00:00:00 | 100%
+no-restricted-modules.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  66%no-restricted-modules.js  | 5 kB |   6.0 kB/s | ETA: 00:00:00 | 100%
+no-restricted-properties. | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%no-restricted-properties. | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+no-restricted-syntax.js   | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-return-assign.js       | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+no-return-await.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  91%no-return-await.js        | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+no-script-url.js          | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+no-self-assign.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  87%no-self-assign.js         | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+no-self-compare.js        | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+no-sequences.js           | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+no-setter-return.js       | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  71%no-setter-return.js       | 5 kB |   5.6 kB/s | ETA: 00:00:00 | 100%
+no-shadow-restricted-name | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+no-shadow.js              | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  20%no-shadow.js              | 19 kB |  19.1 kB/s | ETA: 00:00:00 | 100%
+no-spaced-func.js         | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+no-sparse-arrays.js       | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+no-sync.js                | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+no-tabs.js                | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-template-curly-in-stri | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+no-ternary.js             | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+no-this-before-super.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%no-this-before-super.js   | 8 kB |   8.8 kB/s | ETA: 00:00:00 | 100%
+no-throw-literal.js       | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+no-trailing-spaces.js     | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  67%no-trailing-spaces.js     | 5 kB |   6.0 kB/s | ETA: 00:00:00 | 100%
+no-unassigned-vars.js     | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+no-undef-init.js          | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+no-undef.js               | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+no-undefined.js           | 2 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+no-underscore-dangle.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  42%no-underscore-dangle.js   | 9 kB |   9.3 kB/s | ETA: 00:00:00 | 100%
+no-unexpected-multiline.j | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+no-unmodified-loop-condit | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%no-unmodified-loop-condit | 10 kB |  10.2 kB/s | ETA: 00:00:00 | 100%
+no-unneeded-ternary.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%no-unneeded-ternary.js    | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+no-unreachable-loop.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  80%no-unreachable-loop.js    | 4 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+no-unreachable.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  54%no-unreachable.js         | 7 kB |   7.3 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-finally.js      | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-negation.js     | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+no-unsafe-optional-chaini | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  76%no-unsafe-optional-chaini | 5 kB |   5.3 kB/s | ETA: 00:00:00 | 100%
+no-unused-expressions.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  74%no-unused-expressions.js  | 5 kB |   5.4 kB/s | ETA: 00:00:00 | 100%
+no-unused-labels.js       | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+no-unused-private-class-m | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%no-unused-private-class-m | 12 kB |  12.3 kB/s | ETA: 00:00:00 | 100%
+no-unused-vars.js         | 4 kB |   4.0 kB/s | ETA: 00:00:10 |   8%no-unused-vars.js         | 47 kB |  47.7 kB/s | ETA: 00:00:00 | 100%
+no-use-before-define.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  33%no-use-before-define.js   | 11 kB |  11.8 kB/s | ETA: 00:00:00 | 100%
+no-useless-assignment.js  | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%no-useless-assignment.js  | 19 kB |  19.0 kB/s | ETA: 00:00:00 | 100%
+no-useless-backreference. | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  53%no-useless-backreference. | 7 kB |   7.5 kB/s | ETA: 00:00:00 | 100%
+no-useless-call.js        | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+no-useless-catch.js       | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+no-useless-computed-key.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%no-useless-computed-key.j | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+no-useless-concat.js      | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+no-useless-constructor.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%no-useless-constructor.js | 7 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+no-useless-escape.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  37%no-useless-escape.js      | 10 kB |  10.8 kB/s | ETA: 00:00:00 | 100%
+no-useless-rename.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  83%no-useless-rename.js      | 4 kB |   4.8 kB/s | ETA: 00:00:00 | 100%
+no-useless-return.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%no-useless-return.js      | 11 kB |  11.7 kB/s | ETA: 00:00:00 | 100%
+no-var.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  32%no-var.js                 | 12 kB |  12.5 kB/s | ETA: 00:00:00 | 100%
+no-void.js                | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+no-warning-comments.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%no-warning-comments.js    | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+no-whitespace-before-prop | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+no-with.js                | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+nonblock-statement-body-p | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%nonblock-statement-body-p | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+object-curly-newline.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%object-curly-newline.js   | 9 kB |   9.9 kB/s | ETA: 00:00:00 | 100%
+object-curly-spacing.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  39%object-curly-spacing.js   | 10 kB |  10.1 kB/s | ETA: 00:00:00 | 100%
+object-property-newline.j | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+object-shorthand.js       | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%object-shorthand.js       | 18 kB |  18.1 kB/s | ETA: 00:00:00 | 100%
+one-var-declaration-per-l | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+one-var.js                | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  21%one-var.js                | 18 kB |  18.7 kB/s | ETA: 00:00:00 | 100%
+operator-assignment.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  54%operator-assignment.js    | 7 kB |   7.4 kB/s | ETA: 00:00:00 | 100%
+operator-linebreak.js     | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%operator-linebreak.js     | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+padded-blocks.js          | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%padded-blocks.js          | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+padding-line-between-stat | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  24%padding-line-between-stat | 16 kB |  16.6 kB/s | ETA: 00:00:00 | 100%
+prefer-arrow-callback.js  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%prefer-arrow-callback.js  | 11 kB |  11.6 kB/s | ETA: 00:00:00 | 100%
+prefer-const.js           | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%prefer-const.js           | 15 kB |  15.7 kB/s | ETA: 00:00:00 | 100%
+prefer-destructuring.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%prefer-destructuring.js   | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+prefer-exponentiation-ope | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  60%prefer-exponentiation-ope | 6 kB |   6.6 kB/s | ETA: 00:00:00 | 100%
+prefer-named-capture-grou | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  81%prefer-named-capture-grou | 4 kB |   4.9 kB/s | ETA: 00:00:00 | 100%
+prefer-numeric-literals.j | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  90%prefer-numeric-literals.j | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+prefer-object-has-own.js  | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+prefer-object-spread.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  43%prefer-object-spread.js   | 9 kB |   9.3 kB/s | ETA: 00:00:00 | 100%
+prefer-promise-reject-err | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  88%prefer-promise-reject-err | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+prefer-reflect.js         | 3 kB |   3.7 kB/s | ETA: 00:00:00 | 100%
+prefer-regex-literals.js  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  28%prefer-regex-literals.js  | 14 kB |  14.0 kB/s | ETA: 00:00:00 | 100%
+prefer-rest-params.js     | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+prefer-spread.js          | 2 kB |   2.5 kB/s | ETA: 00:00:00 | 100%
+prefer-template.js        | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%prefer-template.js        | 10 kB |  10.3 kB/s | ETA: 00:00:00 | 100%
+preserve-caught-error.js  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  25%preserve-caught-error.js  | 15 kB |  15.9 kB/s | ETA: 00:00:00 | 100%
+quote-props.js            | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  40%quote-props.js            | 9 kB |   9.9 kB/s | ETA: 00:00:00 | 100%
+quotes.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  37%quotes.js                 | 10 kB |  10.7 kB/s | ETA: 00:00:00 | 100%
+radix.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  80%radix.js                  | 4 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+require-atomic-updates.js | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%require-atomic-updates.js | 9 kB |   9.1 kB/s | ETA: 00:00:00 | 100%
+require-await.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  89%require-await.js          | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+require-unicode-regexp.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  52%require-unicode-regexp.js | 7 kB |   7.6 kB/s | ETA: 00:00:00 | 100%
+require-yield.js          | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+rest-spread-spacing.js    | 3 kB |   3.6 kB/s | ETA: 00:00:00 | 100%
+semi-spacing.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  55%semi-spacing.js           | 7 kB |   7.2 kB/s | ETA: 00:00:00 | 100%
+semi-style.js             | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%semi-style.js             | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+semi.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%semi.js                   | 13 kB |  13.0 kB/s | ETA: 00:00:00 | 100%
+sort-imports.js           | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  47%sort-imports.js           | 8 kB |   8.4 kB/s | ETA: 00:00:00 | 100%
+sort-keys.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%sort-keys.js              | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+sort-vars.js              | 3 kB |   3.2 kB/s | ETA: 00:00:00 | 100%
+space-before-blocks.js    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%space-before-blocks.js    | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+space-before-function-par | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%space-before-function-par | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+space-in-parens.js        | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%space-in-parens.js        | 9 kB |   9.1 kB/s | ETA: 00:00:00 | 100%
+space-infix-ops.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  70%space-infix-ops.js        | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+space-unary-ops.js        | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%space-unary-ops.js        | 10 kB |  10.4 kB/s | ETA: 00:00:00 | 100%
+spaced-comment.js         | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%spaced-comment.js         | 10 kB |  11.0 kB/s | ETA: 00:00:00 | 100%
+strict.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  43%strict.js                 | 9 kB |   9.1 kB/s | ETA: 00:00:00 | 100%
+switch-colon-spacing.js   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  87%switch-colon-spacing.js   | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+symbol-description.js     | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+template-curly-spacing.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  94%template-curly-spacing.js | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+template-tag-spacing.js   | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+unicode-bom.js            | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+use-isnan.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%use-isnan.js              | 6 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+ast-utils.js              | 4 kB |   4.0 kB/s | ETA: 00:00:19 |   4%ast-utils.js              | 81 kB |  81.7 kB/s | ETA: 00:00:00 | 100%
+char-source.js            | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%char-source.js            | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+fix-tracker.js            | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+keywords.js               | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+lazy-loading-rule-map.js  | 2 kB |   2.6 kB/s | ETA: 00:00:00 | 100%
+regular-expressions.js    | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+is-combining-character.js | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+is-emoji-modifier.js      | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+is-regional-indicator-sym | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+is-surrogate-pair.js      | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+valid-typeof.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  96%valid-typeof.js           | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+vars-on-top.js            | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  95%vars-on-top.js            | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+wrap-iife.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  59%wrap-iife.js              | 6 kB |   6.8 kB/s | ETA: 00:00:00 | 100%
+wrap-regex.js             | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+yield-star-spacing.js     | 3 kB |   3.9 kB/s | ETA: 00:00:00 | 100%
+yoda.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  42%yoda.js                   | 9 kB |   9.5 kB/s | ETA: 00:00:00 | 100%
+parser-service.js         | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+processor-service.js      | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+suppressions-service.js   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%suppressions-service.js   | 8 kB |   8.5 kB/s | ETA: 00:00:00 | 100%
+warning-service.js        | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+ajv.js                    | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+assert.js                 | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+ast-utils.js              | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+deep-merge-arrays.js      | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+directives.js             | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+flags.js                  | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+logging.js                | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+message-counts.js         | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+naming.js                 | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+option-utils.js           | 1 kB |   1.2 kB/s | ETA: 00:00:00 | 100%
+relative-module-resolver. | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+runtime-info.js           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  79%runtime-info.js           | 5 kB |   5.0 kB/s | ETA: 00:00:00 | 100%
+serialization.js          | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+severity.js               | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+stats.js                  | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+string-utils.js           | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+text-table.js             | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+translate-cli-options.js  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%translate-cli-options.js  | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+traverser.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  84%traverser.js              | 4 kB |   4.7 kB/s | ETA: 00:00:00 | 100%
+config-api.d.ts           | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:08 |  10%index.d.ts                | 39 kB |  39.4 kB/s | ETA: 00:00:00 | 100%
+rules.d.ts                | 4 kB |   4.0 kB/s | ETA: 00:00:30 |   3%rules.d.ts                | 127 kB | 127.7 kB/s | ETA: 00:00:00 | 100%
+universal.d.ts            | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+use-at-your-own-risk.d.ts | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+universal.js              | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+unsupported-api.js        | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+all-matched-files-ignored | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+config-file-missing.js    | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+config-plugin-missing.js  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+config-serialize-function | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+eslintrc-incompat.js      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  78%eslintrc-incompat.js      | 5 kB |   5.1 kB/s | ETA: 00:00:00 | 100%
+eslintrc-plugins.js       | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+extend-config-missing.js  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+failed-to-read-json.js    | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+file-not-found.js         | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+invalid-rule-options.js   | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+invalid-rule-severity.js  | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+no-config-found.js        | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+plugin-conflict.js        | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+plugin-invalid.js         | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+plugin-missing.js         | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+rule-unsupported-language | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+shared.js                 | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+whitespace-found.js       | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+jiti                      | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+jiti.CMD                  | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+jiti.ps1                  | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%package.json              | 7 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  19%README.md                 | 20 kB |  20.4 kB/s | ETA: 00:00:00 | 100%
+eslint-plugin-react-hooks | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+eslint-plugin-react-hooks | 4 kB |   4.0 kB/s | ETA: 00:08:18 |   0%eslint-plugin-react-hooks | 1980 kB | 1980.0 kB/s | ETA: 00:00:00 |  99%eslint-plugin-react-hooks | 1996 kB | 1996.3 kB/s | ETA: 00:00:00 | 100%
+eslint-plugin-react-hooks | 4 kB |   4.0 kB/s | ETA: 00:08:16 |   0%eslint-plugin-react-hooks | 1991 kB | 1991.9 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+eslint                    | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+eslint.CMD                | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+eslint.ps1                | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+parser                    | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+parser.CMD                | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+parser.ps1                | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  98%README.md                 | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%index.js                  | 12 kB |  13.0 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+eslint                    | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+eslint.CMD                | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+eslint.ps1                | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+package.json              | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%README.md                 | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+eslint-scope.cjs          | 4 kB |   4.0 kB/s | ETA: 00:00:14 |   6%eslint-scope.cjs          | 63 kB |  63.3 kB/s | ETA: 00:00:00 | 100%
+assert.js                 | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+definition.js             | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+index.d.cts               | 4 kB |   4.0 kB/s | ETA: 00:00:05 |  15%index.d.cts               | 26 kB |  26.3 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%index.js                  | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+pattern-visitor.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  90%pattern-visitor.js        | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+reference.js              | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  94%reference.js              | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+referencer.js             | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  22%referencer.js             | 17 kB |  17.6 kB/s | ETA: 00:00:00 | 100%
+scope-manager.js          | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  55%scope-manager.js          | 7 kB |   7.2 kB/s | ETA: 00:00:00 | 100%
+scope.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:03 |  20%scope.js                  | 19 kB |  19.9 kB/s | ETA: 00:00:00 | 100%
+variable.js               | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.4 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%README.md                 | 10 kB |  10.9 kB/s | ETA: 00:00:00 | 100%
+eslint-visitor-keys.cjs   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%eslint-visitor-keys.cjs   | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+eslint-visitor-keys.d.cts | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+index.d.ts                | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+visitor-keys.d.ts         | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 1 kB |   1.7 kB/s | ETA: 00:00:00 | 100%
+visitor-keys.js           | 3 kB |   3.8 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  36%LICENSE                   | 11 kB |  11.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  68%README.md                 | 5 kB |   5.9 kB/s | ETA: 00:00:00 | 100%
+espree.cjs                | 4 kB |   4.0 kB/s | ETA: 00:00:07 |  11%espree.cjs                | 35 kB |  35.1 kB/s | ETA: 00:00:00 | 100%
+espree.d.cts              | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+espree.d.cts.map          | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+espree.d.ts               | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+espree.d.ts.map           | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+espree.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  44%espree.js                 | 8 kB |   9.0 kB/s | ETA: 00:00:00 | 100%
+espree.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%espree.js                 | 12 kB |  13.0 kB/s | ETA: 00:00:00 | 100%
+options.js                | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  86%options.js                | 4 kB |   4.6 kB/s | ETA: 00:00:00 | 100%
+token-translator.js       | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  48%token-translator.js       | 8 kB |   8.2 kB/s | ETA: 00:00:00 | 100%
+types.js                  | 3 kB |   3.3 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+package.json              | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  30%README.md                 | 12 kB |  13.0 kB/s | ETA: 00:00:00 | 100%
+HermesESTreeSelectorTypes | 4 kB |   4.0 kB/s | ETA: 00:00:36 |   2%HermesESTreeSelectorTypes | 151 kB | 151.4 kB/s | ETA: 00:00:00 | 100%
+predicates.js             | 4 kB |   4.0 kB/s | ETA: 00:00:14 |   6%predicates.js             | 60 kB |  60.6 kB/s | ETA: 00:00:00 | 100%
+predicates.js.flow        | 4 kB |   4.0 kB/s | ETA: 00:00:11 |   7%predicates.js.flow        | 50 kB |  50.4 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+index.js.flow             | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+predicates.js             | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  45%predicates.js             | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+predicates.js.flow        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  56%predicates.js.flow        | 7 kB |   7.1 kB/s | ETA: 00:00:00 | 100%
+selectors.js              | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+selectors.js.flow         | 0 kB |   0.9 kB/s | ETA: 00:00:00 | 100%
+types.js                  | 1 kB |   1.3 kB/s | ETA: 00:00:00 | 100%
+types.js.flow             | 4 kB |   4.0 kB/s | ETA: 00:00:11 |   7%types.js.flow             | 50 kB |  50.4 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 0 kB |   0.1 kB/s | ETA: 00:00:00 | 100%
+TransformESTreeToBabel.js | 4 kB |   4.0 kB/s | ETA: 00:00:05 |  14%TransformESTreeToBabel.js | 27 kB |  27.4 kB/s | ETA: 00:00:00 | 100%
+TransformESTreeToBabel.js | 4 kB |   4.0 kB/s | ETA: 00:00:07 |  12%TransformESTreeToBabel.js | 32 kB |  32.5 kB/s | ETA: 00:00:00 | 100%
+StripComponentSyntax.js   | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  18%StripComponentSyntax.js   | 22 kB |  22.2 kB/s | ETA: 00:00:00 | 100%
+StripComponentSyntax.js.f | 4 kB |   4.0 kB/s | ETA: 00:00:04 |  17%StripComponentSyntax.js.f | 22 kB |  22.9 kB/s | ETA: 00:00:00 | 100%
+StripFlowTypes.js         | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  93%StripFlowTypes.js         | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+StripFlowTypes.js.flow    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  97%StripFlowTypes.js.flow    | 4 kB |   4.1 kB/s | ETA: 00:00:00 | 100%
+StripFlowTypesForBabel.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  77%StripFlowTypesForBabel.js | 5 kB |   5.2 kB/s | ETA: 00:00:00 | 100%
+StripFlowTypesForBabel.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%StripFlowTypesForBabel.js | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+ESTreeVisitorKeys.js      | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  48%ESTreeVisitorKeys.js      | 8 kB |   8.3 kB/s | ETA: 00:00:00 | 100%
+ESTreeVisitorKeys.js.flow | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+ParserVisitorKeys.js      | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  29%ParserVisitorKeys.js      | 13 kB |  13.4 kB/s | ETA: 00:00:00 | 100%
+ParserVisitorKeys.js.flow | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+getModuleDocblock.js      | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+getModuleDocblock.js.flow | 2 kB |   3.0 kB/s | ETA: 00:00:00 | 100%
+HermesAST.js.flow         | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+HermesASTAdapter.js       | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  80%HermesASTAdapter.js       | 4 kB |   4.9 kB/s | ETA: 00:00:00 | 100%
+HermesASTAdapter.js.flow  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  73%HermesASTAdapter.js.flow  | 5 kB |   5.4 kB/s | ETA: 00:00:00 | 100%
+HermesParser.js           | 3 kB |   4.0 kB/s | ETA: 00:00:00 | 100%
+HermesParser.js.flow      | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  95%HermesParser.js.flow      | 4 kB |   4.2 kB/s | ETA: 00:00:00 | 100%
+HermesParserDecodeUTF8Str | 1 kB |   1.9 kB/s | ETA: 00:00:00 | 100%
+HermesParserDecodeUTF8Str | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+HermesParserDeserializer. | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  62%HermesParserDeserializer. | 6 kB |   6.4 kB/s | ETA: 00:00:00 | 100%
+HermesParserDeserializer. | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  59%HermesParserDeserializer. | 6 kB |   6.8 kB/s | ETA: 00:00:00 | 100%
+HermesParserNodeDeseriali | 4 kB |   4.0 kB/s | ETA: 00:00:13 |   6%HermesParserNodeDeseriali | 57 kB |  57.5 kB/s | ETA: 00:00:00 | 100%
+HermesParserNodeDeseriali | 0 kB |   0.4 kB/s | ETA: 00:00:00 | 100%
+HermesParserWASM.js       | 4 kB |   4.0 kB/s | ETA: 00:02:44 |   0%HermesParserWASM.js       | 662 kB | 662.3 kB/s | ETA: 00:00:00 | 100%
+HermesParserWASM.js.flow  | 1 kB |   2.0 kB/s | ETA: 00:00:00 | 100%
+HermesToESTreeAdapter.js  | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  35%HermesToESTreeAdapter.js  | 11 kB |  11.2 kB/s | ETA: 00:00:00 | 100%
+HermesToESTreeAdapter.js. | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  34%HermesToESTreeAdapter.js. | 11 kB |  11.5 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  64%index.js                  | 6 kB |   6.2 kB/s | ETA: 00:00:00 | 100%
+index.js.flow             | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+ParserOptions.js          | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+ParserOptions.js.flow     | 0 kB |   0.8 kB/s | ETA: 00:00:00 | 100%
+astArrayMutationHelpers.j | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+astArrayMutationHelpers.j | 1 kB |   1.6 kB/s | ETA: 00:00:00 | 100%
+astNodeMutationHelpers.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  72%astNodeMutationHelpers.js | 5 kB |   5.5 kB/s | ETA: 00:00:00 | 100%
+astNodeMutationHelpers.js | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  69%astNodeMutationHelpers.js | 5 kB |   5.8 kB/s | ETA: 00:00:00 | 100%
+SimpleTransform.js        | 3 kB |   3.5 kB/s | ETA: 00:00:00 | 100%
+SimpleTransform.js.flow   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  90%SimpleTransform.js.flow   | 4 kB |   4.4 kB/s | ETA: 00:00:00 | 100%
+getVisitorKeys.js         | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+getVisitorKeys.js.flow    | 0 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+SimpleTraverser.js        | 2 kB |   2.9 kB/s | ETA: 00:00:00 | 100%
+SimpleTraverser.js.flow   | 3 kB |   3.4 kB/s | ETA: 00:00:00 | 100%
+createSyntaxError.js      | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+createSyntaxError.js.flow | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+mutateESTreeASTForPrettie | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%mutateESTreeASTForPrettie | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+mutateESTreeASTForPrettie | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  89%mutateESTreeASTForPrettie | 4 kB |   4.5 kB/s | ETA: 00:00:00 | 100%
+LICENSE                   | 1 kB |   1.1 kB/s | ETA: 00:00:00 | 100%
+package.json              | 0 kB |   0.5 kB/s | ETA: 00:00:00 | 100%
+README.md                 | 1 kB |   1.8 kB/s | ETA: 00:00:00 | 100%
+api.js                    | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  38%api.js                    | 10 kB |  10.4 kB/s | ETA: 00:00:00 | 100%
+default-stylesheet.js     | 4 kB |   4.0 kB/s | ETA: 00:00:02 |  28%default-stylesheet.js     | 14 kB |  14.2 kB/s | ETA: 00:00:00 | 100%
+js-globals.json           | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  70%js-globals.json           | 5 kB |   5.7 kB/s | ETA: 00:00:00 | 100%
+not-implemented.js        | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+html.js                   | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  57%html.js                   | 6 kB |   7.0 kB/s | ETA: 00:00:00 | 100%
+index.js                  | 1 kB |   1.0 kB/s | ETA: 00:00:00 | 100%
+xml.js                    | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  58%xml.js                    | 6 kB |   6.8 kB/s | ETA: 00:00:00 | 100%
+async-resource-queue.js   | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+no-op-resource-loader.js  | 0 kB |   0.2 kB/s | ETA: 00:00:00 | 100%
+per-document-resource-loa | 2 kB |   2.7 kB/s | ETA: 00:00:00 | 100%
+request-manager.js        | 0 kB |   0.6 kB/s | ETA: 00:00:00 | 100%
+resource-loader.js        | 4 kB |   4.0 kB/s | ETA: 00:00:00 |  92%resource-loader.js        | 4 kB |   4.3 kB/s | ETA: 00:00:00 | 100%
+resource-queue.js         | 2 kB |   2.8 kB/s | ETA: 00:00:00 | 100%
+Window.js                 | 4 kB |   4.0 kB/s | ETA: 00:00:06 |  12%Window.js                 | 31 kB |  31.8 kB/s | ETA: 00:00:00 | 100%
+style.js                  | 2 kB |   2.2 kB/s | ETA: 00:00:00 | 100%
+xpath.js                  | 4 kB |   4.0 kB/s | ETA: 00:00:16 |   5%xpath.js                  | 68 kB |  68.8 kB/s | ETA: 00:00:00 | 100%
+AbortController-impl.js   | 0 kB |   0.3 kB/s | ETA: 00:00:00 | 100%
+AbortSignal-impl.js       | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+Attr-impl.js              | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+NamedNodeMap-impl.js      | 2 kB |   2.3 kB/s | ETA: 00:00:00 | 100%
+attributes.js             | 4 kB |   4.0 kB/s | ETA: 00:00:01 |  46%attributes.js             | 8 kB |   8.7 kB/s | ETA: 00:00:00 | 100%
+DefaultConstraintValidati | 2 kB |   2.4 kB/s | ETA: 00:00:00 | 100%
+ValidityState-impl.js     | 1 kB |   1.5 kB/s | ETA: 00:00:00 | 100%
+Crypto-impl.js            | 2 kB |   2.1 kB/s | ETA: 00:00:00 | 100%
+StyleSheetList-impl.js    | 0 kB |   0.7 kB/s | ETA: 00:00:00 | 100%

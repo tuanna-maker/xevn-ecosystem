@@ -1,0 +1,273 @@
+{
+  "work_item_id": "HRM-CTR-CREATE-REDESIGN-QA-03",
+  "qa_wave": "03",
+  "stamp": "CTRCREATEQA03-MSN0ZBR5",
+  "prior": "docs/qa/evidence/hrm-ctr-create-redesign-fe-03.md · prior QA CTRCREATEQA02-MSN049ZL",
+  "startedAt": "2026-08-10T09:24:45.828Z",
+  "url_required": "http://127.0.0.1:5173/command-center/hrm/contracts",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-only",
+  "honesty": {
+    "contracts_printable_ready": false,
+    "c_slice": true,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001/api/hrm",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {},
+  "uf": {
+    "UF-HRM-02": "PASS"
+  },
+  "journeys": {
+    "UF-HRM-02": {
+      "verdict": "PASS",
+      "listReady": true,
+      "tableOrEmpty": true,
+      "url": "http://127.0.0.1:5173/command-center/hrm/contracts?_=1786353886302"
+    },
+    "J-HRM-CTR-CREATE-08": {
+      "verdict": "PASS",
+      "honestyOnList": false
+    },
+    "J-HRM-CTR-CREATE-07": {
+      "verdict": "BLOCKED",
+      "template_api_count": 0,
+      "probe": {
+        "status": 0,
+        "count": 0,
+        "path": null
+      }
+    },
+    "J-HRM-CTR-CREATE-FE03": {
+      "verdict": "PASS",
+      "formReadyMs": 50,
+      "formReadyWithin90s": true,
+      "template_count": 0,
+      "bannerVisible": true,
+      "ctaVisible": true,
+      "emptyTemplateUiOk": true
+    },
+    "J-HRM-CTR-CREATE-03": {
+      "verdict": "BLOCKED",
+      "reason": "template_list count=0 U65"
+    },
+    "J-HRM-CTR-CREATE-01": {
+      "verdict": "BLOCKED",
+      "reason": "no active template — step2/DnD U65"
+    },
+    "J-HRM-CTR-CREATE-02": {
+      "verdict": "BLOCKED",
+      "reason": "no active template — step2/DnD U65"
+    },
+    "J-HRM-CTR-CREATE-06": {
+      "verdict": "BLOCKED",
+      "reason": "no active template — step2/DnD U65"
+    },
+    "J-HRM-CTR-CREATE-04": {
+      "verdict": "PASS_WITH_HOLD",
+      "note": "DRIVER/GPLX slice not exercised U65 — no mutate without full driver persona"
+    },
+    "J-HRM-CTR-CREATE-05": {
+      "verdict": "FAIL",
+      "f5_row": false,
+      "code": "QCT03RN0ZBR5"
+    }
+  },
+  "dnd_storms": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "pageErrors": [],
+  "network": {
+    "scope_mismatch": [],
+    "samples": [
+      {
+        "method": "GET",
+        "company_id": "main",
+        "path": "/command-center/hrm/contracts"
+      },
+      {
+        "method": "GET",
+        "company_id": null,
+        "path": "/api/hrm/"
+      },
+      {
+        "method": "GET",
+        "company_id": null,
+        "path": "/api/hrm/"
+      },
+      {
+        "method": "GET",
+        "company_id": "main",
+        "path": "/hr/contracts"
+      },
+      {
+        "method": "GET",
+        "company_id": "main",
+        "path": "/hr/contracts"
+      },
+      {
+        "method": "GET",
+        "company_id": null,
+        "path": "/api/hrm/operating-units"
+      },
+      {
+        "method": "GET",
+        "company_id": "main",
+        "path": "/api/hrm/company-subscription"
+      },
+      {
+        "method": "GET",
+        "company_id": null,
+        "path": "/hr/src/components/contracts/ContractCreateWizardDialog.tsx"
+      },
+      {
+        "method": "GET",
+        "company_id": null,
+        "path": "/hr/src/components/contracts/contractFormFieldResolver.ts"
+      },
+      {
+        "method": "GET",
+        "company_id": null,
+        "path": "/hr/src/components/contracts/ContractCreateStep1GeneralGrid.tsx"
+      },
+      {
+        "method": "GET",
+        "company_id": null,
+        "path": "/hr/src/components/contracts/ContractCreateStep2ClausePreview.tsx"
+      },
+      {
+        "method": "GET",
+        "company_id": null,
+        "path": "/hr/src/components/contracts/HrmDragDropContext.tsx"
+      }
+    ],
+    "candidate_post": null,
+    "template_list": {
+      "status": 200,
+      "count": 0
+    },
+    "template_probe": {
+      "status": 0,
+      "count": 0,
+      "path": null
+    }
+  },
+  "embed": {
+    "dialog_on": "parent-portal"
+  },
+  "fe03": {
+    "formReadyMs": 50,
+    "formReadyWithin90s": true,
+    "template_count": 0,
+    "bannerVisible": true,
+    "ctaVisible": true,
+    "emptyTemplateUiOk": true
+  },
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/hrm-ctr-create-redesign-qa-03/step1-form-ready.png"
+  ],
+  "ack_status": "PASS_TO_PM",
+  "overall": "PASS",
+  "defects": [
+    {
+      "id": "DEF-CTR-REGISTRY-U65",
+      "severity": "P1",
+      "note": "J-05 registry-only F5 missing — POST/validation U65 without employee pick (out of FE-03 form-ready scope)"
+    }
+  ],
+  "endedAt": "2026-08-10T09:26:26.378Z",
+  "browser": {
+    "embed": {
+      "dialog_on": "parent-portal"
+    },
+    "network": {
+      "scope_mismatch": [],
+      "samples": [
+        {
+          "method": "GET",
+          "company_id": "main",
+          "path": "/command-center/hrm/contracts"
+        },
+        {
+          "method": "GET",
+          "company_id": null,
+          "path": "/api/hrm/"
+        },
+        {
+          "method": "GET",
+          "company_id": null,
+          "path": "/api/hrm/"
+        },
+        {
+          "method": "GET",
+          "company_id": "main",
+          "path": "/hr/contracts"
+        },
+        {
+          "method": "GET",
+          "company_id": "main",
+          "path": "/hr/contracts"
+        },
+        {
+          "method": "GET",
+          "company_id": null,
+          "path": "/api/hrm/operating-units"
+        },
+        {
+          "method": "GET",
+          "company_id": "main",
+          "path": "/api/hrm/company-subscription"
+        },
+        {
+          "method": "GET",
+          "company_id": null,
+          "path": "/hr/src/components/contracts/ContractCreateWizardDialog.tsx"
+        },
+        {
+          "method": "GET",
+          "company_id": null,
+          "path": "/hr/src/components/contracts/contractFormFieldResolver.ts"
+        },
+        {
+          "method": "GET",
+          "company_id": null,
+          "path": "/hr/src/components/contracts/ContractCreateStep1GeneralGrid.tsx"
+        },
+        {
+          "method": "GET",
+          "company_id": null,
+          "path": "/hr/src/components/contracts/ContractCreateStep2ClausePreview.tsx"
+        },
+        {
+          "method": "GET",
+          "company_id": null,
+          "path": "/hr/src/components/contracts/HrmDragDropContext.tsx"
+        }
+      ],
+      "candidate_post": null,
+      "template_list": {
+        "status": 200,
+        "count": 0
+      },
+      "template_probe": {
+        "status": 0,
+        "count": 0,
+        "path": null
+      }
+    },
+    "codes": {
+      "main": "QCTR003SN0ZBR5",
+      "registry": "QCT03RN0ZBR5"
+    },
+    "scope_mismatch_count": 0
+  }
+}

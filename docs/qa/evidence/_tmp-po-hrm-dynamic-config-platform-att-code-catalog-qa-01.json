@@ -1,0 +1,324 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATALOG-QA-01",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATALOG-BE-01 READY_FOR_QA",
+  "program": "PO-HRM-CONTINUOUS-W8-20260807",
+  "stamp": "ATTCODEQA-MSK4T1A5",
+  "git_head": "dc930c5",
+  "lane": "L1_API (≠ UF 🟢)",
+  "u65": "zero-seed · no pnpm seed · admin CREATE N+1 via Nest catalog API then invent",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "headerCompany": "main"
+  },
+  "honesty": {
+    "attendance_uat_ready": false,
+    "payroll_e2e_ready": false,
+    "c_slice_ne_module": true,
+    "deny_module_att_uat": true,
+    "deny_flip_ready": true,
+    "deny_uf_green_from_l1": true,
+    "deny_aggregate_rewrite": true,
+    "seed_used": false
+  },
+  "open_code": "wfh_qa_msk4t1a5",
+  "invent_code": "zz_invent_att_code_msk4t1a5",
+  "dist": {
+    "dist_exists": true,
+    "has_code_service": true,
+    "has_code_constants": true,
+    "controller_has_effective": true,
+    "dist_has_key": true,
+    "src_create_dto_no_isin4": true,
+    "src_update_dto_no_isin4": true,
+    "src_has_key": true,
+    "aggregate_untouched_spot": true,
+    "stale_dist": false,
+    "note": "dist F-ATT-CAT-CODE + KEY present · DTO open · aggregate sealed spot"
+  },
+  "seals": {
+    "att_leave": "ATTLEAVEQA-MSJ7CPJH",
+    "att_worksite": "ATTWSQA-MSJC3IN9",
+    "emp_seals": [
+      "EMPDEPTQA-MSK3VVXX",
+      "EMPPOSQA2-MSK3CDH1",
+      "EMPSTQA-MSK20G7H",
+      "EMPCFQA-MSK14LUH",
+      "EMPTOKEXTQA-MSJ57PE1"
+    ],
+    "cited_in": [
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-att-leave-catalog-qa-01.md",
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-att-worksite-catalog-qa-01.md",
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-att-code-catalog-be-01.md",
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-dept-catalog-qa-01.md"
+    ],
+    "reopened": false,
+    "note": "cite-only RETAIN · leave/worksite/EMP/SI/CTR · aggregate GĐ1 sealed · no flip attendance_uat"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "steps": [
+    {
+      "id": "DIST_DTO_GATE",
+      "at": "2026-08-08T08:48:32.254Z",
+      "verdict": "PASS",
+      "summary": "dist F-ATT-CAT-CODE + KEY present · DTO open · aggregate sealed spot",
+      "dist_exists": true,
+      "has_code_service": true,
+      "has_code_constants": true,
+      "controller_has_effective": true,
+      "dist_has_key": true,
+      "src_create_dto_no_isin4": true,
+      "src_update_dto_no_isin4": true,
+      "src_has_key": true,
+      "aggregate_untouched_spot": true,
+      "stale_dist": false,
+      "note": "dist F-ATT-CAT-CODE + KEY present · DTO open · aggregate sealed spot"
+    },
+    {
+      "id": "L0",
+      "at": "2026-08-08T08:48:32.296Z",
+      "verdict": "PASS",
+      "summary": "hrm=200 xbos=200 portal=200"
+    },
+    {
+      "id": "UNAUTH_EFF",
+      "at": "2026-08-08T08:48:32.306Z",
+      "verdict": "PASS",
+      "summary": "401 HRM-AUTH-001",
+      "status": 401,
+      "code": "HRM-AUTH-001"
+    },
+    {
+      "id": "LOGIN",
+      "at": "2026-08-08T08:48:32.378Z",
+      "verdict": "PASS",
+      "summary": "via http://127.0.0.1:5173/api/xbos/auth/login"
+    },
+    {
+      "id": "GET_EFF_0",
+      "at": "2026-08-08T08:48:32.565Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-ATT-CODE-200 total=0"
+    },
+    {
+      "id": "ADMIN_N1",
+      "at": "2026-08-08T08:48:32.587Z",
+      "verdict": "PASS",
+      "summary": "201 HRM-ATT-CODE-201 key=wfh_qa_msk4t1a5 id=59bc5ca4-31e2-4fbb-800c-06b3d7cef615"
+    },
+    {
+      "id": "EFF_HAS_OPEN_F5",
+      "at": "2026-08-08T08:48:32.741Z",
+      "verdict": "PASS",
+      "summary": "hasOpenKey=true total=1 baseline=0"
+    },
+    {
+      "id": "PICK_EMPLOYEE",
+      "at": "2026-08-08T08:48:33.112Z",
+      "verdict": "PASS",
+      "summary": "id=0500220b-f289-40df-b07e-86316285439b company=main"
+    },
+    {
+      "id": "EFF_EMP_SCOPE",
+      "at": "2026-08-08T08:48:33.284Z",
+      "verdict": "PASS",
+      "summary": "company=main total=1 hasOpen=true"
+    },
+    {
+      "id": "INVENT_POST",
+      "at": "2026-08-08T08:48:33.624Z",
+      "verdict": "PASS",
+      "summary": "400 HRM-ATT-CODE-KEY"
+    },
+    {
+      "id": "OPEN_SLUG_PERSIST",
+      "at": "2026-08-08T08:48:34.145Z",
+      "verdict": "PASS",
+      "summary": "201 HRM-ATT-201 status=wfh_qa_msk4t1a5 label=QA WFH ATTCODEQA-MSK4T1A5 symbol=WF date=2026-08-10"
+    },
+    {
+      "id": "DISPLAY_LABEL",
+      "at": "2026-08-08T08:48:34.146Z",
+      "verdict": "PASS",
+      "summary": "label=QA WFH ATTCODEQA-MSK4T1A5 symbol=WF"
+    },
+    {
+      "id": "INVENT_PATCH",
+      "at": "2026-08-08T08:48:34.499Z",
+      "verdict": "PASS",
+      "summary": "400 HRM-ATT-CODE-KEY recordId=4ab24bd0-9eb6-4e67-a8cc-0e9243800483"
+    },
+    {
+      "id": "LIST_GET_DISPLAY",
+      "at": "2026-08-08T08:48:35.176Z",
+      "verdict": "PASS",
+      "summary": "get=200 label=QA WFH ATTCODEQA-MSK4T1A5 symbol=WF",
+      "get": {
+        "status": 200,
+        "status_label": "QA WFH ATTCODEQA-MSK4T1A5",
+        "symbol": "WF",
+        "code": "HRM-ATT-200"
+      },
+      "list_hit": {
+        "id": "4ab24bd0-9eb6-4e67-a8cc-0e9243800483",
+        "status": "wfh_qa_msk4t1a5",
+        "status_label": "QA WFH ATTCODEQA-MSK4T1A5",
+        "symbol": "WF"
+      }
+    },
+    {
+      "id": "SOFT_RETIRE",
+      "at": "2026-08-08T08:48:35.378Z",
+      "verdict": "PASS",
+      "summary": "retire=201 HRM-ATT-CODE-200 hidden=true"
+    },
+    {
+      "id": "SEAL_ROUTES_SPOT",
+      "at": "2026-08-08T08:48:35.630Z",
+      "verdict": "PASS",
+      "summary": "leave=200 HRM-ATT-LVT-200 ws=200 HRM-ATT-SITE-200 agg_untouched=true"
+    }
+  ],
+  "val": {
+    "AC-PLT-ATT-CODE-01c": {
+      "expect": "GET attendance-codes/effective 2xx · empty [] OK · no seed",
+      "status": 200,
+      "code": "HRM-ATT-CODE-200",
+      "total": 0,
+      "sample": [],
+      "verdict": "PASS"
+    },
+    "AC-PLT-ATT-CODE-01d": {
+      "expect": "Admin CREATE N+1 open slug 2xx/201 · F5 EFF sees code",
+      "status": 201,
+      "code": "HRM-ATT-CODE-201",
+      "open_key": "wfh_qa_msk4t1a5",
+      "createdId": "59bc5ca4-31e2-4fbb-800c-06b3d7cef615",
+      "summary": "{\"success\":true,\"code\":\"HRM-ATT-CODE-201\",\"message\":\"Attendance code created\",\"data\":{\"id\":\"59bc5ca4-31e2-4fbb-800c-06b3d7cef615\",\"companyId\":\"holding\",\"code\":\"wfh_qa_msk4t1a5\",\"nameVi\":\"QA WFH ATTCODEQA-MSK4T1A5\",\"statusLabel\":\"QA WFH ATTCODEQA-MSK4T1A5\",\"symbol\":\"WF\",\"sortOrder\":990,\"countsAs\":\"work\",\"dayWeight\":1,\"isPaid\":true,\"isPresent\":true,\"color\":null,\"legacyAliasKeys\":[],\"metadata\":null,\"status\":\"active\",\"source\":\"att_native\",\"catalogKind\":\"att_attendance_code\",\"archivedAt\":null,\"updatedAt\":\"2026-08-08T08:48:43.415Z\",\"createdAt\":\"2026-08-08T08:48:43.415Z\"},\"timestamp\":\"2026-08-08T08:48:32.586Z\"}",
+      "verdict": "PASS",
+      "eff_after": {
+        "total": 1,
+        "hasOpen": true
+      }
+    },
+    "VAL-ATT-CODE-CNS-01-POST": {
+      "expect": "POST invent → 4xx HRM-ATT-CODE-KEY (≠ LEAVE/EMP KEY)",
+      "status": 400,
+      "code": "HRM-ATT-CODE-KEY",
+      "invent": "zz_invent_att_code_msk4t1a5",
+      "message": "status 'zz_invent_att_code_msk4t1a5' is not in effective attendance-code catalog (free-text invent forbidden when EFF ≠ empty)",
+      "verdict": "PASS"
+    },
+    "VAL-ATT-CODE-CNS-07": {
+      "expect": "Open slug ∈ EFF persists (no closed IsIn4 reject)",
+      "status": 201,
+      "code": "HRM-ATT-201",
+      "status_persisted": "wfh_qa_msk4t1a5",
+      "open_key": "wfh_qa_msk4t1a5",
+      "open_date": "2026-08-10",
+      "message": "Attendance record created",
+      "verdict": "PASS"
+    },
+    "VAL-ATT-CODE-CNS-08": {
+      "expect": "status_label + symbol from catalog when EFF known",
+      "status_label": "QA WFH ATTCODEQA-MSK4T1A5",
+      "symbol": "WF",
+      "hasLabel": true,
+      "hasSymbol": true,
+      "verdict": "PASS"
+    },
+    "VAL-ATT-CODE-CNS-01-PATCH": {
+      "expect": "PATCH invent → 4xx HRM-ATT-CODE-KEY",
+      "status": 400,
+      "code": "HRM-ATT-CODE-KEY",
+      "recordId": "4ab24bd0-9eb6-4e67-a8cc-0e9243800483",
+      "verdict": "PASS"
+    },
+    "VAL-ATT-CODE-CNS-09": {
+      "expect": "Day-code invent → HRM-ATT-CODE-KEY only (≠ leave/EMP)",
+      "post_code": "HRM-ATT-CODE-KEY",
+      "patch_ok": true,
+      "wrong_family": false,
+      "verdict": "PASS"
+    },
+    "AC-PLT-ATT-CODE-01b": {
+      "expect": "Invent day-code → 4xx HRM-ATT-CODE-KEY · no persist",
+      "post": {
+        "status": 400,
+        "code": "HRM-ATT-CODE-KEY"
+      },
+      "patch": {
+        "expect": "PATCH invent → 4xx HRM-ATT-CODE-KEY",
+        "status": 400,
+        "code": "HRM-ATT-CODE-KEY",
+        "recordId": "4ab24bd0-9eb6-4e67-a8cc-0e9243800483",
+        "verdict": "PASS"
+      },
+      "verdict": "PASS"
+    },
+    "AC-PLT-ATT-CODE-01e": {
+      "expect": "Soft-retire → hidden from default EFF",
+      "retire_status": 201,
+      "retire_code": "HRM-ATT-CODE-200",
+      "hidden_from_eff": true,
+      "eff_total": 0,
+      "verdict": "PASS"
+    },
+    "AC-PLT-ATT-CODE-01H": {
+      "expect": "Honesty false · seals RETAIN · C-SLICE · DENY flip/UAT/aggregate rewrite",
+      "attendance_uat_ready": false,
+      "payroll_e2e_ready": false,
+      "seals": {
+        "att_leave": "ATTLEAVEQA-MSJ7CPJH",
+        "att_worksite": "ATTWSQA-MSJC3IN9",
+        "emp_seals": [
+          "EMPDEPTQA-MSK3VVXX",
+          "EMPPOSQA2-MSK3CDH1",
+          "EMPSTQA-MSK20G7H",
+          "EMPCFQA-MSK14LUH",
+          "EMPTOKEXTQA-MSJ57PE1"
+        ],
+        "cited_in": [
+          "docs/qa/evidence/po-hrm-dynamic-config-platform-att-leave-catalog-qa-01.md",
+          "docs/qa/evidence/po-hrm-dynamic-config-platform-att-worksite-catalog-qa-01.md",
+          "docs/qa/evidence/po-hrm-dynamic-config-platform-att-code-catalog-be-01.md",
+          "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-dept-catalog-qa-01.md"
+        ],
+        "reopened": false,
+        "note": "cite-only RETAIN · leave/worksite/EMP/SI/CTR · aggregate GĐ1 sealed · no flip attendance_uat"
+      },
+      "aggregate_untouched": true,
+      "verdict": "PASS"
+    },
+    "VAL-ATT-CODE-CNS-10": {
+      "expect": "No aggregate rewrite claim this seat",
+      "aggregate_imports_att_code": false,
+      "verdict": "PASS"
+    }
+  },
+  "residuals": [
+    {
+      "id": "R-PLT-ATT-CODE-FE-01",
+      "severity": "P2",
+      "summary": "FE AttendanceRecordsTable Select rebind to Nest EFF HOLD (VAL-06 / 01f) — L1 PASS ≠ UF 🟢",
+      "owner": "dev-fe",
+      "hold": true
+    }
+  ],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "startedAt": "2026-08-08T08:48:32.249Z",
+  "endedAt": "2026-08-08T08:48:35.631Z"
+}

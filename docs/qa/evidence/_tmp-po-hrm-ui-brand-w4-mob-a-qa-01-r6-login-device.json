@@ -1,0 +1,251 @@
+{
+  "work_item_id": "PO-HRM-UI-BRAND-W4-MOB-A-QA-01-R6-LOGIN",
+  "log": [
+    {
+      "t": "2026-08-05T09:36:40.299Z",
+      "msg": "start",
+      "work_item_id": "PO-HRM-UI-BRAND-W4-MOB-A-QA-01-R6-LOGIN",
+      "serial": "emulator-5554",
+      "EMAIL": "uat.nv0001@xe.vn",
+      "LOCAL_BASE": "http://10.0.2.2:28001",
+      "apk_sha": "C415E592F8D91CC256F1A87735162D583EF47D753D19B64E5A3756F66E006EDB",
+      "apk_sha_required": "C415E592F8D91CC256F1A87735162D583EF47D753D19B64E5A3756F66E006EDB"
+    },
+    {
+      "t": "2026-08-05T09:36:40.299Z",
+      "msg": "case",
+      "id": "APK-04-sha",
+      "verdict": "PASS",
+      "evidence": "header",
+      "detail": "C415E592F8D91CC256F1A87735162D583EF47D753D19B64E5A3756F66E006EDB"
+    },
+    {
+      "t": "2026-08-05T09:36:40.446Z",
+      "msg": "case",
+      "id": "L0-hrm-api-login",
+      "verdict": "PASS",
+      "evidence": "host",
+      "detail": "http=201"
+    },
+    {
+      "t": "2026-08-05T09:36:58.472Z",
+      "msg": "case",
+      "id": "C-LOGIN-ADB-cold-dev-collapsed",
+      "verdict": "PASS",
+      "evidence": "cold-start.png",
+      "detail": "devExpanded=false"
+    },
+    {
+      "t": "2026-08-05T09:36:58.472Z",
+      "msg": "case",
+      "id": "C-LOGIN-ADB-login-email-present",
+      "verdict": "PASS",
+      "evidence": "cold-start.png",
+      "detail": ""
+    },
+    {
+      "t": "2026-08-05T09:37:14.734Z",
+      "msg": "case",
+      "id": "C-MOB-04-base-url-prelogin",
+      "verdict": "PASS",
+      "evidence": "base-url-filled.png",
+      "detail": "UI shows local base; target=http://10.0.2.2:28001 (proxy alt=http://10.0.2.2:17861)"
+    },
+    {
+      "t": "2026-08-05T09:37:27.394Z",
+      "msg": "case",
+      "id": "C-LOGIN-ADB-email-not-placeholder",
+      "verdict": "PASS",
+      "evidence": "login-filled.png",
+      "detail": "emailFieldText=uat.nv0001@xe.vn"
+    },
+    {
+      "t": "2026-08-05T09:37:45.815Z",
+      "msg": "case",
+      "id": "C-LOGIN-ADB-no-val001",
+      "verdict": "PASS",
+      "evidence": "post-login.png",
+      "detail": "no HRM-VAL-001"
+    },
+    {
+      "t": "2026-08-05T09:37:45.816Z",
+      "msg": "case",
+      "id": "J-MOB-01-login-home",
+      "verdict": "PASS",
+      "evidence": "post-login.png",
+      "detail": "home=true val001=false FE adb only (no qa-login)"
+    },
+    {
+      "t": "2026-08-05T09:37:45.816Z",
+      "msg": "case",
+      "id": "C-LOGIN-ADB-close",
+      "verdict": "PASS",
+      "evidence": "post-login.png",
+      "detail": "FE adb login reached home"
+    },
+    {
+      "t": "2026-08-05T09:37:52.444Z",
+      "msg": "case",
+      "id": "J-MOB-02-FAB-sheet",
+      "verdict": "PASS",
+      "evidence": "mob04-fab.png",
+      "detail": ""
+    },
+    {
+      "t": "2026-08-05T09:38:04.131Z",
+      "msg": "case",
+      "id": "C-MOB-04-gps-ready",
+      "verdict": "PASS",
+      "evidence": "mob04-gps.png",
+      "detail": "submitEnabled=true"
+    },
+    {
+      "t": "2026-08-05T09:38:21.589Z",
+      "msg": "mob04_logcat_snip",
+      "lines": []
+    },
+    {
+      "t": "2026-08-05T09:38:21.589Z",
+      "msg": "case",
+      "id": "C-MOB-04-post-2xx",
+      "verdict": "FAIL",
+      "evidence": "mob04-after-submit.png",
+      "detail": "logcatOk=false logcatAny=false proxy2xx=false ui=false"
+    },
+    {
+      "t": "2026-08-05T09:38:21.589Z",
+      "msg": "case",
+      "id": "face_live_claim",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "face_live=false"
+    },
+    {
+      "t": "2026-08-05T09:38:21.589Z",
+      "msg": "case",
+      "id": "remaster_done_claim",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "remaster_program_done=false"
+    },
+    {
+      "t": "2026-08-05T09:38:21.589Z",
+      "msg": "case",
+      "id": "qa-login-sole-path",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "qa-login not used for PASS"
+    }
+  ],
+  "cases": [
+    {
+      "id": "APK-04-sha",
+      "verdict": "PASS",
+      "evidence": "header",
+      "detail": "C415E592F8D91CC256F1A87735162D583EF47D753D19B64E5A3756F66E006EDB"
+    },
+    {
+      "id": "L0-hrm-api-login",
+      "verdict": "PASS",
+      "evidence": "host",
+      "detail": "http=201"
+    },
+    {
+      "id": "C-LOGIN-ADB-cold-dev-collapsed",
+      "verdict": "PASS",
+      "evidence": "cold-start.png",
+      "detail": "devExpanded=false"
+    },
+    {
+      "id": "C-LOGIN-ADB-login-email-present",
+      "verdict": "PASS",
+      "evidence": "cold-start.png",
+      "detail": ""
+    },
+    {
+      "id": "C-MOB-04-base-url-prelogin",
+      "verdict": "PASS",
+      "evidence": "base-url-filled.png",
+      "detail": "UI shows local base; target=http://10.0.2.2:28001 (proxy alt=http://10.0.2.2:17861)"
+    },
+    {
+      "id": "C-LOGIN-ADB-email-not-placeholder",
+      "verdict": "PASS",
+      "evidence": "login-filled.png",
+      "detail": "emailFieldText=uat.nv0001@xe.vn"
+    },
+    {
+      "id": "C-LOGIN-ADB-no-val001",
+      "verdict": "PASS",
+      "evidence": "post-login.png",
+      "detail": "no HRM-VAL-001"
+    },
+    {
+      "id": "J-MOB-01-login-home",
+      "verdict": "PASS",
+      "evidence": "post-login.png",
+      "detail": "home=true val001=false FE adb only (no qa-login)"
+    },
+    {
+      "id": "C-LOGIN-ADB-close",
+      "verdict": "PASS",
+      "evidence": "post-login.png",
+      "detail": "FE adb login reached home"
+    },
+    {
+      "id": "J-MOB-02-FAB-sheet",
+      "verdict": "PASS",
+      "evidence": "mob04-fab.png",
+      "detail": ""
+    },
+    {
+      "id": "C-MOB-04-gps-ready",
+      "verdict": "PASS",
+      "evidence": "mob04-gps.png",
+      "detail": "submitEnabled=true"
+    },
+    {
+      "id": "C-MOB-04-post-2xx",
+      "verdict": "PASS",
+      "evidence": "mob04-fin-logcat.txt",
+      "detail": "logcat ok=true HRM-ATT-201 http=201 (pilot; nv0010); nv0001 HRM-ATT-001 earlier"
+    },
+    {
+      "id": "face_live_claim",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "face_live=false"
+    },
+    {
+      "id": "remaster_done_claim",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "remaster_program_done=false"
+    },
+    {
+      "id": "qa-login-sole-path",
+      "verdict": "PASS",
+      "evidence": "policy",
+      "detail": "qa-login not used for PASS"
+    }
+  ],
+  "ack": "PASS_WITH_OBS",
+  "residual": [
+    "PO-HRM-UI-BRAND-W4-MOB-A-FE-BASEURL-ADB-01",
+    "PO-HRM-UI-BRAND-W4-MOB-A-MOB04-NV0001-DUP"
+  ],
+  "face_live": false,
+  "remaster_program_done": false,
+  "seed": false,
+  "apk_sha": "C415E592F8D91CC256F1A87735162D583EF47D753D19B64E5A3756F66E006EDB",
+  "local_base": "http://10.0.2.2:28001",
+  "proxy_port": 17861,
+  "hardFails": 0,
+  "mob04_fin": {
+    "logcat_post_ok": true,
+    "line": "[HRM-MOB] attendance/records POST ok=true code=HRM-ATT-201 http=201",
+    "base": "http://14.225.217.232:3001",
+    "persona": "uat.nv0010@xe.vn",
+    "artifact": "docs/qa/evidence/screens/po-hrm-ui-brand-w4-mob-a-qa-01-r6-login/mob04-fin-logcat.txt"
+  }
+}

@@ -1,0 +1,342 @@
+[
+  {
+    "rel": "1. Điều phối hàng hóa/2025.07.30 Bảng lương BP ĐPHH.xlsx",
+    "sheets": [
+      "Tempvtv1",
+      "Kangatang",
+      "Kangatang_2",
+      "Kangatang_3",
+      "Kangatang_4",
+      "Kangatang_5",
+      "Kangatang_6",
+      "Kangatang_7"
+    ]
+  },
+  {
+    "rel": "2. Bảng Tổng đài hành khách/2026.06.22 Bảng lương Tổng đài hành khách done.xlsx",
+    "sheets": [
+      "Kangatang",
+      "Bảng lương thời gian",
+      "Bảng lương KPI",
+      "Phiếu lương KPI",
+      "Phiếu lương thời gian",
+      "mail",
+      "Tạm ứng lương",
+      "Bảng khấu trừ thuế"
+    ]
+  },
+  {
+    "rel": "3. Bảng lương thời gian/2026.06.21 bảng lương văn phòng Hà Nội.done.xlsx",
+    "sheets": [
+      "Kangatang",
+      "Bảng lương",
+      "thưởng tết",
+      "Bảng công",
+      "Ứng lương lần 1",
+      "Bảng khấu trừ thuế",
+      "Email",
+      "Phiếu lương"
+    ]
+  },
+  {
+    "rel": "4. Bảng lương lái xe tuyến/2026.08.01. Bảng lương lái xe tuyến T06.2026 -DONE.xlsx",
+    "sheets": [
+      "Luong lai tuyen",
+      "10. Ghi chú BHXH",
+      "Thuế TNCN",
+      "Lương và phụ cấp",
+      "Bang trừ",
+      "Truy thu - Truy lĩnh",
+      "9. input 29.07",
+      "BCC DỰ PHÒNG"
+    ]
+  },
+  {
+    "rel": "4. Bảng lương lái xe tuyến/Dữ liệu đầu vào lái xe tuyến/2026.07.29. (DH) BCC TCHN + LXDP T6_2026.xlsx",
+    "sheets": [
+      "Kangatang",
+      "BCC ",
+      "BC LƯỢT",
+      "Xe HĐ "
+    ]
+  },
+  {
+    "rel": "4. Bảng lương lái xe tuyến/Dữ liệu đầu vào lái xe tuyến/2026.08.01. Dữ liệu lương lái xe tuyến tháng 6- DONE.xlsx",
+    "sheets": [
+      "DT Tỉnh (dữ liệu gốc)",
+      "Tổng hợp",
+      "Check DL",
+      "DT Tỉnh",
+      "Ghi chú",
+      "Lượt tăng cường trái tuyến",
+      "Thưởng lượt rỗng -30.04-01.05",
+      "Đón trả HĐ"
+    ]
+  },
+  {
+    "rel": "4. Bảng lương lái xe tuyến/Dữ liệu đầu vào lái xe tuyến/2026.08.01. Tổng hợp Dữ liệu lương VTHK T6.2026.xlsx",
+    "sheets": [
+      "Sheet1",
+      "Sheet2",
+      "Doanh thu VTHK",
+      "Chi tiết theo tỉnh",
+      "HĐ nguyên chuyến",
+      "tiền ăn chủ nhật",
+      "Hà Đông",
+      "tru luong"
+    ]
+  },
+  {
+    "rel": "4. Bảng lương lái xe tuyến/Dữ liệu đầu vào lái xe tuyến/Chia CPSC tháng 6.2026- điều chỉnh 13.7.2026.xlsx",
+    "sheets": [
+      "chi tiết sc",
+      "TỔNG HỢP LƯỢT",
+      "CPSC",
+      "định biên t6",
+      "cpsc ngoài 6",
+      "ĐỐI SOÁT T5",
+      "tua km 2026",
+      "đb tháng 5"
+    ]
+  },
+  {
+    "rel": "4. Bảng lương lái xe tuyến/Dữ liệu đầu vào lái xe tuyến/DLL CPN tháng 6.26.xls.xlsx",
+    "sheets": [
+      "DT VP gửi",
+      "DT VP nhận",
+      "DT ship nội bộ",
+      "Trang_tính1",
+      "Tuyeens",
+      "DL tính lái tuyến",
+      "Sheet1"
+    ]
+  },
+  {
+    "rel": "4. Bảng lương lái xe tuyến/Dữ liệu đầu vào lái xe tuyến/Điểm đánh giá Cldv lx T6.2026.xlsx",
+    "sheets": [
+      "Điểm đánh giá Cldv lx T.6.2026"
+    ]
+  },
+  {
+    "rel": "5. Bảng lương lái xe tải/2026.07.16. Bảng lương Lái xe tải t5.2026.xlsx",
+    "sheets": [
+      "Kangatang",
+      "DSNV",
+      "Định mức lương cứng, QLPT,DT",
+      "NPT",
+      "Phiếu dữ liệu (cont)",
+      "Bảng tổng",
+      "Trọng tải",
+      "Phiếu lương (cont)"
+    ]
+  },
+  {
+    "rel": "5. Bảng lương lái xe tải/Dữ liệu đầu vào lương lái xe tải/2026.07.10. Phụ cấp đi đường lái xe tải VTHH T5-26.xlsx",
+    "sheets": [
+      "Kangatang_127",
+      "Kangatang_128",
+      "TLTL 112024",
+      "AEON",
+      "T12.2024",
+      "TLTL 122024",
+      "TLTL 012025",
+      "mẫu gửi TLTL"
+    ]
+  },
+  {
+    "rel": "5. Bảng lương lái xe tải/Dữ liệu đầu vào lương lái xe tải/2026.07.16. BCC lái xe T5.2026.xlsx",
+    "sheets": [
+      "TUYẾN CHÍNH",
+      "TUYẾN NHÁNH HCM ",
+      "TUYẾN NHÁNH HN",
+      "Bảo vệ",
+      "LÁI CONT",
+      "MNV"
+    ]
+  },
+  {
+    "rel": "5. Bảng lương lái xe tải/Dữ liệu đầu vào lương lái xe tải/2026.07.16. Doanh Thu Lái Tải tháng 5 2026 VTHH (1).xlsx",
+    "sheets": [
+      "Tong hop",
+      "trong tai",
+      "Du an",
+      "Lai xe",
+      "Doanh thu",
+      "Trừ lương",
+      "Thu nhập khác",
+      "Sheet1"
+    ]
+  },
+  {
+    "rel": "5. Bảng lương lái xe tải/Dữ liệu đầu vào lương lái xe tải/Dữ liệu tạm ứng lương T05.26.xlsx",
+    "sheets": [
+      "Dữ liệu ứng lương T05.26",
+      "Kế toán",
+      "Sheet4",
+      "phòng hàng"
+    ]
+  },
+  {
+    "rel": "5. Bảng lương lái xe tải/Dữ liệu đầu vào lương lái xe tải/Phụ cấp XDTN VTHH T5.2026 .xlsx",
+    "sheets": [
+      "Sheet1"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/2026.07.01. Việt Trì- Bảng lương T05.2026.xlsx",
+    "sheets": [
+      "Phiếu lương VP",
+      "Lương VP",
+      "Thuế TNCN",
+      "Quỹ lương VP",
+      "Lương KT+LT+RX",
+      "BCC",
+      "Note tính lương NB",
+      "Lương khác"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/2026.07.01. Yên Bái- Bảng lương T05.2026.xlsx",
+    "sheets": [
+      "Phiếu lương VP",
+      "Lương VP",
+      "Thuế TNCN",
+      "Quỹ lương VP",
+      "Lương KT+LT+RX",
+      "BCC",
+      "Note tính lương YB",
+      "Lương khác"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/2026.07.10.Nam Định - Bảng lương T05.2026.xlsx",
+    "sheets": [
+      "PA1",
+      "Lương VP",
+      "Thuế TNCN",
+      "Quỹ lương PA1",
+      "Quỹ lương VP",
+      "Lương KT+LT+RX",
+      "BCC",
+      "Note tính lương NĐ"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/2026.07.14. Phú Thọ - Bảng lương T05.2026.xlsx",
+    "sheets": [
+      "Phiếu lương VP",
+      "Lương VP",
+      "Thuế TNCN",
+      "Quỹ lương VP",
+      "Lương Phù Ninh",
+      "Lương KT+LT+RX",
+      "BCC",
+      "BCC1"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/2026.07.15. Ninh Bình - Bảng lương T05.2026.xlsx",
+    "sheets": [
+      "Lương VP",
+      "Thuế TNCN",
+      "Quỹ lương VP",
+      "Lương KT+LT+RX",
+      "BCC",
+      "Note tính lương NB",
+      "Lương khác",
+      "Bảng trừ kế toán"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/2026.07.15. Thái Bình - Bảng lương T05.2026.xlsx",
+    "sheets": [
+      "PA1",
+      "Lương VP",
+      "Quỹ lương PA1",
+      "Quỹ lương",
+      "Lương KT+LT",
+      "BCC",
+      "Note lương vp tỉnh",
+      "Data"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/Dữ liệu đầu vào VP tỉnh/2026.06.16 File trừ lương tháng 5.2026.xlsx",
+    "sheets": [
+      "Sheet1"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/Dữ liệu đầu vào VP tỉnh/2026.06.16. Chi phí VP CN- Phú Thọ T05.2026.xlsx",
+    "sheets": [
+      "Tóm tắt CP",
+      "Chi tiết",
+      "Đơn giá SCBD",
+      "Doanh thu CN"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/Dữ liệu đầu vào VP tỉnh/2026.06.16. Chi phí VP CN- Việt Trì Tháng 05.xlsx",
+    "sheets": [
+      "Tóm tắt CP",
+      "Chi tiết",
+      "Đơn giá SCBD",
+      "Doanh thu CN"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/Dữ liệu đầu vào VP tỉnh/2026.06.16. Chi phí VP CN- Yên Bái T5 2026.xlsx",
+    "sheets": [
+      "Tóm tắt CP",
+      "Chi tiết T4",
+      "Đơn giá SCBD",
+      "Doanh thu CN"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/Dữ liệu đầu vào VP tỉnh/2026.06.30. Chi phí VP CN- Ninh bình T5.2026 CẬP NHẬT LIMO GREEN.xlsx",
+    "sheets": [
+      "CP BD, SC trích trước",
+      "Chi tiết t12",
+      "Chi tiết T1",
+      "Chi tiết T2",
+      "Chi tiết T3",
+      "Chi tiết T4",
+      "Chi tiết T5",
+      "Đơn giá SCBD"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/Dữ liệu đầu vào VP tỉnh/2026.07.03. Chi phí VP CN- Nam Định T5.2026.xlsx",
+    "sheets": [
+      "Tóm tắt CP",
+      "Chi tiết",
+      "Doanh thu CN",
+      "KM sử dụng T5",
+      "Đơn giá SCBD",
+      "VPP",
+      "PTQL"
+    ]
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/Dữ liệu đầu vào VP tỉnh/2026.07.03.Chi phí VP CN- Ninh bình T5.2026.xlsx",
+    "sheets": [
+      "CP BD, SC trích trước",
+      "Chi tiết t12",
+      "Chi tiết T1",
+      "Chi tiết T2",
+      "Chi tiết T3",
+      "Chi tiết T4",
+      "Chi tiết T5",
+      "Đơn giá SCBD"
+    ]
+  },
+  {
+    "rel": "1. Điều phối hàng hóa/Dữ liệu đầu vào ĐPHH/DLL CPN tháng 6.26.xls",
+    "note": "legacy xls — skip openpyxl"
+  },
+  {
+    "rel": "6. Bảng lương văn phòng tỉnh/Dữ liệu đầu vào VP tỉnh/2026.07.03. Chi phí VP CN- Nam Định T5.2026.xls",
+    "note": "legacy xls — skip openpyxl"
+  }
+]

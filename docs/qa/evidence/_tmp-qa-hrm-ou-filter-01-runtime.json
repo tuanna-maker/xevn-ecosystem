@@ -1,0 +1,552 @@
+{
+  "work_item_id": "QA-HRM-OU-FILTER-01",
+  "startedAt": "2026-07-27T03:39:19.864Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "seed": false,
+    "HOLD_DEPLOY": true
+  },
+  "steps": [
+    {
+      "id": "api-login",
+      "ok": true,
+      "detail": "ceo@xe.vn via http://127.0.0.1:28002/api/xbos/auth/login",
+      "at": "2026-07-27T03:39:19.944Z"
+    },
+    {
+      "id": "ac1-filter-visible",
+      "ok": true,
+      "detail": "OU filter trigger present",
+      "at": "2026-07-27T03:39:24.935Z"
+    },
+    {
+      "id": "ac1-dropdown-open",
+      "ok": true,
+      "detail": "Select clicked",
+      "at": "2026-07-27T03:39:25.652Z"
+    },
+    {
+      "id": "ac2-options",
+      "ok": true,
+      "detail": "all=true members=5 sample=Tập đoàn XeVN | Công ty Cổ phần Thương mại và Dịch vụ X.E | Công ty TNHH Du lịch Visun | Công ty TNHH Du lịch X.E Việt Nam ouStatus=200 slugs=holding,trsport,logistics,finance,services",
+      "at": "2026-07-27T03:39:26.561Z"
+    },
+    {
+      "id": "ac3-banner",
+      "ok": true,
+      "detail": "Đang xem: Công ty TNHH Du lịch Visun",
+      "at": "2026-07-27T03:39:30.817Z"
+    },
+    {
+      "id": "ac4-list-scoped",
+      "ok": true,
+      "detail": "uiRows=50 netStatus=200 qCompany=logistics selectedSlug=logistics url=/api/hrm/employees?company_id=logistics&page=1&page_size=50 (empty list OK if 2xx)",
+      "at": "2026-07-27T03:39:31.822Z"
+    },
+    {
+      "id": "ac5-rollup",
+      "ok": true,
+      "detail": "clicked=true banner=Đang xem: Tất cả đơn vị (rollup) uiRows=50 (member was 50) net=/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-07-27T03:39:35.459Z"
+    },
+    {
+      "id": "ac6-detail-filter-keeps-employee",
+      "ok": true,
+      "detail": "before=http://127.0.0.1:5173/hr/employees/dbdbece0-6572-401a-b4eb-56781493a75f after=http://127.0.0.1:5173/hr/employees/dbdbece0-6572-401a-b4eb-56781493a75f sameEmployee=true (expected keep — filter scopes list/API only)",
+      "at": "2026-07-27T03:39:44.587Z"
+    }
+  ],
+  "verdicts": {
+    "ac2": "PASS",
+    "ac3": "PASS",
+    "ac4": "PASS",
+    "ac5": "PASS",
+    "ac6": "PASS",
+    "overall": "PASS"
+  },
+  "net": {
+    "operatingUnits": [
+      {
+        "url": "/api/hrm/operating-units",
+        "status": 200,
+        "method": "GET",
+        "dataLen": 5,
+        "slugs": [
+          "holding",
+          "trsport",
+          "logistics",
+          "finance",
+          "services"
+        ],
+        "bodyPreview": {
+          "success": true,
+          "code": "HRM-OPU-200",
+          "message": "Operating units listed",
+          "data": [
+            {
+              "operating_slug": "holding",
+              "display_name_vi": "Tập đoàn XeVN",
+              "rollup_order": 1
+            },
+            {
+              "operating_slug": "trsport",
+              "display_name_vi": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+              "rollup_order": 2
+            },
+            {
+              "operating_slug": "logistics",
+              "display_name_vi": "Công ty TNHH Du lịch Visun",
+              "rollup_order": 3
+            },
+            {
+              "operating_slug": "finance",
+              "display_name_vi": "Công ty TNHH Du lịch X.E Việt Nam",
+              "rollup_order": 4
+            },
+            {
+              "operating_slug": "services",
+              "display_name_vi": "Công ty TNHH X.E Việt Nam",
+              "rollup_order": 5
+            }
+          ],
+          "timestamp": "2026-07-27T03:39:21.075Z"
+        }
+      },
+      {
+        "url": "/api/hrm/operating-units",
+        "status": 200,
+        "method": "GET",
+        "dataLen": 5,
+        "slugs": [
+          "holding",
+          "trsport",
+          "logistics",
+          "finance",
+          "services"
+        ],
+        "bodyPreview": {
+          "success": true,
+          "code": "HRM-OPU-200",
+          "message": "Operating units listed",
+          "data": [
+            {
+              "operating_slug": "holding",
+              "display_name_vi": "Tập đoàn XeVN",
+              "rollup_order": 1
+            },
+            {
+              "operating_slug": "trsport",
+              "display_name_vi": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+              "rollup_order": 2
+            },
+            {
+              "operating_slug": "logistics",
+              "display_name_vi": "Công ty TNHH Du lịch Visun",
+              "rollup_order": 3
+            },
+            {
+              "operating_slug": "finance",
+              "display_name_vi": "Công ty TNHH Du lịch X.E Việt Nam",
+              "rollup_order": 4
+            },
+            {
+              "operating_slug": "services",
+              "display_name_vi": "Công ty TNHH X.E Việt Nam",
+              "rollup_order": 5
+            }
+          ],
+          "timestamp": "2026-07-27T03:39:28.289Z"
+        }
+      },
+      {
+        "url": "/api/hrm/operating-units",
+        "status": 200,
+        "method": "GET",
+        "dataLen": 5,
+        "slugs": [
+          "holding",
+          "trsport",
+          "logistics",
+          "finance",
+          "services"
+        ],
+        "bodyPreview": {
+          "success": true,
+          "code": "HRM-OPU-200",
+          "message": "Operating units listed",
+          "data": [
+            {
+              "operating_slug": "holding",
+              "display_name_vi": "Tập đoàn XeVN",
+              "rollup_order": 1
+            },
+            {
+              "operating_slug": "trsport",
+              "display_name_vi": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+              "rollup_order": 2
+            },
+            {
+              "operating_slug": "logistics",
+              "display_name_vi": "Công ty TNHH Du lịch Visun",
+              "rollup_order": 3
+            },
+            {
+              "operating_slug": "finance",
+              "display_name_vi": "Công ty TNHH Du lịch X.E Việt Nam",
+              "rollup_order": 4
+            },
+            {
+              "operating_slug": "services",
+              "display_name_vi": "Công ty TNHH X.E Việt Nam",
+              "rollup_order": 5
+            }
+          ],
+          "timestamp": "2026-07-27T03:39:28.355Z"
+        }
+      },
+      {
+        "url": "/api/hrm/operating-units",
+        "status": 200,
+        "method": "GET",
+        "dataLen": 5,
+        "slugs": [
+          "holding",
+          "trsport",
+          "logistics",
+          "finance",
+          "services"
+        ],
+        "bodyPreview": {
+          "success": true,
+          "code": "HRM-OPU-200",
+          "message": "Operating units listed",
+          "data": [
+            {
+              "operating_slug": "holding",
+              "display_name_vi": "Tập đoàn XeVN",
+              "rollup_order": 1
+            },
+            {
+              "operating_slug": "trsport",
+              "display_name_vi": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+              "rollup_order": 2
+            },
+            {
+              "operating_slug": "logistics",
+              "display_name_vi": "Công ty TNHH Du lịch Visun",
+              "rollup_order": 3
+            },
+            {
+              "operating_slug": "finance",
+              "display_name_vi": "Công ty TNHH Du lịch X.E Việt Nam",
+              "rollup_order": 4
+            },
+            {
+              "operating_slug": "services",
+              "display_name_vi": "Công ty TNHH X.E Việt Nam",
+              "rollup_order": 5
+            }
+          ],
+          "timestamp": "2026-07-27T03:39:33.049Z"
+        }
+      },
+      {
+        "url": "/api/hrm/operating-units",
+        "status": 200,
+        "method": "GET",
+        "dataLen": 5,
+        "slugs": [
+          "holding",
+          "trsport",
+          "logistics",
+          "finance",
+          "services"
+        ],
+        "bodyPreview": {
+          "success": true,
+          "code": "HRM-OPU-200",
+          "message": "Operating units listed",
+          "data": [
+            {
+              "operating_slug": "holding",
+              "display_name_vi": "Tập đoàn XeVN",
+              "rollup_order": 1
+            },
+            {
+              "operating_slug": "trsport",
+              "display_name_vi": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+              "rollup_order": 2
+            },
+            {
+              "operating_slug": "logistics",
+              "display_name_vi": "Công ty TNHH Du lịch Visun",
+              "rollup_order": 3
+            },
+            {
+              "operating_slug": "finance",
+              "display_name_vi": "Công ty TNHH Du lịch X.E Việt Nam",
+              "rollup_order": 4
+            },
+            {
+              "operating_slug": "services",
+              "display_name_vi": "Công ty TNHH X.E Việt Nam",
+              "rollup_order": 5
+            }
+          ],
+          "timestamp": "2026-07-27T03:39:35.864Z"
+        }
+      },
+      {
+        "url": "/api/hrm/operating-units",
+        "status": 200,
+        "method": "GET",
+        "dataLen": 5,
+        "slugs": [
+          "holding",
+          "trsport",
+          "logistics",
+          "finance",
+          "services"
+        ],
+        "bodyPreview": {
+          "success": true,
+          "code": "HRM-OPU-200",
+          "message": "Operating units listed",
+          "data": [
+            {
+              "operating_slug": "holding",
+              "display_name_vi": "Tập đoàn XeVN",
+              "rollup_order": 1
+            },
+            {
+              "operating_slug": "trsport",
+              "display_name_vi": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+              "rollup_order": 2
+            },
+            {
+              "operating_slug": "logistics",
+              "display_name_vi": "Công ty TNHH Du lịch Visun",
+              "rollup_order": 3
+            },
+            {
+              "operating_slug": "finance",
+              "display_name_vi": "Công ty TNHH Du lịch X.E Việt Nam",
+              "rollup_order": 4
+            },
+            {
+              "operating_slug": "services",
+              "display_name_vi": "Công ty TNHH X.E Việt Nam",
+              "rollup_order": 5
+            }
+          ],
+          "timestamp": "2026-07-27T03:39:42.599Z"
+        }
+      }
+    ],
+    "employees": [
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "method": "GET",
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "method": "GET",
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=logistics&page=1&page_size=50",
+        "status": 200,
+        "method": "GET",
+        "query": {
+          "company_id": "logistics",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "method": "GET",
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=logistics&page=1&page_size=50",
+        "status": 200,
+        "method": "GET",
+        "query": {
+          "company_id": "logistics",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "method": "GET",
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "method": "GET",
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      }
+    ]
+  },
+  "ouApiBody": {
+    "success": true,
+    "code": "HRM-OPU-200",
+    "message": "Operating units listed",
+    "data": [
+      {
+        "operating_slug": "holding",
+        "display_name_vi": "Tập đoàn XeVN",
+        "rollup_order": 1
+      },
+      {
+        "operating_slug": "trsport",
+        "display_name_vi": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+        "rollup_order": 2
+      },
+      {
+        "operating_slug": "logistics",
+        "display_name_vi": "Công ty TNHH Du lịch Visun",
+        "rollup_order": 3
+      },
+      {
+        "operating_slug": "finance",
+        "display_name_vi": "Công ty TNHH Du lịch X.E Việt Nam",
+        "rollup_order": 4
+      },
+      {
+        "operating_slug": "services",
+        "display_name_vi": "Công ty TNHH X.E Việt Nam",
+        "rollup_order": 5
+      }
+    ],
+    "timestamp": "2026-07-27T03:39:42.599Z"
+  },
+  "dropdownOptions": [
+    {
+      "text": "Tất cả đơn vị (rollup)",
+      "value": null
+    },
+    {
+      "text": "Tập đoàn XeVN",
+      "value": null
+    },
+    {
+      "text": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+      "value": null
+    },
+    {
+      "text": "Công ty TNHH Du lịch Visun",
+      "value": null
+    },
+    {
+      "text": "Công ty TNHH Du lịch X.E Việt Nam",
+      "value": null
+    },
+    {
+      "text": "Công ty TNHH X.E Việt Nam",
+      "value": null
+    }
+  ],
+  "bannerTexts": [
+    {
+      "afterSelect": "Đang xem: Công ty TNHH Du lịch Visun"
+    },
+    {
+      "afterRollup": "Đang xem: Tất cả đơn vị (rollup)"
+    }
+  ],
+  "employeeListMeta": [
+    {
+      "phase": "member",
+      "banner": "Đang xem: Công ty TNHH Du lịch Visun",
+      "selectedSlug": "logistics",
+      "selectedLabel": "Công ty TNHH Du lịch Visun",
+      "network": {
+        "url": "/api/hrm/employees?company_id=logistics&page=1&page_size=50",
+        "status": 200,
+        "method": "GET",
+        "query": {
+          "company_id": "logistics",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      "uiRows": 50
+    },
+    {
+      "phase": "rollup",
+      "banner": "Đang xem: Tất cả đơn vị (rollup)",
+      "network": {
+        "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+        "status": 200,
+        "method": "GET",
+        "query": {
+          "company_id": "main",
+          "page": "1",
+          "page_size": "50"
+        },
+        "rowCount": 0,
+        "sampleCompanyIds": []
+      },
+      "uiRows": 50,
+      "selectAllClicked": true
+    }
+  ],
+  "detail": {
+    "urlBefore": "http://127.0.0.1:5173/hr/employees/dbdbece0-6572-401a-b4eb-56781493a75f",
+    "rowClick": {
+      "via": "tr",
+      "text": "QA238502WQA Dept Persist W6QAqa238502@xevn.localTập đoàn XeVN-Đang làm việc"
+    },
+    "urlAfter": "http://127.0.0.1:5173/hr/employees/dbdbece0-6572-401a-b4eb-56781493a75f",
+    "sameEmployee": true,
+    "note": "Product SoT: filter does not replace open employee — only list/API scope. PASS expected."
+  },
+  "ownerHint": null,
+  "finishedAt": "2026-07-27T03:39:44.587Z"
+}

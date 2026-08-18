@@ -1,0 +1,99 @@
+{
+  "work_item_id": "QA-HDSD-MOB-CH12-01-R4",
+  "date": "2026-07-31",
+  "device": "emulator-5554",
+  "api_base": "http://14.225.217.232:3001",
+  "apk_sha256": "5119B9592EAAE3998EDF52DC16500B2A741D89C130E7F36E278EBA7EFE6B8895",
+  "u65_zero_seed": true,
+  "ceo_fallback": false,
+  "preconditions": {
+    "uat.nv0001@xe.vn": {
+      "login": 201,
+      "employeeCode": "HLD-0001",
+      "company": "holding",
+      "companyUuid": "10000000-0000-4000-8000-000000000001",
+      "leaveTotal": 27,
+      "payslipTotal": 1,
+      "pendingAtt": 0,
+      "pendingLeave": 0
+    },
+    "uat.nv0002@xe.vn": {
+      "login": 201,
+      "employeeCode": "VTH-0002",
+      "company": "trsport",
+      "companyUuid": "10000000-0000-4000-8000-000000000002",
+      "leaveTotal": 1,
+      "payslipTotal": 0,
+      "pendingAtt": 1,
+      "pendingLeave": 1
+    }
+  },
+  "jmob": {
+    "J-MOB-03": {
+      "verdict": "FAIL",
+      "layer": "UI",
+      "note": "Row tap did not open detail",
+      "header": {
+        "hasMain": false,
+        "hasUuid": false
+      }
+    },
+    "J-MOB-04": {
+      "verdict": "PASS",
+      "layer": null,
+      "note": "Payslip list → detail tap"
+    },
+    "J-MOB-05": {
+      "verdict": "PASS",
+      "layer": null,
+      "note": "Manager tapped Duyệt on pending item",
+      "header": {
+        "hasMain": false,
+        "hasUuid": false
+      }
+    }
+  },
+  "fig": {
+    "hrm-12-1": {
+      "pass": true,
+      "section": "12.1 Đăng nhập"
+    },
+    "login_screen": true,
+    "hrm-12-2": {
+      "pass": true,
+      "section": "12.2 Trang chủ"
+    },
+    "hrm-12-4": {
+      "pass": true,
+      "section": "12.4 Nghỉ phép"
+    },
+    "hrm-12-5": {
+      "pass": true,
+      "section": "12.5 Phiếu lương"
+    },
+    "hrm-12-3": {
+      "pass": true,
+      "section": "12.3 Đội nhóm"
+    },
+    "hrm-12-7": {
+      "pass": true,
+      "section": "12.7 Hồ sơ"
+    },
+    "hrm-12-8": {
+      "pass": true,
+      "section": "12.8 Thông báo"
+    },
+    "hrm-12-6": {
+      "pass": true,
+      "section": "12.6 Phê duyệt QL"
+    }
+  },
+  "screenshots": {},
+  "png_capture_count": 8,
+  "png_expected": 8,
+  "summary": {
+    "jmobPass": 2,
+    "jmobBlocked": 0,
+    "pngCount": 8
+  }
+}

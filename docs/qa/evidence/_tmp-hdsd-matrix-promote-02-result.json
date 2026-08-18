@@ -1,0 +1,285 @@
+{
+  "work_item_id": "QA-HDSD-MATRIX-PROMOTE-02",
+  "before": {
+    "c": {
+      "🟢": 46,
+      "⬜": 309,
+      "🟡": 7
+    },
+    "total": 362
+  },
+  "after": {
+    "c": {
+      "🟢": 71,
+      "⬜": 285,
+      "🟡": 6
+    },
+    "total": 362
+  },
+  "applied": [
+    {
+      "id": "TC-HRM-HDSD-001",
+      "verdict": "🟢",
+      "was": "🟡",
+      "legacy": "TC-HRM-HDSD-001",
+      "wave": "W0",
+      "evidence": "hdsd-uat-eco-20260730.md",
+      "note": "Embed + standalone load OK",
+      "from": "🟡"
+    },
+    {
+      "id": "TC-XBOS-HDSD-028",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-02-01-01",
+      "wave": "W1",
+      "evidence": "hdsd-uat-ch02-04-20260730.md",
+      "note": "Login POST 201 → /command-center",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-XBOS-HDSD-029",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-02-01-01",
+      "wave": "W1",
+      "evidence": "hdsd-uat-ch02-04-20260730.md",
+      "note": "Login form buttons Network 2xx",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-XBOS-HDSD-033",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-02-01-02",
+      "wave": "W1",
+      "evidence": "hdsd-uat-ch02-04-20260730.md",
+      "note": "Wrong password POST 401 + banner",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-XBOS-HDSD-050",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-02-03-01",
+      "wave": "W1",
+      "evidence": "hdsd-uat-ch02-04-20260730.md",
+      "note": "CC → HRM embed /hr GET 200",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-XBOS-HDSD-117",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-04-02-01",
+      "wave": "W1",
+      "evidence": "hdsd-uat-ch02-04-20260730.md · qa-hdsd-mutate-ret-01-20260730.md",
+      "note": "WF designer deep link load 🟢",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-027",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-05-02-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch05-09-20260730.md",
+      "note": "J-HRM list→detail GET 200",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-016",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-05-03-01",
+      "wave": "W2",
+      "evidence": "qa-hdsd-mutate-ret-01-20260730.md",
+      "note": "POST employees 201 U65 FE mutate",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-044",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-06-03-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch05-09-20260730.md",
+      "note": "BHXH tab load GET 200",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-048",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-06-03-01",
+      "wave": "W2",
+      "evidence": "qa-hdsd-mutate-ret-01-20260730.md",
+      "note": "P0 insurance list 3×200 L1 probe",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-046",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-06-04-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch05-09-20260730.md",
+      "note": "BHXH sắp hết hạn tab load",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-059",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-07-03-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch05-09-20260730.md",
+      "note": "Pipeline ứng viên load",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-075",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-08-01-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch05-09-20260730.md",
+      "note": "Attendance overview GET 200 no reload storm",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-083",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-08-02-01",
+      "wave": "W2",
+      "evidence": "qa-hdsd-mutate-ret-01-20260730.md",
+      "note": "P0 leave POST 201 LVT_01 UF-HRM-09",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-079",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-08-03-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch05-09-20260730.md",
+      "note": "Ca làm việc tab load",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-097",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-09-02-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch05-09-20260730.md",
+      "note": "Phiếu lương drill list",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-114",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-10-02-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch10-11-20260730.md",
+      "note": "Quyết định NS GET 200 empty-ok",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-122",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-10-03-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch10-11-20260730.md",
+      "note": "Công việc operations/tasks 200",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-129",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-10-04-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch10-11-20260730.md · qa-hdsd-mutate-ret-01-20260730.md",
+      "note": "DVC nội bộ route load",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-130",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-10-04-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch10-11-20260730.md",
+      "note": "DVC tab dịch vụ",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-136",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-10-05-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch10-11-20260730.md",
+      "note": "Quy trình read-only load",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-142",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-10-06-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch10-11-20260730.md",
+      "note": "Fleet vehicles GET 200",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-145",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-10-06-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch10-11-20260730.md",
+      "note": "Fleet empty state hợp lệ",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-147",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-11-01-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch10-11-20260730.md",
+      "note": "Settings catalog-sync 200",
+      "from": "⬜"
+    },
+    {
+      "id": "TC-HRM-HDSD-170",
+      "verdict": "🟢",
+      "was": "⬜",
+      "legacy": "TC-HDSD-11-02-01",
+      "wave": "W2",
+      "evidence": "hdsd-uat-ch10-11-20260730.md",
+      "note": "Reports summary + reconciliation 200",
+      "from": "⬜"
+    }
+  ],
+  "skipped": [
+    {
+      "id": "TC-ECO-006",
+      "verdict": "🟢",
+      "was": "🟡",
+      "legacy": "TC-ECO-03",
+      "wave": "W0",
+      "evidence": "hdsd-uat-eco-20260730.md",
+      "note": "Rail phân hệ labels + navigation smoke 🟢",
+      "reason": "already 🟢",
+      "cur": "🟢"
+    }
+  ],
+  "regressions": []
+}

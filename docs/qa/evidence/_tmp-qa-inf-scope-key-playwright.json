@@ -1,0 +1,311 @@
+{
+  "work_item_id": "QA-XBOS-INF-SCOPE-KEY-01",
+  "base": "http://127.0.0.1:5173",
+  "steps": [
+    {
+      "step": "login",
+      "url": "http://127.0.0.1:5173/command-center",
+      "ok": true
+    },
+    {
+      "step": "nav_infra",
+      "url": "http://127.0.0.1:5173/command-center?settings=company_infrastructure",
+      "bodyTextSnippet": "XeVN OS\n\nCommand Center\n\nBOD\nQuản lý\nNhân viên\nGROUP\nTÀI CHÍNH\nKẾ TOÁN\nNHÂN SỰ\nKINH DOANH\nVẬN HÀNH\nCÀI ĐẶT HỆ THỐNG\nMở\nCài đặt hệ thống\n\nChọn nhóm cấu hình\n\nThiết lập công ty\nĐơn vị thành viên\nHạ tầng cơ sở\nHệ thống Phòng/Ban\nPhòng/Ban pháp nhân\nDanh mục hồ sơ nhân sự\nDuyệt danh mục HRM\nÁp dụng danh mục HRM\nHệ thống phân quyền\nHệ thống quy trình\nYêu cầu tài sản\nHệ thống văn bản/Quy định\nHệ thống đo lường/Tiền tệ\nThiết lập hệ thống giá\nHạ tầng cơ sở\nHạ tầng cơ sở\nHai lớp: (1) danh mục nền có mã + phạm vi pháp nhân + cấu hình khối; (2) điểm hạ tầng — nhập giá trị theo pháp nhân đã được gán.\n1. Danh mục nền & phạm vi\n2. Điểm hạ tầng (nhập giá trị)\n\nTạo danh mục có mã qua wizard full-screen — tick pháp nhân, cấu hình khối/trường, rồi xác nhận. Bảng chỉ hiện danh mục đã lưu.\n\nThêm danh mục nền\nMã danh mục\tTên danh mục\tPhạm vi (pháp nhân)\tThao tác\nQA-FCAT-SAVE-CTRL-20260620\tQA positive control — Lưu path\t1 pháp nhân\t\nSửa\nXóa\n\nQA-FCAT-062101\tQA Wizard DM\t2 pháp nhân\t\nSửa\nXóa"
+    },
+    {
+      "step": "save",
+      "putCount": 1,
+      "putCaptured": true
+    }
+  ],
+  "putAudits": [
+    {
+      "url": "http://127.0.0.1:5173/api/xbos/infrastructure/settings",
+      "categoryScopes": [
+        {
+          "ids": [],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": false,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": []
+        },
+        {
+          "ids": [],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": false,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": []
+        },
+        {
+          "ids": [
+            "xbos-group-holding-root",
+            "88665f2e-86d5-410f-8219-1044ff8ec257"
+          ],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": true,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": [
+            "88665f2e-86d5-410f-8219-1044ff8ec257"
+          ]
+        },
+        {
+          "ids": [
+            "xbos-group-holding-root",
+            "f01bb8dc-99fd-46bf-9653-21ae9f696e5a"
+          ],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": true,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": [
+            "f01bb8dc-99fd-46bf-9653-21ae9f696e5a"
+          ]
+        }
+      ],
+      "anyBprime": false,
+      "anyWorkforce": false,
+      "anyHoldingRoot": true,
+      "anyUuidMember": true,
+      "mainWithoutRoot": false
+    }
+  ],
+  "getAudits": [
+    {
+      "status": 200,
+      "code": "XBOS-INFRA-200",
+      "scopes": [
+        {
+          "id": "fcat-1781964193230",
+          "ids": [],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": false,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": []
+        },
+        {
+          "id": "fcat-1781977844732",
+          "ids": [],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": false,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": []
+        },
+        {
+          "id": "fcat-1781977902525",
+          "ids": [
+            "xbos-group-holding-root"
+          ],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": true,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": []
+        },
+        {
+          "id": "fcat-1781978232425",
+          "ids": [
+            "xbos-group-holding-root",
+            "f01bb8dc-99fd-46bf-9653-21ae9f696e5a"
+          ],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": true,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": [
+            "f01bb8dc-99fd-46bf-9653-21ae9f696e5a"
+          ]
+        }
+      ]
+    },
+    {
+      "status": 200,
+      "code": "XBOS-INFRA-200",
+      "scopes": [
+        {
+          "id": "fcat-1781964193230",
+          "ids": [],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": false,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": []
+        },
+        {
+          "id": "fcat-1781977844732",
+          "ids": [],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": false,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": []
+        },
+        {
+          "id": "fcat-1781977902525",
+          "ids": [
+            "xbos-group-holding-root",
+            "88665f2e-86d5-410f-8219-1044ff8ec257"
+          ],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": true,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": [
+            "88665f2e-86d5-410f-8219-1044ff8ec257"
+          ]
+        },
+        {
+          "id": "fcat-1781978232425",
+          "ids": [
+            "xbos-group-holding-root",
+            "f01bb8dc-99fd-46bf-9653-21ae9f696e5a"
+          ],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": true,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": [
+            "f01bb8dc-99fd-46bf-9653-21ae9f696e5a"
+          ]
+        }
+      ]
+    },
+    {
+      "status": 200,
+      "code": "XBOS-INFRA-200",
+      "scopes": [
+        {
+          "id": "fcat-1781964193230",
+          "ids": [],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": false,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": []
+        },
+        {
+          "id": "fcat-1781977844732",
+          "ids": [],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": false,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": []
+        },
+        {
+          "id": "fcat-1781977902525",
+          "ids": [
+            "xbos-group-holding-root",
+            "88665f2e-86d5-410f-8219-1044ff8ec257"
+          ],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": true,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": [
+            "88665f2e-86d5-410f-8219-1044ff8ec257"
+          ]
+        },
+        {
+          "id": "fcat-1781978232425",
+          "ids": [
+            "xbos-group-holding-root",
+            "f01bb8dc-99fd-46bf-9653-21ae9f696e5a"
+          ],
+          "hasBprime": false,
+          "hasWorkforce": false,
+          "hasHoldingRoot": true,
+          "hasMainOnlyWithoutRoot": false,
+          "uuidMembers": [
+            "f01bb8dc-99fd-46bf-9653-21ae9f696e5a"
+          ]
+        }
+      ]
+    }
+  ],
+  "wizardChecks": {
+    "beforeToggle": {
+      "chipCount": 5,
+      "chipLabels": [
+        {
+          "i": 0,
+          "label": "TẬP ĐOÀN — Tập đoàn XeVN",
+          "pressed": "true"
+        },
+        {
+          "i": 1,
+          "label": "XE_TMDV — Công ty Cổ phần Thương mại và Dịch vụ X.E",
+          "pressed": "false"
+        },
+        {
+          "i": 2,
+          "label": "VISUN — Công ty TNHH Du lịch Visun",
+          "pressed": "false"
+        },
+        {
+          "i": 3,
+          "label": "XE_DU_LICH — Công ty TNHH Du lịch X.E Việt Nam",
+          "pressed": "false"
+        },
+        {
+          "i": 4,
+          "label": "XE_VIETNAM — Công ty TNHH X.E Việt Nam",
+          "pressed": "false"
+        }
+      ]
+    },
+    "memberChipLabel": "XE_TMDV — Công ty Cổ phần Thương mại và Dịch vụ X.E",
+    "afterToggle": [
+      {
+        "label": "TẬP ĐOÀN — Tập đoàn XeVN",
+        "pressed": "true"
+      },
+      {
+        "label": "XE_TMDV — Công ty Cổ phần Thương mại và Dịch vụ X.E",
+        "pressed": "true"
+      },
+      {
+        "label": "VISUN — Công ty TNHH Du lịch Visun",
+        "pressed": "false"
+      },
+      {
+        "label": "XE_DU_LICH — Công ty TNHH Du lịch X.E Việt Nam",
+        "pressed": "false"
+      },
+      {
+        "label": "XE_VIETNAM — Công ty TNHH X.E Việt Nam",
+        "pressed": "false"
+      }
+    ],
+    "afterF5Reopen": [
+      {
+        "label": "TẬP ĐOÀN — Tập đoàn XeVN",
+        "pressed": "true"
+      },
+      {
+        "label": "XE_TMDV — Công ty Cổ phần Thương mại và Dịch vụ X.E",
+        "pressed": "true"
+      },
+      {
+        "label": "VISUN — Công ty TNHH Du lịch Visun",
+        "pressed": "false"
+      },
+      {
+        "label": "XE_DU_LICH — Công ty TNHH Du lịch X.E Việt Nam",
+        "pressed": "false"
+      },
+      {
+        "label": "XE_VIETNAM — Công ty TNHH X.E Việt Nam",
+        "pressed": "false"
+      }
+    ]
+  },
+  "verdict": "PASS",
+  "errors": [],
+  "putOk": true,
+  "getOk": true
+}

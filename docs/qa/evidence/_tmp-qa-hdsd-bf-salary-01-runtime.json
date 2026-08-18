@@ -1,0 +1,464 @@
+{
+  "work_item_id": "QA-HDSD-BF-SALARY-01",
+  "program": "P-HDSD-ECOSYSTEM-03 · BF-03",
+  "startedAt": "2026-07-30T18:25:42.586Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM_EMBED": "http://127.0.0.1:8080/hr/",
+    "PILOT_API": "http://14.225.217.232:3001",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed",
+    "stamp": "BFSALUGM9M"
+  },
+  "l0": {
+    "qc:dev-stack": {
+      "exit": 0,
+      "snippet": "qc:dev-stack — xevn-ecosystem (HRM + XBOS + portal)\n\n✓ hrm-api: HTTP 200 ← http://127.0.0.1:28001/api/hrm\n✓ xbos-api: HTTP 200 ← http://127.0.0.1:28002/api/xbos\n✓ web-portal (optional): HTTP 200 ← http://127.0.0.1:5173\n\nHRM + XBOS healthy — có thể chấp nhận bước QC dev (chạy thêm `pnpm run qc:fe-be-health` trước UAT).\n"
+    },
+    "qc:fe-be-health": {
+      "exit": 0,
+      "snippet": "ees-direct  HTTP 200  http://127.0.0.1:28001/api/hrm/employees?page_size=5&company_id=main\nPASS  hrm-catalog-sync-direct  HTTP 200  http://127.0.0.1:28001/api/hrm/catalog-sync\nPASS  portal-proxy-hrm-employees  HTTP 200  http://127.0.0.1:5173/api/hrm/employees?page_size=5&company_id=main\nPASS  portal-proxy-hrm-catalog  HTTP 200  http://127.0.0.1:5173/api/hrm/catalog-sync\n\n=== Summary: ALL PASS ===\n"
+    },
+    "hrm-embed-8080": {
+      "ok": true,
+      "status": 200
+    }
+  },
+  "steps": [
+    {
+      "id": "L0-gate",
+      "ok": true,
+      "detail": "{\"qc:dev-stack\":{\"exit\":0,\"snippet\":\"qc:dev-stack — xevn-ecosystem (HRM + XBOS + portal)\\n\\n✓ hrm-api: HTTP 200 ← http://127.0.0.1:28001/api/hrm\\n✓ xbos-api: HTTP 200 ← http://127.0.0.1:28002/api/xbos\\n✓ web-portal (optional): HTTP 200 ← http://127.0.0.1:5173\\n\\nHRM + XBOS healthy — có thể chấp nhận bước QC dev (chạy thêm `pnpm run qc:fe-be-health` trước UAT).\\n\"},\"qc:fe-be-health\":{\"exit\":0,\"snippet\":\"ees-direct  HTTP 200  http://127.0.0.1:28001/api/hrm/employees?page_size=5&company_id=main\\nPASS  hrm-catalog-sync-direct  HTTP 200  http://127.0.0.1:28001/api/hrm/catalog-sync\\nPASS  portal-proxy-hrm-employees  HTTP 200  http://127.0.0.1:5173/api/hrm/employees?page_size=5&company_id=main\\nPASS  portal-proxy-hrm-catalog  HTTP 200  http://127.0.0.1:5173/api/hrm/catalog-sync\\n\\n=== Summary: ALL PASS ===\\n\"},\"hrm-embed-8080\":{\"ok\":true,\"status\":200}}",
+      "at": "2026-07-30T18:25:43.136Z"
+    },
+    {
+      "id": "J-MOB-04-readonly",
+      "ok": true,
+      "detail": "J-MOB-04 still green on pilot read-only steps=[{\"id\":\"login\",\"status\":201,\"ok\":true,\"companyId\":\"holding\",\"employeeId\":\"3796d949…\"},{\"id\":\"payslip-list\",\"status\":200,\"total\":1,\"ok\":true},{\"id\":\"7c78b34e-046a-48ef-89bc-be389cb7156b\",\"status\":404,\"ok\":false}]",
+      "at": "2026-07-30T18:25:43.769Z"
+    },
+    {
+      "id": "portal-login",
+      "ok": true,
+      "detail": "http://127.0.0.1:5173/command-center",
+      "at": "2026-07-30T18:25:47.834Z"
+    },
+    {
+      "id": "TC-HDSD-09-01-01-mount",
+      "ok": true,
+      "detail": "banner=false periodsGET=none payslipsGET=200 url=http://127.0.0.1:5173/hr/payroll?portal=1&tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:51.768Z"
+    },
+    {
+      "id": "TC-HDSD-09-tab-overview",
+      "ok": true,
+      "detail": "Tổng quan banner=false",
+      "at": "2026-07-30T18:25:52.994Z"
+    },
+    {
+      "id": "TC-HDSD-09-tab-components",
+      "ok": true,
+      "detail": "Thành phần lương banner=false",
+      "at": "2026-07-30T18:25:54.218Z"
+    },
+    {
+      "id": "TC-HDSD-09-tab-policy",
+      "ok": true,
+      "detail": "Chính sách banner=false",
+      "at": "2026-07-30T18:25:55.467Z"
+    },
+    {
+      "id": "TC-HDSD-09-tab-data",
+      "ok": true,
+      "detail": "Dữ liệu banner=false",
+      "at": "2026-07-30T18:25:56.685Z"
+    },
+    {
+      "id": "TC-HDSD-09-tab-payment",
+      "ok": true,
+      "detail": "Chi trả banner=false",
+      "at": "2026-07-30T18:25:57.931Z"
+    },
+    {
+      "id": "TC-HDSD-09-tab-report",
+      "ok": true,
+      "detail": "Báo cáo banner=false",
+      "at": "2026-07-30T18:25:59.159Z"
+    },
+    {
+      "id": "TC-HDSD-09-01-period-list",
+      "ok": true,
+      "detail": "calcVia=Tất cả đơn vị (rollup) periodsGET=200 rows=1",
+      "at": "2026-07-30T18:26:03.444Z"
+    },
+    {
+      "id": "TC-HDSD-09-01-create-spot",
+      "ok": true,
+      "detail": "click miss: Lập bảng lương",
+      "at": "2026-07-30T18:26:03.504Z"
+    },
+    {
+      "id": "TC-HDSD-09-02-payslip-tab",
+      "ok": true,
+      "detail": "payslipsGET=200 banner=false",
+      "at": "2026-07-30T18:26:06.791Z"
+    },
+    {
+      "id": "P-CC-payroll-embed",
+      "ok": true,
+      "detail": "banner=false url=http://127.0.0.1:5173/command-center/hrm/payroll",
+      "at": "2026-07-30T18:26:10.942Z"
+    },
+    {
+      "id": "console-clean-payroll",
+      "ok": true,
+      "detail": "clean",
+      "at": "2026-07-30T18:26:10.943Z"
+    }
+  ],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:44.386Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:25:44.984Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-07-30T18:25:45.820Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:25:46.100Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:46.101Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:46.101Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:25:46.102Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-07-30T18:25:46.102Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:25:46.106Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:25:46.109Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:25:46.113Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:25:46.123Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:25:46.123Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-07-30T18:25:46.139Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:25:48.290Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:25:48.327Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T18:25:48.914Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T18:25:48.991Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-component-categories?company_id=main",
+      "at": "2026-07-30T18:25:53.037Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/salary-components?company_id=main",
+      "at": "2026-07-30T18:25:53.038Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-07-30T18:25:53.099Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payment-batches?company_id=main",
+      "at": "2026-07-30T18:25:56.727Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "at": "2026-07-30T18:25:56.742Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:25:59.396Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:25:59.464Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T18:25:59.657Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T18:25:59.726Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:26:03.743Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:26:03.786Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T18:26:03.961Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T18:26:04.023Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-30T18:26:06.886Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T18:26:06.887Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-07-30T18:26:06.887Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:26:07.112Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:26:07.112Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/rollup?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:26:07.112Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending&assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:26:07.112Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/workflow-engine/tasks?tenantId=xevn&status=pending",
+      "at": "2026-07-30T18:26:07.112Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:26:07.113Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/position-rbac/matrix?roleId=raci_hdqt",
+      "at": "2026-07-30T18:26:07.113Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/command-center/workspace-meta?tenantId=xevn&companyId=main",
+      "at": "2026-07-30T18:26:07.113Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/group-member-units",
+      "at": "2026-07-30T18:26:07.114Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn",
+      "at": "2026-07-30T18:26:07.128Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/kpi-engine/portal-alerts?tenantId=xevn&companyId=main&limit=20",
+      "at": "2026-07-30T18:26:07.147Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T18:26:07.671Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/",
+      "at": "2026-07-30T18:26:07.692Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-30T18:26:08.004Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-30T18:26:08.048Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T18:26:08.234Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "at": "2026-07-30T18:26:08.311Z"
+    }
+  ],
+  "consoleErrors": [],
+  "jMob04": {
+    "persona": "uat.nv0001@xe.vn",
+    "api": "http://14.225.217.232:3001",
+    "steps": [
+      {
+        "id": "login",
+        "status": 201,
+        "ok": true,
+        "companyId": "holding",
+        "employeeId": "3796d949…"
+      },
+      {
+        "id": "payslip-list",
+        "status": 200,
+        "total": 1,
+        "ok": true
+      },
+      {
+        "id": "7c78b34e-046a-48ef-89bc-be389cb7156b",
+        "status": 404,
+        "ok": false
+      }
+    ],
+    "verdict": "🟢",
+    "priorR7": "qa-hdsd-mob-ch12-01-r7-20260801.md J-MOB-04 PASS payslipTotal=1",
+    "crossCheck": "J-MOB-04 still green on pilot read-only"
+  },
+  "verdicts": {
+    "overall": "PASS_TO_PM",
+    "l0": "🟢",
+    "ch09_mount": "🟢",
+    "ch09_period_list": "🟢",
+    "j_mob_04": "🟢"
+  },
+  "ack_status": "PASS_TO_PM",
+  "finishedAt": "2026-07-30T18:26:12.352Z"
+}

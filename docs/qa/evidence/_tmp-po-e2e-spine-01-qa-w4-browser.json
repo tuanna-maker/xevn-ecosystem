@@ -1,0 +1,404 @@
+{
+  "work_item_id": "PO-E2E-SPINE-01-QA-W4",
+  "program": "PO-E2E-BIZ-SPINE-01",
+  "spine": "E2E-SPINE-01",
+  "focus": "HP-04 · J-REC-WF-04 · UF-HRM-12 · HP-05 if hire 2xx",
+  "startedAt": "2026-08-03T15:36:58.067Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed",
+    "companyId": "main",
+    "legacyStamp": "SP2SDD8FM8",
+    "requisitionHint": "34a421e7",
+    "candStamp": "SP4SDE70SZ",
+    "prior": "PO-E2E-SPINE-01-QA-W3"
+  },
+  "l0": {
+    "portal": 200,
+    "hrm_api": 200,
+    "xbos_api": 200
+  },
+  "click_log": [
+    {
+      "at": "2026-08-03T15:36:58.757Z",
+      "action": "open_portal",
+      "url": "http://127.0.0.1:5173"
+    },
+    {
+      "at": "2026-08-03T15:37:01.136Z",
+      "action": "goto_recruitment",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions",
+      "tab": "requisitions"
+    },
+    {
+      "at": "2026-08-03T15:37:04.944Z",
+      "action": "goto_recruitment",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates",
+      "tab": "candidates"
+    },
+    {
+      "at": "2026-08-03T15:37:08.506Z",
+      "action": "click_locator",
+      "text": "/^Ứng viên$|Ứng viên/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates"
+    },
+    {
+      "at": "2026-08-03T15:37:10.231Z",
+      "action": "click_add_candidate",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates"
+    },
+    {
+      "at": "2026-08-03T15:37:11.781Z",
+      "action": "fill",
+      "sel": "full_name",
+      "value": "Nguyen Hire Pay SP4SDE70SZ"
+    },
+    {
+      "at": "2026-08-03T15:37:11.828Z",
+      "action": "fill",
+      "sel": "email",
+      "value": "hire.pay.1785771418067@example.vn"
+    },
+    {
+      "at": "2026-08-03T15:37:11.867Z",
+      "action": "fill",
+      "sel": "position",
+      "value": "UV HireToPay SP2SDD8FM8 SP4SDE70SZ"
+    },
+    {
+      "at": "2026-08-03T15:37:12.003Z",
+      "action": "click_save_no_escape"
+    },
+    {
+      "at": "2026-08-03T15:37:16.787Z",
+      "action": "f5_after_create"
+    },
+    {
+      "at": "2026-08-03T15:37:19.989Z",
+      "action": "goto_recruitment",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates",
+      "tab": "candidates"
+    },
+    {
+      "at": "2026-08-03T15:37:23.535Z",
+      "action": "click_locator",
+      "text": "/^Ứng viên$|Ứng viên/i",
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates"
+    }
+  ],
+  "steps": {
+    "L0": {
+      "summary": "{\"portal\":200,\"hrm_api\":200,\"xbos_api\":200}",
+      "verdict": "🟢",
+      "at": "2026-08-03T15:36:58.090Z"
+    },
+    "HP04_CTX": {
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=requisitions",
+      "clickPath": [
+        "/hr/recruitment?tab=requisitions",
+        "observe YCTD SP2SDD8FM8 / 34a421e7"
+      ],
+      "hasStampUi": true,
+      "requisitionId": "34a421e7-33df-4c8b-b96c-559082b78086",
+      "network": {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+        "at": "2026-08-03T15:37:01.672Z",
+        "rowCount": 6,
+        "hasLegacy": true
+      },
+      "summary": "legacyUi=true reqId=34a421e7-33df-4c8b-b96c-559082b78086 apiHasLegacy=true",
+      "verdict": "🟢",
+      "at": "2026-08-03T15:37:04.731Z"
+    },
+    "HP04_CREATE": {
+      "url": "http://127.0.0.1:5173/hr/recruitment?portal=1&tenantId=xevn&companyId=main&tab=candidates",
+      "clickPath": [
+        "Tuyển dụng → Ứng viên (CH07 §6)",
+        "Thêm ứng viên",
+        "Họ tên + email + vị trí",
+        "Lưu (no Escape)",
+        "F5"
+      ],
+      "hdsd": "CH07 §6 Thêm ứng viên",
+      "open": true,
+      "nameFilled": true,
+      "emailFilled": true,
+      "dialogStillOpenAfterSave": true,
+      "validation": [],
+      "createOk": false,
+      "stampOnList": false,
+      "candidateId": null,
+      "network": [
+        {
+          "method": "POST",
+          "status": 400,
+          "url": "/api/hrm/recruitment/candidates",
+          "at": "2026-08-03T15:37:12.007Z",
+          "createdId": null,
+          "code": "HRM-VAL-001",
+          "message": "property position should not exist; property rating should not exist; property expected_start_date should not exist; property nationality should not exist; property hometown should not exist; property marital_status should not exist",
+          "bodyStage": null
+        }
+      ],
+      "summary": "createOk=false stampOnList=false nameOk=true emailOk=true candId=n/a posts=400:HRM-VAL-001",
+      "gap": "candidate_create_post_not_2xx",
+      "verdict": "🔴",
+      "at": "2026-08-03T15:37:25.108Z"
+    },
+    "HP04_HIRE": {
+      "summary": "Skipped — create failed",
+      "gap": "blocked_create",
+      "verdict": "⬜",
+      "at": "2026-08-03T15:37:25.109Z"
+    },
+    "HP05": {
+      "summary": "Skipped — hire not 2xx this wave",
+      "gap": "blocked_upstream_hp04",
+      "verdict": "⬜",
+      "at": "2026-08-03T15:37:25.112Z"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:37:01.573Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:37:01.581Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:37:01.592Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:37:01.595Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:37:01.604Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-03T15:37:01.672Z",
+      "rowCount": 6,
+      "hasLegacy": true
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:37:05.365Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:37:05.365Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:37:05.365Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:37:05.366Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:37:05.366Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:37:05.427Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "at": "2026-08-03T15:37:10.234Z"
+    },
+    {
+      "method": "POST",
+      "status": 400,
+      "url": "/api/hrm/recruitment/candidates",
+      "at": "2026-08-03T15:37:12.007Z",
+      "createdId": null,
+      "code": "HRM-VAL-001",
+      "message": "property position should not exist; property rating should not exist; property expected_start_date should not exist; property nationality should not exist; property hometown should not exist; property marital_status should not exist",
+      "bodyStage": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:37:17.069Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:37:17.069Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:37:17.079Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:37:17.080Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:37:17.080Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:37:17.128Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:37:20.304Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-templates?company_id=main",
+      "at": "2026-08-03T15:37:20.319Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidate-applications?company_id=main",
+      "at": "2026-08-03T15:37:20.319Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/job-postings?company_id=main",
+      "at": "2026-08-03T15:37:20.319Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/recruitment-plans?company_id=main",
+      "at": "2026-08-03T15:37:20.319Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/candidates-pool?company_id=main",
+      "at": "2026-08-03T15:37:20.359Z"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    "Error saving candidate: ApiClientError: property position should not exist; property rating should not exist; property expected_start_date should not exist; property nationality should not exist; property hometown should not exist; property"
+  ],
+  "pageErrors": [],
+  "screens": [
+    {
+      "at": "2026-08-03T15:37:00.835Z",
+      "name": "00-shell",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w4-20260803/00-shell.png"
+    },
+    {
+      "at": "2026-08-03T15:37:04.705Z",
+      "name": "00-requisitions-context",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w4-20260803/00-requisitions-context.png"
+    },
+    {
+      "at": "2026-08-03T15:37:10.093Z",
+      "name": "01-candidates",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w4-20260803/01-candidates.png"
+    },
+    {
+      "at": "2026-08-03T15:37:11.950Z",
+      "name": "02-create-dialog-filled",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w4-20260803/02-create-dialog-filled.png"
+    },
+    {
+      "at": "2026-08-03T15:37:16.606Z",
+      "name": "03-after-create",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w4-20260803/03-after-create.png"
+    },
+    {
+      "at": "2026-08-03T15:37:25.108Z",
+      "name": "04-f5-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-e2e-spine-01-qa-w4-20260803/04-f5-list.png"
+    }
+  ],
+  "ids": {
+    "requisitionId": "34a421e7-33df-4c8b-b96c-559082b78086",
+    "candidateId": null,
+    "employeeId": null,
+    "hirePatchStatus": null,
+    "hirePatchCode": null
+  },
+  "createOk": false,
+  "hireOk": false,
+  "hireDialogSeen": false,
+  "empStampSeen": false,
+  "contractSurface": null,
+  "seed_used": false,
+  "gap": null,
+  "createError": {
+    "status": 400,
+    "code": "HRM-VAL-001",
+    "message": "property position should not exist; property rating should not exist; property expected_start_date should not exist; property nationality should not exist; property hometown should not exist; property marital_status should not exist"
+  },
+  "createValidation": [],
+  "createDialogStillOpen": true,
+  "endedAt": "2026-08-03T15:37:25.113Z",
+  "clickCount": 12,
+  "idle_guard": "PASS",
+  "summary": {
+    "clicks": 12,
+    "idle_guard": "PASS",
+    "seed_used": false,
+    "createOk": false,
+    "hireOk": false,
+    "hireDialogSeen": false,
+    "employeeId": null,
+    "candidateId": null,
+    "gap": null,
+    "pass": 2,
+    "warn": 0,
+    "fail": 1,
+    "skip": 2
+  }
+}

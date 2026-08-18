@@ -1,0 +1,170 @@
+{
+  "portal": "https://14-225-217-232.nip.io",
+  "cacheBust": "_qa_r3=20260727",
+  "startedAt": "2026-07-27T05:48:01.404Z",
+  "afterLoginUrl": "https://14-225-217-232.nip.io/command-center",
+  "attendanceUrl": "https://14-225-217-232.nip.io/hr/attendance?portal=1&companyId=main&_qa_r3=20260727",
+  "fallbackBefore": {
+    "phase": "after_attendance_load",
+    "resourceCount": 217,
+    "fallbackAllCount": 0,
+    "localhost54321AnyCount": 0,
+    "fallbackSample": [],
+    "nestAttSample": [
+      "https://14-225-217-232.nip.io/api/hrm/attendance/overview?company_id=main&year=2026"
+    ],
+    "recordsUrls": [],
+    "leaveUrls": [],
+    "href": "https://14-225-217-232.nip.io/hr/attendance?portal=1&companyId=main&_qa_r3=20260727",
+    "bodyHasEmpty": false,
+    "bodyHasSyncError": false
+  },
+  "chamCongClick": {
+    "ok": true,
+    "xpath": "//button[contains(., 'Chấm công')]"
+  },
+  "recordsMenuClick": {
+    "ok": true,
+    "xpath": "//*[@role='menuitem' and contains(., 'Dữ liệu chấm công')]"
+  },
+  "fallbackAfterRecords": {
+    "phase": "after_records_nav",
+    "resourceCount": 220,
+    "fallbackAllCount": 0,
+    "localhost54321AnyCount": 0,
+    "fallbackSample": [],
+    "nestAttSample": [
+      "https://14-225-217-232.nip.io/api/hrm/attendance/overview?company_id=main&year=2026",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&from_date=2026-07-27&to_date=2026-07-27&page=1&page_size=100",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/attendance-sheets?company_id=main"
+    ],
+    "recordsUrls": [
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&from_date=2026-07-27&to_date=2026-07-27&page=1&page_size=100"
+    ],
+    "leaveUrls": [],
+    "href": "https://14-225-217-232.nip.io/hr/attendance?portal=1&companyId=main&_qa_r3=20260727",
+    "bodyHasEmpty": true,
+    "bodyHasSyncError": false
+  },
+  "refreshClicked": true,
+  "fallbackAfterRefresh": {
+    "phase": "after_refresh",
+    "resourceCount": 221,
+    "fallbackAllCount": 0,
+    "localhost54321AnyCount": 0,
+    "fallbackSample": [],
+    "nestAttSample": [
+      "https://14-225-217-232.nip.io/api/hrm/attendance/overview?company_id=main&year=2026",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&from_date=2026-07-27&to_date=2026-07-27&page=1&page_size=100",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/attendance-sheets?company_id=main",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&from_date=2026-07-27&to_date=2026-07-27&page=1&page_size=100"
+    ],
+    "recordsUrls": [
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&from_date=2026-07-27&to_date=2026-07-27&page=1&page_size=100",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&from_date=2026-07-27&to_date=2026-07-27&page=1&page_size=100"
+    ],
+    "leaveUrls": [],
+    "href": "https://14-225-217-232.nip.io/hr/attendance?portal=1&companyId=main&_qa_r3=20260727",
+    "bodyHasEmpty": true,
+    "bodyHasSyncError": false
+  },
+  "authFive": {
+    "tokenPresent": true,
+    "tokenLen": 311,
+    "results": [
+      {
+        "id": "Contracts",
+        "path": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=5",
+        "http": 200,
+        "code": "HRM-CON-200",
+        "message": "Contracts listed"
+      },
+      {
+        "id": "Insurance",
+        "path": "/api/hrm/contracts-insurance/insurance?company_id=main&page=1&page_size=5",
+        "http": 200,
+        "code": "HRM-CON-200",
+        "message": "Insurance listed"
+      },
+      {
+        "id": "Recruitment",
+        "path": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=5",
+        "http": 200,
+        "code": "HRM-REC-200",
+        "message": "Job requisitions listed"
+      },
+      {
+        "id": "Attendance",
+        "path": "/api/hrm/attendance/records?company_id=main&page=1&page_size=10",
+        "http": 200,
+        "code": "HRM-ATT-200",
+        "message": "Attendance records listed"
+      },
+      {
+        "id": "Payroll",
+        "path": "/api/hrm/payroll/payslips?company_id=main&page=1&page_size=5",
+        "http": 200,
+        "code": "HRM-PAY-200",
+        "message": "Payroll payslips listed"
+      }
+    ]
+  },
+  "fallbackAfterAuth": {
+    "phase": "after_auth5_records_fetch",
+    "resourceCount": 226,
+    "fallbackAllCount": 0,
+    "localhost54321AnyCount": 0,
+    "fallbackSample": [],
+    "nestAttSample": [
+      "https://14-225-217-232.nip.io/api/hrm/attendance/overview?company_id=main&year=2026",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&from_date=2026-07-27&to_date=2026-07-27&page=1&page_size=100",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/attendance-sheets?company_id=main",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&from_date=2026-07-27&to_date=2026-07-27&page=1&page_size=100",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&page=1&page_size=10"
+    ],
+    "recordsUrls": [
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&from_date=2026-07-27&to_date=2026-07-27&page=1&page_size=100",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&from_date=2026-07-27&to_date=2026-07-27&page=1&page_size=100",
+      "https://14-225-217-232.nip.io/api/hrm/attendance/records?company_id=main&page=1&page_size=10"
+    ],
+    "leaveUrls": [],
+    "href": "https://14-225-217-232.nip.io/hr/attendance?portal=1&companyId=main&_qa_r3=20260727",
+    "bodyHasEmpty": true,
+    "bodyHasSyncError": false
+  },
+  "leaveTabClick": {
+    "ok": true,
+    "xpath": "//button[contains(., 'Nghỉ phép')]"
+  },
+  "requestListClick": {
+    "ok": true,
+    "xpath": "//*[@role='tab' and contains(., 'Danh sách yêu cầu')]"
+  },
+  "eyeClick": {
+    "ok": true,
+    "via": "evaluate"
+  },
+  "leaveDetail": {
+    "hasDetailTitle": true,
+    "hasNotFound": false,
+    "detailText": "Chi tiết yêu cầu nghỉ phép\n\nCEO Tập đoàn\n\nPORTAL-GCEO • CEO\n\nChờ duyệt\nLoại nghỉ\nLVT_01\nSố ngày\n\n1 ngày\n\nTừ ngày\n\n23/01/2027\n\nĐến ngày\n\n23/01/2027\n\nNgày tạo: 27/07/2026 10:00\nĐóng\nTừ chối\nDuyệt\nClose",
+    "dialogOpen": true,
+    "fallbackAllCount": 0,
+    "leaveRes": [
+      "https://14-225-217-232.nip.io/api/hrm/attendance/leave-requests?company_id=main"
+    ],
+    "href": "https://14-225-217-232.nip.io/hr/attendance?portal=1&companyId=main&_qa_r3=20260727"
+  },
+  "console54321": [],
+  "consoleErrorSample": [],
+  "verdict": {
+    "authOk": true,
+    "fbOk": true,
+    "attHttp": 200,
+    "attCode": "HRM-ATT-200",
+    "leaveOk": true,
+    "recordsUiNav": true,
+    "console54321Count": 0,
+    "pass": true
+  }
+}

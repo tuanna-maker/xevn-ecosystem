@@ -1,0 +1,167 @@
+{
+  "work_item_ids": [
+    "PO-HRM-UI-PORTAL-LOGIN-LOGO-02",
+    "PO-HRM-UI-DIALOG-CENTER-01"
+  ],
+  "startedAt": "2026-08-06T03:38:11.424Z",
+  "u65": "zero-seed",
+  "face_live": false,
+  "remaster_program_done": false,
+  "sponsor_correction": "logo pad WHITE not black; size ~112px kept",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "portal": 200,
+    "hrm": 200,
+    "xbos": 200
+  },
+  "checks": {
+    "AC1_login_mark_112": {
+      "pass": true,
+      "width": 100.8,
+      "height": 100.8,
+      "attrW": "112",
+      "attrH": "112",
+      "className": "xevn-login-mark mb-6 h-28 w-28 rounded-[14px] bg-white object-contain",
+      "computedH": "100.797px",
+      "computedW": "100.797px",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "src": "/xevn-logo.png"
+    },
+    "AC1_login_mark_pad_white": {
+      "pass": true,
+      "backgroundColor": "rgb(255, 255, 255)",
+      "rgb": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "classHasWhite": true,
+      "classHasBlack": false,
+      "className": "xevn-login-mark mb-6 h-28 w-28 rounded-[14px] bg-white object-contain"
+    },
+    "AC1_card_wordmark_pad_white": {
+      "pass": true,
+      "backgroundColor": "rgb(255, 255, 255)",
+      "rgb": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "className": "xevn-dialog-wordmark h-10 w-10 !bg-white"
+    },
+    "AC1b_login_works": {
+      "pass": true,
+      "status": 201,
+      "afterUrl": "http://127.0.0.1:5173/command-center"
+    },
+    "_jobs_tab_click": {
+      "ok": true,
+      "hostKind": "frame"
+    },
+    "_dialog_geom_raw": {
+      "found": true,
+      "box": {
+        "x": 260,
+        "y": 900,
+        "width": 920,
+        "height": 810
+      },
+      "elMetrics": {
+        "found": true,
+        "testId": "rec-job-create-edit-dialog-precision",
+        "ownerHref": "http://127.0.0.1:5173/hr/recruitment?tab=jobs&portal=1&tenantId=xevn&companyId=main&_qa=1785987503423",
+        "position": "relative",
+        "overflowY": "hidden",
+        "maxHeight": "810px",
+        "topCss": "0px",
+        "bottomCss": "0px",
+        "margin": "0px 260px",
+        "transform": "none",
+        "zIndex": "50",
+        "className": "xevn-dialog-surface fixed inset-0 z-50 m-auto grid h-fit w-full max-w-lg gap-4 bg-background p-6 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 max-h-[90vh] overflow-y-auto sm:max-w-[920px]",
+        "hasInset0": true,
+        "hasMAuto": true,
+        "hasMaxH90": true,
+        "hasOverflowYAuto": true,
+        "rect": {
+          "top": 900,
+          "bottom": 1710,
+          "height": 810,
+          "width": 920,
+          "left": 260
+        },
+        "vh": 900,
+        "vw": 1440,
+        "scrollHeight": 1011,
+        "clientHeight": 808
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "top": 900,
+      "bottom": 1710,
+      "height": 810,
+      "topGap": 900,
+      "bottomGap": -810,
+      "vCenterDelta": 1710,
+      "permanentlyClipped": true,
+      "droppedToBottom": true,
+      "topAtMidCutOff": true,
+      "offscreenEntirely": true,
+      "hasInset0": true,
+      "hasMAuto": true,
+      "hasMaxH90": true,
+      "hasOverflowYAuto": true,
+      "maxHeight": "810px",
+      "overflowY": "hidden",
+      "position": "relative",
+      "canScrollInside": false
+    },
+    "AC2_dialog_center": {
+      "pass": false,
+      "reason": "{\"classOk\":true,\"notClipped\":false,\"centeredEnough\":false,\"maxHOk\":true,\"actionsOk\":true,\"scrollOk\":true,\"inViewportVisible\":false,\"offscreenEntirely\":true,\"permanentlyClipped\":true,\"droppedToBottom\":true,\"topAtMidCutOff\":true,\"vCenterDelta\":1710,\"topGap\":900,\"bottomGap\":-810,\"height\":810,\"vh\":900,\"position\":\"relative\",\"maxHeight\":\"810px\",\"overflowY\":\"hidden\",\"ownerHref\":\"http://127.0.0.1:5173/hr/recruitment?tab=jobs&portal=1&tenantId=xevn&companyId=main&_qa=1785987503423\",\"saveReachable\":true,\"cancelReachable\":true}"
+    },
+    "AC2b_escape_closes": {
+      "pass": true,
+      "closed": true
+    },
+    "AC3_alertdialog_center": {
+      "pass": true,
+      "skipped": true,
+      "reason": "no easy delete/confirm path without mutate — class parity covered by source + Dialog AC"
+    }
+  },
+  "failReasons": [
+    "AC2_dialog_center: {\"classOk\":true,\"notClipped\":false,\"centeredEnough\":false,\"maxHOk\":true,\"actionsOk\":true,\"scrollOk\":true,\"inViewportVisible\":false,\"offscreenEntirely\":true,\"permanentlyClipped\":true,\"droppedToBottom\":true,\"topAtMidCutOff\":true,\"vCenterDelta\":1710,\"topGap\":900,\"bottomGap\":-810,\"height\":810,\"vh\":900,\"position\":\"relative\",\"maxHeight\":\"810px\",\"overflowY\":\"hidden\",\"ownerHref\":\"http://127.0.0.1:5173/hr/recruitment?tab=jobs&portal=1&tenantId=xevn&companyId=main&_qa=1785987503423\",\"saveReachable\":true,\"cancelReachable\":true}"
+  ],
+  "screenshots": [
+    "evidence/screens/po-hrm-ui-login-logo-dialog-center-01/01-login-mark-white-pad-112.png",
+    "evidence/screens/po-hrm-ui-login-logo-dialog-center-01/01b-login-mark-crop.png",
+    "evidence/screens/po-hrm-ui-login-logo-dialog-center-01/02-after-login.png",
+    "evidence/screens/po-hrm-ui-login-logo-dialog-center-01/03-recruitment-shell.png",
+    "evidence/screens/po-hrm-ui-login-logo-dialog-center-01/04-job-create-dialog.png"
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "network": [
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login"
+    }
+  ],
+  "mutates": 0,
+  "seed": false,
+  "verdict": "FAIL",
+  "ack_status": "FAIL_TO_PM",
+  "endedAt": "2026-08-06T03:38:30.206Z"
+}

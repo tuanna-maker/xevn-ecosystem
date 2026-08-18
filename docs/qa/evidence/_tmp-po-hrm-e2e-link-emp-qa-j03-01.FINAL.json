@@ -1,0 +1,159 @@
+{
+  "work_item_id": "PO-HRM-E2E-LINK-EMP-QA-J03-01",
+  "parent": "PO-HRM-E2E-LINK-EMP-FE-J03-01",
+  "residual_target": "R-J03-DIALOG",
+  "startedAt": "2026-08-07T02:43:40.204Z",
+  "u65": "zero-seed",
+  "honesty": {
+    "hrm_personnel_uat_ready": false
+  },
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn"
+  },
+  "denied": [
+    "seed",
+    "hrm_personnel_uat_ready",
+    "full_emp_matrix"
+  ],
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "steps": {
+    "LOGIN": {
+      "verdict": "PASS",
+      "summary": "url=http://127.0.0.1:5173/command-center",
+      "at": "2026-08-07T02:43:46.189Z"
+    },
+    "LIST": {
+      "verdict": "PASS",
+      "summary": "rows=10 gets=200,200",
+      "rows": 10,
+      "listGets": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+          "at": "2026-08-07T02:43:48.478Z",
+          "code": "HRM-CON-200"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+          "at": "2026-08-07T02:43:52.434Z",
+          "code": "HRM-CON-200"
+        }
+      ],
+      "at": "2026-08-07T02:43:55.421Z"
+    },
+    "MUST_KEEP_UF_HRM_02": {
+      "verdict": "PASS",
+      "summary": "createBtn=1 editTestId=0 pencilProxy=30",
+      "at": "2026-08-07T02:43:55.442Z"
+    },
+    "CLICK_VIEW_BTN": {
+      "verdict": "PASS",
+      "summary": "surface=iframe-testid",
+      "at": "2026-08-07T02:43:58.419Z"
+    },
+    "J-HRM-03": {
+      "verdict": "PASS",
+      "summary": "open=true parentCount=1 latch=1 code=HD-BN37L title=true roleDlg=true",
+      "dialog": {
+        "open": true,
+        "parentVisible": true,
+        "parentCount": 1,
+        "latchCount": 1,
+        "latchCountIframe": 1,
+        "latchCountParent": 0,
+        "roleDlg": true
+      },
+      "content": {
+        "codeText": "HD-BN37L",
+        "bodyCount": 1,
+        "titleHit": true,
+        "populated": true
+      },
+      "at": "2026-08-07T02:43:59.349Z"
+    },
+    "MUST_KEEP_AFTER": {
+      "verdict": "PASS",
+      "summary": "createAfter=1 (dialog may cover; pre-spot=true)",
+      "at": "2026-08-07T02:43:59.355Z"
+    }
+  },
+  "journey": {
+    "J-HRM-03": {
+      "verdict": "PASS",
+      "summary": "open=true parentCount=1 latch=1 code=HD-BN37L title=true roleDlg=true",
+      "dialog": {
+        "open": true,
+        "parentVisible": true,
+        "parentCount": 1,
+        "latchCount": 1,
+        "latchCountIframe": 1,
+        "latchCountParent": 0,
+        "roleDlg": true
+      },
+      "content": {
+        "codeText": "HD-BN37L",
+        "bodyCount": 1,
+        "titleHit": true,
+        "populated": true
+      },
+      "clickSurface": "iframe-testid",
+      "at": "2026-08-07T02:43:59.349Z"
+    }
+  },
+  "network": [
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-07T02:43:42.664Z",
+      "code": "XBOS-AUTH-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:43:48.478Z",
+      "code": "HRM-CON-200"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T02:43:52.434Z",
+      "code": "HRM-CON-200"
+    }
+  ],
+  "consoleErrors": [],
+  "click_log": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-j03-01/00-after-login.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-j03-01/01-contracts-list.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-j03-01/02-after-eye-click.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-e2e-link-emp-qa-j03-01/03-view-dialog.png"
+  ],
+  "residuals": [
+    {
+      "id": "R-J03-DIALOG",
+      "severity": "P2",
+      "status": "CLOSED",
+      "note": "Eye → view dialog/latch + populated code"
+    }
+  ],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T02:43:59.356Z"
+}

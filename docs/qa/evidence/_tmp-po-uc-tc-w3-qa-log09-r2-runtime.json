@@ -1,0 +1,757 @@
+{
+  "work_item_id": "PO-UC-TC-W3-QA-LOG09-R2",
+  "uc_id": "XBOS-DM-LOG-09",
+  "layer": "browser-U65-HDSD",
+  "hdsd_align": true,
+  "u65": "zero-seed",
+  "startedAt": "2026-08-04T01:51:59.251Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "CEO_EMAIL": "ceo@xe.vn",
+    "MEMBER_EMAIL": "du-lich.ceo@xe.vn"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "clicks": [
+    {
+      "at": "2026-08-04T01:52:00.608Z",
+      "action": "goto-login",
+      "email": "ceo@xe.vn"
+    },
+    {
+      "at": "2026-08-04T01:52:01.185Z",
+      "action": "fill-login",
+      "email": "ceo@xe.vn"
+    },
+    {
+      "at": "2026-08-04T01:52:01.219Z",
+      "action": "submit-login",
+      "email": "ceo@xe.vn"
+    },
+    {
+      "at": "2026-08-04T01:52:01.281Z",
+      "action": "login-done",
+      "email": "ceo@xe.vn",
+      "url": "http://127.0.0.1:5173/command-center",
+      "token": true
+    },
+    {
+      "at": "2026-08-04T01:52:02.602Z",
+      "action": "goto-log09",
+      "url": "http://127.0.0.1:5173/command-center?settings=log_catalog_clone_bundle"
+    },
+    {
+      "at": "2026-08-04T01:52:02.736Z",
+      "action": "select-dest-logistics",
+      "via": "testid-logistics",
+      "text": "LGTS — Logistics đích wire xevn/logistics"
+    },
+    {
+      "at": "2026-08-04T01:52:03.155Z",
+      "action": "set-onConflict",
+      "value": "fail"
+    },
+    {
+      "at": "2026-08-04T01:52:03.394Z",
+      "action": "fd-click-submit"
+    },
+    {
+      "at": "2026-08-04T01:52:03.435Z",
+      "action": "confirm-dialog-sao-chep-bo"
+    },
+    {
+      "at": "2026-08-04T01:52:04.833Z",
+      "action": "select-dest-logistics",
+      "via": "testid-logistics",
+      "text": "LGTS — Logistics đích wire xevn/logistics"
+    },
+    {
+      "at": "2026-08-04T01:52:05.252Z",
+      "action": "set-onConflict",
+      "value": "overwrite"
+    },
+    {
+      "at": "2026-08-04T01:52:05.480Z",
+      "action": "hp-click-submit"
+    },
+    {
+      "at": "2026-08-04T01:52:05.517Z",
+      "action": "confirm-dialog-sao-chep-bo"
+    },
+    {
+      "at": "2026-08-04T01:53:10.433Z",
+      "action": "reload-dest-keys"
+    },
+    {
+      "at": "2026-08-04T01:53:45.422Z",
+      "action": "goto-login",
+      "email": "du-lich.ceo@xe.vn"
+    },
+    {
+      "at": "2026-08-04T01:53:45.992Z",
+      "action": "fill-login",
+      "email": "du-lich.ceo@xe.vn"
+    },
+    {
+      "at": "2026-08-04T01:53:46.020Z",
+      "action": "submit-login",
+      "email": "du-lich.ceo@xe.vn"
+    },
+    {
+      "at": "2026-08-04T01:53:46.086Z",
+      "action": "login-done",
+      "email": "du-lich.ceo@xe.vn",
+      "url": "http://127.0.0.1:5173/command-center",
+      "token": true
+    },
+    {
+      "at": "2026-08-04T01:53:47.393Z",
+      "action": "goto-log09",
+      "url": "http://127.0.0.1:5173/command-center?settings=log_catalog_clone_bundle"
+    }
+  ],
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-04T01:51:59.272Z",
+      "id": "L0",
+      "action": "Stack health",
+      "expected": "hrm+xbos+portal 200",
+      "actual": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "result": "pass"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-04T01:52:01.337Z",
+      "id": "LOGIN-CEO",
+      "action": "Login ceo@xe.vn",
+      "expected": "command-center + token",
+      "actual": "url=http://127.0.0.1:5173/command-center",
+      "result": "pass"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-04T01:52:02.702Z",
+      "id": "HDSD-PANEL",
+      "action": "Deep link settings=log_catalog_clone_bundle",
+      "expected": "panel + data-hdsd=sao-chep-bo-danh-muc-log",
+      "actual": "visible=true hdsd=sao-chep-bo-danh-muc-log titleOk=true",
+      "result": "pass"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-04T01:52:02.710Z",
+      "id": "DISTINCT",
+      "action": "≠ apply-to-members · ≠ DM-09 single-key",
+      "expected": "LOG-09 panel only",
+      "actual": "{\"log09_panel\":true,\"mentions_not_apply\":true,\"mentions_not_dm09\":true,\"not_apply_panel\":true,\"not_dm09_panel\":true}",
+      "result": "pass"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-04T01:52:04.812Z",
+      "id": "FD-002",
+      "action": "onConflict=fail → FE status XBOS-CFG-009 (dest logistics)",
+      "expected": "409 CFG-009 in FE status; dest=logistics; no half-copy",
+      "actual": "confirmed=true destHintOk=true status=\"config-sync.clone-bundle failed: Clone bundle blocked: destination already has conflicting catalog keys · XBOS-CFG-009 (HTTP 409)\" net={\"status\":409,\"code\":\"XBOS-CFG-009\"}",
+      "result": "pass",
+      "attachment": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-uc-tc-w3-qa-log09-r2\\03-fd-cfg-009.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-04T01:53:10.413Z",
+      "id": "HP-001",
+      "action": "onConflict=overwrite → CFG-205 + copiedCount (dest logistics)",
+      "expected": "FE status XBOS-CFG-205 + result copiedCount · dest=logistics",
+      "actual": "confirmed=true status=\"XBOS-CFG-205: đã sao chép 92/92 danh mục → logistics · mẫu: log_dm_1, log_dm_10, log_dm_11\" result=\"XBOS-CFG-205: copiedCount = 92 · matched = 92 · skipped = 0Nguồn tập đoàn → đích logistics · onConflict=overwritelog_dm_1 · v2 · logisticslog_dm_10 · v2 · logis\" net={\"status\":201,\"code\":\"XBOS-CFG-205\",\"copiedCount\":92,\"matchedCount\":92,\"destCompanyId\":\"logistics\",\"onConflict\":\"overwrite\"}",
+      "result": "pass",
+      "attachment": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-uc-tc-w3-qa-log09-r2\\04-hp-cfg-205.png"
+    },
+    {
+      "seq": 7,
+      "at": "2026-08-04T01:53:43.025Z",
+      "id": "HP-DEST-KEYS",
+      "action": "Tải lại khóa đích log_dm_*",
+      "expected": "dest keys show log_dm_*",
+      "actual": "(empty)",
+      "result": "fail",
+      "attachment": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-uc-tc-w3-qa-log09-r2\\05-dest-keys.png"
+    },
+    {
+      "seq": 8,
+      "at": "2026-08-04T01:53:44.664Z",
+      "id": "F5-WIRE",
+      "action": "F5 / re-open LOG-09 menu still wired",
+      "expected": "panel visible",
+      "actual": "visible=true url=http://127.0.0.1:5173/command-center?settings=log_catalog_clone_bundle",
+      "result": "pass",
+      "attachment": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-uc-tc-w3-qa-log09-r2\\06-f5-panel.png"
+    },
+    {
+      "seq": 9,
+      "at": "2026-08-04T01:53:47.541Z",
+      "id": "AU-004",
+      "action": "Member du-lich.ceo blocked",
+      "expected": "AU aside / submit disabled / no mutate",
+      "actual": "auVisible=true submitDisabled=true text=\"Thao tác chỉ dành cho CEO tập đoàn / vai trò group_* trên tenant master. Thành viên công ty sẽ nhận XBOS-AUTH-003 nếu gọi API.\"",
+      "result": "pass",
+      "attachment": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screens\\po-uc-tc-w3-qa-log09-r2\\07-au-member.png"
+    }
+  ],
+  "case_matrix": {
+    "TC-DM-LOG-09-COPY-BUNDLE-FD-002": "pass",
+    "TC-DM-LOG-09-COPY-BUNDLE-HP-001": "pass",
+    "TC-DM-LOG-09-COPY-BUNDLE-AU-004": "pass"
+  },
+  "network": [
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-04T01:52:01.260Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Đăng nhập thành công"
+    },
+    {
+      "method": "POST",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalogs/clone-bundle",
+      "at": "2026-08-04T01:52:03.729Z",
+      "code": "XBOS-CFG-009",
+      "message": "Clone bundle blocked: destination already has conflicting catalog keys"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/config-sync/catalogs/clone-bundle",
+      "at": "2026-08-04T01:53:08.567Z",
+      "code": "XBOS-CFG-205",
+      "message": "Catalog bundle cloned",
+      "copiedCount": 92,
+      "matchedCount": 92,
+      "skippedCount": 0,
+      "onConflict": "overwrite",
+      "destCompanyId": "logistics"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_1?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.575Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_10?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.585Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_11?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.591Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_12?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.596Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_13?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.601Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_14?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.605Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_15?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.610Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_16?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.615Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_17?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.619Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_18?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.624Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_19?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.629Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_2?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:08.633Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_1?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.435Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_10?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.439Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_11?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.444Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_12?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.449Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_13?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.453Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_14?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.457Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_15?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.462Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_16?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.467Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_17?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.472Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_18?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.477Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_19?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.481Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "GET",
+      "status": 409,
+      "url": "/api/xbos/config-sync/catalog/log_dm_2?target=xbos&tenantId=xevn&companyId=logistics",
+      "at": "2026-08-04T01:53:10.487Z",
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "companyId mismatches token scope"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-04T01:53:46.069Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Đăng nhập thành công"
+    }
+  ],
+  "consoleErrors": [
+    {
+      "at": "2026-08-04T01:52:03.729Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:52:03.730Z",
+      "text": "[config-sync.clone-bundle] ✗ POST /api/xbos/config-sync/catalogs/clone-bundle HTTP 409 (299ms): config-sync.clone-bundle failed: Clone bundle blocked: destination already has conflicting catalog keys · XBOS-CFG-009 (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.576Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.581Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_1?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (13ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.586Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.586Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_10?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.591Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.592Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_11?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.596Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.597Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_12?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.601Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.601Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_13?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.605Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.606Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_14?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.610Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.611Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_15?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (4ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.615Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.615Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_16?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (4ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.619Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.620Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_17?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.624Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.625Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_18?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.630Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.630Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_19?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.634Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:08.634Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_2?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.435Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.435Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_1?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (7ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.439Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.440Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_10?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.444Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.445Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_11?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.449Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.449Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_12?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (4ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.453Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.454Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_13?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (4ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.458Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.459Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_14?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (4ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.462Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.463Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_15?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.468Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.468Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_16?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.472Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.473Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_17?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.477Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.478Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_18?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (5ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.482Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.482Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_19?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (4ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.488Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:10.488Z",
+      "text": "[config-sync.catalog.get-dest] ✗ GET /api/xbos/config-sync/catalog/log_dm_2?target=xbos&tenantId=xevn&companyId=logistics HTTP 409 (6ms): config-sync.catalog.get-dest failed: companyId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:46.334Z",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    },
+    {
+      "at": "2026-08-04T01:53:46.338Z",
+      "text": "[tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (32ms): tenant-scope.group-member-units failed: Group member units require master tenant membership · XBOS-TENANT-403 (HTTP 403)"
+    },
+    {
+      "at": "2026-08-04T01:53:46.345Z",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    },
+    {
+      "at": "2026-08-04T01:53:46.345Z",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)"
+    },
+    {
+      "at": "2026-08-04T01:53:46.346Z",
+      "text": "[tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (39ms): tenant-scope.group-member-units failed: Group member units require master tenant membership · XBOS-TENANT-403 (HTTP 403)"
+    },
+    {
+      "at": "2026-08-04T01:53:46.346Z",
+      "text": "[catalog-governance.inbox] ✗ GET /api/xbos/catalog-governance/inbox?assigneeUserId=ceo%40xe.vn HTTP 409 (8ms): catalog-governance.inbox failed: tenantId mismatches token scope · SCOPE_CONTEXT_MISMATCH (HTTP 409)"
+    },
+    {
+      "at": "2026-08-04T01:53:46.852Z",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    },
+    {
+      "at": "2026-08-04T01:53:46.852Z",
+      "text": "[tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (15ms): tenant-scope.group-member-units failed: Group member units require master tenant membership · XBOS-TENANT-403 (HTTP 403)"
+    },
+    {
+      "at": "2026-08-04T01:53:46.862Z",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    },
+    {
+      "at": "2026-08-04T01:53:46.863Z",
+      "text": "[tenant-scope.group-member-units] ✗ GET /api/xbos/tenant-scope/group-member-units HTTP 403 (25ms): tenant-scope.group-member-units failed: Group member units require master tenant membership · XBOS-TENANT-403 (HTTP 403)"
+    }
+  ],
+  "pageErrors": [],
+  "screens": [
+    {
+      "at": "2026-08-04T01:52:01.336Z",
+      "name": "login-ceo_xe_vn",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w3-qa-log09-r2/login-ceo_xe_vn.png"
+    },
+    {
+      "at": "2026-08-04T01:52:02.679Z",
+      "name": "02-log09-panel",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w3-qa-log09-r2/02-log09-panel.png"
+    },
+    {
+      "at": "2026-08-04T01:52:04.812Z",
+      "name": "03-fd-cfg-009",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w3-qa-log09-r2/03-fd-cfg-009.png"
+    },
+    {
+      "at": "2026-08-04T01:53:10.413Z",
+      "name": "04-hp-cfg-205",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w3-qa-log09-r2/04-hp-cfg-205.png"
+    },
+    {
+      "at": "2026-08-04T01:53:43.025Z",
+      "name": "05-dest-keys",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w3-qa-log09-r2/05-dest-keys.png"
+    },
+    {
+      "at": "2026-08-04T01:53:44.664Z",
+      "name": "06-f5-panel",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w3-qa-log09-r2/06-f5-panel.png"
+    },
+    {
+      "at": "2026-08-04T01:53:46.135Z",
+      "name": "login-du_lich_ceo_xe_vn",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w3-qa-log09-r2/login-du_lich_ceo_xe_vn.png"
+    },
+    {
+      "at": "2026-08-04T01:53:47.463Z",
+      "name": "02-log09-panel",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w3-qa-log09-r2/02-log09-panel.png"
+    },
+    {
+      "at": "2026-08-04T01:53:47.541Z",
+      "name": "07-au-member",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-uc-tc-w3-qa-log09-r2/07-au-member.png"
+    }
+  ],
+  "hdsd_inventory": [
+    {
+      "surface": "clone-catalog-bundle-panel",
+      "data_hdsd": "sao-chep-bo-danh-muc-log",
+      "visible": true
+    }
+  ],
+  "distinct_menus": {
+    "log09_panel": true,
+    "mentions_not_apply": true,
+    "mentions_not_dm09": true,
+    "not_apply_panel": true,
+    "not_dm09_panel": true
+  },
+  "uat_done": false,
+  "phase1_done": false,
+  "ack_status": "PASS_TO_PM",
+  "verdict": {
+    "browserHpFd": true,
+    "destKeysOk": false,
+    "afterF5": true,
+    "auPass": true,
+    "uat_done": false,
+    "phase1_done": false,
+    "ack_status": "PASS_TO_PM"
+  },
+  "endedAt": "2026-08-04T01:53:47.542Z"
+}

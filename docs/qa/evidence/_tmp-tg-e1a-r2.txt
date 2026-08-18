@@ -1,0 +1,1 @@
+﻿[xevn-ecosystem] E1-A QA R2 PASS → QC đang chạy. E1-B đã GWC. E2 sau QC E1-A.

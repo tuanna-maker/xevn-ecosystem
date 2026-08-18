@@ -1,0 +1,24 @@
+{
+  "work_item_id": "PO-MFD-M2-ATT-SCOPE-01-QA",
+  "STAMP": "M2MAIN-8BWR9",
+  "leave": {
+    "create": {
+      "status": 201,
+      "code": "HRM-LEAVE-201",
+      "id": "407f8c4c-4fa1-45fb-a255-20cb060c0e61",
+      "xCompanyId": "main"
+    },
+    "approve": {
+      "status": 201,
+      "code": "HRM-LEAVE-203",
+      "xCompanyId": "trsport",
+      "requestStatus": "approved"
+    },
+    "f5": true,
+    "clicked": true
+  },
+  "ot": {
+    "pendingApproveBtns": 0
+  },
+  "verdict": "PARTIAL_PASS"
+}

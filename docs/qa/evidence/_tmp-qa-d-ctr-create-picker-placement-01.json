@@ -1,0 +1,126 @@
+{
+  "work_item_id": "QA-D-CTR-CREATE-PICKER-PLACEMENT-01",
+  "startedAt": "2026-08-12T09:59:16.861Z",
+  "commit": "5ccb26e",
+  "u65": "zero-seed-browser-only",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "modes": {
+    "standalone": {
+      "mode": "standalone",
+      "expectedPlacement": "popover",
+      "url": "http://127.0.0.1:8080/hr/contracts?_=1786528757167",
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "pageErrors": [],
+      "refErrors": [],
+      "step1Rendered": true,
+      "pickers": {
+        "hdsd-contracts-form-employee": {
+          "label": "NV picker",
+          "rendered": true,
+          "placement": "popover",
+          "searchBefore": false,
+          "searchAfter": true,
+          "note": "search hidden until click → popover"
+        },
+        "ctr-create-department-picker": {
+          "label": "Department picker",
+          "rendered": true,
+          "placement": "popover",
+          "searchBefore": false,
+          "searchAfter": true,
+          "note": "search hidden until click → popover"
+        },
+        "ctr-create-work-arrangement": {
+          "label": "Work-arrangement picker",
+          "rendered": true,
+          "placement": "popover",
+          "searchBefore": false,
+          "searchAfter": true,
+          "note": "search hidden until click → popover"
+        },
+        "ctr-create-candidate-picker": {
+          "label": "UV picker",
+          "rendered": true,
+          "placement": "popover",
+          "searchBefore": false,
+          "searchAfter": true,
+          "note": "search hidden until click → popover"
+        }
+      },
+      "next": {
+        "attempted": true,
+        "reachedStep2": false,
+        "note": "next found in top; disabled=false; reachedStep2=false"
+      },
+      "screens": [
+        "c:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-d-ctr-create-picker-placement-01/standalone-00-landing.png",
+        "c:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-d-ctr-create-picker-placement-01/standalone-03-step1.png",
+        "c:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-d-ctr-create-picker-placement-01/standalone-04-pickers-done.png",
+        "c:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-d-ctr-create-picker-placement-01/standalone-05-before-next.png",
+        "c:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-d-ctr-create-picker-placement-01/standalone-06-after-next.png"
+      ],
+      "verdict": "PASS",
+      "embedContext": "top-document"
+    },
+    "portal": {
+      "mode": "portal",
+      "expectedPlacement": "inline",
+      "url": "http://127.0.0.1:5173/command-center/hrm/contracts?portal=1&tenantId=xevn&companyId=main&_=1786528773796",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "refErrors": [],
+      "step1Rendered": true,
+      "pickers": {
+        "hdsd-contracts-form-employee": {
+          "label": "NV picker",
+          "rendered": true,
+          "placement": "inline",
+          "searchBefore": true,
+          "note": "search input visible without click"
+        },
+        "ctr-create-department-picker": {
+          "label": "Department picker",
+          "rendered": true,
+          "placement": "inline",
+          "searchBefore": true,
+          "note": "search input visible without click"
+        },
+        "ctr-create-work-arrangement": {
+          "label": "Work-arrangement picker",
+          "rendered": true,
+          "placement": "inline",
+          "searchBefore": true,
+          "note": "search input visible without click"
+        },
+        "ctr-create-candidate-picker": {
+          "label": "UV picker",
+          "rendered": true,
+          "placement": "inline",
+          "searchBefore": true,
+          "note": "search input visible without click"
+        }
+      },
+      "next": {
+        "attempted": true,
+        "reachedStep2": false,
+        "note": "next found in top; disabled=false; reachedStep2=false"
+      },
+      "screens": [
+        "c:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-d-ctr-create-picker-placement-01/portal-00-landing.png",
+        "c:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-d-ctr-create-picker-placement-01/portal-03-step1.png",
+        "c:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-d-ctr-create-picker-placement-01/portal-04-pickers-done.png",
+        "c:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-d-ctr-create-picker-placement-01/portal-05-before-next.png",
+        "c:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/qa-d-ctr-create-picker-placement-01/portal-06-after-next.png"
+      ],
+      "verdict": "PASS",
+      "embedContext": "iframe"
+    }
+  },
+  "endedAt": "2026-08-12T09:59:47.253Z"
+}

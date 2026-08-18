@@ -1,0 +1,383 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-QA-03",
+  "prior": "PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-FE-01",
+  "startedAt": "2026-08-07T10:33:11.807Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed · browser-only · FE after 2xx + F5",
+  "hdsd_align": "Tiền lương / Tính lương → Tạm ứng → pending → Thêm nhân viên",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed_used": false,
+    "module_uat_claimed": false,
+    "amis_done_claimed": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "stamp": "IT3RY3"
+  },
+  "l0": {
+    "hrm-api": 200,
+    "xbos-api": 200,
+    "portal": 200
+  },
+  "probes": {
+    "salaryComponentsStatus": 400,
+    "payroll_e2e_ready_any_true": false,
+    "sampleComponent": null,
+    "advanceListStatus": 200,
+    "advanceCount": 5,
+    "pendingCount": 1,
+    "beforeAdd": {
+      "empty": true,
+      "hasCode": false,
+      "rowCount": 1,
+      "codes": [],
+      "bodySnippet": "Mã NV\tHọ và tên\tPhòng ban\tVị trí\tSố tiền tạm ứng\tGhi chú\t\nChưa có nhân viên nào trong bảng tạm ứng"
+    },
+    "afterAdd": {
+      "empty": false,
+      "hasCode": true,
+      "rowCount": 1,
+      "codes": [
+        "UAT-0100\t"
+      ],
+      "bodySnippet": "Mã NV\tHọ và tên\tPhòng ban\tVị trí\tSố tiền tạm ứng\tGhi chú\t\nUAT-0100\t\n0\nUAT NV 0100\n\t-\tSTAFF\t1.250.000 ₫\t-\t"
+    },
+    "afterF5": {
+      "empty": false,
+      "hasCode": true,
+      "rowCount": 1,
+      "codes": [
+        "UAT-0100\t"
+      ],
+      "bodySnippet": "Mã NV\tHọ và tên\tPhòng ban\tVị trí\tSố tiền tạm ứng\tGhi chú\t\nUAT-0100\t\n0\nUAT NV 0100\n\t-\tSTAFF\t1.250.000 ₫\t-\t"
+    }
+  },
+  "ac": {
+    "L0-STACK": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:11.833Z",
+      "summary": "{\"hrm-api\":200,\"xbos-api\":200,\"portal\":200}"
+    },
+    "HONESTY-E2E-READY": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:12.242Z",
+      "summary": "payroll_e2e_ready stays false (sample=null)"
+    },
+    "NAV-ADVANCE-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:18.975Z",
+      "summary": "Opened Tạm ứng via Tạm ứng"
+    },
+    "FE-CREATE-PENDING": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:22.823Z",
+      "summary": "POST advance-requests → 201 code=HRM-ADV-201",
+      "name": "QA-ADV-EMP-IT3RY3"
+    },
+    "DETAIL-PENDING-ADD-BTN": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:24.886Z",
+      "summary": "Thêm nhân viên visible on pending detail"
+    },
+    "POST-EMPLOYEES-201": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:28.406Z",
+      "summary": "POST /api/hrm/payroll/advance-requests/e331f739-deef-4fa7-a75b-f6098f0d3f5c/employees?company_id=holding → 201 code=HRM-ADV-201",
+      "post": {
+        "requestUrl": "/api/hrm/payroll/advance-requests/e331f739-deef-4fa7-a75b-f6098f0d3f5c/employees?company_id=holding",
+        "requestBody": {
+          "employee_code": "UAT-0100",
+          "employee_name": "UAT NV 0100",
+          "advance_amount": 1250000,
+          "employee_id": "0500220b-f289-40df-b07e-86316285439b",
+          "position": "STAFF"
+        },
+        "method": "POST",
+        "status": 201,
+        "url": "/api/hrm/payroll/advance-requests/e331f739-deef-4fa7-a75b-f6098f0d3f5c/employees?company_id=holding",
+        "code": "HRM-ADV-201",
+        "at": "2026-08-07T10:33:26.369Z",
+        "responseBodySummary": {
+          "code": "HRM-ADV-201",
+          "message": "Advance request employee created",
+          "dataKeys": [
+            "id",
+            "company_id",
+            "request_id",
+            "employee_id",
+            "employee_code",
+            "employee_name",
+            "department",
+            "position",
+            "advance_amount",
+            "note",
+            "created_at",
+            "updated_at"
+          ],
+          "employee_code": "UAT-0100",
+          "employee_name": "UAT NV 0100",
+          "advance_amount": "1250000"
+        }
+      }
+    },
+    "POST-BODY-FIELDS": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:28.407Z",
+      "summary": "body employee_code=UAT-0100 employee_name=UAT NV 0100 advance_amount=1250000",
+      "body": {
+        "employee_code": "UAT-0100",
+        "employee_name": "UAT NV 0100",
+        "advance_amount": 1250000,
+        "employee_id": "0500220b-f289-40df-b07e-86316285439b",
+        "position": "STAFF"
+      }
+    },
+    "NO-STUB-TOAST": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:28.409Z",
+      "summary": "No «API thêm NV chưa có» toast/error",
+      "toasts": [
+        {
+          "source": "dom",
+          "text": "Đã thêm nhân viên",
+          "at": "2026-08-07T10:33:28.406Z"
+        },
+        {
+          "source": "dom",
+          "text": "Đã thêm nhân viên",
+          "at": "2026-08-07T10:33:28.406Z"
+        }
+      ]
+    },
+    "FE-LIST-REFRESH": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:29.423Z",
+      "summary": "before empty=true rows=1 → after empty=false rows=1 codes=[\"UAT-0100\\t\"]",
+      "beforeList": {
+        "empty": true,
+        "hasCode": false,
+        "rowCount": 1,
+        "codes": [],
+        "bodySnippet": "Mã NV\tHọ và tên\tPhòng ban\tVị trí\tSố tiền tạm ứng\tGhi chú\t\nChưa có nhân viên nào trong bảng tạm ứng"
+      },
+      "afterList": {
+        "empty": false,
+        "hasCode": true,
+        "rowCount": 1,
+        "codes": [
+          "UAT-0100\t"
+        ],
+        "bodySnippet": "Mã NV\tHọ và tên\tPhòng ban\tVị trí\tSố tiền tạm ứng\tGhi chú\t\nUAT-0100\t\n0\nUAT NV 0100\n\t-\tSTAFF\t1.250.000 ₫\t-\t"
+      }
+    },
+    "F5-ROW-REMAINS": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:37.914Z",
+      "summary": "F5 empty=false rows=1 lookFor=UAT-0100 snippet=Mã NV\tHọ và tên\tPhòng ban\tVị trí\tSố tiền tạm ứng\tGhi chú\t\nUAT-0100\t\n0\nUAT NV 0100\n\t-\tSTAFF\t1.250.000 ₫\t-\t",
+      "f5List": {
+        "empty": false,
+        "hasCode": true,
+        "rowCount": 1,
+        "codes": [
+          "UAT-0100\t"
+        ],
+        "bodySnippet": "Mã NV\tHọ và tên\tPhòng ban\tVị trí\tSố tiền tạm ứng\tGhi chú\t\nUAT-0100\t\n0\nUAT NV 0100\n\t-\tSTAFF\t1.250.000 ₫\t-\t"
+      },
+      "empCode": "UAT-0100"
+    },
+    "CONSOLE-GATE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T10:33:37.915Z",
+      "summary": "No fatal console (0 errors total)"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/advance-requests?company_id=main",
+      "code": "HRM-ADV-200",
+      "at": "2026-08-07T10:33:18.432Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/advance-requests",
+      "code": "HRM-ADV-201",
+      "at": "2026-08-07T10:33:19.540Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/advance-requests?company_id=main",
+      "code": "HRM-ADV-200",
+      "at": "2026-08-07T10:33:19.790Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/advance-requests/e331f739-deef-4fa7-a75b-f6098f0d3f5c/employees?company_id=main",
+      "code": "HRM-ADV-200",
+      "at": "2026-08-07T10:33:23.602Z"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/payroll/advance-requests/e331f739-deef-4fa7-a75b-f6098f0d3f5c/employees?company_id=holding",
+      "code": "HRM-ADV-201",
+      "at": "2026-08-07T10:33:26.369Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/advance-requests?company_id=main",
+      "code": "HRM-ADV-200",
+      "at": "2026-08-07T10:33:26.726Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/advance-requests/e331f739-deef-4fa7-a75b-f6098f0d3f5c/employees?company_id=main",
+      "code": "HRM-ADV-200",
+      "at": "2026-08-07T10:33:26.748Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/advance-requests/e331f739-deef-4fa7-a75b-f6098f0d3f5c/employees?company_id=main",
+      "code": "HRM-ADV-200",
+      "at": "2026-08-07T10:33:27.031Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/advance-requests?company_id=main",
+      "code": "HRM-ADV-200",
+      "at": "2026-08-07T10:33:34.281Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/payroll/advance-requests/e331f739-deef-4fa7-a75b-f6098f0d3f5c/employees?company_id=main",
+      "code": "HRM-ADV-200",
+      "at": "2026-08-07T10:33:36.648Z"
+    }
+  ],
+  "postEmployees": {
+    "requestUrl": "/api/hrm/payroll/advance-requests/e331f739-deef-4fa7-a75b-f6098f0d3f5c/employees?company_id=holding",
+    "requestBody": {
+      "employee_code": "UAT-0100",
+      "employee_name": "UAT NV 0100",
+      "advance_amount": 1250000,
+      "employee_id": "0500220b-f289-40df-b07e-86316285439b",
+      "position": "STAFF"
+    },
+    "method": "POST",
+    "status": 201,
+    "url": "/api/hrm/payroll/advance-requests/e331f739-deef-4fa7-a75b-f6098f0d3f5c/employees?company_id=holding",
+    "code": "HRM-ADV-201",
+    "at": "2026-08-07T10:33:26.369Z",
+    "responseBodySummary": {
+      "code": "HRM-ADV-201",
+      "message": "Advance request employee created",
+      "dataKeys": [
+        "id",
+        "company_id",
+        "request_id",
+        "employee_id",
+        "employee_code",
+        "employee_name",
+        "department",
+        "position",
+        "advance_amount",
+        "note",
+        "created_at",
+        "updated_at"
+      ],
+      "employee_code": "UAT-0100",
+      "employee_name": "UAT NV 0100",
+      "advance_amount": "1250000"
+    }
+  },
+  "consoleErrors": [],
+  "pageErrors": [],
+  "toasts": [
+    {
+      "source": "dom",
+      "text": "Đã thêm nhân viên",
+      "at": "2026-08-07T10:33:28.406Z"
+    },
+    {
+      "source": "dom",
+      "text": "Đã thêm nhân viên",
+      "at": "2026-08-07T10:33:28.406Z"
+    }
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-input-pack-qa-03/00-payroll.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-input-pack-qa-03/01-create-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-input-pack-qa-03/02-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-input-pack-qa-03/03-detail-pending.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-input-pack-qa-03/04-add-emp-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-input-pack-qa-03/05-emp-selected.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-input-pack-qa-03/06-after-add.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-input-pack-qa-03/03-detail-pending.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-amis-parity-pay-input-pack-qa-03/07-after-f5.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T10:33:12.817Z",
+      "msg": "goto /hr/payroll"
+    },
+    {
+      "at": "2026-08-07T10:33:18.107Z",
+      "msg": "calculate menu",
+      "items": [
+        "Lập bảng lương",
+        "Danh sách bảng lương",
+        "Tạm ứng",
+        "Mẫu bảng lương",
+        "Bảng quyết toán thuế"
+      ]
+    },
+    {
+      "at": "2026-08-07T10:33:18.972Z",
+      "msg": "advance tab: Tạm ứng"
+    },
+    {
+      "at": "2026-08-07T10:33:18.976Z",
+      "msg": "click Tạo bảng tạm ứng"
+    },
+    {
+      "at": "2026-08-07T10:33:24.900Z",
+      "msg": "click Thêm nhân viên"
+    },
+    {
+      "at": "2026-08-07T10:33:29.424Z",
+      "msg": "F5 reload detail"
+    },
+    {
+      "at": "2026-08-07T10:33:33.931Z",
+      "msg": "calculate menu",
+      "items": [
+        "Lập bảng lương",
+        "Danh sách bảng lương",
+        "Tạm ứng",
+        "Mẫu bảng lương",
+        "Bảng quyết toán thuế"
+      ]
+    }
+  ],
+  "residuals": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T10:33:38.164Z"
+}

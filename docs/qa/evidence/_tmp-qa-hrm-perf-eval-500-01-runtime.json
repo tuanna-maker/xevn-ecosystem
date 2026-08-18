@@ -1,0 +1,132 @@
+{
+  "work_item_id": "QA-HRM-PERF-EVAL-500-01",
+  "fix_under_test": "D-HRM-PERF-EVAL-500-01",
+  "startedAt": "2026-07-30T15:17:34.221Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed",
+    "companyId": "main"
+  },
+  "l0": {
+    "qc_dev_stack": {
+      "exit": 3221226505,
+      "stdoutTail": "\n> xevn-ecosystem@1.0.0 qc:dev-stack C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\n> node ./scripts/qc-dev-stack.mjs\n\nqc:dev-stack — xevn-ecosystem (HRM + XBOS + portal)\n\n✓ hrm-api: HTTP 200 ← http://127.0.0.1:28001/api/hrm\n✓ xbos-api: HTTP 200 ← http://127.0.0.1:28002/api/xbos\n✓ web-portal (optional): HTTP 200 ← http://127.0.0.1:5173\n\nHRM + XBOS healthy — có thể chấp nhận bước QC dev (chạy thêm `pnpm run qc:fe-be-health` trước UAT).\n ELIFECYCLE  Command failed with exit code 3221226505.\n"
+    },
+    "qc_fe_be_health": {
+      "exit": 0,
+      "stdoutTail": "TP 200  http://127.0.0.1:28001/api/hrm/\nPASS  xbos-api-health  HTTP 200  http://127.0.0.1:28002/api/xbos\nPASS  web-portal  HTTP 200  http://127.0.0.1:5173\nPASS  portal-login  token ok\nPASS  hrm-employees-direct  HTTP 200  http://127.0.0.1:28001/api/hrm/employees?page_size=5&company_id=main\nPASS  hrm-catalog-sync-direct  HTTP 200  http://127.0.0.1:28001/api/hrm/catalog-sync\nPASS  portal-proxy-hrm-employees  HTTP 200  http://127.0.0.1:5173/api/hrm/employees?page_size=5&company_id=main\nPASS  portal-proxy-hrm-catalog  HTTP 200  http://127.0.0.1:5173/api/hrm/catalog-sync\n\n=== Summary: ALL PASS ===\n"
+    }
+  },
+  "load1": {
+    "network": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/",
+        "at": "2026-07-30T15:17:44.699Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/",
+        "at": "2026-07-30T15:17:44.699Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/operating-units",
+        "at": "2026-07-30T15:17:45.728Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/company-subscription?company_id=main",
+        "at": "2026-07-30T15:17:45.881Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/settings-catalogs",
+        "at": "2026-07-30T15:17:47.193Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/performance/cycles?company_id=main",
+        "at": "2026-07-30T15:17:47.349Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/performance/evaluations?company_id=main",
+        "at": "2026-07-30T15:17:47.373Z"
+      }
+    ],
+    "evalHit": {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/performance/evaluations?company_id=main",
+      "at": "2026-07-30T15:17:47.373Z"
+    },
+    "banner": false,
+    "console500": []
+  },
+  "f5": {
+    "network": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/",
+        "at": "2026-07-30T15:17:53.901Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/",
+        "at": "2026-07-30T15:17:53.901Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/operating-units",
+        "at": "2026-07-30T15:17:54.395Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/company-subscription?company_id=main",
+        "at": "2026-07-30T15:17:54.600Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/performance/cycles?company_id=main",
+        "at": "2026-07-30T15:17:54.976Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/performance/evaluations?company_id=main",
+        "at": "2026-07-30T15:17:55.005Z"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "/api/hrm/settings-catalogs",
+        "at": "2026-07-30T15:17:55.006Z"
+      }
+    ],
+    "evalHit": {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/performance/evaluations?company_id=main",
+      "at": "2026-07-30T15:17:55.005Z"
+    },
+    "banner": false,
+    "console500": []
+  },
+  "hardFails": [],
+  "verdict": "PASS_TO_PM",
+  "finishedAt": "2026-07-30T15:17:59.186Z"
+}

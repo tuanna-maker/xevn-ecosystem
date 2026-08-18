@@ -1,0 +1,297 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-CATALOG-QA-01",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-CATALOG-BE-01 READY_FOR_QA",
+  "program": "PO-HRM-CONTINUOUS-W8-20260807",
+  "stamp": "EMPSTQA-MSK20G7H",
+  "git_head": "dc930c5",
+  "lane": "L1_API (≠ UF 🟢)",
+  "u65": "zero-seed · no pnpm seed · admin CREATE N+1 via Nest API then invent",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "headerCompany": "main",
+    "apiCompany": "holding"
+  },
+  "honesty": {
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "contracts_printable_ready": false,
+    "c_slice_ne_module": true,
+    "deny_module_emp_uat": true,
+    "deny_flip_ready": true,
+    "deny_uf_green_from_l1": true,
+    "seed_used": false
+  },
+  "open_status": "hr_emp_st_msk20g7h",
+  "open_reason": "hr_emp_str_msk20g7h",
+  "invent_status": "zz_invent_emp_st_msk20g7h",
+  "invent_reason": "zz_invent_emp_str_msk20g7h",
+  "dist": {
+    "dist_exists": true,
+    "has_st_service": true,
+    "has_st_constants": true,
+    "has_str_service": true,
+    "has_str_constants": true,
+    "controller_has_st_effective": true,
+    "controller_has_str_effective": true,
+    "src_has_status_key": true,
+    "src_has_reason_key": true,
+    "src_drop_chk": true,
+    "stale_dist": false,
+    "note": "dist ST/STR + effective routes present · KEY constants in src"
+  },
+  "seals": {
+    "emp_custom_cns": "EMPCFQA-MSK14LUH",
+    "merge_token_ext": "EMPTOKEXTQA-MSJ57PE1",
+    "cited_in": [
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-custom-field-qa-01.md",
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-custom-field-qc-01.md",
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-merge-token-emp-ext-qc-01.md",
+      "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-status-catalog-be-01.md"
+    ],
+    "reopened": false,
+    "note": "cite-only RETAIN · suite not re-executed · DOC/ET · ATT/SI/CTR per BE-01 must_keep"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "steps": [
+    {
+      "id": "DIST_GATE",
+      "at": "2026-08-08T07:30:19.338Z",
+      "verdict": "PASS",
+      "summary": "dist ST/STR + effective routes present · KEY constants in src",
+      "dist_exists": true,
+      "has_st_service": true,
+      "has_st_constants": true,
+      "has_str_service": true,
+      "has_str_constants": true,
+      "controller_has_st_effective": true,
+      "controller_has_str_effective": true,
+      "src_has_status_key": true,
+      "src_has_reason_key": true,
+      "src_drop_chk": true,
+      "stale_dist": false,
+      "note": "dist ST/STR + effective routes present · KEY constants in src"
+    },
+    {
+      "id": "L0",
+      "at": "2026-08-08T07:30:19.377Z",
+      "verdict": "PASS",
+      "summary": "hrm=200 xbos=200 portal=200"
+    },
+    {
+      "id": "UNAUTH_EFF",
+      "at": "2026-08-08T07:30:19.394Z",
+      "verdict": "PASS",
+      "summary": "401 HRM-AUTH-001",
+      "status": 401,
+      "code": "HRM-AUTH-001"
+    },
+    {
+      "id": "LOGIN",
+      "at": "2026-08-08T07:30:19.471Z",
+      "verdict": "PASS",
+      "summary": "via http://127.0.0.1:5173/api/xbos/auth/login"
+    },
+    {
+      "id": "GET_ST_EFF",
+      "at": "2026-08-08T07:30:20.007Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-EMP-ST-200 total=3"
+    },
+    {
+      "id": "GET_STR_EFF",
+      "at": "2026-08-08T07:30:20.093Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-EMP-STR-200 total=0"
+    },
+    {
+      "id": "ADMIN_ST_N1",
+      "at": "2026-08-08T07:30:20.141Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-EMP-ST-200 key=hr_emp_st_msk20g7h"
+    },
+    {
+      "id": "EFF_HAS_OPEN_ST",
+      "at": "2026-08-08T07:30:20.459Z",
+      "verdict": "PASS",
+      "summary": "hasOpenKey=true total=4"
+    },
+    {
+      "id": "ADMIN_STR_N1",
+      "at": "2026-08-08T07:30:20.500Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-EMP-STR-200 key=hr_emp_str_msk20g7h"
+    },
+    {
+      "id": "PICK_EMPLOYEE",
+      "at": "2026-08-08T07:30:20.852Z",
+      "verdict": "PASS",
+      "summary": "id=0500220b-f289-40df-b07e-86316285439b company=holding status_before=active"
+    },
+    {
+      "id": "ADMIN_ST_N1_EMP_SCOPE",
+      "at": "2026-08-08T07:30:20.877Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-EMP-ST-200 company=holding"
+    },
+    {
+      "id": "ADMIN_STR_N1_EMP_SCOPE",
+      "at": "2026-08-08T07:30:20.915Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-EMP-STR-200"
+    },
+    {
+      "id": "EFF_EMP_SCOPE",
+      "at": "2026-08-08T07:30:21.226Z",
+      "verdict": "PASS",
+      "summary": "company=holding total=4 hasOpen=true"
+    },
+    {
+      "id": "VAL-EMP-ST-CNS-01",
+      "at": "2026-08-08T07:30:21.863Z",
+      "verdict": "PASS",
+      "summary": "400 HRM-EMP-STATUS-KEY"
+    },
+    {
+      "id": "VAL-EMP-STR-CNS-01",
+      "at": "2026-08-08T07:30:22.502Z",
+      "verdict": "PASS",
+      "summary": "400 HRM-EMP-STATUS-REASON-KEY"
+    },
+    {
+      "id": "CHK_ABSENT",
+      "at": "2026-08-08T07:30:23.801Z",
+      "verdict": "PASS",
+      "summary": "200 HRM-EMP-202 persisted status=hr_emp_st_msk20g7h (≠ closed active|inactive only)"
+    },
+    {
+      "id": "RESTORE_STATUS",
+      "at": "2026-08-08T07:30:24.761Z",
+      "verdict": "SPOT",
+      "summary": "200 HRM-EMP-202 → active"
+    },
+    {
+      "id": "SEALS_RETAIN",
+      "at": "2026-08-08T07:30:24.762Z",
+      "verdict": "PASS",
+      "summary": "cite-only RETAIN · suite not re-executed · DOC/ET · ATT/SI/CTR per BE-01 must_keep"
+    }
+  ],
+  "val": {
+    "AC-PLT-EMP-STATUS-01c-ST": {
+      "expect": "GET employment-statuses/effective 2xx · empty [] OK",
+      "status": 200,
+      "code": "HRM-EMP-ST-200",
+      "total": 3,
+      "sample": [
+        "active",
+        "inactive",
+        "probation"
+      ],
+      "verdict": "PASS"
+    },
+    "AC-PLT-EMP-STATUS-01c-STR": {
+      "expect": "GET status-reasons/effective 2xx · empty [] OK",
+      "status": 200,
+      "code": "HRM-EMP-STR-200",
+      "total": 0,
+      "sample": [],
+      "verdict": "PASS"
+    },
+    "AC-PLT-EMP-STATUS-01d": {
+      "expect": "Admin CREATE N+1 open status_key 2xx",
+      "status": 200,
+      "code": "HRM-EMP-ST-200",
+      "open_key": "hr_emp_st_msk20g7h",
+      "summary": "{\"success\":true,\"code\":\"HRM-EMP-ST-200\",\"message\":\"Employment status upserted\",\"data\":{\"id\":\"e5edab1d-4b1b-459d-a2ab-ba8c44bcaff7\",\"companyId\":\"holding\",\"statusKey\":\"hr_emp_st_msk20g7h\",\"nameVi\":\"QA EMP status EMPSTQA-MSK20G7H\",\"sortOrder\":990,\"isWorkforceActive\":true,\"isTerminal\":false,\"requiresReason\":true,\"countsTowardHeadcount\":true,\"legacyAliasKeys\":[],\"metadata\":null,\"status\":\"active\",\"source\":\"emp_native\",\"catalogKind\":\"emp_employment_status\",\"archivedAt\":null,\"updatedAt\":\"2026-08-08T07:30:31.129Z\",\"createdAt\":\"2026-08-08T07:30:31.129Z\"},\"timestamp\":\"2026-08-08T07:30:20.140Z\"}",
+      "verdict": "PASS"
+    },
+    "AC-PLT-EMP-STATUS-01d-STR": {
+      "expect": "Admin CREATE N+1 open reason_key 2xx",
+      "status": 200,
+      "code": "HRM-EMP-STR-200",
+      "open_key": "hr_emp_str_msk20g7h",
+      "verdict": "PASS"
+    },
+    "AC-PLT-EMP-STATUS-01b": {
+      "expect": "invent status when EFF>0 → 4xx HRM-EMP-STATUS-KEY",
+      "invent": "zz_invent_emp_st_msk20g7h",
+      "status": 400,
+      "code": "HRM-EMP-STATUS-KEY",
+      "message": "status 'zz_invent_emp_st_msk20g7h' is not in effective employment status catalog (free-text invent forbidden when EFF ≠ empty)",
+      "eff_count": 4,
+      "verdict": "PASS"
+    },
+    "VAL-EMP-STR-CNS-01": {
+      "expect": "invent reason when required/EFF>0 → 4xx HRM-EMP-STATUS-REASON-KEY",
+      "invent": "zz_invent_emp_str_msk20g7h",
+      "with_status": "hr_emp_st_msk20g7h",
+      "status": 400,
+      "code": "HRM-EMP-STATUS-REASON-KEY",
+      "message": "status_reason_key 'zz_invent_emp_str_msk20g7h' is not in effective status reason catalog",
+      "verdict": "PASS"
+    },
+    "CHK_EMPLOYEES_STATUS_ABSENT": {
+      "expect": "open key outside active|inactive persists (or no CHECK reject)",
+      "open_key": "hr_emp_st_msk20g7h",
+      "status": 200,
+      "code": "HRM-EMP-202",
+      "persisted_status": "hr_emp_st_msk20g7h",
+      "chk_reject_observed": false,
+      "src_drop_chk": true,
+      "verdict": "PASS"
+    },
+    "SEALS_RETAIN": {
+      "verdict": "PASS",
+      "emp_custom_cns": "EMPCFQA-MSK14LUH",
+      "merge_token_ext": "EMPTOKEXTQA-MSJ57PE1",
+      "cited_in": [
+        "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-custom-field-qa-01.md",
+        "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-custom-field-qc-01.md",
+        "docs/qa/evidence/po-hrm-dynamic-config-platform-merge-token-emp-ext-qc-01.md",
+        "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-status-catalog-be-01.md"
+      ],
+      "reopened": false,
+      "note": "cite-only RETAIN · suite not re-executed · DOC/ET · ATT/SI/CTR per BE-01 must_keep"
+    },
+    "AC-PLT-EMP-STATUS-01H": {
+      "verdict": "PASS",
+      "honesty": {
+        "hrm_personnel_uat_ready": false,
+        "employees_e2e_linkage_ready": false,
+        "contracts_printable_ready": false,
+        "c_slice_ne_module": true,
+        "deny_module_emp_uat": true,
+        "deny_flip_ready": true,
+        "deny_uf_green_from_l1": true,
+        "seed_used": false
+      },
+      "note": "flags remain false · DENY invent module EMP UAT / flip ready · C-SLICE-≠-MODULE"
+    }
+  },
+  "residuals": [
+    {
+      "id": "R-PLT-EMP-ST-FE-01",
+      "severity": "P2",
+      "owner": "dev-fe",
+      "status": "HOLD",
+      "note": "FE picker rebind Nest GET …/employment-statuses/effective — L1 PASS ≠ UF 🟢 · browser after FE-01"
+    }
+  ],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "startedAt": "2026-08-08T07:30:19.333Z",
+  "endedAt": "2026-08-08T07:30:24.763Z"
+}

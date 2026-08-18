@@ -1,0 +1,529 @@
+{
+  "work_item_id": "W1-B-04-AUTH-FE-QA-RET2",
+  "startedAt": "2026-08-03T13:22:19.942Z",
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "u65": "zero-seed",
+    "hdsd_align": true
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200,
+    "appTsx": 200
+  },
+  "clicks": [
+    {
+      "step": "assert-login-form-visible",
+      "at": "2026-08-03T13:22:20.541Z"
+    },
+    {
+      "step": "goto-login-clear",
+      "at": "2026-08-03T13:22:22.171Z",
+      "url": "http://127.0.0.1:5173/login"
+    },
+    {
+      "step": "fill-email",
+      "at": "2026-08-03T13:22:24.955Z",
+      "email": "ceo@xe.vn"
+    },
+    {
+      "step": "fill-password",
+      "at": "2026-08-03T13:22:25.047Z",
+      "passwordLen": 25
+    },
+    {
+      "step": "click-submit-login",
+      "at": "2026-08-03T13:22:25.103Z"
+    },
+    {
+      "step": "goto-login-clear",
+      "at": "2026-08-03T13:22:28.136Z",
+      "url": "http://127.0.0.1:5173/login"
+    },
+    {
+      "step": "fill-email",
+      "at": "2026-08-03T13:22:28.892Z",
+      "email": "ceo@xe.vn"
+    },
+    {
+      "step": "fill-password",
+      "at": "2026-08-03T13:22:28.963Z",
+      "passwordLen": 9
+    },
+    {
+      "step": "click-submit-login",
+      "at": "2026-08-03T13:22:29.013Z"
+    },
+    {
+      "step": "goto-login-clear",
+      "at": "2026-08-03T13:22:45.201Z",
+      "url": "http://127.0.0.1:5173/login"
+    },
+    {
+      "step": "fill-email",
+      "at": "2026-08-03T13:22:45.910Z",
+      "email": "admin@xe.vn"
+    },
+    {
+      "step": "fill-password",
+      "at": "2026-08-03T13:22:46.017Z",
+      "passwordLen": 9
+    },
+    {
+      "step": "click-submit-login",
+      "at": "2026-08-03T13:22:46.175Z"
+    },
+    {
+      "step": "reload-F5",
+      "at": "2026-08-03T13:23:02.365Z"
+    }
+  ],
+  "ac": [
+    {
+      "id": "L0",
+      "verdict": "🟢",
+      "detail": "portal=200 xbos=200 hrm=200 App.tsx=200",
+      "at": "2026-08-03T13:22:19.988Z"
+    },
+    {
+      "id": "FORM",
+      "verdict": "🟢",
+      "detail": "login form visible=true; body=\"XeVN Portal Đăng nhập tập đoàn / công ty thành viên Email Mật khẩu Đăng nhập Dev: du-lich.ceo@xe.vn / Xevn@2026\"",
+      "at": "2026-08-03T13:22:22.170Z"
+    },
+    {
+      "id": "CASE-A",
+      "verdict": "🟢",
+      "detail": "wrong pwd status=401 code=XBOS-AUTH-401 stillLogin=true msgHint=true; body=\"XeVN Portal Đăng nhập tập đoàn / công ty thành viên Email Mật khẩu Email hoặc mật khẩu không đúng Đă\"",
+      "at": "2026-08-03T13:22:28.134Z",
+      "loginNet": {
+        "method": "POST",
+        "status": 401,
+        "url": "/api/xbos/auth/login",
+        "at": "2026-08-03T13:22:25.246Z",
+        "code": "XBOS-AUTH-401",
+        "message": "Email hoặc mật khẩu không đúng"
+      }
+    },
+    {
+      "id": "CASE-B-AC1-labels",
+      "verdict": "🔴",
+      "detail": "login 201/XBOS-AUTH-200; UI mode=missing viteOverlay=true; role=false tenant=false raw=false; ui=\"\"",
+      "at": "2026-08-03T13:22:45.200Z",
+      "be": {
+        "tenantId": "xevn",
+        "roleCode": "group_ceo",
+        "role_label": "CEO Tập đoàn",
+        "company_label": "Công ty chính",
+        "tenant_label": "Tập đoàn XeVN",
+        "membershipId": "9db4e67b-4840-42fd-8c88-b528cb278ac9"
+      },
+      "ui": {
+        "mode": "missing",
+        "text": "",
+        "switcherOpenable": false,
+        "viteOverlay": true,
+        "url": "http://127.0.0.1:5173/command-center",
+        "bodySnippet": ""
+      }
+    },
+    {
+      "id": "CASE-B-AC2-membershipId",
+      "verdict": "🟡",
+      "detail": "path=blocked-no-switcher selectOk=true mid=9db4e67b-4840-42fd-8c88-b528cb278ac9",
+      "at": "2026-08-03T13:23:02.363Z",
+      "selectDetail": {
+        "path": "blocked-no-switcher",
+        "ui": {
+          "mode": "missing",
+          "text": "",
+          "switcherOpenable": false,
+          "viteOverlay": true,
+          "url": "http://127.0.0.1:5173/command-center",
+          "bodySnippet": ""
+        },
+        "ceoMid": "9db4e67b-4840-42fd-8c88-b528cb278ac9",
+        "viteOverlay": true,
+        "failedSrc": [
+          {
+            "status": 500,
+            "url": "/src/pages/command-center/CommandCenterPage.tsx",
+            "at": "2026-08-03T13:22:30.426Z"
+          },
+          {
+            "status": 500,
+            "url": "/src/pages/command-center/CommandCenterPage.tsx",
+            "at": "2026-08-03T13:22:46.968Z"
+          }
+        ]
+      }
+    },
+    {
+      "id": "CASE-C-F5",
+      "verdict": "🔴",
+      "detail": "F5 mid=4382b3d5-3c4a-42fa-a056-fafce0799d07 mode=missing overlay=true raw=false ui=\"\"",
+      "at": "2026-08-03T13:23:05.936Z",
+      "ui": {
+        "mode": "missing",
+        "text": "",
+        "switcherOpenable": false,
+        "viteOverlay": true,
+        "url": "http://127.0.0.1:5173/command-center",
+        "bodySnippet": ""
+      },
+      "sess": {
+        "mid": "4382b3d5-3c4a-42fa-a056-fafce0799d07",
+        "jwtMembershipId": "4382b3d5-3c4a-42fa-a056-fafce0799d07",
+        "jwtRoleCode": "group_ceo",
+        "hasToken": true
+      }
+    }
+  ],
+  "cases": {
+    "A": {
+      "name": "CaseA-wrong-password",
+      "steps": [
+        {
+          "loginStatus": 401,
+          "code": "XBOS-AUTH-401",
+          "message": "Email hoặc mật khẩu không đúng",
+          "stillLogin": true,
+          "bodyHasFailHint": true,
+          "bodySlice": "XeVN Portal Đăng nhập tập đoàn / công ty thành viên Email Mật khẩu Email hoặc mật khẩu không đúng Đăng nhập Dev: du-lich.ceo@xe.vn / Xevn@2026"
+        }
+      ]
+    },
+    "B": {
+      "name": "CaseB-ceo-login-labels-select",
+      "steps": [
+        {
+          "loginOk": true,
+          "loginNet": {
+            "status": 201,
+            "code": "XBOS-AUTH-200"
+          },
+          "be": {
+            "tenantId": "xevn",
+            "roleCode": "group_ceo",
+            "role_label": "CEO Tập đoàn",
+            "company_label": "Công ty chính",
+            "tenant_label": "Tập đoàn XeVN",
+            "membershipId": "9db4e67b-4840-42fd-8c88-b528cb278ac9"
+          },
+          "ui": {
+            "mode": "missing",
+            "text": "",
+            "switcherOpenable": false,
+            "viteOverlay": true,
+            "url": "http://127.0.0.1:5173/command-center",
+            "bodySnippet": ""
+          },
+          "sess": {
+            "mid": "9db4e67b-4840-42fd-8c88-b528cb278ac9",
+            "jwtMembershipId": "9db4e67b-4840-42fd-8c88-b528cb278ac9",
+            "jwtRoleCode": "group_ceo",
+            "hasToken": true
+          }
+        }
+      ],
+      "selectDetail": {
+        "path": "blocked-no-switcher",
+        "ui": {
+          "mode": "missing",
+          "text": "",
+          "switcherOpenable": false,
+          "viteOverlay": true,
+          "url": "http://127.0.0.1:5173/command-center",
+          "bodySnippet": ""
+        },
+        "ceoMid": "9db4e67b-4840-42fd-8c88-b528cb278ac9",
+        "viteOverlay": true,
+        "failedSrc": [
+          {
+            "status": 500,
+            "url": "/src/pages/command-center/CommandCenterPage.tsx",
+            "at": "2026-08-03T13:22:30.426Z"
+          },
+          {
+            "status": 500,
+            "url": "/src/pages/command-center/CommandCenterPage.tsx",
+            "at": "2026-08-03T13:22:46.968Z"
+          }
+        ]
+      },
+      "finalUi": {
+        "mode": "missing",
+        "text": "",
+        "switcherOpenable": false,
+        "viteOverlay": true,
+        "url": "http://127.0.0.1:5173/command-center",
+        "bodySnippet": ""
+      },
+      "sess": {
+        "mid": "9db4e67b-4840-42fd-8c88-b528cb278ac9",
+        "jwtMembershipId": "9db4e67b-4840-42fd-8c88-b528cb278ac9",
+        "jwtRoleCode": "group_ceo",
+        "hasToken": true
+      }
+    },
+    "C": {
+      "ui": {
+        "mode": "missing",
+        "text": "",
+        "switcherOpenable": false,
+        "viteOverlay": true,
+        "url": "http://127.0.0.1:5173/command-center",
+        "bodySnippet": ""
+      },
+      "sess": {
+        "mid": "4382b3d5-3c4a-42fa-a056-fafce0799d07",
+        "jwtMembershipId": "4382b3d5-3c4a-42fa-a056-fafce0799d07",
+        "jwtRoleCode": "group_ceo",
+        "hasToken": true
+      }
+    }
+  },
+  "network": [
+    {
+      "method": "POST",
+      "status": 401,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-03T13:22:25.246Z",
+      "code": "XBOS-AUTH-401",
+      "message": "Email hoặc mật khẩu không đúng"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-03T13:22:29.088Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Đăng nhập thành công",
+      "memberships": [
+        {
+          "tenantId": "xevn",
+          "roleCode": "group_ceo",
+          "role_label": "CEO Tập đoàn",
+          "company_label": "Công ty chính",
+          "tenant_label": "Tập đoàn XeVN",
+          "membershipId": "9db4e67b-4840-42fd-8c88-b528cb278ac9"
+        }
+      ],
+      "jwtMembershipId": "9db4e67b-4840-42fd-8c88-b528cb278ac9",
+      "jwtRoleCode": "group_ceo"
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "at": "2026-08-03T13:22:46.231Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Đăng nhập thành công",
+      "memberships": [
+        {
+          "tenantId": "xevn",
+          "roleCode": "group_ceo",
+          "role_label": "CEO Tập đoàn",
+          "company_label": "Công ty chính",
+          "tenant_label": "Tập đoàn XeVN",
+          "membershipId": "4382b3d5-3c4a-42fa-a056-fafce0799d07"
+        },
+        {
+          "tenantId": "xe-tmdv",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+          "membershipId": "0b7f492e-6a34-458b-b46c-7f1ac2f9e664"
+        },
+        {
+          "tenantId": "visun",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty TNHH Du lịch Visun",
+          "membershipId": "183e052d-2fac-468a-b4a1-afcf45067610"
+        },
+        {
+          "tenantId": "xe-du-lich",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty TNHH Du lịch X.E Việt Nam",
+          "membershipId": "28e72b66-3ea3-49d8-bca1-2ea1ac212725"
+        },
+        {
+          "tenantId": "xe-vietnam",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty TNHH X.E Việt Nam",
+          "membershipId": "74881697-0b55-45f9-8c37-14850e7cc0c7"
+        }
+      ],
+      "jwtMembershipId": "4382b3d5-3c4a-42fa-a056-fafce0799d07",
+      "jwtRoleCode": "group_ceo"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-03T13:23:02.691Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Session loaded",
+      "memberships": [
+        {
+          "tenantId": "xevn",
+          "roleCode": "group_ceo",
+          "role_label": "CEO Tập đoàn",
+          "company_label": "Công ty chính",
+          "tenant_label": "Tập đoàn XeVN",
+          "membershipId": "4382b3d5-3c4a-42fa-a056-fafce0799d07"
+        },
+        {
+          "tenantId": "xe-tmdv",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+          "membershipId": "0b7f492e-6a34-458b-b46c-7f1ac2f9e664"
+        },
+        {
+          "tenantId": "visun",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty TNHH Du lịch Visun",
+          "membershipId": "183e052d-2fac-468a-b4a1-afcf45067610"
+        },
+        {
+          "tenantId": "xe-du-lich",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty TNHH Du lịch X.E Việt Nam",
+          "membershipId": "28e72b66-3ea3-49d8-bca1-2ea1ac212725"
+        },
+        {
+          "tenantId": "xe-vietnam",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty TNHH X.E Việt Nam",
+          "membershipId": "74881697-0b55-45f9-8c37-14850e7cc0c7"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "at": "2026-08-03T13:23:03.315Z",
+      "code": "XBOS-AUTH-200",
+      "message": "Session loaded",
+      "memberships": [
+        {
+          "tenantId": "xevn",
+          "roleCode": "group_ceo",
+          "role_label": "CEO Tập đoàn",
+          "company_label": "Công ty chính",
+          "tenant_label": "Tập đoàn XeVN",
+          "membershipId": "4382b3d5-3c4a-42fa-a056-fafce0799d07"
+        },
+        {
+          "tenantId": "xe-tmdv",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+          "membershipId": "0b7f492e-6a34-458b-b46c-7f1ac2f9e664"
+        },
+        {
+          "tenantId": "visun",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty TNHH Du lịch Visun",
+          "membershipId": "183e052d-2fac-468a-b4a1-afcf45067610"
+        },
+        {
+          "tenantId": "xe-du-lich",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty TNHH Du lịch X.E Việt Nam",
+          "membershipId": "28e72b66-3ea3-49d8-bca1-2ea1ac212725"
+        },
+        {
+          "tenantId": "xe-vietnam",
+          "roleCode": "subsidiary_ceo",
+          "role_label": "CEO công ty thành viên",
+          "company_label": "Công ty chính",
+          "tenant_label": "Công ty TNHH X.E Việt Nam",
+          "membershipId": "74881697-0b55-45f9-8c37-14850e7cc0c7"
+        }
+      ]
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at RenderedRoute (http://127.0.0.1:5173/node_modules/.vite/deps/react-router-dom.js?v=186c2770:4131:5)\n    at Outlet (http://127.0.0.1:5173/node_modules/.vite/deps/react-router-dom.js?v=186c2770:4537:26)\n ",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at RenderedRoute (http://127.0.0.1:5173/node_modules/.vite/deps/react-router-dom.js?v=186c2770:4131:5)\n    at Outlet (http://127.0.0.1:5173/node_modules/.vite/deps/react-router-dom.js?v=186c2770:4537:26)\n ",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at RenderedRoute (http://127.0.0.1:5173/node_modules/.vite/deps/react-router-dom.js?v=186c2770:4131:5)\n    at Outlet (http://127.0.0.1:5173/node_modules/.vite/deps/react-router-dom.js?v=186c2770:4537:26)\n "
+  ],
+  "pageErrors": [
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/src/pages/command-center/CommandCenterPage.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/src/pages/command-center/CommandCenterPage.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/src/pages/command-center/CommandCenterPage.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/src/pages/command-center/CommandCenterPage.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/src/pages/command-center/CommandCenterPage.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/src/pages/command-center/CommandCenterPage.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/src/pages/command-center/CommandCenterPage.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/src/pages/command-center/CommandCenterPage.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:5173/src/pages/command-center/CommandCenterPage.tsx"
+  ],
+  "failedSrc": [
+    {
+      "status": 500,
+      "url": "/src/pages/command-center/CommandCenterPage.tsx",
+      "at": "2026-08-03T13:22:30.426Z"
+    },
+    {
+      "status": 500,
+      "url": "/src/pages/command-center/CommandCenterPage.tsx",
+      "at": "2026-08-03T13:22:46.968Z"
+    },
+    {
+      "status": 500,
+      "url": "/src/pages/command-center/CommandCenterPage.tsx",
+      "at": "2026-08-03T13:23:03.805Z"
+    }
+  ],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-04-auth-fe-qa-ret2/00-login-form.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-04-auth-fe-qa-ret2/A-wrong-password.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-04-auth-fe-qa-ret2/B-ceo-after-login.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-04-auth-fe-qa-ret2/B-admin-after-login.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/w1b-04-auth-fe-qa-ret2/C-after-f5.png"
+  ],
+  "bodyPreviews": {
+    "login": "XeVN Portal Đăng nhập tập đoàn / công ty thành viên Email Mật khẩu Đăng nhập Dev: du-lich.ceo@xe.vn / Xevn@2026"
+  },
+  "finishedAt": "2026-08-03T13:23:07.155Z",
+  "summary": {
+    "form": "🟢",
+    "caseA": "🟢",
+    "caseB_labels": "🔴",
+    "caseB_mid": "🟡",
+    "caseC": "🔴",
+    "clickCount": 14,
+    "networkAuthCount": 5,
+    "failedSrcCount": 3,
+    "idleViewportViolation": false
+  },
+  "ack_status": "FAIL"
+}

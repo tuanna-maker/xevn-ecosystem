@@ -1,0 +1,1067 @@
+{
+  "work_item_id": "PO-HRM-MVP-GD1-CORE-02B-CLUSTER-QA-01",
+  "program": "PO-HRM-MVP-GD1-CONTINUOUS",
+  "uc_ids": [
+    "UC-BP-CORE-02b"
+  ],
+  "stamp": "CORE02BQA-MSLEDIAQ",
+  "startedAt": "2026-08-09T06:04:10.148Z",
+  "cite_seals": {
+    "empcf": "EMPCFQA-MSK14LUH",
+    "ext": "EMPTOKEXTQA-MSJ57PE1",
+    "core09d": "CORE09DQC1-MSLDR8I3",
+    "peers": [
+      "CORE09DQC1-MSLDR8I3",
+      "CORE09CQC1-MSLBXMUT",
+      "CORE09BQC1-MSLB05DZ",
+      "CORE09AQC1-MSLA4LX9",
+      "CORE08QC1-MSL9BFFE",
+      "CORE02QC1-MSL80DU6",
+      "CORE01QC1-MSL6WMS7"
+    ]
+  },
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "apiCompanyId": "holding"
+  },
+  "u65": "zero-seed-browser-cite-smoke",
+  "honesty": {
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "contracts_printable_ready": false,
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "seed_used": false,
+    "c_slice_ne_module": true,
+    "deny_empcf_eq_core02b_personnel_uat": true,
+    "deny_core09d_printable_closed8_done": true,
+    "fe_cta_p2_hold": "R-PLT-EMP-CF-FE-01",
+    "profile_groups_json_hold": true,
+    "nest_emp_custom_field_deny": true,
+    "nest_core_deny": true,
+    "reopen_j_core_09d_to_01": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "EXT_CODE": "qa_c02b_mslediaq",
+    "INVENT_CODE": "zz_invent_c02b_mslediaq",
+    "ALLOW_CATALOG": "hrm_employee_basic_fields"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "src_dist": {
+    "src_assert_has_KEY": true,
+    "src_tok_origin_extension_field": true,
+    "src_soft_draft": true,
+    "dist_assert_has_KEY": true,
+    "dist_tok_upsert": true,
+    "dist_settings_tok_hook": true,
+    "nest_emp_custom_field_absent": true,
+    "nest_core_controller_emp_cf_absent": true,
+    "profile_groups_json_absent_in_src_spot": true
+  },
+  "fe_spot": {
+    "employee_form_exists": true,
+    "binds_four_catalogs": true,
+    "dynamic_fields": true,
+    "empty_cta_p2_hold_note": true,
+    "nest_emp_custom_field_effective": false,
+    "group_hr_extension_items": true
+  },
+  "seal_cites": {
+    "empcf": {
+      "path": "docs/qa/evidence/po-hrm-dynamic-config-platform-emp-custom-field-qa-01.md",
+      "needle": "EMPCFQA-MSK14LUH",
+      "cited": true
+    },
+    "ext": {
+      "path": "docs/qa/evidence/po-hrm-dynamic-config-platform-merge-token-emp-ext-qa-01.md",
+      "needle": "EMPTOKEXTQA-MSJ57PE1",
+      "cited": true
+    },
+    "core09d": {
+      "path": "docs/qa/evidence/po-hrm-mvp-gd1-core-09d-cluster-qc-01.md",
+      "needle": "CORE09DQC1-MSLDR8I3",
+      "cited": true
+    },
+    "api01": {
+      "path": "docs/qa/evidence/po-hrm-mvp-gd1-core-02b-cluster-api-01.md",
+      "needle": "CONFIRMED RETAIN",
+      "cited": true
+    },
+    "peers_must_keep": [
+      {
+        "stamp": "CORE09DQC1-MSLDR8I3",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE09CQC1-MSLBXMUT",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE09BQC1-MSLB05DZ",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE09AQC1-MSLA4LX9",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE08QC1-MSL9BFFE",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE02QC1-MSL80DU6",
+        "reopen": false,
+        "note": "must_keep cite only"
+      },
+      {
+        "stamp": "CORE01QC1-MSL6WMS7",
+        "reopen": false,
+        "note": "must_keep cite only"
+      }
+    ]
+  },
+  "l1": {
+    "nest_core_deny": {
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "summary": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot GET /api/hrm/core/settings-catalogs/hrm_employee_basic_fields/items\",\"timestamp\":\"2026-08-09T06:04:10.330Z\"}",
+      "verdict": "PASS"
+    },
+    "four_catalogs": {
+      "overview_status": 200,
+      "overview_code": "HRM-SET-200",
+      "found": [
+        "hrm_employee_basic_fields",
+        "hrm_employee_personal_fields",
+        "hrm_employee_work_fields",
+        "hrm_employee_finance_fields"
+      ],
+      "perCat": [
+        {
+          "catalog": "hrm_employee_basic_fields",
+          "status": 200,
+          "code": "HRM-SET-200",
+          "count": 7,
+          "sample": [
+            {
+              "code": "basic_01",
+              "status": "active"
+            },
+            {
+              "code": "basic_02",
+              "status": "active"
+            },
+            {
+              "code": "basic_03",
+              "status": "active"
+            },
+            {
+              "code": "basic_04",
+              "status": "active"
+            },
+            {
+              "code": "company_group_hr_profile__work__qa_dl_cat_djch4y_phu_cap_tour",
+              "status": "active"
+            }
+          ]
+        },
+        {
+          "catalog": "hrm_employee_personal_fields",
+          "status": 200,
+          "code": "HRM-SET-200",
+          "count": 4,
+          "sample": [
+            {
+              "code": "pers_01",
+              "status": "active"
+            },
+            {
+              "code": "pers_02",
+              "status": "active"
+            },
+            {
+              "code": "pers_03",
+              "status": "active"
+            },
+            {
+              "code": "pers_04",
+              "status": "active"
+            }
+          ]
+        },
+        {
+          "catalog": "hrm_employee_work_fields",
+          "status": 200,
+          "code": "HRM-SET-200",
+          "count": 0,
+          "sample": []
+        },
+        {
+          "catalog": "hrm_employee_finance_fields",
+          "status": 200,
+          "code": "HRM-SET-200",
+          "count": 0,
+          "sample": []
+        }
+      ],
+      "verdict": "PASS"
+    },
+    "create_raw": {
+      "status": 201,
+      "code": "HRM-SET-209",
+      "summary": "{\"success\":true,\"code\":\"HRM-SET-209\",\"message\":\"Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).\",\"data\":{\"batchId\":\"83b0dcb6-1c66-4e0d-a32e-1b4995f010c5\",\"submitted\":1,\"status\":\"pending\",\"workflowInstanceId\":\"4f8ff547-64cd-4244-925d-33148fd0c7e2\",\"message\":\"Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).\"},\"timestamp\":\"2026-08-09T06:04:12.129Z\"}"
+    },
+    "create_f5": {
+      "companyId": "main",
+      "status": 200,
+      "hit": {
+        "code": "qa_c02b_mslediaq",
+        "status": "active"
+      }
+    },
+    "create": {
+      "status": 201,
+      "code": "HRM-SET-209",
+      "apply_KEY_denied": true,
+      "f5_present": true,
+      "f5_status": "active",
+      "companyId": "main",
+      "summary": "{\"success\":true,\"code\":\"HRM-SET-209\",\"message\":\"Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).\",\"data\":{\"batchId\":\"83b0dcb6-1c66-4e0d-a32e-1b4995f010c5\",\"submitted\":1,\"status\":\"pending\",\"workflowInstanceId\":\"4f8ff547-64cd-4244-925d-33148fd0c7e2\",\"message\":\"Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).\"},\"timestamp\":\"2026-08-09T06:04:12.129Z\"}"
+    },
+    "tok": {
+      "expect": "custom.emp.qa_c02b_mslediaq",
+      "hit": {
+        "token_key": "custom.emp.qa_c02b_mslediaq",
+        "origin": "extension_field",
+        "ring": "custom",
+        "status": "active",
+        "domain": "EMP"
+      },
+      "cite_ext_seal": "EMPTOKEXTQA-MSJ57PE1",
+      "verdict": "PASS"
+    },
+    "employee": {
+      "id": "2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "companyId": "holding",
+      "code": "HIRE-HOLDIN-MSL5T540DDDE8E"
+    },
+    "invent": {
+      "status": 422,
+      "code": "HRM-EMP-CUSTOM-FIELD-KEY",
+      "invent_code": "zz_invent_c02b_mslediaq",
+      "persisted": false,
+      "cite": "EMPCFQA-MSK14LUH",
+      "verdict": "PASS",
+      "summary": "{\"success\":false,\"code\":\"HRM-EMP-CUSTOM-FIELD-KEY\",\"message\":\"custom_fields key 'zz_invent_c02b_mslediaq' is not in Settings EMP extension effective catalog (invent/retired forbidden when EFF ≠ empty)\",\"details\":{\"key\":\"zz_invent_c02b_mslediaq\",\"code\":\"zz_invent_c02b_mslediaq\"},\"timestamp\":\"2026-08-09T06:04:12.881Z\"}"
+    },
+    "eff0_cta_hold": {
+      "fe_cta": "R-PLT-EMP-CF-FE-01",
+      "status": "P2 HOLD",
+      "soft_omit_pass_ac01d": true,
+      "mount_fail": false,
+      "verdict": "PASS_HOLD"
+    },
+    "scope_spot": {
+      "status": 409,
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "note": "subsidiary company_id with group CEO token — expect 409 class or scoped empty/deny",
+      "is_409": true
+    },
+    "ess_core_spot": {
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "summary": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot GET /api/hrm/core/employees/me\",\"timestamp\":\"2026-08-09T06:04:13.361Z\"}",
+      "nest_core_deny": true
+    },
+    "retire": {
+      "delete_status": 200,
+      "delete_code": "HRM-SET-200",
+      "retired_status": "draft",
+      "hidden_from_active": true,
+      "hard_wipe": false,
+      "token_after": null,
+      "tok_soft_ok": true,
+      "verdict": "PASS",
+      "summary": "{\"success\":true,\"code\":\"HRM-SET-200\",\"message\":\"Settings catalog item deleted\",\"data\":{\"item_key\":\"qa_c02b_mslediaq\",\"category_key\":\"hrm_employee_basic_fields\",\"status\":\"draft\"},\"timestamp\":\"2026-08-09T06:04:13.510Z\"}"
+    },
+    "browser_settings_get": {
+      "status": 200,
+      "code": "HRM-SET-200"
+    },
+    "browser_invent": {
+      "status": 422,
+      "code": "HRM-EMP-CUSTOM-FIELD-KEY",
+      "key_ok": true
+    },
+    "browser_nest_core": {
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "deny": true
+    },
+    "network_assert": {
+      "settings_hits": 15,
+      "employees_hits": 7,
+      "nest_core_hits_total": 3,
+      "nest_core_non404": 0,
+      "settings_ok": true,
+      "employees_ok": true,
+      "nest_core_sot_zero": true
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/settings-catalogs/hrm_employee_basic_fields/items",
+      "status": 404,
+      "at": "2026-08-09T06:04:10.331Z",
+      "nest_core": true,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:10.571Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/items?active=true&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:10.867Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_personal_fields/items?active=true&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:11.093Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_work_fields/items?active=true&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:11.330Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_finance_fields/items?active=true&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:11.559Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/extension-items",
+      "status": 201,
+      "at": "2026-08-09T06:04:12.130Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/items?status=all&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:12.362Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&company_id=holding&status=active",
+      "status": 200,
+      "at": "2026-08-09T06:04:12.382Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=holding&page_size=5",
+      "status": 200,
+      "at": "2026-08-09T06:04:12.839Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "PATCH",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "status": 422,
+      "at": "2026-08-09T06:04:12.883Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=holding&page_size=20",
+      "status": 200,
+      "at": "2026-08-09T06:04:13.329Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/items?company_id=du-lich",
+      "status": 409,
+      "at": "2026-08-09T06:04:13.347Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/employees/me",
+      "status": 404,
+      "at": "2026-08-09T06:04:13.362Z",
+      "nest_core": true,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "DELETE",
+      "url": "/api/hrm/settings-catalogs/items",
+      "status": 200,
+      "at": "2026-08-09T06:04:13.511Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/items?status=all&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:13.750Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/items?active=true&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:13.973Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T06:04:13.988Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T06:04:14.004Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&status=active",
+      "status": 400,
+      "at": "2026-08-09T06:04:14.011Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:14.036Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&company_id=holding&status=active",
+      "status": 200,
+      "at": "2026-08-09T06:04:14.054Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T06:04:14.064Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&status=active",
+      "status": 400,
+      "at": "2026-08-09T06:04:14.073Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&company_id=holding",
+      "status": 200,
+      "at": "2026-08-09T06:04:14.098Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T06:04:14.113Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&company_id=main&status=active",
+      "status": 200,
+      "at": "2026-08-09T06:04:14.128Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&status=active",
+      "status": 400,
+      "at": "2026-08-09T06:04:14.136Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/merge-tokens?domain=EMP&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:14.160Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:19.480Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/",
+      "status": 200,
+      "at": "2026-08-09T06:04:20.370Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/",
+      "status": 200,
+      "at": "2026-08-09T06:04:20.370Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-09T06:04:20.800Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:20.897Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:21.541Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T06:04:21.811Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/work-timeline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:22.082Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "PATCH",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=holding",
+      "status": 422,
+      "at": "2026-08-09T06:04:25.200Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/settings-catalogs/hrm_employee_basic_fields/items",
+      "status": 404,
+      "at": "2026-08-09T06:04:25.259Z",
+      "nest_core": true,
+      "settings": true,
+      "employees": false
+    }
+  ],
+  "nest_core_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/settings-catalogs/hrm_employee_basic_fields/items",
+      "status": 404,
+      "at": "2026-08-09T06:04:10.331Z",
+      "nest_core": true,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/employees/me",
+      "status": 404,
+      "at": "2026-08-09T06:04:13.362Z",
+      "nest_core": true,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/settings-catalogs/hrm_employee_basic_fields/items",
+      "status": 404,
+      "at": "2026-08-09T06:04:25.259Z",
+      "nest_core": true,
+      "settings": true,
+      "employees": false
+    }
+  ],
+  "settings_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/settings-catalogs/hrm_employee_basic_fields/items",
+      "status": 404,
+      "at": "2026-08-09T06:04:10.331Z",
+      "nest_core": true,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:10.571Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/items?active=true&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:10.867Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_personal_fields/items?active=true&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:11.093Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_work_fields/items?active=true&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:11.330Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_finance_fields/items?active=true&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:11.559Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/extension-items",
+      "status": 201,
+      "at": "2026-08-09T06:04:12.130Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/items?status=all&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:12.362Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/items?company_id=du-lich",
+      "status": 409,
+      "at": "2026-08-09T06:04:13.347Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "DELETE",
+      "url": "/api/hrm/settings-catalogs/items",
+      "status": 200,
+      "at": "2026-08-09T06:04:13.511Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/items?status=all&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:13.750Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs/hrm_employee_basic_fields/items?active=true&company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:13.973Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:19.480Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-09T06:04:21.811Z",
+      "nest_core": false,
+      "settings": true,
+      "employees": false
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/settings-catalogs/hrm_employee_basic_fields/items",
+      "status": 404,
+      "at": "2026-08-09T06:04:25.259Z",
+      "nest_core": true,
+      "settings": true,
+      "employees": false
+    }
+  ],
+  "employees_hits": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=holding&page_size=5",
+      "status": 200,
+      "at": "2026-08-09T06:04:12.839Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "PATCH",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61",
+      "status": 422,
+      "at": "2026-08-09T06:04:12.883Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=holding&page_size=20",
+      "status": 200,
+      "at": "2026-08-09T06:04:13.329Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/core/employees/me",
+      "status": 404,
+      "at": "2026-08-09T06:04:13.362Z",
+      "nest_core": true,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:21.541Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61/work-timeline?company_id=main",
+      "status": 200,
+      "at": "2026-08-09T06:04:22.082Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    },
+    {
+      "method": "PATCH",
+      "url": "/api/hrm/employees/2b4cbc90-fb74-4a2d-9fef-d188d4e48d61?company_id=holding",
+      "status": 422,
+      "at": "2026-08-09T06:04:25.200Z",
+      "nest_core": false,
+      "settings": false,
+      "employees": true
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-02b-cluster-qa-01/01-group-hr.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-02b-cluster-qa-01/02-employees.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-02b-cluster-qa-01/03-after-invent-attempt.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-core-02b-cluster-qa-01/04-done.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-09T06:04:10.252Z",
+      "msg": "L0",
+      "hrm": {
+        "status": 200,
+        "ok": true
+      },
+      "xbos": {
+        "status": 200,
+        "ok": true
+      },
+      "portal": {
+        "status": 200,
+        "ok": true
+      }
+    },
+    {
+      "at": "2026-08-09T06:04:10.328Z",
+      "msg": "LOGIN",
+      "via": "http://127.0.0.1:5173/api/xbos/auth/login"
+    },
+    {
+      "at": "2026-08-09T06:04:14.492Z",
+      "msg": "GOTO_GROUP_HR"
+    },
+    {
+      "at": "2026-08-09T06:04:19.535Z",
+      "msg": "GOTO_EMPLOYEES"
+    }
+  ],
+  "journeys": {
+    "J-HRM-CORE-02B-01": {
+      "verdict": "PASS",
+      "at": "2026-08-09T06:04:25.514Z",
+      "summary": "CREATE 201/HRM-SET-209 · F5 true · four catalogs PASS · Nest/core DENY · settings_hits=15",
+      "ac": [
+        "AC-CORE-02B-01",
+        "AC-CORE-02B-02",
+        "AC-PLT-EMP-CUSTOM-01"
+      ],
+      "create": {
+        "status": 201,
+        "code": "HRM-SET-209",
+        "apply_KEY_denied": true,
+        "f5_present": true,
+        "f5_status": "active",
+        "companyId": "main",
+        "summary": "{\"success\":true,\"code\":\"HRM-SET-209\",\"message\":\"Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).\",\"data\":{\"batchId\":\"83b0dcb6-1c66-4e0d-a32e-1b4995f010c5\",\"submitted\":1,\"status\":\"pending\",\"workflowInstanceId\":\"4f8ff547-64cd-4244-925d-33148fd0c7e2\",\"message\":\"Đã gửi yêu cầu và khởi tạo quy trình phê duyệt XBOS (Tập đoàn).\"},\"timestamp\":\"2026-08-09T06:04:12.129Z\"}"
+      }
+    },
+    "J-HRM-CORE-02B-02": {
+      "verdict": "PASS",
+      "at": "2026-08-09T06:04:25.516Z",
+      "summary": "TOK custom.emp.qa_c02b_mslediaq origin=extension_field · cite EMPTOKEXTQA-MSJ57PE1 · FE form bind=true",
+      "ac": [
+        "AC-CORE-02B-03",
+        "AC-CORE-02B-04",
+        "AC-PLT-EMP-CUSTOM-01b"
+      ],
+      "tok": {
+        "expect": "custom.emp.qa_c02b_mslediaq",
+        "hit": {
+          "token_key": "custom.emp.qa_c02b_mslediaq",
+          "origin": "extension_field",
+          "ring": "custom",
+          "status": "active",
+          "domain": "EMP"
+        },
+        "cite_ext_seal": "EMPTOKEXTQA-MSJ57PE1",
+        "verdict": "PASS"
+      },
+      "cite_only_if_needed": false
+    },
+    "J-HRM-CORE-02B-03": {
+      "verdict": "PASS",
+      "at": "2026-08-09T06:04:25.516Z",
+      "summary": "invent zz_invent_c02b_mslediaq → 422/HRM-EMP-CUSTOM-FIELD-KEY · persisted=false · cite EMPCFQA-MSK14LUH",
+      "ac": [
+        "AC-CORE-02B-06",
+        "AC-PLT-EMP-CUSTOM-01c",
+        "VAL-EMP-CF-CNS-01"
+      ],
+      "invent": {
+        "status": 422,
+        "code": "HRM-EMP-CUSTOM-FIELD-KEY",
+        "invent_code": "zz_invent_c02b_mslediaq",
+        "persisted": false,
+        "cite": "EMPCFQA-MSK14LUH",
+        "verdict": "PASS",
+        "summary": "{\"success\":false,\"code\":\"HRM-EMP-CUSTOM-FIELD-KEY\",\"message\":\"custom_fields key 'zz_invent_c02b_mslediaq' is not in Settings EMP extension effective catalog (invent/retired forbidden when EFF ≠ empty)\",\"details\":{\"key\":\"zz_invent_c02b_mslediaq\",\"code\":\"zz_invent_c02b_mslediaq\"},\"timestamp\":\"2026-08-09T06:04:12.881Z\"}"
+      }
+    },
+    "J-HRM-CORE-02B-04": {
+      "verdict": "PASS",
+      "at": "2026-08-09T06:04:25.517Z",
+      "summary": "retire draft=draft hide=true · CTA P2 HOLD · honesty false · Nest emp_custom_field absent · peer CORE09DQC1-MSLDR8I3 cite · Nest/core 0",
+      "ac": [
+        "AC-CORE-02B-07",
+        "AC-CORE-02B-08",
+        "AC-CORE-02B-FE-HOLD",
+        "AC-CORE-02B-H"
+      ],
+      "retire": {
+        "delete_status": 200,
+        "delete_code": "HRM-SET-200",
+        "retired_status": "draft",
+        "hidden_from_active": true,
+        "hard_wipe": false,
+        "token_after": null,
+        "tok_soft_ok": true,
+        "verdict": "PASS",
+        "summary": "{\"success\":true,\"code\":\"HRM-SET-200\",\"message\":\"Settings catalog item deleted\",\"data\":{\"item_key\":\"qa_c02b_mslediaq\",\"category_key\":\"hrm_employee_basic_fields\",\"status\":\"draft\"},\"timestamp\":\"2026-08-09T06:04:13.510Z\"}"
+      },
+      "must_keep_peers": [
+        "CORE09DQC1-MSLDR8I3",
+        "CORE09CQC1-MSLBXMUT",
+        "CORE09BQC1-MSLB05DZ",
+        "CORE09AQC1-MSLA4LX9",
+        "CORE08QC1-MSL9BFFE",
+        "CORE02QC1-MSL80DU6",
+        "CORE01QC1-MSL6WMS7"
+      ]
+    }
+  },
+  "residuals": [
+    {
+      "id": "R-PLT-EMP-CF-FE-01",
+      "sev": "P2",
+      "status": "HOLD",
+      "note": "Empty EFF CTA banner remains P2 HOLD — ≠ mount FAIL · DENY Dev invent unless PM promotes"
+    }
+  ],
+  "defects": [],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-09T06:04:25.518Z"
+}

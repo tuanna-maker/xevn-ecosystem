@@ -1,0 +1,133 @@
+{
+  "chosen": null,
+  "at": "2026-07-27T08:26:22.033Z",
+  "industry": {
+    "headers": [
+      "",
+      "Tên công ty",
+      "Mã công ty",
+      "Ngành nghề",
+      "Số nhân viên",
+      "Trạng thái",
+      ""
+    ],
+    "rows": [
+      {
+        "name": "Tập đoàn XeVN",
+        "industry": "-"
+      },
+      {
+        "name": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+        "industry": "-"
+      },
+      {
+        "name": "Công ty TNHH Du lịch Visun",
+        "industry": "-"
+      },
+      {
+        "name": "Công ty TNHH Du lịch X.E Việt Nam",
+        "industry": "-"
+      },
+      {
+        "name": "Công ty TNHH X.E Việt Nam",
+        "industry": "-"
+      }
+    ],
+    "leaks": [],
+    "url": "http://127.0.0.1:5173/hr/company?portal=1&tenantId=xevn&companyId=main",
+    "bodyHasSubsidiary": false,
+    "bodyHasHoldingAsIndustry": false
+  },
+  "industryCc": {
+    "headers": [
+      "",
+      "Tên công ty",
+      "Mã công ty",
+      "Ngành nghề",
+      "Số nhân viên",
+      "Trạng thái",
+      ""
+    ],
+    "rows": [
+      {
+        "name": "Tập đoàn XeVN",
+        "industry": "-"
+      },
+      {
+        "name": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+        "industry": "-"
+      },
+      {
+        "name": "Công ty TNHH Du lịch Visun",
+        "industry": "-"
+      },
+      {
+        "name": "Công ty TNHH Du lịch X.E Việt Nam",
+        "industry": "-"
+      },
+      {
+        "name": "Công ty TNHH X.E Việt Nam",
+        "industry": "-"
+      }
+    ],
+    "leaks": [],
+    "url": "http://127.0.0.1:5173/command-center/hrm/company",
+    "via": "iframe-or-doc"
+  },
+  "contracts": {
+    "headers": [
+      "",
+      "Mã HĐ",
+      "Tên nhân sự",
+      "Phòng ban",
+      "Loại hợp đồng",
+      "Ngày hiệu lực",
+      "Ngày hết hạn",
+      "Tình trạng",
+      "Thao tác"
+    ],
+    "types": [
+      "Hợp đồng thử việc",
+      "Có thời hạn",
+      "Không thời hạn",
+      "Không thời hạn",
+      "Có thời hạn",
+      "Có thời hạn",
+      "Có thời hạn",
+      "Có thời hạn",
+      "Không thời hạn",
+      "Có thời hạn"
+    ],
+    "statuses": [
+      "Có hiệu lực",
+      "Có hiệu lực",
+      "Có hiệu lực",
+      "Có hiệu lực",
+      "Có hiệu lực",
+      "Có hiệu lực",
+      "Có hiệu lực",
+      "Có hiệu lực",
+      "Có hiệu lực",
+      "Có hiệu lực"
+    ],
+    "rawType": [],
+    "rawStatus": [],
+    "url": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main"
+  },
+  "recruitment": {
+    "headers": [],
+    "values": []
+  },
+  "settings": {
+    "rawVisible": [],
+    "vi": [],
+    "url": "http://127.0.0.1:5173/hr/settings?portal=1&tenantId=xevn&companyId=main"
+  },
+  "performance": {
+    "rawCycle": [],
+    "empUuid": [],
+    "hasVi": true,
+    "url": "http://127.0.0.1:5173/hr/performance?portal=1&tenantId=xevn&companyId=main",
+    "slice": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn Hiệu suất - Chu kỳ đánh giá Tên chu kỳ Từ ngày Đến ngày Tạo chu kỳ Nhập đánh giá hiệu suất Employee ID Cycle ID Điểm (0-100) Nhận xét Tạo đánh giá Danh sách chu kỳ (16) QA-BUNDLE-02-1784258007438 01/07/2026 – 30/09/2026 (Nháp) QA-PF-MENU-20260717 01/0"
+  }
+}

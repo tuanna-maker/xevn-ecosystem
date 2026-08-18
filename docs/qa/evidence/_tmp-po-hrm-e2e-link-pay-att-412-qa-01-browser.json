@@ -1,0 +1,230 @@
+{
+  "work_item_id": "PO-HRM-E2E-LINK-PAY-ATT-412-QA-01",
+  "parent": "PO-HRM-E2E-LINK-PAY-ATT-CLOSE-QC-01 GWC — CONDITION R-PAY-HIRE-ATT-412-BROWSER OPEN",
+  "u65": "zero-seed · browser-only · cấm seed",
+  "hdsd_align": "Tiền lương → Path A Jan draft → Khóa bảng lương → confirm → F5",
+  "honesty": {
+    "payroll_e2e_ready": "narrow (AC-04∧05 + ATT-412 browser)",
+    "payroll_module_uat": "DENIED",
+    "product_go": "DENIED"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "commit": "dc930c5",
+    "targetPeriodId": "dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "clicks": [
+    {
+      "step": "PathA",
+      "detail": "http://127.0.0.1:5173/hr/payroll?pay_period_month=1&pay_period_year=2026&pay_batch_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8&portal=1&tenantId=xevn&companyId=main",
+      "at": "2026-08-06T13:09:23.239Z"
+    },
+    {
+      "step": "lock-open",
+      "detail": "Khóa bảng lương",
+      "at": "2026-08-06T13:09:26.527Z"
+    },
+    {
+      "step": "lock-confirm",
+      "detail": "dialog=true confirm=true",
+      "at": "2026-08-06T13:09:27.308Z"
+    },
+    {
+      "step": "F5",
+      "detail": "reload",
+      "at": "2026-08-06T13:09:31.952Z"
+    }
+  ],
+  "pathA": {
+    "url": "http://127.0.0.1:5173/hr/payroll?pay_period_month=1&pay_period_year=2026&pay_batch_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8&portal=1&tenantId=xevn&companyId=main",
+    "detailOk": true,
+    "hrefHasBatch": true
+  },
+  "preLock": {
+    "uatRow": true,
+    "emptyHint": false,
+    "empCount": 1,
+    "empCountText": "Số nhân viên\n\n1",
+    "lockVisible": true
+  },
+  "lock": {
+    "dialogTitle": true,
+    "confirmVisible": true,
+    "procPosts": [
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/process",
+        "code": "HRM-PAY-202",
+        "message": "Payroll period processed",
+        "bodySnippet": "{\"success\":true,\"code\":\"HRM-PAY-202\",\"message\":\"Payroll period processed\",\"data\":{\"id\":\"dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8\",\"company_id\":\"holding\",\"period_label\":\"QA-PAY-HIRE-05-1786012354925\",\"start_date\":\"2025-12-31T17:00:00.000Z\",\"end_date\":\"2026-01-30T17:00:00.000Z\",\"status\":\"processed\",\"created_by\":null,\"processed_at\":\"2026-08-06T13:09:37.125Z\",\"closed_at\":null,\"created_at\":\"2026-08-06T10:3"
+      }
+    ],
+    "processStatus": 201,
+    "processCode": "HRM-PAY-202",
+    "processMessage": "Payroll period processed",
+    "feAfter": {
+      "lockedBadge": true,
+      "errorToast": false,
+      "successToast": true,
+      "lockStillEditable": false,
+      "beforeF5": true,
+      "f5": {
+        "url": "http://127.0.0.1:5173/hr/payroll?pay_period_month=1&pay_period_year=2026&pay_batch_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8&portal=1&tenantId=xevn&companyId=main",
+        "lockedBadge": true,
+        "lockStillEditable": false,
+        "uatRow": true,
+        "statusSnippet": "Đã khóa",
+        "bodyHasProcessed": true
+      }
+    }
+  },
+  "network": {
+    "pay": [
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/salary-templates?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+      },
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/process",
+        "code": "HRM-PAY-202",
+        "message": "Payroll period processed",
+        "bodySnippet": "{\"success\":true,\"code\":\"HRM-PAY-202\",\"message\":\"Payroll period processed\",\"data\":{\"id\":\"dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8\",\"company_id\":\"holding\",\"period_label\":\"QA-PAY-HIRE-05-1786012354925\",\"start_date\":\"2025-12-31T17:00:00.000Z\",\"end_date\":\"2026-01-30T17:00:00.000Z\",\"status\":\"processed\",\"created_by\":null,\"processed_at\":\"2026-08-06T13:09:37.125Z\",\"closed_at\":null,\"created_at\":\"2026-08-06T10:3"
+      },
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/close",
+        "code": "HRM-PAY-203",
+        "message": "Payroll period closed"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/salary-templates?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/payslips?company_id=main&period_id=dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/salary-templates?company_id=main"
+      },
+      {
+        "method": "GET",
+        "status": 200,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods?company_id=main"
+      }
+    ],
+    "process": [
+      {
+        "method": "POST",
+        "status": 201,
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/process",
+        "code": "HRM-PAY-202",
+        "message": "Payroll period processed",
+        "bodySnippet": "{\"success\":true,\"code\":\"HRM-PAY-202\",\"message\":\"Payroll period processed\",\"data\":{\"id\":\"dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8\",\"company_id\":\"holding\",\"period_label\":\"QA-PAY-HIRE-05-1786012354925\",\"start_date\":\"2025-12-31T17:00:00.000Z\",\"end_date\":\"2026-01-30T17:00:00.000Z\",\"status\":\"processed\",\"created_by\":null,\"processed_at\":\"2026-08-06T13:09:37.125Z\",\"closed_at\":null,\"created_at\":\"2026-08-06T10:3"
+      }
+    ],
+    "processBodies": [
+      {
+        "url": "http://127.0.0.1:5173/api/hrm/payroll/periods/dffbb1fe-05b7-4f6e-91f1-0a6c6e739ad8/process",
+        "bodySnippet": "{}",
+        "parseErr": null
+      }
+    ]
+  },
+  "consoleErrors": [
+    "WebSocket connection to 'ws://127.0.0.1:5173/hr/?token=aIi3G0Z9P-a1' failed: WebSocket opening handshake timed out"
+  ],
+  "pageErrors": [],
+  "criteria": {
+    "l0": "PASS",
+    "pathA": "PASS",
+    "preLock": "PASS",
+    "lockClicked": "PASS",
+    "lockProcess": "PASS",
+    "feAfterF5": "PASS"
+  },
+  "residuals": [
+    {
+      "id": "R-PAY-HIRE-ATT-412-BROWSER",
+      "status": "CLOSED",
+      "sev": "P2",
+      "owner": "qa",
+      "note": "Browser Khóa → process 201 HRM-PAY-202 + close 201 HRM-PAY-203 · FE+F5"
+    }
+  ],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "startedAt": "2026-08-06T13:09:22.608Z",
+  "endedAt": "2026-08-06T13:15:09.164Z",
+  "executive": "U65 browser Khóa on Jan draft dffbb1fe… (UAT-0100) → POST process **201** HRM-PAY-202 (then close 201 HRM-PAY-203). FE locked + F5. Recommend close R-PAY-HIRE-ATT-412-BROWSER. Module UAT DENIED.",
+  "completion_report": "Closed ATT-412 browser: Khóa → process 201 HRM-PAY-202 + close 201; FE Đã khóa + F5. R-PAY-HIRE-ATT-412-BROWSER CLOSED. Module UAT DENIED.",
+  "next_owner": "qc",
+  "next_dispatch_prompt": "work_item_id: PO-HRM-E2E-LINK-PAY-ATT-412-QC-01 | to_role: qc | close CONDITION R-PAY-HIRE-ATT-412-BROWSER | evidence po-hrm-e2e-link-pay-att-412-qa-01.md | cấm module UAT",
+  "closeObserved": {
+    "status": 201,
+    "code": "HRM-PAY-203",
+    "message": "Payroll period closed"
+  }
+}

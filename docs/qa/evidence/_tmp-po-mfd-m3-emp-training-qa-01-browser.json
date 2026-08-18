@@ -1,0 +1,352 @@
+{
+  "work_item_id": "PO-MFD-M3-EMP-TRAINING-QA-01",
+  "startedAt": "2026-08-04T09:39:49.705Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "journeys": [
+    "J-HRM-02"
+  ],
+  "matrix_surface": [
+    19
+  ],
+  "must_keep": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    10,
+    11,
+    12,
+    28
+  ],
+  "persona": {
+    "email": "ceo@xe.vn",
+    "tenantId": "xevn",
+    "companyId": "main"
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "entry": {
+      "hrm": 200,
+      "xbos": 200,
+      "portal": 200
+    },
+    "exit": {
+      "hrm": 200,
+      "xbos": 200,
+      "portal": 200
+    }
+  },
+  "click_log": [
+    {
+      "at": "2026-08-04T09:39:49.739Z",
+      "action": "API_LOGIN",
+      "email": "ceo@xe.vn",
+      "companyId": "main",
+      "tenantId": "xevn"
+    },
+    {
+      "at": "2026-08-04T09:39:50.241Z",
+      "action": "NAV_EMPLOYEES",
+      "url": "http://127.0.0.1:5173/hr/employees?portal=1&tenantId=xevn&companyId=main"
+    },
+    {
+      "at": "2026-08-04T09:39:55.322Z",
+      "action": "CLICK_EMPLOYEE_ROW",
+      "text": "QA-M3-9872759Nguyễn Văn QA M3 987275qa-m3-987275@xevn.localTập đoàn XeVN4/8/2026Đang làm việc"
+    },
+    {
+      "at": "2026-08-04T09:40:00.011Z",
+      "action": "OPEN_TRAINING_TAB",
+      "note": "HDSD CH06 §6.2 nhóm HR → Đào tạo"
+    },
+    {
+      "at": "2026-08-04T09:40:04.543Z",
+      "action": "F5_RELOAD",
+      "note": "reload profile then re-open Đào tạo"
+    }
+  ],
+  "network": [
+    {
+      "at": "2026-08-04T09:39:50.740Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:39:50.828Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:39:51.010Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "bodySnippet": {
+        "total": 60,
+        "first": {
+          "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+          "company_id": "holding",
+          "display_name": "Nguyễn Văn QA M3 987275"
+        }
+      }
+    },
+    {
+      "at": "2026-08-04T09:39:51.109Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:39:51.109Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:39:51.352Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:39:55.752Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main",
+      "bodySnippet": {
+        "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+        "company_id": "holding",
+        "code": "HRM-EMP-200"
+      }
+    },
+    {
+      "at": "2026-08-04T09:39:55.937Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:39:56.058Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:40:01.367Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/training?company_id=main",
+      "bodySnippet": {
+        "code": "HRM-EMP-PROFILE-200",
+        "itemCount": 0,
+        "hasStatsKey": false
+      }
+    },
+    {
+      "at": "2026-08-04T09:40:04.946Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:40:05.095Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:40:05.191Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main",
+      "bodySnippet": {
+        "id": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+        "company_id": "holding",
+        "code": "HRM-EMP-200"
+      }
+    },
+    {
+      "at": "2026-08-04T09:40:05.350Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:40:05.387Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "bodySnippet": null
+    },
+    {
+      "at": "2026-08-04T09:40:09.043Z",
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/training?company_id=main",
+      "bodySnippet": {
+        "code": "HRM-EMP-PROFILE-200",
+        "itemCount": 0,
+        "hasStatsKey": false
+      }
+    }
+  ],
+  "mutates": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    {
+      "at": "2026-08-04T09:39:55.266Z",
+      "name": "01-list",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-training-qa-01/01-list.png"
+    },
+    {
+      "at": "2026-08-04T09:40:00.011Z",
+      "name": "02-detail-shell",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-training-qa-01/02-detail-shell.png"
+    },
+    {
+      "at": "2026-08-04T09:40:04.539Z",
+      "name": "03-training-tab",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-training-qa-01/03-training-tab.png"
+    },
+    {
+      "at": "2026-08-04T09:40:12.396Z",
+      "name": "04-training-f5",
+      "path": "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-mfd-m3-emp-training-qa-01/04-training-f5.png"
+    }
+  ],
+  "hdsd_inventory": [
+    {
+      "surface": "Login Group CEO (portal proxy)",
+      "attempted": true,
+      "http": 201
+    },
+    {
+      "surface": "HDSD CH06 §2 Danh sách nhân sự",
+      "attempted": true,
+      "persona": "ceo@xe.vn"
+    },
+    {
+      "surface": "HDSD CH06 §6 / J-HRM-02 list→hồ sơ",
+      "attempted": true
+    },
+    {
+      "surface": "HDSD CH06 §6.2 Tab Đào tạo (SCR-TAB-TRAINING #19)",
+      "attempted": true
+    },
+    {
+      "surface": "F5 → re-open Đào tạo (default tab = chung)",
+      "attempted": true,
+      "training_get_2xx": true,
+      "no_completed_crash": true,
+      "stats_visible": true
+    }
+  ],
+  "surfaces": {
+    "list": {
+      "rows": 50,
+      "syncError": false
+    },
+    "detail": {
+      "detailUrl": "http://127.0.0.1:5173/hr/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "detailId": "0f6e1369-4170-42e3-ad6b-3d04b3ec2edd"
+    },
+    "training_19": {
+      "openVia": {
+        "via": "group:hr"
+      },
+      "trainingOk": [
+        {
+          "status": 200,
+          "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/training?company_id=main",
+          "bodySnippet": {
+            "code": "HRM-EMP-PROFILE-200",
+            "itemCount": 0,
+            "hasStatsKey": false
+          }
+        }
+      ],
+      "trainingBad": [],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "completedCrash": false,
+      "ui": {
+        "hasCompletedLabel": true,
+        "hasInProgress": true,
+        "hasAdd": true,
+        "emptyHonesty": true,
+        "hasNumericStats": true,
+        "crashBanner": false,
+        "bodySnippet": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn Nguyễn Văn QA M3 987275 QA-M3-987275 Chỉnh sửa Thông tin chung Công việc Hợp đồng Lương & Phụ cấp Đào tạo Nhân sự Sự nghiệp Cá nhân Đã hoàn thành 0 Đang học 0 Tổng giờ học 0h Chi phí (CTy) 0 ₫ Chương trình đào tạo Thêm khóa học Chưa có chương trình đào tạo Thêm khóa học",
+        "whiteCrashSuspect": false
+      },
+      "mutates": 0
+    },
+    "training_f5": {
+      "f5Via": {
+        "via": "[data-testid=\"profile-pinned-tab-training\"]"
+      },
+      "trainingOk": [
+        {
+          "status": 200,
+          "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/training?company_id=main",
+          "bodySnippet": {
+            "code": "HRM-EMP-PROFILE-200",
+            "itemCount": 0,
+            "hasStatsKey": false
+          }
+        }
+      ],
+      "pageErrors": [],
+      "f5Crash": false,
+      "ui": {
+        "hasCompletedLabel": true,
+        "hasProgram": true,
+        "crashBanner": false,
+        "bodySnippet": "Đơn vị thành viên Tất cả đơn vị (rollup) Đang xem: Tất cả đơn vị (rollup) · Tổng giám đốc tập đoàn Nguyễn Văn QA M3 987275 QA-M3-987275 Chỉnh sửa Thông tin chung Công việc Hợp đồng Lương & Phụ cấp Đào tạo Nhân sự Sự nghiệp Cá nhân Đã hoàn thành 0 Đang học 0 Tổng giờ học 0h Chi phí (CTy) 0 ₫ Chương trình đào tạo Thêm khóa học Chưa có chương trình đào tạo Thêm khóa học"
+      }
+    }
+  },
+  "criteria": {
+    "l0_entry": true,
+    "list_ok": true,
+    "detail_opened": true,
+    "training_get_2xx": true,
+    "no_pageerror_completed": true,
+    "no_console_completed": true,
+    "ui_stats_visible": true,
+    "f5_ok": true,
+    "zero_mutates": true,
+    "zero_seed": true
+  },
+  "failReasons": [],
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "employees_closed": false,
+  "attendance_closed": false,
+  "uat_done": false,
+  "endedAt": "2026-08-04T09:40:12.429Z",
+  "matrix_stamp": "LIVE"
+}

@@ -1,0 +1,2 @@
+﻿[xevn-ecosystem] SA unlock → Dev E1-A+E1-B (FE‖BE×2) đang chạy.
+Claude=peer docs. HOLD_DEPLOY. Báo tiếp TG khi READY_FOR_QA.

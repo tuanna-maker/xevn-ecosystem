@@ -1,0 +1,10 @@
+Đang dùng
+Công ty: Tập đoàn X.E
+Pháp nhân: Tập đoàn XeVN
+Vai trò: Nhân viên
+Chức danh: Nhân viên
+Tenant key: xevn
+Query company_id: holding
+Header x-company-id: holding
+stale_Tenant_colon_primary: false
+ac2_four_labels: true

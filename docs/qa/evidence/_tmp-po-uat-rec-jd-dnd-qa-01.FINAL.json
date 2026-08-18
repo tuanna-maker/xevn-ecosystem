@@ -1,0 +1,171 @@
+{
+  "work_item_id": "PO-UAT-REC-JD-DND-QA-01",
+  "stamp": "JDDND-IEAW8L",
+  "startedAt": "2026-08-07T03:38:49.653Z",
+  "u65": "zero-seed · browser-only · hard-refresh via cache-bust · no Lưu mutate",
+  "parent": "PO-UAT-REC-JD-DND-FE-01 READY_FOR_QA",
+  "hdsd_align": true,
+  "inventory": [
+    "Tuyển dụng → Thư viện JD → Thêm JD → pick chức danh → wait jd-writer-dnd-surface → drag canvas/palette → Hủy"
+  ],
+  "journeys": [
+    "UF-JD-DND-01"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM_FE": "http://127.0.0.1:8080",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main",
+    "commit": "dc930c5",
+    "BASE": "http://127.0.0.1:5173",
+    "PORTAL_MODE": true,
+    "loginHttp": 201,
+    "loginVia": "http://127.0.0.1:28002/api/xbos/auth/login"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal5173": 200,
+    "hrm_fe": 200
+  },
+  "network": [
+    {
+      "method": "POST",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/jd-pack-rules/resolve",
+      "at": "2026-08-07T03:38:59.998Z"
+    }
+  ],
+  "mutates": [
+    {
+      "method": "POST",
+      "status": 200,
+      "url": "http://127.0.0.1:5173/api/hrm/recruitment/jd-pack-rules/resolve",
+      "at": "2026-08-07T03:38:59.998Z"
+    }
+  ],
+  "consoleAll": [
+    "[vite] connecting...",
+    "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold",
+    "🌐 i18next is made possible by our own product, Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙",
+    "[vite] connecting...",
+    "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold",
+    "🌐 i18next is made possible by our own product, Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙"
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "consoleClassCounts": {
+    "unable_find_drag_handle": 0,
+    "unable_find_any_drag_handles": 0,
+    "uncaught_reference": 0,
+    "uncaught_typeerror": 0
+  },
+  "process_gates": {
+    "dndHits": 0,
+    "dndStorm": false,
+    "unable_find_drag_handle": 0,
+    "unable_find_any_drag_handles": 0,
+    "mojibakeHits": 0,
+    "uncaughtHits": 0,
+    "pageErrors": [],
+    "verdict": "PASS"
+  },
+  "steps": {
+    "UF-JD-DND-01": {
+      "status": "PASS",
+      "note": "DnD clean storm=0",
+      "at": "2026-08-07T03:39:05.050Z"
+    },
+    "JD_position": {
+      "status": "OBS",
+      "note": "{\"count\":8,\"picked\":\"CEOTổng Giám đốc\"}",
+      "at": "2026-08-07T03:39:01.717Z"
+    },
+    "JD_dnd": {
+      "status": "OBS",
+      "note": "{\"dndMode\":\"palette-to-canvas\",\"dndResult\":{\"ok\":true,\"from\":{\"fx\":432.6640625,\"fy\":391},\"to\":{\"tx\":863.6640625,\"ty\":410}},\"groupsBefore\":6,\"groupsAfter\":7,\"writerStillUsable\":true,\"position\":\"CEOTổng Giám đốc\"}",
+      "at": "2026-08-07T03:39:04.433Z"
+    }
+  },
+  "checks": {
+    "L0": {
+      "pass": true,
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal5173\":200,\"hrm_fe\":200}",
+      "at": "2026-08-07T03:38:49.688Z"
+    },
+    "JD_add_btn": {
+      "pass": true,
+      "note": "Thêm JD visible",
+      "at": "2026-08-07T03:38:57.323Z"
+    },
+    "JD_writer_open": {
+      "pass": true,
+      "note": "writer open",
+      "at": "2026-08-07T03:38:59.098Z"
+    },
+    "JD_utf8_vi_labels": {
+      "pass": true,
+      "note": "VI OK excerpt=Thêm JD template Pack resolve từ rule (API) → nhóm always_on; kéo nhóm tùy chọn; lưu snapshot v2 (Q6). Tiêu đề đứng đầu.",
+      "at": "2026-08-07T03:38:59.102Z"
+    },
+    "JD_dnd_surface_ready": {
+      "pass": true,
+      "note": "jd-writer-dnd-surface visible",
+      "at": "2026-08-07T03:39:01.719Z"
+    },
+    "JD_canvas_groups": {
+      "pass": true,
+      "note": "groups=6 canvas=true",
+      "at": "2026-08-07T03:39:02.395Z"
+    },
+    "JD_dnd_attempted": {
+      "pass": true,
+      "note": "mode=palette-to-canvas ok=true reason=— groups 6→7",
+      "at": "2026-08-07T03:39:04.433Z"
+    },
+    "JD_writer_usable_after_drop": {
+      "pass": true,
+      "note": "dialog+submit still up",
+      "at": "2026-08-07T03:39:04.434Z"
+    },
+    "JD_zero_drag_handle_invariant": {
+      "pass": true,
+      "note": "unable_find_drag_handle=0 unable_find_any=0 dndHits=0 storm=false",
+      "at": "2026-08-07T03:39:04.434Z"
+    },
+    "JD_zero_uncaught": {
+      "pass": true,
+      "note": "pageErrors=0 ref=0 type=0",
+      "at": "2026-08-07T03:39:04.435Z"
+    }
+  },
+  "failReasons": [],
+  "screens": [
+    "evidence/screens/po-uat-rec-jd-dnd-qa-01/01-jd-library.png",
+    "evidence/screens/po-uat-rec-jd-dnd-qa-01/02-jd-writer-before-dnd.png",
+    "evidence/screens/po-uat-rec-jd-dnd-qa-01/03-jd-writer-after-dnd.png",
+    "evidence/screens/po-uat-rec-jd-dnd-qa-01/04-jd-writer-closed.png"
+  ],
+  "residuals": [],
+  "honesty": {
+    "recruitment_uat_ready": false,
+    "jd_dynamic_done": false,
+    "seed_used": false,
+    "phase1_done_claimed": false,
+    "product_go_claimed": false
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T03:39:05.051Z",
+  "denied": [
+    "recruitment_uat_ready=true",
+    "jd_dynamic_done=true",
+    "seed",
+    "Phase1 DONE",
+    "product GO"
+  ],
+  "next_owner": "qc",
+  "next_dispatch": "PO-UAT-REC-JD-DND-QC-01 certify JD DnD slice storm=0"
+}

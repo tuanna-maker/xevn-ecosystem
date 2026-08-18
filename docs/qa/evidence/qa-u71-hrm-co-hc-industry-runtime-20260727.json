@@ -1,0 +1,90 @@
+{
+  "work_item_id": "QA-U71-HRM-CO-HC-REGRESSION-01",
+  "finishedAt": "2026-07-27T08:16:10.241Z",
+  "iframe": "http://127.0.0.1:5173/hr/company?portal=1&tenantId=xevn&companyId=main&_v=1785140164999",
+  "scrape": {
+    "headers": [
+      "",
+      "Tên công ty",
+      "Mã công ty",
+      "Ngành nghề",
+      "Số nhân viên",
+      "Trạng thái",
+      ""
+    ],
+    "rows": [
+      {
+        "name": "Tập đoàn XeVN",
+        "industry": "-",
+        "allCells": [
+          "",
+          "Tập đoàn XeVN",
+          "Tập đoàn",
+          "-",
+          "229",
+          "Đang hiệu lực",
+          ""
+        ]
+      },
+      {
+        "name": "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+        "industry": "-",
+        "allCells": [
+          "",
+          "Công ty Cổ phần Thương mại và Dịch vụ X.E",
+          "XE_TMDV",
+          "-",
+          "220",
+          "Đang hiệu lực",
+          ""
+        ]
+      },
+      {
+        "name": "Công ty TNHH Du lịch Visun",
+        "industry": "-",
+        "allCells": [
+          "",
+          "Công ty TNHH Du lịch Visun",
+          "VISUN",
+          "-",
+          "220",
+          "Đang hiệu lực",
+          ""
+        ]
+      },
+      {
+        "name": "Công ty TNHH Du lịch X.E Việt Nam",
+        "industry": "-",
+        "allCells": [
+          "",
+          "Công ty TNHH Du lịch X.E Việt Nam",
+          "XE_DU_LICH",
+          "-",
+          "220",
+          "Đang hiệu lực",
+          ""
+        ]
+      },
+      {
+        "name": "Công ty TNHH X.E Việt Nam",
+        "industry": "-",
+        "allCells": [
+          "",
+          "Công ty TNHH X.E Việt Nam",
+          "XE_VIETNAM",
+          "-",
+          "220",
+          "Đang hiệu lực",
+          ""
+        ]
+      }
+    ],
+    "iframe": "http://127.0.0.1:5173/hr/company?portal=1&tenantId=xevn&companyId=main&_v=1785140164999",
+    "indIdx": 3
+  },
+  "forbiddenHits": [],
+  "AC-CO-IND-02": {
+    "ok": true,
+    "detail": "rows=5 forbiddenRaw=0 headers=[\"\",\"Tên công ty\",\"Mã công ty\",\"Ngành nghề\",\"Số nhân viên\",\"Trạng thái\",\"\"] sample=[{\"name\":\"Tập đoàn XeVN\",\"industry\":\"-\",\"allCells\":[\"\",\"Tập đoàn XeVN\",\"Tập đoàn\",\"-\",\"229\",\"Đang hiệu lực\",\"\"]},{\"name\":\"Công ty Cổ phần Thương mại và Dịch vụ X.E\",\"industry\":\"-\",\"allCells\":[\"\",\"Công ty Cổ phần Thương mại và Dịch vụ X.E\",\"XE_TMDV\",\"-\",\"220\",\"Đang hiệu lực\",\"\"]},{\"name\":\"Công ty TNHH Du lịch Visun\",\"industry\":\"-\",\"allCells\":[\"\",\"Công ty TNHH Du lịch Visun\",\"VISUN\",\"-\",\"220\",\"Đang hiệu lực\",\"\"]},{\"name\":\"Công ty TNHH Du lịch X.E Việt Nam\",\"industry\":\"-\",\"allCells\":[\"\",\"Công ty TNHH Du lịch X.E Việt Nam\",\"XE_DU_LICH\",\"-\",\"220\",\"Đang hiệu lực\",\"\"]},{\"name\":\"Công ty TNHH X.E Việt Nam\",\"industry\":\"-\",\"allCells\":[\"\",\"Công ty TNHH X.E Việt Nam\",\"XE_VIETNAM\",\"-\",\"220\",\"Đang hiệu lực\",\"\"]}]"
+  }
+}

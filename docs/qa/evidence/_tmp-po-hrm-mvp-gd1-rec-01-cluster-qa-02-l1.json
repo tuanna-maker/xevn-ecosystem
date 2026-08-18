@@ -1,0 +1,206 @@
+{
+  "stamp": "RECQA2-MSKT56EP",
+  "planId": "3f302f4d-82a1-4e41-adbf-7e1fab6a0fc4",
+  "out": [
+    {
+      "k": "KEYS",
+      "v": {
+        "DEPT_KEY": "DEPT_02",
+        "POS_KEY": "CHRO",
+        "fromPlan": "82f7b2a7-2fa0-4b19-8e6c-b41ac02524d9"
+      }
+    },
+    {
+      "k": "LIST_PARITY",
+      "v": {
+        "status": 200,
+        "inList": true,
+        "total": 8
+      }
+    },
+    {
+      "k": "GET_PARITY",
+      "v": {
+        "status": 200,
+        "code": "HRM-REC-PLAN-200",
+        "sameId": true
+      }
+    },
+    {
+      "k": "U19_ROLLUP_GET",
+      "v": {
+        "listCompany": "trsport",
+        "status": 200,
+        "code": "HRM-REC-PLAN-200",
+        "idMatch": true
+      }
+    },
+    {
+      "k": "CREATE",
+      "v": {
+        "status": 201,
+        "code": "HRM-REC-PLAN-201",
+        "id": "3f302f4d-82a1-4e41-adbf-7e1fab6a0fc4"
+      }
+    },
+    {
+      "k": "PUT_DRAFT",
+      "v": {
+        "status": 200,
+        "code": "HRM-REC-PLAN-200"
+      }
+    },
+    {
+      "k": "SPAWN_NOT_APPROVED",
+      "v": {
+        "status": 409,
+        "code": "HRM-HC-SPAWN-PLAN-NOT-APPROVED",
+        "message": "Chỉ định biên đã duyệt mới được sinh YCTD tự động"
+      }
+    },
+    {
+      "k": "APPROVE",
+      "v": {
+        "status": 200,
+        "code": "HRM-REC-PLAN-200",
+        "data": {
+          "id": "3f302f4d-82a1-4e41-adbf-7e1fab6a0fc4",
+          "company_id": "holding",
+          "title": "QA ĐB RECQA2-MSKT56EP",
+          "start_month": 1,
+          "end_month": 12,
+          "year": 2026,
+          "note": null,
+          "status": "approved",
+          "creator_id": null,
+          "creator_name": "QA REC-02",
+          "created_at": "2026-08-08T20:09:51.376Z",
+          "updated_at": "2026-08-08T20:09:54.495Z",
+          "workflow_instance_id": null,
+          "wf_callback_fingerprint": null,
+          "submitted_by_dept_key": null,
+          "approved_at": "2026-08-08T20:09:54.495Z",
+          "approved_by": "ceo@xe.vn",
+          "activation_mode": "on_approve",
+          "planId": "3f302f4d-82a1-4e41-adbf-7e1fab6a0fc4",
+          "approved_cell_count": 1
+        }
+      }
+    },
+    {
+      "k": "CELL_LOCK",
+      "v": {
+        "lifecycle": "need_hire_approved",
+        "need_hire": 7,
+        "cell_id": "2822b499-6b36-4055-96a2-e2eb9e751a97",
+        "planStatus": "approved",
+        "positions": 1
+      }
+    },
+    {
+      "k": "PUT_LOCKED",
+      "v": {
+        "status": 409,
+        "code": "HRM-HC-CELL-LOCKED",
+        "message": "Ô Cần tuyển đã duyệt — không được chỉnh số lượng/trạng thái (thiếu quyền override)"
+      }
+    },
+    {
+      "k": "GET_AFTER_LOCKED",
+      "v": {
+        "status": "approved",
+        "planId": "3f302f4d-82a1-4e41-adbf-7e1fab6a0fc4",
+        "depts": 1,
+        "positions": 1,
+        "needCells": [
+          {
+            "month": 8,
+            "need_hire": 7,
+            "lifecycle": "need_hire_approved",
+            "cell_id": "2822b499-6b36-4055-96a2-e2eb9e751a97",
+            "cell_status": "need_hire"
+          }
+        ],
+        "dept_key": "DEPT_02",
+        "pos_key": "CHRO",
+        "dept_name": "Vận hành",
+        "pos_name": "Giám đốc Nhân sự",
+        "sameCell": true,
+        "gridIntact": true
+      }
+    },
+    {
+      "k": "SPAWN1_AFTER_409",
+      "v": {
+        "status": 201,
+        "code": "HRM-HC-SPAWN-200",
+        "created": 1,
+        "skipped": 0,
+        "data": {
+          "created": [
+            {
+              "requisition_id": "38d92b38-c623-4a84-8d78-55c0cd1e0314",
+              "headcount_cell_id": "2822b499-6b36-4055-96a2-e2eb9e751a97",
+              "headcount": 7,
+              "target_month": "2026-08-01"
+            }
+          ],
+          "skipped_duplicate": []
+        }
+      }
+    },
+    {
+      "k": "SPAWN2",
+      "v": {
+        "status": 201,
+        "code": "HRM-HC-SPAWN-200",
+        "created": 0,
+        "skipped": 1,
+        "data": {
+          "created": [],
+          "skipped_duplicate": [
+            {
+              "headcount_cell_id": "2822b499-6b36-4055-96a2-e2eb9e751a97",
+              "existing_requisition_id": "38d92b38-c623-4a84-8d78-55c0cd1e0314"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "k": "PUT_OVERRIDE",
+      "v": {
+        "status": 200,
+        "code": "HRM-REC-PLAN-200",
+        "need_before": 3,
+        "need_after": 9,
+        "cell_before": "30ae64e4-0295-4693-9a34-c8e3b999b6e9",
+        "cell_after": "30ae64e4-0295-4693-9a34-c8e3b999b6e9"
+      }
+    },
+    {
+      "k": "OVERRIDE_NO_CELLID",
+      "v": {
+        "status": 200,
+        "cell_before": "30ae64e4-0295-4693-9a34-c8e3b999b6e9",
+        "cell_after": "f447d354-eb3e-440b-8029-d6e4d8f9a655",
+        "minted_new_cell_id": true
+      }
+    },
+    {
+      "k": "INVENT_DENY",
+      "v": {
+        "rec_headcount_plans": 404,
+        "rec_headcount_underscore": 404
+      }
+    },
+    {
+      "k": "SUBMIT_WORKFLOW",
+      "v": {
+        "status": 201,
+        "code": "HRM-REC-PLAN-WF-200",
+        "id": "170b2144-c411-4f7f-ab6d-0346b51dee4c"
+      }
+    }
+  ]
+}

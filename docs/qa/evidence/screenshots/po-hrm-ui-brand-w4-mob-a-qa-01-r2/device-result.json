@@ -1,0 +1,60 @@
+{
+  "work_item_id": "PO-HRM-UI-BRAND-W4-MOB-A-QA-01-R2",
+  "out_dir": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\qa\\evidence\\screenshots\\po-hrm-ui-brand-w4-mob-a-qa-01-r2",
+  "testids": {
+    "branded_login_card": true,
+    "brand_dialog_chrome": true,
+    "home_top_bar_brand_accent": true,
+    "dashboard_attendance_brand_bar": false,
+    "fab_primary_action_sheet": true,
+    "fab_action_check_in": true,
+    "check_in_channel_gps": false,
+    "check_in_channel_face": false,
+    "face_mvp_honesty_banner": false
+  },
+  "journeys": {
+    "J-MOB-01": {
+      "pass": true,
+      "home_sample": [
+        "NA",
+        "Nguyễn Văn An",
+        "Nhân viên",
+        "",
+        "Tập đoàn X.E",
+        "",
+        "Chấm công",
+        "",
+        "Nghỉ phép",
+        "",
+        "Phiếu lương",
+        "",
+        "1",
+        "Duyệt",
+        "Đội đang làm",
+        "52",
+        "",
+        "",
+        "Hoạt động",
+        "Bảng lương, việc cần làm, lịch nghỉ",
+        "7",
+        "",
+        "Hành trình",
+        "Xem tất cả",
+        ""
+      ]
+    },
+    "J-MOB-02": {
+      "pass": false
+    }
+  },
+  "mob04": {
+    "attempted": false,
+    "log_snippet": ""
+  },
+  "mob04b": {
+    "honesty_banner": false,
+    "submit_disabled_hint": false,
+    "face_live_claimed": false
+  },
+  "verdict": "FAIL_TO_PM"
+}

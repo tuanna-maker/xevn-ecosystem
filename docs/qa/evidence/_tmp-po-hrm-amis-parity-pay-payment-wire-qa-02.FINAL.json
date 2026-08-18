@@ -1,0 +1,201 @@
+{
+  "work_item_id": "PO-HRM-AMIS-PARITY-PAY-PAYMENT-WIRE-QA-02",
+  "prior": "PO-HRM-AMIS-PARITY-PAY-PAYMENT-WIRE-BE-02",
+  "defect_closed": "R-PAY-WIRE-DEPT-COL",
+  "stamp": "PAYWIRE-MSIRV99D",
+  "started": "2026-08-07T09:58:34.658Z",
+  "ended": "2026-08-07T09:58:37.916Z",
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "payroll_e2e_ready": false,
+  "persona": {
+    "email": "ceo@xe.vn",
+    "company_id": "main",
+    "sub": "ceo@xe.vn"
+  },
+  "l0": {
+    "hrm": {
+      "status": 200,
+      "ok": true
+    },
+    "xbos": {
+      "status": 200,
+      "ok": true
+    },
+    "portal": {
+      "status": 200,
+      "ok": true
+    }
+  },
+  "dist": {
+    "ok": true,
+    "hasCustomFieldsDepartment": true,
+    "hasBareEDepartment": false,
+    "lastWrite": "2026-08-07T09:52:41.960Z"
+  },
+  "period": {
+    "id": "38674cc1-2e7e-43a7-a244-8d30e069208b",
+    "label": "QA-CB-BAG-VARS2 PAYFECB-MSII9VYY",
+    "company_id": "holding",
+    "status": "processed",
+    "payslip_total": 1,
+    "processed_count": 1,
+    "unpaid_count": 1,
+    "paid_count": 0,
+    "processed_ids": [
+      "0f2967e7-cfb4-4b21-bffe-9ebd6c15e1c7"
+    ],
+    "list_code": "HRM-PAY-200"
+  },
+  "batchId": "aa4e704c-c244-42b6-95b1-0bb156f55203",
+  "ac": {
+    "AC1_wire_201": {
+      "verdict": "PASS",
+      "detail": {
+        "status": 201,
+        "code": "HRM-PAY-WIRE-201",
+        "expected_payslips": 1,
+        "payslip_count": 1,
+        "records_added": 0,
+        "records_skipped": 1,
+        "batchId": "aa4e704c-c244-42b6-95b1-0bb156f55203",
+        "noDept500": true,
+        "payroll_e2e_ready": false
+      }
+    },
+    "AC2_rewire_idempotent": {
+      "verdict": "PASS",
+      "detail": {
+        "status": 201,
+        "code": "HRM-PAY-WIRE-201",
+        "records_added": 0,
+        "records_skipped": 1,
+        "sameBatch": true,
+        "batchId": "aa4e704c-c244-42b6-95b1-0bb156f55203",
+        "batchId2": "aa4e704c-c244-42b6-95b1-0bb156f55203"
+      }
+    },
+    "AC3_process_payslips_paid": {
+      "verdict": "PASS",
+      "detail": {
+        "process_status": 201,
+        "process_code": "HRM-PB-202",
+        "paid_count": 1,
+        "still_processed": 0,
+        "total": 1
+      }
+    },
+    "AC4_close_before_pay_005": {
+      "verdict": "PASS",
+      "detail": {
+        "status": 412,
+        "code": "HRM-PAY-005",
+        "unpaid_payslip_count": 1
+      }
+    },
+    "AC5_close_after_paid_203": {
+      "verdict": "PASS",
+      "detail": {
+        "status": 201,
+        "code": "HRM-PAY-203",
+        "period_status": "closed"
+      }
+    },
+    "AC6_honesty": {
+      "verdict": "PASS",
+      "detail": "payroll_e2e_ready=false · no seed · no module UAT claim · R-PAY-WIRE-DEPT-COL retest"
+    }
+  },
+  "steps": [
+    {
+      "name": "dist_fix_probe",
+      "ok": true,
+      "hasCustomFieldsDepartment": true,
+      "hasBareEDepartment": false,
+      "lastWrite": "2026-08-07T09:52:41.960Z"
+    },
+    {
+      "name": "unauth_wire_probe",
+      "status": 401,
+      "code": "HRM-AUTH-001",
+      "note": "route live (not 404)"
+    },
+    {
+      "name": "find_processed_period",
+      "list_status": 200,
+      "list_code": "HRM-PAY-200",
+      "candidate_count": 2,
+      "eligible_count": 2,
+      "preferred": {
+        "id": "38674cc1-2e7e-43a7-a244-8d30e069208b",
+        "label": "QA-CB-BAG-VARS2 PAYFECB-MSII9VYY",
+        "processed_count": 1,
+        "unpaid_count": 1
+      },
+      "chosen": {
+        "id": "38674cc1-2e7e-43a7-a244-8d30e069208b",
+        "label": "QA-CB-BAG-VARS2 PAYFECB-MSII9VYY",
+        "processed_count": 1,
+        "unpaid_count": 1
+      }
+    },
+    {
+      "name": "wire1",
+      "status": 201,
+      "code": "HRM-PAY-WIRE-201",
+      "message": "Payment batch wired from processed payslips",
+      "records_added": 0,
+      "records_skipped": 1,
+      "payslip_count": 1,
+      "batch_id": "aa4e704c-c244-42b6-95b1-0bb156f55203",
+      "payroll_e2e_ready": false,
+      "has_department_error": false,
+      "summary": "{\"success\":true,\"code\":\"HRM-PAY-WIRE-201\",\"message\":\"Payment batch wired from processed payslips\",\"data\":{\"period_id\":\"38674cc1-2e7e-43a7-a244-8d30e069208b\",\"batch\":{\"id\":\"aa4e704c-c244-42b6-95b1-0bb156f55203\",\"company_id\":\"holding\",\"payroll_batch_id\":\"38674cc1-2e7e-43a7-a244-8d30e069208b\",\"name\":\"Chi trả QA-CB-BAG-VARS2 PAYFECB-MSII9VYY\",\"salary_period\":\"2026-07-01 — 2026-07-31\",\"department\":null,\"position\":null,\"payment_method\":\"bank_transfer\",\"bank_name\":null,\"employee_count\":1,\"total_amount\":\"8550000\",\"paid_count\":0,\"paid_amount\":\"0\",\"status\":\"pending\",\"payment_date\":null,\"processed_by\":null,\"processed_at\":null,\"created_by\":null,\"created_at\":\"2026-08-07T09:54:00.896Z\",\"updated_at\":\"2026-08-07T09:58:46.155Z\"},\"records_added\":0,\"records_skipped\":1,\"payslip_count\":1,\"records\":[],\"payroll_e2e_ready\":false},\"timestamp\":\"2026-08-07T09:58:36.326Z\"}"
+    },
+    {
+      "name": "wire2_rewire",
+      "status": 201,
+      "code": "HRM-PAY-WIRE-201",
+      "records_added": 0,
+      "records_skipped": 1,
+      "payslip_count": 1,
+      "batch_id": "aa4e704c-c244-42b6-95b1-0bb156f55203",
+      "summary": "{\"success\":true,\"code\":\"HRM-PAY-WIRE-201\",\"message\":\"Payment batch wired from processed payslips\",\"data\":{\"period_id\":\"38674cc1-2e7e-43a7-a244-8d30e069208b\",\"batch\":{\"id\":\"aa4e704c-c244-42b6-95b1-0bb156f55203\",\"company_id\":\"holding\",\"payroll_batch_id\":\"38674cc1-2e7e-43a7-a244-8d30e069208b\",\"name\":\"Chi trả QA-CB-BAG-VARS2 PAYFECB-MSII9VYY\",\"salary_period\":\"2026-07-01 — 2026-07-31\",\"department\":null,\"position\":null,\"payment_method\":\"bank_transfer\",\"bank_name\":null,\"employee_count\":1,\"total_amount\":\"8550000\",\"paid_count\":0,\"paid_amount\":\"0\",\"status\":\"pending\",\"payment_date\":null,\"processed_by\":null,\"processed_at\":null,\"created_by\":null,\"created_at\":\"2026-08-07T09:54:00.896Z\",\"updated_at\":\"2026-08-07T09:58:46.240Z\"},\"records_added\":0,\"records_skipped\":1,\"payslip_count\":1,\"records\":[],\"payroll_e2e_ready\":false},\"timestamp\":\"2026-08-07T09:58:36.408Z\"}"
+    },
+    {
+      "name": "close_before_pay",
+      "status": 412,
+      "code": "HRM-PAY-005",
+      "unpaid_payslip_count": 1,
+      "payroll_e2e_ready": false,
+      "summary": "{\"success\":false,\"code\":\"HRM-PAY-005\",\"message\":\"Tất cả phiếu lương phải được chi trả (paid) trước khi chốt kỳ lương\",\"details\":{\"unpaid_payslip_count\":1,\"payroll_e2e_ready\":false},\"timestamp\":\"2026-08-07T09:58:36.835Z\"}"
+    },
+    {
+      "name": "process_batch",
+      "status": 201,
+      "code": "HRM-PB-202",
+      "summary": "{\"success\":true,\"code\":\"HRM-PB-202\",\"message\":\"Payment batch processed\",\"data\":{\"batch\":{\"id\":\"aa4e704c-c244-42b6-95b1-0bb156f55203\",\"company_id\":\"holding\",\"payroll_batch_id\":\"38674cc1-2e7e-43a7-a244-8d30e069208b\",\"name\":\"Chi trả QA-CB-BAG-VARS2 PAYFECB-MSII9VYY\",\"salary_period\":\"2026-07-01 — 2026-07-31\",\"department\":null,\"position\":null,\"payment_method\":\"bank_transfer\",\"bank_name\":null,\"employee_count\":1,\"total_amount\":\"8550000\",\"paid_count\":1,\"paid_amount\":\"8550000\",\"status\":\"completed\",\"payment_date\":null,\"processed_by\":null,\"processed_at\":\"2026-08-07T09:58:46.729Z\",\"created_by\":null,\"created_at\":\"2026-08-07T09:54:00.896Z\",\"updated_at\":\"2026-08-07T09:58:46.729Z\"},\"processed_records\":1,\"payroll_e2e_ready\":false},\"timestamp\":\"2026-08-07T09:58:36.896Z\"}"
+    },
+    {
+      "name": "payslip_status_after_process",
+      "status": 200,
+      "code": "HRM-PAY-200",
+      "paid_count": 1,
+      "still_processed": 0,
+      "total": 1
+    },
+    {
+      "name": "close_after_paid",
+      "status": 201,
+      "code": "HRM-PAY-203",
+      "period_status": "closed",
+      "summary": "{\"success\":true,\"code\":\"HRM-PAY-203\",\"message\":\"Payroll period closed\",\"data\":{\"id\":\"38674cc1-2e7e-43a7-a244-8d30e069208b\",\"company_id\":\"holding\",\"period_label\":\"QA-CB-BAG-VARS2 PAYFECB-MSII9VYY\",\"start_date\":\"2026-06-30T17:00:00.000Z\",\"end_date\":\"2026-07-30T17:00:00.000Z\",\"status\":\"closed\",\"created_by\":\"ceo@xe.vn\",\"processed_at\":\"2026-08-07T05:32:56.106Z\",\"closed_at\":\"2026-08-07T09:58:47.748Z\",\"created_at\":\"2026-08-07T05:30:15.448Z\",\"updated_at\":\"2026-08-07T09:58:47.748Z\",\"employee_count\":0,\"formula_definition_id\":null,\"pay_sheet_template_id\":null,\"sheet_template_snapshot_json\":null},\"timestamp\":\"2026-08-07T09:58:37.915Z\"}"
+    }
+  ],
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "seed": false,
+    "module_uat_claim": false,
+    "amis_parity_done_claim": false
+  }
+}

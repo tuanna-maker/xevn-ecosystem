@@ -1,0 +1,41 @@
+{
+  "work_item_id": "PO-HRM-REC-PLAN-CONSOLE-QA-01",
+  "startedAt": "2026-08-06T08:26:47.378Z",
+  "portal": "http://127.0.0.1:5173",
+  "account": "ceo@xe.vn",
+  "u65": true,
+  "mutates": 0,
+  "clickPath": [
+    "goto /login",
+    "login ceo@xe.vn submit",
+    "http://127.0.0.1:5173/command-center/hrm/recruitment?tab=plans&companyId=main&tenantId=xevn&_qa=…",
+    "click tab Kế hoạch",
+    "open plan row: KH Tuyển Lái xe Vận hành TMDV TMDV-PLAN-DH7VCT T1–T12/2026 C CEO Tập đoàn 2026-08-03 Đã duyệt"
+  ],
+  "phases": {
+    "plan_surface": {
+      "openedDetail": true,
+      "detailLabel": "KH Tuyển Lái xe Vận hành TMDV TMDV-PLAN-DH7VCT\tT1–T12/2026\t\nC\nCEO Tập đoàn\n\t2026-08-03\tĐã duyệt\t",
+      "listSnippet": "Phòng Vận hành Logistics\nLái xe / Vận hành\t\n2\n0\n\t\n0\n0\n\t\n0\n0\n\t\n0\n0\n\t\n0\n0\n\t\n0\n0\n\t\n0\n0\n\t\n0\n0\n\t\n0\n0\n\t\n0\n0\n\t\n0\n0\n\t\n0\n0",
+      "finalUrl": "http://127.0.0.1:5173/command-center/hrm/recruitment?tab=plans&_qa=1786004809157",
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "consoleWarnings": 0,
+      "classCounts": {
+        "getDialogPortalContainer": 0,
+        "LayoutDashboard": 0,
+        "dragHandle": 0,
+        "uniqueKey": 0,
+        "validateDOMNesting": 0,
+        "ReferenceError": 0,
+        "TypeError": 0,
+        "Uncaught": 0
+      },
+      "pageErrorMessages": [],
+      "consoleErrorSample": [],
+      "consoleWarningSample": [],
+      "verdict": "PASS"
+    }
+  },
+  "endedAt": "2026-08-06T08:26:59.242Z"
+}

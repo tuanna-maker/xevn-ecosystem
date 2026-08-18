@@ -1,0 +1,922 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-QA-02",
+  "parent": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-FE-01",
+  "stamp_ref_l1": "EMPPLATQA-MSIZXHIM",
+  "startedAt": "2026-08-07T14:05:06.430Z",
+  "stamp": "EMPPLATQA2-MSJ0OAL9",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main",
+    "apiCompanyId": "holding"
+  },
+  "u65": "zero-seed · browser-only · FE after 2xx + F5",
+  "hdsd_align": "Settings → Loại giấy tờ EMP · Loại hình thuê EMP · Nhân sự form ET · YCTD ET · retire · CCCD/FULL_TIME INVALID",
+  "honesty": {
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "payroll_e2e_ready": false,
+    "attendance_uat_ready": false,
+    "recruitment_uat_ready": false,
+    "seed_used": false,
+    "deny_module_personnel_uat": true,
+    "deny_honesty_flip": true,
+    "deny_wipe_l1_seal": true
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5",
+    "DOC_KEY": "hr_doc_custom_09_msj0oal9",
+    "DOC_LABEL": "GT QA EMP msj0oal9",
+    "ET_SEASONAL": "seasonal_temp_msj0oal9",
+    "ET_FULLTIME_INPUT": "full-time",
+    "ET_FULLTIME_PERSIST": "full_time"
+  },
+  "l0": {
+    "portal": {
+      "status": 200,
+      "url": "http://127.0.0.1:5173"
+    },
+    "hrm": {
+      "status": 200,
+      "url": "http://127.0.0.1:28001/api/hrm"
+    },
+    "xbos": {
+      "status": 200,
+      "url": "http://127.0.0.1:28002/api/xbos"
+    }
+  },
+  "ac": {
+    "L0-STACK": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:06.460Z",
+      "summary": "portal 200 · hrm 200 · xbos 200"
+    },
+    "AC-PLT-EMP-02-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:12.565Z",
+      "summary": "Clicked settings-tab-emp-document-types"
+    },
+    "AC-PLT-EMP-02-PANEL": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:12.658Z",
+      "summary": "Panel settings-emp-document-types visible"
+    },
+    "AC-PLT-EMP-02-CCCD-INVALID": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:13.639Z",
+      "summary": "CCCD → toast HRM-PLT-CAT-CODE-INVALID · Mã loại giấy tờ không hợp lệ"
+    },
+    "AC-PLT-EMP-02-CREATE-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:15.052Z",
+      "summary": "UPSERT document-types PUT → 200 key=hr_doc_custom_09_msj0oal9 code=HRM-EMP-DOC-200",
+      "network": {
+        "status": 200,
+        "method": "PUT",
+        "url": "/api/hrm/employees/document-types",
+        "id": "8be6fff0-8b0d-4604-8841-7e0a815bf585",
+        "documentTypeKey": "hr_doc_custom_09_msj0oal9",
+        "code": "HRM-EMP-DOC-200"
+      }
+    },
+    "AC-PLT-EMP-02-F5-ROW": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:20.370Z",
+      "summary": "Row settings-emp-document-type-row-hr_doc_custom_09_msj0oal9 after F5"
+    },
+    "AC-PLT-EMP-02-EFFECTIVE-PICKER": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:21.832Z",
+      "summary": "DOC effective picker has hr_doc_custom_09_msj0oal9"
+    },
+    "AC-PLT-EMP-04-TAB": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:27.092Z",
+      "summary": "Clicked settings-tab-emp-employment-types"
+    },
+    "AC-PLT-EMP-04-FULL-TIME-INVALID": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:28.044Z",
+      "summary": "FULL_TIME → toast HRM-PLT-CAT-CODE-INVALID"
+    },
+    "AC-PLT-EMP-04-SEASONAL-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:29.195Z",
+      "summary": "UPSERT employment-types seasonal → 200 key=seasonal_temp_msj0oal9"
+    },
+    "AC-PLT-EMP-04-FULLTIME-PERSIST": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:35.729Z",
+      "summary": "full-time input → status=200 persistedKey=full_time tableHasFullTime=true"
+    },
+    "AC-PLT-EMP-04-F5-SEASONAL": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:35.730Z",
+      "summary": "ET seasonal row seasonal_temp_msj0oal9 after F5"
+    },
+    "AC-PLT-EMP-04-EFFECTIVE-PICKER": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:37.287Z",
+      "summary": "ET Settings effective picker has seasonal_temp_msj0oal9"
+    },
+    "AC-PLT-EMP-04-EFFECTIVE-API": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:37.695Z",
+      "summary": "GET employment-types/effective has seasonal_temp_msj0oal9 holding=true main=true"
+    },
+    "AC-PLT-EMP-04-EMP-FORM-PICKER": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:05:44.929Z",
+      "summary": "Nhân sự form ET picker has seasonal_temp_msj0oal9"
+    },
+    "AC-PLT-EMP-04-YCTD-PICKER": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:08:05.739Z",
+      "summary": "YCTD create dialog · ET picker has seasonal_temp_yctd_msj0rv2s (retest after createBtn testid)",
+      "retest": true,
+      "etKey": "seasonal_temp_yctd_msj0rv2s"
+    },
+    "AC-PLT-EMP-03-RETIRE-2XX": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:06:04.426Z",
+      "summary": "DOC retire 201 rowGone=true · ET retire 201 rowGone=true"
+    },
+    "AC-PLT-EMP-03-ACTIVE-HIDE": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:06:18.363Z",
+      "summary": "After retire DOC picker hasKey=false ET picker hasKey=false (expect both false)"
+    },
+    "AC-PLT-EMP-03-HISTORY-KEY": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:06:18.473Z",
+      "summary": "active hide DOC/ET · history get/all keeps key · {\"docActiveHas\":false,\"etActiveHas\":false,\"docAllHas\":false,\"etAllHas\":false,\"docGet\":{\"status\":200,\"key\":\"hr_doc_custom_09_msj0oal9\",\"statusField\":\"retired\"},\"etGet\":{\"status\":200,\"key\":\"seasonal_temp_msj0oal9\",\"statusField\":\"retired\"}}"
+    },
+    "MUST-KEEP-POSITION-XBOS": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:06:31.956Z",
+      "summary": "Employee form open=true position/combobox=true catalogNet=8"
+    },
+    "MUST-KEEP-CONTRACTS-SI": {
+      "verdict": "PASS",
+      "at": "2026-08-07T14:06:31.957Z",
+      "summary": "contractsOk=true siOk=true"
+    }
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:11.053Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:11.054Z",
+      "body": null
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types",
+      "at": "2026-08-07T14:05:13.798Z",
+      "body": {
+        "code": "HRM-EMP-DOC-200",
+        "id": "8be6fff0-8b0d-4604-8841-7e0a815bf585",
+        "key": "hr_doc_custom_09_msj0oal9"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:13.799Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:13.818Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:13.832Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:15.082Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:15.084Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:18.797Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:18.799Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:25.583Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:25.748Z",
+      "body": null
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types",
+      "at": "2026-08-07T14:05:28.139Z",
+      "body": {
+        "code": "HRM-EMP-ET-200",
+        "id": "25bccd05-9433-42c6-a5ff-bb0c1c2e7d0d",
+        "key": "seasonal_temp_msj0oal9"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:28.142Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:28.299Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:28.440Z",
+      "body": null
+    },
+    {
+      "method": "PUT",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types",
+      "at": "2026-08-07T14:05:29.253Z",
+      "body": {
+        "code": "HRM-EMP-ET-200",
+        "id": "7bd59ed9-ffda-4ccd-a792-b6dca088d779",
+        "key": "full_time"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:29.258Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:29.556Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:29.796Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:30.458Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:30.690Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:34.223Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:34.366Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-07T14:05:38.421Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-07T14:05:38.477Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T14:05:38.610Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T14:05:38.731Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T14:05:41.148Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:41.208Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T14:05:46.339Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T14:05:46.531Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/recruitment/requisitions?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T14:05:46.540Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:54.105Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:54.106Z",
+      "body": null
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees/document-types/8be6fff0-8b0d-4604-8841-7e0a815bf585/retire?company_id=main",
+      "at": "2026-08-07T14:05:55.693Z",
+      "body": {
+        "code": "HRM-EMP-DOC-200",
+        "id": "8be6fff0-8b0d-4604-8841-7e0a815bf585",
+        "key": "hr_doc_custom_09_msj0oal9"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:55.696Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:55.710Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:55.722Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:05:56.522Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:05:56.522Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:06:01.177Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:06:01.387Z",
+      "body": null
+    },
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/hrm/employees/employment-types/25bccd05-9433-42c6-a5ff-bb0c1c2e7d0d/retire?company_id=main",
+      "at": "2026-08-07T14:06:02.744Z",
+      "body": {
+        "code": "HRM-EMP-ET-200",
+        "id": "25bccd05-9433-42c6-a5ff-bb0c1c2e7d0d",
+        "key": "seasonal_temp_msj0oal9"
+      }
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:06:02.747Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:06:02.953Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:06:03.166Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:06:03.576Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:06:03.773Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types/effective?company_id=main",
+      "at": "2026-08-07T14:06:09.596Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/document-types?company_id=main&status=active",
+      "at": "2026-08-07T14:06:09.596Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types?company_id=main&status=active",
+      "at": "2026-08-07T14:06:15.832Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:06:15.982Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50",
+      "at": "2026-08-07T14:06:18.800Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true",
+      "at": "2026-08-07T14:06:18.861Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T14:06:18.927Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T14:06:19.093Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T14:06:21.862Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/employment-types/effective?company_id=main",
+      "at": "2026-08-07T14:06:21.896Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs",
+      "at": "2026-08-07T14:06:25.328Z",
+      "body": null
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "at": "2026-08-07T14:06:25.459Z",
+      "body": null
+    }
+  ],
+  "consoleErrors": [
+    "404 Error: User attempted to access non-existent route: /employee-insurances",
+    "404 Error: User attempted to access non-existent route: /insurances"
+  ],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/01-settings-emp-doc.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/02-cccd-invalid.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/03-doc-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/04-doc-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/05-doc-effective-picker.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/06-settings-emp-et.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/07-full-time-invalid.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/08-et-seasonal-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/09-et-fulltime-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/10-et-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/11-et-effective-picker.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/12-emp-form-work.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/13-emp-et-picker.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/14-yctd-dialog.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/15-yctd-et-picker.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/16-doc-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/17-et-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/18-pickers-after-retire.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/19-mustkeep-position.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/20-mustkeep-contracts.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/21-mustkeep-si.png",
+    "docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/22-yctd-retest-dialog.png",
+    "docs/qa/evidence/screens/po-hrm-dynamic-config-platform-emp-qa-02/23-yctd-retest-picker.png"
+  ],
+  "click_log": [
+    {
+      "at": "2026-08-07T14:05:06.525Z",
+      "msg": "loginApi ok"
+    },
+    {
+      "at": "2026-08-07T14:05:06.991Z",
+      "msg": "goto Settings Loại giấy tờ EMP"
+    },
+    {
+      "at": "2026-08-07T14:05:13.699Z",
+      "msg": "click Tạo loại giấy tờ key=hr_doc_custom_09_msj0oal9"
+    },
+    {
+      "at": "2026-08-07T14:05:16.084Z",
+      "msg": "F5 settings DOC"
+    },
+    {
+      "at": "2026-08-07T14:05:21.853Z",
+      "msg": "goto Settings Loại hình thuê EMP"
+    },
+    {
+      "at": "2026-08-07T14:05:28.081Z",
+      "msg": "click Tạo loại hình seasonal=seasonal_temp_msj0oal9"
+    },
+    {
+      "at": "2026-08-07T14:05:29.210Z",
+      "msg": "click Tạo loại hình full-time"
+    },
+    {
+      "at": "2026-08-07T14:05:37.696Z",
+      "msg": "goto Nhân sự → Thêm → Công việc ET picker"
+    },
+    {
+      "at": "2026-08-07T14:05:45.346Z",
+      "msg": "goto YCTD create ET picker"
+    },
+    {
+      "at": "2026-08-07T14:05:50.258Z",
+      "msg": "retire DOC"
+    },
+    {
+      "at": "2026-08-07T14:05:57.365Z",
+      "msg": "retire ET seasonal"
+    },
+    {
+      "at": "2026-08-07T14:06:18.474Z",
+      "msg": "must_keep position XBOS + contracts/SI"
+    },
+    {
+      "at": "2026-08-07T14:07:53.318Z",
+      "msg": "Settings ET create for YCTD retest"
+    },
+    {
+      "at": "2026-08-07T14:07:58.043Z",
+      "msg": "open Recruitment YCTD"
+    }
+  ],
+  "probes": {
+    "cccdToast": {
+      "ok": true,
+      "snippet": "Mã loại giấy tờ không hợp lệ"
+    },
+    "docUpsert": {
+      "status": 200,
+      "method": "PUT",
+      "url": "/api/hrm/employees/document-types",
+      "id": "8be6fff0-8b0d-4604-8841-7e0a815bf585",
+      "documentTypeKey": "hr_doc_custom_09_msj0oal9",
+      "code": "HRM-EMP-DOC-200"
+    },
+    "docEffectivePicker": {
+      "ok": true,
+      "via": "option_click"
+    },
+    "docEffectiveApi": {
+      "holding": {
+        "status": 200,
+        "hasKey": true,
+        "sample": [
+          "hr_doc_custom_09",
+          "hr_doc_custom_09_msj0oal9",
+          "hr_doc_scope_msizwbx8",
+          "hr_doc_scope_msizxibx"
+        ]
+      },
+      "main": {
+        "status": 200,
+        "hasKey": true,
+        "sample": [
+          "hr_doc_custom_09",
+          "hr_doc_custom_09_msj0oal9",
+          "hr_doc_scope_msizwbx8",
+          "hr_doc_scope_msizxibx"
+        ]
+      }
+    },
+    "fullTimeToast": {
+      "ok": true,
+      "snippet": "Mã loại hình thuê không hợp lệ"
+    },
+    "etSeasonal": {
+      "status": 200,
+      "method": "PUT",
+      "id": "25bccd05-9433-42c6-a5ff-bb0c1c2e7d0d",
+      "employmentTypeKey": "seasonal_temp_msj0oal9",
+      "code": "HRM-EMP-ET-200"
+    },
+    "etFullTime": {
+      "status": 200,
+      "method": "PUT",
+      "id": "7bd59ed9-ffda-4ccd-a792-b6dca088d779",
+      "employmentTypeKey": "full_time",
+      "code": "HRM-EMP-ET-200",
+      "expectedPersist": "full_time"
+    },
+    "etEffectivePicker": {
+      "ok": true,
+      "via": "option_click"
+    },
+    "etEffectiveApi": {
+      "holding": {
+        "status": 200,
+        "hasKey": true,
+        "sample": [
+          "et_scope_msizwc17",
+          "et_scope_msizxig1",
+          "full_time",
+          "seasonal_temp",
+          "seasonal_temp_msj0oal9"
+        ]
+      },
+      "main": {
+        "status": 200,
+        "hasKey": true,
+        "sample": [
+          "et_scope_msizwc17",
+          "et_scope_msizxig1",
+          "full_time",
+          "seasonal_temp",
+          "seasonal_temp_msj0oal9"
+        ]
+      }
+    },
+    "empFormOpen": {
+      "opened": true,
+      "dialogOk": true
+    },
+    "positionPickerVisible": false,
+    "empEtPicker": {
+      "ok": true,
+      "via": "option_click"
+    },
+    "yctdDialog": false,
+    "yctdEtPicker": {
+      "ok": false,
+      "reason": "dialog_missing"
+    },
+    "lastDialog": "Ngừng loại hình thuê «Thuê mùa vụ QA msj0oal9 (seasonal_temp_msj0oal9)»? (soft-delete — hồ sơ / YCTD lịch sử vẫn giữ mã)",
+    "docRetire": {
+      "status": 201
+    },
+    "etRetire": {
+      "status": 201
+    },
+    "docPickerAfterRetire": {
+      "ok": false,
+      "reason": "option_missing",
+      "contentSnippet": "Không có mục khớp"
+    },
+    "etPickerAfterRetire": {
+      "ok": false,
+      "reason": "option_missing",
+      "contentSnippet": "Không có mục khớp"
+    },
+    "history": {
+      "docActiveHas": false,
+      "etActiveHas": false,
+      "docAllHas": false,
+      "etAllHas": false,
+      "docGet": {
+        "status": 200,
+        "key": "hr_doc_custom_09_msj0oal9",
+        "statusField": "retired"
+      },
+      "etGet": {
+        "status": 200,
+        "key": "seasonal_temp_msj0oal9",
+        "statusField": "retired"
+      }
+    },
+    "mustKeepPosition": {
+      "formOpen": true,
+      "posVisible": true,
+      "catNetSample": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-07T14:05:46.339Z",
+          "body": null
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-07T14:05:46.531Z",
+          "body": null
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-07T14:06:18.927Z",
+          "body": null
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-07T14:06:19.093Z",
+          "body": null
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/settings-catalogs",
+          "at": "2026-08-07T14:06:21.862Z",
+          "body": null
+        }
+      ]
+    },
+    "mustKeepContractsSi": {
+      "contractsOk": true,
+      "siOk": true,
+      "contractsBody": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nThêm hợp đồng\nTất cả\n29\nHợp đồng học việc\n27\nHợp đồng lao độn",
+      "siNet": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+          "at": "2026-08-07T14:06:25.459Z",
+          "body": null
+        }
+      ]
+    },
+    "yctdRetestEtCreate": {
+      "status": 200,
+      "key": "seasonal_temp_yctd_msj0rv2s",
+      "id": "d3cee6dd-6899-4c24-8d47-cb199ac6bea3"
+    },
+    "yctdRetestDialog": {
+      "createVisible": true,
+      "dialogOk": true,
+      "bodySnippet": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nDashboard\nYêu cầu tuyển dụng\nThư viện JD\nTin Tuyển dụng\nỨng viên\nĐề xuất\nChiến dịch\nPhỏng vấn\nĐánh giá\nKế hoạch\nBáo cáo\nYêu cầu tuyển dụng\n\nTạo và cập nhật trạng thái yêu cầu tuyển dụng; sau Lưu bấm «Gửi duyệt QT» để vào Inbox.\n\nLàm mới\nThêm yêu cầu\nTiêu đề\tJD gắn\tPhòng/Ban\tSố lượng\tLoại hình\tTrạng t"
+    },
+    "yctdEtPickerRetest": {
+      "ok": true,
+      "via": "option_click"
+    }
+  },
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-07T14:08:05.740Z",
+  "summary": {
+    "pass": 21,
+    "fail": 0,
+    "totalAc": 21,
+    "stamp": "EMPPLATQA2-MSJ0OAL9",
+    "honesty_locked": true,
+    "deny_personnel_uat": true,
+    "l1_seal_retained": true,
+    "yctd_retest": true,
+    "yctd_et_key": "seasonal_temp_yctd_msj0rv2s"
+  }
+}

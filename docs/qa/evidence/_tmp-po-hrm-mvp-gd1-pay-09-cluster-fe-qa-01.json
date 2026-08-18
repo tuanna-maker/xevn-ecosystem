@@ -1,0 +1,296 @@
+{
+  "work_item_id": "QA-PO-HRM-MVP-GD1-PAY-09-CLUSTER-FE-02",
+  "stamp": "PAY09FEQA1-MSMLA825",
+  "fe_handoff": "docs/qa/evidence/po-hrm-mvp-gd1-pay-09-cluster-fe-01.md",
+  "prior_api_qa": "PAY09QA1-MSMGBROF",
+  "startedAt": "2026-08-10T02:05:20.391Z",
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "u65": "zero-seed-browser-primary",
+  "honesty": {
+    "payroll_e2e_ready": false,
+    "ne_pay09_done": true,
+    "c_slice": true,
+    "seed_used": false
+  },
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "TENANT": "xevn",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "qc_fe_be_health": "PASS"
+  },
+  "l1": {
+    "fe_vitest": "PASS (8)",
+    "pay08_regression": "PASS cite PAY08QA1-MSMFFXAZ"
+  },
+  "network": [
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:05:37.328Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-10T02:05:37.449Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/groups?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:05:41.165Z"
+    },
+    {
+      "method": "POST",
+      "url": "/api/hrm/payroll/groups",
+      "status": 201,
+      "at": "2026-08-10T02:05:42.689Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/groups?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:05:44.047Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/groups?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:05:45.365Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:05:45.758Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-10T02:05:46.112Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-10T02:05:46.693Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:05:47.008Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-10T02:05:50.266Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:05:51.204Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/groups?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:05:53.025Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:05:59.365Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:06:01.618Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-10T02:06:02.001Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-10T02:06:02.087Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/groups/f2f21b61-5fc7-4e3e-af10-34a583280ed7/members?period_id=1512285f-7c3e-4b3e-b524-7b0d86b5b902",
+      "status": 200,
+      "at": "2026-08-10T02:06:02.116Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:06:02.319Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-10T02:06:32.463Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:06:32.524Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-10T02:06:35.905Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:06:36.900Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/groups?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:06:39.857Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-10T02:06:41.023Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:06:41.101Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/operating-units",
+      "status": 200,
+      "at": "2026-08-10T02:06:45.657Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:06:47.647Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/groups?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:06:48.986Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:07:03.459Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/settings-catalogs",
+      "status": 200,
+      "at": "2026-08-10T02:07:03.734Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/employees?company_id=main&include_archived=false&page=1&page_size=100",
+      "status": 200,
+      "at": "2026-08-10T02:07:03.812Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/periods?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:07:04.037Z"
+    },
+    {
+      "method": "GET",
+      "url": "/api/hrm/payroll/payslips?company_id=main",
+      "status": 200,
+      "at": "2026-08-10T02:07:13.035Z"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "screens": [
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-pay-09-cluster-fe-qa-01/j09-01-catalog-before.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-pay-09-cluster-fe-qa-01/j09-01-after-create.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-pay-09-cluster-fe-qa-01/j09-02-members.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-pay-09-cluster-fe-qa-01/j09-01-after-f5.png",
+    "C:/Users/ADMIN/OneDrive/Tài liệu/Vibe Coding/projects/xevn-ecosystem/docs/qa/evidence/screens/po-hrm-mvp-gd1-pay-09-cluster-fe-qa-01/j09-03-batch-list.png"
+  ],
+  "journeys": {
+    "J-HRM-PAY-08-05-REGRESS": {
+      "verdict": "PASS",
+      "at": "2026-08-10T02:05:35.386Z",
+      "summary": "PAY-08 subset: PATCH net_amount deny → 403 HRM-PAY-PAYSLIP-403 · cite PAY08QA1-MSMFFXAZ"
+    },
+    "J-HRM-PAY-09-02": {
+      "verdict": "PASS",
+      "at": "2026-08-10T02:06:32.159Z",
+      "summary": "GET members preview 200 · panel pay-group-members-preview · periodSelectEnabled=false",
+      "hdsd": "⋮ → Xem thành viên → Tải preview"
+    },
+    "J-HRM-PAY-09-01": {
+      "verdict": "PASS",
+      "at": "2026-08-10T02:06:39.910Z",
+      "summary": "POST 201 · row after mutate · F5 Q09FEMLA825 visible=true · honesty=true",
+      "hdsd": "Lương → Chính sách → Phân nhóm"
+    },
+    "J-HRM-PAY-09-03": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-10T02:06:44.265Z",
+      "summary": "scope panel not open U65 — cite API QA patch 200 PAY09QA2"
+    },
+    "J-HRM-PAY-09-04": {
+      "verdict": "PASS_WITH_HOLD",
+      "at": "2026-08-10T02:08:16.595Z",
+      "summary": "payslips-api tab not default (batch list) — filter UI cite FE-01 when payslip count≥1 · TimeoutError: locator.waitFor: Timeout 90000ms exceeded.\nCall log:\n  - waiting f"
+    }
+  },
+  "browser": {
+    "honesty_footer_visible": true,
+    "j09_01_post": {
+      "status": 201,
+      "id": "f2f21b61-5fc7-4e3e-af10-34a583280ed7",
+      "code": "Q09FEMLA825"
+    },
+    "j09_01_row_after_reload": true,
+    "j09_02_members": 200,
+    "j09_01_f5_row": true
+  },
+  "defects": [
+    {
+      "id": "FE-PAY09-CATALOG-LIST-STALE",
+      "note": "POST 201 but pay-group-row not visible before reload — refetch UI gap"
+    }
+  ],
+  "overall": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-10T02:08:16.770Z"
+}

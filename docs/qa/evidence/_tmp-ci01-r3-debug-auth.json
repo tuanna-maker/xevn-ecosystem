@@ -1,0 +1,50 @@
+{
+  "pageUrl": "http://127.0.0.1:5173/command-center/hrm/contracts",
+  "hrmUrl": "http://127.0.0.1:5173/hr/contracts?portal=1&tenantId=xevn&companyId=main&_v=1785811142040",
+  "portalKeys": {
+    "xevn.portal.user": "{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"}",
+    "xevn.portal.tokenExpiresAt": "1785897537134",
+    "xevn.portal.membershipId": "9db4e67b-4840-42fd-8c88-b528cb278ac9",
+    "xevn.portal.accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjZW9AeGUudm4iLCJlbWFpbCI6ImNlb0B4ZS52biIsInRlbmFudElkIjoieGV2biIsImNvbXB"
+  },
+  "hrmKeys": {
+    "xevn.portal.user": "{\"userId\":\"ceo@xe.vn\",\"displayName\":\"CEO Tập đoàn\"}",
+    "xevn.portal.tokenExpiresAt": "1785897537134",
+    "xevn.portal.membershipId": "9db4e67b-4840-42fd-8c88-b528cb278ac9",
+    "hrm_portal_mode": "1",
+    "hrm_current_company_id": "main",
+    "xevn.portal.accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjZW9AeGUudm4iLCJlbWFpbCI6ImNlb0B4ZS52biIsInRlbmFudElkIjoieGV2biIsImNvbXB",
+    "hrm_current_tenant_id": "xevn"
+  },
+  "body": "Đơn vị thành viên\nTất cả đơn vị (rollup)\nĐang xem: Tất cả đơn vị (rollup)\n·\nTổng giám đốc tập đoàn\nThêm hợp đồng\nTất cả\n9\nHợp đồng học việc\n7\nHợp đồng lao động không xác định thời hạn\n1\nHợp đồng lao động xác định thời hạn 12 tháng\n0\nHợp đồng lao động xác định thời hạn 36 tháng\n0\nHợp đồng thử việc\n0\n\tMã HĐ\tTên nhân sự\tPhòng ban\tLoại hợp đồng\tNgày hiệu lực\tNgày hết hạn\tTình trạng\tThao tác\n\tUAT-0800-HD\t\nUN\nUAT NV 0800\n\tSTAFF\tHợp đồng học việc\t04/08/2026\t04/08/2027\tCó hiệu lực\t\n\n\tQAHDSDVS7BL-HD\t\nNH\nNV HDSDVS7BL\n\t-\tHợp đồng học việc\t31/07/2026\t31/07/2027\tCó hiệu lực\t\n\n\tQAHDSDVGW2T-HD\t\nNH\nNV HDSDVGW",
+  "net": [
+    {
+      "method": "POST",
+      "status": 201,
+      "url": "/api/xbos/auth/login",
+      "code": "XBOS-AUTH-200",
+      "message": "Đăng nhập thành công"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "code": "XBOS-AUTH-200",
+      "message": "Session loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/auth/me",
+      "code": "XBOS-AUTH-200",
+      "message": "Session loaded"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/contracts-insurance/contracts?company_id=main&page=1&page_size=100",
+      "code": "HRM-CON-200",
+      "message": "Contracts listed"
+    }
+  ]
+}

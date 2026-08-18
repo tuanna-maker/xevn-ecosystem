@@ -1,0 +1,748 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-QA-01",
+  "stamp": "DECPLATQA-MSJ1FB3D",
+  "git_head": "dc930c5",
+  "lane": "L1_API_smoke_only",
+  "u65": "zero-seed · probe ≠ UF · browser Settings HOLD",
+  "honesty": {
+    "decisions_module_uat_ready": false,
+    "hrm_personnel_uat_ready": false,
+    "employees_e2e_linkage_ready": false,
+    "payroll_e2e_ready": false,
+    "attendance_uat_ready": false,
+    "recruitment_uat_ready": false,
+    "contracts_printable_ready": false,
+    "browser_uf": false,
+    "module_uat": false
+  },
+  "account": "ceo@xe.vn",
+  "member_account": "du-lich.ceo@xe.vn",
+  "company_id_query": "holding",
+  "x_company_id": "main",
+  "open_key": "hr_custom_dec_09_msj1fb3d",
+  "dist_inspect": {
+    "dist_decisions_exists": true,
+    "src_files": [
+      "decisions.controller.ts",
+      "decisions.service.spec.ts",
+      "decisions.service.ts",
+      "hr-decision-type.constants.ts",
+      "hr-decision-type.service.spec.ts",
+      "hr-decision-type.service.ts"
+    ],
+    "dist_files": [
+      "decisions.controller.d.ts",
+      "decisions.controller.js",
+      "decisions.controller.js.map",
+      "decisions.service.d.ts",
+      "decisions.service.js",
+      "decisions.service.js.map",
+      "dto",
+      "hr-decision-type.constants.d.ts",
+      "hr-decision-type.constants.js",
+      "hr-decision-type.constants.js.map",
+      "hr-decision-type.service.d.ts",
+      "hr-decision-type.service.js",
+      "hr-decision-type.service.js.map"
+    ],
+    "has_hr_decision_type_service_js": true,
+    "controller_has_effective_route": true,
+    "controller_mtime": "2026-08-07T14:21:27.977Z",
+    "service_src_mtime": "2026-08-07T14:08:19.214Z"
+  },
+  "steps": [
+    {
+      "name": "L0_hrm_health",
+      "status": 200,
+      "ok": true,
+      "note": "{\"success\":true,\"code\":\"HRM-HEALTH-200\",\"message\":\"HRM service is healthy\",\"data\":{\"service\":\"hrm-api\",\"status\":\"ok\"},\"timestamp\":\"2026-08-07T14:26:06.789Z\"}"
+    },
+    {
+      "name": "stale_dist_probe_unauth",
+      "list": {
+        "status": 401,
+        "text": "{\"success\":false,\"code\":\"HRM-AUTH-001\",\"message\":\"Unauthorized decisions access\",\"timestamp\":\"2026-08-07T14:26:06.799Z\"}"
+      },
+      "effective": {
+        "status": 401,
+        "text": "{\"success\":false,\"code\":\"HRM-AUTH-001\",\"message\":\"Unauthorized decisions access\",\"timestamp\":\"2026-08-07T14:26:06.804Z\"}"
+      },
+      "dist": {
+        "dist_decisions_exists": true,
+        "src_files": [
+          "decisions.controller.ts",
+          "decisions.service.spec.ts",
+          "decisions.service.ts",
+          "hr-decision-type.constants.ts",
+          "hr-decision-type.service.spec.ts",
+          "hr-decision-type.service.ts"
+        ],
+        "dist_files": [
+          "decisions.controller.d.ts",
+          "decisions.controller.js",
+          "decisions.controller.js.map",
+          "decisions.service.d.ts",
+          "decisions.service.js",
+          "decisions.service.js.map",
+          "dto",
+          "hr-decision-type.constants.d.ts",
+          "hr-decision-type.constants.js",
+          "hr-decision-type.constants.js.map",
+          "hr-decision-type.service.d.ts",
+          "hr-decision-type.service.js",
+          "hr-decision-type.service.js.map"
+        ],
+        "has_hr_decision_type_service_js": true,
+        "controller_has_effective_route": true,
+        "controller_mtime": "2026-08-07T14:21:27.977Z",
+        "service_src_mtime": "2026-08-07T14:08:19.214Z"
+      },
+      "ok": true,
+      "note": "routes present (list=401 effective=401)"
+    },
+    {
+      "name": "login_ceo",
+      "ok": true,
+      "status": 201,
+      "via": "http://127.0.0.1:5173/api/xbos/auth/login",
+      "companyClaim": "main"
+    },
+    {
+      "name": "VAL_DEC_CAT_list",
+      "method": "GET",
+      "path": "/api/hrm/decisions/decision-types?company_id=holding",
+      "status": 200,
+      "code": "HRM-DEC-TYP-200",
+      "message": "Decision types listed",
+      "dataSummary": "{\"total\":0,\"data\":[]}",
+      "data": {
+        "total": 0,
+        "data": []
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-DEC-TYP-200",
+        "message": "Decision types listed",
+        "data": {
+          "total": 0,
+          "data": []
+        },
+        "timestamp": "2026-08-07T14:26:07.025Z"
+      },
+      "total": 0
+    },
+    {
+      "name": "VAL_DEC_CAT_01_create_open",
+      "method": "POST",
+      "path": "/api/hrm/decisions/decision-types",
+      "status": 201,
+      "code": "HRM-DEC-TYP-201",
+      "message": "Decision type created",
+      "dataSummary": "{\"id\":\"21506dac-a9b2-487d-a6ff-e3bd20a954d1\",\"companyId\":\"holding\",\"decisionTypeKey\":\"hr_custom_dec_09_msj1fb3d\",\"nameVi\":\"QA DEC open DECPLATQA-MSJ1FB3D\",\"sortOrder\":90,\"isPersonBound\":false,\"writesWorkHistory\":false,\"whEventType\":null,\"requiresPositionKey\":false,\"legacyAliasKeys\":null,\"colorToken\":null,\"metadata\":null,\"status\":\"active\",\"source\":\"dec_native\",\"catalogKind\":\"hr_decision_type\",\"archivedAt\":null,\"updatedAt\":\"2026-08-07T14:26:18.118Z\",\"createdAt\":\"2026-08-07T14:26:18.118Z\"}",
+      "data": {
+        "id": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+        "companyId": "holding",
+        "decisionTypeKey": "hr_custom_dec_09_msj1fb3d",
+        "nameVi": "QA DEC open DECPLATQA-MSJ1FB3D",
+        "sortOrder": 90,
+        "isPersonBound": false,
+        "writesWorkHistory": false,
+        "whEventType": null,
+        "requiresPositionKey": false,
+        "legacyAliasKeys": null,
+        "colorToken": null,
+        "metadata": null,
+        "status": "active",
+        "source": "dec_native",
+        "catalogKind": "hr_decision_type",
+        "archivedAt": null,
+        "updatedAt": "2026-08-07T14:26:18.118Z",
+        "createdAt": "2026-08-07T14:26:18.118Z"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-DEC-TYP-201",
+        "message": "Decision type created",
+        "data": {
+          "id": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+          "companyId": "holding",
+          "decisionTypeKey": "hr_custom_dec_09_msj1fb3d",
+          "nameVi": "QA DEC open DECPLATQA-MSJ1FB3D",
+          "sortOrder": 90,
+          "isPersonBound": false,
+          "writesWorkHistory": false,
+          "whEventType": null,
+          "requiresPositionKey": false,
+          "legacyAliasKeys": null,
+          "colorToken": null,
+          "metadata": null,
+          "status": "active",
+          "source": "dec_native",
+          "catalogKind": "hr_decision_type",
+          "archivedAt": null,
+          "updatedAt": "2026-08-07T14:26:18.118Z",
+          "createdAt": "2026-08-07T14:26:18.118Z"
+        },
+        "timestamp": "2026-08-07T14:26:07.063Z"
+      },
+      "createdId": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+      "key": "hr_custom_dec_09_msj1fb3d"
+    },
+    {
+      "name": "VAL_DEC_CAT_03_invalid_format",
+      "space": {
+        "status": 400,
+        "code": "HRM-PLT-CAT-CODE-INVALID"
+      },
+      "digit": {
+        "status": 400,
+        "code": "HRM-PLT-CAT-CODE-INVALID"
+      },
+      "uppercase_alone": {
+        "status": 201,
+        "code": "HRM-DEC-TYP-201",
+        "key": "HRD_QA_MSJ1FBEJ"
+      },
+      "ok": true
+    },
+    {
+      "name": "VAL_DEC_ALS_effective",
+      "method": "GET",
+      "path": "/api/hrm/decisions/decision-types/effective?company_id=holding",
+      "status": 200,
+      "code": "HRM-DEC-TYP-200",
+      "message": "Effective decision types listed",
+      "dataSummary": "{\"total\":5,\"data\":[{\"id\":\"21506dac-a9b2-487d-a6ff-e3bd20a954d1\",\"companyId\":\"holding\",\"decisionTypeKey\":\"hr_custom_dec_09_msj1fb3d\",\"nameVi\":\"QA DEC open DECPLATQA-MSJ1FB3D\",\"sortOrder\":90,\"isPersonBound\":false,\"writesWorkHistory\":false,\"whEventType\":null,\"requiresPositionKey\":false,\"legacyAliasKeys\":null,\"colorToken\":null,\"metadata\":null,\"status\":\"active\",\"source\":\"dec_native\",\"catalogKind\":\"hr_decision_type\",\"archivedAt\":null,\"updatedAt\":\"2026-08-07T14:26:18.118Z\",\"createdAt\":\"2026-08-07T14:26:18.118Z\"},{\"id\":\"group-ref:holding:hrd_01\",\"companyId\":\"holding\",\"decisionTypeKey\":\"HRD_01\",\"nameVi\":\"Bổ nhiệm\",\"sortOrder\":100,\"isPersonBound\":false,\"writesWorkHistory\":false,\"whEventType\":null,\"requiresPositionKey\":false,\"legacyAliasKeys\":null,\"colorToken\":null,\"metadata\":null,\"status\":\"active\",\"…",
+      "data": {
+        "total": 5,
+        "data": [
+          {
+            "id": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+            "companyId": "holding",
+            "decisionTypeKey": "hr_custom_dec_09_msj1fb3d",
+            "nameVi": "QA DEC open DECPLATQA-MSJ1FB3D",
+            "sortOrder": 90,
+            "isPersonBound": false,
+            "writesWorkHistory": false,
+            "whEventType": null,
+            "requiresPositionKey": false,
+            "legacyAliasKeys": null,
+            "colorToken": null,
+            "metadata": null,
+            "status": "active",
+            "source": "dec_native",
+            "catalogKind": "hr_decision_type",
+            "archivedAt": null,
+            "updatedAt": "2026-08-07T14:26:18.118Z",
+            "createdAt": "2026-08-07T14:26:18.118Z"
+          },
+          {
+            "id": "group-ref:holding:hrd_01",
+            "companyId": "holding",
+            "decisionTypeKey": "HRD_01",
+            "nameVi": "Bổ nhiệm",
+            "sortOrder": 100,
+            "isPersonBound": false,
+            "writesWorkHistory": false,
+            "whEventType": null,
+            "requiresPositionKey": false,
+            "legacyAliasKeys": null,
+            "colorToken": null,
+            "metadata": null,
+            "status": "active",
+            "source": "group_ref",
+            "catalogKind": "hr_decision_type",
+            "archivedAt": null,
+            "updatedAt": "2026-08-07T14:26:07.311Z",
+            "createdAt": "2026-08-07T14:26:07.311Z"
+          },
+          {
+            "id": "group-ref:holding:hrd_02",
+            "companyId": "holding",
+            "decisionTypeKey": "HRD_02",
+            "nameVi": "Miễn nhiệm",
+            "sortOrder": 100,
+            "isPersonBound": false,
+            "writesWorkHistory": false,
+            "whEventType": null,
+            "requiresPositionKey": false,
+            "legacyAliasKeys": null,
+            "colorToken": null,
+            "metadata": null,
+            "status": "active",
+            "source": "group_ref",
+            "catalogKind": "hr_decision_type",
+            "archivedAt": null,
+            "updatedAt": "2026-08-07T14:26:07.311Z",
+            "createdAt": "2026-08-07T14:26:07.311Z"
+          },
+          {
+            "id": "group-ref:holding:hrd_03",
+            "companyId": "holding",
+            "decisionTypeKey": "HRD_03",
+            "nameVi": "Kỷ luật",
+            "sortOrder": 100,
+            "isPersonBound": false,
+            "writesWorkHistory": false,
+            "whEventType": null,
+            "requiresPositionKey": false,
+            "legacyAliasKeys": null,
+            "colorToken": null,
+            "metadata": null,
+            "status": "active",
+            "source": "group_ref",
+            "catalogKind": "hr_decision_type",
+            "archivedAt": null,
+            "updatedAt": "2026-08-07T14:26:07.311Z",
+            "createdAt": "2026-08-07T14:26:07.311Z"
+          },
+          {
+            "id": "db521de6-7db2-4d3d-bbf4-dbe942639440",
+            "companyId": "holding",
+            "decisionTypeKey": "HRD_QA_MSJ1FBEJ",
+            "nameVi": "Upper allowed DECPLATQA-MSJ1FB3D",
+            "sortOrder": 100,
+            "isPersonBound": false,
+            "writesWorkHistory": false,
+            "whEventType": null,
+            "requiresPositionKey": false,
+            "legacyAliasKeys": null,
+            "colorToken": null,
+            "metadata": null,
+            "status": "active",
+            "source": "dec_native",
+            "catalogKind": "hr_decision_type",
+            "archivedAt": null,
+            "updatedAt": "2026-08-07T14:26:18.188Z",
+            "createdAt": "2026-08-07T14:26:18.188Z"
+          }
+        ],
+        "personBoundKeys": [],
+        "workHistoryNeoKeys": []
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-DEC-TYP-200",
+        "message": "Effective decision types listed",
+        "data": {
+          "total": 5,
+          "data": [
+            {
+              "id": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+              "companyId": "holding",
+              "decisionTypeKey": "hr_custom_dec_09_msj1fb3d",
+              "nameVi": "QA DEC open DECPLATQA-MSJ1FB3D",
+              "sortOrder": 90,
+              "isPersonBound": false,
+              "writesWorkHistory": false,
+              "whEventType": null,
+              "requiresPositionKey": false,
+              "legacyAliasKeys": null,
+              "colorToken": null,
+              "metadata": null,
+              "status": "active",
+              "source": "dec_native",
+              "catalogKind": "hr_decision_type",
+              "archivedAt": null,
+              "updatedAt": "2026-08-07T14:26:18.118Z",
+              "createdAt": "2026-08-07T14:26:18.118Z"
+            },
+            {
+              "id": "group-ref:holding:hrd_01",
+              "companyId": "holding",
+              "decisionTypeKey": "HRD_01",
+              "nameVi": "Bổ nhiệm",
+              "sortOrder": 100,
+              "isPersonBound": false,
+              "writesWorkHistory": false,
+              "whEventType": null,
+              "requiresPositionKey": false,
+              "legacyAliasKeys": null,
+              "colorToken": null,
+              "metadata": null,
+              "status": "active",
+              "source": "group_ref",
+              "catalogKind": "hr_decision_type",
+              "archivedAt": null,
+              "updatedAt": "2026-08-07T14:26:07.311Z",
+              "createdAt": "2026-08-07T14:26:07.311Z"
+            },
+            {
+              "id": "group-ref:holding:hrd_02",
+              "companyId": "holding",
+              "decisionTypeKey": "HRD_02",
+              "nameVi": "Miễn nhiệm",
+              "sortOrder": 100,
+              "isPersonBound": false,
+              "writesWorkHistory": false,
+              "whEventType": null,
+              "requiresPositionKey": false,
+              "legacyAliasKeys": null,
+              "colorToken": null,
+              "metadata": null,
+              "status": "active",
+              "source": "group_ref",
+              "catalogKind": "hr_decision_type",
+              "archivedAt": null,
+              "updatedAt": "2026-08-07T14:26:07.311Z",
+              "createdAt": "2026-08-07T14:26:07.311Z"
+            },
+            {
+              "id": "group-ref:holding:hrd_03",
+              "companyId": "holding",
+              "decisionTypeKey": "HRD_03",
+              "nameVi": "Kỷ luật",
+              "sortOrder": 100,
+              "isPersonBound": false,
+              "writesWorkHistory": false,
+              "whEventType": null,
+              "requiresPositionKey": false,
+              "legacyAliasKeys": null,
+              "colorToken": null,
+              "metadata": null,
+              "status": "active",
+              "source": "group_ref",
+              "catalogKind": "hr_decision_type",
+              "archivedAt": null,
+              "updatedAt": "2026-08-07T14:26:07.311Z",
+              "createdAt": "2026-08-07T14:26:07.311Z"
+            },
+            {
+              "id": "db521de6-7db2-4d3d-bbf4-dbe942639440",
+              "companyId": "holding",
+              "decisionTypeKey": "HRD_QA_MSJ1FBEJ",
+              "nameVi": "Upper allowed DECPLATQA-MSJ1FB3D",
+              "sortOrder": 100,
+              "isPersonBound": false,
+              "writesWorkHistory": false,
+              "whEventType": null,
+              "requiresPositionKey": false,
+              "legacyAliasKeys": null,
+              "colorToken": null,
+              "metadata": null,
+              "status": "active",
+              "source": "dec_native",
+              "catalogKind": "hr_decision_type",
+              "archivedAt": null,
+              "updatedAt": "2026-08-07T14:26:18.188Z",
+              "createdAt": "2026-08-07T14:26:18.188Z"
+            }
+          ],
+          "personBoundKeys": [],
+          "workHistoryNeoKeys": []
+        },
+        "timestamp": "2026-08-07T14:26:07.311Z"
+      },
+      "total": 5,
+      "openInEff": true,
+      "sources": [
+        "dec_native",
+        "group_ref"
+      ]
+    },
+    {
+      "name": "VAL_DEC_CNS_01_unknown_when_catalog_gt0",
+      "method": "POST",
+      "path": "/api/hrm/decisions",
+      "status": 400,
+      "code": "HRM-DEC-TYPE-UNKNOWN",
+      "message": "decision_type 'zz_unknown_dec_msj1fbkh' is not in effective decision-type catalog (free-text SoT forbidden)",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-DEC-TYPE-UNKNOWN\",\"message\":\"decision_type 'zz_unknown_dec_msj1fbkh' is not in effective decision-type catalog (free-text SoT forbidden)\",\"timestamp\":\"2026-08-07T14:26:07.601Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-DEC-TYPE-UNKNOWN",
+        "message": "decision_type 'zz_unknown_dec_msj1fbkh' is not in effective decision-type catalog (free-text SoT forbidden)",
+        "timestamp": "2026-08-07T14:26:07.601Z"
+      },
+      "ok": true
+    },
+    {
+      "name": "VAL_DEC_CAT_04_retire",
+      "method": "POST",
+      "path": "/api/hrm/decisions/decision-types/21506dac-a9b2-487d-a6ff-e3bd20a954d1/retire?company_id=holding",
+      "status": 201,
+      "code": "HRM-DEC-TYP-200",
+      "message": "Decision type retired",
+      "dataSummary": "{\"id\":\"21506dac-a9b2-487d-a6ff-e3bd20a954d1\",\"companyId\":\"holding\",\"decisionTypeKey\":\"hr_custom_dec_09_msj1fb3d\",\"nameVi\":\"QA DEC open DECPLATQA-MSJ1FB3D\",\"sortOrder\":90,\"isPersonBound\":false,\"writesWorkHistory\":false,\"whEventType\":null,\"requiresPositionKey\":false,\"legacyAliasKeys\":null,\"colorToken\":null,\"metadata\":null,\"status\":\"retired\",\"source\":\"dec_native\",\"catalogKind\":\"hr_decision_type\",\"archivedAt\":\"2026-08-07T14:26:18.676Z\",\"updatedAt\":\"2026-08-07T14:26:18.676Z\",\"createdAt\":\"2026-08-07T14:26:18.118Z\"}",
+      "data": {
+        "id": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+        "companyId": "holding",
+        "decisionTypeKey": "hr_custom_dec_09_msj1fb3d",
+        "nameVi": "QA DEC open DECPLATQA-MSJ1FB3D",
+        "sortOrder": 90,
+        "isPersonBound": false,
+        "writesWorkHistory": false,
+        "whEventType": null,
+        "requiresPositionKey": false,
+        "legacyAliasKeys": null,
+        "colorToken": null,
+        "metadata": null,
+        "status": "retired",
+        "source": "dec_native",
+        "catalogKind": "hr_decision_type",
+        "archivedAt": "2026-08-07T14:26:18.676Z",
+        "updatedAt": "2026-08-07T14:26:18.676Z",
+        "createdAt": "2026-08-07T14:26:18.118Z"
+      },
+      "json": {
+        "success": true,
+        "code": "HRM-DEC-TYP-200",
+        "message": "Decision type retired",
+        "data": {
+          "id": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+          "companyId": "holding",
+          "decisionTypeKey": "hr_custom_dec_09_msj1fb3d",
+          "nameVi": "QA DEC open DECPLATQA-MSJ1FB3D",
+          "sortOrder": 90,
+          "isPersonBound": false,
+          "writesWorkHistory": false,
+          "whEventType": null,
+          "requiresPositionKey": false,
+          "legacyAliasKeys": null,
+          "colorToken": null,
+          "metadata": null,
+          "status": "retired",
+          "source": "dec_native",
+          "catalogKind": "hr_decision_type",
+          "archivedAt": "2026-08-07T14:26:18.676Z",
+          "updatedAt": "2026-08-07T14:26:18.676Z",
+          "createdAt": "2026-08-07T14:26:18.118Z"
+        },
+        "timestamp": "2026-08-07T14:26:07.619Z"
+      },
+      "hidden": true,
+      "stillVisibleArchived": true,
+      "listAfterTotal": 1
+    },
+    {
+      "name": "VAL_DEC_SCP_get",
+      "getHolding": {
+        "method": "GET",
+        "path": "/api/hrm/decisions/decision-types/21506dac-a9b2-487d-a6ff-e3bd20a954d1?company_id=holding",
+        "status": 200,
+        "code": "HRM-DEC-TYP-200",
+        "message": "Decision type loaded",
+        "dataSummary": "{\"id\":\"21506dac-a9b2-487d-a6ff-e3bd20a954d1\",\"companyId\":\"holding\",\"decisionTypeKey\":\"hr_custom_dec_09_msj1fb3d\",\"nameVi\":\"QA DEC open DECPLATQA-MSJ1FB3D\",\"sortOrder\":90,\"isPersonBound\":false,\"writesWorkHistory\":false,\"whEventType\":null,\"requiresPositionKey\":false,\"legacyAliasKeys\":null,\"colorToken\":null,\"metadata\":null,\"status\":\"retired\",\"source\":\"dec_native\",\"catalogKind\":\"hr_decision_type\",\"archivedAt\":\"2026-08-07T14:26:18.676Z\",\"updatedAt\":\"2026-08-07T14:26:18.676Z\",\"createdAt\":\"2026-08-07T14:26:18.118Z\"}",
+        "data": {
+          "id": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+          "companyId": "holding",
+          "decisionTypeKey": "hr_custom_dec_09_msj1fb3d",
+          "nameVi": "QA DEC open DECPLATQA-MSJ1FB3D",
+          "sortOrder": 90,
+          "isPersonBound": false,
+          "writesWorkHistory": false,
+          "whEventType": null,
+          "requiresPositionKey": false,
+          "legacyAliasKeys": null,
+          "colorToken": null,
+          "metadata": null,
+          "status": "retired",
+          "source": "dec_native",
+          "catalogKind": "hr_decision_type",
+          "archivedAt": "2026-08-07T14:26:18.676Z",
+          "updatedAt": "2026-08-07T14:26:18.676Z",
+          "createdAt": "2026-08-07T14:26:18.118Z"
+        },
+        "json": {
+          "success": true,
+          "code": "HRM-DEC-TYP-200",
+          "message": "Decision type loaded",
+          "data": {
+            "id": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+            "companyId": "holding",
+            "decisionTypeKey": "hr_custom_dec_09_msj1fb3d",
+            "nameVi": "QA DEC open DECPLATQA-MSJ1FB3D",
+            "sortOrder": 90,
+            "isPersonBound": false,
+            "writesWorkHistory": false,
+            "whEventType": null,
+            "requiresPositionKey": false,
+            "legacyAliasKeys": null,
+            "colorToken": null,
+            "metadata": null,
+            "status": "retired",
+            "source": "dec_native",
+            "catalogKind": "hr_decision_type",
+            "archivedAt": "2026-08-07T14:26:18.676Z",
+            "updatedAt": "2026-08-07T14:26:18.676Z",
+            "createdAt": "2026-08-07T14:26:18.118Z"
+          },
+          "timestamp": "2026-08-07T14:26:07.655Z"
+        }
+      },
+      "getMain": {
+        "method": "GET",
+        "path": "/api/hrm/decisions/decision-types/21506dac-a9b2-487d-a6ff-e3bd20a954d1?company_id=main",
+        "status": 200,
+        "code": "HRM-DEC-TYP-200",
+        "message": "Decision type loaded",
+        "dataSummary": "{\"id\":\"21506dac-a9b2-487d-a6ff-e3bd20a954d1\",\"companyId\":\"holding\",\"decisionTypeKey\":\"hr_custom_dec_09_msj1fb3d\",\"nameVi\":\"QA DEC open DECPLATQA-MSJ1FB3D\",\"sortOrder\":90,\"isPersonBound\":false,\"writesWorkHistory\":false,\"whEventType\":null,\"requiresPositionKey\":false,\"legacyAliasKeys\":null,\"colorToken\":null,\"metadata\":null,\"status\":\"retired\",\"source\":\"dec_native\",\"catalogKind\":\"hr_decision_type\",\"archivedAt\":\"2026-08-07T14:26:18.676Z\",\"updatedAt\":\"2026-08-07T14:26:18.676Z\",\"createdAt\":\"2026-08-07T14:26:18.118Z\"}",
+        "data": {
+          "id": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+          "companyId": "holding",
+          "decisionTypeKey": "hr_custom_dec_09_msj1fb3d",
+          "nameVi": "QA DEC open DECPLATQA-MSJ1FB3D",
+          "sortOrder": 90,
+          "isPersonBound": false,
+          "writesWorkHistory": false,
+          "whEventType": null,
+          "requiresPositionKey": false,
+          "legacyAliasKeys": null,
+          "colorToken": null,
+          "metadata": null,
+          "status": "retired",
+          "source": "dec_native",
+          "catalogKind": "hr_decision_type",
+          "archivedAt": "2026-08-07T14:26:18.676Z",
+          "updatedAt": "2026-08-07T14:26:18.676Z",
+          "createdAt": "2026-08-07T14:26:18.118Z"
+        },
+        "json": {
+          "success": true,
+          "code": "HRM-DEC-TYP-200",
+          "message": "Decision type loaded",
+          "data": {
+            "id": "21506dac-a9b2-487d-a6ff-e3bd20a954d1",
+            "companyId": "holding",
+            "decisionTypeKey": "hr_custom_dec_09_msj1fb3d",
+            "nameVi": "QA DEC open DECPLATQA-MSJ1FB3D",
+            "sortOrder": 90,
+            "isPersonBound": false,
+            "writesWorkHistory": false,
+            "whEventType": null,
+            "requiresPositionKey": false,
+            "legacyAliasKeys": null,
+            "colorToken": null,
+            "metadata": null,
+            "status": "retired",
+            "source": "dec_native",
+            "catalogKind": "hr_decision_type",
+            "archivedAt": "2026-08-07T14:26:18.676Z",
+            "updatedAt": "2026-08-07T14:26:18.676Z",
+            "createdAt": "2026-08-07T14:26:18.118Z"
+          },
+          "timestamp": "2026-08-07T14:26:07.676Z"
+        }
+      },
+      "ok": true
+    },
+    {
+      "name": "login_member",
+      "ok": true,
+      "status": 201
+    },
+    {
+      "name": "VAL_DEC_SCP_member_oos",
+      "method": "GET",
+      "path": "/api/hrm/decisions/decision-types/21506dac-a9b2-487d-a6ff-e3bd20a954d1?company_id=holding",
+      "status": 409,
+      "code": "SCOPE_CONTEXT_MISMATCH",
+      "message": "tenantId mismatches token scope",
+      "dataSummary": "{\"success\":false,\"code\":\"SCOPE_CONTEXT_MISMATCH\",\"message\":\"tenantId mismatches token scope\",\"details\":{\"field\":\"tenantId\",\"token\":\"xe-du-lich\",\"request\":\"xevn\"},\"timestamp\":\"2026-08-07T14:26:07.732Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "SCOPE_CONTEXT_MISMATCH",
+        "message": "tenantId mismatches token scope",
+        "details": {
+          "field": "tenantId",
+          "token": "xe-du-lich",
+          "request": "xevn"
+        },
+        "timestamp": "2026-08-07T14:26:07.732Z"
+      },
+      "ok": true
+    },
+    {
+      "name": "VAL_DEC_CAT_05_hard_delete_forbidden",
+      "method": "DELETE",
+      "path": "/api/hrm/decisions/decision-types/21506dac-a9b2-487d-a6ff-e3bd20a954d1?company_id=holding",
+      "status": 404,
+      "code": "HRM-DATA-404",
+      "message": "Cannot DELETE /api/hrm/decisions/decision-types/21506dac-a9b2-487d-a6ff-e3bd20a954d1?company_id=holding",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-DATA-404\",\"message\":\"Cannot DELETE /api/hrm/decisions/decision-types/21506dac-a9b2-487d-a6ff-e3bd20a954d1?company_id=holding\",\"timestamp\":\"2026-08-07T14:26:07.748Z\"}",
+      "data": null,
+      "json": {
+        "success": false,
+        "code": "HRM-DATA-404",
+        "message": "Cannot DELETE /api/hrm/decisions/decision-types/21506dac-a9b2-487d-a6ff-e3bd20a954d1?company_id=holding",
+        "timestamp": "2026-08-07T14:26:07.748Z"
+      },
+      "ok": true
+    }
+  ],
+  "ac": {
+    "stale_dist_gate": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "unauth list+effective auth-gate (not 404/500)"
+    },
+    "VAL_DEC_CAT_list": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "200 HRM-DEC-TYP-200 total=0"
+    },
+    "VAL_DEC_CAT_01_create_open": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "201 HRM-DEC-TYP-201 id=21506dac-a9b2-487d-a6ff-e3bd20a954d1"
+    },
+    "VAL_DEC_CAT_03_invalid_format": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "space=400/HRM-PLT-CAT-CODE-INVALID digit=400/HRM-PLT-CAT-CODE-INVALID upperAlone=201 (DEC allows case)"
+    },
+    "VAL_DEC_ALS_effective": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "200 total=5 openInEff=true sources=dec_native,group_ref"
+    },
+    "VAL_DEC_CNS_01": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "400 HRM-DEC-TYPE-UNKNOWN (expect 400 HRM-DEC-TYPE-UNKNOWN)"
+    },
+    "VAL_DEC_CAT_04_retire": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "201 status=retired hidden=true"
+    },
+    "VAL_DEC_SCP_ceo": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "holding=200 main=200"
+    },
+    "VAL_DEC_SCP_member_oos": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "409 SCOPE_CONTEXT_MISMATCH (expect 403|404|409)"
+    },
+    "VAL_DEC_CAT_05_hard_delete": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "404 HRM-DATA-404 (expect 404/405 no hard-delete)"
+    },
+    "honesty_locked": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "all *_ready / browser_uf / module_uat false LOCKED"
+    },
+    "browser_settings_hold": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "FE HOLD — do not claim Settings browser PASS (R-PLT-DEC-FE-01)"
+    }
+  },
+  "residual": [],
+  "overall": {
+    "verdict": "PASS",
+    "ack_status": "PASS_TO_PM",
+    "pass": 12,
+    "fail": 0,
+    "total_ac": 12,
+    "stamp": "DECPLATQA-MSJ1FB3D",
+    "fe_hold": true,
+    "honesty_locked": true
+  }
+}

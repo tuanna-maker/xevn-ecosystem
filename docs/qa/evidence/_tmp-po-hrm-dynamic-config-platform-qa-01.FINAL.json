@@ -1,0 +1,287 @@
+{
+  "work_item_id": "PO-HRM-DYNAMIC-CONFIG-PLATFORM-QA-01",
+  "stamp": "PLTQA-MSIEQLQ8",
+  "lane": "L1_secondary_only",
+  "u65": "zero-seed · not UF · not printable UAT",
+  "persona": "ceo@xe.vn",
+  "company_id": "main",
+  "startedAt": "2026-08-07T03:51:02.528Z",
+  "feStatusAtRun": "FE-01 DISPATCHED — no fe evidence · AC-PLT-CTR-05 browser SKIP",
+  "checks": {
+    "list_200": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 200 code=HRM-PLT-TOK-200 items=0"
+    },
+    "resolve_preview_keyword_map": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 201 code=HRM-PLT-TOK-200 msg=Merge resolve preview (2xx + PLT code OK)"
+    },
+    "format_invalid_only": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 400 code=HRM-PLT-CAT-CODE-INVALID (expect HRM-PLT-CAT-CODE-INVALID format)"
+    },
+    "open_catalog_token_upsert": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "HTTP 200 code=HRM-PLT-TOK-200 key=custom.emp.qa_plt_pltqa_msieqlq8"
+    },
+    "scope_parity_get": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "GET by id HTTP 200 code=HRM-PLT-TOK-200"
+    },
+    "soft_delete_retire": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "retire HTTP 201 code=HRM-PLT-TOK-200 (2xx soft-delete OK)"
+    },
+    "retired_hidden_from_default_list": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "retired hidden / inactive"
+    },
+    "dynamic_lock_merge_token_no_closed_enum": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "token upsert open + format-only INVALID (no starter-N reject)"
+    },
+    "dynamic_lock_tpl_9th_peer": {
+      "ok": null,
+      "verdict": "DEFER_PEER",
+      "note": "XEVN-TPL-QA-01 FAIL AC-11 is HRM-VAL-001 DTO whitelist / stale dist — NOT CODE-INVALID «not in 8». Owned by XEVN-TPL-BE-02. MergeToken BE-01 did not reintroduce closed template CHK."
+    },
+    "honesty_printable_denied": {
+      "ok": true,
+      "verdict": "PASS",
+      "note": "contracts_printable_ready=false — DENIED invent · L1 ≠ UF 🟢"
+    }
+  },
+  "steps": [
+    {
+      "method": "GET",
+      "path": "/api/hrm/merge-tokens?company_id=main",
+      "status": 200,
+      "code": "HRM-PLT-TOK-200",
+      "message": "Merge tokens listed",
+      "dataSummary": "{\"items\":[],\"total\":0}",
+      "itemCount": 0,
+      "json": {
+        "success": true,
+        "code": "HRM-PLT-TOK-200",
+        "message": "Merge tokens listed",
+        "data": {
+          "items": [],
+          "total": 0
+        },
+        "timestamp": "2026-08-07T03:51:02.696Z"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/merge-tokens/resolve-preview",
+      "status": 201,
+      "code": "HRM-PLT-TOK-200",
+      "message": "Merge resolve preview",
+      "dataSummary": "{\"companyId\":\"main\",\"templateId\":null,\"resolveOrder\":\"missing\",\"tokens\":[{\"tokenKey\":\"contract.code\",\"displayToken\":\"{{contract.code}}\",\"source\":\"missing\",\"warning\":\"HRM-PLT-TOKEN-UNKNOWN:contract.code\"},{\"tokenKey\":\"employee.full_name\",\"displayToken\":\"{{employee.full_name}}\",\"source\":\"override\",\"value\":\"QA L1 Probe\"}],\"mergedPreview\":{\"employee.full_name\":\"QA L1 Probe\",\"employee_full_name\":\"QA L1 Probe\"},\"warnings\":[\"HRM-PLT-TOKEN-UNKNOWN:contract.code\"]}",
+      "itemCount": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PLT-TOK-200",
+        "message": "Merge resolve preview",
+        "data": {
+          "companyId": "main",
+          "templateId": null,
+          "resolveOrder": "missing",
+          "tokens": [
+            {
+              "tokenKey": "contract.code",
+              "displayToken": "{{contract.code}}",
+              "source": "missing",
+              "warning": "HRM-PLT-TOKEN-UNKNOWN:contract.code"
+            },
+            {
+              "tokenKey": "employee.full_name",
+              "displayToken": "{{employee.full_name}}",
+              "source": "override",
+              "value": "QA L1 Probe"
+            }
+          ],
+          "mergedPreview": {
+            "employee.full_name": "QA L1 Probe",
+            "employee_full_name": "QA L1 Probe"
+          },
+          "warnings": [
+            "HRM-PLT-TOKEN-UNKNOWN:contract.code"
+          ]
+        },
+        "timestamp": "2026-08-07T03:51:02.712Z"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/merge-tokens",
+      "status": 400,
+      "code": "HRM-PLT-CAT-CODE-INVALID",
+      "message": "tokenKey format invalid — expected a-z / digits / underscore / dots (format only)",
+      "dataSummary": "{\"success\":false,\"code\":\"HRM-PLT-CAT-CODE-INVALID\",\"message\":\"tokenKey format invalid — expected a-z / digits / underscore / dots (format only)\",\"timestamp\":\"2026-08-07T03:51:02.724Z\"}",
+      "itemCount": null,
+      "json": {
+        "success": false,
+        "code": "HRM-PLT-CAT-CODE-INVALID",
+        "message": "tokenKey format invalid — expected a-z / digits / underscore / dots (format only)",
+        "timestamp": "2026-08-07T03:51:02.724Z"
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/api/hrm/merge-tokens",
+      "status": 200,
+      "code": "HRM-PLT-TOK-200",
+      "message": "Merge token upserted",
+      "dataSummary": "{\"id\":\"9bd627e7-7439-4c52-9ac1-dabf108d0dca\",\"companyId\":\"holding\",\"tokenKey\":\"custom.emp.qa_plt_pltqa_msieqlq8\",\"sourcePath\":\"custom.emp.qa_plt_pltqa_msieqlq8\",\"ring\":\"custom\",\"domain\":\"EMP\",\"labelVi\":\"QA L1 soft PLTQA-MSIEQLQ8\",\"status\":\"active\",\"origin\":\"builtin\",\"extensionFieldRef\":null,\"meta\":{\"stamp\":\"PLTQA-MSIEQLQ8\",\"qa_l1_secondary\":true},\"version\":1,\"archivedAt\":null,\"updatedAt\":\"2026-08-07T03:51:13.415Z\",\"createdAt\":\"2026-08-07T03:51:13.415Z\"}",
+      "itemCount": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PLT-TOK-200",
+        "message": "Merge token upserted",
+        "data": {
+          "id": "9bd627e7-7439-4c52-9ac1-dabf108d0dca",
+          "companyId": "holding",
+          "tokenKey": "custom.emp.qa_plt_pltqa_msieqlq8",
+          "sourcePath": "custom.emp.qa_plt_pltqa_msieqlq8",
+          "ring": "custom",
+          "domain": "EMP",
+          "labelVi": "QA L1 soft PLTQA-MSIEQLQ8",
+          "status": "active",
+          "origin": "builtin",
+          "extensionFieldRef": null,
+          "meta": {
+            "stamp": "PLTQA-MSIEQLQ8",
+            "qa_l1_secondary": true
+          },
+          "version": 1,
+          "archivedAt": null,
+          "updatedAt": "2026-08-07T03:51:13.415Z",
+          "createdAt": "2026-08-07T03:51:13.415Z"
+        },
+        "timestamp": "2026-08-07T03:51:02.759Z"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/merge-tokens/9bd627e7-7439-4c52-9ac1-dabf108d0dca?company_id=main",
+      "status": 200,
+      "code": "HRM-PLT-TOK-200",
+      "message": "Merge token loaded",
+      "dataSummary": "{\"id\":\"9bd627e7-7439-4c52-9ac1-dabf108d0dca\",\"companyId\":\"holding\",\"tokenKey\":\"custom.emp.qa_plt_pltqa_msieqlq8\",\"sourcePath\":\"custom.emp.qa_plt_pltqa_msieqlq8\",\"ring\":\"custom\",\"domain\":\"EMP\",\"labelVi\":\"QA L1 soft PLTQA-MSIEQLQ8\",\"status\":\"active\",\"origin\":\"builtin\",\"extensionFieldRef\":null,\"meta\":{\"stamp\":\"PLTQA-MSIEQLQ8\",\"qa_l1_secondary\":true},\"version\":1,\"archivedAt\":null,\"updatedAt\":\"2026-08-07T03:51:13.415Z\",\"createdAt\":\"2026-08-07T03:51:13.415Z\"}",
+      "itemCount": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PLT-TOK-200",
+        "message": "Merge token loaded",
+        "data": {
+          "id": "9bd627e7-7439-4c52-9ac1-dabf108d0dca",
+          "companyId": "holding",
+          "tokenKey": "custom.emp.qa_plt_pltqa_msieqlq8",
+          "sourcePath": "custom.emp.qa_plt_pltqa_msieqlq8",
+          "ring": "custom",
+          "domain": "EMP",
+          "labelVi": "QA L1 soft PLTQA-MSIEQLQ8",
+          "status": "active",
+          "origin": "builtin",
+          "extensionFieldRef": null,
+          "meta": {
+            "stamp": "PLTQA-MSIEQLQ8",
+            "qa_l1_secondary": true
+          },
+          "version": 1,
+          "archivedAt": null,
+          "updatedAt": "2026-08-07T03:51:13.415Z",
+          "createdAt": "2026-08-07T03:51:13.415Z"
+        },
+        "timestamp": "2026-08-07T03:51:02.768Z"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/hrm/merge-tokens/9bd627e7-7439-4c52-9ac1-dabf108d0dca/retire?company_id=main",
+      "status": 201,
+      "code": "HRM-PLT-TOK-200",
+      "message": "Merge token retired",
+      "dataSummary": "{\"id\":\"9bd627e7-7439-4c52-9ac1-dabf108d0dca\",\"companyId\":\"holding\",\"tokenKey\":\"custom.emp.qa_plt_pltqa_msieqlq8\",\"sourcePath\":\"custom.emp.qa_plt_pltqa_msieqlq8\",\"ring\":\"custom\",\"domain\":\"EMP\",\"labelVi\":\"QA L1 soft PLTQA-MSIEQLQ8\",\"status\":\"retired\",\"origin\":\"builtin\",\"extensionFieldRef\":null,\"meta\":{\"stamp\":\"PLTQA-MSIEQLQ8\",\"qa_l1_secondary\":true},\"version\":1,\"archivedAt\":\"2026-08-07T03:51:13.457Z\",\"updatedAt\":\"2026-08-07T03:51:13.457Z\",\"createdAt\":\"2026-08-07T03:51:13.415Z\"}",
+      "itemCount": null,
+      "json": {
+        "success": true,
+        "code": "HRM-PLT-TOK-200",
+        "message": "Merge token retired",
+        "data": {
+          "id": "9bd627e7-7439-4c52-9ac1-dabf108d0dca",
+          "companyId": "holding",
+          "tokenKey": "custom.emp.qa_plt_pltqa_msieqlq8",
+          "sourcePath": "custom.emp.qa_plt_pltqa_msieqlq8",
+          "ring": "custom",
+          "domain": "EMP",
+          "labelVi": "QA L1 soft PLTQA-MSIEQLQ8",
+          "status": "retired",
+          "origin": "builtin",
+          "extensionFieldRef": null,
+          "meta": {
+            "stamp": "PLTQA-MSIEQLQ8",
+            "qa_l1_secondary": true
+          },
+          "version": 1,
+          "archivedAt": "2026-08-07T03:51:13.457Z",
+          "updatedAt": "2026-08-07T03:51:13.457Z",
+          "createdAt": "2026-08-07T03:51:13.415Z"
+        },
+        "timestamp": "2026-08-07T03:51:02.801Z"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/merge-tokens?company_id=main&q=custom.emp.qa_plt_pltqa_msieqlq8",
+      "status": 200,
+      "code": "HRM-PLT-TOK-200",
+      "message": "Merge tokens listed",
+      "dataSummary": "{\"items\":[],\"total\":0}",
+      "itemCount": 0,
+      "json": {
+        "success": true,
+        "code": "HRM-PLT-TOK-200",
+        "message": "Merge tokens listed",
+        "data": {
+          "items": [],
+          "total": 0
+        },
+        "timestamp": "2026-08-07T03:51:02.824Z"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/hrm/contracts-insurance/contract-templates?company_id=main&page_size=50",
+      "status": 400,
+      "code": "HRM-VAL-001",
+      "message": "property page_size should not exist",
+      "dataSummary": "{\"total\":null,\"sampleCodes\":[]}",
+      "itemCount": null,
+      "json": {
+        "success": false,
+        "code": "HRM-VAL-001",
+        "message": "property page_size should not exist",
+        "timestamp": "2026-08-07T03:51:02.832Z"
+      }
+    }
+  ],
+  "login": "ok",
+  "finishedAt": "2026-08-07T03:51:02.832Z",
+  "summary": {
+    "pass": 9,
+    "fail": 0,
+    "defer": 1
+  },
+  "ack_status": "PASS_TO_PM",
+  "label": "L1 secondary only — NOT UF 🟢 · NOT AC-PLT-CTR-05 browser · NOT printable UAT"
+}

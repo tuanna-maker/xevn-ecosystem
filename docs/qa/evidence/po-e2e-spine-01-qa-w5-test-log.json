@@ -1,0 +1,191 @@
+{
+  "schema": "xevn-test-log/v1",
+  "log_id": "TEL-PO-E2E-SPINE-01-QA-W5-20260803",
+  "work_item_id": "PO-E2E-SPINE-01-QA-W5",
+  "tester": {
+    "role": "qa",
+    "agent": "po-e2e-spine-01-qa-w5-browser"
+  },
+  "started_at": "2026-08-03T15:54:54.849Z",
+  "ended_at": "2026-08-03T15:55:29.444Z",
+  "environment": {
+    "portal_url": "http://127.0.0.1:5173",
+    "hrm_api": "http://127.0.0.1:28001/api/hrm",
+    "xbos_api": "http://127.0.0.1:28002/api/xbos",
+    "persona": "ceo@xe.vn",
+    "company_id": "main",
+    "cand_stamp": "SP4SDEKW49",
+    "employee_id": "5c3ea407-02cb-4cfa-a36c-9ada56908010",
+    "employee_code": "UAT-0020",
+    "notes": "U65 zero-seed · HP-05/06 after W4-R1 hire · Leave/Approve UX not reopened · screenshot audit overrides harness auto-green on HP-06"
+  },
+  "spec_ref": "PO_E2E_BUSINESS_SPINE_PROGRAM.md §E2E-SPINE-01 · HP-05 · HP-06 · J-HRM-01/02/03/07 · FR-UC-H01 · FR-UC-H04",
+  "hdsd_sot": "HDSD Nhân viên · Hợp đồng · CC Tiền lương /command-center/hrm/payroll",
+  "hdsd_align": true,
+  "u65_zero_seed": true,
+  "evidence_narrative": "docs/qa/evidence/po-e2e-spine-01-qa-w5.md",
+  "raw_harness": "docs/qa/evidence/_tmp-po-e2e-spine-01-qa-w5-browser.json",
+  "screens_dir": "docs/qa/evidence/screens/po-e2e-spine-01-qa-w5-20260803",
+  "verdict": "fail",
+  "ack_status": "FAIL_TO_PM",
+  "ids": {
+    "employeeId": "5c3ea407-02cb-4cfa-a36c-9ada56908010",
+    "employeeCode": "UAT-0020",
+    "candidateStamp": "SP4SDEKW49",
+    "detailGetStatus": 200,
+    "payrollGetStatus": 200,
+    "contractsViteStatus": 500,
+    "payrollViteStatus": 500
+  },
+  "case_matrix": {
+    "A_fail_deep": "fail",
+    "B_success_hdsd": "pass",
+    "C_logic_br": "pass"
+  },
+  "summary": {
+    "clicks": 12,
+    "idle_guard": "PASS",
+    "seed_used": false,
+    "steps_pass": 7,
+    "steps_warn": 1,
+    "steps_fail": 4,
+    "steps_skip": 0,
+    "hp05_detail": "pass",
+    "hp05_contracts": "fail",
+    "hp06_cc_blank": "fail",
+    "hp06_emp_tab_honest": "pass"
+  },
+  "steps": [
+    {
+      "seq": 1,
+      "at": "2026-08-03T15:54:54.849Z",
+      "action": "L0_PROBES",
+      "expected": "hrm-api + xbos-api + portal 200",
+      "actual": "hrm 200 · xbos 200 · portal 200",
+      "network": { "method": "GET", "url": "/api/hrm", "status": 200 },
+      "result": "pass"
+    },
+    {
+      "seq": 2,
+      "at": "2026-08-03T15:54:55.630Z",
+      "action": "OPEN_PORTAL",
+      "expected": "shell loads with ceo session",
+      "actual": "navigated http://127.0.0.1:5173",
+      "result": "pass",
+      "attachment": "screens/po-e2e-spine-01-qa-w5-20260803/00-shell.png"
+    },
+    {
+      "seq": 3,
+      "at": "2026-08-03T15:54:58.094Z",
+      "action": "HP05_EMP_LIST",
+      "expected": "employee list loads · no Sync ERROR",
+      "actual": "47 employees · stamp SP4SDEKW49 absent (soft-link) · UAT-0020 on list",
+      "network": { "method": "GET", "url": "/api/hrm/employees?company_id=main", "status": 200 },
+      "result": "pass",
+      "attachment": "screens/po-e2e-spine-01-qa-w5-20260803/01-employees-list.png"
+    },
+    {
+      "seq": 4,
+      "at": "2026-08-03T15:55:01.834Z",
+      "action": "HP05_SEARCH",
+      "expected": "find hire-linked emp via HDSD search",
+      "actual": "search 5c3ea407 — UUID not in row text; soft-link uses UAT-0020",
+      "network": { "method": "GET", "url": "/api/hrm/employees?keyword=5c3ea407", "status": 200 },
+      "result": "pass"
+    },
+    {
+      "seq": 5,
+      "at": "2026-08-03T15:55:07.582Z",
+      "action": "HP05_DETAIL_JHRM02",
+      "expected": "GET employee by id 200 · profile visible",
+      "actual": "UAT NV 0020 / UAT-0020 · Loại hợp đồng=-- · no 404/409",
+      "network": {
+        "method": "GET",
+        "url": "/api/hrm/employees/5c3ea407-02cb-4cfa-a36c-9ada56908010?company_id=main",
+        "status": 200
+      },
+      "result": "pass",
+      "attachment": "screens/po-e2e-spine-01-qa-w5-20260803/02-emp-detail.png"
+    },
+    {
+      "seq": 6,
+      "at": "2026-08-03T15:55:11.199Z",
+      "action": "HP05_TAB_HOP_DONG",
+      "expected": "contract tab content or honest empty",
+      "actual": "UI remained Thông tin chung · Loại HĐ empty",
+      "result": "warn",
+      "attachment": "screens/po-e2e-spine-01-qa-w5-20260803/03-emp-tab-contracts.png"
+    },
+    {
+      "seq": 7,
+      "at": "2026-08-03T15:55:13.479Z",
+      "action": "HP05_CONTRACTS_MODULE",
+      "expected": "contracts list/empty chrome · J-HRM-01",
+      "actual": "whitescreen · Vite Contracts.tsx 500 · dynamic import fail",
+      "network": { "method": "GET", "url": "/hr/src/pages/Contracts.tsx", "status": 500 },
+      "result": "fail",
+      "attachment": "screens/po-e2e-spine-01-qa-w5-20260803/04-contracts-list.png"
+    },
+    {
+      "seq": 8,
+      "at": "2026-08-03T15:55:16.744Z",
+      "action": "JHRM01_FALLBACK_DEEPLINK",
+      "expected": "profile reachable without contracts table",
+      "actual": "deep-link detail OK",
+      "result": "pass",
+      "attachment": "screens/po-e2e-spine-01-qa-w5-20260803/05-jhrm01-fallback.png"
+    },
+    {
+      "seq": 9,
+      "at": "2026-08-03T15:55:18.890Z",
+      "action": "HP06_CC_PAYROLL",
+      "expected": "payroll content or honest empty reason",
+      "actual": "Tiền lương selected · main content blank white · no honest empty copy",
+      "result": "fail",
+      "attachment": "screens/po-e2e-spine-01-qa-w5-20260803/06-payroll.png"
+    },
+    {
+      "seq": 10,
+      "at": "2026-08-03T15:55:22.058Z",
+      "action": "HP06_CC_PAYROLL_F5",
+      "expected": "persist content/empty after F5",
+      "actual": "still blank",
+      "result": "fail",
+      "attachment": "screens/po-e2e-spine-01-qa-w5-20260803/07-payroll-f5.png"
+    },
+    {
+      "seq": 11,
+      "at": "2026-08-03T15:55:27.381Z",
+      "action": "HP06_EMP_TAB_LUONG",
+      "expected": "payslip rows or honest empty on profile",
+      "actual": "Chưa có dữ liệu lương · subcopy visible · GET payslips 200",
+      "network": { "method": "GET", "url": "/api/hrm/payroll/payslips?company_id=main", "status": 200 },
+      "result": "pass",
+      "attachment": "screens/po-e2e-spine-01-qa-w5-20260803/08-emp-tab-luong.png"
+    },
+    {
+      "seq": 12,
+      "at": "2026-08-03T15:55:29.500Z",
+      "action": "VITE_MODULE_PROBE",
+      "expected": "Contracts.tsx + Payroll.tsx resolve 200",
+      "actual": "both HTTP 500",
+      "result": "fail"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "R-PO-SPINE01-PAYROLL-BLANK",
+      "severity": "P1",
+      "expected": "CC payroll content or honest empty",
+      "actual": "blank main pane on /command-center/hrm/payroll · Payroll.tsx Vite 500",
+      "residual_wi": "PO-E2E-SPINE-01-FE-VITE-PAY-CON-01"
+    },
+    {
+      "id": "R-PO-SPINE01-CONTRACTS-VITE",
+      "severity": "P1",
+      "expected": "/hr/contracts list or honest empty",
+      "actual": "whitescreen · Contracts.tsx Vite 500",
+      "residual_wi": "PO-E2E-SPINE-01-FE-VITE-PAY-CON-01"
+    }
+  ]
+}

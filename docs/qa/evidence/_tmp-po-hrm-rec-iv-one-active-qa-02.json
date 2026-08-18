@@ -1,0 +1,78 @@
+{
+  "work_item_id": "PO-HRM-REC-IV-ONE-ACTIVE-QA-02",
+  "startedAt": "2026-08-06T10:06:47.870Z",
+  "u65": "zero-seed",
+  "recruitment_uat_ready": false,
+  "persona": {
+    "email": "ceo@xe.vn",
+    "companyId": "main"
+  },
+  "clickPath": [
+    "goto http://127.0.0.1:5173/command-center/hrm/recruitment?tab=candidates&companyId=main&tenantId=xevn",
+    "schedule button NOT found",
+    "F5 reload"
+  ],
+  "network": [],
+  "api": {
+    "slugPost": {
+      "status": 201,
+      "code": "HRM-REC-203",
+      "notVal001": true,
+      "pass": true,
+      "interviewId": "2508e008-8cb5-42ae-adb7-cdd5716fd510"
+    },
+    "conflict409": {
+      "status": 409,
+      "code": "HRM-REC-IV-409-ACTIVE",
+      "pass": true
+    },
+    "cancelThenCreate": {
+      "cancelStatus": 200,
+      "createStatus": 201,
+      "createCode": "HRM-REC-203",
+      "interviewId": "0fd33dd2-c663-4a84-b390-6ece5aea6ab8",
+      "pass": true
+    },
+    "completeThenCreate": {
+      "completeStatus": 200,
+      "createStatus": 201,
+      "createCode": "HRM-REC-203",
+      "pass": true
+    },
+    "poolTotal": 6,
+    "spineTotal": 7,
+    "poolTargetEmail": "tuanna@unicomhub.com",
+    "poolHasTarget": true,
+    "spineHasTargetEmail": true,
+    "emailMergeGap": false,
+    "candidateId": "089f36e8-1793-4fd4-b30d-1f5071f63a96",
+    "candidateEmail": "tuanna@unicomhub.com",
+    "browserSeedInterviewId": "50fed74f-9361-4b63-9be0-41acc93101fa"
+  },
+  "browser": {
+    "badgeAfterSchedule": {
+      "visible": false
+    },
+    "badgeTimePattern": "other",
+    "conflictToast": null,
+    "f5BadgePersists": false,
+    "postCreates": [],
+    "pageErrors": 0,
+    "consoleErrors": 0,
+    "badgeBefore": {
+      "visible": false
+    },
+    "syncErrorToast": null,
+    "consoleSample": [],
+    "scheduleDialogOpened": false
+  },
+  "ac": {
+    "AC-01-slug-post-201-or-409-not-val001": "PASS",
+    "AC-02-badge-datetime-f5": "FAIL",
+    "AC-03-duplicate-409-toast": "PASS",
+    "AC-04-cancel-complete-create": "PASS",
+    "AC-05-console-clean": "PASS"
+  },
+  "overall": "FAIL_TO_PM",
+  "endedAt": "2026-08-06T10:07:04.509Z"
+}

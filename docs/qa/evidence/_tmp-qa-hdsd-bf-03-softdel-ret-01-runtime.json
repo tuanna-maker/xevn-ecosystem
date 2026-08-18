@@ -1,0 +1,93 @@
+{
+  "work_item_id": "QA-HDSD-BF-03-SOFTDEL-RET-01",
+  "program": "P-HDSD-ECOSYSTEM-03 · R-MUTATE-SOFTDEL-01",
+  "startedAt": "2026-07-31T04:50:44.660Z",
+  "env": {
+    "PORTAL": "http://14.225.217.232:8088",
+    "EMAIL": "ceo@xe.vn",
+    "u65": "zero-seed",
+    "stamp": "SD8GSF1W"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "tc": [
+    {
+      "id": "TC-HRM-HDSD-025-ROWCLICK",
+      "verdict": "🔴",
+      "detail": "must_keep plain row click → profile ok=false no rows url=http://14.225.217.232:8088/hr/employees?portal=1&tenantId=xevn&companyId=main",
+      "at": "2026-07-31T04:50:57.187Z",
+      "uf": "J-HRM-02",
+      "clickPath": "employees list td → profile"
+    },
+    {
+      "id": "TC-HRM-HDSD-025",
+      "verdict": "🔴",
+      "detail": "§5.3 soft-delete createPOST=none archive=none  f5Gone=false navigatedProfileOnXoa=false create failed POST=none Error: click miss: Thêm nhân viên",
+      "at": "2026-07-31T04:51:02.823Z",
+      "uf": "UF-HRM-01",
+      "clickPath": "Thêm NV → ⋯ → Xóa → AlertDialog → Xóa nhân viên → F5",
+      "stamp": "SD8GSF1W"
+    }
+  ],
+  "journeys": [],
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/xbos/tenant-scope/accessible",
+      "at": "2026-07-31T04:50:47.568Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T04:50:54.442Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T04:50:54.822Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units",
+      "at": "2026-07-31T04:51:00.114Z"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main",
+      "at": "2026-07-31T04:51:00.294Z"
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://14.225.217.232:8088/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://14.225.217.232:8088/hr/",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at PermissionRoute (http://14.225.217.232:8088/hr/src/components/auth/PermissionRoute.tsx:93:35)\n    at RenderedRoute (http://14.225.217.232:8088/hr/"
+  ],
+  "pageErrors": [
+    "TypeError: Failed to fetch dynamically imported module: http://14.225.217.232:8088/hr/src/pages/Employees.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://14.225.217.232:8088/hr/src/pages/Employees.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://14.225.217.232:8088/hr/src/pages/Employees.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://14.225.217.232:8088/hr/src/pages/Employees.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://14.225.217.232:8088/hr/src/pages/Employees.tsx",
+    "TypeError: Failed to fetch dynamically imported module: http://14.225.217.232:8088/hr/src/pages/Employees.tsx"
+  ],
+  "screens": [],
+  "must_keep": {
+    "preserved": [
+      "TC-HRM-HDSD-041",
+      "TC-HDSD-06",
+      "TC-HDSD-07",
+      "TC-HDSD-08"
+    ],
+    "note": "disposable stamp NV only — no YCTD/leave/HĐ mutate; row-click profile regression asserted"
+  },
+  "finishedAt": "2026-07-31T04:51:02.824Z"
+}

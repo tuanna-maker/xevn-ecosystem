@@ -1,0 +1,428 @@
+{
+  "work_item_id": "PO-HRM-UI-BRAND-W3-EMP-A-QA",
+  "fe_work_item": "PO-HRM-UI-BRAND-W3-EMP-A",
+  "startedAt": "2026-08-05T03:29:24.052Z",
+  "u65": "zero-seed",
+  "hdsd_align": true,
+  "inventory": [
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E05",
+    "E06",
+    "E07",
+    "E08",
+    "E10",
+    "E11",
+    "E28"
+  ],
+  "env": {
+    "PORTAL": "http://127.0.0.1:5173",
+    "HRM": "http://127.0.0.1:28001",
+    "XBOS": "http://127.0.0.1:28002",
+    "EMAIL": "ceo@xe.vn",
+    "companyId": "main",
+    "commit": "dc930c5"
+  },
+  "l0": {
+    "hrm": 200,
+    "xbos": 200,
+    "portal": 200
+  },
+  "themeContrastStrict": {
+    "exit": 0,
+    "snippet": [
+      "> xevn-ecosystem@1.0.0 verify:xevn:theme-contrast C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem",
+      "> node scripts/verify-xevn-theme-contrast.mjs \"--\" \"--strict\"",
+      "[xevn-theme-contrast] token lockstep PASS ? primary #1E40AF � text #111827 � secondary #4B5563 � muted-fg OK (portal+HRM+TW)",
+      "[xevn-theme-contrast] scanned 598 files; pale hits=0 files=0",
+      "[xevn-theme-contrast] STRICT PASS ? 0 pale hits"
+    ]
+  },
+  "network": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/operating-units"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/summary?company_id=main&include_archived=true"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/company-subscription?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees?company_id=main&page=1&page_size=50"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/settings-catalogs"
+    }
+  ],
+  "detailGets": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "steps": {
+    "l0": {
+      "status": "PASS",
+      "note": "{\"hrm\":200,\"xbos\":200,\"portal\":200}",
+      "at": "2026-08-05T03:29:25.243Z"
+    },
+    "theme": {
+      "status": "PASS",
+      "note": "strict",
+      "at": "2026-08-05T03:29:25.244Z"
+    },
+    "login": {
+      "status": "PASS",
+      "note": "HTTP 201",
+      "at": "2026-08-05T03:29:25.311Z"
+    },
+    "list": {
+      "status": "PASS",
+      "note": "E01–E06",
+      "at": "2026-08-05T03:29:29.800Z"
+    },
+    "form": {
+      "status": "PASS",
+      "note": "E07",
+      "at": "2026-08-05T03:29:31.786Z"
+    },
+    "softdel": {
+      "status": "PASS",
+      "note": "must_keep wire",
+      "at": "2026-08-05T03:29:33.867Z"
+    },
+    "import": {
+      "status": "PASS",
+      "note": "E08",
+      "at": "2026-08-05T03:29:36.610Z"
+    },
+    "profile": {
+      "status": "PASS",
+      "note": "E28+E10–E11",
+      "at": "2026-08-05T03:29:43.624Z"
+    }
+  },
+  "checks": {
+    "E01_E06_list": {
+      "pass": true,
+      "titleText": "Quản lý nhân viên",
+      "titleStyle": {
+        "color": "rgb(17, 24, 39)",
+        "fontSize": "21px",
+        "fontWeight": "700"
+      },
+      "titleSharp": true,
+      "subPale": false,
+      "searchOk": true,
+      "comboCount": 3,
+      "companyColOk": true,
+      "paleCellCount": 0,
+      "companyCellsSample": [
+        {
+          "text": "QA-M3-987275",
+          "color": "rgb(17, 24, 39)",
+          "fontSize": "12.25px"
+        },
+        {
+          "text": "Tập đoàn XeVN",
+          "color": "rgb(17, 24, 39)",
+          "fontSize": "12.25px"
+        },
+        {
+          "text": "4/8/2026",
+          "color": "rgb(17, 24, 39)",
+          "fontSize": "12.25px"
+        },
+        {
+          "text": "Đang làm việc",
+          "color": "rgb(17, 24, 39)",
+          "fontSize": "12.25px"
+        }
+      ],
+      "pagVisible": true,
+      "pageNumStyle": {
+        "color": "rgb(17, 24, 39)",
+        "text": "1 / 2"
+      },
+      "listGetCount": 1,
+      "listGetStatus": 200
+    },
+    "E07_add_dialog": {
+      "pass": true,
+      "formVisible": true,
+      "hasSurface": true,
+      "brandBar": {
+        "bg": "rgb(30, 64, 175)",
+        "height": "3px",
+        "content": "\"\""
+      },
+      "barPrimary": true,
+      "paleLabelCount": 0,
+      "sharpLabelCount": 9,
+      "labelSample": [
+        {
+          "text": "Mã NV *",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "500"
+        },
+        {
+          "text": "Họ và tên *",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "500"
+        },
+        {
+          "text": "Quản lý trực tiếp",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "500"
+        },
+        {
+          "text": "Mã NV",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "500"
+        },
+        {
+          "text": "Họ tên",
+          "color": "rgb(17, 24, 39)",
+          "fontWeight": "500"
+        }
+      ],
+      "stickyFooter": true
+    },
+    "SoftDel_alertdialog": {
+      "pass": true,
+      "alertOk": true,
+      "title": "Xác nhận xóa nhân viên"
+    },
+    "E08_import": {
+      "pass": true,
+      "hasSurface": true,
+      "paleBodyCount": 0,
+      "paleSample": [],
+      "blueGlass": false,
+      "instructions": true,
+      "bodySample": [
+        {
+          "text": "Tải file mẫu",
+          "color": "rgb(17, 24, 39)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "className": "mb-1 font-medium text-xevn-text"
+        },
+        {
+          "text": "Tải file Excel mẫu để biết định dạng dữ liệu cần n",
+          "color": "rgb(75, 85, 99)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "className": "mb-3 text-sm text-xevn-textSecondary"
+        },
+        {
+          "text": "Kéo thả file hoặc click để chọn",
+          "color": "rgb(17, 24, 39)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "className": "font-medium text-xevn-text"
+        },
+        {
+          "text": "Hỗ trợ: .xlsx, .xls, .csv — xử lý trên máy chủ.",
+          "color": "rgb(75, 85, 99)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "className": "mt-1 text-sm text-xevn-textSecondary"
+        },
+        {
+          "text": "Hướng dẫn:",
+          "color": "rgb(17, 24, 39)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "className": "mb-2 font-medium text-xevn-text"
+        },
+        {
+          "text": "• Tải file mẫu chính thức từ máy chủ (đúng tiêu đề",
+          "color": "rgb(75, 85, 99)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "className": ""
+        }
+      ]
+    },
+    "E28_list_detail": {
+      "pass": true,
+      "url": "/hr/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd",
+      "onDetail": true,
+      "detailGets": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd?company_id=main"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "/api/hrm/employees/0f6e1369-4170-42e3-ad6b-3d04b3ec2edd/work-timeline?company_id=main"
+        }
+      ],
+      "detail200": true
+    },
+    "E10_E11_profile": {
+      "pass": true,
+      "profileTitleStyle": {
+        "text": "Nguyễn Văn QA M3 987275",
+        "color": "rgb(17, 24, 39)"
+      },
+      "tabCheck": {
+        "pass": true,
+        "onDetail": true,
+        "purple": false,
+        "primaryChip": true,
+        "tabStyle": {
+          "bg": "rgb(30, 63, 174)",
+          "color": "rgb(248, 250, 252)",
+          "className": "inline-flex items-center justify-center whitespace-nowrap rounded-input text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-xevn-accent focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow-soft hover:opacity-90 active:scale-95 h-9 rounded-input px-3 shrink-0 gap-2 bg-primary text-primary-foreground",
+          "iconBg": "rgb(30, 63, 174)",
+          "iconClass": "w-5 h-5 rounded flex items-center justify-center text-white shrink-0 bg-primary"
+        }
+      },
+      "paleInfoCount": 0,
+      "secondaryInfoCount": 16,
+      "infoLabelSample": [
+        {
+          "text": "Email",
+          "color": "rgb(75, 85, 99)",
+          "className": "text-xs font-medium text-xevn-textSecondary"
+        },
+        {
+          "text": "Điện thoại",
+          "color": "rgb(75, 85, 99)",
+          "className": "text-xs font-medium text-xevn-textSecondary"
+        },
+        {
+          "text": "Ngày sinh",
+          "color": "rgb(75, 85, 99)",
+          "className": "text-xs font-medium text-xevn-textSecondary"
+        },
+        {
+          "text": "Giới tính",
+          "color": "rgb(75, 85, 99)",
+          "className": "text-xs font-medium text-xevn-textSecondary"
+        },
+        {
+          "text": "CMND/CCCD",
+          "color": "rgb(75, 85, 99)",
+          "className": "text-xs font-medium text-xevn-textSecondary"
+        },
+        {
+          "text": "Ngày cấp",
+          "color": "rgb(75, 85, 99)",
+          "className": "text-xs font-medium text-xevn-textSecondary"
+        }
+      ],
+      "paleValuesCount": 0
+    },
+    "OCR_OUT": {
+      "pass": true,
+      "note": "CORE-04 OUT — no OCR dialog opened"
+    },
+    "QR_SKIP": {
+      "pass": true,
+      "note": "PROP-03e SKIP — EmployeeQRCard not exercised"
+    }
+  },
+  "failReasons": [],
+  "screens": [
+    "evidence/screens/po-hrm-ui-brand-w3-emp-a-qa/01-employees-list.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-a-qa/02-add-employee-dialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-a-qa/03-softdel-alertdialog.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-a-qa/04-import-excel.png",
+    "evidence/screens/po-hrm-ui-brand-w3-emp-a-qa/05-profile-general.png"
+  ],
+  "residuals": [
+    {
+      "id": "W3-EMP-B",
+      "note": "E09 export + lifecycle tabs E12–E17 out of EMP-A scope — PM → dev-fe after PASS"
+    },
+    {
+      "id": "R3-StatsCards",
+      "note": "EmployeeStatsCards demo numbers remain display chrome — not LIVE API (defer)"
+    }
+  ],
+  "honesty": {
+    "ocr_invented": false,
+    "qr_invented": false,
+    "employees_closed_claimed": false,
+    "product_go_claimed": false
+  },
+  "verdict": "PASS",
+  "ack_status": "PASS_TO_PM",
+  "endedAt": "2026-08-05T03:29:43.797Z",
+  "criticalFail": []
+}
