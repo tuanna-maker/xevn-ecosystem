@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseQaLoginDeepLink, parseQaLogoutDeepLink, qaDeepLinkToSignInPayload } from '../qaLoginDeepLink';
 
 const SAMPLE_JWT =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnRfaWQiOiJ4ZXZuIiwiY29tcGFueV9pZCI6ImhvbGRpbmciLCJjb21wYW55X3V1aWQiOiIxMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDEiLCJlbXBsb3llZV9pZCI6IjM3OTZkOTQ5LTQ1MTMtNDVjMC04OGZhLTMzMDMwYTA2MmIxNyIsInJvbGVzIjpbImVtcGxveWVlIl0sImlhdCI6MSwiZXhwIjo5OTk5OTk5OTk5fQ.sig';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnRfaWQiOiJ0ZXN0LXRlbmFudCIsImNvbXBhbnlfaWQiOiJ0ZXN0LWNvbXBhbnkiLCJjb21wYW55X3V1aWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDEiLCJlbXBsb3llZV9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMiIsInJvbGVzIjpbImVtcGxveWVlIl0sImlhdCI6MSwiZXhwIjo5OTk5OTk5OTk5fQ.fake_sig_for_unit_test';
 
 describe('parseQaLoginDeepLink', () => {
   it('parses xevn://qa-login with token query params', () => {

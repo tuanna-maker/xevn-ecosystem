@@ -68,3 +68,6 @@ scripts/tmp-*
 .cursor/team/telegram-pm/bridge.pid
 .cursor/team/telegram-pm/wake.json
 
+
+# Cursor team operational state — runtime bus, logs, incident queue (local only)
+.cursor/team/

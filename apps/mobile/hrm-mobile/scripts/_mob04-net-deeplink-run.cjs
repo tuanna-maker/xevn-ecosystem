@@ -35,7 +35,7 @@ async function main() {
   const loginRes = await fetch('http://127.0.0.1:28001/api/hrm/auth/mobile/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: 'uat.nv0001@xe.vn', password: 'xevn-uat-2026' }),
+    body: JSON.stringify({ email: process.env.QA_EMAIL || 'uat.nv0001@xe.vn', password: process.env.QA_PASSWORD || '' }),
   });
   const loginJson = await loginRes.json();
   if (!loginJson.success) throw new Error(`login failed: ${JSON.stringify(loginJson)}`);
