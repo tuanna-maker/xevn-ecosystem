@@ -2079,6 +2079,7 @@ export function JobRequisitionsTab({
                   </FormItem>
                 )}
               />
+              <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
                   Hủy
                 </Button>
