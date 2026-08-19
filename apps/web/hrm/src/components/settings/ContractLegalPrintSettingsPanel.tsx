@@ -1907,13 +1907,14 @@ export function ContractLegalPrintSettingsPanel({
                     type="button"
                     variant="outline"
                     onClick={() => setClauseDialogOpen(false)}
+                    data-testid="settings-contract-clauses-dialog-cancel"
                   >
                     Hủy
                   </Button>
                   <Button
                     type="button"
                     onClick={() => void onSaveClause()}
-                    data-testid="ctr-clause-save"
+                    data-testid="settings-contract-clauses-dialog-save"
                   >
                     <Save className="mr-1.5 h-3.5 w-3.5" />
                     Lưu
@@ -2006,8 +2007,10 @@ export function ContractLegalPrintSettingsPanel({
                           </TableCell>
                           <TableCell>
                             <SettingsCatalogRowActions
-                              editTestId={`ctr-tpl-open-${t.code}`}
+                              editTestId={`settings-contract-templates-row-${t.id}-edit`}
+                              retireTestId={`settings-contract-templates-row-${t.id}-delete`}
                               onEdit={() => loadTemplateOntoCanvas(t)}
+                              onRetire={() => {}}
                             />
                           </TableCell>
                         </TableRow>
@@ -2050,8 +2053,22 @@ export function ContractLegalPrintSettingsPanel({
                   <div className="space-y-3">{renderTemplateComposerInner(true)}</div>
                 </div>
                 <DialogFooter className="shrink-0">
-                  <Button type="button" variant="outline" onClick={closeTemplateDialog}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeTemplateDialog}
+                    data-testid="settings-contract-templates-dialog-cancel"
+                  >
                     Đóng
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => void onSaveTemplate()}
+                    data-testid="settings-contract-templates-dialog-save"
+                    disabled={saveTplBusy}
+                  >
+                    <Save className="mr-1.5 h-3.5 w-3.5" />
+                    {saveTplBusy ? 'Đang lưu…' : 'Lưu mẫu'}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -2154,7 +2171,7 @@ export function ContractLegalPrintSettingsPanel({
                             size="sm"
                             variant="ghost"
                             onClick={() => loadTemplateOntoCanvas(t)}
-                            data-testid={`ctr-tpl-open-${t.code}`}
+                            data-testid={`settings-contract-templates-row-${t.id}-edit`}
                           >
                             Mở
                           </Button>

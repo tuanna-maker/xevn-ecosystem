@@ -1,3 +1,11 @@
+---
+description: >-
+  QC evidence pack gate — lazy. Kích hoạt khi QA/QC, GO/NO-GO, evidence pack,
+  minigate, verify:qc:evidence-pack, CRUD matrix, J-* journey signoff.
+globs: docs/qa/**,docs/program/**,docs/ops/**
+alwaysApply: false
+---
+
 # QC Evidence Pack Gate (mandatory — 2026-06-03)
 
 Reform plan: `docs/program/QC_ZERO_DEFECT_REFORM_PLAN.md`

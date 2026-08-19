@@ -1,0 +1,55 @@
+---
+description: XeVN — sau TechSpec bắt buộc DB_DESIGN + API_DESIGN bám SRS (mỗi API có mục đích + bước Diễn biến)
+alwaysApply: true
+---
+
+# XeVN — Gate DB_DESIGN + API_DESIGN (sau TechSpec)
+
+**Sponsor lock 2026-07-27:** Sau TechSpec phải có **hai tài liệu vật lý** trước Dev. API_DESIGN phải thể hiện **mục đích + nghiệp vụ xử lý** và **tham chiếu bước SRS**.
+
+**SoT OS:** `_vibe-team-os/13-BRD-SRS-TECHSPEC-QUALITY.md` §3.4.11.**F** / **F.1**  
+**Project control:** `docs/program/DATA_LINKAGE_BE_FE_QA_CONTROL.md` (metric dual-plane)  
+**Templates:** `_vibe-team-os/templates/TECHSPEC_PHYSICAL_DB_TABLE.md` · `TECHSPEC_API_CONTRACT.md`
+
+## Pipeline (xevn-ecosystem)
+
+```text
+BRD → SRS (docs/hrm|ecosystem/SRS*.md) → TechSpec (TECHSPEC*.md)
+  → DB_DESIGN_*.md (docs/hrm/ hoặc docs/tech-spec/)
+  → API_DESIGN_*.md (cùng root)
+  → test plan → Task dev-be / dev-fe
+```
+
+## Path gợi ý (HRM / XBOS)
+
+| Artifact | Path ví dụ |
+|----------|------------|
+| DB_DESIGN | `docs/hrm/DB_DESIGN_HRM.md` · `docs/tech-spec/DB_DESIGN_XBOS.md` · slice `DB_DESIGN_HRM_CO_HC.md` |
+| API_DESIGN | `docs/hrm/API_DESIGN_HRM.md` · slice `API_DESIGN_HRM_EMPLOYEES_SUMMARY.md` |
+
+## API_DESIGN — mỗi endpoint/fn bắt buộc
+
+| Mục | Nội dung |
+|-----|----------|
+| **Mục đích** | API phục vụ thao tác/màn nào (VI) |
+| **Nghiệp vụ xử lý** | Validate, scope, ghi bảng, dual-plane key… |
+| **Bước SRS** | `UC-…` + **Diễn biến #** / tên bước sequenceDiagram |
+| DTO ↔ cột | Request/response map DB |
+| Lỗi | Mã khớp fail SRS |
+
+**Ví dụ (Company headcount):** `GET /api/hrm/employees/summary` · Mục đích: cấp `total` + `by_company[]` cho card/cột NV · Bước SRS: UC-HRM-CO-01 Diễn biến enrich headcount · Key Plane B slug — cấm LE UUID.
+
+## PM / Dev / QA
+
+| Role | Hành vi |
+|------|---------|
+| **PM** | Không dispatch Dev feature mới khi thiếu DB_DESIGN + API_DESIGN path trong `read_first` |
+| **Dev** | `spec_read_ack` gồm `db_design` + `api_design` + bước SRS; CODE-MEMORY trích `ref_srs` |
+| **QA** | Test theo **bước SRS** đã gắn API; Network khớp API_DESIGN |
+| **QC** | NO-GO / P0 nếu API_DESIGN thiếu mục đích hoặc không gắn Diễn biến |
+
+## Cấm
+
+- TechSpec xong → code ngay
+- API_DESIGN chỉ liệt kê path không gắn bước SRS
+- DB_DESIGN không `ref_srs` / lệch TechSpec catalog

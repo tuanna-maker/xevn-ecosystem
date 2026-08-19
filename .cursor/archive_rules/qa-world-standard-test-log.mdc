@@ -1,0 +1,28 @@
+# QA — World-standard Test Log (OS)
+
+**SoT:** `_vibe-team-os/31-WORLD-STANDARD-TEST-LOG.md`  
+**Template:** `_vibe-team-os/templates/TEST_EXECUTION_LOG.md`  
+**Sponsor 2026-08-03:** Mọi lần test phải có log — IEEE 829 / ISO 29119-3 lean + JSON máy.
+
+## Bắt buộc
+
+Mỗi wave QA/qa-device:
+
+1. `docs/qa/evidence/<WI>-test-log.md` (hoặc section `## Test execution log`) — bảng bước **theo thời gian**
+2. `docs/qa/evidence/<WI>-test-log.json` — schema `xevn-test-log/v1`
+3. `started_at` / `ended_at` · expected vs actual · attachments
+4. Gắn `30` (HDSD + case_matrix) + anti-idle
+
+## PM dispatch
+
+```text
+test_log_required: true
+test_log_md: docs/qa/evidence/<WI>-test-log.md
+test_log_json: docs/qa/evidence/<WI>-test-log.json
+```
+
+## Reject
+
+- PASS/FAIL không có log bước
+- Chỉ screenshot idle
+- Handoff thiếu JSON machine log → INVALID-HANDOFF

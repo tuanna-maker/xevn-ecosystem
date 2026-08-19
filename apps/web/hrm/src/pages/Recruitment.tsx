@@ -105,7 +105,7 @@
  * Why: DEF-REC-EMBED-DEEPLINK-TAB-CANDIDATES — iframe src omits tab; stayed on Dashboard
  * must_keep: Tab ids · G4 URL seal · U65
  */
-import { Fragment, useState, useEffect, useMemo } from 'react';
+import { Fragment, lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -222,22 +222,23 @@ import {
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { CampaignsTab } from '@/components/recruitment/CampaignsTab';
-import { CandidateEvaluationDialog } from '@/components/recruitment/CandidateEvaluationDialog';
-import { CandidateComparisonDialog } from '@/components/recruitment/CandidateComparisonDialog';
-import { CandidateDetailView } from '@/components/recruitment/CandidateDetailView';
-import { HeadcountProposalTab } from '@/components/recruitment/HeadcountProposalTab';
-import { JobPostingsTab } from '@/components/recruitment/JobPostingsTab';
-import { JobRequisitionsTab } from '@/components/recruitment/JobRequisitionsTab';
-import { JobTemplatesTab } from '@/components/recruitment/JobTemplatesTab';
 import { useJobTemplates } from '@/hooks/useJobTemplates';
-import { RecruitmentNestDashboardPanel } from '@/components/recruitment/RecruitmentNestDashboardPanel';
-import { RecruitmentWfSpawnBanner } from '@/components/recruitment/RecruitmentWfSpawnBanner';
-import { CandidateSourceStats } from '@/components/recruitment/CandidateSourceStats';
-import { CandidatesTab } from '@/components/recruitment/CandidatesTab';
-import { InterviewsTab } from '@/components/recruitment/InterviewsTab';
-import { RecruitmentReportsTab } from '@/components/recruitment/RecruitmentReportsTab';
-import { HireEmployeeLinkDialog } from '@/components/recruitment/HireEmployeeLinkDialog';
+// Lazy-loaded recruitment components (code-split for performance — REC-PERF-FE-01)
+const CampaignsTab = lazy(() => import('@/components/recruitment/CampaignsTab').then(m => ({ default: m.CampaignsTab })));
+const CandidateEvaluationDialog = lazy(() => import('@/components/recruitment/CandidateEvaluationDialog').then(m => ({ default: m.CandidateEvaluationDialog })));
+const CandidateComparisonDialog = lazy(() => import('@/components/recruitment/CandidateComparisonDialog').then(m => ({ default: m.CandidateComparisonDialog })));
+const CandidateDetailView = lazy(() => import('@/components/recruitment/CandidateDetailView').then(m => ({ default: m.CandidateDetailView })));
+const HeadcountProposalTab = lazy(() => import('@/components/recruitment/HeadcountProposalTab').then(m => ({ default: m.HeadcountProposalTab })));
+const JobPostingsTab = lazy(() => import('@/components/recruitment/JobPostingsTab').then(m => ({ default: m.JobPostingsTab })));
+const JobRequisitionsTab = lazy(() => import('@/components/recruitment/JobRequisitionsTab').then(m => ({ default: m.JobRequisitionsTab })));
+const JobTemplatesTab = lazy(() => import('@/components/recruitment/JobTemplatesTab').then(m => ({ default: m.JobTemplatesTab })));
+const RecruitmentNestDashboardPanel = lazy(() => import('@/components/recruitment/RecruitmentNestDashboardPanel').then(m => ({ default: m.RecruitmentNestDashboardPanel })));
+const RecruitmentWfSpawnBanner = lazy(() => import('@/components/recruitment/RecruitmentWfSpawnBanner').then(m => ({ default: m.RecruitmentWfSpawnBanner })));
+const CandidateSourceStats = lazy(() => import('@/components/recruitment/CandidateSourceStats').then(m => ({ default: m.CandidateSourceStats })));
+const CandidatesTab = lazy(() => import('@/components/recruitment/CandidatesTab').then(m => ({ default: m.CandidatesTab })));
+const InterviewsTab = lazy(() => import('@/components/recruitment/InterviewsTab').then(m => ({ default: m.InterviewsTab })));
+const RecruitmentReportsTab = lazy(() => import('@/components/recruitment/RecruitmentReportsTab').then(m => ({ default: m.RecruitmentReportsTab })));
+const HireEmployeeLinkDialog = lazy(() => import('@/components/recruitment/HireEmployeeLinkDialog').then(m => ({ default: m.HireEmployeeLinkDialog })));
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 import { resolveRecruitmentTabFromSearch } from '@/lib/recruitmentEmbedDeepLink';
@@ -516,6 +517,19 @@ const recruitmentCampaigns = [
 // Mock recruitment plans data removed - now using useRecruitmentPlans hook
 
 
+
+// Skeleton for tab content during initial load
+const RecTabSkeleton = () => (
+  <div className="space-y-3 p-4 animate-pulse">
+    {/* Header bar */}
+    <div className="h-8 w-48 rounded bg-muted" />
+    {/* Table rows mock */}
+    {Array.from({ length: 5 }).map((_, i) => (
+      <div key={i} className="h-12 rounded bg-muted/60" />
+    ))}
+  </div>
+);
+
 export default function Recruitment() {
   const location = useLocation();
   const portalEmbed = getHrmPortalMode(location.search);
@@ -525,6 +539,7 @@ export default function Recruitment() {
   const candidatesMenuItems = getCandidatesMenuItems(t);
   const interviewsMenuItems = getInterviewsMenuItems(t);
   const { toast } = useToast();
+  const [autoOpenCreate, setAutoOpenCreate] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window === 'undefined') return 'dashboard';
     return resolveRecruitmentTabFromSearch(window.location.search) ?? 'dashboard';
@@ -1174,7 +1189,7 @@ export default function Recruitment() {
                 {t('recruitment.dashboardTitle')}
               </h2>
               <PermissionGate module="recruitment" action="create">
-                <Button size="sm" className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button size="sm" className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => { setActiveTab('jobs'); setAutoOpenCreate(true); }}>
                   <Plus className="mr-1.5 h-3.5 w-3.5" />
                   {t('recruitment.createJobPosting')}
                 </Button>
@@ -1189,13 +1204,15 @@ export default function Recruitment() {
               </TabsList>
 
               <TabsContent value="dashboard" className="mt-3 space-y-3">
-                <RecruitmentNestDashboardPanel
-                  onOpenYctd={(requisitionId) => {
-                    setFocusRequisitionId(requisitionId);
-                    setActiveTab('requisitions');
-                  }}
-                  onOpenPlans={() => setActiveTab('plans')}
-                />
+                <Suspense fallback={<RecTabSkeleton />}>
+                  <RecruitmentNestDashboardPanel
+                    onOpenYctd={(requisitionId) => {
+                      setFocusRequisitionId(requisitionId);
+                      setActiveTab('requisitions');
+                    }}
+                    onOpenPlans={() => setActiveTab('plans')}
+                  />
+                </Suspense>
               </TabsContent>
 
               <TabsContent value="board" className="mt-4">
@@ -1318,45 +1335,65 @@ export default function Recruitment() {
         )}
 
         {activeTab === 'requisitions' && (
-          <JobRequisitionsTab
-            onOpenJdLibrary={() => setActiveTab('jd-library')}
-            jobTemplates={recruitmentJobTemplatesState.templates}
-            jobTemplatesLoading={recruitmentJobTemplatesState.loading}
-            refetchJobTemplates={recruitmentJobTemplatesState.refetch}
-            hydrateJobTemplates={recruitmentJobTemplatesState.hydrateTemplates}
-            createPreset={yctdCreatePreset ?? undefined}
-            onCreatePresetConsumed={() => setYctdCreatePreset(null)}
-            focusRequisitionId={focusRequisitionId}
-            onFocusRequisitionConsumed={() => setFocusRequisitionId(null)}
-          />
+          <Suspense fallback={<RecTabSkeleton />}>
+            <JobRequisitionsTab
+              onOpenJdLibrary={() => setActiveTab('jd-library')}
+              jobTemplates={recruitmentJobTemplatesState.templates}
+              jobTemplatesLoading={recruitmentJobTemplatesState.loading}
+              refetchJobTemplates={recruitmentJobTemplatesState.refetch}
+              hydrateJobTemplates={recruitmentJobTemplatesState.hydrateTemplates}
+              createPreset={yctdCreatePreset ?? undefined}
+              onCreatePresetConsumed={() => setYctdCreatePreset(null)}
+              focusRequisitionId={focusRequisitionId}
+              onFocusRequisitionConsumed={() => setFocusRequisitionId(null)}
+            />
+          </Suspense>
         )}
 
         {activeTab === 'jd-library' && (
-          <JobTemplatesTab sharedTemplates={recruitmentJobTemplatesState} />
+          <Suspense fallback={<RecTabSkeleton />}>
+            <JobTemplatesTab sharedTemplates={recruitmentJobTemplatesState} />
+          </Suspense>
         )}
 
         {/* Jobs Tab — page title lives in JobPostingsTab (rec-jobs-tab-precision) for QA measure parity */}
-        {activeTab === 'jobs' && <JobPostingsTab />}
+        {activeTab === 'jobs' && (
+          <Suspense fallback={<RecTabSkeleton />}>
+            <JobPostingsTab autoOpenCreate={autoOpenCreate} />
+          </Suspense>
+        )}
 
 
-        {activeTab === 'candidates' && <CandidatesTab />}
+        {activeTab === 'candidates' && (
+          <Suspense fallback={<RecTabSkeleton />}>
+            <CandidatesTab />
+          </Suspense>
+        )}
 
         {/* Proposals Tab — O5 HOLD ≠ YCTD SoT; CTA redirect only */}
         {activeTab === 'proposals' && (
-          <HeadcountProposalTab
-            onCreateOutOfPlanYctd={() => {
-              setYctdCreatePreset({ headcount_mode: 'out_of_plan', open: true });
-              setActiveTab('requisitions');
-            }}
-          />
+          <Suspense fallback={<RecTabSkeleton />}>
+            <HeadcountProposalTab
+              onCreateOutOfPlanYctd={() => {
+                setYctdCreatePreset({ headcount_mode: 'out_of_plan', open: true });
+                setActiveTab('requisitions');
+              }}
+            />
+          </Suspense>
         )}
 
         {/* Campaigns Tab */}
-        {activeTab === 'campaigns' && <CampaignsTab />}
+        {activeTab === 'campaigns' && (
+          <Suspense fallback={<RecTabSkeleton />}>
+            <CampaignsTab />
+          </Suspense>
+        )}
 
         {/* Interviews Tab */}
         {activeTab === 'interviews' && (
-          <InterviewsTab />
+          <Suspense fallback={<RecTabSkeleton />}>
+            <InterviewsTab />
+          </Suspense>
         )}
 
         {/* Evaluations Tab */}
@@ -2068,7 +2105,9 @@ export default function Recruitment() {
 
                     {/* Actions */}
                     <div className="space-y-3 pt-4 border-t">
-                      <RecruitmentWfSpawnBanner visible={planSpawnMissing} />
+                      <Suspense fallback={null}>
+                        <RecruitmentWfSpawnBanner visible={planSpawnMissing} />
+                      </Suspense>
                       {selectedPlan.workflowInstanceId &&
                       isRecruitmentWorkflowLocked(
                         selectedPlan.workflowInstanceId,
@@ -2178,29 +2217,35 @@ export default function Recruitment() {
 
         {/* Reports Tab */}
         {activeTab === 'reports' && (
-          <RecruitmentReportsTab />
+          <Suspense fallback={<RecTabSkeleton />}>
+            <RecruitmentReportsTab />
+          </Suspense>
         )}
       </div>
 
       {/* Removed - CandidateDetailView is now handled in CandidatesTab */}
 
       {/* Candidate Evaluation Dialog */}
-      <CandidateEvaluationDialog
-        candidate={evaluatingCandidate ? {
-          id: evaluatingCandidate.id,
-          full_name: evaluatingCandidate.fullName,
-          email: evaluatingCandidate.email,
-          position: evaluatingCandidate.position || null,
-        } : null}
-        open={isEvaluationDialogOpen}
-        onOpenChange={setIsEvaluationDialogOpen}
-      />
+      <Suspense fallback={null}>
+        <CandidateEvaluationDialog
+          candidate={evaluatingCandidate ? {
+            id: evaluatingCandidate.id,
+            full_name: evaluatingCandidate.fullName,
+            email: evaluatingCandidate.email,
+            position: evaluatingCandidate.position || null,
+          } : null}
+          open={isEvaluationDialogOpen}
+          onOpenChange={setIsEvaluationDialogOpen}
+        />
+      </Suspense>
 
       {/* Candidate Comparison Dialog */}
-      <CandidateComparisonDialog
-        open={isComparisonDialogOpen}
-        onOpenChange={setIsComparisonDialogOpen}
-      />
+      <Suspense fallback={null}>
+        <CandidateComparisonDialog
+          open={isComparisonDialogOpen}
+          onOpenChange={setIsComparisonDialogOpen}
+        />
+      </Suspense>
 
       {/* O3 qty_drift — confirm version / controlled update (no silent YCTD overwrite) */}
       <AlertDialog
@@ -2229,19 +2274,23 @@ export default function Recruitment() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <HireEmployeeLinkDialog
-        open={!!hirePendingKanban}
-        onOpenChange={(open) => {
-          if (!open && !hireSubmitting) {
-            setHirePendingKanban(null);
-            setHirePendingKanbanStage(null);
-          }
-        }}
-        candidateName={hirePendingKanban?.fullName || 'ứng viên'}
-        initialEmployeeId={hirePendingKanban?.employeeId}
-        submitting={hireSubmitting}
-        onConfirm={handleConfirmKanbanHire}
-      />
+      <Suspense fallback={null}>
+        <HireEmployeeLinkDialog
+          open={!!hirePendingKanban}
+          onOpenChange={(open) => {
+            if (!open && !hireSubmitting) {
+              setHirePendingKanban(null);
+              setHirePendingKanbanStage(null);
+            }
+          }}
+          candidateName={hirePendingKanban?.fullName || 'ứng viên'}
+          initialEmployeeId={hirePendingKanban?.employeeId}
+          submitting={hireSubmitting}
+          onConfirm={handleConfirmKanbanHire}
+        />
+      </Suspense>
     </div>
   );
 }
+
+

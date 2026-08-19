@@ -26,6 +26,7 @@ import { AuthModule } from './auth/auth.module';
 import { LegalEntityProfileModule } from './legal-entity-profile/legal-entity-profile.module';
 import { CommandCenterModule } from './command-center/command-center.module';
 import { XbosDbWriteAuditInterceptor } from './platform/xbos-db-write-audit.interceptor';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { XbosDbWriteAuditInterceptor } from './platform/xbos-db-write-audit.inte
     AssetRequestModule,
     CatalogGovernanceModule,
     RaciGovernanceModule,
+    SettingsModule,
   ],
   controllers: [
     AppController,

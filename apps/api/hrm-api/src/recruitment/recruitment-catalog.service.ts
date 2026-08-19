@@ -160,6 +160,13 @@
  * mint HRM-REC-EVAL-* · RETAIN APP-02 sole stage · pool-only = FR06_LEGACY_POOL read-only.
  * change_mode: UPGRADE · UC-BP-REC-06 · API-01 F-REC-APP-03 · DATA-01 §5
  * DENY: Nest /rec · second eval SoT · Campaign · seed · honesty · claim pool DONE
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-17 REC-JP-JD-LINK-BE-01
+ * ADD jd_template_id UUID FK + jd_snapshot_json JSONB to job_postings (ALTER TABLE);
+ * ADD createJobPosting JD load + snapshot; ADD getJobPosting(); UPGRADE listJobPostings LEFT JOIN JDT.
+ * jd_template_id nullable — backward compat for existing postings without JD.
+ * change_mode: ADD · must_keep description/requirements/benefits cols (nullable, backward compat) ·
+ *   no FR-RC-01 rebind · U65 no seed · YCTD job_requisitions untouched
  */
 import { HttpStatus, Injectable, Optional } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
@@ -583,6 +590,13 @@ export class RecruitmentCatalogService {
       ALTER TABLE public.job_postings
         ADD COLUMN IF NOT EXISTS department_key TEXT NULL;
     `);
+    // REC-JP-JD-LINK-BE-01 — link job_postings to JD template; snapshot captures JD at link time.
+    // jd_template_id nullable: existing postings without JD remain valid (backward compat).
+    await this.db.query(`
+      ALTER TABLE public.job_postings
+        ADD COLUMN IF NOT EXISTS jd_template_id UUID REFERENCES public.job_description_templates(id) ON DELETE SET NULL,
+        ADD COLUMN IF NOT EXISTS jd_snapshot_json JSONB;
+    `);
     await this.db.query(`
       ALTER TABLE public.headcount_proposals
         ADD COLUMN IF NOT EXISTS position_key TEXT NULL;
@@ -829,23 +843,69 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, query.company_id);
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    // Use jp. prefix to disambiguate after LEFT JOIN with jdt (both tables have company_id).
+    if (scope.companyIds.length === 1) {
+      values.push(scope.companyIds[0]);
+      filters.push(`jp.company_id = $${values.length}::text`);
+    } else {
+      values.push(scope.companyIds);
+      filters.push(`jp.company_id = ANY($${values.length}::text[])`);
+    }
     if (query.status) {
       values.push(query.status);
-      filters.push(`status = $${values.length}`);
+      filters.push(`jp.status = $${values.length}`);
     }
     const res = await this.db.query(
-      `SELECT * FROM public.job_postings WHERE ${filters.join(' AND ')} ORDER BY created_at DESC;`,
+      `SELECT jp.*,
+        jdt.code AS jd_code,
+        jdt.title AS jd_title,
+        COALESCE(jp.jd_snapshot_json, jdt.values_json) AS jd_content
+       FROM public.job_postings jp
+       LEFT JOIN public.job_description_templates jdt ON jdt.id = jp.jd_template_id
+       WHERE ${filters.join(' AND ')} ORDER BY jp.created_at DESC;`,
       values,
     );
     return { total: res.rows.length, data: res.rows };
   }
 
   /**
+   * @CODE-MEMORY method · Lane B GET job-postings/:id — scope_parity with listJobPostings
+   * REC-JP-JD-LINK-BE-01: JOIN with JD template to return jd_code / jd_title / jd_content.
+   */
+  async getJobPosting(jobPostingId: string, companyId: string, authorization?: string) {
+    await this.ensureWave2Schema();
+    const scope = resolveHrmListScope(authorization, companyId);
+    const filters: string[] = ['jp.id = $1::uuid'];
+    const values: unknown[] = [jobPostingId];
+    // Use jp. prefix to disambiguate after LEFT JOIN with jdt (both tables have company_id).
+    if (scope.companyIds.length === 1) {
+      values.push(scope.companyIds[0]);
+      filters.push(`jp.company_id = $${values.length}::text`);
+    } else {
+      values.push(scope.companyIds);
+      filters.push(`jp.company_id = ANY($${values.length}::text[])`);
+    }
+    const res = await this.db.query(
+      `SELECT jp.*,
+        jdt.code AS jd_code,
+        jdt.title AS jd_title,
+        COALESCE(jp.jd_snapshot_json, jdt.values_json) AS jd_content
+       FROM public.job_postings jp
+       LEFT JOIN public.job_description_templates jdt ON jdt.id = jp.jd_template_id
+       WHERE ${filters.join(' AND ')} LIMIT 1;`,
+      values,
+    );
+    if (!res.rows[0]) {
+      throw new ApiException('HRM-REC-JP-404', 'Job posting not found', 404);
+    }
+    return res.rows[0];
+  }
+
+  /**
    * @CODE-MEMORY method · Lane B create job_postings — menu JD leftover (F1/F6/F9)
    * must_keep §17.6.4 — FR-RC-01 chỉ job_requisitions
    */
-  async createJobPosting(payload: CreateJobPostingDto, authorization?: string) {
+  async createJobPosting(payload: CreateJobPostingDto & { jd_template_id?: string }, authorization?: string) {
     await this.ensureWave2Schema();
     const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
     const pos = await this.assertConsumerPositionKey({
@@ -865,14 +925,29 @@ export class RecruitmentCatalogService {
         errorMessage: `department_key '${departmentKey}' is not in departments catalog`,
       });
     }
+    // REC-JP-JD-LINK-BE-01 — load JD template and capture snapshot at link time.
+    const jdTemplateId: string | null = payload.jd_template_id?.trim() || null;
+    let jdSnapshot: Record<string, unknown> | null = null;
+    if (jdTemplateId) {
+      const jdRow = await this.db.queryOne<{ id: string; code: string; title: string; values_json: unknown }>(
+        `SELECT id::text AS id, code, title, values_json
+         FROM public.job_description_templates
+         WHERE id = $1::uuid AND status <> 'retired'`,
+        [jdTemplateId],
+      );
+      if (!jdRow) {
+        throw new ApiException('HRM-REC-JP-JD-404', `JD template not found: ${jdTemplateId}`, 404);
+      }
+      jdSnapshot = { id: jdTemplateId, code: jdRow.code, title: jdRow.title, values_json: jdRow.values_json };
+    }
     const id = randomUUID();
     const res = await this.db.query(
       `INSERT INTO public.job_postings (
         id, company_id, title, department, department_key, position, position_key, employment_type, work_location,
         salary_min, salary_max, is_salary_visible, description, requirements, benefits,
-        headcount, deadline, priority, status
+        headcount, deadline, priority, status, jd_template_id, jd_snapshot_json
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::date, $18, $19
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::date, $18, $19, $20::uuid, $21::jsonb
       ) RETURNING *;`,
       [
         id,
@@ -894,6 +969,8 @@ export class RecruitmentCatalogService {
         payload.deadline ?? null,
         payload.priority ?? 'medium',
         payload.status ?? 'draft',
+        jdTemplateId,
+        jdSnapshot !== null ? JSON.stringify(jdSnapshot) : null,
       ],
     );
     return res.rows[0];

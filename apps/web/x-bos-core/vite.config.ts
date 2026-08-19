@@ -42,5 +42,14 @@ export default defineConfig({
     port: 5176,
     strictPort: true,
     headers: { 'Cache-Control': 'no-store' },
+    // XBOS BE binds XBOS_BE_PORT (28002 per deploy/xevn-ecosystem/.env:64 + docker-compose).
+    // FE must NOT fetch the BE origin directly — that hits the BE CORS policy. Proxy /api/xbos
+    // through Vite (same-origin) instead, matching the HRM FE pattern (proxy /api/hrm → :28001).
+    proxy: {
+      '/api/xbos': {
+        target: process.env.VITE_DEV_PROXY_XBOS_API || 'http://127.0.0.1:3002',
+        changeOrigin: true,
+      },
+    },
   },
 });

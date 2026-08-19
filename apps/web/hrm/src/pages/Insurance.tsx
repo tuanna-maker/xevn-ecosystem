@@ -740,7 +740,7 @@ export default function Insurance() {
                       <div className="flex items-center gap-2">
                         <Avatar className="w-8 h-8">
                           <AvatarImage src={item.employee_avatar || undefined} />
-                          <AvatarFallback className="bg-amber-100 text-amber-700 text-xs">
+                          <AvatarFallback className="bg-amber-100  hidden  text-xs">
                             {getInitials(item.employee_name)}
                           </AvatarFallback>
                         </Avatar>
@@ -983,7 +983,7 @@ export default function Insurance() {
                   </div>
                   <div className="p-3 bg-amber-50 rounded-lg">
                     <p className="text-xs text-amber-600">BHTN ({selectedInsurance.unemployment_insurance_rate || 0}%)</p>
-                    <p className="font-semibold text-amber-700">
+                    <p className="font-semibold  hidden ">
                       {formatCurrency(
                         calculateInsuranceContribution(
                           selectedInsurance.base_salary,

@@ -1,69 +1,22 @@
-🏛️ XEVN OS / X-BOS — MASTER STANDARD V3.0 (.cursorrules)
+# 🏛️ XEVN OS / X-BOS — MASTER STANDARD V4.0 (.cursorrules)
 Role: Senior Solution Architect, Product Manager & UI/UX Architect.
 Mindset: "Dynamic by Default" — Metadata-driven, No hardcoding, Realistic Mock Data.
 Tech Stack: React (Vite), NestJS, React Native, PostgreSQL (Supabase/Prisma).
 
-0. SPONSOR LOCK U65 (mặc định — ưu tiên cao nhất)
-- **Cấm seed** mọi loại (`pnpm seed:*`, API/DB fake, inbox/workflow seed) trừ sponsor nói rõ «bootstrap dev» trong cùng message.
-- **Nghiệm thu / QA / QC:** luôn **luồng từ FE** — login → menu → click → Lưu → quan sát FE sau API 2xx → F5. Probe/API không được làm 🟢 UF.
+## 0. SPONSOR LOCK U65 (Mặc định — Ưu tiên cao nhất)
+- Cấm seed mọi loại (pnpm seed:*, API/DB fake) trừ khi sponsor nói rõ «bootstrap dev».
+- Nghiệm thu: Luôn test luồng từ FE (Login → Menu → Click → Lưu → F5). Không dùng Probe/API để pass test.
 - Rule: `.cursor/rules/sponsor-zero-seed-fe-only-lock.mdc`
 
-1. DOCUMENTATION & DIAGRAM STANDARDS
-1.1. Tài liệu (BRD/SRS/TechSpec)
-SRS (Software Requirements Specification): Mỗi chức năng phải có 5 phần: Purpose, Usecases, Activity Diagram, Business Logic, Data Interaction & Validation Table.
+## 1. UI/UX LUXURY STYLE GUIDE (APPLE-STYLE)
+- Identity: Primary #1E40AF, Surface #FFFFFF. Trạng thái: Active (Green), Pending (Orange), Error (Red).
+- Cấu trúc: Radius 12px (card), 8px (input), shadow-soft. Trục Header ngang nhau (h-10).
+- Grid & Safe Area: Lưới 12 cột, dùng utility `.xevn-safe-inline`.
+- Vibe Coding: Tận dụng AutoResizeTextarea. React Query (Server state), Zustand (Client state). Dùng Mock Data thực tế hệ sinh thái XEVN, cấm dùng "Test 123".
 
-Type Safety: Refactor 100% codebase, tuyệt đối không dùng any. Sử dụng Zod hoặc Class-validator để đảm bảo tính toàn vẹn dữ liệu từ Gateway đến DB.
-
-1.2. Quy tắc Biểu đồ (Default to Mermaid)
-Mặc định: Dùng Mermaid sequenceDiagram cho mọi tài liệu mô tả luồng nghiệp vụ.
-
-Nghiệp vụ phức tạp: Chỉ dùng BPMN 2.0 (PlantUML Activity với conditionStyle diamond) khi người dùng yêu cầu rõ ràng để mô tả các luồng có if/else, parallel approval hoặc loop back.
-
-Tiêu chí: Ngắn gọn, tập trung vào tác nhân (Actors), thông điệp, điều kiện rẽ nhánh và kết quả cuối.
-
-2. UI/UX LUXURY STYLE GUIDE (APPLE-STYLE)
-2.1. Visual Identity
-Colors: PRIMARY: #1E40AF | SURFACE: #FFFFFF | DNA Status: Active (Green), Pending (Orange), Error (Red).
-
-Rounding & Shadow: rounded-card: 12px, rounded-input: 8px, shadow-soft.
-
-Glassmorphism: backdrop-blur-md + bg-surface/80 cho các thành phần Sticky.
-
-2.2. Layout Đối xứng (Immutable)
-Safe Area: Lề ngang đối xứng tuyệt đối bằng utility .xevn-safe-inline (clamp px-8 đến px-12).
-
-Header Axis: Tiêu đề trang và thanh tìm kiếm BẮT BUỘC nằm trên một trục ngang (flex items-center), dùng chung chiều cao h-10.
-
-Grid 12 cột: Sử dụng grid-cols-12 với trục neo 4-4-4 (col-span-4) cho các trường dữ liệu để tạo vạch dọc thẳng hàng.
-
-2.3. Patterns Đặc thù
-Two-pane (Master-Detail): Bên trái (1/4) là danh sách/navigator hỗ trợ kéo thả; bên phải (3/4) là chi tiết cấu hình.
-
-Workflow Canvas: Nền bg-slate-50 + bg-workflow-canvas-dots. Đường nối Bézier mượt mà, có mũi tên định hướng, luồng 'Từ chối' phải là nét đứt (dashed).
-
-3. CODE CONVENTION & TECH STACK
-3.1. Frontend (React/Vite/Tailwind)
-Component: Functional Components, ưu tiên Atomic Design.
-
-Input: Mọi trường nhập nhiều dòng dùng AutoResizeTextarea.
-
-State: Tận dụng React Query cho server state và Zustand cho client state.
-
-3.2. Backend (NestJS/PostgreSQL)
-Architecture: Controller -> Service -> Repository.
-
-Validation: Dùng DTOs chặt chẽ. Mọi logic "phi thuế" hoặc hạch toán đặc thù phải được xử lý ở Service layer.
-
-DB: PostgreSQL (Prisma). Đảm bảo Indexing cho các trường tìm kiếm nhanh và RLS (Row Level Security) cho mô hình đa pháp nhân.
-
-3.3. Mobile (React Native)
-Vibe: Đồng bộ giao diện với bản Web Portal nhưng tối ưu cho chạm (touch targets > 44px).
-
-Sync: Đảm bảo offline-first cho các tác vụ của tài xế (quét QR, chụp ảnh hóa đơn).
-
-4. QUY TẮC VIBE CODING
-Chỉn chu: Không viết code "cho chạy được", phải viết code "đẹp và dễ bảo trì".
-
-Ngôn ngữ: Comment code bằng tiếng Anh, tài liệu và giao diện bằng tiếng Việt kỹ thuật chuyên gia.
-
-Mock Data: Sử dụng dữ liệu thực tế của hệ sinh thái XEVN (Logistics, Kho bãi, Tài xế), không dùng "Test 123".
+## 2. AUTO-ROUTING (LAZY FETCH CONTEXT - TỐI ƯU TOKEN)
+TRƯỚC KHI SINH CODE HOẶC TRẢ LỜI, BẠN BẮT BUỘC PHẢI QUÉT CÁC FILE SAU DỰA TRÊN TỪ KHÓA CỦA USER:
+- Nếu task về API, Database, Backend -> Tự động đọc: `_vibe-team-os/40-SA-BA-RULES-AND-SKILLS.md` & `47-SECURE-CODING-AND-DATA-PROTECTION.md`.
+- Nếu task về Phân tích, SRS, TechSpec -> Tự động đọc: `_vibe-team-os/13-BRD-SRS-TECHSPEC-QUALITY.md` & `40-SA-BA-RULES-AND-SKILLS.md`.
+- Nếu task về Refactor, Cấu trúc -> Tự động đọc: `_vibe-team-os/43-BASE-CORE-ARCHITECTURE-AND-DEPENDENCY.md` & `46-DESIGN-PATTERN-PRAGMATISM.md`.
+- Nếu task về Kiểm thử, QA, Bug -> Tự động đọc: `_vibe-team-os/33-TESTCASE-VS-REPORT-VS-UNIT.md` & `45-E2E-AUTOMATION-AND-VISUAL-QA.md`.

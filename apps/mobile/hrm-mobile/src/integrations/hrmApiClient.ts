@@ -17,7 +17,7 @@
 import { isQaDeepLinkLoginEnabled } from '../config/qaLogin';
 import { RELEASE_PILOT_HRM_API_BASE_URL } from '../config/pilotApiBase';
 import { isUuid } from '../utils/uuid';
-import { isHrmWireBlockedSlug } from './companyWireScope';
+import { isHrmWireBlockedSlug, resolveWireCompanyId, type WireScopeInput } from './companyWireScope';
 import { normalizeHrmBaseUrl } from './normalizeHrmBaseUrl';
 import type { ApiEnvelopeError, ApiEnvelopeSuccess, HrmAuthConfig } from './types';
 
@@ -133,9 +133,19 @@ export async function hrmRequest<T>(
   };
   if (auth.tenantId?.trim()) headers['x-tenant-id'] = auth.tenantId.trim();
   const method = fetchInit.method ?? 'GET';
+
+  const wireInput: WireScopeInput = {
+    companyUuid: auth.companyUuid,
+    companyId: auth.companyId,
+    accessToken: auth.accessToken,
+    employeeId: auth.employeeId,
+    tenantId: auth.tenantId,
+  };
+  const wireUuid = resolveWireCompanyId(wireInput);
+
   const companyHeader = isHrmWriteMethod(method)
-    ? resolveHrmWriteHeaderId(auth.companyUuid, auth.companyId)
-    : resolveHrmCompanyHeaderId(auth.companyUuid, auth.companyId);
+    ? resolveHrmWriteHeaderId(wireUuid, auth.companyId)
+    : resolveHrmCompanyHeaderId(wireUuid, auth.companyId);
   if (companyHeader) headers['x-company-id'] = companyHeader;
 
   if (auth.accessToken) {

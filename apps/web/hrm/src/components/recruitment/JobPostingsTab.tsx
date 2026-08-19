@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY-CHANGE 2026-07-28 D-FE-ERP-E1A-PICKER-01
  * change_mode: ADD
  * What: position/department CatalogSearchPicker; Network position_key + department_key + snapshots
@@ -25,6 +25,18 @@
  * Why: Sponsor — popup thêm mới: trường Tiêu đề đứng đầu form
  * must_keep: CatalogSearchPicker · ViMoneyInput · mutate create/update · U65 · dialog chrome
  * LastVerified: docs/qa/evidence/po-hrm-ui-p0-logo-font-title-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-15 REC-JOBPOST-DIALOG-FIX-FE-01
+ * change_mode: UPGRADE
+ * What: Form dialog 3-tab layout (Thông tin / JD & Yêu cầu / Đãi ngộ); JD template picker soft-ref; remove max-h scroll
+ * Why: Bug1 layout scroll; Bug2 requirements no JD ref
+ * must_keep: CatalogSearchPicker wires · ViMoneyInput · mutate create/update · U65 · dialog testid
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-17 REC-JP-JD-LINK-FE-01
+ * change_mode: REFACTOR
+ * What: JD Template = SoT; bỏ textareas description/requirements/benefits; JdTemplateViewPanel inline; Tab Đãi ngộ salary-only; gửi jd_template_id thật lên API
+ * Why: jd_template_id trước là UI-local, không gửi API; duplicate fields description/requirements
+ * must_keep: CatalogSearchPicker wires · ViMoneyInput · mutate create/update · U65 · dialog testid · data-testid precision
  */
 import { useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -51,9 +63,8 @@ import {
   amountStringToNumber,
   numberToAmountString,
 } from '@/components/ui/ViMoneyInput';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
@@ -96,6 +107,8 @@ import {
 } from '@/components/ui/form';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Plus,
   Search,
@@ -108,12 +121,12 @@ import {
   Trash2,
   CalendarIcon,
   Building2,
-  ChevronRight,
   Clock,
-  Download,
   LayoutGrid,
   List,
   UserPlus,
+  X,
+  FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -121,10 +134,13 @@ import {
   deleteJobPosting,
   listJobPostings,
   updateJobPosting,
+  listJobDescriptionTemplates,
+  type HrmJobDescriptionTemplate,
 } from '@/integrations/hrmApi';
 import { cn } from '@/lib/utils';
 import { resolveEmploymentTypeDisplay } from '@/lib/labelMaps';
 import { JobCandidatesDialog } from './JobCandidatesDialog';
+import { JdTemplateViewPanel } from '@/components/recruitment/JdTemplateViewPanel';
 
 interface JobPosting {
   id: string;
@@ -150,6 +166,10 @@ interface JobPosting {
   tags: string[] | null;
   created_at: string;
   updated_at: string;
+  jd_template_id?: string | null;
+  jd_content?: Record<string, unknown> | null;
+  jd_code?: string | null;
+  jd_title?: string | null;
 }
 
 const formatCurrency = (amount: number | null) => {
@@ -157,22 +177,28 @@ const formatCurrency = (amount: number | null) => {
   return new Intl.NumberFormat('vi-VN').format(amount);
 };
 
-export function JobPostingsTab() {
+export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: boolean }) {
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
   const queryClient = useQueryClient();
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(autoOpenCreate);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
   const [isCandidatesOpen, setIsCandidatesOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<JobPosting | null>(null);
   const [editingJob, setEditingJob] = useState<JobPosting | null>(null);
+
+  // JD template picker state
+  const [isJdPickerOpen, setIsJdPickerOpen] = useState(false);
+  const [jdSearch, setJdSearch] = useState('');
+  const [selectedJdRef, setSelectedJdRef] = useState<{ id: string; code: string; title: string } | null>(null);
+  const [selectedJdFullRow, setSelectedJdFullRow] = useState<HrmJobDescriptionTemplate | null>(null);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -244,13 +270,11 @@ export function JobPostingsTab() {
     salary_min: z.string().optional(),
     salary_max: z.string().optional(),
     is_salary_visible: z.boolean().default(true),
-    description: z.string().optional(),
-    requirements: z.string().optional(),
-    benefits: z.string().optional(),
     headcount: z.string().min(1, t('recruitment.form.openingsRequired')),
     deadline: z.date().optional(),
     priority: z.string().default('medium'),
     status: z.string().default('draft'),
+    jd_template_id: z.string().optional(),
   });
 
   type JobPostingFormValues = z.infer<typeof jobPostingSchema>;
@@ -266,12 +290,10 @@ export function JobPostingsTab() {
       salary_min: '',
       salary_max: '',
       is_salary_visible: true,
-      description: '',
-      requirements: '',
-      benefits: '',
       headcount: '1',
       priority: 'medium',
       status: 'draft',
+      jd_template_id: '',
     },
   });
 
@@ -310,6 +332,23 @@ export function JobPostingsTab() {
       })) as (JobPosting & { candidate_count: number })[];
     },
     enabled: !!currentCompanyId,
+    staleTime: 30_000,   // 30s — list does not change constantly
+  });
+
+  // Fetch active JD templates (for soft-ref picker in form — REC-JOBPOST-DIALOG-FIX-FE-01)
+  const { data: jdTemplates = [] } = useQuery({
+    queryKey: ['jd_templates_for_posting', currentCompanyId, jdSearch],
+    queryFn: async () => {
+      if (!currentCompanyId) return [];
+      const res = await listJobDescriptionTemplates({
+        company_id: currentCompanyId,
+        status: 'active',
+        q: jdSearch || undefined,
+      });
+      return res.data ?? [];
+    },
+    enabled: !!currentCompanyId && isFormOpen,
+    staleTime: 120_000, // 2min — JD templates change infrequently
   });
 
   const parseOptionalNumber = (value: string | undefined): number | undefined => {
@@ -321,7 +360,7 @@ export function JobPostingsTab() {
   const buildCreatePayload = (values: JobPostingFormValues) => {
     if (!currentCompanyId) throw new Error('Missing company scope');
     const pos = buildPositionKeyFields(values.position_key, positionOptions);
-    if (!pos) throw new Error('Chọn vị trí từ danh mục');
+    if (!pos) throw new Error('Chon vi tri tu danh muc');
     const dept = values.department_key?.trim()
       ? buildDepartmentKeyFields(values.department_key, departmentOptions)
       : null;
@@ -337,13 +376,11 @@ export function JobPostingsTab() {
       salary_min: parseOptionalNumber(values.salary_min),
       salary_max: parseOptionalNumber(values.salary_max),
       is_salary_visible: values.is_salary_visible,
-      description: values.description || undefined,
-      requirements: values.requirements || undefined,
-      benefits: values.benefits || undefined,
       headcount: Number(values.headcount) || 1,
       deadline: values.deadline ? format(values.deadline, 'yyyy-MM-dd') : undefined,
       priority: values.priority,
       status: values.status,
+      jd_template_id: values.jd_template_id || undefined,
     };
   };
 
@@ -428,11 +465,33 @@ export function JobPostingsTab() {
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setEditingJob(null);
+    setSelectedJdRef(null);
+    setSelectedJdFullRow(null);
+    setIsJdPickerOpen(false);
+    setJdSearch('');
     form.reset();
+  };
+
+  // JD template = SoT; gửi jd_template_id thật lên API (REC-JP-JD-LINK-FE-01)
+  const handleSelectJdTemplate = (tpl: HrmJobDescriptionTemplate) => {
+    form.setValue('jd_template_id', tpl.id);
+    setSelectedJdRef({ id: tpl.id, code: tpl.code, title: tpl.title });
+    setSelectedJdFullRow(tpl);
+    setIsJdPickerOpen(false);
+  };
+
+  const handleClearJd = () => {
+    form.setValue('jd_template_id', '');
+    setSelectedJdRef(null);
+    setSelectedJdFullRow(null);
   };
 
   const handleOpenCreate = () => {
     setEditingJob(null);
+    setSelectedJdRef(null);
+    setSelectedJdFullRow(null);
+    setIsJdPickerOpen(false);
+    setJdSearch('');
     form.reset({
       title: '',
       department_key: '',
@@ -442,18 +501,20 @@ export function JobPostingsTab() {
       salary_min: '',
       salary_max: '',
       is_salary_visible: true,
-      description: '',
-      requirements: '',
-      benefits: '',
       headcount: '1',
       priority: 'medium',
       status: 'draft',
+      jd_template_id: '',
     });
     setIsFormOpen(true);
   };
 
   const handleOpenEdit = (job: JobPosting) => {
     setEditingJob(job);
+    setSelectedJdRef(null);
+    setSelectedJdFullRow(null);
+    setIsJdPickerOpen(false);
+    setJdSearch('');
     form.reset({
       title: job.title,
       department_key: job.department_key?.trim() || '',
@@ -463,13 +524,11 @@ export function JobPostingsTab() {
       salary_min: job.salary_min?.toString() || '',
       salary_max: job.salary_max?.toString() || '',
       is_salary_visible: job.is_salary_visible ?? true,
-      description: job.description || '',
-      requirements: job.requirements || '',
-      benefits: job.benefits || '',
       headcount: job.headcount.toString(),
       deadline: job.deadline ? new Date(job.deadline) : undefined,
       priority: job.priority || 'medium',
       status: job.status,
+      jd_template_id: '',
     });
     setIsFormOpen(true);
   };
@@ -521,13 +580,12 @@ export function JobPostingsTab() {
 
   return (
     <div className="space-y-4" data-testid="rec-jobs-tab-precision">
-      {/* R04 page title ≥20 Montserrat — QA harness measures first h2 inside this testid.
-          xevn-type-title = absolute 20px floor (survives html 14px root where text-xl→17.5px). */}
+      {/* R04 page title >=20 Montserrat */}
       <h2 className="xevn-type-title font-display text-[20px] font-bold tracking-tight text-xevn-text">
         {t('recruitment.jobPostings')}
       </h2>
 
-      {/* Stats Cards — Precision Motion DNA (no AI purple) */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-4">
         <Card className="border-xevn-border bg-xevn-surface">
           <CardContent className="pt-4">
@@ -586,7 +644,7 @@ export function JobPostingsTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button onClick={handleOpenCreate}>
+          <Button onClick={handleOpenCreate} data-testid="rec-job-create-btn">
             <Plus className="w-4 h-4 mr-2" />
             {t('recruitment.jt.createPost')}
           </Button>
@@ -717,7 +775,7 @@ export function JobPostingsTab() {
                     <TableCell>
                       {job.salary_min || job.salary_max ? (
                         <span className="text-sm">
-                          {job.salary_min ? formatCurrency(job.salary_min) : '...'} - {job.salary_max ? formatCurrency(job.salary_max) : '...'} Ä‘
+                          {job.salary_min ? formatCurrency(job.salary_min) : '...'} - {job.salary_max ? formatCurrency(job.salary_max) : '...'} d
                         </span>
                       ) : (
                         <span className="text-muted-foreground">{t('recruitment.jt.negotiable')}</span>
@@ -805,7 +863,7 @@ export function JobPostingsTab() {
                   <div className="text-sm">
                     {job.salary_min || job.salary_max ? (
                       <span className="text-primary font-medium">
-                        {formatCurrency(job.salary_min || 0)} - {formatCurrency(job.salary_max || 0)} Ä‘
+                        {formatCurrency(job.salary_min || 0)} - {formatCurrency(job.salary_max || 0)} d
                       </span>
                     ) : (
                       <span className="text-muted-foreground">{t('recruitment.jt.negotiable')}</span>
@@ -830,43 +888,28 @@ export function JobPostingsTab() {
             {t('recruitment.jt.showing', { from: (currentPage - 1) * itemsPerPage + 1, to: Math.min(currentPage * itemsPerPage, filteredList.length), total: filteredList.length })}
           </p>
           <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
-            >
+            <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
               {t('recruitment.jt.prev')}
             </Button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).slice(
               Math.max(0, currentPage - 3),
               Math.min(totalPages, currentPage + 2)
             ).map((page) => (
-              <Button
-                key={page}
-                variant={currentPage === page ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setCurrentPage(page)}
-              >
+              <Button key={page} variant={currentPage === page ? 'default' : 'outline'} size="sm" onClick={() => setCurrentPage(page)}>
                 {page}
               </Button>
             ))}
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(currentPage + 1)}
-            >
+            <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
               {t('recruitment.jt.next')}
             </Button>
           </div>
         </div>
       )}
 
-      {/* Form Dialog — R12 Precision Motion (glass/wordmark via DialogHeader) */}
+      {/* Form Dialog — REC-JOBPOST-DIALOG-FIX-FE-01: 3-tab, no overflow, JD picker */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent
-          className="max-h-[90vh] overflow-y-auto sm:max-w-[920px]"
+          className="sm:max-w-[960px]"
           data-testid="rec-job-create-edit-dialog-precision"
         >
           <DialogHeader>
@@ -876,8 +919,8 @@ export function JobPostingsTab() {
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Title-first (PO-HRM-UI-P0-LOGO-FONT-TITLE-01) — before section chrome */}
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* Title field — full-width above tabs (PO-HRM-UI-P0-LOGO-FONT-TITLE-01) */}
               <FormField
                 control={form.control}
                 name="title"
@@ -898,305 +941,362 @@ export function JobPostingsTab() {
                 )}
               />
 
-              {/* Basic Info */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-xevn-textSecondary">{t('recruitment.jt.basicInfo')}</h3>
+              <Tabs defaultValue="info" className="w-full">
+                <TabsList className="w-full">
+                  <TabsTrigger value="info" data-testid="rec-job-tab-info">Thông tin</TabsTrigger>
+                  <TabsTrigger value="jd" data-testid="rec-job-tab-jd">JD &amp; Yêu cầu</TabsTrigger>
+                  <TabsTrigger value="benefit" data-testid="rec-job-tab-benefit">Đãi ngộ</TabsTrigger>
+                </TabsList>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="position_key"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('recruitment.jt.positionLabel')} <span className="text-destructive">*</span></FormLabel>
-                        <FormControl>
-                          <CatalogSearchPicker
-                            options={positionOptions}
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            placeholder={t('recruitment.jt.positionPlaceholder')}
-                            loading={catalogsLoading}
-                            errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
-                            emptyHint={
-                              <a href="/settings" className="text-primary underline text-xs font-medium">
-                                Mở Cài đặt → Danh mục nghiệp vụ
-                              </a>
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="department_key"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('recruitment.jt.departmentLabel')}</FormLabel>
-                        <FormControl>
-                          <CatalogSearchPicker
-                            options={departmentOptions}
-                            value={field.value}
-                            onValueChange={field.onChange}
-                            placeholder={t('recruitment.jt.departmentPlaceholder')}
-                            loading={catalogsLoading}
-                            errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
-                            emptyHint={
-                              <a href="/settings" className="text-primary underline text-xs font-medium">
-                                Mở Cài đặt → Danh mục nghiệp vụ
-                              </a>
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="employment_type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('recruitment.jt.typeLabel')} <span className="text-destructive">*</span></FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                {/* Tab 1 — Basic info */}
+                <TabsContent value="info" className="space-y-4 pt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="position_key"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('recruitment.jt.positionLabel')} <span className="text-destructive">*</span></FormLabel>
                           <FormControl>
-                            <SelectTrigger className="xevn-field-select-md">
-                              <SelectValue placeholder={t('recruitment.jt.selectType')} />
-                            </SelectTrigger>
+                            <CatalogSearchPicker
+                              options={positionOptions}
+                              value={field.value}
+                              onValueChange={field.onChange}
+                              placeholder={t('recruitment.jt.positionPlaceholder')}
+                              loading={catalogsLoading}
+                              errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                              emptyHint={
+                                <a href="/settings" className="text-primary underline text-xs font-medium">
+                                  Mở Cài đặt → Danh mục nghiệp vụ
+                                </a>
+                              }
+                            />
                           </FormControl>
-                          <SelectContent>
-                            {employmentTypes.map((et) => (
-                              <SelectItem key={et.value} value={et.value}>{et.label}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="work_location"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('recruitment.jt.locationLabel')}</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-xevn-textMuted" />
-                            <Input placeholder={t('recruitment.jt.locationPlaceholder')} className="xevn-field-line pl-10" {...field} />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="headcount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('recruitment.jt.headcountLabel')} <span className="text-destructive">*</span></FormLabel>
-                        <FormControl>
-                          <Input type="number" min="1" className="xevn-field-num" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="salary_min"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('recruitment.jt.salaryMin')}</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
-                            <ViMoneyInput
-                              placeholder="VD: 15.000.000"
-                              className="pl-10"
-                              value={amountStringToNumber(field.value)}
-                              onValueChange={(n) => field.onChange(numberToAmountString(n))}
-                              onBlur={field.onBlur}
-                              name={field.name}
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="department_key"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('recruitment.jt.departmentLabel')}</FormLabel>
+                          <FormControl>
+                            <CatalogSearchPicker
+                              options={departmentOptions}
+                              value={field.value}
+                              onValueChange={field.onChange}
+                              placeholder={t('recruitment.jt.departmentPlaceholder')}
+                              loading={catalogsLoading}
+                              errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                              emptyHint={
+                                <a href="/settings" className="text-primary underline text-xs font-medium">
+                                  Mở Cài đặt → Danh mục nghiệp vụ
+                                </a>
+                              }
                             />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="salary_max"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('recruitment.jt.salaryMax')}</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
-                            <ViMoneyInput
-                              placeholder="VD: 25.000.000"
-                              className="pl-10"
-                              value={amountStringToNumber(field.value)}
-                              onValueChange={(n) => field.onChange(numberToAmountString(n))}
-                              onBlur={field.onBlur}
-                              name={field.name}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="deadline"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>{t('recruitment.jt.deadlineLabel')}</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
+                  <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="employment_type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('recruitment.jt.typeLabel')} <span className="text-destructive">*</span></FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "xevn-field-date pl-3 text-left font-normal",
-                                  !field.value && "text-xevn-textMuted"
-                                )}
-                              >
-                                {field.value ? format(field.value, "dd/MM/yyyy") : t('recruitment.jt.selectDate')}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
+                              <SelectTrigger className="xevn-field-select-md">
+                                <SelectValue placeholder={t('recruitment.jt.selectType')} />
+                              </SelectTrigger>
                             </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) => date < new Date()}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
+                            <SelectContent>
+                              {employmentTypes.map((et) => (
+                                <SelectItem key={et.value} value={et.value}>{et.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="work_location"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('recruitment.jt.locationLabel')}</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <MapPin className="absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-xevn-textMuted" />
+                              <Input placeholder={t('recruitment.jt.locationPlaceholder')} className="xevn-field-line pl-10" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="headcount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('recruitment.jt.headcountLabel')} <span className="text-destructive">*</span></FormLabel>
+                          <FormControl>
+                            <Input type="number" min="1" className="xevn-field-num" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="deadline"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>{t('recruitment.jt.deadlineLabel')}</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "xevn-field-date pl-3 text-left font-normal",
+                                    !field.value && "text-xevn-textMuted"
+                                  )}
+                                >
+                                  {field.value ? format(field.value, "dd/MM/yyyy") : t('recruitment.jt.selectDate')}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="priority"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('recruitment.jt.priorityLabel')}</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="xevn-field-select-sm">
+                                <SelectValue placeholder={t('recruitment.jt.selectPriority')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {priorityOptions.map((p) => (
+                                <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('recruitment.jt.statusLabel')}</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="xevn-field-select-sm">
+                                <SelectValue placeholder={t('recruitment.jt.selectStatus')} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="draft">{t('recruitment.jt.statuses.draft')}</SelectItem>
+                              <SelectItem value="active">{t('recruitment.jt.statuses.active')}</SelectItem>
+                              <SelectItem value="paused">{t('recruitment.jt.statuses.paused')}</SelectItem>
+                              <SelectItem value="closed">{t('recruitment.jt.statuses.closed')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </TabsContent>
+
+                {/* Tab 2 — JD & Requirements (REC-JP-JD-LINK-FE-01: JD = SoT, no textarea) */}
+                <TabsContent value="jd" className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Mẫu JD tham chiếu</label>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Popover open={isJdPickerOpen} onOpenChange={setIsJdPickerOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            data-testid="rec-job-jd-picker-btn"
+                          >
+                            <FileText className="h-4 w-4 mr-1" />
+                            {selectedJdRef ? 'Đổi JD' : 'Chọn từ thư viện JD'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 p-2" align="start">
+                          <Input
+                            placeholder="Tìm kiếm JD..."
+                            value={jdSearch}
+                            onChange={(e) => setJdSearch(e.target.value)}
+                            className="mb-2"
+                            data-testid="rec-job-jd-search-input"
+                          />
+                          <ScrollArea className="h-48">
+                            {jdTemplates.length === 0 ? (
+                              <p className="text-sm text-muted-foreground p-2">Không có JD template nào</p>
+                            ) : (
+                              <div data-testid="rec-job-jd-template-list">
+                                {jdTemplates.map((tpl) => (
+                                  <button
+                                    key={tpl.id}
+                                    type="button"
+                                    className="w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted cursor-pointer block"
+                                    data-testid={`rec-job-jd-item-${tpl.id}`}
+                                    onClick={() => handleSelectJdTemplate(tpl)}
+                                  >
+                                    <span className="font-medium">{tpl.code}</span> — {tpl.title}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </ScrollArea>
+                        </PopoverContent>
+                      </Popover>
+                      {selectedJdRef && (
+                        <div
+                          className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs"
+                          data-testid="rec-job-jd-ref-chip"
+                        >
+                          <span>{selectedJdRef.code} — {selectedJdRef.title}</span>
+                          <button
+                            type="button"
+                            className="ml-1 rounded-full hover:bg-muted p-0.5"
+                            data-testid="rec-job-jd-ref-clear"
+                            onClick={handleClearJd}
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* JdTemplateViewPanel inline khi đã chọn */}
+                    {selectedJdRef && selectedJdFullRow && (
+                      <div className="mt-3 rounded-lg border border-border/50 overflow-hidden">
+                        <div className="bg-muted/40 px-3 py-2 text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                          Nội dung JD tham chiếu (chỉ đọc)
+                        </div>
+                        <div className="max-h-[300px] overflow-y-auto p-1">
+                          <JdTemplateViewPanel row={selectedJdFullRow} />
+                        </div>
+                      </div>
                     )}
-                  />
+
+                    {/* Empty state khi chưa chọn JD */}
+                    {!selectedJdRef && (
+                      <div className="rounded-lg border border-dashed border-border/60 p-6 text-center text-sm text-muted-foreground">
+                        Chọn mẫu JD để hiển thị yêu cầu công việc
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                {/* Tab 3 — Dai ngo */}
+                <TabsContent value="benefit" className="space-y-4 pt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="salary_min"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('recruitment.jt.salaryMin')}</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+                              <ViMoneyInput
+                                placeholder="VD: 15.000.000"
+                                className="pl-10"
+                                value={amountStringToNumber(field.value)}
+                                onValueChange={(n) => field.onChange(numberToAmountString(n))}
+                                onBlur={field.onBlur}
+                                name={field.name}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="salary_max"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('recruitment.jt.salaryMax')}</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+                              <ViMoneyInput
+                                placeholder="VD: 25.000.000"
+                                className="pl-10"
+                                value={amountStringToNumber(field.value)}
+                                onValueChange={(n) => field.onChange(numberToAmountString(n))}
+                                onBlur={field.onBlur}
+                                name={field.name}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
-                    name="priority"
+                    name="is_salary_visible"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('recruitment.jt.priorityLabel')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="xevn-field-select-sm">
-                              <SelectValue placeholder={t('recruitment.jt.selectPriority')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {priorityOptions.map((p) => (
-                              <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>Hiển thị mức lương</FormLabel>
+                        </div>
                       </FormItem>
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('recruitment.jt.statusLabel')}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="xevn-field-select-sm">
-                              <SelectValue placeholder={t('recruitment.jt.selectStatus')} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="draft">{t('recruitment.jt.statuses.draft')}</SelectItem>
-                            <SelectItem value="active">{t('recruitment.jt.statuses.active')}</SelectItem>
-                            <SelectItem value="paused">{t('recruitment.jt.statuses.paused')}</SelectItem>
-                            <SelectItem value="closed">{t('recruitment.jt.statuses.closed')}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Details */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-xevn-textSecondary">{t('recruitment.jt.jobDetails')}</h3>
-                
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('recruitment.jt.descriptionLabel')}</FormLabel>
-                      <FormControl>
-                        <Textarea rows={4} placeholder={t('recruitment.jt.descriptionPlaceholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="requirements"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('recruitment.jt.requirementsLabel')}</FormLabel>
-                      <FormControl>
-                        <Textarea rows={4} placeholder={t('recruitment.jt.requirementsPlaceholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="benefits"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('recruitment.jt.benefitsLabel')}</FormLabel>
-                      <FormControl>
-                        <Textarea rows={3} placeholder={t('recruitment.jt.benefitsPlaceholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                </TabsContent>
+              </Tabs>
 
               <div className="xevn-dialog-footer-sticky flex justify-end gap-3 border-t pt-4">
-                <Button type="button" variant="outline" onClick={handleCloseForm}>{t('recruitment.jt.cancelBtn')}</Button>
+                <Button type="button" variant="outline" onClick={handleCloseForm} data-testid="rec-job-cancel-btn">{t('recruitment.jt.cancelBtn')}</Button>
                 <Button
                   type="submit"
                   className="bg-primary text-primary-foreground hover:bg-primary/90"
@@ -1223,16 +1323,11 @@ export function JobPostingsTab() {
                   <div>
                     <h2 className="text-xl">{selectedJob.title}</h2>
                     <p className="text-sm text-muted-foreground font-normal">
-                      {resolvePositionDisplayLabel(
-                        positionOptions,
-                        selectedJob.position_key,
-                        selectedJob.position,
-                      )}
+                      {resolvePositionDisplayLabel(positionOptions, selectedJob.position_key, selectedJob.position)}
                     </p>
                   </div>
                 </DialogTitle>
               </DialogHeader>
-              
               <div className="space-y-6">
                 <div className="flex items-center gap-3 flex-wrap">
                   {getStatusBadge(selectedJob.status)}
@@ -1242,7 +1337,6 @@ export function JobPostingsTab() {
                       ?? resolveEmploymentTypeDisplay(selectedJob.employment_type)}
                   </Badge>
                 </div>
-
                 <div className="grid grid-cols-4 gap-4 p-4 bg-muted/50 rounded-lg">
                   <div className="text-center">
                     <p className="text-2xl font-bold text-primary">{selectedJob.headcount}</p>
@@ -1269,7 +1363,6 @@ export function JobPostingsTab() {
                     <p className="text-xs text-muted-foreground">{t('recruitment.jt.daysLeft')}</p>
                   </div>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <Building2 className="w-4 h-4 text-muted-foreground" />
@@ -1295,33 +1388,48 @@ export function JobPostingsTab() {
                     <span className="text-muted-foreground">{t('recruitment.jt.salaryInfo')}</span>
                     <span>
                       {selectedJob.salary_min || selectedJob.salary_max ? (
-                        `${formatCurrency(selectedJob.salary_min || 0)} - ${formatCurrency(selectedJob.salary_max || 0)} VNÄ`
+                        `${formatCurrency(selectedJob.salary_min || 0)} - ${formatCurrency(selectedJob.salary_max || 0)} VND`
                       ) : t('recruitment.jt.negotiable')}
                     </span>
                   </div>
                 </div>
-
-                {selectedJob.description && (
+                {selectedJob.jd_template_id && (
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Mô tả công việc (JD)</h3>
+                    {selectedJob.jd_content ? (
+                      <JdTemplateViewPanel
+                        row={{
+                          id: selectedJob.jd_template_id,
+                          code: selectedJob.jd_code ?? '',
+                          title: selectedJob.jd_title ?? selectedJob.title,
+                          values_json: selectedJob.jd_content,
+                        } as HrmJobDescriptionTemplate}
+                      />
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        JD: {selectedJob.jd_code} — {selectedJob.jd_title}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {!selectedJob.jd_template_id && selectedJob.description && (
                   <div>
                     <h3 className="font-semibold mb-2">{t('recruitment.jt.descriptionTitle')}</h3>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">{selectedJob.description}</p>
                   </div>
                 )}
-
-                {selectedJob.requirements && (
+                {!selectedJob.jd_template_id && selectedJob.requirements && (
                   <div>
                     <h3 className="font-semibold mb-2">{t('recruitment.jt.requirementsTitle')}</h3>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">{selectedJob.requirements}</p>
                   </div>
                 )}
-
-                {selectedJob.benefits && (
+                {!selectedJob.jd_template_id && selectedJob.benefits && (
                   <div>
                     <h3 className="font-semibold mb-2">{t('recruitment.jt.benefitsTitle')}</h3>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">{selectedJob.benefits}</p>
                   </div>
                 )}
-
                 <div className="flex justify-end gap-3 pt-4 border-t">
                   <Button variant="outline" onClick={() => setIsViewOpen(false)}>{t('recruitment.jt.closeBtn')}</Button>
                   <Button onClick={() => { setIsViewOpen(false); handleOpenEdit(selectedJob); }}>

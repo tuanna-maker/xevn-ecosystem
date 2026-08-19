@@ -1,0 +1,29 @@
+# QA HDSD + case nghiệp vụ + neo nhánh ↔ SRS (OS)
+
+**SoT:** `_vibe-team-os/30-HDSD-ALIGNED-QA-AND-SRS-BRANCH-TRACE.md`  
+**Sponsor:** 2026-08-03 — PM mọi dự án phải ghi nhớ.
+
+## Ba lớp cùng lúc
+
+1. **HDSD path** — click đúng menu/màn/nút như hướng dẫn người dùng (U76).
+2. **Case matrix** — Fail nghiệp vụ sâu → Success HDSD → Logic BR (không chỉ happy path).
+3. **Code ↔ SRS** — mọi `if`/`else`/`switch`/early-return nghiệp vụ comment `UC` + **Diễn biến #**.
+
+## PM dispatch QA (bắt buộc)
+
+```text
+hdsd_align: true
+hdsd_sot: <path HDSD>
+case_matrix: fail_deep + success_hdsd + logic_br
+srs_branch_trace: required on Dev hot-path
+```
+
+## Reject
+
+- 🟢 UF khi click lệch HDSD hoặc thiếu inventory.
+- PASS chỉ API/probe / chỉ 1 happy path.
+- GO khi nhánh mutate không trỏ được bước Diễn biến SRS (trace_gap).
+
+## Liên kết
+
+- `13` §3.4.2–3.4.3 · `04` comment tại chỗ · `18` (viết HDSD) · U65 zero-seed

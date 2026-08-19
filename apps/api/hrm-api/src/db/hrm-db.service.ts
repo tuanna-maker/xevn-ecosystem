@@ -66,6 +66,27 @@ export class HrmDbService implements OnModuleDestroy {
   }
 
   /**
+   * Convenience wrapper: returns the first row or null.
+   * Equivalent to query(...).rows[0] ?? null — added 2026-08-17 to satisfy callers
+   * across settings/payroll services that expect this pattern.
+   */
+  async queryOne<T extends QueryResultRow = QueryResultRow>(
+    text: string,
+    values: unknown[] = [],
+  ): Promise<T | null> {
+    const result = await this.query<T>(text, values);
+    return result.rows[0] ?? null;
+  }
+
+  /**
+   * Convenience wrapper: fire-and-forget write (INSERT/UPDATE/DELETE with no RETURNING needed).
+   * Equivalent to query(...) — result discarded.
+   */
+  async execute(text: string, values: unknown[] = []): Promise<void> {
+    await this.query(text, values);
+  }
+
+  /**
    * Same-connection BEGIN/COMMIT for multi-statement writes (e.g. FR-05 profile + audit).
    * Fail-closed: any thrown error rolls back.
    */

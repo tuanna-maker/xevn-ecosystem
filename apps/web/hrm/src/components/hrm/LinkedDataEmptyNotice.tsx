@@ -76,7 +76,7 @@ export function LinkedDataEmptyNotice({
       role="status"
     >
       <div className="flex gap-3">
-        <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" aria-hidden />
+        <AlertCircle className="mt-0.5 h-5 w-5 shrink-0  hidden " aria-hidden />
         <div className="min-w-0 flex-1">
           <p className="font-semibold">{copy.title}</p>
           {body}

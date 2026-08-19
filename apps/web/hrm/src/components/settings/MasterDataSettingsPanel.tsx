@@ -105,6 +105,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Save } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
 import {
@@ -188,10 +196,11 @@ function CatalogItemsTable({
 
 function MasterDataBucketPanel({ bucket }: { bucket: MdBucket }) {
   const meta = MD_BUCKET_META[bucket];
-  const [code, setCode] = useState('');
-  const [label, setLabel] = useState('');
   const [search, setSearch] = useState('');
   const [deactivatingCode, setDeactivatingCode] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [form, setForm] = useState({ code: '', label: '' });
   const queryClient = useQueryClient();
   const overview = useSettingsCatalogsOverview();
   const catalogs = overview.catalogs ?? [];
@@ -213,6 +222,14 @@ function MasterDataBucketPanel({ bucket }: { bucket: MdBucket }) {
 
   const leaveTypesRefReadOnly =
     bucket === 'leaveTypes' && isLeaveTypesGroupRefReadOnly(catalog ?? undefined);
+
+  const isW3StandaloneBucket =
+    bucket === 'employmentTypes' ||
+    bucket === 'decisionTypes' ||
+    bucket === 'insuranceTypes' ||
+    bucket === 'insurers';
+
+  const extensionMutateDisabled = leaveTypesRefReadOnly || isW3StandaloneBucket;
 
   const attLeaveTypesSettingsHref = hrmPathWithEmbedSearch(SETTINGS_ATT_LEAVE_TYPES_PATH);
 
@@ -241,10 +258,6 @@ function MasterDataBucketPanel({ bucket }: { bucket: MdBucket }) {
           ? 'Đã ngưng mục danh mục — vẫn giữ lịch sử trên danh sách.'
           : 'Đã lưu mục danh mục — làm mới danh sách.',
       );
-      if (vars.status !== 'draft') {
-        setCode('');
-        setLabel('');
-      }
       setDeactivatingCode(null);
       void queryClient.invalidateQueries({ queryKey: [SETTINGS_CATALOGS_QUERY_KEY] });
     },
@@ -288,16 +301,15 @@ function MasterDataBucketPanel({ bucket }: { bucket: MdBucket }) {
         items={filteredItems}
         emptyLabel={
           items.length === 0
-            ? leaveTypesRefReadOnly
-              ? 'Chưa có mục REF — đồng bộ XBOS hoặc cấu hình loại phép tại tab Loại phép ATT.'
+            ? extensionMutateDisabled
+              ? 'Chưa có mục REF — đồng bộ XBOS hoặc quản lý tại tab chuyên biệt.'
               : 'Chưa có mục — đồng bộ XBOS hoặc thêm mục bên dưới.'
             : 'Không có mục khớp bộ lọc.'
         }
         deactivatingCode={deactivatingCode}
-        extensionMutateDisabled={leaveTypesRefReadOnly}
+        extensionMutateDisabled={extensionMutateDisabled}
         onPick={(row) => {
-          setCode(row.code);
-          setLabel(row.label);
+          setForm({ code: row.code, label: row.label });
         }}
         onDeactivate={(row) => {
           setDeactivatingCode(row.code);
@@ -310,6 +322,54 @@ function MasterDataBucketPanel({ bucket }: { bucket: MdBucket }) {
       />
     </div>
   );
+
+  const emptyForm = () => ({ code: '', label: '' });
+
+  const openCreate = () => {
+    setEditingId(null);
+    setForm(emptyForm());
+    setDialogOpen(true);
+  };
+
+  const openEdit = (row: HrmSettingsCatalogItem) => {
+    setEditingId(row.code);
+    setForm({
+      code: row.code,
+      label: row.label,
+    });
+    setDialogOpen(true);
+  };
+
+  const closeDialog = () => {
+    setDialogOpen(false);
+    setEditingId(null);
+    setForm(emptyForm());
+  };
+
+  const onSave = async () => {
+    if (!overview.scope) {
+      toast.error('Thiếu phạm vi công ty');
+      return;
+    }
+    const c = form.code.trim();
+    const l = form.label.trim();
+    if (!c || !l) {
+      toast.error('Mã và Tên hiển thị là bắt buộc');
+      return;
+    }
+
+    try {
+      await upsertMutation.mutateAsync({
+        code: c,
+        label: l,
+        status: 'active',
+      });
+      closeDialog();
+      setSearch('');
+    } catch (err) {
+      // Error handled by mutation onError
+    }
+  };
 
   return (
     <div className="space-y-4" data-testid={`md-bucket-${bucket}`}>
@@ -328,78 +388,104 @@ function MasterDataBucketPanel({ bucket }: { bucket: MdBucket }) {
 
       {listBlock}
 
-      {leaveTypesRefReadOnly ? (
+      {extensionMutateDisabled ? (
         <div
           className="rounded-card border border-amber-200 bg-amber-50/80 p-4 space-y-3"
-          data-testid="md-leave-types-ref-readonly-banner"
+          data-testid={`md-${bucket}-ref-readonly-banner`}
         >
-          <p className="text-sm text-foreground">{LEAVE_TYPES_REF_READONLY_MD_COPY}</p>
-          <p className="text-xs text-muted-foreground">
-            Picker nghỉ phép dùng{' '}
-            <span className="font-mono">GET …/attendance/leave-types/effective</span> — không thêm
-            extension trên leave_types.
+          <p className="text-sm text-foreground">
+            {leaveTypesRefReadOnly
+              ? LEAVE_TYPES_REF_READONLY_MD_COPY
+              : 'Danh mục này được quản lý bằng giao diện chuyên biệt (có các trường cấu hình riêng).'}
           </p>
-          <Button asChild variant="default" size="sm" data-testid="md-leave-types-open-att-tab">
-            <Link to={attLeaveTypesSettingsHref}>Mở tab Loại phép ATT</Link>
+          <p className="text-xs text-muted-foreground">
+            {leaveTypesRefReadOnly
+              ? 'Picker nghỉ phép dùng GET …/attendance/leave-types/effective — không thêm extension trên leave_types.'
+              : 'Sử dụng tab cài đặt tương ứng để thêm mới hoặc cập nhật thông tin chi tiết.'}
+          </p>
+          <Button asChild variant="default" size="sm" data-testid={`md-${bucket}-open-standalone-tab`}>
+            {bucket === 'leaveTypes'
+              ? <Link to={attLeaveTypesSettingsHref}>Mở tab Loại phép ATT</Link>
+              : bucket === 'employmentTypes'
+              ? <Link to={hrmPathWithEmbedSearch('/settings?tab=emp-employment-types')}>Mở tab Loại hình thuê</Link>
+              : bucket === 'decisionTypes'
+              ? <Link to={hrmPathWithEmbedSearch('/settings?tab=dec-decision-types')}>Mở tab Loại quyết định</Link>
+              : bucket === 'insuranceTypes'
+              ? <Link to={hrmPathWithEmbedSearch('/settings?tab=si-insurance-types')}>Mở tab Loại bảo hiểm</Link>
+              : <Link to={hrmPathWithEmbedSearch('/settings?tab=si-insurers')}>Mở tab Nơi KCB / Đơn vị BH</Link>
+            }
           </Button>
         </div>
       ) : (
-        <div
-          className="rounded-card border border-xevn-border p-4 space-y-3 bg-surface/80"
-          data-testid={`md-upsert-form-${bucket}`}
-        >
-          <p className="text-sm font-medium">Thêm / cập nhật mục (extension HRM)</p>
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-            <div className="sm:col-span-4 space-y-1.5">
-              <Label htmlFor={`md-code-${bucket}`}>Mã *</Label>
-              <Input
-                id={`md-code-${bucket}`}
-                data-testid={`md-code-${bucket}`}
-                className="rounded-input font-mono text-sm"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder={meta.codePlaceholder}
-                disabled={upsertMutation.isPending}
-              />
-            </div>
-            <div className="sm:col-span-5 space-y-1.5">
-              <Label htmlFor={`md-label-${bucket}`}>Tên hiển thị *</Label>
-              <Input
-                id={`md-label-${bucket}`}
-                data-testid={`md-label-${bucket}`}
-                className="rounded-input"
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                placeholder={meta.labelPlaceholder}
-                disabled={upsertMutation.isPending}
-              />
-            </div>
-            <div className="sm:col-span-3 flex items-end">
-              <Button
-                type="button"
-                className="w-full"
-                data-testid={`md-save-${bucket}`}
-                disabled={
-                  upsertMutation.isPending || !code.trim() || !label.trim()
-                }
-                onClick={() =>
-                  upsertMutation.mutate({
-                    code: code.trim(),
-                    label: label.trim(),
-                    status: 'active',
-                  })
-                }
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Lưu
-              </Button>
-            </div>
-          </div>
+        <>
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            data-testid={`md-create-${bucket}`}
+            onClick={openCreate}
+            className="w-full sm:w-auto"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Thêm {meta.title}
+          </Button>
+
+          <Dialog open={dialogOpen} onOpenChange={(open) => (open ? setDialogOpen(true) : closeDialog())}>
+            <DialogContent
+              className="max-h-[min(90vh,720px)] max-w-lg overflow-y-auto sm:max-w-xl"
+              data-testid={`md-dialog-${bucket}`}
+            >
+              <DialogHeader>
+                <DialogTitle>{editingId ? `Sửa ${meta.title}` : `Thêm ${meta.title}`}</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor={`md-code-${bucket}`}>Mã *</Label>
+                  <Input
+                    id={`md-code-${bucket}`}
+                    data-testid={`md-code-${bucket}`}
+                    className="rounded-input font-mono text-sm"
+                    placeholder={meta.codePlaceholder}
+                    value={form.code}
+                    disabled={Boolean(editingId) || upsertMutation.isPending}
+                    onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor={`md-label-${bucket}`}>Tên hiển thị *</Label>
+                  <Input
+                    id={`md-label-${bucket}`}
+                    data-testid={`md-label-${bucket}`}
+                    className="rounded-input"
+                    placeholder={meta.labelPlaceholder}
+                    value={form.label}
+                    onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
+                    disabled={upsertMutation.isPending}
+                  />
+                </div>
+              </div>
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button type="button" variant="outline" onClick={closeDialog}>
+                  Hủy
+                </Button>
+                <Button
+                  type="button"
+                  disabled={upsertMutation.isPending || !overview.scope}
+                  data-testid={`md-save-${bucket}`}
+                  onClick={() => void onSave()}
+                >
+                  <Save className="mr-1.5 h-4 w-4" />
+                  {upsertMutation.isPending ? 'Đang lưu…' : 'Lưu'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
           <p className="text-xs text-muted-foreground">
             Sau Lưu danh sách cập nhật; F5 vẫn còn (U65). Chọn dòng để sửa nhãn; Ngưng = soft-stop (không xóa
             cứng). Form nghiệp vụ chỉ chọn qua picker — không gõ free-text SoT.
           </p>
-        </div>
+        </>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SpreadsheetModule } from './spreadsheet/spreadsheet.module';
+import { TenantProvisionModule } from './tenant-provision/tenant-provision.module';
 import { AppController } from './app.controller';
 import { CoreModule } from './core/core.module';
 import { HrmAdminController } from './hrm-admin/hrm-admin.controller';
@@ -96,9 +97,10 @@ import { OperatingUnitsController } from './operating-units/operating-units.cont
 import { OperatingUnitsService } from './operating-units/operating-units.service';
 import { HomeController } from './home/home.controller';
 import { HomeService } from './home/home.service';
+import { ContractTemplatesModule } from './contract-templates/contract-templates.module';
 
 @Module({
-  imports: [CoreModule, SettingsCatalogsModule, EmployeesModule, FleetModule, SpreadsheetModule],
+  imports: [CoreModule, SettingsCatalogsModule, EmployeesModule, FleetModule, SpreadsheetModule, TenantProvisionModule, ContractTemplatesModule],
   controllers: [
     AppController,
     HrmAdminController,

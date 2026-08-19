@@ -964,7 +964,7 @@ export default function Decisions() {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Avatar className="w-8 h-8">
-                        <AvatarFallback className="bg-amber-100 text-amber-700 text-xs">
+                        <AvatarFallback className="bg-amber-100  hidden  text-xs">
                           {getInitials(decision.employee_name)}
                         </AvatarFallback>
                       </Avatar>

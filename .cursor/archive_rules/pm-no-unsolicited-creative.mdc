@@ -1,0 +1,20 @@
+# PM/PO — No unsolicited creative (sponsor lock 2026-08-06)
+
+**SoT:** `_vibe-team-os/35-NO-UNSOLICITED-CREATIVE.md`  
+**Incident:** `_vibe-team-os/incidents/INC-PM-INVENT-UI-WITHOUT-SPONSOR.md`
+
+## Rule
+
+1. Dispatch **chỉ** đúng literal sponsor (+ kỹ thuật bắt buộc để đạt literal).
+2. Mọi **creative visual** mới (màu nền logo, gradient, font hero mới, icon mới, dark shell…) → **hỏi sponsor trước**; chờ chốt mới `Task`.
+3. Cấm gộp “làm đẹp thêm” vào Task fix kỹ thuật.
+4. Packet Dev bắt buộc:
+   - `sponsor_literal: …`
+   - `creative_extra: none` **hoặc** `asked+confirmed: …`
+5. QA **FAIL** nếu thấy visual delta không có trong sponsor/ADR confirm.
+
+## Example (XeVN 2026-08-06)
+
+- OK: «logo to» → tăng kích thước mark.
+- SAI: tự thêm `bg-black` quanh logo.
+- Đúng sau reject: sponsor chốt «nền trắng» → FIX `bg-white` / surface trắng.

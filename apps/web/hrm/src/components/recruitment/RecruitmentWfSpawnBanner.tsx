@@ -51,7 +51,7 @@ export function RecruitmentWfSpawnBanner({ visible, className, detail }: Recruit
       data-rec-wf-code="HRM-REC-WF-SPAWN-MISSING"
       data-rec-wf-required-codes={HRM_REC_WF_REQUIRED_CODES.join(',')}
     >
-      <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-300" />
+      <AlertTriangle className="h-4 w-4  hidden  dark:text-amber-300" />
       <AlertTitle>{RECRUITMENT_SPAWN_MISSING_TITLE_VI}</AlertTitle>
       <AlertDescription>
         <p>{RECRUITMENT_SPAWN_MISSING_BODY_VI}</p>

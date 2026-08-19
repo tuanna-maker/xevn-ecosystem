@@ -1,0 +1,47 @@
+---
+description: PM bóc Task dài thành sub-task song song (sponsor lock) — tránh interrupt 1 Task monolith
+alwaysApply: true
+---
+
+# PM — Parallel sub-task decomposition (U69)
+
+> **Sponsor (2026-07-21):** *«Task dài thì phải chia ra nhiều sub agent cùng làm… bóc tách sub task rồi từng sub agent care từng sub task.»*
+
+## Nguyên tắc
+
+| Sai (cũ) | Đúng (bắt buộc) |
+|----------|-----------------|
+| 1 Task devops = sync FE+BE+restart+probe+evidence dài | Tách `…-FE-01` + `…-BE-01` + `…-SMOKE-01` (song song khi độc lập) |
+| 1 Task QA = full 17 menu + mutate + Network dump | Tách P0 journey Task + batch menu Task (2–3 song song) |
+| 1 Task BA = remaster 120 UC | Batch W2a / W2b / W2c (đã làm) — giữ pattern |
+| 1 Task BE = CODE-MEMORY toàn monorepo | Spine W1 Task → W2 Task theo module |
+
+## Quy tắc bóc tách (trước khi gọi Task)
+
+1. Nếu ước lượng > **~15–20 phút** wall / nhiều host (local+VPS) / nhiều role → **bóc ≥2 work_item_id**.
+2. Mỗi Task: **1 outcome đo được** + **1 evidence_path** riêng + entry/exit ngắn.
+3. Song song tối đa **2–4** execution Task (khớp `pm-self-directed-scope-orchestration`); QA/QC sau wave không gộp vào cùng monolith.
+4. Phụ thuộc cứng (BE trước FE bind): ghi `entry_criteria` + vẫn có thể chuẩn bị FE stub song song nếu không đụng API.
+5. Interrupt / thiếu evidence → **RE-DISPATCH đúng sub-task thiếu**, không mở lại cả monolith.
+
+## Mẫu work_item
+
+```
+D-{SCOPE}-{FEATURE}-01          ← parent (bus only)
+D-{SCOPE}-{FEATURE}-FE-01       ← Task dev-fe
+D-{SCOPE}-{FEATURE}-BE-01       ← Task dev-be
+D-{SCOPE}-{FEATURE}-DO-SYNC-01  ← Task devops (chỉ sync slice)
+QA-{SCOPE}-{FEATURE}-01         ← Task qa (AC hẹp)
+```
+
+## Cấm
+
+- Một Task «làm hết wave» rồi đổ lỗi interrupt.
+- Kết thúc bằng «Task dài nên chờ» — phải đã bóc + `Task` song song trong cùng lượt.
+- Gộp FE+BE+QA+QC vào một `subagent_type`.
+
+## Liên kết
+
+- U38 parallel 2–4 · `pm-lock-task-same-turn-u43`
+- Program: `docs/program/HRM_SPEC_TRACE_DB_API_CODE_LOCK.md`
+- KB: cập nhật `docs/program/knowledge/PM_ORCHESTRATION_KB.md` khi lesson lặp

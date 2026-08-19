@@ -120,7 +120,7 @@ export function ExpiringContractsAlert() {
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-white/60 dark:bg-background/40 border border-amber-100 dark:border-amber-800/50 hover:bg-white dark:hover:bg-background/60 transition-colors cursor-pointer">
                   <Avatar className="w-10 h-10 border-2 border-amber-200 dark:border-amber-700">
                     <AvatarImage src={contract.employee_avatar || undefined} />
-                    <AvatarFallback className="bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300 text-sm font-medium">
+                    <AvatarFallback className="bg-amber-100  hidden  dark:bg-amber-900 dark:text-amber-300 text-sm font-medium">
                       {contract.employee_name.split(' ').pop()?.charAt(0) || 'N'}
                     </AvatarFallback>
                   </Avatar>
@@ -165,7 +165,7 @@ export function ExpiringContractsAlert() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-xs text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
+                className="text-xs text-amber-600 hover: hidden  dark:text-amber-400 dark:hover:text-amber-300"
               >
                 {t('expiringContracts.viewMore', { count: expiringContracts.length - 5 })}
               </Button>
