@@ -1392,7 +1392,7 @@ export async function createJobRequisition(payload: {
  */
 export async function listJobDescriptionTemplates(params: {
   company_id: string;
-  /** PO-HRM-JD-YCTD-REF — picker SoT; FORBIDDEN JobPostingsTab. */
+  /** PO-HRM-JD-YCTD-REF — picker SoT (JobPostingsTab được phép pick JD từ REC-JP-JD-LINK-BE-01). */
   bindable?: boolean;
   /** Alias query `for=yctd` (API-01 §3.1). */
   for?: "yctd";
@@ -2074,6 +2074,14 @@ export type HrmJobPostingRow = {
   priority: string;
   created_at: string;
   updated_at: string;
+  /** REC-JP-JD-LINK-BE-01 — FK to job_description_templates (nullable). */
+  jd_template_id?: string | null;
+  /** JD template catalog code (from JOIN). */
+  jd_code?: string | null;
+  /** JD template title (from JOIN). */
+  jd_title?: string | null;
+  /** COALESCE(jd_snapshot_json, jdt.values_json) — values at link time or current. */
+  jd_content?: Record<string, unknown> | null;
 };
 
 export type HrmCandidatePoolRow = {
@@ -2236,6 +2244,8 @@ export async function createJobPosting(payload: {
   deadline?: string;
   priority?: string;
   status?: string;
+  /** REC-JP-JD-LINK-BE-01 — optional JD template UUID to link to this posting. */
+  jd_template_id?: string;
 }) {
   return requestHrm<HrmJobPostingRow>("/api/hrm/recruitment/job-postings", {
     method: "POST",
@@ -10855,5 +10865,64 @@ export async function resolvePositionCompensationPolicy(params: {
   return requestHrm<HrmPositionCompensationPrefillDraft>(
     `/api/hrm/settings/position-compensation-policies/resolve?${search.toString()}`,
     { method: "GET" },
+  );
+}
+
+// Contract Templates — BA-CTR-TPL-8-CLAUSE-MAP-01-S7
+// WorkItem: BA-CTR-TPL-8-CLAUSE-MAP-01-S7-FE-01
+
+export type ClauseOverrideRow = {
+  id: string;
+  tenant_id: string;
+  template_code: string;
+  clause_id: string;
+  override_text: string | null;
+  source: 'template_file' | 'company_specific' | 'manual';
+  updated_by: string | null;
+  updated_at: string;
+  deleted_at: string | null;
+  created_at: string;
+};
+
+export async function getContractBoundCodes(): Promise<{ bound_codes: string[]; bind_count: number; dropped_codes: string[] }> {
+  const data = await requestHrm<{ bound_codes?: string[]; bind_count?: number; dropped_codes?: string[] }>(
+    '/api/hrm/contract-templates/bound-codes',
+    { method: 'GET' },
+  );
+  return {
+    bound_codes: data.bound_codes ?? [],
+    bind_count: data.bind_count ?? 0,
+    dropped_codes: data.dropped_codes ?? [],
+  };
+}
+
+export async function listContractClauseOverrides(templateCode: string): Promise<{ items: ClauseOverrideRow[]; warnings: string[] }> {
+  const data = await requestHrm<{ items?: ClauseOverrideRow[]; warnings?: string[] }>(
+    '/api/hrm/contract-templates/' + encodeURIComponent(templateCode) + '/clauses',
+    { method: 'GET' },
+  );
+  return { items: data.items ?? [], warnings: data.warnings ?? [] };
+}
+
+export async function getContractClauseOverride(templateCode: string, clauseId: string): Promise<{ item: ClauseOverrideRow; warnings: string[] }> {
+  const data = await requestHrm<{ item: ClauseOverrideRow; warnings?: string[] }>(
+    '/api/hrm/contract-templates/' + encodeURIComponent(templateCode) + '/clauses/' + encodeURIComponent(clauseId),
+    { method: 'GET' },
+  );
+  return { item: data.item, warnings: data.warnings ?? [] };
+}
+
+export async function upsertContractClauseOverride(templateCode: string, clauseId: string, body: { override_text?: string; source: string }): Promise<{ item: ClauseOverrideRow; warnings: string[] }> {
+  const data = await requestHrm<{ item: ClauseOverrideRow; warnings?: string[] }>(
+    '/api/hrm/contract-templates/' + encodeURIComponent(templateCode) + '/clauses/' + encodeURIComponent(clauseId),
+    { method: 'PUT', body: JSON.stringify(body) },
+  );
+  return { item: data.item, warnings: data.warnings ?? [] };
+}
+
+export async function softDeleteContractClauseOverride(templateCode: string, clauseId: string): Promise<void> {
+  await requestHrm<unknown>(
+    '/api/hrm/contract-templates/' + encodeURIComponent(templateCode) + '/clauses/' + encodeURIComponent(clauseId),
+    { method: 'DELETE' },
   );
 }

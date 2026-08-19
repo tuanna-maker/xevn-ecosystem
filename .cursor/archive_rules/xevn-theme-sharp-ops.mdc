@@ -1,0 +1,24 @@
+---
+description: XeVN Precision Motion theme — sharp text / pale ban (pointer to ADR)
+alwaysApply: false
+---
+
+# XeVN theme sharp-ops (pointer)
+
+**SoT (Accepted):** `docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md`
+
+| Lock | Value |
+|------|--------|
+| Primary | `#1E40AF` |
+| Body text | `#111827` |
+| Secondary | `#4B5563` |
+| Muted | `#6B7280` placeholder/icon only |
+| HRM `--muted-foreground` | ≈ `#4B5563` (not pale body) |
+
+**Gate:** `pnpm run verify:xevn:theme-contrast` (`scripts/verify-xevn-theme-contrast.mjs`)
+
+**Program:** `docs/program/HRM_UI_BRAND_REMASTER_PROGRAM.md` · W2 foundation `PO-HRM-UI-BRAND-FE-FOUNDATION-01`
+
+**Cấm:** purple/cream AI themes · invent B1–B5 brand · remaster claim via tokens-only · seed for screenshots
+
+Supersedes missing `ADR-XEVN-THEME-SHARP-OPS-20260722` citations.

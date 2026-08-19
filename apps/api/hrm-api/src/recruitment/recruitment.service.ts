@@ -898,6 +898,23 @@ export class RecruitmentService {
       ON public.recruitment_candidates (accepted_application_id)
       WHERE accepted_application_id IS NOT NULL;
     `);
+    // REC-PERF-BE-01: Performance indexes for list queries.
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_job_requisitions_company_status
+      ON public.job_requisitions (company_id, status);
+    `);
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_job_requisitions_company_created_at
+      ON public.job_requisitions (company_id, created_at DESC);
+    `);
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_recruitment_candidates_company_requisition
+      ON public.recruitment_candidates (company_id, requisition_id);
+    `);
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_recruitment_candidates_company_created_at
+      ON public.recruitment_candidates (company_id, created_at DESC);
+    `);
     await this.recruitmentWorkflowBridge.ensureSchema();
   }
 
@@ -3052,11 +3069,10 @@ export class RecruitmentService {
        LIMIT $${values.length};`,
       values,
     );
-    const data = [];
-    for (const row of res.rows) {
-      const logs = await this.loadMailLogs(String(row.id));
-      data.push(this.mapMailOutboxDto(row, logs));
-    }
+    // REC-PERF-BE-01: Batch-load all mail logs in 1 query (fix N+1 per outbox row).
+    const outboxIds = res.rows.map((r) => String(r.id));
+    const logsMap = await this.batchLoadMailLogs(outboxIds);
+    const data = res.rows.map((row) => this.mapMailOutboxDto(row, logsMap.get(String(row.id)) ?? []));
     return { total: data.length, data };
   }
 
@@ -3170,6 +3186,51 @@ export class RecruitmentService {
       [outboxId],
     );
     return res.rows;
+  }
+
+  /** REC-PERF-BE-01: Batch variant of loadMailLogs — one query for N outbox ids. */
+  private async batchLoadMailLogs(
+    outboxIds: string[],
+  ): Promise<
+    Map<
+      string,
+      Array<{
+        attempt_no: number;
+        result: string;
+        error_message: string | null;
+        provider_ref: string | null;
+        logged_at: string;
+      }>
+    >
+  > {
+    if (outboxIds.length === 0) return new Map();
+    const res = await this.db.query<{
+      outbox_id: string;
+      attempt_no: number;
+      result: string;
+      error_message: string | null;
+      provider_ref: string | null;
+      logged_at: string;
+    }>(
+      `SELECT outbox_id::text AS outbox_id, attempt_no, result, error_message, provider_ref, logged_at
+       FROM public.rec_mail_log
+       WHERE outbox_id = ANY($1::uuid[])
+       ORDER BY outbox_id, attempt_no ASC;`,
+      [outboxIds],
+    );
+    const map = new Map<string, Array<{ attempt_no: number; result: string; error_message: string | null; provider_ref: string | null; logged_at: string; }>>();
+    for (const row of res.rows) {
+      const id = row.outbox_id;
+      if (!map.has(id)) map.set(id, []);
+      map.get(id)!.push({
+        attempt_no: row.attempt_no,
+        result: row.result,
+        error_message: row.error_message,
+        provider_ref: row.provider_ref,
+        logged_at: row.logged_at,
+      });
+    }
+    return map;
   }
 
   private mapMailOutboxDto(

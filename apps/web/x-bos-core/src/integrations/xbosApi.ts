@@ -101,14 +101,100 @@ export async function bootstrapXbosCatalogs() {
   });
 }
 
-export async function listXbosCatalogsForTarget(target: 'xbos' | 'hrm' = 'xbos') {
-  const data = await xbosRequest<{ data: XbosCatalog[] }>(`/api/xbos/config-sync/catalogs?target=${target}`, {
+export async function listXbosCatalogsForTarget(
+  target: 'xbos' | 'hrm' = 'xbos',
+  scope?: { tenantId?: string; companyId?: string },
+) {
+  const params = new URLSearchParams({ target });
+  if (scope?.tenantId) params.set('tenantId', scope.tenantId);
+  if (scope?.companyId) params.set('companyId', scope.companyId);
+  const data = await xbosRequest<{ data: XbosCatalog[] }>(`/api/xbos/config-sync/catalogs?${params}`, {
     method: 'GET',
   });
   return data.data;
 }
 
-export async function syncXbosCatalogs(target: 'xbos' | 'hrm' = 'xbos') {
+export async function syncXbosCatalogs(
+  target: 'xbos' | 'hrm' = 'xbos',
+  scope?: { tenantId?: string; companyId?: string },
+) {
   await bootstrapXbosCatalogs();
-  return listXbosCatalogsForTarget(target);
+  return listXbosCatalogsForTarget(target, scope);
+}
+
+// ─── Settings > Quản lý Công ty & Tenant ───────────────────────────────────
+// @CODE-MEMORY WorkItem: XBOS-TENANT-PROVISION-FE-01
+
+export type TenantStatus = 'provisioning' | 'active' | 'suspended' | 'archived';
+export type TenantModule = 'hrm' | 'logistics';
+export type TenantKind = 'master' | 'member';
+
+export type XbosCompanyRow = {
+  tenantId: string;
+  name: string;
+  shortName: string;
+  tenantKind: TenantKind;
+  defaultCompanyId: string;
+  modules: TenantModule[];
+  status: TenantStatus;
+  // Display-ready «Ngành nghề» (VI). Resolved from legalEntity.businessLines
+  // via the industry dictionary — never raw `entity_type` (TECHSPEC §20.5).
+  industry?: string | null;
+  legalEntity?: {
+    code?: string;
+    name?: string;
+    taxCode?: string;
+    businessLines?: string;
+  };
+};
+
+export type CreateCompanyPayload = {
+  tenantCode: string;
+  name: string;
+  shortName: string;
+  tenantKind: TenantKind;
+  modules: TenantModule[];
+  // Industry persisted as a catalog code/VI text on `business_lines` (TECHSPEC §20.5).
+  // Selection is bound to the industry dictionary; free-text VI is also accepted.
+  industry?: string;
+  legalEntity?: {
+    code?: string;
+    name?: string;
+    taxCode?: string;
+    businessLines?: string;
+  };
+};
+
+export async function listSettingsCompanies(): Promise<{ items: XbosCompanyRow[] }> {
+  return xbosRequest<{ items: XbosCompanyRow[] }>('/api/xbos/settings/companies', {
+    method: 'GET',
+  });
+}
+
+export async function createSettingsCompany(payload: CreateCompanyPayload): Promise<XbosCompanyRow> {
+  return xbosRequest<XbosCompanyRow>('/api/xbos/settings/companies', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function activateTenant(tenantId: string): Promise<XbosCompanyRow> {
+  return xbosRequest<XbosCompanyRow>(`/api/xbos/settings/companies/${encodeURIComponent(tenantId)}/activate`, {
+    method: 'PUT',
+  });
+}
+
+export async function suspendTenant(tenantId: string): Promise<XbosCompanyRow> {
+  return xbosRequest<XbosCompanyRow>(`/api/xbos/settings/companies/${encodeURIComponent(tenantId)}/suspend`, {
+    method: 'PUT',
+  });
+}
+
+export async function updateTenantModules(tenantId: string, modules: TenantModule[]): Promise<XbosCompanyRow> {
+  return xbosRequest<XbosCompanyRow>(`/api/xbos/settings/companies/${encodeURIComponent(tenantId)}/modules`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ modules }),
+  });
 }

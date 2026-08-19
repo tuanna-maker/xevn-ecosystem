@@ -108,7 +108,7 @@ export function ExpiringInsuranceAlert({
         );
       case 'warning':
         return (
-          <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-0">
+          <Badge className="bg-amber-100  hidden  hover:bg-amber-100 border-0">
             Còn {daysUntilExpiry} ngày
           </Badge>
         );
@@ -149,7 +149,7 @@ export function ExpiringInsuranceAlert({
                 )}
               </div>
             </AlertTitle>
-            <AlertDescription className="text-amber-700 dark:text-amber-400">
+            <AlertDescription className=" hidden  dark:text-amber-400">
               Có {expiringItems.length} nhân viên có thẻ BHYT sẽ hết hạn trong {warningDays} ngày tới. 
               Vui lòng kiểm tra và gia hạn kịp thời.
             </AlertDescription>
@@ -218,7 +218,7 @@ export function ExpiringInsuranceAlert({
             <Button
               variant="ghost"
               size="sm"
-              className="mt-2 text-amber-700 dark:text-amber-400 hover:text-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/50 -ml-2"
+              className="mt-2  hidden  dark:text-amber-400 hover:text-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/50 -ml-2"
               onClick={() => setIsExpanded(!isExpanded)}
             >
               {isExpanded ? (

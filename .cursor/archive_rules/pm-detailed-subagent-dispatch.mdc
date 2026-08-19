@@ -1,0 +1,27 @@
+# PM — Detailed subagent dispatch (training-style)
+
+**SoT:** `_vibe-team-os/33-TESTCASE-VS-REPORT-VS-UNIT.md` §7 · `templates/PM_DETAILED_DISPATCH.md`
+
+## Lock
+
+Subagent **không** nhớ chat sponsor. Mọi `Task` phải diễn giải **bối cảnh + tầm nhìn + ranh giới + định nghĩa xong** — như đang train người mới.
+
+## Bắt buộc trong prompt
+
+1. Mission + why (sponsor intent)
+2. Done vs non-goal (không overclaim UAT)
+3. `read_first` **ordered**
+4. Shape deliverable (path + cột/DoD)
+5. entry/exit đo được
+6. locks (seed/HDSD/test-log/paths)
+7. handoff: `completion_report` · `next_dispatch_prompt` · `evidence_path`
+
+## Cấm
+
+- Prompt 1 dòng: “viết TC / fix / retest giúp”
+- Giả định agent biết wave trước mà không ghi evidence path
+- Claim catalog design = product PASS trong exit_criteria
+
+## Copy template
+
+`_vibe-team-os/templates/PM_DETAILED_DISPATCH.md`

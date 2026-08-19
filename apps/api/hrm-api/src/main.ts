@@ -7,6 +7,7 @@ import {
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { PayPayrollGroupService } from './payroll/pay-payroll-group.service';
 import { idempotencyMiddleware } from './common/idempotency.middleware';
 import { useRedisIoAdapter } from './realtime/redis-io.adapter';
 import { GlobalHttpExceptionFilter } from './common/http-exception.filter';
@@ -24,6 +25,14 @@ async function bootstrap() {
   assertProductionEnvOrExit('hrm-api');
 
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  // PAY-09: ensure pay_payroll_group + payroll_group_id FK columns exist before any
+  // group query runs. Idempotent (IF NOT EXISTS / ADD COLUMN IF NOT EXISTS). Never
+  // block startup on it — a transient DB blip must not take the service down.
+  try {
+    await app.get(PayPayrollGroupService).ensureSchema();
+  } catch (err) {
+    console.error(`[hrm-api] PayPayrollGroupService.ensureSchema failed: ${(err as Error)?.message ?? err}`);
+  }
   await useRedisIoAdapter(app);
   const pilotUatAuth =
     process.env.HRM_PILOT_UAT_AUTH_ENABLED?.trim().toLowerCase() === 'true';

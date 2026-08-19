@@ -22,6 +22,12 @@
  * Date: 2026-07-28
  * Change: Xóa hostname perimeter khỏi `allowedHosts` mặc định; comment chỉ local/Docker.
  * must_keep: Vite proxy `/api/hrm` → 127.0.0.1:28001; `HRM_VITE_ALLOWED_HOSTS` / `HRM_VITE_ALLOW_ALL_HOSTS` override
+ *
+ * @CODE-MEMORY-CHANGE
+ * WorkItem: D-FE-HRM-VITE-HMR-PROXY-01
+ * Date: 2026-08-19
+ * Change: Docker/VPS (`HRM_VITE_DISABLE_HMR=true`) tắt HMR — iframe :8088/hr không còn WS tới localhost:8080.
+ * must_keep: local `pnpm` không set env → HMR overlay:false; cấm hardcode IP perimeter
  */
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
@@ -53,11 +59,14 @@ const hrmAllowedHosts = (
   ]
 ) as string[] | true;
 
+/** Docker/VPS: Vite vẫn inject @vite/client khi `hmr: false` → WS localhost:8080. Gỡ script sau inject. */
+const disableHrmHmr = process.env.HRM_VITE_DISABLE_HMR === "true";
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   test: {
     environment: "jsdom",
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
     passWithNoTests: true,
   },
   // Bắt buộc khi nhúng qua web-portal (5175): asset phải nằm dưới /hr/* để proxy tới đúng app HRM,
@@ -69,9 +78,13 @@ export default defineConfig(({ mode }) => ({
     // Docker portal-fe proxy may send Host: hrm-fe — default Vite blocks unknown hosts with 403.
     allowedHosts:
       process.env.HRM_VITE_ALLOW_ALL_HOSTS === "true" ? true : hrmAllowedHosts,
-    hmr: {
-      overlay: false,
-    },
+    // VPS portal :8088 proxies HTTP /hr → hrm-fe:8080; Vite default HMR targets localhost:8080
+    // (browser machine) → ERR_CONNECTION_REFUSED. Disable HMR in Docker; keep overlay-off locally.
+    hmr: disableHrmHmr
+      ? false
+      : {
+          overlay: false,
+        },
     proxy: {
       '/api/hrm': {
         target: proxyHrmApi,
@@ -85,7 +98,20 @@ export default defineConfig(({ mode }) => ({
     allowedHosts:
       process.env.HRM_VITE_ALLOW_ALL_HOSTS === "true" ? true : hrmAllowedHosts,
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(),
+    !disableHrmHmr && mode === "development" && componentTagger(),
+    disableHrmHmr && {
+      name: "xevn-strip-vite-hmr-client",
+      apply: "serve" as const,
+      transformIndexHtml: {
+        order: "post" as const,
+        handler(html: string) {
+          return html.replace(/<script[^>]*src="[^"]*@vite\/client"[^>]*><\/script>\s*/gi, "");
+        },
+      },
+    },
+  ].filter(Boolean),
   build: {
     rollupOptions: {
       output: {

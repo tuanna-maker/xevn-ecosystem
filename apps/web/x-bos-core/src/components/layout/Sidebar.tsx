@@ -1,11 +1,12 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Building2, LayoutGrid, Network, ReceiptText, Target } from 'lucide-react';
+import { Building2, LayoutGrid, Network, ReceiptText, Settings, Target } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 export function Sidebar() {
   const location = useLocation();
 
   const kpiOpen = location.pathname === '/kpi' || location.pathname.startsWith('/kpi/');
+  const settingsOpen = location.pathname.startsWith('/settings');
   const policyOpen = location.pathname === '/policy' || location.pathname.startsWith('/policy/');
 
   return (
@@ -105,6 +106,27 @@ export function Sidebar() {
           >
             <ReceiptText className="h-4 w-4 shrink-0 opacity-90" />
             Chính sách thưởng/phạt
+          </NavLink>
+        </div>
+
+        {/* Settings group */}
+        <div className="mt-2">
+          <div className="px-3 pb-2 pt-1 text-[11px] font-semibold uppercase tracking-wide text-xevn-muted">
+            Cài đặt hệ thống
+          </div>
+          <NavLink
+            to="/settings/companies"
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors',
+                isActive || settingsOpen
+                  ? 'bg-xevn-primary/10 text-xevn-primary'
+                  : 'text-xevn-muted hover:bg-black/[0.04] hover:text-xevn-text'
+              )
+            }
+          >
+            <Settings className="h-4 w-4 shrink-0 opacity-90" />
+            Quản lý Công ty & Tenant
           </NavLink>
         </div>
       </nav>

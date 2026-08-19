@@ -1,0 +1,21 @@
+---
+description: U75 — Claude panel = phó/cố vấn; Claude CLI = code team; sponsor messages via Cursor
+alwaysApply: true
+---
+
+# Peer Claude runtime (U75)
+
+## Surfaces
+- **Claude panel / VS Code chat** = CLAUDE-PM (deputy + advisor): spec, audit, U74 góp ý, coordination. **Không** claim code DONE khi Edit fail / không diff.
+- **Claude Code CLI** (`cd C:\xevn-ecosystem` → `claude`) = execution team: Edit/Bash/test đầy đủ. Claude-PM tự điều phối CLI members.
+
+## Cursor-PM (Composer)
+- Relay **mọi** thông điệp sponsor tới Claude qua `PEER_PM_COLLAB` §5 + `peer-pm.jsonl` (không bắt sponsor tự nhắc Claude).
+- Tận dụng tư duy Claude: hỏi phản biện trước wave lớn; khi thiếu quota Task → **đẩy WI** cho Claude (`owner_runtime: claude-cli` hoặc docs lane).
+- Không Task-hóa peer; không trùng file với Claude CLI đang sửa.
+
+## Claude DoD
+- Code WI → evidence phải có path + lệnh test; cấm «Done» chỉ planning.
+- Panel blocked → `BLOCKED` + đề xuất CLI hoặc trả Cursor.
+
+SoT: `docs/program/PEER_CLAUDE_RUNTIME_MODEL.md` · `TEAM_USER_REQUIREMENTS.md` U75.

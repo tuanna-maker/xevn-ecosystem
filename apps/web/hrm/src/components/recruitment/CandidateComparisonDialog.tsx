@@ -455,7 +455,7 @@ export function CandidateComparisonDialog({ open, onOpenChange }: CandidateCompa
               </p>
               {atMaxN ? (
                 <p
-                  className="text-xs text-amber-700 dark:text-amber-400"
+                  className="text-xs  hidden  dark:text-amber-400"
                   data-testid={HDSD_MUTATE_TEST_IDS.recCompareMaxNHint}
                 >
                   {r('maxCompare')}

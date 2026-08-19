@@ -1,0 +1,63 @@
+---
+description: LOCK — Sau QA/QC phải tự mở SA/BA + residual cùng phiên; cấm chờ sponsor nhắc «mở liên tục»
+alwaysApply: true
+---
+
+# PM — Continuous pipeline after QA/QC (U88)
+
+**Sponsor lock (2026-08-07):** *«Không thể để tôi nhắc liên tục — QC xong phải cuốn chiếu; đoạn sau SA/BA luôn.»*
+
+Bổ sung U37/U38/U42/U43/U58 · `pm-post-delivery-verification.mdc` · `pm-continuous-dispatch.mdc`.
+**Không** đụng U78 (Test Log) / U79–U87.
+
+## Chuỗi bắt buộc (cùng phiên — không hỏi sponsor)
+
+```text
+Dev READY_FOR_QA
+  → Task qa
+QA PASS
+  → Task qc (nếu ảnh hưởng gate / slice program)
+QC GO | GWC | PASS_TO_PM
+  → (1) seal bus seat
+  → (2) Task residual execution nếu next_dispatch_prompt / Residual P0–P2 (FE/BE/DevOps)
+  → (3) Task governance kế: sa và/hoặc ba-process|ba-data (vertical / AC / physical kế tiếp)
+  → (4) cập nhật TEAM_WORKING_NOW + program continuous board
+```
+
+**Idle-ok một seat ≠ idle program.** Seal slice GWC rồi **vẫn** mở vertical/wave kế nếu honesty flags còn false hoặc residual program còn mở.
+
+## Sau mỗi subagentStop / notification
+
+| Tín hiệu | Task bắt buộc trong ≤3 tool call |
+|----------|-----------------------------------|
+| `READY_FOR_QA` | `qa` |
+| QA `PASS_TO_PM` | `qc` (hoặc `dev-*` nếu FAIL residual) |
+| QC `GO` / `GWC` / `PASS_TO_PM` | residual owner **và** **≥1** `sa` hoặc `ba-*` cho đoạn kế (trừ milestone exit 100%) |
+| `FAIL_TO_PM` | owner fix từ evidence — **không** chờ user |
+
+## Cách chọn «đoạn SA/BA sau»
+
+1. `next_dispatch_prompt` / Residual trong evidence QC vừa seal.
+2. Program board active (`PO_HRM_CONTINUOUS_W*.md`, resume plan, platform vertical residual).
+3. Peer pattern: ATT → REC → EMP → **QSĐ/DEC** → MergeToken / CTR / INS — **không** dừng vì «đã GWC slice».
+4. Nếu không rõ: **sa** Option/F.1 delta hẹp + **ba-process** AC pack — **cấm** kết thúc chỉ SEALED.
+
+## Cấm tuyệt đối
+
+| Cấm | Vì sao |
+|-----|--------|
+| Kết thúc sau QC chỉ «GWC / IDLE-OK seat» **không** Task kế | Sponsor phải nhắc «mở liên tục» — vi phạm U88 |
+| Chờ user hỏi «còn việc không» mới mở SA/BA | U37/U42 |
+| Coi `pm:idle:check` stale intake-gap là việc duy nhất | Ignore noise; vẫn mở product wave |
+| Claim module/Phase1 DONE vì nhiều GWC slice | `C-SLICE-≠-MODULE` · honesty flags |
+
+## Self-check trước gửi message (sau QC/QA notify)
+
+- [ ] Đã `Task` owner kế từ handoff?
+- [ ] Nếu vừa QC GWC: đã `Task` **sa** hoặc **ba-*** cho vertical/AC kế **hoặc** residual FE/BE đã DISPATCHED **và** còn ≥1 governance Task nếu program chưa exit?
+- [ ] Có câu «sẽ mở SA…» không kèm Task? → **Sửa: gọi Task trước.**
+
+## Liên kết
+
+- `TEAM_USER_REQUIREMENTS.md` **U88**
+- SoT ví dụ: `docs/program/PO_HRM_CONTINUOUS_W8_20260807.md`

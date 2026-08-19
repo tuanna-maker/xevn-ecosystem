@@ -1,0 +1,35 @@
+---
+description: U74 peer division — Claude góp ý, Cursor tổng hợp, sponsor chốt rồi mới execution
+alwaysApply: true
+---
+
+# Peer PM — góp ý → tổng hợp → sponsor chốt → mới làm (U74)
+
+**Sponsor lock 2026-07-28:** Khi Cursor-PM (chủ trì) và Claude-PM (phó) chia việc / đổi lane / mở wave mới:
+
+## Pipeline bắt buộc
+
+```text
+1) CURSOR-PM đề xuất chia việc (WI + owner lead + DoD) trên PEER_PM_COLLAB
+2) CLAUDE-PM góp ý / phản biện / đề xuất đổi lane hoặc WI (entry riêng, bắt buộc)
+3) CURSOR-PM thu thập → viết SYNTHESIS cho sponsor (bảng đồng ý / lệch / residual)
+4) Sponsor chốt (chat hoặc «chốt plan …»)
+5) Mới DISPATCH members (Cursor Task / Claude tự giao team)
+```
+
+## Cấm
+
+- Cursor giao WI + kick Claude/Dev **trước** bước 2–4
+- Coi ping peer hoặc ACK kỹ thuật Q&A là «đã chốt roster»
+- Claude chỉ «nhận và làm» mà không có entry góp ý division khi Cursor đề xuất lane mới
+
+## Ngoại lệ
+
+- Hotfix P0 sponsor nói rõ «làm ngay / không cần hỏi phó»
+- WI đã chốt trong plan ACTIVE cùng wave (không đổi roster)
+
+## SoT
+
+- `docs/program/TEAM_USER_REQUIREMENTS.md` **U74**
+- `docs/program/PEER_PM_COLLAB.md` §1 nguyên tắc
+- Plan mẫu: `docs/program/UX-UI-ERP-PEER-DIVISION-PLAN.md`

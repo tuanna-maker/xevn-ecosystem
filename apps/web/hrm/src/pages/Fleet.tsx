@@ -89,7 +89,7 @@ export default function FleetPage() {
           data-testid="fleet-catalog-missing-banner"
         >
           <div className="flex gap-3">
-            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" aria-hidden />
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0  hidden " aria-hidden />
             <div className="min-w-0 flex-1 space-y-1">
               <p className="font-medium">{emptyCopy.kind === 'catalog_missing' ? emptyCopy.title : 'Cần cấu hình danh mục hồ sơ xe'}</p>
               <p className="text-sm leading-relaxed">

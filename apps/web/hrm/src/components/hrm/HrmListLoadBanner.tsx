@@ -46,7 +46,7 @@ export function HrmListLoadBanner({
       )}
       role="alert"
     >
-      <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" aria-hidden />
+      <AlertCircle className="mt-0.5 h-5 w-5 shrink-0  hidden " aria-hidden />
       <div className="min-w-0 flex-1">
         <p className="font-semibold">Lỗi tải dữ liệu</p>
         <p className="mt-1 text-xs leading-relaxed">{message}</p>

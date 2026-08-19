@@ -235,6 +235,10 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         title: 'Công cụ & thiết bị',
         subtitle: 'Tài sản, CCDC, mốc kiểm định và người phụ trách.',
       },
+      fleet: {
+        title: 'Hồ sơ xe',
+        subtitle: 'Danh mục xe, giấy tờ và trạng thái vận hành.',
+      },
       reports: { title: 'Báo cáo', subtitle: 'Báo cáo nhân sự tổng hợp.' },
       settings: { title: 'Cấu hình HRM', subtitle: 'Thiết lập hệ thống HRM.' },
       guide: {

@@ -74,6 +74,7 @@ export default defineConfig(({ mode }) => {
           target: proxyHrmWeb,
           changeOrigin: false,
           secure: false,
+          ws: true,
         },
         // HRM API gọi cùng origin từ portal/iframe -> proxy sang NestJS.
         '/api/hrm': {

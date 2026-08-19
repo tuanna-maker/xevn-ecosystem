@@ -1512,7 +1512,7 @@ export default function Contracts() {
                     <div className="flex items-center gap-2">
                       <Avatar className="w-8 h-8">
                         <AvatarImage src={contract.employee_avatar || undefined} />
-                        <AvatarFallback className="bg-amber-100 text-amber-700 text-xs">
+                        <AvatarFallback className="bg-amber-100  hidden  text-xs">
                           {getInitials(contract.employee_name)}
                         </AvatarFallback>
                       </Avatar>
