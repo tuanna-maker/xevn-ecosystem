@@ -1,0 +1,239 @@
+[1|SPONSOR] sẽ tổng hợp WBS và gửi trong tối nay.  Quyết định chính  Thống nhất tách phần chiến dịch tuyển dụng ra khỏi MVP, chỉ triển khai khi có đối tác/API kết nối.  Chốt module tuyển dụng cần tập trung vào: mô tả công việc, yêu cầu tuyển dụng, thông tin ứng viên và báo cáo; bắt buộc liên kết ứng viên với yêu cầu tuyển dụng.  Thống nhất bổ sung trường 'trong/ngoài định biên' vào yêu cầu tuyển dụng, dùng làm điều kiện cho luồng phê duyệt.  Thống nhất kế hoạch tuyển dụng theo tháng chỉ cần số lượng cần tuy
+
+[2|SPONSOR] Deadline: Tối nay Cấu trúc WBS theo từng module mỗi task liệt kê nghiệp vụ cụ thể Gửi file nghiệm thu cho anh Nam Owner:
+
+[3|SPONSOR] Deadline: Chưa rõ Nhớ gửi file để anh Nam ký nghiệm thu Bổ sung trường trong/ngoài định biên vào yêu cầu tuyển dụng Owner:
+
+[4|SPONSOR] Deadline: Chưa rõ Bổ sung trường thông tin và lý do tuyển thay thế/tuyển mới phục vụ điều kiện luồng phê duyệt Tách phần chiến dịch tuyển dụng ra khỏi phạm vi hiện tại Owner:
+
+[5|SPONSOR] Deadline: Chưa rõ Chỉ thực hiện khi có đối tác sẵn sàng mở API đồng bộ tuyển dụng Chỉnh lại bảng kế hoạch tuyển dụng theo tháng Owner:
+
+[6|SPONSOR] Deadline: Chưa rõ Bỏ cột kế hoạch/đề xuất trùng chỉ thể hiện số lượng cần tuyển theo từng tháng Xây dựng báo cáo tuyển dụng theo yêu cầu Owner:
+
+[7|SPONSOR] Deadline: Chưa rõ Báo cáo theo thời gian phòng ban cấp độ so sánh kế hoạch và thực tế Rà soát và tách các module: quản lý công việc, hợp đồng/bảo hiểm, chấm công nghỉ phép, tiền lương Owner:
+
+[8|SPONSOR] Deadline: Chưa rõ Tổ chức lại phạm vi từng module tránh gộp chức năng không đúng chỗ Họp review phân hệ HRM Hồ sơ nhân sự Hồ sơ nhân sự gồm thông tin cơ bản, cá nhân, công việc, tài chính; cần bổ sung người phụ thuộc Thông tin lương, ngân hàng, mã số thuế, bảo hiểm nên chuyển sang module hợp đồng/bảo hiểm để bảo mật Quản lý công việc không nên gộp vào nhân sự, cần module riêng Khen thưởng/kỷ luật cần thêm trạng thái thực thi, liên kết với tiền lương nếu có phạt/thưởng Quyết định & hướng Thống nh
+
+[9|SPONSOR] 00:42   Chỗ này cũng nhiều anh chị phết.  N2
+
+[10|CUSTOMER] 00:45   Ừ, chỗ này thật sự có dư.  N1
+
+[11|SPONSOR] 00:47   Chỗ này chưa có, anh Dương ạ.  N2
+
+[12|CUSTOMER] 00:49   Đến đây dư không?  N1
+
+[13|SPONSOR] 01:09   Chỗ này tính ra cũng đặc phết đấy. Dài, khá dài. 763 trang rồi mà.  N2
+
+[14|CUSTOMER] 01:46   Hết rồi không?  N1
+
+[15|SPONSOR] 01:49   Gần 800 trang.  N2
+
+[16|CUSTOMER] 01:50   Comment nói cái gì vậy?  N1
+
+[17|SPONSOR] 01:52   Tài liệu không dành cho người đọc.  N2
+
+[18|CUSTOMER] 01:57   Ông viết cái gì vậy? Ông viết về xuất bản sách à? Ông làm bên bảo hiểm đúng không?  N1
+
+[19|SPONSOR] 02:03   Nhưng mà thanh keo đấy mới được lên 700 trang nhỉ? Thanh keo chạy nhanh nhanh mà.  N2
+
+[20|CUSTOMER] 02:09   Có đoạn nào—  N1
+
+[21|SPONSOR] 02:10   Để em in ra xong rồi anh đến đỡ em nhé.  N2
+
+[22|CUSTOMER] 02:12   In ra à?  N1
+
+[23|SPONSOR] 02:14   In sách ạ, in sách. Đây, để em lấy nốt BID. Từ trang đâu. Có thể có một vài cái ngôn ngữ từ mà em vẫn còn sót thì chắc là em sẽ sửa tiếp theo em. Ừ, quên, cái này cũng phải. Thêm một dòng thì càng cố cố cần thử nữa. Không, anh Nam nhìn thấy Nam đấy.  N2
+
+[24|CUSTOMER] 03:19   Em nhớ gửi file này cho anh Nam ký nghiệm thu nhé.  N1
+
+[25|SPONSOR] 03:22   Anh không đọc đâu. Anh không đọc file đấy đâu. Mất cái trang đấy. Đấy, 763 trang này. Tí anh Dương đếm thử của em xem 763 trang không.  N2
+
+[26|CUSTOMER] 03:37   Bật cái DM trên laptop đi.  N1
+
+[27|SPONSOR] 03:39   Em đang bật rồi mà.  N2
+
+[28|CUSTOMER] 03:41   Bật trên điện thoại.  N1
+
+[29|CUSTOMER] 03:43   Tắt ra vào cho khỏi bị đụng.  N1
+
+[30|SPONSOR] 03:50   Nhưng mà anh Dũng này nếu mà được thì chắc là cái case mà hôm qua em viết trên này thì chắc anh tư vấn thêm cho em ấy.  N2
+
+[31|CUSTOMER] 03:57   Ừ. Nó chỉ là— đây chỉ là cái nút đầu ban đầu thôi.  N1
+
+[32|SPONSOR] 04:00   Nút ban đầu thôi à?  N2
+
+[33|CUSTOMER] 04:01   Ừ. Còn vị chi tiết tính năng như nào, hoặc cái nguồn như nào ấy thì nó vẫn cần chi tiết. Thì cái đấy là cái bức tranh nó kiểu là đến nhánh to của cái tính năng thôi. Còn những cái như case hay là cái function này nọ như nào thì sẽ phải chi tiết thêm.  N1
+
+[34|SPONSOR] 04:15   Thế thì chắc là em cứ đi vào. Còn DEV trước thì— để em sờ vào DEV trước vậy. Có thể là nó đang thiếu thì anh cứ nhìn giúp em cái nút ghi đã.  N2
+
+[35|CUSTOMER] 04:33   Một dự án bỏ 500 triệu bơi ra vẫn lãi một tòa.  N1
+
+[36|SPONSOR] 04:39   Mấy anh cũng biết chứ. Mà dù học về copying vẫn có công cụ nhưng mà— Em có công cụ nhưng mà em vẫn thích ghi bằng tay để cái đầu nó ngấm. Không vỡ mồm.  N2
+
+[37|CUSTOMER] 05:00   Anh thì được cái anh không tin cái đầu anh lắm nên là—  N1
+
+[38|SPONSOR] 05:06   Anh tin các bạn anh luôn. Em mà không ghi chép là trong đầu em nó sẽ không có một cái gì. Xong rồi thì có lúc đọc lại các cái tài liệu mà AI hay là cái gì ghi ấy, mình cứ thấy nó cứ thế néo nào, thế thế là thôi em phải ghi lại. Kể cả là có thể là em ghi chép không chuẩn lắm.  N2
+
+[39|CUSTOMER] 05:49   Em cần đóng cửa không? Em cần đóng cửa không?  N1
+
+[40|SPONSOR] 05:54   Dạ vâng.  N2
+
+[41|CUSTOMER] 06:09   Đóng cửa sang bên này một tí nhé. Đóng cửa sang bên này.  N1
+
+[42|SPONSOR] 06:14   Không có đâu. Chỗ này là— chỗ này cũng kín đáo thế này anh ạ.  N2
+
+[43|CUSTOMER] 06:18   Mở cửa từ đằng sau ra bên ngoài có không khí thoáng hơn.  N1
+
+[44|SPONSOR] 06:23   Một cái điều hòa riêng thì cần gì nữa.  N2
+
+[45|CUSTOMER] 06:25   Đúng rồi, cần khí trời.  N1
+
+[46|SPONSOR] 06:56   Ok, bắt đầu nhé.  N2
+
+[47|SPONSOR] 06:58   Đây đi. À, hiện tại nhé, ví dụ như là cái phần tuyển dụng đúng không, nó sẽ có phần quản lý yêu cầu này, apply và các cái CV ứng viên này, lịch hẹn phỏng vấn này, offer onboarding này. Thì ở thời điểm hiện tại là tuyển dụng ở đây đang có những cái gì?  N2
+
+[48|SPONSOR] 07:19   Tuyển dụng ở đây, đầu tiên là nó sẽ có cái phần quản lý về cái yêu cầu tuyển dụng. Đấy, yêu cầu tuyển dụng thì nó sẽ bao gồm là, ờ, thư viện GD này, à, tiêu đề này, đấy, phòng nào tuyển dụng này, số lượng nhân sự này, và loại hình, ờ, gọi là loại hình thuê đấy. Đấy, hiện tại là nghiệp vụ của em đang lưu 3 thông tin này. Đấy, đây. Sau đó là tạo thêm cái— sau khi có cái yêu cầu này xong thì sẽ có cái phần là đăng tin tuyển dụng. Đấy, thì tin tuyển dụng ở đây nó sẽ gồm có những cái gì? Có t
+
+[49|CUSTOMER] 08:57   Cho anh hỏi quay lại cái trước một tí. Cái tin tuyển dụng kia nhé, đúng không? Cái tin đang tuyển tất cả cái này là có đồng bộ lên nền tảng nào không, hay là mình chỉ quản lý ở đây?  N1
+
+[50|SPONSOR] 09:06   Hiện tại là nó chỉ đang nội bộ thôi ạ.  N2
+
+[51|CUSTOMER] 09:09   Quản lý ở đây thì thực ra cái này nó không giá trị lắm, bởi vì nó sẽ giống như là cái yêu cầu tuyển dụng. Nó không khác gì cái yêu cầu tuyển dụng cả. Còn cái này có giá trị khi và chỉ khi nó tự động. Thông tin ở đây, và mình sẽ tắt bật được ở trên các nền tảng tuyển dụng như Toast TV hay LinkedIn hay cái gì đó, thì chỗ này mới có giá trị. Còn nếu như không ấy, thì mình đã tạo yêu cầu tuyển dụng xong rồi tạo tin tuyển dụng, nó đang bị trùng lặp, không có giá trị.  N1
+
+[52|SPONSOR] 09:40   Ok. Mình kết nối sang nền tảng tuyển dụng đúng không? Thế cái này chắc để em nghiên cứu thêm, bởi vì cũng có nhiều bên—  N2
+
+[53|CUSTOMER] 09:49   Ừ đúng, nhưng mà nếu như cái đấy như anh nói là phải đồng bộ được. Nếu như không đồng bộ được thì hãy đẩy cái việc mà đã đăng tin thành một cái trạng thái của yêu cầu tuyển dụng. Có nghĩa là trong yêu cầu tuyển dụng của mình, sau khi filter xong ấy, thì nó sẽ có sang trạng thái là đã đăng tin, hay là đã CV, hay là đã phỏng vấn. Thì nó thuộc về trạng thái của yêu cầu tuyển dụng, chứ nó không nên tách ra thành một cái menu mà vô thường vô phải.  N1
+
+[54|SPONSOR] 10:14   Gọi là visualize cái danh sách tuyển dụng mình vẫn dùng như mọi khi, file sheet đúng không? Cái Google Sheet bình thường anh em mình vẫn hay dùng, nó sẽ có các status, rồi là các kiểu trạng thái.  N2
+
+[55|CUSTOMER] 10:27   Thì một cái yêu cầu đấy thì đã đăng tin hay chưa, đã có ứng viên hay chưa, thì cái đấy nó chỉ là lên là trạng thái thôi.  N1
+
+[56|SPONSOR] 10:33   Vốn là cái luồng bình thường mình vẫn đang dùng.  N2
+
+[57|CUSTOMER] 10:36   Còn cái tin tuyển dụng này nên có khi chỉ khi mà mình có cái hub kết nối được với các cái đơn vị tuyển dụng, kiểu là à tôi tạo tin ở đây để tôi quản lý và tôi sẽ bật bẻ lên trên nền tảng nào, xong từ nền tảng đấy nó sẽ trả về cho tôi cái thông tin gì. Thì lúc đấy mình đo được tuyển dụng đa kênh, thì mới nên có cái này. Còn không thì thực ra là nếu như anh mà làm tài liệu tuyển dụng, anh nhập vào hai chỗ, anh sẽ không nhập.  N1
+
+[58|CUSTOMER] 11:08   Anh nhập phụ tới mức đa kênh nữa.  N1
+
+[59|SPONSOR] 11:15   Chủ yếu nếu là cái này thì nó sẽ phục vụ người đứng cấp độ quản lý đúng không?  N2
+
+[60|CUSTOMER] 11:19   Đúng.  N1
+
+[61|SPONSOR] 11:19   Quản lý chỉ cần biết là đang có bao nhiêu các hồ sơ, hay là đang— đang các vị trí, trạng thái.  N2
+
+[62|CUSTOMER] 11:26   Cái đấy là sẽ dành cho những cái người ở vị trí quản lý. Người ta sẽ ví dụ là giám đốc, ban giám đốc từng công ty, hay là ban giám đốc tập đoàn chẳng hạn, nhìn xem, soi xem là công ty này đang nhu cầu tuyển dụng như nào, các thứ để đẩy dần người sang.  N1
+
+[63|SPONSOR] 11:40   Ừ. Còn nếu mà không có automation thì cái đoạn này thì gần như không giá trị cho người khác sử dụng.  N2
+
+[64|CUSTOMER] 11:44   Không có ý nghĩa mà. Không liên lụy với bất kỳ bên gọi là hít hàm tuyển dụng nào, thì nền tảng tuyển dụng nào thì là không có ý nghĩa.  N1
+
+[65|SPONSOR] 11:52   Thì các bên HR họ sẽ prefer là họ dùng Excel hơn.  N2
+
+[66|CUSTOMER] 11:57   Ừ. Thì có cái yêu cầu tuyển dụng như này thì tạo trên này, filter trên này thì là ok. Xong cái đấy xong thì là mình bắt đầu sang quy trình tuyển dụng.  N1
+
+[67|SPONSOR] 12:06   Ừ. Thì khi mà ví dụ như kiểu là cái này thì nếu mà vậy thì cái này nếu mà khả năng mà tích hợp được với cả các cái kênh tuyển dụng, là các cái thông tin ứng viên các thứ là cũng sẽ có thể tự động nạp hết về đây.  N2
+
+[68|CUSTOMER] 12:23   Cái đấy còn liên quan câu chuyện là trên cái nền tảng nó có cho hay không. Là một. Thứ hai nữa là nó chỉ lưu CV, vì nếu CV về thì chỉ là lưu dạng file chứ không lưu thông tin, trừ khi mình lại phải xử lý từ OCR từ file sang thông tin.  N1
+
+[69|SPONSOR] 12:40   Đấy thì—  N2
+
+[70|CUSTOMER] 12:41   Cái cái cái yêu cầu tuyển dụng ấy, cái luồng phê duyệt của mình như nào? Anh đang chưa thấy là có luồng phê duyệt với các cái yêu cầu tuyển dụng.  N1
+
+[71|SPONSOR] 12:49   Luồng phê duyệt ấy.  N2
+
+[72|CUSTOMER] 12:50   Luồng phê duyệt ban đầu ấy.  N1
+
+[73|SPONSOR] 12:52   Ví dụ như bên này nó sẽ có cái phần là gửi duyệt, là gửi duyệt đây. Đấy, nó sẽ có cái phần—  N2
+
+[74|CUSTOMER] 13:01   Thí dụ bây giờ cái việc gửi duyệt này là gửi duyệt như thế nào?  N1
+
+[75|SPONSOR] 13:04   Gửi duyệt này là nó sẽ cấu hình.  N2
+
+[76|CUSTOMER] 13:06   Em mở một cái dashboard ấy, mở mở cái sửa một cái yêu cầu tuyển dụng đi. Sửa yêu cầu tuyển dụng.  N1
+
+[77|SPONSOR] 13:15   Đây.  N2
+
+[78|CUSTOMER] 13:19   Chưa thấy đâu. Lỗi form view. Tạo mới cũng được.  N1
+
+[79|SPONSOR] 13:22   Là mạng, mạng.  N2
+
+[80|CUSTOMER] 13:29   Rồi. Chỗ này còn thiếu một thông tin rất quan trọng, là cái tuyển dụng này ấy, nó trong định biên hay ngoài định biên, có kế hoạch trước hay chưa. Cái việc nằm trong định biên hay ngoài định biên ấy, nó sẽ ảnh hưởng rất lớn đến cái quy trình phê duyệt của mình.  N1
+
+[81|CUSTOMER] 13:43   Ví dụ trong định biên mà mình đã được phê duyệt từ đầu năm ấy, thì đôi khi sẽ không cần qua cái cấp BOD nữa, mà chỉ cần là yêu cầu tuyển dụng được lên, xong lại sản ra hành chính nhân sự và tuyển, bởi vì là nó lên kế hoạch rồi. Đó, thậm chí là theo từ cái định biên nhân sự từ đầu năm ấy, đã xây sẵn các yêu cầu tuyển dụng theo cái mốc của định biên nhân sự rồi, thì sẽ không cần phải phê duyệt nữa. Coi như là phê duyệt cái định biên nhân sự là phê duyệt theo cái yêu cầu tuyển dụng này. Còn
+
+[82|SPONSOR] 14:20   Ờ, đang cấu hình ở con export. Đây, hệ thống quy trình này thì vẫn đang cấu hình ở con export. Ví dụ như kiểu là nó sẽ có cái luồng tuyển dụng này, luồng phê duyệt yêu cầu tuyển dụng này. Đấy, thì nó sẽ có một cái luồng cấu hình ở đây.  N2
+
+[83|CUSTOMER] 14:40   Coi như con này là bên gọi là workflow của mình, cấu hình riêng đúng không?  N1
+
+[84|SPONSOR] 14:44   Cấu hình riêng.  N2
+
+[85|CUSTOMER] 14:45   Cấu hình tự động, bằng tay. Ok, nút nào tay sang con đấy, mình sẽ xử lý sau. Đi tiếp đã.  N1
+
+[86|SPONSOR] 14:49   Con này cũng có tự cái quy trình riêng, tức là sẽ có tự quy trình và nó thực ra nó phải ốp được vào đây. Tức là con export mà app ấy, là từng khi mà anh vào từng công ty ấy, là anh sẽ nhìn thấy quy trình đã dùng ở đây. Đấy, sau đó là có thể thêm các cái quy trình mới. Đấy, sau đó thì con export ở bên này là sẽ có người đồng bộ, đồng bộ chéo với nhau.  N2
+
+[87|CUSTOMER] 15:13   Nhưng bây giờ chưa đồng bộ.  N1
+
+[88|SPONSOR] 15:14   Đang đang đang đồng bộ, đang đang test thôi, thì chắc đang chạy lại, chạy lại xong thì chắc được. Đấy, cái luồng của nó là vậy. Tức là nếu mà nằm ngoài định biên là, à nếu mà nằm ngoài định biên là sẽ cần phải duyệt. Tức là bản chất là cái này nên là hai quy trình ấy, ý anh là vậy.  N2
+
+[89|CUSTOMER] 15:30   Không, không phải là hai quy trình, mà bản chất nó là một cái điều kiện cho cái luồng phê duyệt.  N1
+
+[90|CUSTOMER] 15:35   Có những công ty thì mày có trong định biên hay ngoài định biên thì đều gọi là giám đốc phê duyệt hết, bởi vì nó liên quan đến chỗ ngồi, liên quan đến duyệt thì nó sẽ liên quan đến tiền lương hoặc là chi phí đúng không? Đó, thì luôn luôn phải qua. Còn có những công ty là không, ok, tao đã phê duyệt định biên từ đầu rồi thì cứ thế mà tuyển đi, không cần liên quan gì đến tao nữa. Thì cái đấy nó chỉ là một thêm một cái trường thông tin, một cái điều kiện để mình set trong cái luồng phê duyệ
+
+[91|CUSTOMER] 16:26   Tuyển dụng này. Ok, xong bước duyệt rồi đúng không? Thì sang đến ứng viên.  N1
+
+[92|SPONSOR] 16:32   Ứng viên.  N2
+
+[93|CUSTOMER] 16:34   Đây là base, là cái base của ứng viên của mình đúng không? Tất cả danh sách ứng viên của mình từ trước đến giờ là sẽ nằm ở đây hết đúng không?  N1
+
+[94|SPONSOR] 16:39   Nằm ở đây hết.  N2
+
+[95|CUSTOMER] 16:42   Trạng thái ứng tuyển cái gì kìa. Ứng tuyển sang ứng viên sau khi phỏng vấn xong mà đã từ chối rồi thì là nằm ở đây. Thì vẫn là trạng thái cuối là từ chối.  N1
+
+[96|SPONSOR] 17:05   Tức là anh muốn tách cả bài ra.  N2
+
+[97|CUSTOMER] 17:08   Không. Nếu như đây là một cái cái base ứng viên, theo kiểu là cái kho ứng viên của mình ấy, thì nó sẽ có một cái là lưu trữ. Có nghĩa là tôi đã qua cái mùa qua cái đợt tuyển dụng này rồi, và bạn đấy CV có phù hợp hay không phù hợp thì sẽ đều nằm ở trong kho lưu trữ của mình. Cái kho đấy là mục đích gì? Để lần sau mình tuyển dụng vị trí đó thì mình sẽ ưu tiên search ở trong kho trước, là có ứng viên nào nó phù hợp hay không mà mình liên hệ trước. Sau đấy thì mình không liên hệ được hoặc m
+
+[98|SPONSOR] 17:50   Tức là ở đây nhé, ví dụ như kiểu là cho ông này đi, ông này đang ở trạng thái mới ứng tuyển thôi.  N2
+
+[99|CUSTOMER] 17:56   Thì bây giờ nhé, em cần tuyển một vị trí là Dev Java đi. Thế khi anh yêu cầu Dev Java đúng không? Mà nếu như cái kho ứng viên này của mình là đủ nhiều và mình đã hoạt động một thời gian rồi, thì hành chính nhân sự sẽ phải search trong cái kho CV từ trước đến giờ của mình là bao nhiêu Dev Java, và có ông Dev Java nào thỏa mãn hay không. Xong rồi đi liên hệ xem ông ấy có open hay không, có muốn nhảy việc hay không để mình đi phỏng vấn và tìm sang bên mình, đúng không? Trong trường hợp khôn
+
+[100|CUSTOMER] 18:31   Nó chính là cái việc mà tối ưu về data dữ liệu của mình ấy. Thì nếu không ấy, thực tế là bây giờ mọi người đang làm là gì? Là có thông tin CV new nhưng để trên Google Drive và gần như không bao giờ search lại. Cứ mỗi một lần yêu cầu tuyển dụng mới là mọi người sẽ đăng tin tuyển dụng mới, mọi người sẽ lên trên các nền tảng đi kéo CV về. Nhưng thậm chí là có những cái CV kéo về nó lại là cái CV thực tế là mình đã từng lưu trữ rồi, nhưng mình lại vẫn mất tiền cho cái CV đấy. Thì nó không tố
+
+[101|CUSTOMER] 20:00   Tiếp nhé, cái thông tin ứng viên ấy, nếu như là thông tin ứng viên thì em nên, em nên chê giúp anh. Nó sẽ không có vị trí ứng tuyển. Tất nhiên là nó có thông tin đấy, nhưng mà nó sẽ phải là cái job, gọi là cái title của thằng ứng viên hơn là cái cái vị trí nó ứng tuyển vào. Vị trí title của nó là checklist, title của nó là CTO, full stack Java, full stack Node. Tức là cái thông tin đấy nó phải gắn với ứng viên hơn là gắn với các yêu cầu tuyển dụng nào. Bởi vì hình dung là cái Dev Java nh
+
+[102|SPONSOR] 21:36   Kinh nghiệm làm việc.  N2
+
+[103|CUSTOMER] 21:36   Kinh nghiệm của nó và cái liên quan đến kỹ năng của nó là gì, mình sẽ cần phải lưu rất là chi tiết. Còn nếu như lưu kiểu như này thì thực tế là lưu CV xong thì mình không có giá trị tìm kiếm và tham khảo sau này.  N1
+
+[104|SPONSOR] 22:20   Nói chung là các mảng ở đây là đang trình bày theo hơi kiểu truyền thống thôi. Thông tin, dữ liệu thì cũng không nói gì cả. Thế sau khi mà có các cái thông tin của ứng viên là bắt đầu à không, cái này là đây, cái này là đề xuất ngoài định biên hay không là lúc nọ anh bảo để em bổ sung vào này.  N2
+
+[105|CUSTOMER] 22:43   Cái này đề xuất ngoài định biên hay không, nó phải trong yêu cầu tuyển dụng. Chứ nó không phải là ở đây. Ở đây như này, cái tách ra như này rất là khó để làm.  N1
+
+[106|SPONSOR] 22:50   Ờ, thế á?  N2
+
+[107|CUSTOMER] 22:51   Ừ, bởi vì trong yêu cầu.  N1
+
+[108|SPONSOR] 22:53   Nó sẽ nằm trong yêu cầu tuyển dụng.  N2
+
+[109|CUSTOMER] 22:54   Ừ, bản thân trong yêu cầu tuyển dụng thì cái trường mà gọi là ngoài định biên hay trong định biên ấy, thì nó chỉ là một loại hoặc là một cái trường thông tin trong yêu cầu tuyển dụng thôi. Còn tất nhiên là ngoài định biên hay trong định biên thì nó sẽ có thêm cái lý do ngoài định biên là tôi phải làm gì để tuyển thay thế hay là tuyển mở rộng team hay như nào đấy, thì nó sẽ có thêm cái lý do thêm về đấy thôi. Còn tất cả những thông tin thực tế thì nó vẫn là cái yêu cầu tuyển dụng thôi. Nó
+
+[110|SPONSOR] 23:26   Theo như là cái định biên nó sẽ nằm ở trong cái phần là kế hoạch tuyển dụng của cái bộ phận đấy trong vòng 1 năm.  N2
+
+[111|CUSTOMER] 23:34   Cái cái việc mà đề xuất tuyển dụng ngoài định biên hay không ấy, thì nó có một cái là mình nên làm thành cái là cái định biên nhân sự phòng ban. Định biên nhân sự phòng ban ấy thì nó là cả một cái kế hoạch liên quan đến nhân sự, tôi cần vị trí nào và theo từng tháng. Thường là theo từng trong công ty thì theo từng tháng và làm nửa năm hoặc thậm chí là cả một năm một lần. Đó, thì cái đấy là sẽ theo kiểu là à vị trí A hiện tại là bao nhiêu, gì nhỉ, cần gì nhỉ, dự kiến là bao nhiêu, cần tuy
+
+[112|SPONSOR] 25:10   Không, bọn em thì thường là như bọn em làm ấy là sẽ thường tuyển dụng theo dự án.  N2
+
+[113|CUSTOMER] 25:16   Ừ thì đúng, thì nó sẽ không có định biên đấy đúng không? Thì thì thì bản thân cái định biên đấy từ trước khi có dự án là ông ấy rồi, và đôi khi là dự án kéo dài đúng không? Thì ông cũng sẽ biết là à thời điểm này tôi chỉ cần test, tôi chỉ cần test, thì tôi sẽ có kế hoạch là dự án vận hành được 2 tháng xong tôi mới cần tuyển QA và Tester chẳng hạn. Thì thực tế đấy chính là cái phần định biên nhân sự của mình. Và mình sẽ có kế hoạch à 2 tháng sau tao phải chạy một cái cái kế hoạch tuyển dụ
+
+[114|SPONSOR] 25:43   Không định nghĩa nó là định biên. Mà thường là các bạn quy mô như này thì hay bốc tháo như này.  N2
+
+[115|CUSTOMER] 25:49   Ờ, chạy thẳng thế nào có cái thì báo cho bên kia, bên kia bắt đầu chạy chiến dịch và kéo CV về. Nhưng mình nên đưa nó thành định biên. Thì anh bảo là cái định biên đấy nếu như ngay từ đầu mà được phê duyệt thì ví dụ như là tháng 3, tháng 6, tháng 9 cần tuyển Dev Java là ngay khi cái định biên đấy được phê duyệt là đã có một cái yêu cầu tuyển dụng vào tháng 3, tháng 6, tháng 9 được phê duyệt sẵn ở đấy rồi. Để đến tháng 3, tháng 6, tháng 9 là người ta nhìn vào bên bên tuyển dụng nhìn vào c
+
+[116|SPONSOR] 26:19   Ok. Đề xuất tuyển dụng. Đấy, sau khi có đề xuất xong.  N2
+
+[117|CUSTOMER] 26:25   Cái này vẫn thiếu.  N1
+
+[118|SPONSOR] 26:27   Cái này còn còn gì nữa không anh?  N2
+
+[119|CUSTOMER] 26:28   Thiếu thông tin như hôm trước nói là cái ứng viên đấy nó đang gắn theo cái cái đề xuất như nào. Ví dụ anh cần tuyển 3 Dev Java, thì bây giờ cái đề xuất tuyển dụng của anh là có bao nhiêu CV rồi, anh đã phỏng vấn được bao nhiêu người rồi, đã chốt được offer bao nhiêu vị trí rồi, còn cần tuyển bao nhiêu nữa. Bởi vì đứng vai trò là trưởng phòng, ví dụ anh cần biết rằng là à tao cần Dev Java 3 tháng sau đi làm, thì đến bây giờ là giữa tháng này rồi, thì đầu tháng sau tao cần thì tao đã có ba
+
+[120|SPONSOR] 27:44   Nếu như này thì thực ra là đang đứng từ góc độ đấy thì các việc chi tiết về GD các thứ nó lại không phải là quan trọng nhất đúng không anh? Quan trọng nhất là tracking status của.  N2

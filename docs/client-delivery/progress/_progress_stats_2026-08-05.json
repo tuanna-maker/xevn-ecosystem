@@ -1,0 +1,128 @@
+{
+  "reportDate": "2026-08-05",
+  "xbos": {
+    "path": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\client-delivery\\progress\\BAO_CAO_TIEN_DO_XBOS_2026-08-05.xlsx",
+    "total": 126,
+    "done": 54,
+    "wip": 72,
+    "p1": 2,
+    "todoHold": 0,
+    "overallPct": 42.9,
+    "modules": [
+      {
+        "module": "Auth / Cổng Portal",
+        "total": 9,
+        "done": 7,
+        "pct": 77.8
+      },
+      {
+        "module": "Tổ chức / Pháp nhân",
+        "total": 20,
+        "done": 11,
+        "pct": 55
+      },
+      {
+        "module": "Danh mục (Catalog)",
+        "total": 45,
+        "done": 10,
+        "pct": 22.2
+      },
+      {
+        "module": "Danh mục Logistic",
+        "total": 22,
+        "done": 0,
+        "pct": 0
+      },
+      {
+        "module": "Quy trình (Workflow)",
+        "total": 11,
+        "done": 10,
+        "pct": 90.9
+      },
+      {
+        "module": "KPI / Command Center",
+        "total": 10,
+        "done": 8,
+        "pct": 80
+      },
+      {
+        "module": "RACI / Phân quyền",
+        "total": 8,
+        "done": 8,
+        "pct": 100
+      },
+      {
+        "module": "Cấu hình / Hệ thống",
+        "total": 1,
+        "done": 0,
+        "pct": 0
+      }
+    ]
+  },
+  "hrm": {
+    "path": "C:\\Users\\ADMIN\\OneDrive\\Tài liệu\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\client-delivery\\progress\\BAO_CAO_TIEN_DO_HRM_2026-08-05.xlsx",
+    "total": 167,
+    "done": 43,
+    "wip": 100,
+    "p1": 74,
+    "todoHold": 24,
+    "overallPct": 25.7,
+    "modules": [
+      {
+        "module": "Nhân sự",
+        "total": 35,
+        "done": 19,
+        "pct": 54.3
+      },
+      {
+        "module": "Chấm công",
+        "total": 18,
+        "done": 5,
+        "pct": 27.8
+      },
+      {
+        "module": "Nghỉ phép",
+        "total": 12,
+        "done": 0,
+        "pct": 0
+      },
+      {
+        "module": "Lương",
+        "total": 16,
+        "done": 2,
+        "pct": 12.5
+      },
+      {
+        "module": "Tuyển dụng",
+        "total": 18,
+        "done": 5,
+        "pct": 27.8
+      },
+      {
+        "module": "Mobile",
+        "total": 15,
+        "done": 0,
+        "pct": 0
+      },
+      {
+        "module": "Metadata / Đồng bộ danh mục",
+        "total": 33,
+        "done": 12,
+        "pct": 36.4
+      },
+      {
+        "module": "Quyết định / Khác",
+        "total": 20,
+        "done": 0,
+        "pct": 0
+      }
+    ]
+  },
+  "parseCounts": {
+    "phase1Total": 246,
+    "xbosUc": 126,
+    "hrmPhase1Uc": 120,
+    "hrmBlueprintUc": 47,
+    "hrmDetailTotal": 167
+  }
+}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tổng quan chấm công — XeVN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-frame">
+      <header class="app-header">
+        <a class="neo-brand" href="index.html">
+          <img src="assets/xevn-logo.png" alt="" width="28" height="28" />
+          <span>XeVN</span>
+        </a>
+        <nav class="neo-nav-links" aria-label="Neo P0">
+          <a href="login.html">Đăng nhập</a>
+          <a href="att-overview.html" aria-current="page">Chấm công</a>
+          <a href="dialog-leave.html">Đơn nghỉ</a>
+          <a href="dialog-ot.html">Đơn OT</a>
+          <a href="emp-profile.html">Hồ sơ NV</a>
+        </nav>
+      </header>
+
+      <main class="app-main">
+        <div class="page-head">
+          <h1>Tổng quan chấm công</h1>
+          <div style="display: flex; gap: 0.5rem">
+            <a class="btn btn-ghost btn-sm" href="dialog-leave.html">Tạo đơn nghỉ</a>
+            <a class="btn btn-primary btn-sm" href="dialog-ot.html">Tạo đơn OT</a>
+          </div>
+        </div>
+
+        <div class="note-box" role="status">
+          <strong>Chưa mở — nhận diện khuôn mặt / mã QR:</strong>
+          Chức năng thiết bị chấm công trực tiếp chưa bật trên bản neo này.
+          Không mô phỏng trạng thái LIVE.
+        </div>
+
+        <div class="toolbar">
+          <div class="field" style="margin: 0">
+            <label for="att-date" class="sr-only">Ngày</label>
+            <input id="att-date" class="xevn-field-date" type="date" value="2026-08-05" />
+          </div>
+          <div class="field" style="margin: 0">
+            <label for="att-unit" class="sr-only">Đơn vị</label>
+            <select id="att-unit" class="xevn-field-select-md">
+              <option>Công ty Du lịch XeVN</option>
+              <option>XeVN Holding</option>
+            </select>
+          </div>
+          <div class="field" style="margin: 0">
+            <label for="att-shift" class="sr-only">Ca</label>
+            <select id="att-shift" class="xevn-field-select-sm">
+              <option>Tất cả ca</option>
+              <option>Ca sáng</option>
+              <option>Ca chiều</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm">Áp dụng</button>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi">
+            <div class="kpi-label">Có mặt</div>
+            <div class="kpi-value">842</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Đi muộn</div>
+            <div class="kpi-value">36</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Nghỉ phép</div>
+            <div class="kpi-value">18</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Chưa chốt</div>
+            <div class="kpi-value">12</div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Mã NV</th>
+                <th>Họ tên</th>
+                <th>Ca</th>
+                <th>Vào</th>
+                <th>Ra</th>
+                <th>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>NV-1024</td>
+                <td>Nguyễn Văn An</td>
+                <td>Ca sáng</td>
+                <td>07:58</td>
+                <td>17:05</td>
+                <td><span class="badge badge-ok">Đủ công</span></td>
+              </tr>
+              <tr>
+                <td>NV-1088</td>
+                <td>Trần Thị Bình</td>
+                <td>Ca sáng</td>
+                <td>08:22</td>
+                <td>17:01</td>
+                <td><span class="badge badge-warn">Đi muộn</span></td>
+              </tr>
+              <tr>
+                <td>NV-1150</td>
+                <td>Lê Minh Cường</td>
+                <td>Ca chiều</td>
+                <td>—</td>
+                <td>—</td>
+                <td><span class="badge badge-err">Vắng</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="compare" style="margin-top: 1.5rem">
+          <div class="compare-panel">
+            <div class="compare-label fail">Chưa đạt</div>
+            <div class="compare-body">
+              <div class="wire-old">
+                <div class="wire-title">ATT Overview</div>
+                <div class="wire-field"></div>
+                <div class="wire-field" style="width: 60%"></div>
+                <div class="wire-meta">Header mỏng · không logo · KPI xám nhạt · không thanh brand</div>
+              </div>
+            </div>
+          </div>
+          <div class="compare-panel">
+            <div class="compare-label pass">Đạt</div>
+            <div class="compare-body" style="font-size: 13px; color: var(--xevn-text-secondary)">
+              Header kính mờ + logo trái · KPI viền xanh trên · toolbar field compact ·
+              chức năng chưa mở ghi rõ trạng thái, không giả lập nhận diện khuôn mặt hay mã quét.
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

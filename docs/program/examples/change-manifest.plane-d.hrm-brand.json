@@ -1,0 +1,207 @@
+{
+  "$schema": "../schemas/change-manifest.schema.json",
+  "manifest_version": "0.1.1",
+  "work_item_id": "PO-BIZ-CHANGE-COMPILER-BA-01-DISPATCH-SAMPLE",
+  "title": "Plane D sample — HRM UI Brand W4 (SPONSOR_CHOT / Precision Motion)",
+  "summary": "Dispatch Manifest (Plane D) biên soạn từ SPONSOR_UI_BRAND_OPEN_QUESTIONS + SPONSOR_CHOT locks + inventory W4. Map work_item thật W4: PORT-LOGIN · REC-A (+FIX-01) · PAY-A · ATT-DIALOG-EXT · residual W4-MOB-A Face MVP. FE web W4 đã code dưới sponsor authorize — Manifest này là mẫu compiler docs/QA gate, không mở thêm mutate apps/**. remaster_program_done=false · attendance_closed=false · face_live=false.",
+  "uc_ids": [
+    "UC-BP-REC-02",
+    "UC-BP-REC-04",
+    "UC-BP-REC-07",
+    "UC-BP-PAY-01",
+    "UC-BP-ATT-10"
+  ],
+  "br_ids": [
+    "BR-UI-BRAND-B2",
+    "BR-UI-BRAND-B4",
+    "BR-UI-BRAND-B5",
+    "BR-FACE-MOBILE-MVP"
+  ],
+  "ac": [
+    {
+      "id": "AC-BRAND-W4-01",
+      "statement": "Manifest Plane D này ajv-valid với change-manifest.schema.json v0.1.1 và liệt kê đủ work_item W4 brand thật trên role_owners / source.",
+      "verify": "gate_script",
+      "pass_when": "Ajv2020 validate exit PASS; summary + role_owners map W4-PORT-LOGIN · W4-REC-A · W4-PAY-A · W4-ATT-DIALOG-EXT · W4-MOB-A (dev_fe/qa/dev_mobile keys + summary)."
+    },
+    {
+      "id": "AC-BRAND-W4-02",
+      "statement": "Portal /login hai cột neo brandShell + card glass viền #1E40AF; không fake credential UI; AuthContext.login giữ nguyên.",
+      "verify": "browser",
+      "uf_or_j": "UF-XBOS-01",
+      "pass_when": "Evidence po-hrm-ui-brand-w4-port-login-qa.md 6/6 PASS; theme-contrast --strict exit 0; mutates=0; remaster_done=false."
+    },
+    {
+      "id": "AC-BRAND-W4-03",
+      "statement": "Tuyển dụng spine R01–R05/R08/R11–R12/R15: Dialog title ≥20px Montserrat, brand bar 4px #1E40AF + wordmark; Reports honesty S3=A (campaign OUT); Hire→Employee list→detail còn.",
+      "verify": "browser",
+      "uf_or_j": "J-HRM-05",
+      "pass_when": "po-hrm-ui-brand-w4-rec-a-fix-qa.md Jobs title 20px/700 PASS; R12+R15 chrome hold; 0 seed; không claim remaster DONE."
+    },
+    {
+      "id": "AC-BRAND-W4-04",
+      "statement": "Payroll P0 + PayslipPrintDialog: cấm purple/emerald AI KPI; vi-VN money giữ; không invent công thức lương; Face HOLD.",
+      "verify": "browser",
+      "uf_or_j": "UF-HRM-06",
+      "pass_when": "po-hrm-ui-brand-w4-pay-a-qa.md PASS chrome; theme-contrast --strict exit 0; attendance_closed=false."
+    },
+    {
+      "id": "AC-BRAND-W4-05",
+      "statement": "ATT dialog còn lại (shift/sheet/manual/GPS floor): chrome Precision Motion; Face web HOLD; không claim Attendance CLOSED.",
+      "verify": "browser",
+      "uf_or_j": "J-HRM-06b",
+      "pass_when": "po-hrm-ui-brand-w4-att-dialog-ext-qa.md (+ DELTA) PASS chrome; mutates=0; face_live=false."
+    },
+    {
+      "id": "AC-BRAND-W4-06",
+      "statement": "W4-MOB-A Face MVP chrome (MOB-01/03/04/04b/05/13) còn mở — không claim Face LIVE trên web S17–S19.",
+      "verify": "doc_review",
+      "pass_when": "Inventory slice W4-MOB-A còn OPEN; R-FACE-01 Mobile only; next_owner = dev-mobile với work_item PO-HRM-UI-BRAND-W4-MOB-A."
+    },
+    {
+      "id": "AC-BRAND-W4-07",
+      "statement": "Wave compiler sample không đụng apps/** / packages/** (FE W4 đã coded ở work_item riêng).",
+      "verify": "gate_script",
+      "pass_when": "git diff của PO-BIZ-CHANGE-COMPILER-BA-01-DISPATCH-SAMPLE ⊆ allowed_paths; forbidden_paths gồm apps/**."
+    }
+  ],
+  "slice_id": "HRM-UI-BRAND-W4",
+  "allowed_paths": [
+    "docs/program/examples/change-manifest.plane-d.hrm-brand.json",
+    "docs/program/schemas/**",
+    "docs/program/HRM_UI_BRAND_REMASTER_PROGRAM.md",
+    "docs/program/HRM_UI_BRAND_SCREEN_INVENTORY.md",
+    "docs/program/slices/HRM-UI-BRAND-W4.md",
+    "docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md",
+    "docs/architecture/ADR-BUSINESS-CHANGE-COMPILER-20260805.md",
+    "docs/client-delivery/hrm-enterprise-blueprint/**",
+    "docs/qa/evidence/po-biz-change-compiler-ba-01-dispatch-sample.md",
+    "docs/qa/evidence/po-hrm-ui-brand-w4-*.md"
+  ],
+  "forbidden_paths": [
+    "apps/**",
+    "packages/**",
+    "deploy/**",
+    "supabase/**"
+  ],
+  "role_owners": {
+    "pm": "PO-HRM-UI-BRAND-REMASTER-01",
+    "ba_process": "PO-BIZ-CHANGE-COMPILER-BA-01-DISPATCH-SAMPLE",
+    "ba_docs": "PO-HRM-BP-UI-BRAND-OPEN-01",
+    "sa": "PO-HRM-UI-BRAND-ADR-01",
+    "dev_fe": "PO-HRM-UI-BRAND-W4-REC-A",
+    "dev_mobile": "PO-HRM-UI-BRAND-W4-MOB-A",
+    "qa": "PO-HRM-UI-BRAND-W4-REC-A-FIX-01-QA",
+    "qc": "PO-HRM-UI-BRAND-W5-QC"
+  },
+  "sponsor_confirm": {
+    "status": "CONFIRMED",
+    "wave_id": "PO-HRM-UI-BRAND-REMASTER-01",
+    "date": "2026-08-05",
+    "evidence_ref": "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_UI_BRAND_OPEN_QUESTIONS.md §3–§7.1 · ADR §16 LOCK",
+    "notes": "Sponsor authorize remaster «cho team làm luôn» + B1–B5/S3 LOCK; CHOT parallel GPS/leave/Face mobile. FE W4 already coded under W4-* work_items — this Manifest keeps apps/** forbidden (compiler sample / residual MOB unlock = separate ready_for_dev Manifest)."
+  },
+  "change_mode": "UPGRADE",
+  "neo_tags": [
+    "DOC-DELTA",
+    "UI-MEMORY",
+    "STYLE-MEMORY",
+    "TEST-MEMORY"
+  ],
+  "source_artifacts": [
+    {
+      "path": "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_UI_BRAND_OPEN_QUESTIONS.md",
+      "kind": "markdown",
+      "note": "B1–B5 · S3=A · U1–U4 · Q1–Q3 brand locks"
+    },
+    {
+      "path": "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_CHOT_REMAINING.xlsx",
+      "kind": "excel",
+      "sheet": "02_Remaining",
+      "note": "R-FACE-01 Mobile only · CHOT parallel remaster"
+    },
+    {
+      "path": "docs/client-delivery/hrm-enterprise-blueprint/UC_MEETING_PRODUCT_GAP_MATRIX.md",
+      "kind": "markdown",
+      "note": "UC-BP-REC-* · UC-BP-PAY-01 · UC-BP-ATT-10 · R-FACE-01"
+    },
+    {
+      "path": "docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md",
+      "kind": "markdown",
+      "note": "§16 FINAL LOCK Montserrat + Source Sans 3 · B4 cấm AI"
+    },
+    {
+      "path": "docs/program/HRM_UI_BRAND_SCREEN_INVENTORY.md",
+      "kind": "markdown",
+      "note": "W4-MOB-A…C · W3-REC/PAY surface map used by W4 FE seats"
+    },
+    {
+      "path": "docs/qa/evidence/po-hrm-ui-brand-w4-rec-a.md",
+      "kind": "markdown",
+      "note": "Coded W4-REC-A evidence (apps already touched under that work_item)"
+    }
+  ],
+  "read_first": [
+    "docs/architecture/ADR-BUSINESS-CHANGE-COMPILER-20260805.md",
+    "docs/program/schemas/change-manifest.schema.json",
+    "docs/program/schemas/CHANGE_MANIFEST_VALIDATION_MATRIX.md",
+    "docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md",
+    "docs/program/HRM_UI_BRAND_REMASTER_PROGRAM.md",
+    "docs/program/HRM_UI_BRAND_SCREEN_INVENTORY.md",
+    "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_UI_BRAND_OPEN_QUESTIONS.md"
+  ],
+  "must_keep": [
+    "Spec-first: Manifest không thay SRS/TechSpec",
+    "Wordmark + viền brand 4px #1E40AF trên mọi modal (B2/Q1)",
+    "Cấm palette AI tím–indigo / cream–terracotta / glow (B4)",
+    "Display Montserrat · Body Source Sans 3 (B5 §16 LOCK)",
+    "S3=A: remaster chrome + giữ honesty stub/featureInDev",
+    "R-FACE-01: Face product = Mobile MVP only; web S17–S19 honesty HOLD",
+    "remaster_program_done=false · attendance_closed=false · face_live=false · product_go=false",
+    "U65 zero-seed trên mọi browser AC",
+    "FE W4 coded paths (PORT-LOGIN/REC-A/PAY-A/ATT-DIALOG-EXT) = work_item riêng — không đè từ compiler sample",
+    "Campaign R07 / OCR / PROP-03e QR card = OUT · không remaster LIVE"
+  ],
+  "spec_targets": {
+    "srs": "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-REC-02/04/07 · UC-BP-PAY-01 · UC-BP-ATT-10",
+    "tech_spec": "docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §8–§10 · §16"
+  },
+  "traceability": {
+    "srs_refs": [
+      "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md · UC-BP-REC-02",
+      "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md · UC-BP-REC-04",
+      "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md · UC-BP-REC-07",
+      "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md · UC-BP-PAY-01",
+      "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md · UC-BP-ATT-10"
+    ],
+    "tech_spec_refs": [
+      "docs/architecture/ADR-XEVN-PRECISION-MOTION-TOKENS-20260805.md §16 LOCK · ref_srs brand Open Q B1–B5"
+    ],
+    "journey_ids": [
+      "UF-XBOS-01",
+      "J-HRM-05",
+      "UF-HRM-06",
+      "J-HRM-06b",
+      "J-MOB-01",
+      "J-MOB-02"
+    ],
+    "scope_parity_ack": false
+  },
+  "pipeline_stage": "qa",
+  "compound_hooks": {
+    "pre_task_memory_loadout": true,
+    "post_task_memory_update": true,
+    "promote_os_on_lesson": true
+  },
+  "promote_os": {
+    "required": true,
+    "chapter": "34-BUSINESS-CHANGE-COMPILER.md",
+    "notes": "Promote after Plane D brand sample ajv-green + BA evidence PASS_TO_PM."
+  },
+  "compiled_at": "2026-08-05T14:24:00+07:00",
+  "compiler": {
+    "name": "manual-ba-process",
+    "version": "0.1.1",
+    "mode": "manual"
+  }
+}

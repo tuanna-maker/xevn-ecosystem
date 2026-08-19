@@ -1,0 +1,158 @@
+
+  const emp = await pickEmployee(session.token);
+  if (!emp?.id) {
+    R.defects.push({ sev: 'P0', id: 'NO-EMP', note: 'no active employee' });
+  } else {
+    R.setup.employee = { id: emp.id, code: emp.employee_code, name: emp.full_name };
+    const g = await grantTrackedEntitlement(session.token, emp.id, 'annual', 14);
+    R.setup.grant = g;
+    if (!g.ok) R.defects.push({ sev: 'P0', id: 'GRANT', note: 'PUT tracked-entitlement failed' });
+  }
+
+  try {
+    const host = await openLeaveTab(page);
+    await clickCreateLeave(host, page);
+    const dlg = host.locator('[data-testid="att-leave-create-dialog-precision"]').first();
+    await dlg.waitFor({ state: 'visible', timeout: 15000 });
+    const panelBefore = R.panel_hits.length;
+    await selectEmployeeInDlg(dlg, page);
+    const formPanelVis = await dlg.locator('[data-testid="att-05b-form-panel"]').isVisible({ timeout: 15000 }).catch(() => false);
+    const panelGets = R.panel_hits.slice(panelBefore).filter((h) => h.status >= 200 && h.status < 300);
+    await shot(page, '01-j05b-01-form-panel');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await sleep(1500);
+    const host2 = await openLeaveTab(page);
+    await clickCreateLeave(host2, page);
+    const dlg2 = host2.locator('[data-testid="att-leave-create-dialog-precision"]').first();
+    await selectEmployeeInDlg(dlg2, page);
+    const f5Panel = await dlg2.locator('[data-testid="att-05b-form-panel"]').isVisible({ timeout: 15000 }).catch(() => false);
+    const pass01 = formPanelVis && panelGets.length >= 1 && f5Panel && nestOk();
+    jset('J-HRM-ATT-05B-01', pass01 ? 'PASS' : 'FAIL', {
+      summary: 'formPanel=' + formPanelVis + ' panelGET=' + panelGets.length + ' f5=' + f5Panel + ' nest=' + R.nest_core_leave_non404.length,
+      click_path: 'Nghỉ phép → Tạo đơn → panel on form · GET panel 2xx · F5',
+      nest_core_0: nestOk(),
+    });
+  } catch (e) {
+    jset('J-HRM-ATT-05B-01', 'FAIL', { summary: String(e).slice(0, 300) });
+  }
+
+  try {
+    const host = await openLeaveTab(page);
+    const dlg = await openGrantDialog(host, page);
+    const annualVis = await dlg.locator('[data-testid="leave-balance-row-annual"]').isVisible({ timeout: 12000 }).catch(() => false);
+    const carryRow = dlg.locator('[data-testid="leave-balance-row-carry_over"]').first();
+    const carryVis = await carryRow.isVisible({ timeout: 12000 }).catch(() => false);
+    const carryLabel = (await carryRow.innerText().catch(() => '')).includes('Phép chuyển kỳ');
+    await shot(page, '02-j05b-02-carry-sep');
+    await host.keyboard.press('Escape').catch(() => {});
+    const pass02 = annualVis && carryVis && carryLabel && nestOk();
+    jset('J-HRM-ATT-05B-02', pass02 ? 'PASS' : 'FAIL', {
+      summary: 'annual=' + annualVis + ' carry=' + carryVis + ' label=' + carryLabel + ' ATT05QC1',
+      click_path: 'Form → carry_over tách annual',
+      nest_core_0: nestOk(),
+    });
+  } catch (e) {
+    jset('J-HRM-ATT-05B-02', 'FAIL', { summary: String(e).slice(0, 300) });
+  }
+
+  try {
+    const host = await openLeaveTab(page);
+    const dlg = await openGrantDialog(host, page);
+    const pickerVis = await dlg.locator('[data-testid="catalog-search-picker"]').isVisible({ timeout: 8000 }).catch(() => false);
+    const panelBefore = R.panel_hits.length;
+    await selectLeaveTypeInDlg(dlg, page, /Phép năm|annual/i);
+    const refetchAfter = R.panel_hits.length > panelBefore;
+    await fillDates(dlg, RANGE_SUBMIT.startVi, RANGE_SUBMIT.endVi);
+    const previewBefore = R.preview_hits.length;
+    await sleep(2000);
+    const previewHit = R.preview_hits.slice(previewBefore).find((h) => h.status >= 200 && h.status < 300);
+    await shot(page, '03-j05b-03-picker-refetch-preview');
+    await host.keyboard.press('Escape').catch(() => {});
+    const pass03 = pickerVis && refetchAfter && previewHit && nestOk();
+    jset('J-HRM-ATT-05B-03', pass03 ? 'PASS' : 'FAIL', {
+      summary: 'picker=' + pickerVis + ' refetch=' + refetchAfter + ' preview=' + (previewHit?.status ?? '—') + ' nest=' + R.nest_core_leave_non404.length,
+      click_path: 'EFF picker · refetch · preview-deduction',
+      nest_core_0: nestOk(),
+    });
+  } catch (e) {
+    jset('J-HRM-ATT-05B-03', 'FAIL', { summary: String(e).slice(0, 300) });
+  }
+
+  try {
+    const empId = R.setup.employee?.id;
+    const balBefore = empId ? await fetchBalance(session.token, empId, 'annual') : { pending: 0 };
+    const host = await openLeaveTab(page);
+    const dlg = await openGrantDialog(host, page);
+    await selectLeaveTypeInDlg(dlg, page, /Phép năm|annual/i);
+    await fillDates(dlg, RANGE_SUBMIT.startVi, RANGE_SUBMIT.endVi);
+    await fillReason(dlg);
+    const heldBefore = await readHeldInFormPanel(dlg, 'annual');
+    const submit = await submitCreate(dlg);
+    await sleep(2000);
+    const balAfter = empId ? await fetchBalance(session.token, empId, 'annual') : balBefore;
+    const pendingUp = balAfter.pending > balBefore.pending;
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await sleep(1500);
+    const balF5 = empId ? await fetchBalance(session.token, empId, 'annual') : balAfter;
+    const f5Persist = balF5.pending >= balAfter.pending && balF5.pending > balBefore.pending;
+    await shot(page, '04-j05b-04-post-hold');
+    const pass04 = submit.clicked && submit.createHit && pendingUp && f5Persist && nestOk();
+    jset('J-HRM-ATT-05B-04', pass04 ? 'PASS' : 'FAIL', {
+      summary: 'POST ' + (submit.createHit?.status ?? '—') + ' pending ' + balBefore.pending + '→' + balAfter.pending + ' F5=' + balF5.pending + ' held ' + heldBefore.heldText,
+      click_path: 'Gửi đơn → pending↑ · F5',
+      nest_core_0: nestOk(),
+    });
+  } catch (e) {
+    jset('J-HRM-ATT-05B-04', 'FAIL', { summary: String(e).slice(0, 300) });
+  }
+
+  try {
+    const host = await openLeaveTab(page);
+    await clickCreateLeave(host, page);
+    const dlg = host.locator('[data-testid="att-leave-create-dialog-precision"]').first();
+    await dlg.waitFor({ state: 'visible', timeout: 15000 });
+    const emptyVis = await dlg.locator('[data-testid="att-05b-empty-catalog"]').isVisible({ timeout: 3000 }).catch(() => false);
+    const pickerVis = await dlg.locator('[data-testid="catalog-search-picker"]').isVisible({ timeout: 3000 }).catch(() => false);
+    let verdict05 = 'FAIL';
+    let summary05 = '';
+    if (emptyVis) {
+      verdict05 = 'PASS';
+      summary05 = 'att-05b-empty-catalog honest';
+    } else if (pickerVis) {
+      verdict05 = 'PASS_WITH_HOLD';
+      summary05 = 'catalog populated — conditional tenant';
+    } else summary05 = 'no empty hint nor picker';
+    await shot(page, '05-j05b-05-empty');
+    await host.keyboard.press('Escape').catch(() => {});
+    jset('J-HRM-ATT-05B-05', verdict05, { summary: summary05, nest_core_0: nestOk() });
+  } catch (e) {
+    jset('J-HRM-ATT-05B-05', 'FAIL', { summary: String(e).slice(0, 300) });
+  }
+
+  try {
+    const host = await openLeaveTab(page);
+    const h05b = await readHonesty05b(host);
+    await clickCreateLeave(host, page);
+    const dlg = host.locator('[data-testid="att-leave-create-dialog-precision"]').first();
+    await selectEmployeeInDlg(dlg, page);
+    await selectLeaveTypeInDlg(dlg, page, /Phép năm|annual/i);
+    await fillDates(dlg, RANGE_OVERLAP.startVi, RANGE_OVERLAP.endVi);
+    await fillReason(dlg);
+    const advVis = await dlg.locator('[data-testid="att-05b-adv-hint"]').isVisible({ timeout: 2000 }).catch(() => false);
+    const beforeOverlap = R.leave_create_hits.length;
+    const submit2 = await submitCreate(dlg);
+    await sleep(1500);
+    const overlapHit = R.leave_create_hits.slice(beforeOverlap).find((h) => h.status === 409 || h.status === 400);
+    const overlapUi = await dlg.locator('[data-testid="att-09-type-block"]').isVisible({ timeout: 3000 }).catch(() => false);
+    const overlapOk = overlapHit || overlapUi || !submit2.createHit;
+    const pass06 =
+      h05b.visible && h05b.neAtt05b && h05b.neUat && h05b.denyMerge && h05b.mk04 && h05b.mk09 && overlapOk && nestOk();
+    await shot(page, '06-j05b-06-honesty-overlap');
+    jset('J-HRM-ATT-05B-06', pass06 ? 'PASS_WITH_HOLD' : 'FAIL', {
+      summary: 'honesty=' + h05b.neAtt05b + ' overlap=' + overlapOk + ' adv=' + advVis + ' FY/DEDUCT HOLD',
+      must_keep: R.must_keep,
+      nest_core_0: nestOk(),
+    });
+  } catch (e) {
+    jset('J-HRM-ATT-05B-06', 'FAIL', { summary: String(e).slice(0, 300) });
+  }

@@ -1,0 +1,1046 @@
+sẽ tổng hợp WBS và gửi trong tối nay.
+ Quyết định chính
+ Thống nhất tách phần chiến dịch tuyển dụng ra khỏi MVP, chỉ triển khai khi có đối tác/API kết nối.
+ Chốt module tuyển dụng cần tập trung vào: mô tả công việc, yêu cầu tuyển dụng, thông tin ứng viên và báo cáo; bắt buộc liên kết ứng viên với yêu cầu tuyển dụng.
+ Thống nhất bổ sung trường 'trong/ngoài định biên' vào yêu cầu tuyển dụng, dùng làm điều kiện cho luồng phê duyệt.
+ Thống nhất kế hoạch tuyển dụng theo tháng chỉ cần số lượng cần tuyển, không tách hai cột kế hoạch/đề xuất trùng lặp.
+ Thống nhất chuyển thông tin lương, ngân hàng, mã số thuế, bảo hiểm sang module hợp đồng/bảo hiểm để bảo mật.
+ Thống nhất không gộp quản lý công việc vào phân hệ nhân sự, cần có module quản lý công việc riêng.
+ Chốt tạm dừng việc code/demo, chuyển sang xác nhận tài liệu nghiệp vụ trước khi triển khai.
+ Thống nhất xây dựng bảng công tổng hợp từ chấm công, nghỉ phép, OT làm dữ liệu đầu vào cho tính lương.
+ Mind Map
+ Tự động sinh từ nội dung họp Phóng to 
+ Tuyển dụng Tin tuyển dụng hiện chỉ quản lý nội bộ, chưa đồng bộ nền tảng nên giá trị thấp Chiến dịch tuyển dụng cần có tích hợp API với bên ngoài mới triển khai, giai đoạn này không nên làm Yêu cầu tuyển dụng cần bổ sung trường trong/ngoài định biên, dùng làm điều kiện phê duyệt Cần liên kết ứng viên với yêu cầu tuyển dụng để tracking số lượng CV, phỏng vấn, offer, onboarding Chấm công – nghỉ phép Cần khai báo ca làm việc, quy định đi muộn về sớm theo chính sách công ty Cần có bảng công tổng hợp từ chấm công, nghỉ phép, OT để phục vụ tính lương Nghỉ phép cần cấu hình linh hoạt: phép năm, thâm niên, phép OT, tồn phép, ứng phép Nghỉ ốm cần tính chế độ bảo hiểm và công ty hỗ trợ hay không Hành động triển khai Tổng hợp WBS phân rã các module/task nghiệp vụ Owner:
+
+---
+
+Deadline: Tối nay Cấu trúc WBS theo từng module mỗi task liệt kê nghiệp vụ cụ thể Gửi file nghiệm thu cho anh Nam Owner:
+
+---
+
+Deadline: Chưa rõ Nhớ gửi file để anh Nam ký nghiệm thu Bổ sung trường trong/ngoài định biên vào yêu cầu tuyển dụng Owner:
+
+---
+
+Deadline: Chưa rõ Bổ sung trường thông tin và lý do tuyển thay thế/tuyển mới phục vụ điều kiện luồng phê duyệt Tách phần chiến dịch tuyển dụng ra khỏi phạm vi hiện tại Owner:
+
+---
+
+Deadline: Chưa rõ Chỉ thực hiện khi có đối tác sẵn sàng mở API đồng bộ tuyển dụng Chỉnh lại bảng kế hoạch tuyển dụng theo tháng Owner:
+
+---
+
+Deadline: Chưa rõ Bỏ cột kế hoạch/đề xuất trùng chỉ thể hiện số lượng cần tuyển theo từng tháng Xây dựng báo cáo tuyển dụng theo yêu cầu Owner:
+
+---
+
+Deadline: Chưa rõ Báo cáo theo thời gian phòng ban cấp độ so sánh kế hoạch và thực tế Rà soát và tách các module: quản lý công việc, hợp đồng/bảo hiểm, chấm công nghỉ phép, tiền lương Owner:
+
+---
+
+Deadline: Chưa rõ Tổ chức lại phạm vi từng module tránh gộp chức năng không đúng chỗ Họp review phân hệ HRM Hồ sơ nhân sự Hồ sơ nhân sự gồm thông tin cơ bản, cá nhân, công việc, tài chính; cần bổ sung người phụ thuộc Thông tin lương, ngân hàng, mã số thuế, bảo hiểm nên chuyển sang module hợp đồng/bảo hiểm để bảo mật Quản lý công việc không nên gộp vào nhân sự, cần module riêng Khen thưởng/kỷ luật cần thêm trạng thái thực thi, liên kết với tiền lương nếu có phạt/thưởng Quyết định & hướng Thống nhất tách phần chiến dịch tuyển dụng ra khỏi MVP, chỉ triển khai khi có đối tác/API kết nối Chốt module tuyển dụng cần tập trung vào: mô tả công việc, yêu cầu tuyển dụng, thông tin ứng viên và báo cáo; bắt buộc liên kết ứng viên với yêu cầu tuyển dụng Thống nhất bổ sung trường 'trong/ngoài định biên' vào yêu cầu tuyển dụng, dùng làm điều kiện cho luồng phê duyệt Thống nhất kế hoạch tuyển dụng theo tháng chỉ cần số lượng cần tuyển, không tách hai cột kế hoạch/đề xuất trùng lặp Thống nhất chuyển thông tin lương, ngân hàng, mã số thuế, bảo hiểm sang module hợp đồng/bảo hiểm để bảo mật Thống nhất không gộp quản lý công việc vào phân hệ nhân sự, cần có module quản lý công việc riêng Chốt tạm dừng việc code/demo, chuyển sang xác nhận tài liệu nghiệp vụ trước khi triển khai Thống nhất xây dựng bảng công tổng hợp từ chấm công, nghỉ phép, OT làm dữ liệu đầu vào cho tính lương 
+ Bản dịch chi tiết
+ Quản lý người nói 
+ N1
+
+---
+
+00:42 
+ Chỗ này cũng nhiều anh chị phết.
+ N2
+
+---
+
+00:47 
+ Chỗ này chưa có, anh Dương ạ.
+ N2
+
+---
+
+01:09 
+ Chỗ này tính ra cũng đặc phết đấy. Dài, khá dài. 763 trang rồi mà.
+ N2
+
+---
+
+01:49 
+ Gần 800 trang.
+ N2
+
+---
+
+01:52 
+ Tài liệu không dành cho người đọc.
+ N2
+
+---
+
+02:03 
+ Nhưng mà thanh keo đấy mới được lên 700 trang nhỉ? Thanh keo chạy nhanh nhanh mà.
+ N2
+
+---
+
+02:10 
+ Để em in ra xong rồi anh đến đỡ em nhé.
+ N2
+
+---
+
+02:14 
+ In sách ạ, in sách. Đây, để em lấy nốt BID. Từ trang đâu. Có thể có một vài cái ngôn ngữ từ mà em vẫn còn sót thì chắc là em sẽ sửa tiếp theo em. Ừ, quên, cái này cũng phải. Thêm một dòng thì càng cố cố cần thử nữa. Không, anh Nam nhìn thấy Nam đấy.
+ N2
+
+---
+
+03:22 
+ Anh không đọc đâu. Anh không đọc file đấy đâu. Mất cái trang đấy. Đấy, 763 trang này. Tí anh Dương đếm thử của em xem 763 trang không.
+ N2
+
+---
+
+03:39 
+ Em đang bật rồi mà.
+ N2
+
+---
+
+03:50 
+ Nhưng mà anh Dũng này nếu mà được thì chắc là cái case mà hôm qua em viết trên này thì chắc anh tư vấn thêm cho em ấy.
+ N2
+
+---
+
+04:00 
+ Nút ban đầu thôi à?
+ N2
+
+---
+
+04:15 
+ Thế thì chắc là em cứ đi vào. Còn DEV trước thì— để em sờ vào DEV trước vậy. Có thể là nó đang thiếu thì anh cứ nhìn giúp em cái nút ghi đã.
+ N2
+
+---
+
+04:39 
+ Mấy anh cũng biết chứ. Mà dù học về copying vẫn có công cụ nhưng mà— Em có công cụ nhưng mà em vẫn thích ghi bằng tay để cái đầu nó ngấm. Không vỡ mồm.
+ N2
+
+---
+
+05:06 
+ Anh tin các bạn anh luôn. Em mà không ghi chép là trong đầu em nó sẽ không có một cái gì. Xong rồi thì có lúc đọc lại các cái tài liệu mà AI hay là cái gì ghi ấy, mình cứ thấy nó cứ thế néo nào, thế thế là thôi em phải ghi lại. Kể cả là có thể là em ghi chép không chuẩn lắm.
+ N2
+
+---
+
+05:54 
+ Dạ vâng.
+ N2
+
+---
+
+06:14 
+ Không có đâu. Chỗ này là— chỗ này cũng kín đáo thế này anh ạ.
+ N2
+
+---
+
+06:23 
+ Một cái điều hòa riêng thì cần gì nữa.
+ N2
+
+---
+
+06:56 
+ Ok, bắt đầu nhé.
+ N2
+
+---
+
+06:58 
+ Đây đi. À, hiện tại nhé, ví dụ như là cái phần tuyển dụng đúng không, nó sẽ có phần quản lý yêu cầu này, apply và các cái CV ứng viên này, lịch hẹn phỏng vấn này, offer onboarding này. Thì ở thời điểm hiện tại là tuyển dụng ở đây đang có những cái gì?
+ N2
+
+---
+
+07:19 
+ Tuyển dụng ở đây, đầu tiên là nó sẽ có cái phần quản lý về cái yêu cầu tuyển dụng. Đấy, yêu cầu tuyển dụng thì nó sẽ bao gồm là, ờ, thư viện GD này, à, tiêu đề này, đấy, phòng nào tuyển dụng này, số lượng nhân sự này, và loại hình, ờ, gọi là loại hình thuê đấy. Đấy, hiện tại là nghiệp vụ của em đang lưu 3 thông tin này. Đấy, đây. Sau đó là tạo thêm cái— sau khi có cái yêu cầu này xong thì sẽ có cái phần là đăng tin tuyển dụng. Đấy, thì tin tuyển dụng ở đây nó sẽ gồm có những cái gì? Có tiêu đề này, vị trí— cái này vị trí này thì phải lấy trong setup này. Cái này chắc chưa dev, chưa đẩy lên local là đã có rồi này. Danh sách phòng ban này. Đây là cái này đều sẽ lấy trong danh mục của HRM này. Và thực chất là load ra từ export này. Đấy. Loại hình này, loại hình thì có rồi này. Lương tối thiểu này, hạn nộp hồ sơ này. Đấy, mức độ ưu tiên của cái tin tuyển dụng này này, của cái nhu cầu tuyển dụng này này. Rồi cái, ờ, cái này chưa quên chuyện cái này chưa ra tham chiếu vào thư viện CD này. Đấy. Và cái này thì đều nó sẽ load theo cái GD hết. Đấy. Sau đó là sẽ có các cái thông tin ứng viên ở đây. Thông tin ứng viên ở đây thì nó gồm những cái gì? Đầu tiên họ tên này.
+ N2
+
+---
+
+09:06 
+ Hiện tại là nó chỉ đang nội bộ thôi ạ.
+ N2
+
+---
+
+09:40 
+ Ok. Mình kết nối sang nền tảng tuyển dụng đúng không? Thế cái này chắc để em nghiên cứu thêm, bởi vì cũng có nhiều bên—
+ N2
+
+---
+
+10:14 
+ Gọi là visualize cái danh sách tuyển dụng mình vẫn dùng như mọi khi, file sheet đúng không? Cái Google Sheet bình thường anh em mình vẫn hay dùng, nó sẽ có các status, rồi là các kiểu trạng thái.
+ N2
+
+---
+
+10:33 
+ Vốn là cái luồng bình thường mình vẫn đang dùng.
+ N2
+
+---
+
+11:15 
+ Chủ yếu nếu là cái này thì nó sẽ phục vụ người đứng cấp độ quản lý đúng không?
+ N2
+
+---
+
+11:19 
+ Quản lý chỉ cần biết là đang có bao nhiêu các hồ sơ, hay là đang— đang các vị trí, trạng thái.
+ N2
+
+---
+
+11:40 
+ Ừ. Còn nếu mà không có automation thì cái đoạn này thì gần như không giá trị cho người khác sử dụng.
+ N2
+
+---
+
+11:52 
+ Thì các bên HR họ sẽ prefer là họ dùng Excel hơn.
+ N2
+
+---
+
+12:06 
+ Ừ. Thì khi mà ví dụ như kiểu là cái này thì nếu mà vậy thì cái này nếu mà khả năng mà tích hợp được với cả các cái kênh tuyển dụng, là các cái thông tin ứng viên các thứ là cũng sẽ có thể tự động nạp hết về đây.
+ N2
+
+---
+
+12:40 
+ Đấy thì—
+ N2
+
+---
+
+12:49 
+ Luồng phê duyệt ấy.
+ N2
+
+---
+
+12:52 
+ Ví dụ như bên này nó sẽ có cái phần là gửi duyệt, là gửi duyệt đây. Đấy, nó sẽ có cái phần—
+ N2
+
+---
+
+13:04 
+ Gửi duyệt này là nó sẽ cấu hình.
+ N2
+
+---
+
+13:15 
+ Đây.
+ N2
+
+---
+
+13:22 
+ Là mạng, mạng.
+ N2
+
+---
+
+14:20 
+ Ờ, đang cấu hình ở con export. Đây, hệ thống quy trình này thì vẫn đang cấu hình ở con export. Ví dụ như kiểu là nó sẽ có cái luồng tuyển dụng này, luồng phê duyệt yêu cầu tuyển dụng này. Đấy, thì nó sẽ có một cái luồng cấu hình ở đây.
+ N2
+
+---
+
+14:44 
+ Cấu hình riêng.
+ N2
+
+---
+
+14:49 
+ Con này cũng có tự cái quy trình riêng, tức là sẽ có tự quy trình và nó thực ra nó phải ốp được vào đây. Tức là con export mà app ấy, là từng khi mà anh vào từng công ty ấy, là anh sẽ nhìn thấy quy trình đã dùng ở đây. Đấy, sau đó là có thể thêm các cái quy trình mới. Đấy, sau đó thì con export ở bên này là sẽ có người đồng bộ, đồng bộ chéo với nhau.
+ N2
+
+---
+
+15:14 
+ Đang đang đang đồng bộ, đang đang test thôi, thì chắc đang chạy lại, chạy lại xong thì chắc được. Đấy, cái luồng của nó là vậy. Tức là nếu mà nằm ngoài định biên là, à nếu mà nằm ngoài định biên là sẽ cần phải duyệt. Tức là bản chất là cái này nên là hai quy trình ấy, ý anh là vậy.
+ N2
+
+---
+
+16:32 
+ Ứng viên.
+ N2
+
+---
+
+16:39 
+ Nằm ở đây hết.
+ N2
+
+---
+
+17:05 
+ Tức là anh muốn tách cả bài ra.
+ N2
+
+---
+
+17:50 
+ Tức là ở đây nhé, ví dụ như kiểu là cho ông này đi, ông này đang ở trạng thái mới ứng tuyển thôi.
+ N2
+
+---
+
+21:36 
+ Kinh nghiệm làm việc.
+ N2
+
+---
+
+22:20 
+ Nói chung là các mảng ở đây là đang trình bày theo hơi kiểu truyền thống thôi. Thông tin, dữ liệu thì cũng không nói gì cả. Thế sau khi mà có các cái thông tin của ứng viên là bắt đầu à không, cái này là đây, cái này là đề xuất ngoài định biên hay không là lúc nọ anh bảo để em bổ sung vào này.
+ N2
+
+---
+
+22:50 
+ Ờ, thế á?
+ N2
+
+---
+
+22:53 
+ Nó sẽ nằm trong yêu cầu tuyển dụng.
+ N2
+
+---
+
+23:26 
+ Theo như là cái định biên nó sẽ nằm ở trong cái phần là kế hoạch tuyển dụng của cái bộ phận đấy trong vòng 1 năm.
+ N2
+
+---
+
+25:10 
+ Không, bọn em thì thường là như bọn em làm ấy là sẽ thường tuyển dụng theo dự án.
+ N2
+
+---
+
+25:43 
+ Không định nghĩa nó là định biên. Mà thường là các bạn quy mô như này thì hay bốc tháo như này.
+ N2
+
+---
+
+26:19 
+ Ok. Đề xuất tuyển dụng. Đấy, sau khi có đề xuất xong.
+ N2
+
+---
+
+26:27 
+ Cái này còn còn gì nữa không anh?
+ N2
+
+---
+
+27:44 
+ Nếu như này thì thực ra là đang đứng từ góc độ đấy thì các việc chi tiết về GD các thứ nó lại không phải là quan trọng nhất đúng không anh? Quan trọng nhất là tracking status của.
+ N2
+
+---
+
+28:16 
+ Gọi là tracking cái cái cái chỉ tiêu này là đã hoàn thành được bao nhiêu phần trăm chẳng hạn đúng không?
+ N2
+
+---
+
+28:26 
+ Thì nó sẽ tách thành một phân hệ khác gọi là phân hệ hỗ trợ cho người tuyển dụng. Còn là cái một cái nó phân hệ là quản lý chỉ tiêu của công ty trong cái thời điểm năm nay hoặc là thời gian tới hay như nào đấy. Đúng không? Các chỉ tiêu đấy hoàn thiện được đến đâu thì nó là tách ra hai cái. Còn một cái kia là hỗ trợ dành cho người tuyển dụng. Thì sẽ việc quản lý ứng viên hay là hồ sơ cái nào thì đấy là một cái. Việc đứng từ góc nhìn từ trên xuống là sẽ là muốn là tracking từng chỉ tiêu một hay là như thế nào, nhu cầu đến đâu.
+ N2
+
+---
+
+29:05 
+ Bao giờ tôi có người.
+ N2
+
+---
+
+29:40 
+ Nhưng mà cái chỉ tiêu lắm lúc nó cũng còn có cái là ứng viên onboard vào chẳng hạn như là từ 49 lên 50 đúng không? Xong rồi sau hai tuần thử nghiệm nó nghỉ.
+ N2
+
+---
+
+30:03 
+ Do cái chính sách đúng không?
+ N2
+
+---
+
+30:19 
+ Thì.
+ N2
+
+---
+
+30:39 
+ Quên con mẹ nó.
+ N2
+
+---
+
+30:43 
+ Anh anh so note cho em xem em còn thiếu chừng nào không tắt.
+ N2
+
+---
+
+30:48 
+ Vâng. Cái này là cái.
+ N2
+
+---
+
+32:31 
+ Nền tảng nào đẩy hay chưa đẩy.
+ N2
+
+---
+
+32:45 
+ Chiến dịch tuyển dụng đầu tiên là tham chiếu theo nhiều à?
+ N2
+
+---
+
+32:58 
+ Nhiều đề xuất tuyển dụng à nhiều yêu cầu tuyển dụng.
+ N2
+
+---
+
+33:15 
+ Chạy trên nền tảng nào.
+ N2
+
+---
+
+33:41 
+ Số lượng cần tuyển các thứ à đúng rồi. Số lượng cần tuyển các thứ là nó sẽ tự theo các cái yêu cầu tuyển dụng kia xong nó tự gom lại đúng không?
+ N2
+
+---
+
+33:49 
+ Từng phân bên theo từng cái yêu cầu tuyển dụng kia nó tự lọc ra, tự tổng hợp ra chứ nó không phải là từng cái phát như thế này. Thì này có nghĩa là đang tham chiếu, tham chiếu 11.
+ N2
+
+---
+
+34:38 
+ Trong cùng công ty á?
+ N2
+
+---
+
+34:52 
+ Nhưng mà hai ông có offer lương khác nhau về.
+ N2
+
+---
+
+35:47 
+ Ok. Nói vậy thì cái phần chiến dịch này thì em sẽ nên tách ra. Em sẽ tách ra.
+ N2
+
+---
+
+37:24 
+ Chưa chưa tới đây. Ok thì em lại tắt rồi.
+ N2
+
+---
+
+38:03 
+ Liên kết được thông tin ứng viên với lại yêu cầu tuyển dụng. Rồi. Tức là phần tuyển dụng là chỉ nên nằm đây thôi. Thế còn cái phần lên lịch phỏng vấn này em?
+ N2
+
+---
+
+39:04 
+ Đúng rồi. Đây cái phần tắt cái này trước em thêm cái đây tức là theo tháng này. Đây này. Tức là thêm vị trí này. Và cái này chưa tham dự theo vị trí. Tức là ví dụ như kiểu là năm 2026 đúng không? Tháng 1, tháng 12 đây thì em sẽ thêm các cái phòng ban ở đây. Từng phòng ban ở đây em em chưa sợ theo. Tức là tức là dự kiến đúng không? Dự kiến và sau đó là đề xuất thì sẽ có phần ở đây. Đấy theo 12 tháng đấy. Ví dụ như kiểu là số lượng nhân sự cần bao nhiêu người. Đề xuất trong tháng này là bao nhiêu người. Hay là em sẽ tham dự vào ví dụ như kiểu là trong tháng 1 này ví dụ không cái này em đang bị lỗi một tí. Tức là cái đoạn này là nhân sự này phải tách ra xong rồi từng tháng này lại đề xuất xong rồi nó sẽ trừ dần trừ dần cái số lượng ở đây đi này. Đấy thì đây.
+ N2
+
+---
+
+40:18 
+ Mốt một tháng. À ok thế thôi em không trừ.
+ N2
+
+---
+
+40:23 
+ Đấy kế hoạch và đề xuất.
+ N2
+
+---
+
+40:28 
+ Tức là đây tức là bản chất là đây là cần bao nhiêu nhân sự và đề xuất là tuyển bao nhiêu người.
+ N2
+
+---
+
+40:46 
+ Cần bao nhiêu tuyển bấy nhiêu chứ.
+ N2
+
+---
+
+40:54 
+ À ok. Thế thì để em chỉnh lại cái cái trường dữ liệu này thì em vẫn sẽ giữ nguyên hai cột này là trong tháng này có bao nhiêu nhân sự và cần tuyển thêm.
+ N2
+
+---
+
+41:45 
+ Có. Tức là em đang để thêm phòng ban đấy.
+ N2
+
+---
+
+41:50 
+ Ờ cái này thì em đang để cho cái ông hành chính nhân sự ông sẽ nhập.
+ N2
+
+---
+
+44:24 
+ Riêng cái này là riêng một con.
+ N2
+
+---
+
+44:40 
+ Thậm chí con này nó cũng độc lập, nó không cần chạy chung với bất kỳ cái gì.
+ N2
+
+---
+
+45:04 
+ Dữ liệu dùng. Cái dữ liệu dùng chung là cái phòng ban thì thực ra nó ít.
+ N2
+
+---
+
+46:16 
+ Kế hoạch em sẽ tỉa lại một chút. Offer với onboarding.
+ N2
+
+---
+
+47:05 
+ Là cái gì?
+ N2
+
+---
+
+48:25 
+ Nhiều nhỉ.
+ N2
+
+---
+
+48:52 
+ Ok. Để em sẽ bổ sung thêm. Em sẽ báo cáo này. Thế thì cái báo cáo này em sẽ.
+ N2
+
+---
+
+49:13 
+ Báo cáo này là.
+ N2
+
+---
+
+49:21 
+ Không file tổng hợp nốt của họ ấy. Cho em xin thêm cái đấy. Ok. Tiếp theo.
+ N2
+
+---
+
+49:35 
+ Rồi đến phần nhân sự này. Nhân sự. Nhân sự thì ở đây là đang bao gồm các cái thông tin cơ bản về hành chính rồi.
+ N2
+
+---
+
+49:56 
+ À hiện tại là đang phân theo nhóm đầu tiên là thông tin cơ bản này. À thông tin cá nhân này. Rồi công việc này. Thông tin công việc này. Rồi thông tin liên quan đến tài chính. Đấy thì cả bốn cái này nó đều được cấu hình ở input.
+ N2
+
+---
+
+50:23 
+ Chức vụ là phụ cấp, phụ cấp, phụ cấp với cả công ty nào.
+ N2
+
+---
+
+51:11 
+ Email các thứ nữa đúng không?
+ N2
+
+---
+
+52:06 
+ Có mấy con đúng không?
+ N2
+
+---
+
+55:19 
+ Đây ngày hoàn làm ngày kết thúc này.
+ N2
+
+---
+
+55:25 
+ Profile của nhân sự.
+ N2
+
+---
+
+55:31 
+ Chắc chắn là cái này đang chưa phân quyền nhưng mà.
+ N2
+
+---
+
+55:52 
+ Đúng.
+ N2
+
+---
+
+56:22 
+ Tức là cái này ví dụ như ở quá trình công tác này thì nên đổi đổi sang chỗ khác.
+ N2
+
+---
+
+56:49 
+ Anh sạc iPhone không anh? Anh sạc gì?
+ N2
+
+---
+
+56:55 
+ Lightning.
+ N2
+
+---
+
+57:00 
+ Nó chạy cả 3G xong nó hết pin.
+ N2
+
+---
+
+57:09 
+ Thế tôi cần sạc tôi 3G cũng được.
+ N2
+
+---
+
+57:46 
+ Còn nhiều không?
+ N2
+
+---
+
+58:05 
+ Chưa cần thiết.
+ N2
+
+---
+
+58:27 
+ Con này thì con này tức là con này là có thể sau này là tích hợp các cái phần liên quan đến giao việc các thứ ấy.
+ N2
+
+---
+
+58:50 
+ Module quản lý công việc riêng.
+ N2
+
+---
+
+59:15 
+ Cái phần hợp đồng nữa. Hợp đồng này. Hợp đồng nhân sự.
+ N2
+
+---
+
+01:00:09 
+ Giá trị. Ok. À cái phần là sơ yếu lý lịch này thì có cần không nhỉ?
+ N2
+
+---
+
+01:00:30 
+ Bản chất nó cũng như kiểu thông tin chung.
+ N2
+
+---
+
+01:00:58 
+ Các cái chế độ bảo hiểm cơ bản của công ty thôi.
+ N2
+
+---
+
+01:01:02 
+ Quan trọng nhất trường thông tin là quản lý nhân sự nào thì ông không có này.
+ N2
+
+---
+
+01:01:11 
+ Trong nhân sự.
+ N2
+
+---
+
+01:01:27 
+ Ờ cái này á, cái này là công ty đóng bao nhiêu?
+ N2
+
+---
+
+01:02:12 
+ Ơ số bảo hiểm mà số bảo hiểm nó chỉ có một thôi á. Cho dù có là loại bảo hiểm nào đi chăng nữa.
+ N2
+
+---
+
+01:02:21 
+ À.
+ N2
+
+---
+
+01:02:24 
+ Ok.
+ N2
+
+---
+
+01:02:27 
+ Để em xem xem là em đang hưởng những loại bảo hiểm nào đúng không?
+ N2
+
+---
+
+01:02:39 
+ Ok.
+ N2
+
+---
+
+01:04:13 
+ Ơ nếu mà trong trường hợp đấy thì nghiệp vụ mình sửa như nào?
+ N2
+
+---
+
+01:06:21 
+ Có nhớ có timeline đúng không? Timeline.
+ N2
+
+---
+
+01:06:26 
+ Không ý em là cái đoạn thay đổi đóng các thứ ấy.
+ N2
+
+---
+
+01:07:15 
+ Chờ xử lý tức là dừng hoạt động này. Tạm dừng này.
+ N2
+
+---
+
+01:08:41 
+ Đây là khen thưởng kỷ luật. Đây em có làm thêm cái này thì thật ra là em bóc từ cái HRM.
+ N2
+
+---
+
+01:09:14 
+ Nó sẽ chạy theo chứng chỉ thôi. Nó đã đặt được thôi. Còn cái đào tạo thì nó sẽ ở module internal luôn. Module đào tạo riêng.
+ N2
+
+---
+
+01:09:36 
+ Đây khen thưởng kỷ luật.
+ N2
+
+---
+
+01:10:09 
+ Chưa có. À đây đây kỷ luật này.
+ N2
+
+---
+
+01:12:11 
+ Chứng chỉ này, bằng cấp này.
+ N2
+
+---
+
+01:12:17 
+ Ừ. Tài sản này, lợi ích cung cấp này, tài sản gì này. Tức là như kiểu là được cấp xe hay là gì không này. Kiểu đấy. Đấy. Như kiểu là nhân viên đét thì được cấp laptop hay cấp PC chẳng hạn. Ví dụ thế. Hay là lái xe thì được cấp cấp xe hay là cấp gì? Cấp tủ các thứ. Tủ hộc các thứ kiểu đấy.
+ N2
+
+---
+
+01:14:28 
+ Bản cấp này chưa? Cấp thì ở đây cũng thông tin cơ bản thôi. Chứng chỉ thì cũng tương tự vậy. Bảng chứng chỉ. Số hiệu. Kỹ năng. Tổng cung kỹ năng gì? Nếu cần thì cái kỹ năng này thì em sẽ bổ sung thêm cái bóc tách từ các cái hồ sơ nhân sự kia để để mà thay vì phải điền tay từng cái như thế này.
+ N2
+
+---
+
+01:15:25 
+ Ví dụ như kiểu là trong CV chẳng hạn kiểu đấy. Thông tin gia đình các thứ thì cái này sẽ lấy tham chiếu từ kia. Cái này mà điền vào xong thì cái thông tin kia nó sẽ có. Tức là đây bao nhiêu người phụ thuộc các thứ đây. Quan hệ này là con cái hay gì. Thực ra khi mà mình điền xong các thông tin ở đây thì nó kia nó sẽ có. Chẳng qua là em đang định điền tay thôi mà nếu mà cần thì.
+ N2
+
+---
+
+01:16:38 
+ Điền tay.
+ N2
+
+---
+
+01:16:41 
+ Thì các cái thông tin này thì về cơ bản là cần là điền tay xong đã là các cái thông tin đúng thông tin chung của người ta là sẽ điền ở đây.
+ N2
+
+---
+
+01:17:10 
+ Quyết định này. Quyết định này. Quyết định. Sẽ có loại quyết định ở đây. Tham chiếu theo nhân viên làm.
+ N2
+
+---
+
+01:17:24 
+ Đúng. Ghi nhận thông tin thôi.
+ N2
+
+---
+
+01:17:36 
+ Nó sẽ có thêm ở phần ở trong lịch sử nhân sự, lịch sử làm việc các thứ ấy.
+ N2
+
+---
+
+01:17:45 
+ Vâng. Kể cả lịch sử điều chỉnh lương các thứ nó sẽ giữ.
+ N2
+
+---
+
+01:17:59 
+ Ừ.
+ N2
+
+---
+
+01:18:08 
+ Ừ.
+ N2
+
+---
+
+01:18:47 
+ Vẫn dùng cái này vừa nói rồi.
+ N2
+
+---
+
+01:18:50 
+ Trần Công.
+ N2
+
+---
+
+01:18:53 
+ Dữ liệu công một ngày của nhân sự đâu?
+ N2
+
+---
+
+01:19:00 
+ Thêm thêm tay nữa.
+ N2
+
+---
+
+01:19:23 
+ Cái này là tự load từ cái nghiệp vụ trần công trên app mobile để xem.
+ N2
+
+---
+
+01:19:33 
+ App mobile. Thế là ông nó sẽ có mấy cách. Một là.
+ N2
+
+---
+
+01:19:42 
+ Ừ. Đăng ký giờ làm á?
+ N2
+
+---
+
+01:21:32 
+ Đây đang có cái phần.
+ N2
+
+---
+
+01:21:37 
+ Ví dụ như Quốc Khánh mùng 2 tháng 9 Tết Dương lịch thì mỗi năm phải công huynh một lần. Thì cái đấy là phải có công huynh để quy định. Đây là. Tính chán.
+ N2
+
+---
+
+01:22:14 
+ Chuẩn bị xong chưa nào?
+ N2
+
+---
+
+01:23:15 
+ Đây ví dụ như kiểu là quyết định trần công đi. Đây quyết định về trần công. Quyết định về đi muộn này.
+ N2
+
+---
+
+01:23:26 
+ Quyết định về trần công đấy là trần công theo thiết bị nào này. Giờ trần công là giờ giờ nào này.
+ N2
+
+---
+
+01:23:41 
+ Đây nó sẽ có các cái phần chu kỳ. Ví dụ như kiểu là ngày bắt đầu tính công này.
+ N2
+
+---
+
+01:23:47 
+ Chu kỳ. Làm tròn hay không làm tròn này. Cho phép trần công nhiều lần không?
+ N2
+
+---
+
+01:23:54 
+ Tức là nôm na là kiểu ví dụ như kiểu là đi muộn chẳng hạn nhá. Anh ví dụ như kiểu là 30 phút à 30 phút mà thêm mấy chục giây thì anh đã tính là đi muộn trưa hay là phải tính 31 phút anh mới tính đi muộn. Ví dụ thế.
+ N2
+
+---
+
+01:24:18 
+ Nó không. Ý em là cái cái này cái cấu hình này là để là cái phần khi mà người ta trần công ấy thì người ta sẽ bị rơi vào cây đi muộn hay là gì?
+ N2
+
+---
+
+01:28:41 
+ Nghỉ phép đúng không?
+ N2
+
+---
+
+01:28:45 
+ Hiện tại thì đang có cái này của em là đang có cái yêu cầu xin nghỉ thôi.
+ N2
+
+---
+
+01:30:16 
+ Vậy phép từ từ phép đấy phép liên quan chức vụ à anh?
+ N2
+
+---
+
+01:30:34 
+ Cấp phép trước à?
+ N2
+
+---
+
+01:30:42 
+ Ừ. Mỗi tháng cấp phép một lần.
+ N2
+
+---
+
+01:31:40 
+ Cái bàn tay.
+ N2
+
+---
+
+01:36:11 
+ Rất nhiều cây. Phết ở đây.
+ N2
+
+---
+
+01:36:20 
+ Không sao anh còn phần tiền lương xong là chiều ở đây đến buổi chiều để làm nốt phần tiền lương đi. Xong rồi xong rồi em sạch một phát để cho xong cái khối tọt ỏi xong rồi các anh chốt lại bắt đầu.
+ N2
+
+---
+
+01:36:46 
+ Thôi thì anh chọn nốt đây. Em thấy còn mỗi phần tiền lương này thôi.
+ N2
+
+---
+
+01:36:54 
+ Phần công chưa xong đâu đúng không?
+ N2

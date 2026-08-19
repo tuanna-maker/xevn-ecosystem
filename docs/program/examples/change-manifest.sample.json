@@ -1,0 +1,136 @@
+{
+  "$schema": "../schemas/change-manifest.schema.json",
+  "manifest_version": "0.1.1",
+  "work_item_id": "PO-HRM-BP-ATT-SIGN-DB-API-01",
+  "title": "Ký chốt bảng công — DB_DESIGN + API_DESIGN delta",
+  "summary": "Gold Plane D sample — closes TR-CM-09/10 for ATT-SIGN: §4.6.1 att_timesheet_sign_step + F-ATT-WF-SIGN F.1 + F-ATT-SHEET-02 BR-BP-TS-02 preconditions. Prior TS wave PO-HRM-BP-ATT-SIGN-TS-01 (§6.4).",
+  "uc_ids": ["UC-BP-ATT-11"],
+  "br_ids": ["BR-ATT-SIGN-01"],
+  "ac": [
+    {
+      "id": "AC-ATT-SIGN-01",
+      "statement": "TechSpec (khi mở) mô tả đủ ba bước ký và ràng buộc chỉ bảng đã ký mới vào tính lương, khớp quyết định đã chốt trên phiếu sponsor.",
+      "verify": "doc_review",
+      "pass_when": "spec_targets.tech_spec không còn HOLD mù — có path TechSpec + ref_srs tới UC-BP-ATT-11 hoặc wave ghi rõ lý do HOLD còn lại."
+    },
+    {
+      "id": "AC-ATT-SIGN-02",
+      "statement": "Quy trình duyệt ký không hard-code một pháp nhân; master cấu hình trên XBOS, đồng bộ tenant HRM.",
+      "verify": "doc_review",
+      "pass_when": "must_keep và TechSpec/API map nêu XBOS workflow sync theo tenant; không mô tả cấp duyệt cố định toàn tập đoàn."
+    },
+    {
+      "id": "AC-ATT-SIGN-03",
+      "statement": "Wave docs-only không đụng mã sản phẩm.",
+      "verify": "gate_script",
+      "pass_when": "git diff không chứa apps/** hoặc packages/**; forbidden_paths được tôn trọng."
+    },
+    {
+      "id": "AC-ATT-SIGN-04",
+      "statement": "Khi mở wave sản phẩm, người dùng hoàn tất chuỗi ký chốt bảng công trên UI theo đúng persona và thấy trạng thái sau lưu + F5.",
+      "verify": "browser",
+      "uf_or_j": "UF-HRM-ATT-SIGN",
+      "pass_when": "UF-HRM-ATT-SIGN: login → bảng công kỳ → ký NV→QL→HCNS → API 2xx → FE cập nhật → F5 còn trạng thái; U65 zero-seed."
+    }
+  ],
+  "slice_id": "HRM-ATT-SIGN-01",
+  "allowed_paths": [
+    "docs/architecture/**",
+    "docs/client-delivery/hrm-enterprise-blueprint/**",
+    "docs/program/schemas/**",
+    "docs/program/examples/**",
+    "docs/program/slices/HRM-ATT-SIGN-01.md",
+    "docs/qa/evidence/**"
+  ],
+  "forbidden_paths": ["apps/**", "packages/**", "deploy/**"],
+  "role_owners": {
+    "pm": "PO-BIZ-CHANGE-COMPILER-BA-PROC-01",
+    "sa": "PO-HRM-BP-ATT-SIGN-SA-01",
+    "ba_data": "PO-HRM-BP-ATT-SIGN-DB-API-01",
+    "ba_process": "PO-HRM-BP-SRS-CHOT-01",
+    "ba_docs": "PO-BIZ-CHANGE-COMPILER-BA-01",
+    "qa": "UF-HRM-ATT-SIGN-when-product",
+    "qc": "pre-send-docs-only"
+  },
+  "sponsor_confirm": {
+    "status": "CONFIRMED",
+    "wave_id": "PO-HRM-BP-SRS-CHOT-01",
+    "date": "2026-08-05",
+    "evidence_ref": "docs/client-delivery/hrm-enterprise-blueprint/UC_MEETING_PRODUCT_GAP_MATRIX.md",
+    "notes": "Q-ATT-SIGN ANSWERED · R-SIGN-01 CLOSED — NV+QL+HR · XBOS WF configurable per tenant."
+  },
+  "change_mode": "UPGRADE",
+  "neo_tags": ["DOC-DELTA", "CONTRACT-MEMORY"],
+  "source_artifacts": [
+    {
+      "path": "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_CHOT_FILL_v1.1.xlsx",
+      "kind": "excel",
+      "sheet": "00_Chot_Sponsor",
+      "note": "decision_id=Q-ATT-SIGN · batch_change_id=CM-HRM-ATT-011"
+    },
+    {
+      "path": "docs/client-delivery/hrm-enterprise-blueprint/UC_MEETING_PRODUCT_GAP_MATRIX.md",
+      "kind": "markdown",
+      "note": "UC-BP-ATT-11 · R-SIGN-01 CLOSED"
+    },
+    {
+      "path": "docs/program/schemas/change-manifest.batch.example.json",
+      "kind": "other",
+      "note": "Plane B feedstock CM-HRM-ATT-011 — do not ajv as Plane D"
+    }
+  ],
+  "read_first": [
+    "docs/architecture/ADR-BUSINESS-CHANGE-COMPILER-20260805.md",
+    "docs/program/schemas/change-manifest.schema.json",
+    "docs/program/schemas/CHANGE_MANIFEST_VALIDATION_MATRIX.md",
+    "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md",
+    "docs/client-delivery/hrm-enterprise-blueprint/UC_MEETING_PRODUCT_GAP_MATRIX.md"
+  ],
+  "must_keep": [
+    "Không bỏ bước nhân viên xác nhận trước quản lý trực tiếp",
+    "Workflow cấu hình trên XBOS — cấm hard-code cấp duyệt theo một pháp nhân",
+    "Chỉ bảng công đã ký mới vào phễu tính lương",
+    "Spec-first: SRS confirm trước TechSpec",
+    "no_prompt_echo trên tài liệu khách"
+  ],
+  "spec_targets": {
+    "srs": "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-ATT-11",
+    "tech_spec": "docs/client-delivery/hrm-enterprise-blueprint/TECHSPEC_HRM_ENTERPRISE.md §6.4",
+    "db_design": "docs/client-delivery/hrm-enterprise-blueprint/DB_DESIGN_HRM_ENTERPRISE.md §4.6.1",
+    "api_design": "docs/client-delivery/hrm-enterprise-blueprint/API_DESIGN_HRM_ENTERPRISE.md · F-ATT-WF-SIGN-01/02 · F-ATT-SHEET-02"
+  },
+  "traceability": {
+    "srs_refs": [
+      "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-ATT-11 · FR-UC-BP-ATT-11"
+    ],
+    "tech_spec_refs": [
+      "docs/client-delivery/hrm-enterprise-blueprint/TECHSPEC_HRM_ENTERPRISE.md §6.4 · FR-UC-BP-ATT-11 · PO-HRM-BP-ATT-SIGN-TS-01"
+    ],
+    "db_design_refs": [
+      "docs/client-delivery/hrm-enterprise-blueprint/DB_DESIGN_HRM_ENTERPRISE.md §4.6.1 · att_timesheet_sign_step · PO-HRM-BP-ATT-SIGN-DB-API-01"
+    ],
+    "api_design_refs": [
+      "docs/client-delivery/hrm-enterprise-blueprint/API_DESIGN_HRM_ENTERPRISE.md · F-ATT-WF-SIGN-01 · F-ATT-WF-SIGN-02 · F-ATT-SHEET-02 · PO-HRM-BP-ATT-SIGN-DB-API-01"
+    ],
+    "journey_ids": ["UF-HRM-ATT-SIGN", "J-HRM-06", "J-HRM-06b"],
+    "scope_parity_ack": true,
+    "scope_parity_evidence": "docs/qa/evidence/po-hrm-bp-att-sign-be-01.md · SP-ATT-SIGN-01..04"
+  },
+  "pipeline_stage": "ready_for_dev",
+  "compound_hooks": {
+    "pre_task_memory_loadout": true,
+    "post_task_memory_update": true,
+    "promote_os_on_lesson": false
+  },
+  "promote_os": {
+    "required": false,
+    "chapter": "34-BUSINESS-CHANGE-COMPILER.md",
+    "notes": "Gold sample for PM change_manifest_path — not OS promote trigger alone."
+  },
+  "compiled_at": "2026-08-05T15:00:00+07:00",
+  "compiler": {
+    "name": "manual-ba-data",
+    "version": "0.1.1",
+    "mode": "manual"
+  }
+}

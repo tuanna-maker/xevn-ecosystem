@@ -1,14 +1,28 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+/**
+ * Post-build gate: dist must contain runtime spine modules.
+ * Incremental nest/tsc emit can leave a partial dist/ after OneDrive/Unicode wipe —
+ * fail fast so local L0 never serves a half-empty outDir.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-const distPath = path.join(__dirname, '..', 'dist');
+/** Modules that caused MODULE_NOT_FOUND / ECONNREFUSED when dist was wiped mid-watch. */
+export const DIST_SPINE = [
+  'dist/main.js',
+  'dist/app.module.js',
+  'dist/common/http-exception.filter.js',
+  'dist/platform/platform-runtime.js',
+  'dist/auth/auth.module.js',
+];
 
-if (!fs.existsSync(distPath)) {
-    console.error(`Error: dist directory is missing at ${distPath}`);
-    process.exit(1);
+const missing = DIST_SPINE.filter((rel) => !fs.existsSync(path.join(root, rel)));
+if (missing.length === 0) {
+  process.exit(0);
 }
-console.log('Verified dist directory exists.');
+
+console.error(`[xbos-api] verify-dist FAIL — missing: ${missing.join(', ')}`);
+console.error('[xbos-api] run: pnpm run build:clean   OR   pnpm run start:node');
+process.exit(1);

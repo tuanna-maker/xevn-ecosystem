@@ -1,0 +1,15 @@
+You are Team Claude (external coding lane) on xevn-ecosystem. Cursor Lead is absolute reviewer.
+
+work_item_id: W1-B-01-TC-LEAVE
+Read and execute EXACTLY: docs/program/TEAM_CLAUDE_ACTIVE_PACKET.md
+Slice: docs/program/slices/DOC-ENT-P0-HRM-LEAVE.md
+
+Rules:
+- Stay inside allowed_paths only
+- NFD repo cwd only (this git repo)
+- OS 28 display-ready BE; OS 25 SOLID; no seed U65
+- Write docs/qa/evidence/team-claude-w1b-01-leave.md when done
+- Append DONE to docs/program/PEER_PM_COLLAB.md §5 and update docs/program/TEAM_CLAUDE_STATUS.md
+- draft_ready_for_cursor_review: true — do NOT claim READY_FOR_QA or merge main
+
+Start now: read packet → audit leave services vs API_CONTRACT §4 → implement gaps → tests → evidence → peer DONE.

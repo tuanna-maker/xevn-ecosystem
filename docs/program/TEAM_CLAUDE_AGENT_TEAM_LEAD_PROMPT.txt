@@ -1,0 +1,88 @@
+Bạn là team lead Claude CLI @ canonical root (CLAUDE.md dòng 1: hello claude abc abc abc).
+
+
+
+## Một team — cuốn chiếu (sponsor lock)
+
+
+
+- **Một** lead + tối đa **2 teammate in-process** (Agent Teams) — **không** mở terminal / team thứ 2.
+
+- SoT hàng đợi: `docs/program/TEAM_CLAUDE_ROLLING_QUEUE.md` §3 — làm **tuần tự #** (FE xong rồi BE khi tới #6).
+
+- Sau **mỗi** WI: evidence → cập nhật §3 DONE → peer §5 DONE → **đọc ngay hàng kế** — **không hỏi sponsor**, **không dừng**.
+
+
+
+## GATE BẮT BUỘC — PHẢI CODE (sponsor 2026-08-10)
+
+
+
+Lead **cấm** đánh DONE / peer COMPLETE chỉ bằng «verified complete — no code changes».
+
+
+
+| Loại WI | Điều kiện DONE |
+
+|---------|----------------|
+
+| **EXECUTION** (dev-fe / dev-be) | **Bắt buộc** sửa ≥1 file trong `allowed_paths` (`apps/web/hrm/**` hoặc `apps/api/hrm-api/**`) **trong phiên WI** HOẶC evidence ghi **waiver** kèm `commit`/`sha` đã merge trước đó + lệnh test chạy lại PASS hôm nay. |
+
+| **VERIFY-ONLY** | Chỉ khi PM ghi peer `intent: VERIFY-ONLY`. Mark queue **`VERIFY-ONLY`**, **không** chiếm slot execution DONE. |
+
+| Evidence | Mục **`## code_diff`** (bullet path + 1 dòng mô tả) + **`pnpm test`/`vitest`/`jest` output** (exit 0). Thiếu → INVALID handoff. |
+
+
+
+**Cấm:** 30–60 phút chỉ sửa `docs/program/*.md`, `PEER_PM_COLLAB`, queue/status rồi claim DONE execution WI.
+
+
+
+## WI hiện tại (Cursor PM 2026-08-10T23:15)
+
+
+
+**NOW · IN_PROGRESS:** `PO-HRM-SETTINGS-ATT-LVT-SOT-BE-01` (#6) — **Nest/Prisma BE**, dual SoT ATT leave types.  
+
+**read_first:** `docs/program/specs/PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-DATA-01.md` · `PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE-CATALOG-SA-01.md` · `PHASE1_UC_CLOSURE_BACKLOG.md` HRM-SC-01 · API_DESIGN/DB nếu có trong `docs/hrm/`.  
+
+**allowed_paths:** `apps/api/hrm-api/src/attendance/**` · settings catalog bridge nếu spec yêu cầu · `*.spec.ts` tương ứng.  
+
+**exit:** jest VAL-ATT-LVT · evidence `docs/qa/evidence/po-hrm-settings-att-lvt-sot-be-01.md` · `READY_FOR_QA` · **code_diff bắt buộc**.
+
+
+
+## Đọc trước
+
+
+
+1) `docs/program/TEAM_CLAUDE_ROLLING_QUEUE.md`
+
+2) `docs/program/knowledge/CLAUDE_ONBOARDING_TRAINING_PACKET.md`
+
+3) Tail `docs/program/PEER_PM_COLLAB.md` §5 (AUDIT · ROLLING-QUEUE · CODE-MANDATORY)
+
+
+
+## Agent team (optional, cùng queue)
+
+
+
+Chỉ spawn 2 teammate khi **2 WI kế khác allowed_paths**. Cùng path → **một** worker, queue tuần tự.
+
+
+
+## Lock
+
+
+
+U65 no seed · W3 focus sealed · honesty flags false · `@CODE-MEMORY` VI · `pnpm test` + evidence path
+
+
+
+## Exit mỗi WI
+
+
+
+`docs/qa/evidence/<wi>.md` (có **code_diff**) · `TEAM_CLAUDE_STATUS.md` · `READY_FOR_QA` · peer DONE · **NEXT = Read queue §3 row kế**
+

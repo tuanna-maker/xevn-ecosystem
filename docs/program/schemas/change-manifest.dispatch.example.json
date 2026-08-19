@@ -1,0 +1,90 @@
+{
+  "$schema": "./change-manifest.schema.json",
+  "manifest_version": "0.1.1",
+  "work_item_id": "PO-BIZ-CHANGE-COMPILER-BA-DATA-01",
+  "title": "Change Manifest validation matrix + schema align",
+  "summary": "Plane D sample — docs-only governance wave; validates against change-manifest.schema.json v0.1.1.",
+  "uc_ids": ["UC-BCC-01", "FR-BCC-VAL-01"],
+  "br_ids": ["BR-BCC-01"],
+  "ac": [
+    {
+      "id": "AC-CM-VAL-01",
+      "statement": "CHANGE_MANIFEST_VALIDATION_MATRIX.md on disk with Plane D/B lock and VAL-CM rules",
+      "verify": "doc_review",
+      "pass_when": "Matrix sections 1–11 present; dual-plane lock explicit"
+    },
+    {
+      "id": "AC-CM-VAL-02",
+      "statement": "Schema v0.1.1 enforces browser uf_or_j, confirm date, and br_ids except FIX+WAIVED",
+      "verify": "doc_review",
+      "pass_when": "change-manifest.schema.json description v0.1.1 and if/then blocks present"
+    }
+  ],
+  "slice_id": "biz-change-compiler",
+  "allowed_paths": [
+    "docs/program/schemas/**",
+    "docs/qa/evidence/po-biz-change-compiler-ba-data-01.md"
+  ],
+  "forbidden_paths": ["apps/**", "packages/**"],
+  "role_owners": {
+    "ba_data": "PO-BIZ-CHANGE-COMPILER-BA-DATA-01",
+    "pm": "PO-BIZ-CHANGE-COMPILER"
+  },
+  "sponsor_confirm": {
+    "status": "CONFIRMED",
+    "wave_id": "U77",
+    "date": "2026-08-05",
+    "evidence_ref": "docs/program/TEAM_USER_REQUIREMENTS.md §U77"
+  },
+  "change_mode": "ADD",
+  "neo_tags": ["DOC-DELTA", "CONTRACT-MEMORY"],
+  "source_artifacts": [
+    {
+      "path": "docs/architecture/ADR-BUSINESS-CHANGE-COMPILER-20260805.md",
+      "kind": "markdown",
+      "note": "Field SoT for Plane D"
+    },
+    {
+      "path": "docs/program/schemas/CHANGE_MANIFEST_EXCEL_COLUMNS.md",
+      "kind": "markdown",
+      "note": "Excel → JSON map"
+    }
+  ],
+  "read_first": [
+    "docs/architecture/ADR-BUSINESS-CHANGE-COMPILER-20260805.md",
+    "docs/program/schemas/change-manifest.schema.json",
+    "docs/program/schemas/CHANGE_MANIFEST_VALIDATION_MATRIX.md"
+  ],
+  "must_keep": [
+    "Spec-first order unchanged",
+    "Plane B ledger must not be ajv-validated as Plane D",
+    "Phase A forbidden_paths includes apps/**"
+  ],
+  "spec_targets": {
+    "srs": "docs/program/TEAM_USER_REQUIREMENTS.md"
+  },
+  "traceability": {
+    "srs_refs": [
+      "docs/program/TEAM_USER_REQUIREMENTS.md §U77"
+    ],
+    "journey_ids": [],
+    "scope_parity_ack": false
+  },
+  "pipeline_stage": "intake",
+  "compound_hooks": {
+    "pre_task_memory_loadout": true,
+    "post_task_memory_update": true,
+    "promote_os_on_lesson": true
+  },
+  "promote_os": {
+    "required": true,
+    "chapter": "34-BUSINESS-CHANGE-COMPILER.md",
+    "notes": "Promote after A2 sample green"
+  },
+  "compiled_at": "2026-08-05T14:18:00+07:00",
+  "compiler": {
+    "name": "manual-ba-data",
+    "version": "0.1.1",
+    "mode": "manual"
+  }
+}

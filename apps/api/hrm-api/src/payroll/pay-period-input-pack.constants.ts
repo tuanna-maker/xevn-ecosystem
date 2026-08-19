@@ -1,0 +1,12 @@
+/** Error codes — PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-API-01 §7 */
+export const HRM_PAY_ATT_412 = 'HRM-PAY-ATT-412';
+export const HRM_PAY_PERIOD_409_IMMUTABLE = 'HRM-PAY-PERIOD-409-IMMUTABLE';
+export const HRM_PAY_INP_409_DUP = 'HRM-PAY-INP-409-DUP';
+export const HRM_PAY_INP_404_COMPONENT = 'HRM-PAY-INP-404-COMPONENT';
+export const HRM_PAY_INP_404 = 'HRM-PAY-INP-404';
+export const HRM_PAY_ADV_409_BRIDGE = 'HRM-PAY-ADV-409-BRIDGE';
+export const HRM_PAY_ADV_409_PERIOD = 'HRM-PAY-ADV-409-PERIOD';
+
+export const PAY_PERIOD_MUTABLE_STATUSES = ['draft'] as const;
+export const DEFAULT_TRANSFER_KIND = 'closed_transfer';
+export const DEFAULT_ADVANCE_COMPONENT_CODE = 'tam_ung';

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hồ sơ nhân viên — XeVN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-frame">
+      <header class="app-header">
+        <a class="neo-brand" href="index.html">
+          <img src="assets/xevn-logo.png" alt="" width="28" height="28" />
+          <span>XeVN</span>
+        </a>
+        <nav class="neo-nav-links" aria-label="Neo P0">
+          <a href="login.html">Đăng nhập</a>
+          <a href="att-overview.html">Chấm công</a>
+          <a href="dialog-leave.html">Đơn nghỉ</a>
+          <a href="dialog-ot.html">Đơn OT</a>
+          <a href="emp-profile.html" aria-current="page">Hồ sơ NV</a>
+        </nav>
+      </header>
+
+      <main class="app-main">
+        <div class="page-head">
+          <h1>Hồ sơ nhân viên</h1>
+          <a class="btn btn-ghost btn-sm" href="index.html">← Neo P0</a>
+        </div>
+
+        <section class="profile-hero" aria-label="Thông tin nhanh">
+          <div class="avatar" aria-hidden="true">NA</div>
+          <div class="profile-meta">
+            <h1>Nguyễn Văn An</h1>
+            <p>NV-1024 · Chuyên viên vận hành · Công ty Du lịch XeVN</p>
+            <p style="margin-top: 0.35rem">Email: an.nguyen@xe.vn · ĐT: 0912 345 678</p>
+          </div>
+          <div class="profile-actions">
+            <button type="button" class="btn btn-primary" id="btn-quick-edit" aria-haspopup="dialog">
+              Sửa nhanh
+            </button>
+          </div>
+        </section>
+
+        <div class="table-wrap" style="margin-bottom: 1.25rem">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nhóm</th>
+                <th>Giá trị</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Phòng ban</td>
+                <td>Vận hành tuyến</td>
+              </tr>
+              <tr>
+                <td>Ngày vào</td>
+                <td>15/03/2022</td>
+              </tr>
+              <tr>
+                <td>Trạng thái</td>
+                <td><span class="badge badge-ok">Đang làm việc</span></td>
+              </tr>
+              <tr>
+                <td>Chức danh</td>
+                <td>Chuyên viên vận hành</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Quick-edit modal (visible neo demo) -->
+        <div class="modal-backdrop modal-backdrop--static" id="quick-edit-modal">
+          <div class="xevn-modal" role="dialog" aria-labelledby="qe-title" style="max-width: 560px">
+            <div class="xevn-modal-brand-bar" aria-hidden="true"></div>
+            <div class="xevn-modal-header-glass">
+              <img class="xevn-wordmark" src="assets/xevn-logo.png" alt="" />
+              <div>
+                <h2 id="qe-title" class="xevn-modal-title">Sửa nhanh hồ sơ</h2>
+                <p class="xevn-modal-sub">Cập nhật liên hệ — không đổi hợp đồng API</p>
+              </div>
+            </div>
+            <form class="xevn-modal-body" action="#" method="get" onsubmit="return false">
+              <div class="form-grid">
+                <div class="field col-6">
+                  <label for="qe-name">Họ và tên</label>
+                  <input id="qe-name" class="xevn-field-name" type="text" value="Nguyễn Văn An" />
+                </div>
+                <div class="field col-6">
+                  <label for="qe-code">Mã NV</label>
+                  <input id="qe-code" class="xevn-field-code" type="text" value="NV-1024" readonly />
+                </div>
+                <div class="field col-6">
+                  <label for="qe-phone">Điện thoại</label>
+                  <input id="qe-phone" class="xevn-field-phone" type="tel" value="0912 345 678" />
+                </div>
+                <div class="field col-6">
+                  <label for="qe-email">Email</label>
+                  <input id="qe-email" class="xevn-field-line" type="email" value="an.nguyen@xe.vn" />
+                </div>
+                <div class="field col-12">
+                  <label for="qe-addr">Địa chỉ liên hệ ngắn</label>
+                  <input
+                    id="qe-addr"
+                    class="xevn-field-line"
+                    type="text"
+                    value="Q. Tân Bình, TP.HCM"
+                  />
+                </div>
+              </div>
+            </form>
+            <div class="xevn-modal-footer">
+              <button type="button" class="btn btn-ghost">Hủy</button>
+              <button type="button" class="btn btn-primary">Lưu</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="compare">
+          <div class="compare-panel">
+            <div class="compare-label fail">Chưa đạt</div>
+            <div class="compare-body">
+              <div class="wire-old">
+                <div class="wire-title">Profile + modal sửa</div>
+                <div class="wire-field"></div>
+                <div class="wire-meta">Không viền brand · modal không logo · label slate-400</div>
+              </div>
+            </div>
+          </div>
+          <div class="compare-panel">
+            <div class="compare-label pass">Đạt</div>
+            <div class="compare-body" style="font-size: 13px; color: var(--xevn-text-secondary)">
+              Hero hồ sơ viền xanh trái · modal sửa nhanh đủ Q1 (thanh xanh + logo) ·
+              field phone/code compact · chữ #111827.
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

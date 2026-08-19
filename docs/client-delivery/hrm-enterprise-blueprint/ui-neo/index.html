@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>XeVN — Neo giao diện P0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="neo-shell">
+      <header class="neo-topnav">
+        <a class="neo-brand" href="index.html">
+          <img src="assets/xevn-logo.png" alt="" width="36" height="36" />
+          <span>XeVN</span>
+        </a>
+        <nav class="neo-nav-links" aria-label="Neo P0">
+          <a href="login.html">Đăng nhập</a>
+          <a href="att-overview.html">Chấm công</a>
+          <a href="dialog-leave.html">Đơn nghỉ</a>
+          <a href="dialog-ot.html">Đơn OT</a>
+          <a href="emp-profile.html">Hồ sơ NV</a>
+        </nav>
+      </header>
+
+      <h1 class="neo-hero-title">Neo giao diện — năm màn ưu tiên</h1>
+      <p class="neo-lead">
+        Mẫu tĩnh cho portal nội bộ XeVN: viền xanh đầu hộp thoại, logo bên trái,
+        tiêu đề Montserrat, chữ thân Source Sans 3 (chờ chốt font thân cuối),
+        trường nhập co theo loại dữ liệu. Không giả lập nhận diện khuôn mặt hay mã QR thời gian thực.
+      </p>
+
+      <div class="neo-grid-cards">
+        <a class="neo-card-link" href="login.html">
+          <strong>1. Đăng nhập</strong>
+          <span>Vỏ đen brand + thẻ đăng nhập có thanh xanh</span>
+        </a>
+        <a class="neo-card-link" href="att-overview.html">
+          <strong>2. Tổng quan chấm công</strong>
+          <span>Thanh công cụ + chỉ số tối giản</span>
+        </a>
+        <a class="neo-card-link" href="dialog-leave.html">
+          <strong>3. Tạo đơn nghỉ</strong>
+          <span>Hộp thoại rộng, nhiều trường</span>
+        </a>
+        <a class="neo-card-link" href="dialog-ot.html">
+          <strong>4. Tạo đơn OT</strong>
+          <span>Cùng chuẩn chrome + field compact</span>
+        </a>
+        <a class="neo-card-link" href="emp-profile.html">
+          <strong>5. Hồ sơ nhân viên</strong>
+          <span>Đầu trang + hộp sửa nhanh</span>
+        </a>
+      </div>
+
+      <h2 class="font-display" style="font-size: 1.15rem; margin: 0 0 0.75rem">
+        CHƯA ĐẠT so với ĐẠT (mẫu hộp thoại)
+      </h2>
+      <div class="compare">
+        <div class="compare-panel">
+          <div class="compare-label fail">Chưa đạt — UI hiện tại đơn sơ</div>
+          <div class="compare-body">
+            <div class="wire-old">
+              <div class="wire-title">Tạo đơn nghỉ</div>
+              <div class="wire-field"></div>
+              <div class="wire-field"></div>
+              <div class="wire-field"></div>
+              <div class="wire-meta">
+                Không logo · không viền brand · tiêu đề nhạt · mọi ô kéo full chiều ngang
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="compare-panel">
+          <div class="compare-label pass">Đạt — chuẩn neo</div>
+          <div class="compare-body">
+            <div class="xevn-modal" style="max-width: 100%; box-shadow: var(--xevn-shadow-soft)">
+              <div class="xevn-modal-brand-bar"></div>
+              <div class="xevn-modal-header-glass">
+                <img class="xevn-wordmark" src="assets/xevn-logo.png" alt="" />
+                <div>
+                  <h3 class="xevn-modal-title">Tạo đơn nghỉ</h3>
+                  <p class="xevn-modal-sub">Thanh xanh · logo trái · kính mờ nhẹ</p>
+                </div>
+              </div>
+              <div class="xevn-modal-body" style="padding-bottom: 1rem">
+                <div class="field" style="margin: 0">
+                  <label for="demo-type">Loại nghỉ</label>
+                  <select id="demo-type" class="xevn-field-select-sm">
+                    <option>Nghỉ phép năm</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="font-display" style="font-size: 1.15rem; margin: 0 0 0.5rem">
+        Ánh xạ trường → chiều rộng tối đa
+      </h2>
+      <table class="mapping-table">
+        <thead>
+          <tr>
+            <th>Loại trường</th>
+            <th>Ví dụ</th>
+            <th>max-width</th>
+            <th>class</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ngày</td>
+            <td>Từ ngày / Đến ngày</td>
+            <td>8,75 rem (~140px)</td>
+            <td><code>xevn-field-date</code></td>
+          </tr>
+          <tr>
+            <td>Giờ</td>
+            <td>Giờ bắt đầu OT</td>
+            <td>6,5 rem (~104px)</td>
+            <td><code>xevn-field-time</code></td>
+          </tr>
+          <tr>
+            <td>Mã</td>
+            <td>Mã nhân viên</td>
+            <td>10 rem (~160px)</td>
+            <td><code>xevn-field-code</code></td>
+          </tr>
+          <tr>
+            <td>Số ngắn</td>
+            <td>Số giờ OT</td>
+            <td>7,5 rem (~120px)</td>
+            <td><code>xevn-field-num</code></td>
+          </tr>
+          <tr>
+            <td>Select ngắn</td>
+            <td>Loại nghỉ / ca</td>
+            <td>12,5 rem (~200px)</td>
+            <td><code>xevn-field-select-sm</code></td>
+          </tr>
+          <tr>
+            <td>Select trung</td>
+            <td>Phòng ban</td>
+            <td>17,5 rem (~280px)</td>
+            <td><code>xevn-field-select-md</code></td>
+          </tr>
+          <tr>
+            <td>Họ tên</td>
+            <td>Họ và tên</td>
+            <td>17,5 rem (~280px)</td>
+            <td><code>xevn-field-name</code></td>
+          </tr>
+          <tr>
+            <td>Dòng dài</td>
+            <td>Email</td>
+            <td>24 rem</td>
+            <td><code>xevn-field-line</code></td>
+          </tr>
+          <tr>
+            <td>Lý do</td>
+            <td>Textarea</td>
+            <td>100% cột nội dung</td>
+            <td><code>xevn-field-reason</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note-box">
+        <strong>Ghi chú cho đội giao diện:</strong> bọc mọi hộp thoại bằng thanh brand +
+        header kính mờ + wordmark; dùng <code>xevn-modal--wide</code> (~920px) cho đơn
+        nghỉ/OT; giữ nguyên hợp đồng API và bố cục nghiệp vụ đã chốt. Font thân tạm
+        Source Sans 3 — đổi khi sponsor chốt phương án A/B/C.
+      </div>
+    </div>
+  </body>
+</html>

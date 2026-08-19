@@ -1,0 +1,195 @@
+{
+  "schema_version": "0.1.0-draft",
+  "plane": "B",
+  "plane_alias": "P0_BATCH_FEEDSTOCK",
+  "program_id": "PO-BIZ-CHANGE-COMPILER",
+  "module_default": "HRM",
+  "emitted_at": "2026-08-05T14:30:00+07:00",
+  "source_workbook": [
+    "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_CHOT_FILL_v1.1.xlsx",
+    "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_CHOT_REMAINING.xlsx"
+  ],
+  "gap_matrix_ref": "docs/client-delivery/hrm-enterprise-blueprint/UC_MEETING_PRODUCT_GAP_MATRIX.md",
+  "uc_inventory_ref": "docs/client-delivery/hrm-enterprise-blueprint/UC_INVENTORY.md",
+  "notes": "Plane B (P0) — ledger chốt; không dùng làm change_manifest_path cho Dev. Compile → Plane D / P1 Wave Manifest (ajv).",
+  "compiled_to_wave_examples": [
+    "docs/program/schemas/change-manifest.example.json",
+    "docs/program/schemas/change-manifest.example-emp.json",
+    "docs/program/schemas/change-manifest.example-rec.json"
+  ],
+  "changes": [
+    {
+      "change_id": "CM-HRM-ATT-011",
+      "module": "HRM",
+      "domain": "ATT",
+      "uc_id": "UC-BP-ATT-11",
+      "decision_id": "Q-ATT-SIGN",
+      "surface_id": null,
+      "change_type": "RULE_LOCK",
+      "change_mode": "UPGRADE",
+      "title_vi": "Ký chốt bảng công trước khi tính lương",
+      "decision_summary": "Chuỗi ký bắt buộc: nhân viên xác nhận → quản lý trực tiếp → HCNS; thứ tự và cấp duyệt cấu hình trên quy trình XBOS, đồng bộ theo từng công ty thành viên.",
+      "decision_status": "CLOSED",
+      "mvp_phase": "MVP",
+      "gap_class": "COVERED",
+      "runtime": "PARTIAL",
+      "product_surface": "HRM → Chấm công → Bảng tổng hợp công → Ký chốt kỳ",
+      "impact": {
+        "srs": true,
+        "tech_spec": true,
+        "db_design": false,
+        "api_design": true,
+        "fe": true,
+        "be": true,
+        "mobile": false,
+        "qa_matrix": true
+      },
+      "spec_refs": {
+        "srs": "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-ATT-11",
+        "tech_spec": "HOLD"
+      },
+      "meeting_ref": "R-SIGN-01",
+      "wbs_row": "WBS-ATT-06",
+      "must_keep": [
+        "Không bỏ bước nhân viên xác nhận trước quản lý",
+        "Workflow cấu hình trên XBOS — cấm hard-code cấp duyệt theo một pháp nhân",
+        "Chỉ bảng công đã ký mới vào phễu tính lương"
+      ],
+      "forbidden_paths": [],
+      "dispatch_hint": {
+        "next_role": "sa",
+        "work_item_suggested": "PO-HRM-BP-ATT-SIGN-TS-01",
+        "wave_manifest_example": "docs/program/schemas/change-manifest.example.json"
+      },
+      "evidence_paths": [
+        "docs/qa/evidence/po-hrm-bp-srs-chot-01.md",
+        "docs/client-delivery/hrm-enterprise-blueprint/UC_MEETING_PRODUCT_GAP_MATRIX.md"
+      ],
+      "decided_on": "2026-08-05",
+      "decided_by": "sponsor-internal",
+      "notes": "residual_closed: R-SIGN-01",
+      "supersedes": null,
+      "source": {
+        "sheet": "00_Chot_Sponsor",
+        "row": null,
+        "workbook": "SPONSOR_CHOT_FILL_v1.1.xlsx"
+      }
+    },
+    {
+      "change_id": "CM-HRM-EMP-012",
+      "module": "HRM",
+      "domain": "EMP",
+      "uc_id": "UC-BP-ATT-12",
+      "decision_id": "R-FY-01",
+      "surface_id": null,
+      "change_type": "CONFIG_CRUD",
+      "change_mode": "ADD",
+      "title_vi": "Mở quỹ phép và ca mặc định khi hồ sơ nhân sự Hoạt động",
+      "decision_summary": "Khi hồ sơ nhân sự chuyển Hoạt động: mở quỹ phép theo năm tài chính công ty thành viên và gán ca mặc định theo bộ phận; mọi tham số năm tài chính / cấp phép phải có màn cấu hình CRUD — cấm tháng bắt đầu cố định toàn tập đoàn.",
+      "decision_status": "CLOSED",
+      "mvp_phase": "MVP",
+      "gap_class": "SRS_THIN",
+      "runtime": "PARTIAL",
+      "product_surface": "HRM → Nhân sự → Hồ sơ nhân viên → Trạng thái Hoạt động · Cấu hình → Năm tài chính / quỹ phép",
+      "impact": {
+        "srs": true,
+        "tech_spec": true,
+        "db_design": true,
+        "api_design": true,
+        "fe": true,
+        "be": true,
+        "mobile": false,
+        "qa_matrix": true
+      },
+      "spec_refs": {
+        "srs": "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-ATT-12 · UC-BP-ATT-04",
+        "tech_spec": "HOLD"
+      },
+      "meeting_ref": "Q-LEAVE-ACCRUAL · R-FY-01",
+      "wbs_row": "WBS-ATT-04",
+      "must_keep": [
+        "Mỗi tenant / pháp nhân một cấu hình năm tài chính riêng",
+        "CRUD cấu hình — không hard-code tháng bắt đầu năm",
+        "Mở quỹ gắn sự kiện hồ sơ Hoạt động — không seed quỹ giả để nghiệm thu"
+      ],
+      "forbidden_paths": [],
+      "dispatch_hint": {
+        "next_role": "ba-process",
+        "work_item_suggested": "PO-HRM-BP-EMP-LEAVE-OPEN-AC-01",
+        "wave_manifest_example": "docs/program/schemas/change-manifest.example-emp.json"
+      },
+      "evidence_paths": [
+        "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_CHOT_REMAINING.xlsx",
+        "docs/client-delivery/hrm-enterprise-blueprint/UC_INVENTORY.md"
+      ],
+      "decided_on": "2026-08-05",
+      "decided_by": "sponsor-internal",
+      "notes": "Gắn miền EMP (kích hoạt hồ sơ) + ATT (quỹ phép). Không invent tháng FY cụ thể.",
+      "supersedes": null,
+      "source": {
+        "sheet": "01_Con_can_chot",
+        "row": 1,
+        "workbook": "SPONSOR_CHOT_REMAINING.xlsx"
+      }
+    },
+    {
+      "change_id": "CM-HRM-REC-02B",
+      "module": "HRM",
+      "domain": "REC",
+      "uc_id": "UC-BP-REC-02b",
+      "decision_id": "Q-REC-HEADCOUNT",
+      "surface_id": null,
+      "change_type": "RULE_LOCK",
+      "change_mode": "UPGRADE",
+      "title_vi": "Yêu cầu tuyển ngoài định biên có duyệt BOD",
+      "decision_summary": "Cho phép tạo yêu cầu tuyển ngoài định biên vị trí × 12 tháng; bắt buộc thêm nhánh duyệt BOD. Quy trình duyệt cấu hình từ XBOS đồng bộ sang HRM, áp dụng khác nhau theo từng tenant.",
+      "decision_status": "ANSWERED",
+      "mvp_phase": "MVP",
+      "gap_class": "COVERED",
+      "runtime": "PARTIAL",
+      "product_surface": "HRM → Tuyển dụng → Yêu cầu tuyển dụng → Ngoài định biên",
+      "impact": {
+        "srs": true,
+        "tech_spec": true,
+        "db_design": true,
+        "api_design": true,
+        "fe": true,
+        "be": true,
+        "mobile": false,
+        "qa_matrix": true
+      },
+      "spec_refs": {
+        "srs": "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-REC-02b",
+        "tech_spec": "HOLD"
+      },
+      "meeting_ref": "Q-REC-HEADCOUNT",
+      "wbs_row": "WBS-REC-02b",
+      "must_keep": [
+        "Nhánh trong định biên (UC-BP-REC-02) vẫn rút gọn — không gộp bỏ BOD",
+        "Workflow master trên XBOS → sync tenant HRM",
+        "Định biên 12 tháng (UC-BP-REC-01) vẫn là SoT số Cần tuyển"
+      ],
+      "forbidden_paths": [
+        "Claim chiến dịch hub đa kênh UC-BP-REC-03 trong MVP (OUT)"
+      ],
+      "dispatch_hint": {
+        "next_role": "sa",
+        "work_item_suggested": "PO-HRM-BP-REC-HEADCOUNT-TS-01",
+        "wave_manifest_example": "docs/program/schemas/change-manifest.example-rec.json"
+      },
+      "evidence_paths": [
+        "docs/client-delivery/hrm-enterprise-blueprint/UC_MEETING_PRODUCT_GAP_MATRIX.md",
+        "docs/client-delivery/hrm-enterprise-blueprint/UC_INVENTORY.md"
+      ],
+      "decided_on": "2026-08-05",
+      "decided_by": "sponsor-internal",
+      "notes": "UC-BP-REC-03 = OUT — không đưa vào MVP wave này.",
+      "supersedes": null,
+      "source": {
+        "sheet": "00_Chot_Sponsor",
+        "row": null,
+        "workbook": "SPONSOR_CHOT_FILL_v1.1.xlsx"
+      }
+    }
+  ]
+}

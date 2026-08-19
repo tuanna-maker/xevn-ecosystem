@@ -1,0 +1,110 @@
+{
+  "$schema": "./change-manifest.schema.json",
+  "manifest_version": "0.1.1",
+  "work_item_id": "PO-HRM-BP-EMP-LEAVE-OPEN-AC-01",
+  "title": "Mở quỹ phép khi hồ sơ Hoạt động — AC / SRS delta",
+  "summary": "R-FY-01 CLOSED + Q-LEAVE-ACCRUAL: khi hồ sơ nhân sự chuyển Hoạt động thì mở quỹ phép theo năm tài chính tenant và gán ca mặc định; cấu hình năm tài chính phải CRUD per tenant — cấm tháng bắt đầu cố định toàn tập đoàn. Feedstock: CM-HRM-EMP-012.",
+  "uc_ids": ["UC-BP-ATT-12", "UC-BP-ATT-04"],
+  "br_ids": ["BR-EMP-LEAVE-OPEN-01", "BR-FY-CRUD-01"],
+  "ac": [
+    {
+      "id": "AC-EMP-LEAVE-01",
+      "statement": "SRS/Diễn biến mô tả rõ sự kiện hồ sơ Hoạt động kích hoạt mở quỹ phép và gán ca mặc định theo bộ phận.",
+      "verify": "doc_review",
+      "pass_when": "UC-BP-ATT-12 có bước thành công gắn trạng thái Hoạt động → quỹ phép mở; không chỉ nêu cấu hình năm tài chính."
+    },
+    {
+      "id": "AC-EMP-LEAVE-02",
+      "statement": "Năm tài chính / cấp phép là cấu hình CRUD theo từng công ty thành viên — không hard-code một tháng bắt đầu cho cả tập đoàn.",
+      "verify": "doc_review",
+      "pass_when": "must_keep và spec_targets nêu CRUD per tenant; không invent tháng FY cụ thể khi chốt chỉ yêu cầu cấu hình được."
+    },
+    {
+      "id": "AC-EMP-LEAVE-03",
+      "statement": "Wave docs-only không đụng mã sản phẩm; nghiệm thu sau này U65 không dùng seed quỹ giả.",
+      "verify": "gate_script",
+      "pass_when": "forbidden_paths gồm apps/** và packages/**; diff wave ⊆ allowed_paths."
+    }
+  ],
+  "slice_id": "HRM-EMP-LEAVE-OPEN-01",
+  "allowed_paths": [
+    "docs/architecture/**",
+    "docs/client-delivery/hrm-enterprise-blueprint/**",
+    "docs/program/schemas/**",
+    "docs/program/examples/**",
+    "docs/program/slices/HRM-EMP-LEAVE-OPEN-01.md",
+    "docs/qa/evidence/**"
+  ],
+  "forbidden_paths": ["apps/**", "packages/**", "deploy/**"],
+  "role_owners": {
+    "pm": "PO-BIZ-CHANGE-COMPILER-BA-PROC-01",
+    "ba_process": "PO-HRM-BP-EMP-LEAVE-OPEN-AC-01",
+    "ba_docs": "PO-BIZ-CHANGE-COMPILER-BA-01",
+    "sa": "PO-HRM-BP-EMP-LEAVE-OPEN-TS-01",
+    "qa": "doc_review-gate",
+    "qc": "pre-send-docs-only"
+  },
+  "sponsor_confirm": {
+    "status": "CONFIRMED",
+    "wave_id": "PO-HRM-BP-SRS-CHOT-01",
+    "date": "2026-08-05",
+    "evidence_ref": "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_CHOT_REMAINING.xlsx",
+    "notes": "R-FY-01 CLOSED · Q-LEAVE-ACCRUAL ANSWERED — Năm tài chính + CRUD cấu hình."
+  },
+  "change_mode": "ADD",
+  "neo_tags": ["DOC-DELTA", "CONTRACT-MEMORY"],
+  "source_artifacts": [
+    {
+      "path": "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_CHOT_REMAINING.xlsx",
+      "kind": "excel",
+      "sheet": "01_Con_can_chot",
+      "note": "decision_id=R-FY-01 · batch_change_id=CM-HRM-EMP-012"
+    },
+    {
+      "path": "docs/program/schemas/change-manifest.batch.example.json",
+      "kind": "other",
+      "note": "Plane B feedstock CM-HRM-EMP-012"
+    }
+  ],
+  "read_first": [
+    "docs/architecture/ADR-BUSINESS-CHANGE-COMPILER-20260805.md",
+    "docs/program/schemas/change-manifest.schema.json",
+    "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md",
+    "docs/program/schemas/change-manifest.batch.example.json"
+  ],
+  "must_keep": [
+    "Mỗi tenant một cấu hình năm tài chính riêng",
+    "CRUD cấu hình — không hard-code tháng bắt đầu năm",
+    "Mở quỹ gắn sự kiện hồ sơ Hoạt động",
+    "no_prompt_echo trên tài liệu khách"
+  ],
+  "spec_targets": {
+    "srs": "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-ATT-12",
+    "tech_spec": "HOLD"
+  },
+  "traceability": {
+    "srs_refs": [
+      "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-ATT-12",
+      "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-ATT-04"
+    ],
+    "journey_ids": ["UF-HRM-01", "J-HRM-02"],
+    "scope_parity_ack": false
+  },
+  "pipeline_stage": "srs",
+  "compound_hooks": {
+    "pre_task_memory_loadout": true,
+    "post_task_memory_update": true,
+    "promote_os_on_lesson": false
+  },
+  "promote_os": {
+    "required": false,
+    "chapter": "34-BUSINESS-CHANGE-COMPILER.md",
+    "notes": "Phase A pilot."
+  },
+  "compiled_at": "2026-08-05T14:25:00+07:00",
+  "compiler": {
+    "name": "manual-ba-emit",
+    "version": "0.1.1",
+    "mode": "manual"
+  }
+}

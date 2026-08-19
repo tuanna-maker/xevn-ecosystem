@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Đăng nhập — XeVN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="login-page">
+      <section class="login-visual" aria-label="Nhận diện XeVN">
+        <div class="login-back"><a href="index.html">← Neo P0</a></div>
+        <img
+          src="assets/xevn-logo.png"
+          alt="XeVN"
+          width="56"
+          height="56"
+          style="border-radius: 10px; margin-bottom: 1.25rem; background: #000"
+        />
+        <h1 class="font-display">XeVN</h1>
+        <p>Cổng vận hành tập đoàn — nhân sự, chấm công, điều hành đa công ty.</p>
+      </section>
+
+      <section class="login-panel">
+        <div class="login-card">
+          <div class="xevn-modal-brand-bar"></div>
+          <div class="xevn-modal-header-glass">
+            <img class="xevn-wordmark" src="assets/xevn-logo.png" alt="" />
+            <div>
+              <h2 class="xevn-modal-title">Đăng nhập</h2>
+              <p class="xevn-modal-sub">Portal nội bộ XeVN</p>
+            </div>
+          </div>
+          <form class="xevn-modal-body" action="#" method="get" onsubmit="return false">
+            <div class="field">
+              <label for="email">Email công việc</label>
+              <input
+                id="email"
+                class="xevn-field-line"
+                type="email"
+                name="email"
+                autocomplete="username"
+                placeholder="vd. ceo@xe.vn"
+                value="ceo@xe.vn"
+              />
+            </div>
+            <div class="field">
+              <label for="password">Mật khẩu</label>
+              <input
+                id="password"
+                class="xevn-field-line"
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                placeholder="Nhập mật khẩu"
+              />
+            </div>
+            <p class="hint" style="font-size: 12px; color: var(--xevn-text-secondary); margin: 0 0 0.75rem">
+              Chữ tối thiểu 14px · không dùng nền kem hay gradient tím.
+            </p>
+          </form>
+          <div class="xevn-modal-footer">
+            <button type="button" class="btn btn-primary">Đăng nhập</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="neo-shell" style="padding-top: 0">
+      <div class="compare">
+        <div class="compare-panel">
+          <div class="compare-label fail">Chưa đạt</div>
+          <div class="compare-body">
+            <div class="wire-old">
+              <div class="wire-title">Login form trắng giữa trang</div>
+              <div class="wire-field"></div>
+              <div class="wire-field"></div>
+              <div class="wire-meta">Thiếu vỏ brand · thiếu thanh xanh · chữ nhạt</div>
+            </div>
+          </div>
+        </div>
+        <div class="compare-panel">
+          <div class="compare-label pass">Đạt</div>
+          <div class="compare-body" style="font-size: 13px; color: var(--xevn-text-secondary)">
+            Vỏ trái đen + logo XeVN · thẻ phải có viền xanh đầu · wordmark trái · CTA
+            <strong style="color: var(--xevn-primary)">#1E40AF</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

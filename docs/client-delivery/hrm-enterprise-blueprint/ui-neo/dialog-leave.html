@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tạo đơn nghỉ — XeVN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-frame">
+      <header class="app-header">
+        <a class="neo-brand" href="index.html">
+          <img src="assets/xevn-logo.png" alt="" width="28" height="28" />
+          <span>XeVN</span>
+        </a>
+        <nav class="neo-nav-links" aria-label="Neo P0">
+          <a href="login.html">Đăng nhập</a>
+          <a href="att-overview.html">Chấm công</a>
+          <a href="dialog-leave.html" aria-current="page">Đơn nghỉ</a>
+          <a href="dialog-ot.html">Đơn OT</a>
+          <a href="emp-profile.html">Hồ sơ NV</a>
+        </nav>
+      </header>
+
+      <main class="app-main">
+        <div class="page-head">
+          <h1>Neo — Tạo đơn nghỉ</h1>
+          <a class="btn btn-ghost btn-sm" href="att-overview.html">← Tổng quan</a>
+        </div>
+
+        <div class="modal-backdrop modal-backdrop--static">
+          <div class="xevn-modal xevn-modal--wide" role="dialog" aria-labelledby="leave-title">
+            <div class="xevn-modal-brand-bar" aria-hidden="true"></div>
+            <div class="xevn-modal-header-glass">
+              <img class="xevn-wordmark" src="assets/xevn-logo.png" alt="" />
+              <div>
+                <h2 id="leave-title" class="xevn-modal-title">Tạo đơn nghỉ</h2>
+                <p class="xevn-modal-sub">Công ty Du lịch XeVN · Phê duyệt theo quy trình nghỉ phép</p>
+              </div>
+            </div>
+            <form class="xevn-modal-body" action="#" method="get" onsubmit="return false">
+              <div class="form-grid">
+                <p class="section-label">Thông tin đơn</p>
+                <div class="field col-4">
+                  <label for="leave-code">Mã đơn</label>
+                  <input id="leave-code" class="xevn-field-code" type="text" value="NP-2026-0842" readonly />
+                </div>
+                <div class="field col-4">
+                  <label for="leave-emp">Mã nhân viên</label>
+                  <input id="leave-emp" class="xevn-field-code" type="text" value="NV-1024" />
+                </div>
+                <div class="field col-4">
+                  <label for="leave-name">Họ và tên</label>
+                  <input id="leave-name" class="xevn-field-name" type="text" value="Nguyễn Văn An" />
+                </div>
+
+                <div class="field col-4">
+                  <label for="leave-type">Loại nghỉ</label>
+                  <select id="leave-type" class="xevn-field-select-sm">
+                    <option>Nghỉ phép năm</option>
+                    <option>Nghỉ việc riêng</option>
+                    <option>Nghỉ ốm</option>
+                    <option>Nghỉ thai sản</option>
+                  </select>
+                </div>
+                <div class="field col-4">
+                  <label for="leave-dept">Phòng ban</label>
+                  <select id="leave-dept" class="xevn-field-select-md">
+                    <option>Vận hành tuyến</option>
+                    <option>Nhân sự</option>
+                    <option>Kế toán</option>
+                  </select>
+                </div>
+                <div class="field col-4">
+                  <label for="leave-days">Số ngày</label>
+                  <input id="leave-days" class="xevn-field-num" type="number" min="0.5" step="0.5" value="2" />
+                </div>
+
+                <p class="section-label">Thời gian</p>
+                <div class="field col-4">
+                  <label for="leave-from">Từ ngày</label>
+                  <input id="leave-from" class="xevn-field-date" type="date" value="2026-08-12" />
+                </div>
+                <div class="field col-4">
+                  <label for="leave-to">Đến ngày</label>
+                  <input id="leave-to" class="xevn-field-date" type="date" value="2026-08-13" />
+                </div>
+                <div class="field col-4">
+                  <label for="leave-shift">Ca ảnh hưởng</label>
+                  <select id="leave-shift" class="xevn-field-select-sm">
+                    <option>Cả ngày</option>
+                    <option>Ca sáng</option>
+                    <option>Ca chiều</option>
+                  </select>
+                </div>
+
+                <p class="section-label">Lý do &amp; liên hệ</p>
+                <div class="field col-12">
+                  <label for="leave-reason">Lý do nghỉ</label>
+                  <textarea
+                    id="leave-reason"
+                    class="xevn-field-reason"
+                    rows="3"
+                    placeholder="Ghi rõ lý do theo quy định nội bộ"
+                  >Nghỉ phép năm theo kế hoạch gia đình.</textarea>
+                </div>
+                <div class="field col-4">
+                  <label for="leave-phone">Điện thoại liên hệ</label>
+                  <input id="leave-phone" class="xevn-field-phone" type="tel" value="0912 345 678" />
+                </div>
+                <div class="field col-8">
+                  <label for="leave-handover">Người bàn giao công việc</label>
+                  <input
+                    id="leave-handover"
+                    class="xevn-field-line"
+                    type="text"
+                    value="Trần Thị Bình (NV-1088)"
+                  />
+                </div>
+              </div>
+            </form>
+            <div class="xevn-modal-footer">
+              <button type="button" class="btn btn-ghost">Hủy</button>
+              <button type="button" class="btn btn-primary">Gửi duyệt</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="compare">
+          <div class="compare-panel">
+            <div class="compare-label fail">Chưa đạt</div>
+            <div class="compare-body">
+              <div class="wire-old">
+                <div class="wire-title">Dialog hẹp ~480px</div>
+                <div class="wire-field"></div>
+                <div class="wire-field"></div>
+                <div class="wire-field"></div>
+                <div class="wire-meta">Mọi ô full-width · không logo · title 16px nhạt</div>
+              </div>
+            </div>
+          </div>
+          <div class="compare-panel">
+            <div class="compare-label pass">Đạt</div>
+            <div class="compare-body" style="font-size: 13px; color: var(--xevn-text-secondary)">
+              Dialog rộng ~920px · thanh xanh full-bleed · logo trái · glass header ·
+              ngày/số/mã compact · textarea lý do rộng · CTA #1E40AF.
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

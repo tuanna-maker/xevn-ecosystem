@@ -1,0 +1,215 @@
+[241|SPONSOR] 01:01:02   Quan trọng nhất trường thông tin là quản lý nhân sự nào thì ông không có này.  N2
+
+[242|CUSTOMER] 01:01:05   Không, đây là đang trong nhân sự rồi. Trong nhân sự. Đây là đang đang trong nhân sự.  N1
+
+[243|SPONSOR] 01:01:11   Trong nhân sự.  N2
+
+[244|CUSTOMER] 01:01:12   Trong nhân sự cần phải thông tin ok. Bạn bảo hiểm này, trạng thái, ngày công cấp. Hút đóng nhân viên, hút đóng công ty là sao?  N1
+
+[245|SPONSOR] 01:01:27   Ờ cái này á, cái này là công ty đóng bao nhiêu?  N2
+
+[246|CUSTOMER] 01:01:30   Bạn bảo hiểm này, có bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm y tế, bảo hiểm tất nhiên. Ok. Rồi mình chia riêng từng cái một luôn đúng không? Cái này ok chi tiết đồng ý. Nhà cung cấp nhập tay. Nhưng mà cái số thẻ thông thường một bạn ấy sẽ có một số bảo hiểm thôi. Nhập như này thì ví dụ ba cái bảo hiểm xã hội, bảo hiểm tất nhiên và bảo hiểm y tế là sẽ phải nhập đi ba lần đúng không? Mất thời gian. Còn theo dõi riêng như này là đúng.  N1
+
+[247|SPONSOR] 01:02:12   Ơ số bảo hiểm mà số bảo hiểm nó chỉ có một thôi á. Cho dù có là loại bảo hiểm nào đi chăng nữa.  N2
+
+[248|CUSTOMER] 01:02:17   Bây giờ đang là thế và nó còn đang trùng với cả số căn cước công dân luôn.  N1
+
+[249|SPONSOR] 01:02:21   À.  N2
+
+[250|CUSTOMER] 01:02:22   Bây giờ nó đang gộp lại hết rồi.  N1
+
+[251|SPONSOR] 01:02:24   Ok.  N2
+
+[252|CUSTOMER] 01:02:25   Bây giờ em có thể dùng căn cước công dân số.  N1
+
+[253|SPONSOR] 01:02:27   Để em xem xem là em đang hưởng những loại bảo hiểm nào đúng không?  N2
+
+[254|CUSTOMER] 01:02:31   Nó nó chính là cái số bảo hiểm xã hội của em chính là cái số căn cước công dân luôn. Ngày xưa nó là hai số khác nhau, bây giờ nó chuyển rồi rồi lại một rồi.  N1
+
+[255|SPONSOR] 01:02:39   Ok.  N2
+
+[256|CUSTOMER] 01:02:40   Chỗ này ok. Nhưng ngày bắt đầu, ngày kết thúc, các bạn còn khai báo tăng giảm là ông đang dựa vào ngày kết thúc đúng không? Ông thay đổi ngày kết thúc à? Một nhân viên đăng ký là bắt đầu từ tháng này đúng không? Thì như nào? Rồi tiếp theo nữa là nghỉ việc kết thúc thì như nào? Rồi tiếp theo nữa là mức mức thay đổi. Nhân viên vẫn đang làm nhưng họ được tăng chức nên là họ thay đổi về số bảo hiểm, cái mức đóng bảo hiểm, số tiền ý là ông đang khác nhau. Cho nên cái mức đóng nhân viên và 
+
+[257|SPONSOR] 01:04:13   Ơ nếu mà trong trường hợp đấy thì nghiệp vụ mình sửa như nào?  N2
+
+[258|CUSTOMER] 01:04:17   Là chỉ cần trạng thái của nhân viên thì tùy từng công ty là chuyển sang trạng thái là là tạm dừng xong rồi cái khai báo khác bảo hiểm thôi. Còn lại tất cả mọi thông tin nó giữ nguyên. Lúc nào đi làm lại thì lại chuyển về chế độ hoạt động lại tiếp và lại khai báo tăng bảo hiểm lên. Thì mình phải có cái giữ cái thông tin đấy. Cái thông tin này nó sẽ là thông tin đầu vào để mình tính lương. Bởi vì mỗi một cái mức đóng khác nhau theo từng tháng khác nhau thì cái cái trừ bảo hiểm ở trong s
+
+[259|SPONSOR] 01:06:21   Có nhớ có timeline đúng không? Timeline.  N2
+
+[260|CUSTOMER] 01:06:23   Timeline thì đây là có rồi. Ngày bắt đầu ngày kết thúc thì có rồi.  N1
+
+[261|SPONSOR] 01:06:26   Không ý em là cái đoạn thay đổi đóng các thứ ấy.  N2
+
+[262|CUSTOMER] 01:06:31   Nó chính là cái ngày bắt đầu, ngày kết thúc và thay đổi trạng thái luôn. Nhưng cái nghiệp vụ để thay đổi ba trường thông tin này là mình phải định nghĩa thêm. Như hiện tại thì mình đang chưa có cái nghiệp vụ cũng là cái action để thay đổi ba cái này mà mình đang phải sửa tay thì cái việc đấy nó sẽ mất thời gian của của hành chính nhân sự. Còn như này thì là đã đủ thông tin rồi nhá. Tôi sửa tay là hoàn toàn có thể đáp ứng được yêu cầu rồi. Nhưng mà cái câu chuyện là sửa tay trăm bản đi
+
+[263|SPONSOR] 01:07:15   Chờ xử lý tức là dừng hoạt động này. Tạm dừng này.  N2
+
+[264|CUSTOMER] 01:07:18   Thường thường đây là để mình tạm hoãn tất cả mức rộng ra luôn. Nó sẽ có một cái bị chờ xử lý là bị chờ đăng ký đúng không? Thông báo rồi và đang chờ thông báo lại. Thì cái đấy có thể để hoặc là không thì bỏ qua luôn. Bởi vì để thì sẽ phải có một cái thông tin nữa theo kiểu là phải cập nhật trạng thái từ bên bảo hiểm báo lại. Thì thông thường người ta sẽ lười, người ta cứ khai báo là bảo hiểm sẽ khai báo được và nó sẽ chuyển sang trạng thái đang hoạt động luôn. Và nó để sẵn ngày bắt đầ
+
+[265|SPONSOR] 01:08:41   Đây là khen thưởng kỷ luật. Đây em có làm thêm cái này thì thật ra là em bóc từ cái HRM.  N2
+
+[266|CUSTOMER] 01:09:06   Đào tạo thì đúng sẽ cần nhưng mà cái đấy thì không nên nhét vào đây. Cái này nó sẽ liên quan đến thông thường ở trên hành chính.  N1
+
+[267|SPONSOR] 01:09:14   Nó sẽ chạy theo chứng chỉ thôi. Nó đã đặt được thôi. Còn cái đào tạo thì nó sẽ ở module internal luôn. Module đào tạo riêng.  N2
+
+[268|CUSTOMER] 01:09:33   Khen thưởng kỷ luật. Có chưa?  N1
+
+[269|SPONSOR] 01:09:36   Đây khen thưởng kỷ luật.  N2
+
+[270|CUSTOMER] 01:09:38   Cái này thì chắc cũng là này. Lại khen thưởng cho anh xem. Ơ rồi thế thì kỷ luật đâu. Đây là khen thưởng đúng không? Khen thưởng kỷ luật đang cùng một cái đúng không?  N1
+
+[271|SPONSOR] 01:10:09   Chưa có. À đây đây kỷ luật này.  N2
+
+[272|CUSTOMER] 01:10:19   Cái này ghi nhận thông tin này. Sắp xếp lại các trường thông tin một chút. Khen thưởng bao giờ cũng sẽ là tiêu đề đầu tiên. Sau đó là mới đến cái trường thông tin khác bên dưới. Thông thường bao giờ cái form sẽ có tiêu đề trước. Rồi cái ghi nhận khen thưởng kỷ luật này, nếu như mà liên quan đến tiền thì nó sẽ là một là liên kết trực tiếp với module từng lương trong tháng đấy, trong cái tháng xử lý để mình ghi nhận. Và sau khi mà xử lý xong thì nó sẽ phải có một cái là trạng thái là đã
+
+[273|SPONSOR] 01:12:11   Chứng chỉ này, bằng cấp này.  N2
+
+[274|CUSTOMER] 01:12:14   Và cái đấy là thông tin mình kích thêm thôi đúng không?  N1
+
+[275|SPONSOR] 01:12:17   Ừ. Tài sản này, lợi ích cung cấp này, tài sản gì này. Tức là như kiểu là được cấp xe hay là gì không này. Kiểu đấy. Đấy. Như kiểu là nhân viên đét thì được cấp laptop hay cấp PC chẳng hạn. Ví dụ thế. Hay là lái xe thì được cấp cấp xe hay là cấp gì? Cấp tủ các thứ. Tủ hộc các thứ kiểu đấy.  N2
+
+[276|CUSTOMER] 01:12:46   Cái này thì nên đi kèm biên bản. Biên bản bản sao trên này luôn. Nó bởi vì nó là một cái nội bộ thì mình có thể dùng chữ ký nội bộ để mình ví dụ như là bên cấp phát là bên hành chính nhân sự ghi nhận những thông tin này thì nhân sự là xác nhận thì coi như họ đã nhận bàn giao bất kỳ giấy tờ ngoài coi như là một cái hoạt động chữ ký nội bộ đúng không? Đấy sau khi mà nhân sự sau này có quy trình nghỉ việc thì tự động là những cái thiết bị này sẽ được đưa vào cái danh sách cần bàn giao và
+
+[277|SPONSOR] 01:14:28   Bản cấp này chưa? Cấp thì ở đây cũng thông tin cơ bản thôi. Chứng chỉ thì cũng tương tự vậy. Bảng chứng chỉ. Số hiệu. Kỹ năng. Tổng cung kỹ năng gì? Nếu cần thì cái kỹ năng này thì em sẽ bổ sung thêm cái bóc tách từ các cái hồ sơ nhân sự kia để để mà thay vì phải điền tay từng cái như thế này.  N2
+
+[278|CUSTOMER] 01:15:24   Đổi từng lần tốt nhất.  N1
+
+[279|SPONSOR] 01:15:25   Ví dụ như kiểu là trong CV chẳng hạn kiểu đấy. Thông tin gia đình các thứ thì cái này sẽ lấy tham chiếu từ kia. Cái này mà điền vào xong thì cái thông tin kia nó sẽ có. Tức là đây bao nhiêu người phụ thuộc các thứ đây. Quan hệ này là con cái hay gì. Thực ra khi mà mình điền xong các thông tin ở đây thì nó kia nó sẽ có. Chẳng qua là em đang định điền tay thôi mà nếu mà cần thì.  N2
+
+[280|CUSTOMER] 01:16:37   Không điền tay là đúng rồi.  N1
+
+[281|SPONSOR] 01:16:38   Điền tay.  N2
+
+[282|CUSTOMER] 01:16:39   Cái này cũng phải điền tay.  N1
+
+[283|SPONSOR] 01:16:41   Thì các cái thông tin này thì về cơ bản là cần là điền tay xong đã là các cái thông tin đúng thông tin chung của người ta là sẽ điền ở đây.  N2
+
+[284|CUSTOMER] 01:17:05   Khá là đầy đủ.  N1
+
+[285|SPONSOR] 01:17:10   Quyết định này. Quyết định này. Quyết định. Sẽ có loại quyết định ở đây. Tham chiếu theo nhân viên làm.  N2
+
+[286|CUSTOMER] 01:17:22   Cái này chỉ là ghi nhận thông tin thôi đúng không?  N1
+
+[287|SPONSOR] 01:17:24   Đúng. Ghi nhận thông tin thôi.  N2
+
+[288|CUSTOMER] 01:17:29   Xong cái này thì nó sẽ có vào mục nào của nhân viên không? Ví dụ như là lịch sử công tác hay là sau khi bổ nhiệm xong thì nó có thay đổi.  N1
+
+[289|SPONSOR] 01:17:36   Nó sẽ có thêm ở phần ở trong lịch sử nhân sự, lịch sử làm việc các thứ ấy.  N2
+
+[290|CUSTOMER] 01:17:43   Ok. Thay đổi thuyên chuyển công tác ấy đúng không?  N1
+
+[291|SPONSOR] 01:17:45   Vâng. Kể cả lịch sử điều chỉnh lương các thứ nó sẽ giữ.  N2
+
+[292|CUSTOMER] 01:17:50   Chỗ này còn thiếu cái phần liên quan đến nghỉ việc. Trong nhân sự thì còn cái quy trình nghỉ việc.  N1
+
+[293|SPONSOR] 01:17:59   Ừ.  N2
+
+[294|CUSTOMER] 01:18:03   Nghỉ việc thì có hai đoạn. Một là tự nghỉ hai là bị đuổi đúng không?  N1
+
+[295|SPONSOR] 01:18:08   Ừ.  N2
+
+[296|CUSTOMER] 01:18:08   Thì cái xử lý nó cũng sẽ khác nhau.  N1
+
+[297|SPONSOR] 01:18:47   Vẫn dùng cái này vừa nói rồi.  N2
+
+[298|CUSTOMER] 01:18:49   Trần Công.  N1
+
+[299|SPONSOR] 01:18:50   Trần Công.  N2
+
+[300|CUSTOMER] 01:18:52   Trần Công thì nó.  N1
+
+[301|SPONSOR] 01:18:53   Dữ liệu công một ngày của nhân sự đâu?  N2
+
+[302|CUSTOMER] 01:18:55   Dữ liệu công một ngày của nhân sự thì nó có sẽ có cái bảng trần công ở đây.  N1
+
+[303|SPONSOR] 01:19:00   Thêm thêm tay nữa.  N2
+
+[304|CUSTOMER] 01:19:01   Thêm tay. Chọn phòng ban này, chọn vị trí này. Đây là báo cáo rồi. Dữ liệu trần công đây. Cái này là import hay là từ đâu ra?  N1
+
+[305|SPONSOR] 01:19:23   Cái này là tự load từ cái nghiệp vụ trần công trên app mobile để xem.  N2
+
+[306|CUSTOMER] 01:19:31   Thế thì chạy cái này phải có app mobile nữa đúng không?  N1
+
+[307|SPONSOR] 01:19:33   App mobile. Thế là ông nó sẽ có mấy cách. Một là.  N2
+
+[308|CUSTOMER] 01:19:37   Rồi. Trần công này còn thiếu một cái là đăng ký giờ làm.  N1
+
+[309|SPONSOR] 01:19:42   Ừ. Đăng ký giờ làm á?  N2
+
+[310|CUSTOMER] 01:19:43   Ừ. Ở phần ca làm việc kia. Xem xem ca làm việc nào. Xem xem ca. Ca sáng, tên ca, giờ hấp dẫn, bắt đầu, kết thúc, hệ số công, số công, cho phép đi muộn, cho phép về sớm, yêu cầu trần công dùng buổi trưa. Ok. Xong rồi phần ca đông. Đây là ca đúng không? Tiếp bên dưới chốt ca phải có phân phân ca. Tiếp là chốt ca ở dưới này. Mấy lưu ca ở dưới này. Phân bình phân ca. Đang có nốt đỏ đỏ phía dưới. Không đúng rồi. Đây cũng là ca vừa rồi. Nghỉ phân ca với ca làm việc đang giống nhau. Nói chun
+
+[311|SPONSOR] 01:21:32   Đây đang có cái phần.  N2
+
+[312|CUSTOMER] 01:21:34   Phép.  N1
+
+[313|SPONSOR] 01:21:37   Ví dụ như Quốc Khánh mùng 2 tháng 9 Tết Dương lịch thì mỗi năm phải công huynh một lần. Thì cái đấy là phải có công huynh để quy định. Đây là. Tính chán.  N2
+
+[314|CUSTOMER] 01:21:50   Đây là ông ấy yêu cầu nghỉ rồi. Chỗ công huynh nghỉ cơ. Công huynh nghỉ chắc là công huynh hay thiết lập riêng. Chứ nhìn cách là không có rồi.  N1
+
+[315|SPONSOR] 01:22:14   Chuẩn bị xong chưa nào?  N2
+
+[316|CUSTOMER] 01:22:31   Nó sẽ có khai báo nghỉ chung của toàn công ty ấy. Tiếp nữa là anh đang thấy mấy cái việc là cấu hình đi muộn thôi về sớm thì cái đấy mình đi cấu hình cái gì? Ví dụ đi muộn về sớm mà nó cho phép hay không cho phép đúng không? Rồi cái việc mà có phạt đi muộn về sớm không thì mình đang tính như nào? Có công ty thì làm theo phút, có công ty thì theo block, có công ty thì theo khoảng thời gian. Thì cái đoạn đấy là mình phải cấu hình lại.  N1
+
+[317|SPONSOR] 01:23:15   Đây ví dụ như kiểu là quyết định trần công đi. Đây quyết định về trần công. Quyết định về đi muộn này.  N2
+
+[318|CUSTOMER] 01:23:23   Quyết định về trần công ấy thì là quyết định cái gì?  N1
+
+[319|SPONSOR] 01:23:26   Quyết định về trần công đấy là trần công theo thiết bị nào này. Giờ trần công là giờ giờ nào này.  N2
+
+[320|CUSTOMER] 01:23:33   Cái đấy nó phải làm theo ca của mình chứ. Nó thay đổi liên tục làm sao mình quyết định được em.  N1
+
+[321|SPONSOR] 01:23:41   Đây nó sẽ có các cái phần chu kỳ. Ví dụ như kiểu là ngày bắt đầu tính công này.  N2
+
+[322|CUSTOMER] 01:23:46   Ok. Cái đây gọi là chu kỳ đúng không?  N1
+
+[323|SPONSOR] 01:23:47   Chu kỳ. Làm tròn hay không làm tròn này. Cho phép trần công nhiều lần không?  N2
+
+[324|CUSTOMER] 01:23:52   Làm tròn hay không làm tròn là sao?  N1
+
+[325|SPONSOR] 01:23:54   Tức là nôm na là kiểu ví dụ như kiểu là đi muộn chẳng hạn nhá. Anh ví dụ như kiểu là 30 phút à 30 phút mà thêm mấy chục giây thì anh đã tính là đi muộn trưa hay là phải tính 31 phút anh mới tính đi muộn. Ví dụ thế.  N2
+
+[326|CUSTOMER] 01:24:11   Cái đấy nó phải phụ thuộc vào câu chuyện là ấy chứ. Cái này được bao giờ quy định trần công. Cái này cái đấy là quy định liên quan đến đi muộn về sớm chứ.  N1
+
+[327|SPONSOR] 01:24:18   Nó không. Ý em là cái cái này cái cấu hình này là để là cái phần khi mà người ta trần công ấy thì người ta sẽ bị rơi vào cây đi muộn hay là gì?  N2
+
+[328|CUSTOMER] 01:24:28   Ít nhất là cái thời gian làm việc ấy của em là theo ca hoặc là theo từng cái bảng từng bảng bảng lịch làm việc chứ làm sao mà cấu hình chung cả công ty được. Trong một công ty có những bộ phận họ sẽ làm thứ bảy, có những bộ phận không làm thứ bảy, có những bộ phận làm theo ca, có bộ phận làm hàng chín thì tất cả những cái đấy nó phải quy theo về ca làm việc hết. Và từ từ dữ liệu ca làm việc đấy, thậm chí là tuần này là tôi làm hàng chín, tuần sau tôi làm ca, tuần sau nữa tôi làm thứ b
+
+[329|SPONSOR] 01:28:41   Nghỉ phép đúng không?  N2
+
+[330|CUSTOMER] 01:28:42   Ừ.  N1
+
+[331|SPONSOR] 01:28:45   Hiện tại thì đang có cái này của em là đang có cái yêu cầu xin nghỉ thôi.  N2
+
+[332|CUSTOMER] 01:28:51   Ờ thế thì mình vẫn thiếu là phép của mình không mặc định mình phải có cấp pháp phép thì mới có phép để sử dụng. Thì riêng cái việc cấp pháp phép là mình đã phải có một cái module liên quan về là cấp pháp phép rồi. Cấp pháp phép của mình thì nó có một vài cái phép. Thứ nhất là thông dụng nhất là phép hàng năm. Phép hàng năm thì cứ mỗi một tháng làm việc của mình sẽ có một ngày phép và thông thường theo luật là một nửa tháng nó sẽ có 0,5 ngày. Thì thông thường là là như vậy thì cái đấy 
+
+[333|SPONSOR] 01:30:16   Vậy phép từ từ phép đấy phép liên quan chức vụ à anh?  N2
+
+[334|CUSTOMER] 01:30:20   Không phép năm á. Luật của mình là cứ một ngày lao động thì sẽ được sử dụng là hai ngày phép đúng không? Ừ. Có những công ty thì thả đổi ra cứ đầu tháng 1 năm 2026 là nó đã được nghỉ 12 ngày rồi là dùng một phát hết cả phép năm của 2026 luôn.  N1
+
+[335|SPONSOR] 01:30:34   Cấp phép trước à?  N2
+
+[336|CUSTOMER] 01:30:35   Đúng rồi. Cấp phép trước. Thứ hai là có những công ty là mẹ hết một tháng xong cấp phép một lần.  N1
+
+[337|SPONSOR] 01:30:42   Ừ. Mỗi tháng cấp phép một lần.  N2
+
+[338|CUSTOMER] 01:30:44   Ờ có những công ty thì cấp phép 6 tháng một lần. Nói chung là cái việc cấp phép là khác nhau và cái sử dụng phép cũng là khác nhau luôn. Nó phụ thuộc vào cái việc cấp phép thì nó sẽ có những cái việc nghỉ phép khác nhau. Nếu như công ty mà cấp phép sau theo kiểu chính xác là cuối tháng ta mới cấp phép cho mày để mày dùng vào tháng sau thì những cái kỳ nghỉ của tháng hiện tại ấy ví dụ bây giờ đang là tháng 8 nhá thì anh chưa được cấp phép của tháng 8 đúng không? Thì cái cái nghỉ tháng 
+
+[339|SPONSOR] 01:31:40   Cái bàn tay.  N2
+
+[340|CUSTOMER] 01:31:40   Ờ xong rồi còn câu chuyện là được phê duyệt hay không phê duyệt. Xong rồi cái cấp phép đấy nó còn giữ chỗ. Ví dụ như là mày được sử dụng bốn ngày phép đúng không? Mày xin nghỉ cái này bốn ngày phép mày chỉ cần submit lên là đã bị giữ chỗ rồi đúng không? Thì mày sẽ không thể submit một cái mới được nữa. Và cái submit cái mới của mày sẽ không phải trả lời nghỉ không nữa. Nhưng mà cái nghỉ phép của mày mà bị từ chối thì cái submit kia của mày lại đổi thành ngày nghỉ có phép. Bởi vì về bả
+
+[341|SPONSOR] 01:36:11   Rất nhiều cây. Phết ở đây.  N2
+
+[342|CUSTOMER] 01:36:19   Sắp mưa to.  N1
+
+[343|SPONSOR] 01:36:20   Không sao anh còn phần tiền lương xong là chiều ở đây đến buổi chiều để làm nốt phần tiền lương đi. Xong rồi xong rồi em sạch một phát để cho xong cái khối tọt ỏi xong rồi các anh chốt lại bắt đầu.  N2
+
+[344|CUSTOMER] 01:36:44   Xử lý nốt đi.  N1
+
+[345|SPONSOR] 01:36:46   Thôi thì anh chọn nốt đây. Em thấy còn mỗi phần tiền lương này thôi.  N2
+
+[346|CUSTOMER] 01:36:49   Tiền lương của mình thì à à phần công chưa xong đâu.  N1
+
+[347|SPONSOR] 01:36:54   Phần công chưa xong đâu đúng không?  N2
+
+[348|CUSTOMER] 01:36:55   Còn công của mình ý thì cái kết quả cuối cùng của cả phần trống công nghỉ phép OT tất cả mọi thứ là bảng công thì tôi phải có một cái dữ liệu gen bảng công cuối cùng trong đấy bao gồm các trường thông tin ví dụ như là công chuẩn này, công chấm công này, công nghỉ phép này, công gì gì đấy. Nói chung là công lễ các thể loại rồi ngồi phạt đi muộn về sớm gì gì đó ăn ca rồi OT các kiểu như nào thì nó sẽ ra được cái bảng công cuối cùng thì bắt buộc phải có cái bảng công đấy thì cái bảng côn

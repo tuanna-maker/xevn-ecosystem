@@ -1,0 +1,336 @@
+/**
+ * D-BE-ERP-E2-01 — pay_types / contract_types assert + salary component unique.
+ * U65: no seed — catalog assert mocked.
+ */
+import 'reflect-metadata';
+import { ApiException } from './common/api.exception';
+import { signServiceJwt } from './common/jwt-sign';
+import {
+  ContractsInsuranceService,
+  HRM_CON_POS_KEY,
+  HRM_CON_TYPE_KEY,
+} from './contracts-insurance/contracts-insurance.service';
+import {
+  HRM_PAY_TYPE_KEY,
+  HRM_SC_002,
+  PayrollCatalogService,
+} from './payroll/payroll-catalog.service';
+
+function ceoAuth(): string {
+  return `Bearer ${signServiceJwt({
+    sub: 'ceo@xe.vn',
+    tenantId: 'xevn',
+    companyId: 'holding',
+    roleCode: 'group_ceo',
+  })}`;
+}
+
+function ddlAwareQuery(extra?: (sql: string, params?: unknown[]) => { rows: unknown[] } | null) {
+  return jest.fn().mockImplementation((sql: string, params?: unknown[]) => {
+    const s = String(sql);
+    if (
+      s.includes('CREATE TABLE') ||
+      s.includes('ALTER TABLE') ||
+      s.includes('CREATE INDEX') ||
+      s.includes('CREATE UNIQUE') ||
+      s.includes('DROP DEFAULT')
+    ) {
+      return Promise.resolve({ rows: [] });
+    }
+    const hit = extra?.(s, params);
+    if (hit) return Promise.resolve(hit);
+    return Promise.resolve({ rows: [] });
+  });
+}
+
+describe('D-BE-ERP-E2-01 PayrollCatalogService pay_types + unique', () => {
+  it('ensureSchema drops VI default and creates unique (company_id, lower(code))', async () => {
+    const ddl: string[] = [];
+    const db = {
+      query: jest.fn().mockImplementation(async (sql: string) => {
+        ddl.push(String(sql));
+        return { rows: [] };
+      }),
+      onModuleDestroy: jest.fn(),
+    };
+    const svc = new PayrollCatalogService(db as never);
+    await svc.listSalaryComponents('holding', ceoAuth());
+    const joined = ddl.join('\n');
+    expect(joined).toMatch(/ALTER COLUMN component_type DROP DEFAULT/);
+    expect(joined).toMatch(/uq_salary_components_company_code/);
+    expect(joined).toMatch(/lower\(code\)/);
+    expect(joined).not.toMatch(/DEFAULT 'Lương'/);
+  });
+
+  it('create rejects missing component_type with HRM-PAY-TYPE-KEY (no Lương fallback)', async () => {
+    const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
+    const catalogs = { assertCodeInEffectiveCatalog: jest.fn() };
+    const svc = new PayrollCatalogService(db as never, catalogs as never);
+    await expect(
+      svc.createSalaryComponent(
+        { company_id: 'holding', code: 'BASIC', name: 'Lương cơ bản' },
+        ceoAuth(),
+      ),
+    ).rejects.toMatchObject<ApiException>({ code: HRM_PAY_TYPE_KEY });
+    expect(catalogs.assertCodeInEffectiveCatalog).not.toHaveBeenCalled();
+  });
+
+  it('create invents nature → HRM-PAY-TYPE-KEY via pay_types assert', async () => {
+    const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
+    const catalogs = {
+      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
+        new ApiException(HRM_PAY_TYPE_KEY, 'invent', 400),
+      ),
+    };
+    const svc = new PayrollCatalogService(db as never, catalogs as never);
+    await expect(
+      svc.createSalaryComponent(
+        {
+          company_id: 'holding',
+          code: 'BASIC',
+          name: 'Lương cơ bản',
+          component_type: 'Lương',
+        },
+        ceoAuth(),
+      ),
+    ).rejects.toMatchObject<ApiException>({ code: HRM_PAY_TYPE_KEY });
+    expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        catalogKey: 'pay_types',
+        code: 'Lương',
+        errorCode: HRM_PAY_TYPE_KEY,
+      }),
+    );
+  });
+
+  it('create happy path persists catalog code (not VI invent)', async () => {
+    const db = {
+      query: ddlAwareQuery((sql, params) => {
+        if (sql.includes('SELECT id FROM public.salary_components')) {
+          return { rows: [] };
+        }
+        if (sql.includes('INSERT INTO public.salary_components')) {
+          return {
+            rows: [
+              {
+                id: params?.[0],
+                company_id: 'holding',
+                code: 'BASIC',
+                component_type: 'base_salary',
+              },
+            ],
+          };
+        }
+        return null;
+      }),
+      onModuleDestroy: jest.fn(),
+    };
+    const catalogs = {
+      assertCodeInEffectiveCatalog: jest.fn().mockResolvedValue({
+        code: 'base_salary',
+        label: 'Lương cơ bản',
+        status: 'active',
+      }),
+    };
+    const svc = new PayrollCatalogService(db as never, catalogs as never);
+    const row = await svc.createSalaryComponent(
+      {
+        company_id: 'holding',
+        code: 'BASIC',
+        name: 'Lương cơ bản',
+        component_type: 'base_salary',
+      },
+      ceoAuth(),
+    );
+    expect(row.component_type).toBe('base_salary');
+    expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
+      expect.objectContaining({ catalogKey: 'pay_types', code: 'base_salary' }),
+    );
+  });
+
+  it('create duplicate code → HRM-SC-002', async () => {
+    const db = {
+      query: ddlAwareQuery((sql) => {
+        if (sql.includes('SELECT id FROM public.salary_components')) {
+          return { rows: [{ id: 'existing-1' }] };
+        }
+        return null;
+      }),
+      onModuleDestroy: jest.fn(),
+    };
+    const catalogs = {
+      assertCodeInEffectiveCatalog: jest.fn().mockResolvedValue({
+        code: 'base_salary',
+        label: 'Lương cơ bản',
+        status: 'active',
+      }),
+    };
+    const svc = new PayrollCatalogService(db as never, catalogs as never);
+    await expect(
+      svc.createSalaryComponent(
+        {
+          company_id: 'holding',
+          code: 'BASIC',
+          name: 'Dup',
+          component_type: 'base_salary',
+        },
+        ceoAuth(),
+      ),
+    ).rejects.toMatchObject<ApiException>({ code: HRM_SC_002 });
+  });
+
+  it('update invents component_type → HRM-PAY-TYPE-KEY', async () => {
+    const db = {
+      query: ddlAwareQuery((sql) => {
+        if (sql.includes('FROM public.salary_components') && sql.includes('WHERE id')) {
+          return {
+            rows: [
+              {
+                company_id: 'holding',
+                archived_at: null,
+                component_type: 'base_salary',
+                is_system: false,
+              },
+            ],
+          };
+        }
+        if (sql.includes('FROM public.hrm_allowance_deduction_types')) {
+          return { rows: [] };
+        }
+        return null;
+      }),
+      onModuleDestroy: jest.fn(),
+    };
+    const catalogs = {
+      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
+        new ApiException(HRM_PAY_TYPE_KEY, 'invent', 400),
+      ),
+    };
+    const svc = new PayrollCatalogService(db as never, catalogs as never);
+    await expect(
+      svc.updateSalaryComponent(
+        '11111111-1111-4111-8111-111111111111',
+        { component_type: 'NOT_IN_CATALOG' },
+        'holding',
+        ceoAuth(),
+      ),
+    ).rejects.toMatchObject<ApiException>({ code: HRM_PAY_TYPE_KEY });
+  });
+});
+
+describe('D-BE-ERP-E2-01 ContractsInsuranceService contract_types', () => {
+  it('create invents contract_type → HRM-CON-TYPE-KEY', async () => {
+    const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
+    const catalogs = {
+      assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { catalogKey: string; errorCode: string }) => {
+        if (opts.catalogKey === 'contract_types') {
+          throw new ApiException(HRM_CON_TYPE_KEY, 'invent', 400);
+        }
+        return { code: 'NV_KD', label: 'NV', status: 'active' };
+      }),
+      getEffectiveItemsForKey: jest.fn().mockResolvedValue([
+        { code: 'NV_KD', label: 'NV', status: 'active' },
+      ]),
+    };
+    const svc = new ContractsInsuranceService(db as never, catalogs as never);
+    await expect(
+      svc.createContract(
+        {
+          company_id: 'holding',
+          employee_id: '11111111-1111-4111-8111-111111111111',
+          contract_type: 'FAKE_TYPE',
+          start_date: '2026-01-01',
+          position_key: 'NV_KD',
+        },
+        ceoAuth(),
+      ),
+    ).rejects.toMatchObject<ApiException>({ code: HRM_CON_TYPE_KEY });
+    expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        catalogKey: 'contract_types',
+        code: 'FAKE_TYPE',
+        errorCode: HRM_CON_TYPE_KEY,
+      }),
+    );
+  });
+
+  it('create asserts contract_types then keeps E1-A position_key', async () => {
+    const db = {
+      query: ddlAwareQuery((sql, params) => {
+        if (sql.includes('INSERT INTO public.employee_contracts')) {
+          return {
+            rows: [
+              {
+                id: params?.[0],
+                contract_type: 'indefinite',
+                position_key: 'NV_KD',
+                end_date: null,
+              },
+            ],
+          };
+        }
+        return null;
+      }),
+      onModuleDestroy: jest.fn(),
+    };
+    const catalogs = {
+      assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { code: string; catalogKey: string }) => ({
+        code: opts.code,
+        label: opts.code,
+        status: 'active',
+      })),
+      getEffectiveItemsForKey: jest.fn().mockResolvedValue([
+        { code: 'NV_KD', label: 'NV', status: 'active' },
+      ]),
+    };
+    const svc = new ContractsInsuranceService(db as never, catalogs as never);
+    await svc.createContract(
+      {
+        company_id: 'holding',
+        employee_id: '11111111-1111-4111-8111-111111111111',
+        contract_type: 'indefinite',
+        start_date: '2026-01-01',
+        position_key: 'NV_KD',
+      },
+      ceoAuth(),
+    );
+    expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
+      expect.objectContaining({ catalogKey: 'contract_types', errorCode: HRM_CON_TYPE_KEY }),
+    );
+    expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
+      expect.objectContaining({ catalogKey: 'job_titles', errorCode: HRM_CON_POS_KEY }),
+    );
+  });
+
+  it('update invents contract_type → HRM-CON-TYPE-KEY', async () => {
+    const db = {
+      query: ddlAwareQuery((sql) => {
+        if (sql.includes('FROM public.employee_contracts') && sql.includes('WHERE id')) {
+          return { rows: [{ id: 'con-1', company_id: 'holding' }] };
+        }
+        return null;
+      }),
+      onModuleDestroy: jest.fn(),
+    };
+    const catalogs = {
+      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
+        new ApiException(HRM_CON_TYPE_KEY, 'invent', 400),
+      ),
+    };
+    const svc = new ContractsInsuranceService(db as never, catalogs as never);
+    await expect(
+      svc.updateContract('con-1', { contract_type: 'INVENT' }, 'holding', ceoAuth()),
+    ).rejects.toMatchObject<ApiException>({ code: HRM_CON_TYPE_KEY });
+  });
+});
+
+describe('D-BE-ERP-E2-01 non-goals', () => {
+  it('payroll controller has no tax-settlement invent routes', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('node:fs') as typeof import('node:fs');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const path = require('node:path') as typeof import('node:path');
+    const ctrl = fs.readFileSync(path.join(__dirname, 'payroll', 'payroll.controller.ts'), 'utf8');
+    expect(ctrl).not.toMatch(/tax-settlement|tax_settlements|TaxSettlement/);
+  });
+});

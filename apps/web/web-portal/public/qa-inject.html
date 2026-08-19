@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>QA Inject Portal</title></head>
+<body>
+<script>
+  const exp = Date.now() + 86400000;
+  sessionStorage.setItem('xevn.portal.accessToken', 'mock-qa-golive');
+  sessionStorage.setItem('xevn.portal.tokenExpiresAt', String(exp));
+  localStorage.setItem('xevn.portal.accessToken', 'mock-qa-golive');
+  localStorage.setItem('xevn.portal.tokenExpiresAt', String(exp));
+  localStorage.setItem('xevn.portal.user', JSON.stringify({userId:'ceo@xe.vn',displayName:'CEO Test'}));
+  sessionStorage.setItem('xevn.portal.user', JSON.stringify({userId:'ceo@xe.vn',displayName:'CEO Test'}));
+  localStorage.setItem('hrm_current_company_id','main');
+  window.location.href = '/';
+</script>
+</body>
+</html>

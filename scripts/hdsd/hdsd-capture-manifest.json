@@ -1,0 +1,942 @@
+{
+  "version": "1.0",
+  "work_item_id": "HDSD-P2-SCREEN-01",
+  "defaults": {
+    "viewport": { "width": 1280, "height": 1800 },
+    "credentials": { "email": "ceo@xe.vn", "password": "Xevn@2026" },
+    "portalBase": "http://127.0.0.1:5173",
+    "hrmBase": "http://127.0.0.1:5175",
+    "waitUntil": "networkidle",
+    "navigationTimeoutMs": 90000,
+    "settleMs": 1500
+  },
+  "figures": [
+    {
+      "id": "ECO.1",
+      "domain": "ecosystem",
+      "caption": "Màn đăng nhập Cổng",
+      "host": "portal",
+      "path": "/login",
+      "auth": false,
+      "sourceMd": "ecosystem/HDSD_ECOSYSTEM_CH01_CONG_VA_CHUYEN_PHAN_HE.md"
+    },
+    {
+      "id": "ECO.2",
+      "domain": "ecosystem",
+      "caption": "Rail trái Command Center",
+      "host": "portal",
+      "path": "/command-center",
+      "auth": true,
+      "waitFor": "nav, aside, [data-testid]",
+      "sourceMd": "ecosystem/HDSD_ECOSYSTEM_CH01_CONG_VA_CHUYEN_PHAN_HE.md"
+    },
+    {
+      "id": "XBOS.1.1",
+      "domain": "xbos",
+      "caption": "Command Center overview",
+      "host": "portal",
+      "path": "/command-center",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH01_COMMAND_CENTER.md"
+    },
+    {
+      "id": "XBOS.1.2",
+      "domain": "xbos",
+      "caption": "Rail phân hệ",
+      "host": "portal",
+      "path": "/command-center",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH01_COMMAND_CENTER.md"
+    },
+    {
+      "id": "2.1",
+      "domain": "xbos",
+      "caption": "Màn Đăng nhập Cổng: logo XeVN, trường Email/Mật khẩu, nút Đăng nhập",
+      "host": "portal",
+      "path": "/login",
+      "auth": false,
+      "sourceMd": "xbos/HDSD_XEVN_CH02_COMMAND_CENTER_LEGACY.md"
+    },
+    {
+      "id": "2.3",
+      "domain": "xbos",
+      "caption": "Command Center: header XeVN OS, persona, rail phân hệ, widget và Action Cards",
+      "host": "portal",
+      "path": "/command-center",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH02_COMMAND_CENTER_LEGACY.md"
+    },
+    {
+      "id": "2.4",
+      "domain": "xbos",
+      "caption": "Thanh rail phân hệ: icon GROUP, NHÂN SỰ, CÀI ĐẶT HỆ THỐNG",
+      "host": "portal",
+      "path": "/command-center",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH02_COMMAND_CENTER_LEGACY.md"
+    },
+    {
+      "id": "2.5",
+      "domain": "xbos",
+      "caption": "Layout HRM embed: sidebar menu HRM, iframe nội dung",
+      "host": "portal",
+      "path": "/command-center/hrm/dashboard",
+      "auth": true,
+      "waitFor": "iframe",
+      "sourceMd": "xbos/HDSD_XEVN_CH02_COMMAND_CENTER_LEGACY.md"
+    },
+    {
+      "id": "3.0",
+      "domain": "xbos",
+      "caption": "Shell Cài đặt: sidebar nhóm Thiết lập công ty, vùng làm việc phải, ô tìm nhanh",
+      "host": "portal",
+      "path": "/command-center?settings=company_member_units",
+      "auth": true,
+      "actions": [{ "type": "clickRole", "role": "button", "name": "CÀI ĐẶT", "optional": true }],
+      "sourceMd": "xbos/HDSD_XEVN_CH03_XBOS_TO_CHUC.md"
+    },
+    {
+      "id": "3.1",
+      "domain": "xbos",
+      "caption": "Bảng Quản trị tập đoàn đa pháp nhân",
+      "host": "portal",
+      "path": "/command-center?settings=company_member_units",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH03_XBOS_TO_CHUC.md"
+    },
+    {
+      "id": "3.2",
+      "domain": "xbos",
+      "caption": "Form hồ sơ pháp nhân",
+      "host": "portal",
+      "path": "/command-center?settings=company_member_units",
+      "auth": true,
+      "actions": [{ "type": "clickText", "text": "Chỉnh sửa", "optional": true }],
+      "sourceMd": "xbos/HDSD_XEVN_CH03_XBOS_TO_CHUC.md"
+    },
+    {
+      "id": "3.3",
+      "domain": "xbos",
+      "caption": "Ma trận RACI đơn vị",
+      "host": "portal",
+      "path": "/command-center?settings=company_member_units",
+      "auth": true,
+      "actions": [
+        { "type": "clickText", "text": "Chỉnh sửa", "optional": true },
+        { "type": "clickText", "text": "RACI", "optional": true }
+      ],
+      "sourceMd": "xbos/HDSD_XEVN_CH03_XBOS_TO_CHUC.md"
+    },
+    {
+      "id": "3.4",
+      "domain": "xbos",
+      "caption": "Hệ thống Phòng/Ban: tab Tham chiếu ORG GRADE và Danh mục khung",
+      "host": "portal",
+      "path": "/command-center?settings=company_dept_system",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH03_XBOS_TO_CHUC.md"
+    },
+    {
+      "id": "3.5",
+      "domain": "xbos",
+      "caption": "Phòng/Ban pháp nhân: chọn công ty trên scope bar, bảng dòng PB",
+      "host": "portal",
+      "path": "/command-center?settings=tenant_departments",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH03_XBOS_TO_CHUC.md"
+    },
+    {
+      "id": "3.6",
+      "domain": "xbos",
+      "caption": "Ma trận phân quyền: tab vai trò, accordion module, checkbox Xem/Ghi/Xóa/Duyệt",
+      "host": "portal",
+      "path": "/command-center?settings=permission",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH03_XBOS_TO_CHUC.md"
+    },
+    {
+      "id": "4.1",
+      "domain": "xbos",
+      "caption": "Bảng điều khiển Tập đoàn, khu Action Cards và bộ lọc phân hệ",
+      "host": "portal",
+      "path": "/command-center",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH04_XBOS_WF_CAT_KPI.md"
+    },
+    {
+      "id": "4.2",
+      "domain": "xbos",
+      "caption": "Danh sách quy trình và nút Thêm quy trình mới",
+      "host": "portal",
+      "path": "/command-center?settings=workflow",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH04_XBOS_WF_CAT_KPI.md"
+    },
+    {
+      "id": "4.3",
+      "domain": "xbos",
+      "caption": "Canvas quy trình: nút Bắt đầu, các bước, Kết thúc",
+      "host": "portal",
+      "path": "/command-center?settings=workflow",
+      "auth": true,
+      "actions": [{ "type": "clickText", "text": "Chỉnh sửa", "optional": true }],
+      "sourceMd": "xbos/HDSD_XEVN_CH04_XBOS_WF_CAT_KPI.md"
+    },
+    {
+      "id": "4.4",
+      "domain": "xbos",
+      "caption": "Nhiệm vụ & RACI: thẻ thống kê và tab Ma trận RACI",
+      "host": "portal",
+      "path": "/command-center?settings=company_group_hr",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH04_XBOS_WF_CAT_KPI.md"
+    },
+    {
+      "id": "4.5",
+      "domain": "xbos",
+      "caption": "Panel Áp dụng danh mục HRM sang ĐVTV",
+      "host": "portal",
+      "path": "/command-center?settings=hrm_catalog_apply_members",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH04_XBOS_WF_CAT_KPI.md"
+    },
+    {
+      "id": "4.6",
+      "domain": "xbos",
+      "caption": "Hộp thư phê duyệt danh mục và panel Chi tiết yêu cầu",
+      "host": "portal",
+      "path": "/command-center?settings=hrm_catalog_governance",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH04_XBOS_WF_CAT_KPI.md"
+    },
+    {
+      "id": "4.7",
+      "domain": "xbos",
+      "caption": "Widget KPI: phần trăm, nhãn Tổng hợp tập đoàn / KPI cá nhân",
+      "host": "portal",
+      "path": "/command-center",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XEVN_CH04_XBOS_WF_CAT_KPI.md"
+    },
+    {
+      "id": "HRM.0.1",
+      "domain": "hrm",
+      "caption": "Layout embed: sidebar HRM + iframe",
+      "host": "portal",
+      "path": "/command-center/hrm/dashboard",
+      "auth": true,
+      "waitFor": "iframe",
+      "sourceMd": "hrm/HDSD_HRM_CH00_VAO_UNG_DUNG.md"
+    },
+    {
+      "id": "HRM.0.2",
+      "domain": "hrm",
+      "caption": "App HRM standalone full sidebar",
+      "host": "hrm",
+      "path": "/hr/employees",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_HRM_CH00_VAO_UNG_DUNG.md"
+    },
+    {
+      "id": "XBOS.4.1",
+      "domain": "xbos",
+      "caption": "Cockpit: header, KPI cards, module grid, cảnh báo",
+      "host": "portal",
+      "path": "/cockpit",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH04_DASHBOARD_VAN_HANH.md"
+    },
+    {
+      "id": "XBOS.4.2",
+      "domain": "xbos",
+      "caption": "Dashboard Tổ chức",
+      "host": "portal",
+      "path": "/dashboard/organization",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH04_DASHBOARD_VAN_HANH.md"
+    },
+    {
+      "id": "XBOS.4.3a",
+      "domain": "xbos",
+      "caption": "Dashboard Khách hàng",
+      "host": "portal",
+      "path": "/dashboard/customers",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH04_DASHBOARD_VAN_HANH.md"
+    },
+    {
+      "id": "XBOS.4.3b",
+      "domain": "xbos",
+      "caption": "Dashboard Đối tác",
+      "host": "portal",
+      "path": "/dashboard/partners",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH04_DASHBOARD_VAN_HANH.md"
+    },
+    {
+      "id": "XBOS.4.4a",
+      "domain": "xbos",
+      "caption": "KPI Policy",
+      "host": "portal",
+      "path": "/dashboard/kpi-policy",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH04_DASHBOARD_VAN_HANH.md"
+    },
+    {
+      "id": "XBOS.4.4b",
+      "domain": "xbos",
+      "caption": "KPI Dashboard biểu đồ",
+      "host": "portal",
+      "path": "/dashboard/kpi-dashboard",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH04_DASHBOARD_VAN_HANH.md"
+    },
+    {
+      "id": "XBOS.4.5",
+      "domain": "xbos",
+      "caption": "Catalog Governance",
+      "host": "portal",
+      "path": "/catalog-governance",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH04_DASHBOARD_VAN_HANH.md"
+    },
+    {
+      "id": "XBOS.4.6",
+      "domain": "xbos",
+      "caption": "Settings Chức danh mẫu",
+      "host": "portal",
+      "path": "/dashboard/settings/positions",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH04_DASHBOARD_VAN_HANH.md"
+    },
+    {
+      "id": "XBOS.4.7",
+      "domain": "xbos",
+      "caption": "HR stub liên kết HRM",
+      "host": "portal",
+      "path": "/dashboard/hr",
+      "auth": true,
+      "sourceMd": "xbos/HDSD_XBOS_CH04_DASHBOARD_VAN_HANH.md"
+    },
+    {
+      "id": "5.1",
+      "domain": "hrm",
+      "caption": "Màn Quản lý nhân viên: tiêu đề, bộ lọc, bảng danh sách",
+      "host": "portal",
+      "path": "/command-center/hrm/employees",
+      "auth": true,
+      "waitFor": "iframe",
+      "sourceMd": "hrm/HDSD_XEVN_CH05_HRM_NHAN_SU.md"
+    },
+    {
+      "id": "5.2",
+      "domain": "hrm",
+      "caption": "Hộp thoại nhân viên với tab Thông tin cơ bản / Cá nhân / Công việc / Tài chính",
+      "host": "portal",
+      "path": "/command-center/hrm/employees",
+      "auth": true,
+      "actions": [{ "type": "clickText", "text": "Thêm nhân viên", "optional": true }],
+      "sourceMd": "hrm/HDSD_XEVN_CH05_HRM_NHAN_SU.md"
+    },
+    {
+      "id": "5.3",
+      "domain": "hrm",
+      "caption": "Hộp thoại Xác nhận xóa nhân viên",
+      "host": "portal",
+      "path": "/command-center/hrm/employees",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH05_HRM_NHAN_SU.md"
+    },
+    {
+      "id": "5.4",
+      "domain": "hrm",
+      "caption": "Hồ sơ nhân viên: header, dải tab Cốt lõi",
+      "host": "portal",
+      "path": "/command-center/hrm/employees",
+      "auth": true,
+      "actions": [{ "type": "clickRow", "optional": true }],
+      "sourceMd": "hrm/HDSD_XEVN_CH05_HRM_NHAN_SU.md"
+    },
+    {
+      "id": "6.1",
+      "domain": "hrm",
+      "caption": "Toàn cảnh màn Hợp đồng lao động",
+      "host": "portal",
+      "path": "/command-center/hrm/contracts",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH06_HRM_HD_BH.md"
+    },
+    {
+      "id": "6.2",
+      "domain": "hrm",
+      "caption": "Popover bộ lọc hợp đồng",
+      "host": "portal",
+      "path": "/command-center/hrm/contracts",
+      "auth": true,
+      "actions": [{ "type": "clickText", "text": "Bộ lọc", "optional": true }],
+      "sourceMd": "hrm/HDSD_XEVN_CH06_HRM_HD_BH.md"
+    },
+    {
+      "id": "6.3",
+      "domain": "hrm",
+      "caption": "Form tạo hợp đồng",
+      "host": "portal",
+      "path": "/command-center/hrm/contracts",
+      "auth": true,
+      "actions": [{ "type": "clickText", "text": "Thêm", "optional": true }],
+      "sourceMd": "hrm/HDSD_XEVN_CH06_HRM_HD_BH.md"
+    },
+    {
+      "id": "6.4",
+      "domain": "hrm",
+      "caption": "Chi tiết hợp đồng read-only",
+      "host": "portal",
+      "path": "/command-center/hrm/contracts",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH06_HRM_HD_BH.md"
+    },
+    {
+      "id": "6.5",
+      "domain": "hrm",
+      "caption": "Toàn cảnh màn Bảo hiểm",
+      "host": "portal",
+      "path": "/command-center/hrm/insurance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH06_HRM_HD_BH.md"
+    },
+    {
+      "id": "6.6",
+      "domain": "hrm",
+      "caption": "CRUD chính sách BH",
+      "host": "portal",
+      "path": "/command-center/hrm/insurance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH06_HRM_HD_BH.md"
+    },
+    {
+      "id": "6.7",
+      "domain": "hrm",
+      "caption": "Bảng danh sách BH nhân viên",
+      "host": "portal",
+      "path": "/command-center/hrm/insurance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH06_HRM_HD_BH.md"
+    },
+    {
+      "id": "6.8",
+      "domain": "hrm",
+      "caption": "Form ghi nhận BH nhân viên",
+      "host": "portal",
+      "path": "/command-center/hrm/insurance",
+      "auth": true,
+      "actions": [{ "type": "clickText", "text": "Thêm", "optional": true }],
+      "sourceMd": "hrm/HDSD_XEVN_CH06_HRM_HD_BH.md"
+    },
+    {
+      "id": "7.0",
+      "domain": "hrm",
+      "caption": "Thanh điều hướng Tuyển dụng",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.1",
+      "domain": "hrm",
+      "caption": "Dashboard tuyển dụng",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.2",
+      "domain": "hrm",
+      "caption": "Yêu cầu tuyển dụng",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.3",
+      "domain": "hrm",
+      "caption": "Thư viện JD",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.4",
+      "domain": "hrm",
+      "caption": "Tin tuyển dụng",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.5",
+      "domain": "hrm",
+      "caption": "Danh sách / Kanban ứng viên",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.6",
+      "domain": "hrm",
+      "caption": "Đề xuất định biên",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.7",
+      "domain": "hrm",
+      "caption": "Chiến dịch tuyển dụng",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.8",
+      "domain": "hrm",
+      "caption": "Lịch phỏng vấn",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.9",
+      "domain": "hrm",
+      "caption": "Bảng đánh giá ứng viên",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.10",
+      "domain": "hrm",
+      "caption": "Kế hoạch định biên năm",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "7.11",
+      "domain": "hrm",
+      "caption": "Báo cáo tuyển dụng",
+      "host": "portal",
+      "path": "/command-center/hrm/recruitment",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH07_HRM_TUYEN_DUNG.md"
+    },
+    {
+      "id": "8.0",
+      "domain": "hrm",
+      "caption": "Thanh tab Chấm công",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.1",
+      "domain": "hrm",
+      "caption": "Tổng quan chấm công",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.2",
+      "domain": "hrm",
+      "caption": "Wizard chấm công",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.3",
+      "domain": "hrm",
+      "caption": "Danh sách bảng chấm công",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.4",
+      "domain": "hrm",
+      "caption": "Dữ liệu chấm công raw",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.5",
+      "domain": "hrm",
+      "caption": "Lưới tuần",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.6",
+      "domain": "hrm",
+      "caption": "Bảng tổng hợp tháng",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.7",
+      "domain": "hrm",
+      "caption": "Danh sách ca",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.8",
+      "domain": "hrm",
+      "caption": "Lịch phân ca",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.9",
+      "domain": "hrm",
+      "caption": "Ca làm thêm",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.10",
+      "domain": "hrm",
+      "caption": "Menu Quản lý đơn",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.11",
+      "domain": "hrm",
+      "caption": "Đơn xin nghỉ",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.12",
+      "domain": "hrm",
+      "caption": "Nghỉ phép",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.13",
+      "domain": "hrm",
+      "caption": "Báo cáo chấm công",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "8.14",
+      "domain": "hrm",
+      "caption": "Thiết lập chấm công",
+      "host": "portal",
+      "path": "/command-center/hrm/attendance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH08_HRM_CHAM_CONG.md"
+    },
+    {
+      "id": "9.0",
+      "domain": "hrm",
+      "caption": "Thanh tab Lương",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.1",
+      "domain": "hrm",
+      "caption": "Dashboard lương",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.2",
+      "domain": "hrm",
+      "caption": "Thành phần lương",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.3",
+      "domain": "hrm",
+      "caption": "Chính sách thuế",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.4",
+      "domain": "hrm",
+      "caption": "Chính sách BH trên lương",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.5",
+      "domain": "hrm",
+      "caption": "Màn nhập dữ liệu lương",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.6",
+      "domain": "hrm",
+      "caption": "Tạo kỳ lương",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.7",
+      "domain": "hrm",
+      "caption": "Danh sách kỳ và phiếu lương",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.8",
+      "domain": "hrm",
+      "caption": "Chi tiết phiếu lương",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.9",
+      "domain": "hrm",
+      "caption": "Tạm ứng",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.10",
+      "domain": "hrm",
+      "caption": "Template payroll",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.11",
+      "domain": "hrm",
+      "caption": "Quyết toán thuế TNCN",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.12",
+      "domain": "hrm",
+      "caption": "Đợt chi trả lương",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "9.13",
+      "domain": "hrm",
+      "caption": "Báo cáo lương",
+      "host": "portal",
+      "path": "/command-center/hrm/payroll",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH09_HRM_LUONG.md"
+    },
+    {
+      "id": "10.1",
+      "domain": "hrm",
+      "caption": "Cơ cấu / Quyết định — placeholder Phase 2",
+      "host": "portal",
+      "path": "/command-center/hrm/decisions",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH10_HRM_CO_QD_CV.md"
+    },
+    {
+      "id": "10.2",
+      "domain": "hrm",
+      "caption": "Quyết định nhân sự",
+      "host": "portal",
+      "path": "/command-center/hrm/decisions",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH10_HRM_CO_QD_CV.md"
+    },
+    {
+      "id": "10.3",
+      "domain": "hrm",
+      "caption": "Đánh giá hiệu suất",
+      "host": "portal",
+      "path": "/command-center/hrm/performance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH10_HRM_CO_QD_CV.md"
+    },
+    {
+      "id": "10.4",
+      "domain": "hrm",
+      "caption": "Cơ cấu tổ chức HRM",
+      "host": "portal",
+      "path": "/command-center/hrm/company",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH10_HRM_CO_QD_CV.md"
+    },
+    {
+      "id": "10.5",
+      "domain": "hrm",
+      "caption": "Chu kỳ đánh giá",
+      "host": "portal",
+      "path": "/command-center/hrm/performance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH10_HRM_CO_QD_CV.md"
+    },
+    {
+      "id": "10.6",
+      "domain": "hrm",
+      "caption": "Chính sách bảo hiểm doanh nghiệp",
+      "host": "portal",
+      "path": "/command-center/hrm/performance",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH10_HRM_CO_QD_CV.md"
+    },
+    {
+      "id": "11.1",
+      "domain": "hrm",
+      "caption": "Cấu hình HRM",
+      "host": "portal",
+      "path": "/command-center/hrm/settings",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH11_HRM_SETTINGS_REPORTS.md"
+    },
+    {
+      "id": "11.2",
+      "domain": "hrm",
+      "caption": "Danh mục metadata HRM",
+      "host": "portal",
+      "path": "/command-center/hrm/settings",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH11_HRM_SETTINGS_REPORTS.md"
+    },
+    {
+      "id": "11.3",
+      "domain": "hrm",
+      "caption": "Báo cáo HRM tổng hợp",
+      "host": "portal",
+      "path": "/command-center/hrm/reports",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH11_HRM_SETTINGS_REPORTS.md"
+    },
+    {
+      "id": "11.4",
+      "domain": "hrm",
+      "caption": "Báo cáo chấm công trong Reports",
+      "host": "portal",
+      "path": "/command-center/hrm/reports",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH11_HRM_SETTINGS_REPORTS.md"
+    },
+    {
+      "id": "11.5",
+      "domain": "hrm",
+      "caption": "Báo cáo lương trong Reports",
+      "host": "portal",
+      "path": "/command-center/hrm/reports",
+      "auth": true,
+      "sourceMd": "hrm/HDSD_XEVN_CH11_HRM_SETTINGS_REPORTS.md"
+    }
+  ],
+  "skipped": [
+    {
+      "id": "2.2",
+      "reason": "Transient loading screen — not stable for Playwright capture"
+    },
+    {
+      "id": "12.1",
+      "reason": "Mobile HRM — out of web Playwright scope (HDSD Ch.12)"
+    },
+    {
+      "id": "12.2",
+      "reason": "Mobile HRM — out of web Playwright scope"
+    },
+    {
+      "id": "12.3",
+      "reason": "Mobile HRM — out of web Playwright scope"
+    },
+    {
+      "id": "12.4",
+      "reason": "Mobile HRM — out of web Playwright scope"
+    },
+    {
+      "id": "12.5",
+      "reason": "Mobile HRM — out of web Playwright scope"
+    },
+    {
+      "id": "12.6",
+      "reason": "Mobile HRM — out of web Playwright scope"
+    },
+    {
+      "id": "12.7",
+      "reason": "Mobile HRM — out of web Playwright scope"
+    },
+    {
+      "id": "12.8",
+      "reason": "Mobile HRM — out of web Playwright scope"
+    }
+  ]
+}

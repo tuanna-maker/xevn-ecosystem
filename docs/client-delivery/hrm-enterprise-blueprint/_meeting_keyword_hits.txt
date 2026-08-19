@@ -1,0 +1,37 @@
+OT	cust=226	spon=41
+luong	cust=122	spon=32
+tuyen dung	cust=114	spon=50
+nhan su	cust=91	spon=21
+bao hiem	cust=39	spon=13
+phe duyet	cust=32	spon=6
+module	cust=29	spon=15
+nghi phep	cust=19	spon=7
+bao cao	cust=12	spon=7
+quy trinh	cust=10	spon=6
+ca lam	cust=10	spon=1
+tai san	cust=8	spon=2
+thiet bi	cust=6	spon=1
+cham cong	cust=5	spon=5
+KPI	cust=5	spon=0
+phep nam	cust=5	spon=1
+Excel	cust=4	spon=1
+HRM	cust=3	spon=3
+phan mem	cust=3	spon=0
+mobile	cust=1	spon=2
+app	cust=1	spon=4
+face	cust=1	spon=0
+import	cust=1	spon=0
+vai tro	cust=1	spon=0
+hop dong	cust=0	spon=0
+XBOS	cust=0	spon=0
+van tay	cust=0	spon=0
+GPS	cust=0	spon=0
+dao tao	cust=0	spon=0
+XBot	cust=0	spon=0
+chatbot	cust=0	spon=0
+canh bao	cust=0	spon=0
+export	cust=0	spon=5
+cong ty thanh vien	cust=0	spon=0
+tap doan	cust=0	spon=0
+RBAC	cust=0	spon=0
+tang ca	cust=0	spon=0

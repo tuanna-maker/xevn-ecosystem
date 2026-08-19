@@ -1,0 +1,112 @@
+{
+  "$schema": "./change-manifest.schema.json",
+  "manifest_version": "0.1.1",
+  "work_item_id": "PO-HRM-BP-REC-HEADCOUNT-TS-01",
+  "title": "Yêu cầu tuyển ngoài định biên + BOD — mở TechSpec",
+  "summary": "Q-REC-HEADCOUNT ANSWERED: cho phép YCTD ngoài định biên với duyệt BOD; quy trình cấu hình từ XBOS đồng bộ HRM theo tenant. Feedstock: CM-HRM-REC-02B. UC-BP-REC-03 chiến dịch hub = OUT — ngoài wave.",
+  "uc_ids": ["UC-BP-REC-02b"],
+  "br_ids": ["BR-REC-HEADCOUNT-BOD-01"],
+  "ac": [
+    {
+      "id": "AC-REC-HC-01",
+      "statement": "TechSpec (khi mở) tách nhánh trong định biên (rút gọn) và ngoài định biên (có BOD) — không gộp một form bỏ BOD.",
+      "verify": "doc_review",
+      "pass_when": "spec_targets.tech_spec có path hoặc HOLD có lý do; ref_srs UC-BP-REC-02b; must_keep nêu hai nhánh."
+    },
+    {
+      "id": "AC-REC-HC-02",
+      "statement": "Master quy trình duyệt trên XBOS, đồng bộ từng tenant HRM — không hard-code một chuỗi BOD toàn tập đoàn.",
+      "verify": "doc_review",
+      "pass_when": "TechSpec/API map hoặc must_keep ghi XBOS→HRM sync per tenant."
+    },
+    {
+      "id": "AC-REC-HC-03",
+      "statement": "Wave docs-only; không claim hub chiến dịch UC-BP-REC-03 trong MVP.",
+      "verify": "gate_script",
+      "pass_when": "forbidden_paths gồm apps/**; summary/must_keep ghi REC-03 OUT."
+    }
+  ],
+  "slice_id": "HRM-REC-HEADCOUNT-01",
+  "allowed_paths": [
+    "docs/architecture/**",
+    "docs/client-delivery/hrm-enterprise-blueprint/**",
+    "docs/program/schemas/**",
+    "docs/program/examples/**",
+    "docs/program/slices/HRM-REC-HEADCOUNT-01.md",
+    "docs/qa/evidence/**"
+  ],
+  "forbidden_paths": ["apps/**", "packages/**", "deploy/**"],
+  "role_owners": {
+    "pm": "PO-BIZ-CHANGE-COMPILER-BA-PROC-01",
+    "sa": "PO-HRM-BP-REC-HEADCOUNT-TS-01",
+    "ba_process": "PO-HRM-BP-SRS-CHOT-01",
+    "ba_docs": "PO-BIZ-CHANGE-COMPILER-BA-01",
+    "qa": "doc_review-gate",
+    "qc": "pre-send-docs-only"
+  },
+  "sponsor_confirm": {
+    "status": "CONFIRMED",
+    "wave_id": "PO-HRM-BP-SRS-CHOT-01",
+    "date": "2026-08-05",
+    "evidence_ref": "docs/client-delivery/hrm-enterprise-blueprint/UC_MEETING_PRODUCT_GAP_MATRIX.md",
+    "notes": "Q-REC-HEADCOUNT ANSWERED — ngoài ĐB + BOD · WF XBOS sync tenant."
+  },
+  "change_mode": "UPGRADE",
+  "neo_tags": ["DOC-DELTA", "CONTRACT-MEMORY"],
+  "source_artifacts": [
+    {
+      "path": "docs/client-delivery/hrm-enterprise-blueprint/SPONSOR_CHOT_FILL_v1.1.xlsx",
+      "kind": "excel",
+      "sheet": "00_Chot_Sponsor",
+      "note": "decision_id=Q-REC-HEADCOUNT · batch_change_id=CM-HRM-REC-02B"
+    },
+    {
+      "path": "docs/program/schemas/change-manifest.batch.example.json",
+      "kind": "other",
+      "note": "Plane B feedstock CM-HRM-REC-02B"
+    }
+  ],
+  "read_first": [
+    "docs/architecture/ADR-BUSINESS-CHANGE-COMPILER-20260805.md",
+    "docs/program/schemas/change-manifest.schema.json",
+    "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md",
+    "docs/client-delivery/hrm-enterprise-blueprint/UC_INVENTORY.md"
+  ],
+  "must_keep": [
+    "Hai nhánh: trong ĐB rút gọn vs ngoài ĐB + BOD",
+    "Workflow master XBOS → sync tenant HRM",
+    "UC-BP-REC-03 OUT khỏi MVP wave này",
+    "no_prompt_echo trên tài liệu khách"
+  ],
+  "spec_targets": {
+    "srs": "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-REC-02b",
+    "tech_spec": "HOLD"
+  },
+  "traceability": {
+    "srs_refs": [
+      "docs/client-delivery/hrm-enterprise-blueprint/SRS_HRM_ENTERPRISE.md §3 · UC-BP-REC-02b"
+    ],
+    "tech_spec_refs": [
+      "HOLD — PO-HRM-BP-REC-HEADCOUNT-TS-01"
+    ],
+    "journey_ids": ["UF-HRM-12", "J-HRM-05"],
+    "scope_parity_ack": false
+  },
+  "pipeline_stage": "techspec",
+  "compound_hooks": {
+    "pre_task_memory_loadout": true,
+    "post_task_memory_update": true,
+    "promote_os_on_lesson": false
+  },
+  "promote_os": {
+    "required": false,
+    "chapter": "34-BUSINESS-CHANGE-COMPILER.md",
+    "notes": "Phase A pilot."
+  },
+  "compiled_at": "2026-08-05T14:25:00+07:00",
+  "compiler": {
+    "name": "manual-ba-emit",
+    "version": "0.1.1",
+    "mode": "manual"
+  }
+}

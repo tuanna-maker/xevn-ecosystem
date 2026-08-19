@@ -6,7 +6,7 @@
 
 | Chỉ tiêu | Giá trị |
 |----------|--------|
-| **Tổng UC Phase 1** | **245** (+ **1** governance ADD `UC-HRM-CO-01` STT 351a — chưa regenerate inventory) |
+| **Tổng UC Phase 1** | **245** |
 | Khối **A** — XBOS nền + `UC-XBOS-CAT-*` | **104** (STT 1–97, 367–373) |
 | Khối **B** — `XBOS-DM-LOG-*` | **22** (STT 98–119) |
 | Khối **C** — HRM đầy đủ | **119** (STT 248–366) |
@@ -287,7 +287,6 @@ Cập nhật override: `docs/ecosystem/phase1-impl-status.json` · Regenerate: `
 | 349 | `UC-HRM-25` | Embed — Hợp đồng và bảo hiểm xã hội | M05 | Có | TECHSPEC_HE §9.3 | Có — endpoint | e2e_pass | HRM |
 | 350 | `UC-HRM-26` | Embed — Hàng chờ duyệt metadata | M05 | Có | TECHSPEC_HE §9.3 | Một phần — pattern API | e2e_pass | HRM |
 | 351 | `UC-HRM-27` | Embed — Quyết định và báo cáo (backlog) | M05 | Có | TECHSPEC_HE §9.3 | Một phần — pattern API | waived | FE |
-| 351a | `UC-HRM-CO-01` | Embed — Quản lý công ty: headcount ĐVTV (FR-HRM-CO-HC-01) + Ngành nghề (FR-HRM-CO-IND-01) | M05 | Có — `docs/hrm/SRS.md` UC-HRM-CO-01 | TECHSPEC_HE Plane A/B + BR-INT-05; **industry:** expose `business_lines` + FE dictionary (TBD SA) | Một phần — XBOS list + HRM summary/COUNT; industry bind residual | planned | HRM |
 | 352 | `UC-HRM-MOB-01` | Đăng nhập và thiết lập phiên an toàn | M06 | Có | TECHSPEC_HE §9.4 | Có — endpoint | e2e_pass | Mobile |
 | 353 | `UC-HRM-MOB-02` | Chọn và xác nhận phạm vi công ty | M06 | Có | TECHSPEC_HE §9.4 | Có — endpoint | e2e_pass | Mobile |
 | 354 | `UC-HRM-MOB-03` | Xem bảng điều khiển cá nhân | M06 | Có | TECHSPEC_HE §9.4 | Một phần — pattern API | e2e_pass | Mobile |

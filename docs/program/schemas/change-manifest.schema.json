@@ -1,0 +1,555 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://xevn.local/schemas/change-manifest.schema.json",
+  "title": "XeVN / Vibe Team OS — Business Change Manifest (Dispatch / Plane D)",
+  "description": "Draft v0.1.1 — Dispatch Manifest (Plane D) machine SoT for Excel/docs → Spec-first pipeline (U77 / ADR-BUSINESS-CHANGE-COMPILER-20260805). Spec-first order is never replaced by this document. Batch Change Ledger (Plane B: changes[]) is NOT validated by this schema — see CHANGE_MANIFEST_VALIDATION_MATRIX.md. ADD ba-data: optional traceability (Manifest→SRS→TechSpec→DB→API→CODE-MEMORY; VAL-CM-S-23 / TR-CM-07..16); uf_or_j allows J-MOB-*.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_version",
+    "work_item_id",
+    "uc_ids",
+    "br_ids",
+    "ac",
+    "slice_id",
+    "allowed_paths",
+    "forbidden_paths",
+    "role_owners",
+    "sponsor_confirm",
+    "change_mode",
+    "neo_tags"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional pointer to this schema file."
+    },
+    "manifest_version": {
+      "type": "string",
+      "pattern": "^0\\.1\\.\\d+$",
+      "description": "Semver of manifest instance; Phase A uses 0.1.x."
+    },
+    "work_item_id": {
+      "type": "string",
+      "minLength": 3,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "description": "Stable work item id (PO-…, W-…, P1-…)."
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "uc_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^(UC|FR)-[A-Za-z0-9._-]+$"
+      }
+    },
+    "br_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^BR-[A-Za-z0-9._-]+$"
+      },
+      "description": "Default minItems 1 via root else-branch; empty only when change_mode=FIX and sponsor_confirm.status=WAIVED_HOTFIX_P0 (VAL-CM-S-05)."
+    },
+    "ac": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/acceptanceCriterion"
+      }
+    },
+    "slice_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Maps to docs/program/slices/<slice_id>.md"
+    },
+    "allowed_paths": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "forbidden_paths": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Phase A docs waves should include apps/** and packages/** (VAL-CM-P-05)."
+    },
+    "role_owners": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "pm": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "sa": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "ba_process": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "ba_data": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "ba_docs": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "dev_fe": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "dev_be": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "dev_mobile": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "qa": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "qc": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "devops": {
+          "$ref": "#/$defs/ownerRef"
+        },
+        "technical_manager": {
+          "$ref": "#/$defs/ownerRef"
+        }
+      }
+    },
+    "sponsor_confirm": {
+      "$ref": "#/$defs/sponsorConfirm"
+    },
+    "change_mode": {
+      "type": "string",
+      "enum": [
+        "ADD",
+        "UPGRADE",
+        "FIX"
+      ],
+      "description": "Default enum per ADR. REPLACE/REMOVE only via sponsor_override (CM-VAL-005)."
+    },
+    "neo_tags": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/neoTag"
+      }
+    },
+    "source_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "excel",
+              "markdown",
+              "pdf",
+              "html",
+              "chat_extract",
+              "other"
+            ]
+          },
+          "sheet": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "read_first": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered paths for Task read_first."
+    },
+    "must_keep": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "spec_targets": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "srs": {
+          "type": "string"
+        },
+        "tech_spec": {
+          "type": "string"
+        },
+        "db_design": {
+          "type": "string"
+        },
+        "api_design": {
+          "type": "string"
+        }
+      },
+      "description": "Path pointers — completeness by pipeline_stage: VAL-CM-050..053."
+    },
+    "traceability": {
+      "$ref": "#/$defs/traceability",
+      "description": "ADD v0.1.1 ba-data — explicit Manifest→SRS→TechSpec→DB→API→CODE-MEMORY refs (VAL-CM-S-23, TR-CM-07..16). Completeness by pipeline_stage is PROCESS (VAL-CM-P-11/15/16), not all required here."
+    },
+    "pipeline_stage": {
+      "type": "string",
+      "enum": [
+        "intake",
+        "srs",
+        "techspec",
+        "db_api",
+        "ready_for_dev",
+        "qa",
+        "qc",
+        "closed"
+      ]
+    },
+    "compound_hooks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pre_task_memory_loadout": {
+          "type": "boolean"
+        },
+        "post_task_memory_update": {
+          "type": "boolean"
+        },
+        "promote_os_on_lesson": {
+          "type": "boolean"
+        }
+      }
+    },
+    "promote_os": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "chapter": {
+          "type": "string",
+          "const": "34-BUSINESS-CHANGE-COMPILER.md"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "sponsor_override": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Only when Sponsor explicitly requires REPLACE/REMOVE.",
+      "required": [
+        "change_mode_extended",
+        "rationale"
+      ],
+      "properties": {
+        "change_mode_extended": {
+          "type": "string",
+          "enum": [
+            "REPLACE",
+            "REMOVE",
+            "ALIGN"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 8
+        },
+        "expiry": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      }
+    },
+    "compiled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "compiler": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "script",
+            "hybrid"
+          ]
+        }
+      }
+    }
+  },
+  "if": {
+    "properties": {
+      "change_mode": {
+        "const": "FIX"
+      },
+      "sponsor_confirm": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "const": "WAIVED_HOTFIX_P0"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      }
+    },
+    "required": [
+      "change_mode",
+      "sponsor_confirm"
+    ]
+  },
+  "then": {
+    "properties": {
+      "br_ids": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "pattern": "^BR-[A-Za-z0-9._-]+$"
+        }
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "br_ids": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "pattern": "^BR-[A-Za-z0-9._-]+$"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "acceptanceCriterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "statement",
+        "verify",
+        "pass_when"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^AC-[A-Za-z0-9._-]+$"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 8
+        },
+        "verify": {
+          "type": "string",
+          "enum": [
+            "browser",
+            "api",
+            "jest",
+            "doc_review",
+            "gate_script"
+          ]
+        },
+        "uf_or_j": {
+          "type": "string",
+          "description": "UF-* / J-* / J-MOB-* when verify=browser (VAL-CM-S-10 / TR-CM-05).",
+          "pattern": "^(UF|J|J-MOB)-[A-Za-z0-9._-]+$"
+        },
+        "pass_when": {
+          "type": "string",
+          "minLength": 8
+        }
+      },
+      "if": {
+        "properties": {
+          "verify": {
+            "const": "browser"
+          }
+        },
+        "required": [
+          "verify"
+        ]
+      },
+      "then": {
+        "required": [
+          "uf_or_j"
+        ]
+      }
+    },
+    "ownerRef": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Role owner label or nested work_item_id."
+    },
+    "sponsorConfirm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "CONFIRMED",
+            "WAIVED_HOTFIX_P0",
+            "REJECTED"
+          ]
+        },
+        "wave_id": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "evidence_ref": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "CONFIRMED",
+              "WAIVED_HOTFIX_P0"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "date"
+        ]
+      }
+    },
+    "neoTag": {
+      "type": "string",
+      "enum": [
+        "CODE-MEMORY",
+        "UI-MEMORY",
+        "STYLE-MEMORY",
+        "ROUTE-MEMORY",
+        "CONTRACT-MEMORY",
+        "DB-MEMORY",
+        "TEST-MEMORY",
+        "ENV-REGISTRY",
+        "CONFIG-MEMORY",
+        "DEPLOY-MEMORY",
+        "SCRIPT-MEMORY",
+        "DOC-DELTA"
+      ]
+    },
+    "traceability": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Explicit end-to-end refs for BA-Data / QA reject when incomplete at ready_for_dev.",
+      "properties": {
+        "srs_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "path + § / FR / UC (TR-CM-07)"
+        },
+        "tech_spec_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "path + § + ref_srs ack (TR-CM-08)"
+        },
+        "db_design_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "path + table names (TR-CM-09)"
+        },
+        "api_design_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "path + METHOD/path + bước SRS (TR-CM-10)"
+        },
+        "code_memory_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Files that must carry @CODE-MEMORY / neo (TR-CM-11)"
+        },
+        "journey_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(UF|J|J-MOB)-[A-Za-z0-9._-]+$"
+          },
+          "description": "UF-* / J-* / J-MOB-* for L2.5 (TR-CM-05)"
+        },
+        "scope_parity_ack": {
+          "type": "boolean",
+          "description": "true when list+get-by-id share scope resolver (VAL-CM-P-16 / CM-SCOPE-01 / U19); process-required when API journeys in scope"
+        }
+      }
+    }
+  }
+}

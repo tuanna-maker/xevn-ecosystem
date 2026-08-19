@@ -1,0 +1,1075 @@
+B-Minutes AI - Trợ lý phòng họp thông minh 
+ B-Minutes.ai
+ Tải xuống / In 
+ Bản ghi âm 11:40:01 4/8/2026
+ 4/8/2026 • 11:50 AM
+ Mới
+ Tóm tắt Biên bản Bản dịch (Transcript) Quyết định & Hành động 
+ Đã mở hộp thoại in cho biên bản cuộc họp. Chọn Save as PDF để lưu đúng bản render trên màn hình.
+ Bạn đang xem cuộc họp được chia sẻ ở chế độ chỉ xem.
+ Tóm tắt cuộc họp
+ Cuộc họp tập trung rà soát phân hệ HRM gồm các module tuyển dụng, nhân sự, chấm công nghỉ phép, bảo hiểm và tiền lương. Trọng tâm là xác định phạm vi MVP, bổ sung các trường nghiệp vụ quan trọng như trong/ngoài định biên, liên kết ứng viên với yêu cầu tuyển dụng, tách chiến dịch tuyển dụng khỏi giai đoạn hiện tại, chuyển thông tin lương/bảo hiểm sang module khác để đảm bảo bảo mật. Các bên thống nhất tạm dừng code/demo, chuyển sang chốt tài liệu nghiệp vụ trước. Người nói 1 sẽ tổng hợp WBS và gửi trong tối nay.
+ Quyết định chính
+ Thống nhất tách phần chiến dịch tuyển dụng ra khỏi MVP, chỉ triển khai khi có đối tác/API kết nối.
+ Chốt module tuyển dụng cần tập trung vào: mô tả công việc, yêu cầu tuyển dụng, thông tin ứng viên và báo cáo; bắt buộc liên kết ứng viên với yêu cầu tuyển dụng.
+ Thống nhất bổ sung trường 'trong/ngoài định biên' vào yêu cầu tuyển dụng, dùng làm điều kiện cho luồng phê duyệt.
+ Thống nhất kế hoạch tuyển dụng theo tháng chỉ cần số lượng cần tuyển, không tách hai cột kế hoạch/đề xuất trùng lặp.
+ Thống nhất chuyển thông tin lương, ngân hàng, mã số thuế, bảo hiểm sang module hợp đồng/bảo hiểm để bảo mật.
+ Thống nhất không gộp quản lý công việc vào phân hệ nhân sự, cần có module quản lý công việc riêng.
+ Chốt tạm dừng việc code/demo, chuyển sang xác nhận tài liệu nghiệp vụ trước khi triển khai.
+ Thống nhất xây dựng bảng công tổng hợp từ chấm công, nghỉ phép, OT làm dữ liệu đầu vào cho tính lương.
+ Mind Map
+ Tự động sinh từ nội dung họp Phóng to 
+ Tuyển dụng Tin tuyển dụng hiện chỉ quản lý nội bộ, chưa đồng bộ nền tảng nên giá trị thấp Chiến dịch tuyển dụng cần có tích hợp API với bên ngoài mới triển khai, giai đoạn này không nên làm Yêu cầu tuyển dụng cần bổ sung trường trong/ngoài định biên, dùng làm điều kiện phê duyệt Cần liên kết ứng viên với yêu cầu tuyển dụng để tracking số lượng CV, phỏng vấn, offer, onboarding Chấm công – nghỉ phép Cần khai báo ca làm việc, quy định đi muộn về sớm theo chính sách công ty Cần có bảng công tổng hợp từ chấm công, nghỉ phép, OT để phục vụ tính lương Nghỉ phép cần cấu hình linh hoạt: phép năm, thâm niên, phép OT, tồn phép, ứng phép Nghỉ ốm cần tính chế độ bảo hiểm và công ty hỗ trợ hay không Hành động triển khai Tổng hợp WBS phân rã các module/task nghiệp vụ Owner: Người nói 1 Deadline: Tối nay Cấu trúc WBS theo từng module mỗi task liệt kê nghiệp vụ cụ thể Gửi file nghiệm thu cho anh Nam Owner: Người nói 1 Deadline: Chưa rõ Nhớ gửi file để anh Nam ký nghiệm thu Bổ sung trường trong/ngoài định biên vào yêu cầu tuyển dụng Owner: Người nói 1 Deadline: Chưa rõ Bổ sung trường thông tin và lý do tuyển thay thế/tuyển mới phục vụ điều kiện luồng phê duyệt Tách phần chiến dịch tuyển dụng ra khỏi phạm vi hiện tại Owner: Người nói 1 Deadline: Chưa rõ Chỉ thực hiện khi có đối tác sẵn sàng mở API đồng bộ tuyển dụng Chỉnh lại bảng kế hoạch tuyển dụng theo tháng Owner: Người nói 1 Deadline: Chưa rõ Bỏ cột kế hoạch/đề xuất trùng chỉ thể hiện số lượng cần tuyển theo từng tháng Xây dựng báo cáo tuyển dụng theo yêu cầu Owner: Người nói 1 Deadline: Chưa rõ Báo cáo theo thời gian phòng ban cấp độ so sánh kế hoạch và thực tế Rà soát và tách các module: quản lý công việc, hợp đồng/bảo hiểm, chấm công nghỉ phép, tiền lương Owner: Người nói 1 Deadline: Chưa rõ Tổ chức lại phạm vi từng module tránh gộp chức năng không đúng chỗ Họp review phân hệ HRM Hồ sơ nhân sự Hồ sơ nhân sự gồm thông tin cơ bản, cá nhân, công việc, tài chính; cần bổ sung người phụ thuộc Thông tin lương, ngân hàng, mã số thuế, bảo hiểm nên chuyển sang module hợp đồng/bảo hiểm để bảo mật Quản lý công việc không nên gộp vào nhân sự, cần module riêng Khen thưởng/kỷ luật cần thêm trạng thái thực thi, liên kết với tiền lương nếu có phạt/thưởng Quyết định & hướng Thống nhất tách phần chiến dịch tuyển dụng ra khỏi MVP, chỉ triển khai khi có đối tác/API kết nối Chốt module tuyển dụng cần tập trung vào: mô tả công việc, yêu cầu tuyển dụng, thông tin ứng viên và báo cáo; bắt buộc liên kết ứng viên với yêu cầu tuyển dụng Thống nhất bổ sung trường 'trong/ngoài định biên' vào yêu cầu tuyển dụng, dùng làm điều kiện cho luồng phê duyệt Thống nhất kế hoạch tuyển dụng theo tháng chỉ cần số lượng cần tuyển, không tách hai cột kế hoạch/đề xuất trùng lặp Thống nhất chuyển thông tin lương, ngân hàng, mã số thuế, bảo hiểm sang module hợp đồng/bảo hiểm để bảo mật Thống nhất không gộp quản lý công việc vào phân hệ nhân sự, cần có module quản lý công việc riêng Chốt tạm dừng việc code/demo, chuyển sang xác nhận tài liệu nghiệp vụ trước khi triển khai Thống nhất xây dựng bảng công tổng hợp từ chấm công, nghỉ phép, OT làm dữ liệu đầu vào cho tính lương 
+ Bản dịch chi tiết
+ Quản lý người nói 
+ N1
+ Người nói 1 00:42 
+ Chỗ này cũng nhiều anh chị phết.
+ N2
+ Người nói 2 00:45 
+ Ừ, chỗ này thật sự có dư.
+ N1
+ Người nói 1 00:47 
+ Chỗ này chưa có, anh Dương ạ.
+ N2
+ Người nói 2 00:49 
+ Đến đây dư không?
+ N1
+ Người nói 1 01:09 
+ Chỗ này tính ra cũng đặc phết đấy. Dài, khá dài. 763 trang rồi mà.
+ N2
+ Người nói 2 01:46 
+ Hết rồi không?
+ N1
+ Người nói 1 01:49 
+ Gần 800 trang.
+ N2
+ Người nói 2 01:50 
+ Comment nói cái gì vậy?
+ N1
+ Người nói 1 01:52 
+ Tài liệu không dành cho người đọc.
+ N2
+ Người nói 2 01:57 
+ Ông viết cái gì vậy? Ông viết về xuất bản sách à? Ông làm bên bảo hiểm đúng không?
+ N1
+ Người nói 1 02:03 
+ Nhưng mà thanh keo đấy mới được lên 700 trang nhỉ? Thanh keo chạy nhanh nhanh mà.
+ N2
+ Người nói 2 02:09 
+ Có đoạn nào—
+ N1
+ Người nói 1 02:10 
+ Để em in ra xong rồi anh đến đỡ em nhé.
+ N2
+ Người nói 2 02:12 
+ In ra à?
+ N1
+ Người nói 1 02:14 
+ In sách ạ, in sách. Đây, để em lấy nốt BID. Từ trang đâu. Có thể có một vài cái ngôn ngữ từ mà em vẫn còn sót thì chắc là em sẽ sửa tiếp theo em. Ừ, quên, cái này cũng phải. Thêm một dòng thì càng cố cố cần thử nữa. Không, anh Nam nhìn thấy Nam đấy.
+ N2
+ Người nói 2 03:19 
+ Em nhớ gửi file này cho anh Nam ký nghiệm thu nhé.
+ N1
+ Người nói 1 03:22 
+ Anh không đọc đâu. Anh không đọc file đấy đâu. Mất cái trang đấy. Đấy, 763 trang này. Tí anh Dương đếm thử của em xem 763 trang không.
+ N2
+ Người nói 2 03:37 
+ Bật cái DM trên laptop đi.
+ N1
+ Người nói 1 03:39 
+ Em đang bật rồi mà.
+ N2
+ Người nói 2 03:41 
+ Bật trên điện thoại.
+ N1
+ Người nói 1 03:43 
+ À.
+ N2
+ Người nói 2 03:43 
+ Tắt ra vào cho khỏi bị đụng.
+ N1
+ Người nói 1 03:50 
+ Nhưng mà anh Dũng này nếu mà được thì chắc là cái case mà hôm qua em viết trên này thì chắc anh tư vấn thêm cho em ấy.
+ N2
+ Người nói 2 03:57 
+ Ừ. Nó chỉ là— đây chỉ là cái nút đầu ban đầu thôi.
+ N1
+ Người nói 1 04:00 
+ Nút ban đầu thôi à?
+ N2
+ Người nói 2 04:01 
+ Ừ. Còn vị chi tiết tính năng như nào, hoặc cái nguồn như nào ấy thì nó vẫn cần chi tiết. Thì cái đấy là cái bức tranh nó kiểu là đến nhánh to của cái tính năng thôi. Còn những cái như case hay là cái function này nọ như nào thì sẽ phải chi tiết thêm.
+ N1
+ Người nói 1 04:15 
+ Thế thì chắc là em cứ đi vào. Còn DEV trước thì— để em sờ vào DEV trước vậy. Có thể là nó đang thiếu thì anh cứ nhìn giúp em cái nút ghi đã.
+ N2
+ Người nói 2 04:33 
+ Một dự án bỏ 500 triệu bơi ra vẫn lãi một tòa.
+ N1
+ Người nói 1 04:39 
+ Mấy anh cũng biết chứ. Mà dù học về copying vẫn có công cụ nhưng mà— Em có công cụ nhưng mà em vẫn thích ghi bằng tay để cái đầu nó ngấm. Không vỡ mồm.
+ N2
+ Người nói 2 05:00 
+ Anh thì được cái anh không tin cái đầu anh lắm nên là—
+ N1
+ Người nói 1 05:06 
+ Anh tin các bạn anh luôn. Em mà không ghi chép là trong đầu em nó sẽ không có một cái gì. Xong rồi thì có lúc đọc lại các cái tài liệu mà AI hay là cái gì ghi ấy, mình cứ thấy nó cứ thế néo nào, thế thế là thôi em phải ghi lại. Kể cả là có thể là em ghi chép không chuẩn lắm.
+ N2
+ Người nói 2 05:49 
+ Em cần đóng cửa không? Em cần đóng cửa không?
+ N1
+ Người nói 1 05:54 
+ Dạ vâng.
+ N2
+ Người nói 2 06:09 
+ Đóng cửa sang bên này một tí nhé. Đóng cửa sang bên này.
+ N1
+ Người nói 1 06:14 
+ Không có đâu. Chỗ này là— chỗ này cũng kín đáo thế này anh ạ.
+ N2
+ Người nói 2 06:18 
+ Mở cửa từ đằng sau ra bên ngoài có không khí thoáng hơn.
+ N1
+ Người nói 1 06:23 
+ Một cái điều hòa riêng thì cần gì nữa.
+ N2
+ Người nói 2 06:25 
+ Đúng rồi, cần khí trời.
+ N1
+ Người nói 1 06:56 
+ Ok, bắt đầu nhé.
+ N2
+ Người nói 2 06:57 
+ Ừ.
+ N1
+ Người nói 1 06:58 
+ Đây đi. À, hiện tại nhé, ví dụ như là cái phần tuyển dụng đúng không, nó sẽ có phần quản lý yêu cầu này, apply và các cái CV ứng viên này, lịch hẹn phỏng vấn này, offer onboarding này. Thì ở thời điểm hiện tại là tuyển dụng ở đây đang có những cái gì?
+ N2
+ Người nói 2 07:17 
+ Ừ.
+ N1
+ Người nói 1 07:19 
+ Tuyển dụng ở đây, đầu tiên là nó sẽ có cái phần quản lý về cái yêu cầu tuyển dụng. Đấy, yêu cầu tuyển dụng thì nó sẽ bao gồm là, ờ, thư viện GD này, à, tiêu đề này, đấy, phòng nào tuyển dụng này, số lượng nhân sự này, và loại hình, ờ, gọi là loại hình thuê đấy. Đấy, hiện tại là nghiệp vụ của em đang lưu 3 thông tin này. Đấy, đây. Sau đó là tạo thêm cái— sau khi có cái yêu cầu này xong thì sẽ có cái phần là đăng tin tuyển dụng. Đấy, thì tin tuyển dụng ở đây nó sẽ gồm có những cái gì? Có tiêu đề này, vị trí— cái này vị trí này thì phải lấy trong setup này. Cái này chắc chưa dev, chưa đẩy lên local là đã có rồi này. Danh sách phòng ban này. Đây là cái này đều sẽ lấy trong danh mục của HRM này. Và thực chất là load ra từ export này. Đấy. Loại hình này, loại hình thì có rồi này. Lương tối thiểu này, hạn nộp hồ sơ này. Đấy, mức độ ưu tiên của cái tin tuyển dụng này này, của cái nhu cầu tuyển dụng này này. Rồi cái, ờ, cái này chưa quên chuyện cái này chưa ra tham chiếu vào thư viện CD này. Đấy. Và cái này thì đều nó sẽ load theo cái GD hết. Đấy. Sau đó là sẽ có các cái thông tin ứng viên ở đây. Thông tin ứng viên ở đây thì nó gồm những cái gì? Đầu tiên họ tên này.
+ N2
+ Người nói 2 08:57 
+ Cho anh hỏi quay lại cái trước một tí. Cái tin tuyển dụng kia nhé, đúng không? Cái tin đang tuyển tất cả cái này là có đồng bộ lên nền tảng nào không, hay là mình chỉ quản lý ở đây?
+ N1
+ Người nói 1 09:06 
+ Hiện tại là nó chỉ đang nội bộ thôi ạ.
+ N2
+ Người nói 2 09:09 
+ Quản lý ở đây thì thực ra cái này nó không giá trị lắm, bởi vì nó sẽ giống như là cái yêu cầu tuyển dụng. Nó không khác gì cái yêu cầu tuyển dụng cả. Còn cái này có giá trị khi và chỉ khi nó tự động. Thông tin ở đây, và mình sẽ tắt bật được ở trên các nền tảng tuyển dụng như Toast TV hay LinkedIn hay cái gì đó, thì chỗ này mới có giá trị. Còn nếu như không ấy, thì mình đã tạo yêu cầu tuyển dụng xong rồi tạo tin tuyển dụng, nó đang bị trùng lặp, không có giá trị.
+ N1
+ Người nói 1 09:40 
+ Ok. Mình kết nối sang nền tảng tuyển dụng đúng không? Thế cái này chắc để em nghiên cứu thêm, bởi vì cũng có nhiều bên—
+ N2
+ Người nói 2 09:49 
+ Ừ đúng, nhưng mà nếu như cái đấy như anh nói là phải đồng bộ được. Nếu như không đồng bộ được thì hãy đẩy cái việc mà đã đăng tin thành một cái trạng thái của yêu cầu tuyển dụng. Có nghĩa là trong yêu cầu tuyển dụng của mình, sau khi filter xong ấy, thì nó sẽ có sang trạng thái là đã đăng tin, hay là đã CV, hay là đã phỏng vấn. Thì nó thuộc về trạng thái của yêu cầu tuyển dụng, chứ nó không nên tách ra thành một cái menu mà vô thường vô phải.
+ N1
+ Người nói 1 10:14 
+ Gọi là visualize cái danh sách tuyển dụng mình vẫn dùng như mọi khi, file sheet đúng không? Cái Google Sheet bình thường anh em mình vẫn hay dùng, nó sẽ có các status, rồi là các kiểu trạng thái.
+ N2
+ Người nói 2 10:27 
+ Thì một cái yêu cầu đấy thì đã đăng tin hay chưa, đã có ứng viên hay chưa, thì cái đấy nó chỉ là lên là trạng thái thôi.
+ N1
+ Người nói 1 10:33 
+ Vốn là cái luồng bình thường mình vẫn đang dùng.
+ N2
+ Người nói 2 10:36 
+ Còn cái tin tuyển dụng này nên có khi chỉ khi mà mình có cái hub kết nối được với các cái đơn vị tuyển dụng, kiểu là à tôi tạo tin ở đây để tôi quản lý và tôi sẽ bật bẻ lên trên nền tảng nào, xong từ nền tảng đấy nó sẽ trả về cho tôi cái thông tin gì. Thì lúc đấy mình đo được tuyển dụng đa kênh, thì mới nên có cái này. Còn không thì thực ra là nếu như anh mà làm tài liệu tuyển dụng, anh nhập vào hai chỗ, anh sẽ không nhập.
+ N1
+ Người nói 1 10:58 
+ Ừ.
+ N2
+ Người nói 2 11:08 
+ Anh nhập phụ tới mức đa kênh nữa.
+ N1
+ Người nói 1 11:15 
+ Chủ yếu nếu là cái này thì nó sẽ phục vụ người đứng cấp độ quản lý đúng không?
+ N2
+ Người nói 2 11:19 
+ Đúng.
+ N1
+ Người nói 1 11:19 
+ Quản lý chỉ cần biết là đang có bao nhiêu các hồ sơ, hay là đang— đang các vị trí, trạng thái.
+ N2
+ Người nói 2 11:26 
+ Cái đấy là sẽ dành cho những cái người ở vị trí quản lý. Người ta sẽ ví dụ là giám đốc, ban giám đốc từng công ty, hay là ban giám đốc tập đoàn chẳng hạn, nhìn xem, soi xem là công ty này đang nhu cầu tuyển dụng như nào, các thứ để đẩy dần người sang.
+ N1
+ Người nói 1 11:40 
+ Ừ. Còn nếu mà không có automation thì cái đoạn này thì gần như không giá trị cho người khác sử dụng.
+ N2
+ Người nói 2 11:44 
+ Không có ý nghĩa mà. Không liên lụy với bất kỳ bên gọi là hít hàm tuyển dụng nào, thì nền tảng tuyển dụng nào thì là không có ý nghĩa.
+ N1
+ Người nói 1 11:52 
+ Thì các bên HR họ sẽ prefer là họ dùng Excel hơn.
+ N2
+ Người nói 2 11:57 
+ Ừ. Thì có cái yêu cầu tuyển dụng như này thì tạo trên này, filter trên này thì là ok. Xong cái đấy xong thì là mình bắt đầu sang quy trình tuyển dụng.
+ N1
+ Người nói 1 12:06 
+ Ừ. Thì khi mà ví dụ như kiểu là cái này thì nếu mà vậy thì cái này nếu mà khả năng mà tích hợp được với cả các cái kênh tuyển dụng, là các cái thông tin ứng viên các thứ là cũng sẽ có thể tự động nạp hết về đây.
+ N2
+ Người nói 2 12:23 
+ Cái đấy còn liên quan câu chuyện là trên cái nền tảng nó có cho hay không. Là một. Thứ hai nữa là nó chỉ lưu CV, vì nếu CV về thì chỉ là lưu dạng file chứ không lưu thông tin, trừ khi mình lại phải xử lý từ OCR từ file sang thông tin.
+ N1
+ Người nói 1 12:40 
+ Đấy thì—
+ N2
+ Người nói 2 12:41 
+ Cái cái cái yêu cầu tuyển dụng ấy, cái luồng phê duyệt của mình như nào? Anh đang chưa thấy là có luồng phê duyệt với các cái yêu cầu tuyển dụng.
+ N1
+ Người nói 1 12:49 
+ Luồng phê duyệt ấy.
+ N2
+ Người nói 2 12:50 
+ Luồng phê duyệt ban đầu ấy.
+ N1
+ Người nói 1 12:52 
+ Ví dụ như bên này nó sẽ có cái phần là gửi duyệt, là gửi duyệt đây. Đấy, nó sẽ có cái phần—
+ N2
+ Người nói 2 13:01 
+ Thí dụ bây giờ cái việc gửi duyệt này là gửi duyệt như thế nào?
+ N1
+ Người nói 1 13:04 
+ Gửi duyệt này là nó sẽ cấu hình.
+ N2
+ Người nói 2 13:06 
+ Em mở một cái dashboard ấy, mở mở cái sửa một cái yêu cầu tuyển dụng đi. Sửa yêu cầu tuyển dụng.
+ N1
+ Người nói 1 13:15 
+ Đây.
+ N2
+ Người nói 2 13:19 
+ Chưa thấy đâu. Lỗi form view. Tạo mới cũng được.
+ N1
+ Người nói 1 13:22 
+ Là mạng, mạng.
+ N2
+ Người nói 2 13:29 
+ Rồi. Chỗ này còn thiếu một thông tin rất quan trọng, là cái tuyển dụng này ấy, nó trong định biên hay ngoài định biên, có kế hoạch trước hay chưa. Cái việc nằm trong định biên hay ngoài định biên ấy, nó sẽ ảnh hưởng rất lớn đến cái quy trình phê duyệt của mình.
+ N1
+ Người nói 1 13:42 
+ Ừ.
+ N2
+ Người nói 2 13:43 
+ Ví dụ trong định biên mà mình đã được phê duyệt từ đầu năm ấy, thì đôi khi sẽ không cần qua cái cấp BOD nữa, mà chỉ cần là yêu cầu tuyển dụng được lên, xong lại sản ra hành chính nhân sự và tuyển, bởi vì là nó lên kế hoạch rồi. Đó, thậm chí là theo từ cái định biên nhân sự từ đầu năm ấy, đã xây sẵn các yêu cầu tuyển dụng theo cái mốc của định biên nhân sự rồi, thì sẽ không cần phải phê duyệt nữa. Coi như là phê duyệt cái định biên nhân sự là phê duyệt theo cái yêu cầu tuyển dụng này. Còn nếu như trong trường hợp phát sinh hoặc là tuyển mới thay thế, thì mình sẽ cần là tuyển phát sinh, tuyển thay thế, tuyển theo định biên. Thì lúc đấy cái luồng quy trình tuyển dụng, à cái luồng phê duyệt nó sẽ khác. Tiếp theo, cái luồng phê duyệt của cái này thì đang cấu hình ở đâu? Hay là mình đang fix?
+ N1
+ Người nói 1 14:20 
+ Ờ, đang cấu hình ở con export. Đây, hệ thống quy trình này thì vẫn đang cấu hình ở con export. Ví dụ như kiểu là nó sẽ có cái luồng tuyển dụng này, luồng phê duyệt yêu cầu tuyển dụng này. Đấy, thì nó sẽ có một cái luồng cấu hình ở đây.
+ N2
+ Người nói 2 14:40 
+ Coi như con này là bên gọi là workflow của mình, cấu hình riêng đúng không?
+ N1
+ Người nói 1 14:44 
+ Cấu hình riêng.
+ N2
+ Người nói 2 14:45 
+ Cấu hình tự động, bằng tay. Ok, nút nào tay sang con đấy, mình sẽ xử lý sau. Đi tiếp đã.
+ N1
+ Người nói 1 14:49 
+ Con này cũng có tự cái quy trình riêng, tức là sẽ có tự quy trình và nó thực ra nó phải ốp được vào đây. Tức là con export mà app ấy, là từng khi mà anh vào từng công ty ấy, là anh sẽ nhìn thấy quy trình đã dùng ở đây. Đấy, sau đó là có thể thêm các cái quy trình mới. Đấy, sau đó thì con export ở bên này là sẽ có người đồng bộ, đồng bộ chéo với nhau.
+ N2
+ Người nói 2 15:13 
+ Nhưng bây giờ chưa đồng bộ.
+ N1
+ Người nói 1 15:14 
+ Đang đang đang đồng bộ, đang đang test thôi, thì chắc đang chạy lại, chạy lại xong thì chắc được. Đấy, cái luồng của nó là vậy. Tức là nếu mà nằm ngoài định biên là, à nếu mà nằm ngoài định biên là sẽ cần phải duyệt. Tức là bản chất là cái này nên là hai quy trình ấy, ý anh là vậy.
+ N2
+ Người nói 2 15:30 
+ Không, không phải là hai quy trình, mà bản chất nó là một cái điều kiện cho cái luồng phê duyệt.
+ N1
+ Người nói 1 15:35 
+ À.
+ N2
+ Người nói 2 15:35 
+ Có những công ty thì mày có trong định biên hay ngoài định biên thì đều gọi là giám đốc phê duyệt hết, bởi vì nó liên quan đến chỗ ngồi, liên quan đến duyệt thì nó sẽ liên quan đến tiền lương hoặc là chi phí đúng không? Đó, thì luôn luôn phải qua. Còn có những công ty là không, ok, tao đã phê duyệt định biên từ đầu rồi thì cứ thế mà tuyển đi, không cần liên quan gì đến tao nữa. Thì cái đấy nó chỉ là một thêm một cái trường thông tin, một cái điều kiện để mình set trong cái luồng phê duyệt thôi. Và trong cái luồng phê duyệt của mình là bắt buộc phải có những cái điều kiện nó liên quan đến các trường thông tin. Ví dụ như là khi tôi set là với điều kiện là trường thông tin này bằng cái này, thì nhánh phê duyệt là cái này. Mà trường thông tin nó bằng cái khác, thì là nhánh phê duyệt là cái khác. Thì tí nữa sang phần quy trình anh sẽ xem là phần đấy mình đã đáp ứng hay chưa. Có nghĩa là phê duyệt theo nhánh và phụ thuộc vào thông tin ở trong một trường thông tin nào đấy ở trong cái form.
+ N1
+ Người nói 1 16:23 
+ Ok.
+ N2
+ Người nói 2 16:26 
+ Tuyển dụng này. Ok, xong bước duyệt rồi đúng không? Thì sang đến ứng viên.
+ N1
+ Người nói 1 16:32 
+ Ứng viên.
+ N2
+ Người nói 2 16:34 
+ Đây là base, là cái base của ứng viên của mình đúng không? Tất cả danh sách ứng viên của mình từ trước đến giờ là sẽ nằm ở đây hết đúng không?
+ N1
+ Người nói 1 16:39 
+ Nằm ở đây hết.
+ N2
+ Người nói 2 16:42 
+ Trạng thái ứng tuyển cái gì kìa. Ứng tuyển sang ứng viên sau khi phỏng vấn xong mà đã từ chối rồi thì là nằm ở đây. Thì vẫn là trạng thái cuối là từ chối.
+ N1
+ Người nói 1 17:05 
+ Tức là anh muốn tách cả bài ra.
+ N2
+ Người nói 2 17:08 
+ Không. Nếu như đây là một cái cái base ứng viên, theo kiểu là cái kho ứng viên của mình ấy, thì nó sẽ có một cái là lưu trữ. Có nghĩa là tôi đã qua cái mùa qua cái đợt tuyển dụng này rồi, và bạn đấy CV có phù hợp hay không phù hợp thì sẽ đều nằm ở trong kho lưu trữ của mình. Cái kho đấy là mục đích gì? Để lần sau mình tuyển dụng vị trí đó thì mình sẽ ưu tiên search ở trong kho trước, là có ứng viên nào nó phù hợp hay không mà mình liên hệ trước. Sau đấy thì mình không liên hệ được hoặc mình không tìm được ứng viên phù hợp, hoặc là có ứng viên phù hợp nhưng nó không nhận offer, nó không open. Thì lúc đấy mình mới bắt đầu liên hệ với các đơn vị tuyển dụng và các nền tảng tuyển dụng để mình tra cứu.
+ N1
+ Người nói 1 17:50 
+ Tức là ở đây nhé, ví dụ như kiểu là cho ông này đi, ông này đang ở trạng thái mới ứng tuyển thôi.
+ N2
+ Người nói 2 17:56 
+ Thì bây giờ nhé, em cần tuyển một vị trí là Dev Java đi. Thế khi anh yêu cầu Dev Java đúng không? Mà nếu như cái kho ứng viên này của mình là đủ nhiều và mình đã hoạt động một thời gian rồi, thì hành chính nhân sự sẽ phải search trong cái kho CV từ trước đến giờ của mình là bao nhiêu Dev Java, và có ông Dev Java nào thỏa mãn hay không. Xong rồi đi liên hệ xem ông ấy có open hay không, có muốn nhảy việc hay không để mình đi phỏng vấn và tìm sang bên mình, đúng không? Trong trường hợp không tìm được CV nào thì mình lúc đấy mới mất tiền, tốn tiền, hoặc là mình mới đăng tin tuyển dụng, mới tốn tiền chi cho các nền tảng để scan CV về. Đúng không?
+ N1
+ Người nói 1 18:31 
+ Dạ.
+ N2
+ Người nói 2 18:31 
+ Nó chính là cái việc mà tối ưu về data dữ liệu của mình ấy. Thì nếu không ấy, thực tế là bây giờ mọi người đang làm là gì? Là có thông tin CV new nhưng để trên Google Drive và gần như không bao giờ search lại. Cứ mỗi một lần yêu cầu tuyển dụng mới là mọi người sẽ đăng tin tuyển dụng mới, mọi người sẽ lên trên các nền tảng đi kéo CV về. Nhưng thậm chí là có những cái CV kéo về nó lại là cái CV thực tế là mình đã từng lưu trữ rồi, nhưng mình lại vẫn mất tiền cho cái CV đấy. Thì nó không tối ưu về cái chi phí tuyển dụng. Thì bắt buộc là cái bước một là phải scan qua kho CV của mình đã. Và thậm chí như anh đã từng chia sẻ rồi, anh ấy kỳ vọng là mình có thể xây dựng được hệ thống thông minh nào. Ví dụ như bây giờ là nó là Dev Junior, nhưng theo tức là theo tốc độ phát triển thì 2-3 năm sau thì nó có thể lên Middle rồi. Thì đến lúc đấy mình tiến Middle là mình vẫn có thể scan CV Junior của 2-3 năm trước để mình đưa vào cái danh sách là mình gọi để xem nó có open hay không. Thì đến mức độ như vậy thì mình mới tối ưu và tiết kiệm được chi phí tuyển dụng. Còn nếu không thì thực tế là tuyển dụng bây giờ mình đang giải quyết mỗi bài toán là lưu trữ thông tin theo Excel, thì thực ra mọi người sẽ welcome dùng Excel hơn. Nếu như với cái việc mà đang xây dựng như này thì anh đang thấy nó chỉ gọi là lưu trữ thông tin theo Excel thôi, thì nó không có giá trị cho bên tuyển dụng.
+ N1
+ Người nói 1 19:44 
+ Dạ.
+ N2
+ Người nói 2 20:00 
+ Tiếp nhé, cái thông tin ứng viên ấy, nếu như là thông tin ứng viên thì em nên, em nên chê giúp anh. Nó sẽ không có vị trí ứng tuyển. Tất nhiên là nó có thông tin đấy, nhưng mà nó sẽ phải là cái job, gọi là cái title của thằng ứng viên hơn là cái cái vị trí nó ứng tuyển vào. Vị trí title của nó là checklist, title của nó là CTO, full stack Java, full stack Node. Tức là cái thông tin đấy nó phải gắn với ứng viên hơn là gắn với các yêu cầu tuyển dụng nào. Bởi vì hình dung là cái Dev Java nhé, là bây giờ mình có một cái yêu cầu tuyển dụng thì nó có một cái mã, đúng không? Tuần sau mình có một cái yêu cầu tuyển dụng Dev Java lại có mã khác. Thì cái ứng viên này gắn với cả yêu cầu tuyển dụng là nó nằm giá trị thông tin, nó chỉ có đúng tại cái thời điểm nó đang ứng tuyển thôi. Còn sau khi nó ứng tuyển và lưu trữ xong ấy, thì cái thông tin mà có giá trị hơn đối với ứng viên là cái title của nó. Và lưu thông tin của ứng viên này thì nên lưu dưới dạng theo kiểu là dạng CV, là cần cái shortlist hoặc thông tin về cái skill, cái cái kinh nghiệm làm việc của nó nữa. Còn nếu như lưu thông tin như này thì thực tế về sau mình cũng không tìm kiếm được thông tin phù hợp với cái ứng viên theo cái nhu cầu công việc tiếp theo của mình. Ví dụ bên dưới đúng không? Em đang chỉ lưu tình trạng hôn nhân, quy quán, có thể thực ra những cái thông tin này là thông tin chỉ cần khi nó thành nhân viên của mình thì mới quan tâm đến cái thông tin này thôi. Còn nó không thành nhân viên của mình thì thực tế là mình chỉ quan tâm đến thông tin cơ bản nó ở trên là tên liên lạc, số điện thoại và cái title. Tiếp theo đó là nguồn từ đâu, đúng không? Xong rồi ví dụ như là cái đánh giá của mình kia thì cũng ok, nhưng mà cái thông tin chi tiết bên dưới là cái kinh nghiệm của nó.
+ N1
+ Người nói 1 21:36 
+ Kinh nghiệm làm việc.
+ N2
+ Người nói 2 21:36 
+ Kinh nghiệm của nó và cái liên quan đến kỹ năng của nó là gì, mình sẽ cần phải lưu rất là chi tiết. Còn nếu như lưu kiểu như này thì thực tế là lưu CV xong thì mình không có giá trị tìm kiếm và tham khảo sau này.
+ N1
+ Người nói 1 22:20 
+ Nói chung là các mảng ở đây là đang trình bày theo hơi kiểu truyền thống thôi. Thông tin, dữ liệu thì cũng không nói gì cả. Thế sau khi mà có các cái thông tin của ứng viên là bắt đầu à không, cái này là đây, cái này là đề xuất ngoài định biên hay không là lúc nọ anh bảo để em bổ sung vào này.
+ N2
+ Người nói 2 22:43 
+ Cái này đề xuất ngoài định biên hay không, nó phải trong yêu cầu tuyển dụng. Chứ nó không phải là ở đây. Ở đây như này, cái tách ra như này rất là khó để làm.
+ N1
+ Người nói 1 22:50 
+ Ờ, thế á?
+ N2
+ Người nói 2 22:51 
+ Ừ, bởi vì trong yêu cầu.
+ N1
+ Người nói 1 22:53 
+ Nó sẽ nằm trong yêu cầu tuyển dụng.
+ N2
+ Người nói 2 22:54 
+ Ừ, bản thân trong yêu cầu tuyển dụng thì cái trường mà gọi là ngoài định biên hay trong định biên ấy, thì nó chỉ là một loại hoặc là một cái trường thông tin trong yêu cầu tuyển dụng thôi. Còn tất nhiên là ngoài định biên hay trong định biên thì nó sẽ có thêm cái lý do ngoài định biên là tôi phải làm gì để tuyển thay thế hay là tuyển mở rộng team hay như nào đấy, thì nó sẽ có thêm cái lý do thêm về đấy thôi. Còn tất cả những thông tin thực tế thì nó vẫn là cái yêu cầu tuyển dụng thôi. Nó vẫn cần là ví dụ cần bao nhiêu năm kinh nghiệm, cần vị trí nào, cần job detail là gì, thì nó vẫn là vậy thôi. Nó chỉ có thêm cái đó thôi.
+ N1
+ Người nói 1 23:26 
+ Theo như là cái định biên nó sẽ nằm ở trong cái phần là kế hoạch tuyển dụng của cái bộ phận đấy trong vòng 1 năm.
+ N2
+ Người nói 2 23:34 
+ Cái cái việc mà đề xuất tuyển dụng ngoài định biên hay không ấy, thì nó có một cái là mình nên làm thành cái là cái định biên nhân sự phòng ban. Định biên nhân sự phòng ban ấy thì nó là cả một cái kế hoạch liên quan đến nhân sự, tôi cần vị trí nào và theo từng tháng. Thường là theo từng trong công ty thì theo từng tháng và làm nửa năm hoặc thậm chí là cả một năm một lần. Đó, thì cái đấy là sẽ theo kiểu là à vị trí A hiện tại là bao nhiêu, gì nhỉ, cần gì nhỉ, dự kiến là bao nhiêu, cần tuyển là bao nhiêu, tháng nào cần thì mình sẽ đánh số lần sau ra. Có nghĩa là nhé, nó sẽ có khoảng tầm đầu tiên là các cột đầu tiên là đầu tiên là tên vị trí này. Tiếp theo nữa là số lượng hiện tại này. Tiếp theo nữa là số lượng dự kiến này. Tiếp theo nữa là số lượng cần tuyển này. Sau đó là từ tháng đấy đến 12 tháng sau. Ví dụ vậy là tháng nào cần tuyển bao nhiêu thì mình viết số vào đấy. Ví dụ nhé, anh ấy là Dev Java, số lượng hiện tại là 5, dự kiến là 8, cần tuyển là 3, đúng không? Bây giờ là tháng 1 đi, thì sẽ là tháng 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12. Thì trong 12 tháng đấy cần tuyển 3 người, nhưng mà tuyển ở tháng nào thì mình phải viết vào. Ví dụ như tháng 3 tôi tuyển là 1, tháng 6 tôi tuyển là 1, tháng 9 tôi tuyển là 1, thì tháng 3, tháng 6, tháng 9 mình tuyển là 1, các tháng khác tuyển là 0. Để sau này mình làm gì thì dòng thẳng theo tháng ấy, thì mình biết là à phòng công nghệ tuyển là vị trí tháng 3 là 1 Dev Java, 2 BA, 1 Tester, tổng tháng 3 phòng công nghệ thông tin cần tuyển 4 người. Thì lúc đấy mình sẽ có một cái ma trận cần tuyển dụng theo cả chiều ngang và chiều dọc. Cái đấy ông làm việc với nhân sự bên ông xem có cần tuyển dụng vào cái đấy hay không là biết liền.
+ N1
+ Người nói 1 25:10 
+ Không, bọn em thì thường là như bọn em làm ấy là sẽ thường tuyển dụng theo dự án.
+ N2
+ Người nói 2 25:16 
+ Ừ thì đúng, thì nó sẽ không có định biên đấy đúng không? Thì thì thì bản thân cái định biên đấy từ trước khi có dự án là ông ấy rồi, và đôi khi là dự án kéo dài đúng không? Thì ông cũng sẽ biết là à thời điểm này tôi chỉ cần test, tôi chỉ cần test, thì tôi sẽ có kế hoạch là dự án vận hành được 2 tháng xong tôi mới cần tuyển QA và Tester chẳng hạn. Thì thực tế đấy chính là cái phần định biên nhân sự của mình. Và mình sẽ có kế hoạch à 2 tháng sau tao phải chạy một cái cái kế hoạch tuyển dụng liên quan đến câu chuyện là tuyển Tester. Thực ra là cũng có đấy, nhưng chỉ là mình không định nghĩa một cái ở đây.
+ N1
+ Người nói 1 25:43 
+ Không định nghĩa nó là định biên. Mà thường là các bạn quy mô như này thì hay bốc tháo như này.
+ N2
+ Người nói 2 25:49 
+ Ờ, chạy thẳng thế nào có cái thì báo cho bên kia, bên kia bắt đầu chạy chiến dịch và kéo CV về. Nhưng mình nên đưa nó thành định biên. Thì anh bảo là cái định biên đấy nếu như ngay từ đầu mà được phê duyệt thì ví dụ như là tháng 3, tháng 6, tháng 9 cần tuyển Dev Java là ngay khi cái định biên đấy được phê duyệt là đã có một cái yêu cầu tuyển dụng vào tháng 3, tháng 6, tháng 9 được phê duyệt sẵn ở đấy rồi. Để đến tháng 3, tháng 6, tháng 9 là người ta nhìn vào bên bên tuyển dụng nhìn vào cái công việc cần làm sẽ biết ngay là à có một cái đề xuất tuyển dụng này đã được phê duyệt. Kiểu như vậy và tôi sẽ phải đi chạy chiến dịch cho cái đấy.
+ N1
+ Người nói 1 26:19 
+ Ok. Đề xuất tuyển dụng. Đấy, sau khi có đề xuất xong.
+ N2
+ Người nói 2 26:25 
+ Cái này vẫn thiếu.
+ N1
+ Người nói 1 26:27 
+ Cái này còn còn gì nữa không anh?
+ N2
+ Người nói 2 26:28 
+ Thiếu thông tin như hôm trước nói là cái ứng viên đấy nó đang gắn theo cái cái đề xuất như nào. Ví dụ anh cần tuyển 3 Dev Java, thì bây giờ cái đề xuất tuyển dụng của anh là có bao nhiêu CV rồi, anh đã phỏng vấn được bao nhiêu người rồi, đã chốt được offer bao nhiêu vị trí rồi, còn cần tuyển bao nhiêu nữa. Bởi vì đứng vai trò là trưởng phòng, ví dụ anh cần biết rằng là à tao cần Dev Java 3 tháng sau đi làm, thì đến bây giờ là giữa tháng này rồi, thì đầu tháng sau tao cần thì tao đã có bao nhiêu, tao cần phải sắp xếp thời gian để phỏng vấn nhiều hơn hay là như nào đấy. Thì cái đấy anh đang chưa thấy link được với nhau thì là chịu chết. Và bản thân trưởng phòng tuyển dụng cũng không nhìn được để mà push các cái nhân viên tuyển dụng của mình là cần phải chạy gấp cái job này, job kia hay là chi tiền để scan CV, thậm chí là chi tiền để sign bonus các kiểu để có vị trí đấy về đi. Thì đang chưa có. Cái này của em vẫn như hôm trước anh đang thấy là nó là độc lập với nhau. Yêu cầu đi làm yêu cầu, ứng viên đi làm ứng viên thì thực ra là mọi người không đi được với nhau thì không biết là phải đang làm gì cả. Nhìn thì có vẻ đủ thông tin nhưng thực tế là rời rạc và không biết là đang phải làm gì hết.
+ N1
+ Người nói 1 27:44 
+ Nếu như này thì thực ra là đang đứng từ góc độ đấy thì các việc chi tiết về GD các thứ nó lại không phải là quan trọng nhất đúng không anh? Quan trọng nhất là tracking status của.
+ N2
+ Người nói 2 27:55 
+ Bản thân trong cái tuyển dụng thì là cái GD nó chỉ là cái đầu vào thôi. Nó sẽ tracking được là ví dụ như vừa nói là tao cần tuyển 3 Dev Java thì tao có bao nhiêu CV rồi, tao phỏng vấn được bao nhiêu CV rồi, chốt offer được bao nhiêu CV rồi, dự kiến bao nhiêu ngày nó onboard. Thì nó sẽ cả một cái danh sách đấy bên dưới là tao sẽ rất quan tâm để tao biết được rằng là tao cần phải tuyển dụng hơn hay là tao cần phải làm gì nhanh để có có người cho vị trí đấy.
+ N1
+ Người nói 1 28:16 
+ Gọi là tracking cái cái cái chỉ tiêu này là đã hoàn thành được bao nhiêu phần trăm chẳng hạn đúng không?
+ N2
+ Người nói 2 28:21 
+ Thế còn bây giờ cái GD nó chỉ là cái đầu vào để tôi đi tuyển dụng thôi thì nó bắt buộc phải có.
+ N1
+ Người nói 1 28:26 
+ Thì nó sẽ tách thành một phân hệ khác gọi là phân hệ hỗ trợ cho người tuyển dụng. Còn là cái một cái nó phân hệ là quản lý chỉ tiêu của công ty trong cái thời điểm năm nay hoặc là thời gian tới hay như nào đấy. Đúng không? Các chỉ tiêu đấy hoàn thiện được đến đâu thì nó là tách ra hai cái. Còn một cái kia là hỗ trợ dành cho người tuyển dụng. Thì sẽ việc quản lý ứng viên hay là hồ sơ cái nào thì đấy là một cái. Việc đứng từ góc nhìn từ trên xuống là sẽ là muốn là tracking từng chỉ tiêu một hay là như thế nào, nhu cầu đến đâu.
+ N2
+ Người nói 2 28:56 
+ Đó thì cái đấy là cái quan trọng. Thì tôi không quan tâm đến GD, tôi cũng không quan tâm đến ứng viên mà tôi quan tâm là bao giờ tôi có người.
+ N1
+ Người nói 1 29:05 
+ Bao giờ tôi có người.
+ N2
+ Người nói 2 29:06 
+ Riêng phòng tuyển dụng là bao giờ có người và bao giờ có đủ người. Thì cái đấy là cái câu hỏi quan trọng nhất. Kể cả từ cấp nào nhìn xuống cũng thế thôi. Tôi là người đi yêu cầu tuyển dụng thì là lúc nào bao giờ có người. Tôi là nhân viên tuyển dụng thì bao giờ tôi hoàn thành được cái cái cái cái cái tuyển dụng đấy. Xong rồi nếu như là giám đốc hoặc là trưởng phòng tuyển dụng thì cũng là bọn nó đã đủ chỉ tiêu vào tháng này hay chưa. Ví dụ cần tuyển 60 người mà bây giờ giữa tháng rồi mới tuyển được 10 người thì thiếu chỉ tiêu thì như nào đấy. Thì tất cả nó đều là bao giờ có đủ người.
+ N1
+ Người nói 1 29:40 
+ Nhưng mà cái chỉ tiêu lắm lúc nó cũng còn có cái là ứng viên onboard vào chẳng hạn như là từ 49 lên 50 đúng không? Xong rồi sau hai tuần thử nghiệm nó nghỉ.
+ N2
+ Người nói 2 29:49 
+ Thì thì lúc đấy nó lại đi qua những cái câu chuyện là bản thân nó cũng phải ghi nhận nhé. Còn cái câu chuyện là tính KPI là cứ tuyển được onboard rồi là được tính KPI hay qua 2 tháng thử việc thì đấy là thuộc về KPI của vị trí đấy và mình do do xây dựng.
+ N1
+ Người nói 1 30:03 
+ Do cái chính sách đúng không?
+ N2
+ Người nói 2 30:04 
+ Do chính sách. Nhưng còn cái câu chuyện là trạng thái thì tôi vẫn phải cập nhật. Ví dụ như là không qua hoặc là tôi cứ đến câu chuyện onboard rồi thì là tôi kết thúc tuyển dụng. Còn lại câu chuyện sau đấy là liên quan đến đào tạo và giữ người thì là câu chuyện của phần sau, không liên quan đến tuyển dụng nữa cả. Thì cái đấy là do quy trình mình làm.
+ N1
+ Người nói 1 30:19 
+ Thì.
+ N2
+ Người nói 2 30:20 
+ Trong quá trình tuyển dụng cơ là tôi cứ trước khi đến câu chuyện onboard ấy là tôi phải trích lọc được cái trạng thái. Kiểu như vậy. Chứ không là mọi người cứ yêu cầu tuyển dụng xong bản thân đang yêu cầu cũng bận việc xong nó quên ấy. Bởi vì nó cũng cần người thật nhưng nó quá bận. Nó quên con mẹ nó là phải đi boost người. Còn thằng tuyển dụng thì cũng đeo thêm vài phút thì tao cũng quên con mẹ nó.
+ N1
+ Người nói 1 30:39 
+ Quên con mẹ nó.
+ N2
+ Người nói 2 30:40 
+ Ừ. Thì đó là câu chuyện mà mọi người phải cập nhật.
+ N1
+ Người nói 1 30:43 
+ Anh anh so note cho em xem em còn thiếu chừng nào không tắt.
+ N2
+ Người nói 2 30:46 
+ Đây là cái yêu cầu tuyển dụng đúng không?
+ N1
+ Người nói 1 30:48 
+ Vâng. Cái này là cái.
+ N2
+ Người nói 2 30:53 
+ Tiêu đề phòng ban này, vị trí này, định biên hiện tại, số lượng cần tuyển thêm này, lại đề xuất, mức độ ưu tiên, ngày bắt đầu. Đang ngày onboard đấy đúng không? Người đề xuất ok, mức độ này ok, lý do đề xuất là định biên rồi. Cá bên dưới giúp anh mô tả công việc như cái này để sẽ lấy cái review sang đúng không? Rồi cái này thì nó chính là cái đề xuất tuyển dụng của mình. Đó. Cái này là đề xuất tuyển dụng hoặc là cái yêu cầu tuyển dụng cụ thể. Gọi một trong hai tên là đề xuất tuyển dụng hoặc yêu cầu tuyển dụng thì form này là ok. Nó sẽ cũng sẽ chỉ cần như này thôi. Tiếp theo nó là cái luồng quy trình phê duyệt. Ok. Rồi. Bây giờ thì tiếp theo là đến cái phần này, cái phần chiến dịch đây. Cái phần chiến dịch bản chất là như anh nói như này thì cái phần chiến dịch ấy bản chất là nó sẽ tham chiếu theo cái đề xuất tuyển dụng đúng không anh? Thì bản chất là tất cả tên chiến dịch hay là mô tả chiến dịch thì không nói nhưng mà ví dụ như kiểu là trạng thái là ngày bắt đầu hay ngày kết thúc chẳng hạn ấy.
+ N1
+ Người nói 1 32:31 
+ Nền tảng nào đẩy hay chưa đẩy.
+ N2
+ Người nói 2 32:33 
+ Nền tảng nào đẩy hay chưa đẩy đúng không? Và một cái chiến dịch này nó có thể là chạy cho một vài cái đề xuất tuyển dụng, một vài cái yêu cầu tuyển dụng chứ không phải chạy một hộp.
+ N1
+ Người nói 1 32:45 
+ Chiến dịch tuyển dụng đầu tiên là tham chiếu theo nhiều à?
+ N2
+ Người nói 2 32:57 
+ Ừ, một nhiều.
+ N1
+ Người nói 1 32:58 
+ Nhiều đề xuất tuyển dụng à nhiều yêu cầu tuyển dụng.
+ N2
+ Người nói 2 33:02 
+ Đề xuất yêu cầu như nhau. Thì cái này nó gần như là nó song song với câu chuyện là tuyển dụng của truyền thông, chuyên dụng của branding thương hiệu nên nó không chỉ có thể là cả hai.
+ N1
+ Người nói 1 33:15 
+ Chạy trên nền tảng nào.
+ N2
+ Người nói 2 33:16 
+ Trong một cái chiến dịch này có thể danh sách yêu cầu hoặc là danh sách các vị trí chúng tôi cần tuyển theo kiểu như thế.
+ N1
+ Người nói 1 33:41 
+ Số lượng cần tuyển các thứ à đúng rồi. Số lượng cần tuyển các thứ là nó sẽ tự theo các cái yêu cầu tuyển dụng kia xong nó tự gom lại đúng không?
+ N2
+ Người nói 2 33:49 
+ Đúng rồi.
+ N1
+ Người nói 1 33:49 
+ Từng phân bên theo từng cái yêu cầu tuyển dụng kia nó tự lọc ra, tự tổng hợp ra chứ nó không phải là từng cái phát như thế này. Thì này có nghĩa là đang tham chiếu, tham chiếu 11.
+ N2
+ Người nói 2 34:01 
+ Tham chiếu 11 nhưng mà đang chưa liên quan. Cái của mình là mình sẽ tham chiếu một nhiều. Bởi vì đôi khi là cùng vị trí marketing nhưng mà ở nhiều phòng ban khác nhau à nhiều nhóm bán hàng khác nhau cùng tuyển vị trí marketing trong cùng công ty ấy. Những tập đoàn to chẳng hạn thì bán hàng sản phẩm A, sản phẩm B, sản phẩm C đều cần tuyển nhân viên marketing để mạnh thị trường thì họ cũng có nhu cầu tuyển dụng để nhân viên marketing. Thế nên trong lúc mà có một ứng viên ý là mình phải thông báo đến tất cả vị trí trưởng phòng của các ông đấy để họ cùng tham gia phỏng vấn. Xong rồi còn cạnh tranh với ứng viên bên offer tốt hơn ý. Và ứng viên có quyền chọn một trong các bên đấy để làm việc.
+ N1
+ Người nói 1 34:38 
+ Trong cùng công ty á?
+ N2
+ Người nói 2 34:39 
+ Đúng rồi. Em làm các tập đoàn to trước đấy là bình thường mà em. Ví dụ như bây giờ nhá, em có một nhóm em bên mình đi, có hai ba dự án khác nhau cần tuyển Dev Java đúng không? Cùng yêu cầu là hai bên.
+ N1
+ Người nói 1 34:52 
+ Nhưng mà hai ông có offer lương khác nhau về.
+ N2
+ Người nói 2 34:53 
+ Hai bên dự án nào có chính sách lương hơn thì có thể nó sẽ cùng join vào công ty này nhưng mà nó sẽ sang dự án đấy làm. Hoặc là nó thích ông leader đấy thôi nhưng nó sang bên đấy làm bởi vì trong quá trình tuyển dụng tôi ấn tượng hơn ông leader đấy. Tôi thích làm việc với ông leader đấy. Chuyện đấy là bình thường mà.
+ N1
+ Người nói 1 35:47 
+ Ok. Nói vậy thì cái phần chiến dịch này thì em sẽ nên tách ra. Em sẽ tách ra.
+ N2
+ Người nói 2 35:55 
+ Cái này là tạm thời thì nên làm chiến dịch. Chiến dịch em làm khi mà em có đối tác bên thứ ba nó sẵn sàng mở cổng API cho em viết cái này sang. Không thì làm giai đoạn này nó chỉ là thông tin thì nó chẳng khác gì cái đề xuất cả. Em không thể đồng bộ đẩy được cái chiến dịch đấy lên Facebook, không thể đồng bộ lên một chỗ nào khác đẩy bài. Thì chiến dịch tạo ra bây giờ nó là không có giá trị gì hết. Nên làm chiến dịch khi mà chỉ khi là em đã có sẵn những cái đối tác mà họ sẵn sàng làm việc với mình để mình có thể để kết nối với bên họ thì mới làm. Còn nếu không thì bây giờ là mình làm thì lại đang thêm việc cho cho bên tuyển dụng thì không nên làm. Nó không phải là MVP trong giai đoạn này. Chỉ cần có yêu cầu tuyển dụng, có thông tin về ứng viên, ứng viên đấy cái yêu cầu tuyển dụng như nào, sau đó đưa ra được một cái báo cáo về cái gọi là hiện trạng tuyển dụng, cái tiến độ tuyển dụng là xong. Module tuyển dụng chỉ như vậy thôi. Để sau khi có báo cáo đấy xong thì mình lọc ra được là ứng viên từng cái job review một đang à từng cái cái cái cái yêu cầu tuyển dụng nó đang đáp ứng như nào, sắp xong hay chưa xong. Đó cùng làm thêm cái câu chuyện là danh sách những ứng viên sắp đi làm và cần cần cần onboard để mình biết được rằng là tôi cần phải tiếp đón cái ứng viên đấy như nào, chuẩn bị về chỗ ngồi cơ sở, trang thiết bị máy tính hoặc là vật tư làm việc như nào. Thì cái đấy là cái mình cần phải đẩy sang bên hành chính hỗ trợ họ chuẩn bị thôi. Chứ còn module tuyển dụng thì không thể nào mình.
+ N1
+ Người nói 1 37:24 
+ Chưa chưa tới đây. Ok thì em lại tắt rồi.
+ N2
+ Người nói 2 37:29 
+ Làm đúng cho anh có ba phần thôi. Thứ nhất là liên quan đến cái phần job detail là cái phần mô tả công việc của mình. Nó là cái master ta đọc vào của yêu cầu tuyển dụng. Cái thứ hai là yêu cầu tuyển dụng. Cái thứ ba là thông tin về ứng viên. Và cái thứ tư là báo cáo. Trong đấy phải liên kết bằng được cái việc ứng viên và trạng thái của ứng viên với yêu cầu tuyển dụng nó đang như nào. Thì đấy là quan trọng nhất. Mình phải tracking được cái trạng thái của yêu cầu đấy và trả lời cho câu hỏi là bao giờ có người.
+ N1
+ Người nói 1 38:03 
+ Liên kết được thông tin ứng viên với lại yêu cầu tuyển dụng. Rồi. Tức là phần tuyển dụng là chỉ nên nằm đây thôi. Thế còn cái phần lên lịch phỏng vấn này em?
+ N2
+ Người nói 2 38:52 
+ Nó là một phần trong cái ấy thôi. Nó là một cái phần thêm ở trong tuyển dụng thôi. Phỏng vấn đánh giá cái đấy thì là một phần gộp chung lại trong phỏng vấn đánh giá.
+ N1
+ Người nói 1 39:04 
+ Đúng rồi. Đây cái phần tắt cái này trước em thêm cái đây tức là theo tháng này. Đây này. Tức là thêm vị trí này. Và cái này chưa tham dự theo vị trí. Tức là ví dụ như kiểu là năm 2026 đúng không? Tháng 1, tháng 12 đây thì em sẽ thêm các cái phòng ban ở đây. Từng phòng ban ở đây em em chưa sợ theo. Tức là tức là dự kiến đúng không? Dự kiến và sau đó là đề xuất thì sẽ có phần ở đây. Đấy theo 12 tháng đấy. Ví dụ như kiểu là số lượng nhân sự cần bao nhiêu người. Đề xuất trong tháng này là bao nhiêu người. Hay là em sẽ tham dự vào ví dụ như kiểu là trong tháng 1 này ví dụ không cái này em đang bị lỗi một tí. Tức là cái đoạn này là nhân sự này phải tách ra xong rồi từng tháng này lại đề xuất xong rồi nó sẽ trừ dần trừ dần cái số lượng ở đây đi này. Đấy thì đây.
+ N2
+ Người nói 2 40:00 
+ Không cần đâu. Bản thân cái việc đấy là số lượng tổng và nó bổ phân bổ vào các tháng ở phía sau thôi. Nó nó không cần chứa đâu. Để mình nhìn ngay được nhân viên kinh doanh tổng là bao nhiêu rồi. Về sau của mình từng tháng một là bao nhiêu. Trừ đi thì mọi người về sau cái con số đấy nó luôn là bằng 0 rồi thì là mấy thì nó.
+ N1
+ Người nói 1 40:18 
+ Mốt một tháng. À ok thế thôi em không trừ.
+ N2
+ Người nói 2 40:20 
+ Mốt một tháng em lại đang có hai ô rồi. Kế hoạch và gì?
+ N1
+ Người nói 1 40:23 
+ Đấy kế hoạch và đề xuất.
+ N2
+ Người nói 2 40:26 
+ Không em kế hoạch và đề xuất là sao?
+ N1
+ Người nói 1 40:28 
+ Tức là đây tức là bản chất là đây là cần bao nhiêu nhân sự và đề xuất là tuyển bao nhiêu người.
+ N2
+ Người nói 2 40:33 
+ Cần bao nhiêu? Đề xuất tuyển bao nhiêu? Không. Hai cái đấy gần như là một mà. Nếu như mà trường thông tin phía trước là định biên đang có và cần tuyển thêm thì ok. Nhưng mà bây giờ là kế hoạch thực ra kế hoạch có đề xuất thì tôi kế hoạch bao nhiêu tôi phải đề xuất bấy nhiêu đấy.
+ N1
+ Người nói 1 40:46 
+ Cần bao nhiêu tuyển bấy nhiêu chứ.
+ N2
+ Người nói 2 40:48 
+ Đúng rồi. Cả nhà cần năm tuyển có ba à? Thế thì cần làm gì đâu phải là cần.
+ N1
+ Người nói 1 40:54 
+ À ok. Thế thì để em chỉnh lại cái cái trường dữ liệu này thì em vẫn sẽ giữ nguyên hai cột này là trong tháng này có bao nhiêu nhân sự và cần tuyển thêm.
+ N2
+ Người nói 2 41:02 
+ Thực ra có bao nhiêu nhân sự là mình không tính được bởi vì bây giờ là mình đang xét tuyển từ đầu năm. Bao nhiêu nhân sự mẹ biết được là tuyển bao nhiêu, có tuyển được hay không, nó có nghỉ được hay không. Nên là mình chỉ có kế hoạch là tháng đấy tôi cần tuyển bao nhiêu thôi. Còn lại cái câu chuyện nó phát sinh đối với việc kiểu cần tuyển thêm hoặc nó nghỉ cần tuyển bổ sung đấy là câu chuyện nó phát sinh. Mình không thể nào tính được cái số lượng nhân sự chính xác của tháng đấy đâu. Nó chỉ có là à kế hoạch là tuyển nhân viên kinh doanh cả một năm tiếp theo là 12 người, mỗi tháng một người. Hay là 12 người tháng 3, tháng 6, tháng 9, tháng 12 mỗi tháng ba người kiểu như vậy. Tổng là 12 xong phân bổ như nào thế thôi. Tiếp nữa là ở đây có nên thêm phòng ban hay không?
+ N1
+ Người nói 1 41:45 
+ Có. Tức là em đang để thêm phòng ban đấy.
+ N2
+ Người nói 2 41:48 
+ Bởi vì thêm phòng ban thì ai là cái người nhập cái này?
+ N1
+ Người nói 1 41:50 
+ Ờ cái này thì em đang để cho cái ông hành chính nhân sự ông sẽ nhập.
+ N2
+ Người nói 2 41:57 
+ Không đúng. Cái này phải là từng phòng ban đẩy lên. Đúng rồi. Chứ hành chính nhân sự mà đẩy lên thì ông hành chính nhân sự chết. Làm sao ông biết kế hoạch tổng phòng ban như nào? Ông lại phải có một kênh bên ngoài đi hỏi là mày cần kế hoạch như nào xong ông đi đây ông nhập à. Cái này sẽ là từng phòng ban sẽ trình lên và được phê duyệt hay không phê duyệt. Sau khi phê duyệt xong thì tổng hợp cái này lại thành một cái báo cáo tuyển dụng hoặc là cái đề xuất tuyển dụng sinh ra sẵn trong phòng tuyển dụng. Báo cáo tuyển dụng của cái này nó sẽ có hai chiều. Một là theo chiều thời gian là từng tháng một tôi cần phải tuyển bao nhiêu người, bao nhiêu vị trí, với level như nào. Đấy là ông trưởng phòng tuyển dụng sẽ quan tâm nhất. Ví dụ tháng 1 tôi cần tuyển 40 người ở khoảng tầm 15 vị trí. Trong đấy ví dụ như là trình độ gọi là C level là 1. Xong rồi cấp độ giám đốc trưởng phòng là 3. Xong rồi trưởng nhóm là 5. Còn lại nhân viên bình thường là còn lại kiểu kiểu như thế. Thì cái đấy là là họ quan tâm để họ có một cái kế hoạch tuyển dụng hoặc là họ xin một cái gọi là gì nhỉ? Cái cái chi phí tuyển dụng, cái bugis tuyển dụng trước cho cái đống đấy. Bởi vì ví dụ tuyển C level sẽ khác với tuyển lao động phổ thông. Kiểu như vậy. Tiếp theo nữa là đấy là chiều theo thời gian. Thứ hai là chiều theo phòng ban. Chiều theo phòng ban là à với phòng công nghệ, phòng kinh doanh thì là cần tổng là bao nhiêu nhân sự với cái điều kiện cấp độ như thế nào. Bởi vì ví dụ như tuyển nhân viên kinh doanh, tuyển nhân viên marketing nó sẽ khác với tuyển nhân sự công nghệ. Đó thì họ sẽ có những cái kế hoạch đối ứng nó nó khác nhau. Đấy chỉ là cái báo cáo theo kiểu là kế hoạch thôi nhá. Còn sau này có đáp ứng được hay không đáp ứng được thì thông thường chúng ta đề xuất có số cột. Ví dụ tháng này mình cần tuyển bao nhiêu, vị trí là bao nhiêu thì cái việc là kế hoạch là một cái cột màu đỏ chẳng hạn. Còn cái mà đã tuyển được là cái cột màu xanh thì khi nào mà cái màu xanh đấy nó bằng cột màu đỏ thì là hoàn thành đúng không? Đấy là cái câu chuyện là so sánh. Xong rồi có những cái báo cáo liên quan đến câu chuyện là về cái phần tăng trưởng nhân sự phát triển như là ví dụ như là cùng kỳ so với năm trước mình tuyển nhiều hơn hay ít hơn so với tháng trước nhiều hơn hay ít hơn hay như nào đấy. Rồi các vị trí level như nào thì cái này liên quan báo cáo hiệu suất của team tuyển dụng thì cái đấy mình sẽ tính sau.
+ N1
+ Người nói 1 44:24 
+ Riêng cái này là riêng một con.
+ N2
+ Người nói 2 44:26 
+ Ừ nó phải một con mà. Thường các công ty nó sẽ đều có một con như này hết. Chính là HRM ông Giang Quang Nam á. Chẳng qua là đợt đấy thì anh ấy cũng chưa trao đổi chi tiết mức độ này thôi.
+ N1
+ Người nói 1 44:40 
+ Thậm chí con này nó cũng độc lập, nó không cần chạy chung với bất kỳ cái gì.
+ N2
+ Người nói 2 44:43 
+ Đúng rồi. Thì nó là đầu vào mà. Nó nó là đầu vào của funnel input ấy. Thì bất kỳ một doanh nghiệp nào cũng có thể chạy cái con này. Còn sau đấy kết quả đầu ra của con này sẽ cắm vào ERP quản lý nhân sự của bên các bên thoải mái mà. Thì chỉ cần là con này có API để code ra các công ty để.
+ N1
+ Người nói 1 45:04 
+ Dữ liệu dùng. Cái dữ liệu dùng chung là cái phòng ban thì thực ra nó ít.
+ N2
+ Người nói 2 45:08 
+ Đúng rồi. Cũng không có đấy. Thứ hai nữa là liệu con này sẽ có thông tin là liệu thông tin nhân sự được tuyển xong thì bắt đầu sẽ đẩy sang một con nào đấy là về thông tin của ứng viên để đỡ phải nhập lại trong form nhân sự thôi. Còn không thì là cũng xong mà. Kể cả thậm chí kết thúc một con này vẫn là xong mà. Đấy cũng là nhân sự mới nhập mới. Đấy là câu chuyện quản lý nhân sự tuyển dụng vẫn có một con riêng mà. Có các con này như này bây giờ thì như kiểu tốt suy nghĩ các thứ nó cầm phân hệ tuyển dụng, yêu cầu tuyển dụng rồi chất lượng ở trên đấy anh em có thể xem được. Nếu như mình là người tuyển dụng là họ có cả phân hệ quản lý thông tin định biên theo trên đấy luôn. Riêng một cái module liên quan đến tuyển dụng này. Và kết quả đầu ra là ứng viên đi làm onboard ngày nào. Còn lại sau đấy trôi nổi đi đâu với ERP hay là với Excel của hành chính nhân sự thì nó không biết. Nhưng mà riêng module tuyển dụng là ok.
+ N1
+ Người nói 1 46:16 
+ Kế hoạch em sẽ tỉa lại một chút. Offer với onboarding.
+ N2
+ Người nói 2 46:25 
+ Đúng rồi. Trước mình phỏng vấn xong thì sau đó sẽ có đánh giá phỏng vấn. Cái đánh giá đấy thông thường là sẽ có mẫu. Thì mọi người nên là có mẫu để điền luôn. Tức là khi tôi phỏng vấn xong tôi mở cái đấy ra tôi đánh giá ứng viên luôn thì nó sẽ có những thông tin theo từng công ty. Tốt nhất chỗ này nếu như làm được thì là nên làm động theo kiểu là tiêu chí đánh giá, điểm đánh giá, kết quả pass or fail kiểu như vậy. Mức đề xuất tuyển dụng và không tuyển dụng và đề xuất mức lương như thế nào. Đó thì đấy là liên quan đến phần đánh giá. Đó thì trong này ý nếu như mà làm được ngon nhất ý thì có một cái mà hỗ trợ cho tuyển dụng khá nhiều ấy là mail service.
+ N1
+ Người nói 1 47:05 
+ Là cái gì?
+ N2
+ Người nói 2 47:05 
+ Mail gửi email. Gửi email khi qua từng cái một. Ví dụ như là scan CV mà fail thì cũng gửi về email là đã xem CV chẳng qua là mày chưa phù hợp, mày rất là tốt nhưng mà tao rất tiếc. Kiểu đấy là lưu lại thông tin lần sau mời xong rồi xếp lịch phỏng vấn ở trên này thì cũng sẽ tự động gửi mail cho ứng viên là ngày này giờ này mà đến đây phỏng vấn và mail cho cả CC cho cả những cái ông tham gia phỏng vấn. Sau khi có kết quả đánh giá luôn mà được phê duyệt thì cũng gửi email luôn cho ứng viên. Theo kiểu như vậy thì tuyển dụng nó nhàn đó. Bởi vì nó sẽ có template form biểu mẫu sẵn. Và lúc này thì chỉ việc là ai ví dụ ông trưởng phòng đấy ông ấy phê duyệt cái offer đấy thì là mail tự gửi rồi. Hành chính nhân sự không phải gửi nữa thì nó nhàn hơn kiểu vậy.
+ N1
+ Người nói 1 48:25 
+ Nhiều nhỉ.
+ N2
+ Người nói 2 48:27 
+ Nhiều quá. Cục này mà làm chi tiết các thứ cẩn thận ra cũng không ít đâu. Cả một con to.
+ N1
+ Người nói 1 48:52 
+ Ok. Để em sẽ bổ sung thêm. Em sẽ báo cáo này. Thế thì cái báo cáo này em sẽ.
+ N2
+ Người nói 2 49:12 
+ Báo cáo thì.
+ N1
+ Người nói 1 49:13 
+ Báo cáo này là.
+ N2
+ Người nói 2 49:15 
+ Sau khi mà có thông tin xong ấy thì sẽ có mẫu báo cáo sau. Báo cáo thì nó sẽ hơi đầu. File in to á.
+ N1
+ Người nói 1 49:21 
+ Không file tổng hợp nốt của họ ấy. Cho em xin thêm cái đấy. Ok. Tiếp theo.
+ N2
+ Người nói 2 49:33 
+ Rồi sau nhân sự, sau phần tuyển dụng.
+ N1
+ Người nói 1 49:35 
+ Rồi đến phần nhân sự này. Nhân sự. Nhân sự thì ở đây là đang bao gồm các cái thông tin cơ bản về hành chính rồi.
+ N2
+ Người nói 2 49:44 
+ Nhân sự nhá thì là mình sẽ có một cái gọi là hồ sơ nhân sự đúng không? Hồ sơ nhân sự thì nó sẽ bao gồm là cách chứa thông tin nhân sự. Thì bên mình đang phân thông tin nhân sự qua những cái nhóm thông tin nào?
+ N1
+ Người nói 1 49:56 
+ À hiện tại là đang phân theo nhóm đầu tiên là thông tin cơ bản này. À thông tin cá nhân này. Rồi công việc này. Thông tin công việc này. Rồi thông tin liên quan đến tài chính. Đấy thì cả bốn cái này nó đều được cấu hình ở input.
+ N2
+ Người nói 2 50:13 
+ Rồi cho anh từng cái một đi. Thông tin cơ bản này, mã này, họ tên này, độ tuổi, chức vụ. Cái kia là cái gì nhỉ?
+ N1
+ Người nói 1 50:23 
+ Chức vụ là phụ cấp, phụ cấp, phụ cấp với cả công ty nào.
+ N2
+ Người nói 2 50:28 
+ Không, phụ cấp thì lại không nằm ở đây. Phụ cấp thì nó nằm chỗ khác. Đúng không? Thông tin cơ bản mà. Thông tin cơ bản thì nó sẽ cần gì? Thứ nhất là họ tên đúng không? Mã, chức vụ, bộ phận phòng ban và cái thông tin liên quan đến đến nhân. Thông thường thì nó sẽ là thông tin công việc luôn ý. Nó sẽ có bao gồm email và số điện thoại làm việc của đồng chí này và vị trí làm việc đó. Rồi thì đấy là liên quan đến thông tin công việc. Tức là làm sao để một người cái thông tin này sẽ là cái thông tin mà người ta public trong toàn công ty đúng không? Để ai cũng có thể tìm kiếm và trao đổi được công việc với người ta khi cần. Đó thì đấy là cái thông tin.
+ N1
+ Người nói 1 51:11 
+ Email các thứ nữa đúng không?
+ N2
+ Người nói 2 51:12 
+ Email, số điện thoại, các kiểu đó. Rồi tiếp theo nữa sang phần thông tin cá nhân. Thông tin cá nhân thì nó sẽ vừa tính những chất liệu bên kia. Có ngày sinh, căn cước, công dân, nơi cấp, địa chỉ thường trú, địa chỉ tạm trú. Ok. Liên hệ khẩn cấp, số điện thoại khẩn cấp. Năm sinh, ngày sinh ở trên phần năm sinh đây. Giới tính, giao diện, đáp ứng kết, căn cước công dân, nơi cấp, đáp ứng kết. Rồi cái đống này xong rồi thì mình còn đang thiếu thông tin liên quan đến người phụ thuộc. Thông tin liên quan đến người phụ thuộc bởi vì một số hoặc là thông tin gia đình. Nhưng mà một số công ty mà có cái chế độ đãi ngộ tốt thì họ sẽ rất là quan tâm đến gia đình để lỡ như quốc tế thì như mùng 1 tháng 6 hoặc là những cái dịp khác nó sẽ có quà tặng người thân. Đó thì cái đấy là cần phải có. Ví dụ như bây giờ công ty nào cũng sẽ có chế độ mùng 1 tháng 6. Thế thì chỗ này mà em không biết là.
+ N1
+ Người nói 1 52:06 
+ Có mấy con đúng không?
+ N2
+ Người nói 2 52:07 
+ Nhân sự có bao nhiêu con và sinh năm bao nhiêu còn nằm trong mức tuổi nhận quà mùng 1 tháng 6 hay không thì mùng 1 tháng 6 nào em cũng sẽ phải đi thống kê và đi hỏi. Đúng không? Đó. Thì cái đấy là cái thông tin cần. Rồi tiếp theo thông tin công việc như thế này nó là loại hình công văn phòng thì là ok cho sang bên kia thôi. Email, số điện thoại các thứ hoàn toàn chưa có này. Thông tin rất là quan trọng mà nó không được. Tiếp tài chính cái chỗ này thì nên để sang nó là phần thông tin về lương. Nó là nên của trong module khác hoặc là để đấy cũng được. Thì lương thì thông tin nên để ở phần hợp đồng contract. Chỗ này thì ok có mã số thuế cá nhân, số tài khoản ngân hàng và ngân hàng. Anh nghĩ là đến thế thôi. Số sổ bảo hiểm xã hội và số bảo hiểm y tế nữa. Ok. Những cái thông tin như vậy. Còn lương thì nên để đây, nên để trong phần contract. Bởi vì thông tin về nhân viên là thông tin gần như là public cho mọi người nhìn thấy liền và hành chính nhân sự thấy. Thì hành chính nhân sự sẽ không thể thấy được thông tin về lương hay là cái thông tin về nhân sự là cái thông tin public nên thường nó sẽ có rủi ro. Rủi ro về câu chuyện bảo mật. Em đang phải làm cái câu chuyện bảo mật trường thông tin lương còn vẫn public các trường thông tin khác. Đôi khi nó sẽ bị rò rỉ bảo mật nên nên để hẳn sang phân hệ khác và phân quyền phân hệ để cho một số đối tượng dùng thì nó sẽ an toàn hơn. Thì thông tin lương em để đây. Lương để đây em sẽ phải đối mặt với đợt đảo bảo mật đau đầu. Bởi vì anh chỉ cần làm không tốt một cái thôi là nó có vô vàn cách nó rủi ro. Đôi khi em sẽ là API vẫn trả về nhưng mà em sẽ ẩn cái giao diện này lại thì nó code được API vẫn ẩn thông tin về lương kiểu như vậy đúng không? Một số thằng nó bọc vạch nó ẩn thông tin về lương kiểu như thế. Thậm chí thông tin về mã số thuế thứ này cũng nên để module khác. Nó nên là module liên quan đến C&D. Trong đấy mình sẽ có câu chuyện là khai báo về tăng giảm bảo hiểm thì lúc đấy sẽ có số sổ bảo hiểm và số bảo hiểm y tế. Còn thông tin về phần hợp đồng thì nó sẽ có lương và ngân hàng, số tài khoản ngân hàng cộng với cả mã số thuế cá nhân. Đấy là những cái thông tin mà nên bảo mật cho nhân sự thì nên chuyển sang module liên quan đến cái phần là hợp đồng bảo hiểm bên dưới. Không nên để bên này. Để bên này thì khá là nhiều rủi ro. Thực ra là nếu như xử lý được thì cũng ok thôi nhưng mà cái câu chuyện đấy tự do mình làm phức tạp cho mình thì không nên. Ok. Trong này thì khá nhiều thông tin nữa. Ví dụ như là đây này. Đây là thông tin chi tiết của một nhân sự đấy. Từ tên này, chức vụ này rồi đến thông tin công việc này. Ờ có ngày hoàn làm ngày kết thúc nữa các bạn. Nhưng mà cái này.
+ N1
+ Người nói 1 55:19 
+ Đây ngày hoàn làm ngày kết thúc này.
+ N2
+ Người nói 2 55:20 
+ Cái này ý thì là dành cho ai xem. Đây là khi kích vào gọi là xem profile của nhân sự.
+ N1
+ Người nói 1 55:25 
+ Profile của nhân sự.
+ N2
+ Người nói 2 55:26 
+ Đó thì ai là người xem và xem những thông tin nào đó.
+ N1
+ Người nói 1 55:31 
+ Chắc chắn là cái này đang chưa phân quyền nhưng mà.
+ N2
+ Người nói 2 55:33 
+ Xong rồi còn bảo hiểm này. Bên kia có kỹ năng, có trình công tác. Nói chung anh thấy là cũng khá là đầy đủ đối tả kiểu một CV. Đó cũng nên trình bày đại như vậy. Nhưng mà thông tin này bây giờ đầu vào ở đâu, skill bên kia lấy ở đâu, quá trình công tác lấy ở đâu, gập tay ở đây thì thì không quản lý được đúng không?
+ N1
+ Người nói 1 55:52 
+ Đúng.
+ N2
+ Người nói 2 55:52 
+ Mà nên có một module liên quan đến phần gọi là lịch trình thuyên chuyển công tác thì gọi là xem ở đấy thì là toàn bộ lịch trình thuyên chuyển công tác của cả công ty thì nó sẽ rõ ràng. Rồi skill cũng thế đúng không? Quản lý thì nó nên nằm ở module liên quan đến đánh giá, review. Bởi vì sau khi quản lý skill xong, đánh giá điểm skill xong thì tôi phải có những hoạt động review tăng lương hoặc làm gì đấy nên nằm ở module như vậy.
+ N1
+ Người nói 1 56:22 
+ Tức là cái này ví dụ như ở quá trình công tác này thì nên đổi đổi sang chỗ khác.
+ N2
+ Người nói 2 56:26 
+ Không, nó tổng hợp hết vào đây là đúng nhưng mà sẽ có module để quản lý riêng và xem riêng. Đây nó giống như kiểu cái phần dashboard. Profile nhân sự, dashboard nhân sự là nơi tổng hợp tất cả thông tin về nhân sự đấy. Ok, đồng ý. Hoàn toàn như này là ok. Nhưng mà để gọi là đầu vào từng cái dữ liệu một thì nên có module để quản lý riêng.
+ N1
+ Người nói 1 56:49 
+ Anh sạc iPhone không anh? Anh sạc gì?
+ N2
+ Người nói 2 56:53 
+ iPhone. Cái này là Lightning.
+ N1
+ Người nói 1 56:55 
+ Lightning.
+ N2
+ Người nói 2 56:56 
+ iPhone không sạc ở đây.
+ N1
+ Người nói 1 57:00 
+ Nó chạy cả 3G xong nó hết pin.
+ N2
+ Người nói 2 57:02 
+ Ơ anh bắt wifi ở trong team ý.
+ N1
+ Người nói 1 57:09 
+ Thế tôi cần sạc tôi 3G cũng được.
+ N2
+ Người nói 2 57:12 
+ Thôi bắt wifi ở đây này. Chạy ngoài CD. Low battery.
+ N1
+ Người nói 1 57:29 
+ Hả?
+ N2
+ Người nói 2 57:30 
+ Bài báo low battery. Do you want to disconnect? Chế độ bảo vệ cao, hết pin hết, dung lượng hết, 3G, tất cả mọi thứ bị disconnect.
+ N1
+ Người nói 1 57:46 
+ Còn nhiều không?
+ N2
+ Người nói 2 57:50 
+ Nhưng mà anh nghĩ là vẫn chỉ nói gọn trong sáng nay xong module hành chính nhân sự thôi. Không bắt ông ấy gửi tài liệu trước. Còn khả năng cao là anh em vẫn phải có kế hoạch backup cho con này. Thì anh nhìn con này một thằng làm xong như thế này cái cái này.
+ N1
+ Người nói 1 58:05 
+ Chưa cần thiết.
+ N2
+ Người nói 2 58:06 
+ Chưa cần thiết đúng không? Ok. Hành chính nhân sự nên để nó là hành chính nhân sự. Còn nếu như muốn quản lý công việc thì nó phải có phần module liên quan đến công việc. Lúc đấy nó sẽ phân theo dự án, theo phòng ban hoặc là các thứ khác nhau. Nó sẽ liên quan đến trích lấp tiến độ công việc. Nhét công việc vào đây thì không đúng.
+ N1
+ Người nói 1 58:27 
+ Con này thì con này tức là con này là có thể sau này là tích hợp các cái phần liên quan đến giao việc các thứ ấy.
+ N2
+ Người nói 2 58:34 
+ Đồng ý. Nhưng mà nó sẽ không nằm ở phần nhân sự. Công việc nó sẽ có module quản lý công việc riêng. Bởi vì nhân sự này sẽ là hành chính nhân sự dùng được chủ yếu. Công việc thì lại liên quan đến trưởng bộ phận hoặc phòng theo kiểu là dự án hoặc là nhìn chéo nhau thì nó bắt buộc phải tổ chức thành cái kiểu module quản lý công việc dự án.
+ N1
+ Người nói 1 58:50 
+ Module quản lý công việc riêng.
+ N2
+ Người nói 2 58:51 
+ Đó. Nhét vào đây thì thực ra hành chính nhân sự không xem. Và sau này em lại tự nhiên lại phân quyền theo kiểu là dự án PM kiểu vào xem thông tin nhân sự để xem công việc thì lại không đúng. Cách mình tổ chức bản thân về phần tính năng thì ok nhưng cái cách mình tổ chức thì nó chưa hợp lý lắm.
+ N1
+ Người nói 1 59:15 
+ Cái phần hợp đồng nữa. Hợp đồng này. Hợp đồng nhân sự.
+ N2
+ Người nói 2 59:24 
+ Mã, ngày ký, trạng thái, hiệu lực ngày, hết hạn, mức lương, vị trí, công việc, phòng ban, địa điểm làm việc này. Thời gian thường được là kết thúc thường ngày của người đăng nhập công ty. Trước khi người ký file hợp đồng. Là cái lương phúc cấp này nó còn hai kiểu tính.
+ N1
+ Người nói 1 01:00:09 
+ Giá trị. Ok. À cái phần là sơ yếu lý lịch này thì có cần không nhỉ?
+ N2
+ Người nói 2 01:00:29 
+ Sơ yếu lý lịch.
+ N1
+ Người nói 1 01:00:30 
+ Bản chất nó cũng như kiểu thông tin chung.
+ N2
+ Người nói 2 01:00:33 
+ Nói thông tin cá nhân thôi thì cái này ok nhưng cái thông tin này ai nhập và nhập tên kiểu gì. Cái này thông thường ý nó sẽ là không nhập hoặc nó sẽ lưu trữ file. Thì cái này anh đang chưa thấy là với một bạn thì sẽ cần nộp cái hồ sơ nhân sự giấy tờ gì và đã còn nợ giấy tờ gì. Nó là một trong những vấn nạn của bên hành chính nhân sự. Có những.
+ N1
+ Người nói 1 01:00:58 
+ Các cái chế độ bảo hiểm cơ bản của công ty thôi.
+ N2
+ Người nói 2 01:01:00 
+ Thế thì đang thiếu ở xã hội với cả.
+ N1
+ Người nói 1 01:01:02 
+ Quan trọng nhất trường thông tin là quản lý nhân sự nào thì ông không có này.
+ N2
+ Người nói 2 01:01:05 
+ Không, đây là đang trong nhân sự rồi. Trong nhân sự. Đây là đang đang trong nhân sự.
+ N1
+ Người nói 1 01:01:11 
+ Trong nhân sự.
+ N2
+ Người nói 2 01:01:12 
+ Trong nhân sự cần phải thông tin ok. Bạn bảo hiểm này, trạng thái, ngày công cấp. Hút đóng nhân viên, hút đóng công ty là sao?
+ N1
+ Người nói 1 01:01:27 
+ Ờ cái này á, cái này là công ty đóng bao nhiêu?
+ N2
+ Người nói 2 01:01:30 
+ Bạn bảo hiểm này, có bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm y tế, bảo hiểm tất nhiên. Ok. Rồi mình chia riêng từng cái một luôn đúng không? Cái này ok chi tiết đồng ý. Nhà cung cấp nhập tay. Nhưng mà cái số thẻ thông thường một bạn ấy sẽ có một số bảo hiểm thôi. Nhập như này thì ví dụ ba cái bảo hiểm xã hội, bảo hiểm tất nhiên và bảo hiểm y tế là sẽ phải nhập đi ba lần đúng không? Mất thời gian. Còn theo dõi riêng như này là đúng.
+ N1
+ Người nói 1 01:02:12 
+ Ơ số bảo hiểm mà số bảo hiểm nó chỉ có một thôi á. Cho dù có là loại bảo hiểm nào đi chăng nữa.
+ N2
+ Người nói 2 01:02:17 
+ Bây giờ đang là thế và nó còn đang trùng với cả số căn cước công dân luôn.
+ N1
+ Người nói 1 01:02:21 
+ À.
+ N2
+ Người nói 2 01:02:22 
+ Bây giờ nó đang gộp lại hết rồi.
+ N1
+ Người nói 1 01:02:24 
+ Ok.
+ N2
+ Người nói 2 01:02:25 
+ Bây giờ em có thể dùng căn cước công dân số.
+ N1
+ Người nói 1 01:02:27 
+ Để em xem xem là em đang hưởng những loại bảo hiểm nào đúng không?
+ N2
+ Người nói 2 01:02:31 
+ Nó nó chính là cái số bảo hiểm xã hội của em chính là cái số căn cước công dân luôn. Ngày xưa nó là hai số khác nhau, bây giờ nó chuyển rồi rồi lại một rồi.
+ N1
+ Người nói 1 01:02:39 
+ Ok.
+ N2
+ Người nói 2 01:02:40 
+ Chỗ này ok. Nhưng ngày bắt đầu, ngày kết thúc, các bạn còn khai báo tăng giảm là ông đang dựa vào ngày kết thúc đúng không? Ông thay đổi ngày kết thúc à? Một nhân viên đăng ký là bắt đầu từ tháng này đúng không? Thì như nào? Rồi tiếp theo nữa là nghỉ việc kết thúc thì như nào? Rồi tiếp theo nữa là mức mức thay đổi. Nhân viên vẫn đang làm nhưng họ được tăng chức nên là họ thay đổi về số bảo hiểm, cái mức đóng bảo hiểm, số tiền ý là ông đang khác nhau. Cho nên cái mức đóng nhân viên và mức đóng công ty kìa. Cái mức đóng nhân viên, mức đóng công ty kia thì anh đang hiểu đây là tiền phần trăm đúng không? Nhưng mà cái số tiền để đóng là bao nhiêu thì em đang chưa điền vào đây. Ví dụ 10% trên bao nhiêu tiền và 21,5% trên bao nhiêu tiền thì mình đang chưa điền. Ví dụ mức đóng nhân viên bình thường chỉ là 5 triệu, 3 triệu 4 theo mức cơ bản thôi. Nhưng cấp trưởng nhóm thì tầm 6, 7 triệu, trưởng phòng có thể 8, 9, 10 hay 20 triệu thì cái mức đấy là mình phải khai báo vào đây. Và cái con số đấy là cái con số có thể thay đổi trong suốt quá trình họ công tác. Thì cái ngày bắt đầu, ngày kết thúc sẽ phải thay đổi theo cái ngày đó. Thì cái việc mà khai báo tăng giảm đấy là anh đang chưa thấy này. Rồi có những cái bạn họ nghỉ dài ngày thì họ sẽ không được tham gia bảo hiểm. Nghỉ ốm dài ngày chẳng hạn. Về mặt chế độ phúc lợi là công ty không được quyền kết thúc hợp đồng với bạn. Nhưng mà công ty sẽ không đóng bảo hiểm, không trực tiếp với bạn trong giai đoạn đấy. Nó sẽ tạm thời báo hoãn hợp đồng và bảo hiểm trong giai đoạn đó.
+ N1
+ Người nói 1 01:04:13 
+ Ơ nếu mà trong trường hợp đấy thì nghiệp vụ mình sửa như nào?
+ N2
+ Người nói 2 01:04:17 
+ Là chỉ cần trạng thái của nhân viên thì tùy từng công ty là chuyển sang trạng thái là là tạm dừng xong rồi cái khai báo khác bảo hiểm thôi. Còn lại tất cả mọi thông tin nó giữ nguyên. Lúc nào đi làm lại thì lại chuyển về chế độ hoạt động lại tiếp và lại khai báo tăng bảo hiểm lên. Thì mình phải có cái giữ cái thông tin đấy. Cái thông tin này nó sẽ là thông tin đầu vào để mình tính lương. Bởi vì mỗi một cái mức đóng khác nhau theo từng tháng khác nhau thì cái cái trừ bảo hiểm ở trong số lương của mình sẽ khác nhau mà. Thì không có cái đấy làm sao ông căn cứ được là là là dựa vào đâu. Cũng không thể nào cứ mỗi một lần có một nhân sự thay đổi là ông bắt đầu ngày vào kết thúc, ngày bắt đầu vào kết thúc là ông ấy đúng không? Ông đi sửa từ nhân sự 1 đúng không? Sửa từ nhân sự. Thế thì công ty nhỏ nhỏ như anh em mình còn hai ba chục nhân sự. Ok. Thì đấy là không phải là xe Việt Nam nghìn nhân sự. Đấy nó ngồi đến lúc cuối tháng này nó cho nghỉ việc được tầm trăm nhân sự mà ngồi sửa từng đứa ngày kết thúc thì nó chết. Lúc đấy nó sẽ chỉ có một cái hoạt động là tích vào 100 nhân sự đó đúng không? Xong rồi nó báo cắt bảo hiểm hoặc nó báo giảm bảo hiểm và không có ngày bắt đầu mới là xong. Thì coi như kiểu là đến ngày đấy là nó sẽ dừng bảo hiểm lại toàn bộ. Nhưng đoạn này ấy bảo báo tăng và có trạng thái. Trạng thái kia ok rồi nhưng mà có cái hoạt động liên quan đến đổi trạng thái hàng loạt và báo tăng giảm hàng loạt cũng như cái báo hoạt động thay đổi số tiền từng nhân sự một. Ví dụ như là thay đổi từ mức 5 triệu lên mức 10 triệu. Đấy.
+ N1
+ Người nói 1 01:06:21 
+ Có nhớ có timeline đúng không? Timeline.
+ N2
+ Người nói 2 01:06:23 
+ Timeline thì đây là có rồi. Ngày bắt đầu ngày kết thúc thì có rồi.
+ N1
+ Người nói 1 01:06:26 
+ Không ý em là cái đoạn thay đổi đóng các thứ ấy.
+ N2
+ Người nói 2 01:06:31 
+ Nó chính là cái ngày bắt đầu, ngày kết thúc và thay đổi trạng thái luôn. Nhưng cái nghiệp vụ để thay đổi ba trường thông tin này là mình phải định nghĩa thêm. Như hiện tại thì mình đang chưa có cái nghiệp vụ cũng là cái action để thay đổi ba cái này mà mình đang phải sửa tay thì cái việc đấy nó sẽ mất thời gian của của hành chính nhân sự. Còn như này thì là đã đủ thông tin rồi nhá. Tôi sửa tay là hoàn toàn có thể đáp ứng được yêu cầu rồi. Nhưng mà cái câu chuyện là sửa tay trăm bản đi thì là là chết. Nên mình chỉ có nghiệp vụ là thay đổi hàng loạt cho tới hôm nay. Còn đơn giản là nó đóng hay không đóng thì thay đổi trạng thái là đang hoạt động thành không hoạt động hoặc là nó đổi ngày bắt đầu ngày kết thúc thôi thì là xong rồi. Tin nữa giúp cho anh là cái trạng thái của mình đang có cái gì. À chờ xử lý là sao nhỉ?
+ N1
+ Người nói 1 01:07:15 
+ Chờ xử lý tức là dừng hoạt động này. Tạm dừng này.
+ N2
+ Người nói 2 01:07:18 
+ Thường thường đây là để mình tạm hoãn tất cả mức rộng ra luôn. Nó sẽ có một cái bị chờ xử lý là bị chờ đăng ký đúng không? Thông báo rồi và đang chờ thông báo lại. Thì cái đấy có thể để hoặc là không thì bỏ qua luôn. Bởi vì để thì sẽ phải có một cái thông tin nữa theo kiểu là phải cập nhật trạng thái từ bên bảo hiểm báo lại. Thì thông thường người ta sẽ lười, người ta cứ khai báo là bảo hiểm sẽ khai báo được và nó sẽ chuyển sang trạng thái đang hoạt động luôn. Và nó để sẵn ngày bắt đầu, ngày kết thúc. Nó sẽ không có trạng thái chờ xử lý nữa. Nó sẽ chỉ có ba trạng thái thôi là hoạt động, à ngừng hoạt động và đang tạm hoãn. Tạm hoãn là trạng thái thực ra nó giống như kiểu ngừng hoạt động nhưng mà nó treo ở đấy. Biết được rằng là nhân sự đấy sẽ được kích hoạt lại. Có lịch để kích hoạt lại. Còn dừng hoạt động là những nhân sự thông thường sẽ là nghỉ rồi chấm dứt hợp đồng với công ty hoặc là không tham gia bảo hiểm với công ty.
+ N1
+ Người nói 1 01:08:41 
+ Đây là khen thưởng kỷ luật. Đây em có làm thêm cái này thì thật ra là em bóc từ cái HRM.
+ N2
+ Người nói 2 01:09:06 
+ Đào tạo thì đúng sẽ cần nhưng mà cái đấy thì không nên nhét vào đây. Cái này nó sẽ liên quan đến thông thường ở trên hành chính.
+ N1
+ Người nói 1 01:09:14 
+ Nó sẽ chạy theo chứng chỉ thôi. Nó đã đặt được thôi. Còn cái đào tạo thì nó sẽ ở module internal luôn. Module đào tạo riêng.
+ N2
+ Người nói 2 01:09:33 
+ Khen thưởng kỷ luật. Có chưa?
+ N1
+ Người nói 1 01:09:36 
+ Đây khen thưởng kỷ luật.
+ N2
+ Người nói 2 01:09:38 
+ Cái này thì chắc cũng là này. Lại khen thưởng cho anh xem. Ơ rồi thế thì kỷ luật đâu. Đây là khen thưởng đúng không? Khen thưởng kỷ luật đang cùng một cái đúng không?
+ N1
+ Người nói 1 01:10:09 
+ Chưa có. À đây đây kỷ luật này.
+ N2
+ Người nói 2 01:10:19 
+ Cái này ghi nhận thông tin này. Sắp xếp lại các trường thông tin một chút. Khen thưởng bao giờ cũng sẽ là tiêu đề đầu tiên. Sau đó là mới đến cái trường thông tin khác bên dưới. Thông thường bao giờ cái form sẽ có tiêu đề trước. Rồi cái ghi nhận khen thưởng kỷ luật này, nếu như mà liên quan đến tiền thì nó sẽ là một là liên kết trực tiếp với module từng lương trong tháng đấy, trong cái tháng xử lý để mình ghi nhận. Và sau khi mà xử lý xong thì nó sẽ phải có một cái là trạng thái là đã thi hành hay chưa. Hiện tại mình đang có cái thông tin liên quan đến làm cái gì ghi nhận rồi đúng không? Nhưng mà trạng thái lựa chọn các thứ là đã thực thi hay chưa, thu tiền thì đã thu tiền chưa, thường tiền thì đã thường tiền chưa là mình sẽ cần phải note lại thêm một cái trạng thái. Cái kia là loại, cái này là trạng thái.
+ N1
+ Người nói 1 01:12:11 
+ Chứng chỉ này, bằng cấp này.
+ N2
+ Người nói 2 01:12:14 
+ Và cái đấy là thông tin mình kích thêm thôi đúng không?
+ N1
+ Người nói 1 01:12:17 
+ Ừ. Tài sản này, lợi ích cung cấp này, tài sản gì này. Tức là như kiểu là được cấp xe hay là gì không này. Kiểu đấy. Đấy. Như kiểu là nhân viên đét thì được cấp laptop hay cấp PC chẳng hạn. Ví dụ thế. Hay là lái xe thì được cấp cấp xe hay là cấp gì? Cấp tủ các thứ. Tủ hộc các thứ kiểu đấy.
+ N2
+ Người nói 2 01:12:46 
+ Cái này thì nên đi kèm biên bản. Biên bản bản sao trên này luôn. Nó bởi vì nó là một cái nội bộ thì mình có thể dùng chữ ký nội bộ để mình ví dụ như là bên cấp phát là bên hành chính nhân sự ghi nhận những thông tin này thì nhân sự là xác nhận thì coi như họ đã nhận bàn giao bất kỳ giấy tờ ngoài coi như là một cái hoạt động chữ ký nội bộ đúng không? Đấy sau khi mà nhân sự sau này có quy trình nghỉ việc thì tự động là những cái thiết bị này sẽ được đưa vào cái danh sách cần bàn giao và cái bên ông ông gọi là quản lý tài sản ông ấy nhận lại những thiết bị này coi như là xong hết nội bộ bên nhân sự. Cái tên tài sản, mã tài sản này này là mình đang làm theo kiểu là khá là là là thủ công cho cái module tài sản. Nhưng cái này nếu như mà mình đã làm đến mức độ có tài sản ở đây thì mình phải có một module quản lý tài sản. Và cái thông tin tài sản này là mình có thể tham chiếu sang bên kia và nó sẽ tự động lấy hết được thông tin sang chứ không phải là mỗi lần lại đi nhập thủ công như này. Đó công cụ thiết bị thì mình chỉ cần chọn công cụ thiết bị thôi thì tất cả như kiểu module, tên, serial rồi tình trạng các kiểu nó phải có hết thì mình chỉ gắn có hai thông tin với nhau thôi là tài sản đấy là gì cộng với lại nhân sự đấy là gì thì tất cả những thông tin khác sẽ tự động lấy tham chiếu lại. Không phải mỗi lần đi nhập này là là chết đó.
+ N1
+ Người nói 1 01:14:28 
+ Bản cấp này chưa? Cấp thì ở đây cũng thông tin cơ bản thôi. Chứng chỉ thì cũng tương tự vậy. Bảng chứng chỉ. Số hiệu. Kỹ năng. Tổng cung kỹ năng gì? Nếu cần thì cái kỹ năng này thì em sẽ bổ sung thêm cái bóc tách từ các cái hồ sơ nhân sự kia để để mà thay vì phải điền tay từng cái như thế này.
+ N2
+ Người nói 2 01:15:24 
+ Đổi từng lần tốt nhất.
+ N1
+ Người nói 1 01:15:25 
+ Ví dụ như kiểu là trong CV chẳng hạn kiểu đấy. Thông tin gia đình các thứ thì cái này sẽ lấy tham chiếu từ kia. Cái này mà điền vào xong thì cái thông tin kia nó sẽ có. Tức là đây bao nhiêu người phụ thuộc các thứ đây. Quan hệ này là con cái hay gì. Thực ra khi mà mình điền xong các thông tin ở đây thì nó kia nó sẽ có. Chẳng qua là em đang định điền tay thôi mà nếu mà cần thì.
+ N2
+ Người nói 2 01:16:37 
+ Không điền tay là đúng rồi.
+ N1
+ Người nói 1 01:16:38 
+ Điền tay.
+ N2
+ Người nói 2 01:16:39 
+ Cái này cũng phải điền tay.
+ N1
+ Người nói 1 01:16:41 
+ Thì các cái thông tin này thì về cơ bản là cần là điền tay xong đã là các cái thông tin đúng thông tin chung của người ta là sẽ điền ở đây.
+ N2
+ Người nói 2 01:17:05 
+ Khá là đầy đủ.
+ N1
+ Người nói 1 01:17:10 
+ Quyết định này. Quyết định này. Quyết định. Sẽ có loại quyết định ở đây. Tham chiếu theo nhân viên làm.
+ N2
+ Người nói 2 01:17:22 
+ Cái này chỉ là ghi nhận thông tin thôi đúng không?
+ N1
+ Người nói 1 01:17:24 
+ Đúng. Ghi nhận thông tin thôi.
+ N2
+ Người nói 2 01:17:29 
+ Xong cái này thì nó sẽ có vào mục nào của nhân viên không? Ví dụ như là lịch sử công tác hay là sau khi bổ nhiệm xong thì nó có thay đổi.
+ N1
+ Người nói 1 01:17:36 
+ Nó sẽ có thêm ở phần ở trong lịch sử nhân sự, lịch sử làm việc các thứ ấy.
+ N2
+ Người nói 2 01:17:43 
+ Ok. Thay đổi thuyên chuyển công tác ấy đúng không?
+ N1
+ Người nói 1 01:17:45 
+ Vâng. Kể cả lịch sử điều chỉnh lương các thứ nó sẽ giữ.
+ N2
+ Người nói 2 01:17:50 
+ Chỗ này còn thiếu cái phần liên quan đến nghỉ việc. Trong nhân sự thì còn cái quy trình nghỉ việc.
+ N1
+ Người nói 1 01:17:59 
+ Ừ.
+ N2
+ Người nói 2 01:18:03 
+ Nghỉ việc thì có hai đoạn. Một là tự nghỉ hai là bị đuổi đúng không?
+ N1
+ Người nói 1 01:18:08 
+ Ừ.
+ N2
+ Người nói 2 01:18:08 
+ Thì cái xử lý nó cũng sẽ khác nhau.
+ N1
+ Người nói 1 01:18:47 
+ Vẫn dùng cái này vừa nói rồi.
+ N2
+ Người nói 2 01:18:49 
+ Trần Công.
+ N1
+ Người nói 1 01:18:50 
+ Trần Công.
+ N2
+ Người nói 2 01:18:52 
+ Trần Công thì nó.
+ N1
+ Người nói 1 01:18:53 
+ Dữ liệu công một ngày của nhân sự đâu?
+ N2
+ Người nói 2 01:18:55 
+ Dữ liệu công một ngày của nhân sự thì nó có sẽ có cái bảng trần công ở đây.
+ N1
+ Người nói 1 01:19:00 
+ Thêm thêm tay nữa.
+ N2
+ Người nói 2 01:19:01 
+ Thêm tay. Chọn phòng ban này, chọn vị trí này. Đây là báo cáo rồi. Dữ liệu trần công đây. Cái này là import hay là từ đâu ra?
+ N1
+ Người nói 1 01:19:23 
+ Cái này là tự load từ cái nghiệp vụ trần công trên app mobile để xem.
+ N2
+ Người nói 2 01:19:31 
+ Thế thì chạy cái này phải có app mobile nữa đúng không?
+ N1
+ Người nói 1 01:19:33 
+ App mobile. Thế là ông nó sẽ có mấy cách. Một là.
+ N2
+ Người nói 2 01:19:37 
+ Rồi. Trần công này còn thiếu một cái là đăng ký giờ làm.
+ N1
+ Người nói 1 01:19:42 
+ Ừ. Đăng ký giờ làm á?
+ N2
+ Người nói 2 01:19:43 
+ Ừ. Ở phần ca làm việc kia. Xem xem ca làm việc nào. Xem xem ca. Ca sáng, tên ca, giờ hấp dẫn, bắt đầu, kết thúc, hệ số công, số công, cho phép đi muộn, cho phép về sớm, yêu cầu trần công dùng buổi trưa. Ok. Xong rồi phần ca đông. Đây là ca đúng không? Tiếp bên dưới chốt ca phải có phân phân ca. Tiếp là chốt ca ở dưới này. Mấy lưu ca ở dưới này. Phân bình phân ca. Đang có nốt đỏ đỏ phía dưới. Không đúng rồi. Đây cũng là ca vừa rồi. Nghỉ phân ca với ca làm việc đang giống nhau. Nói chung là nó sẽ có hai phần. Một là khai báo ca, hai là phân ca. Trong khai báo ca thì sẽ có quy định về giờ vào, giờ ra. Buổi sáng giờ vào, giờ ra. Nói chung là giờ vào, giờ ra của giờ ca đầu và giờ vào, giờ ra của giờ ca sau. Có yêu cầu trần công trước hay không? Có cho đi muộn về sớm hay không? Cái đấy là rồi. Tiếp theo nữa là ca làm việc xong thì ca làm thêm đấy là không cần đấy. Nó sẽ là quy trình làm thêm. Bản thân nó sẽ không có ca làm thêm mà nó sẽ là yêu cầu làm thêm và yêu có phê duyệt. Trong cái ca làm việc của mình ý, nó cần một khai báo nữa là ngày nghỉ mặc định. Anh không biết là cái ngày nghỉ mặc định đấy mọi người đang để ở đâu.
+ N1
+ Người nói 1 01:21:32 
+ Đây đang có cái phần.
+ N2
+ Người nói 2 01:21:34 
+ Phép.
+ N1
+ Người nói 1 01:21:37 
+ Ví dụ như Quốc Khánh mùng 2 tháng 9 Tết Dương lịch thì mỗi năm phải công huynh một lần. Thì cái đấy là phải có công huynh để quy định. Đây là. Tính chán.
+ N2
+ Người nói 2 01:21:50 
+ Đây là ông ấy yêu cầu nghỉ rồi. Chỗ công huynh nghỉ cơ. Công huynh nghỉ chắc là công huynh hay thiết lập riêng. Chứ nhìn cách là không có rồi.
+ N1
+ Người nói 1 01:22:14 
+ Chuẩn bị xong chưa nào?
+ N2
+ Người nói 2 01:22:31 
+ Nó sẽ có khai báo nghỉ chung của toàn công ty ấy. Tiếp nữa là anh đang thấy mấy cái việc là cấu hình đi muộn thôi về sớm thì cái đấy mình đi cấu hình cái gì? Ví dụ đi muộn về sớm mà nó cho phép hay không cho phép đúng không? Rồi cái việc mà có phạt đi muộn về sớm không thì mình đang tính như nào? Có công ty thì làm theo phút, có công ty thì theo block, có công ty thì theo khoảng thời gian. Thì cái đoạn đấy là mình phải cấu hình lại.
+ N1
+ Người nói 1 01:23:15 
+ Đây ví dụ như kiểu là quyết định trần công đi. Đây quyết định về trần công. Quyết định về đi muộn này.
+ N2
+ Người nói 2 01:23:23 
+ Quyết định về trần công ấy thì là quyết định cái gì?
+ N1
+ Người nói 1 01:23:26 
+ Quyết định về trần công đấy là trần công theo thiết bị nào này. Giờ trần công là giờ giờ nào này.
+ N2
+ Người nói 2 01:23:33 
+ Cái đấy nó phải làm theo ca của mình chứ. Nó thay đổi liên tục làm sao mình quyết định được em.
+ N1
+ Người nói 1 01:23:41 
+ Đây nó sẽ có các cái phần chu kỳ. Ví dụ như kiểu là ngày bắt đầu tính công này.
+ N2
+ Người nói 2 01:23:46 
+ Ok. Cái đây gọi là chu kỳ đúng không?
+ N1
+ Người nói 1 01:23:47 
+ Chu kỳ. Làm tròn hay không làm tròn này. Cho phép trần công nhiều lần không?
+ N2
+ Người nói 2 01:23:52 
+ Làm tròn hay không làm tròn là sao?
+ N1
+ Người nói 1 01:23:54 
+ Tức là nôm na là kiểu ví dụ như kiểu là đi muộn chẳng hạn nhá. Anh ví dụ như kiểu là 30 phút à 30 phút mà thêm mấy chục giây thì anh đã tính là đi muộn trưa hay là phải tính 31 phút anh mới tính đi muộn. Ví dụ thế.
+ N2
+ Người nói 2 01:24:11 
+ Cái đấy nó phải phụ thuộc vào câu chuyện là ấy chứ. Cái này được bao giờ quy định trần công. Cái này cái đấy là quy định liên quan đến đi muộn về sớm chứ.
+ N1
+ Người nói 1 01:24:18 
+ Nó không. Ý em là cái cái này cái cấu hình này là để là cái phần khi mà người ta trần công ấy thì người ta sẽ bị rơi vào cây đi muộn hay là gì?
+ N2
+ Người nói 2 01:24:28 
+ Ít nhất là cái thời gian làm việc ấy của em là theo ca hoặc là theo từng cái bảng từng bảng bảng lịch làm việc chứ làm sao mà cấu hình chung cả công ty được. Trong một công ty có những bộ phận họ sẽ làm thứ bảy, có những bộ phận không làm thứ bảy, có những bộ phận làm theo ca, có bộ phận làm hàng chín thì tất cả những cái đấy nó phải quy theo về ca làm việc hết. Và từ từ dữ liệu ca làm việc đấy, thậm chí là tuần này là tôi làm hàng chín, tuần sau tôi làm ca, tuần sau nữa tôi làm thứ bảy thì với mỗi một cái tuần tôi có cái khai báo gán vào thì dữ liệu công của tôi sẽ tự động tính đi muộn về sớm theo dữ liệu của ca làm việc của mình. Cái này nếu như mà cấu hình về quy định thì nó chỉ có hai cái thôi. Kiểu thông thường nhất là một là máy trống công, hai là phần mềm, ba là liên quan đến giải IP, bốn là liên quan đến vị trí. Thì lúc đấy mình sẽ khai báo ở đây là những vị trí được phép, những giải IP được phép, những thiết bị được phép nó sẽ nằm ở đây. Chứ không nên đưa tất cả những cái về chi tiết công và chi tiết công đấy nó sẽ phải nằm theo bảng công và bảng ca. Cái ngày bắt đầu, ngày kết thúc như thế nó là theo ca hết. Bởi vì câu chuyện là có những người đúng không? Tài xế kiểu đôi khi tất cả những cái đấy ca ca ấy thì nó không khi nó quy định chung của cả công ty để mà mình cấu hình những cái việc đấy. Và mỗi một cái ca đấy là đôi khi nó tính theo chu kỳ khác nhau liên quan đến đó thì quy định đi muộn về sớm là sẽ phải cần cấu hình để nó được quy định đó. Cấu hình thì sẽ phải được giữ cách mình mà thứ nhất là có phạt đi muộn về sớm hay không. Thứ hai là nếu như không phạt đúng không? Thì bỏ qua thì xem kiểu máy đi làm bao nhiêu ta ghi nhận bấy nhiêu. Theo từng phút ví dụ thế. Thứ hai là nếu như có phạt phạt một cách nào có động hay là theo phút hay là ừ như nào đó thì sẽ khai báo được ở đây. Rồi quyết định nghỉ. Quyết định nghỉ thì liên quan đến phần nghỉ phép đúng không? Quyết định nghỉ này thì chính là cái phần mà anh ấy đẩy phần cấu hình ngày nghỉ mặc định và trong 1 năm 1 năm có bao nhiêu ngày nghỉ dưới dạng nghỉ nghỉ nghỉ nghỉ lễ Tết thì mình sẽ đẩy vào đây và năm nào cũng phải quy định một lần. Mình phải cấu hình không fix được bởi vì mình có mấy cái trò tính theo lịch âm thì mỗi lịch âm năm lịch dương nó là ngày khác nên không cố định được. Chứ còn Tết dương 30 tháng 4 mùng 1 tháng 5 thì đơn giản nhưng mình có mấy cái cột lệ kiểu mẹ mùng 10 tháng 3 âm lịch Tết âm lịch mỗi năm một khác thì cái đấy năm nào cũng phải đi cấu hình. Rồi sang phần trần công thì anh thấy còn khớ đấy. Thứ nhất là khai báo này, cách thức trống công này, dữ liệu công này. Dữ liệu công xong bây giờ còn một cái nữa là cái mà gọi là gì nhỉ? Mình ghi gọi là cái giải trình công thì mình cần phải có cái đấy. Ví dụ là công mà công ty ghi nhận được sau đó nhân sự có giải trình và phê duyệt thì update lại cái công của nhân sự là cái kết quả của cái giải trình công đấy là cập nhật lại vào cái dữ liệu công và kèm với lịch sử thay đổi. Đấy là liên quan đến phần trống công. Nghỉ phép.
+ N1
+ Người nói 1 01:28:41 
+ Nghỉ phép đúng không?
+ N2
+ Người nói 2 01:28:42 
+ Ừ.
+ N1
+ Người nói 1 01:28:45 
+ Hiện tại thì đang có cái này của em là đang có cái yêu cầu xin nghỉ thôi.
+ N2
+ Người nói 2 01:28:51 
+ Ờ thế thì mình vẫn thiếu là phép của mình không mặc định mình phải có cấp pháp phép thì mới có phép để sử dụng. Thì riêng cái việc cấp pháp phép là mình đã phải có một cái module liên quan về là cấp pháp phép rồi. Cấp pháp phép của mình thì nó có một vài cái phép. Thứ nhất là thông dụng nhất là phép hàng năm. Phép hàng năm thì cứ mỗi một tháng làm việc của mình sẽ có một ngày phép và thông thường theo luật là một nửa tháng nó sẽ có 0,5 ngày. Thì thông thường là là như vậy thì cái đấy là mặc định. Thứ hai là phép thâm niên. Theo quy định cũ thì không biết là 3 năm hay 5 năm là được cộng một ngày. Và thứ hai là theo từng công ty có chế độ đấy riêng. Thứ ba là phép liên quan đến từng chức vụ. Có những ông là ví dụ như cấp này thì sẽ được cấp thêm bao nhiêu ngày phép năm. Kiểu trưởng phòng thì sẽ có 16 à ngoài 12 ngày phép năm thì thêm được 4 ngày nghỉ một năm nữa chẳng hạn. Kiểu đấy ngoài việc không phải trống công nhá thì nó phép năm nữa chẳng hạn kiểu vậy. Đó thì đấy là cái cái cấu hình về về việc gọi là cấp phát phép. À cấp phát phép này ngoài cái việc ừ đấy ra thì còn một cái nữa là ừ một số công ty là liên quan đến cấu hình là có cho ứng phép hay không. Có những công ty thì là tháng nào dùng tháng đấy. Có những công ty thì tháng nào dùng tháng đấy nhưng được ứng trước 2 tháng là tổng là tháng.
+ N1
+ Người nói 1 01:30:16 
+ Vậy phép từ từ phép đấy phép liên quan chức vụ à anh?
+ N2
+ Người nói 2 01:30:20 
+ Không phép năm á. Luật của mình là cứ một ngày lao động thì sẽ được sử dụng là hai ngày phép đúng không? Ừ. Có những công ty thì thả đổi ra cứ đầu tháng 1 năm 2026 là nó đã được nghỉ 12 ngày rồi là dùng một phát hết cả phép năm của 2026 luôn.
+ N1
+ Người nói 1 01:30:34 
+ Cấp phép trước à?
+ N2
+ Người nói 2 01:30:35 
+ Đúng rồi. Cấp phép trước. Thứ hai là có những công ty là mẹ hết một tháng xong cấp phép một lần.
+ N1
+ Người nói 1 01:30:42 
+ Ừ. Mỗi tháng cấp phép một lần.
+ N2
+ Người nói 2 01:30:44 
+ Ờ có những công ty thì cấp phép 6 tháng một lần. Nói chung là cái việc cấp phép là khác nhau và cái sử dụng phép cũng là khác nhau luôn. Nó phụ thuộc vào cái việc cấp phép thì nó sẽ có những cái việc nghỉ phép khác nhau. Nếu như công ty mà cấp phép sau theo kiểu chính xác là cuối tháng ta mới cấp phép cho mày để mày dùng vào tháng sau thì những cái kỳ nghỉ của tháng hiện tại ấy ví dụ bây giờ đang là tháng 8 nhá thì anh chưa được cấp phép của tháng 8 đúng không? Thì cái cái nghỉ tháng 8 của anh ấy thì tất cả sẽ là nghỉ không lương hết. Xong cuối tháng cấp phép xong rồi mới lại bù lại trở thành nghỉ có lương và trừ phép sau. Còn mặc định ban đầu khi xin nghỉ là phải nghỉ không lương. Còn cuối tháng này có được dùng trừ phép hay không thì sẽ là ứng phép sang. Còn có những công ty thì là tao cấp cho mày phép trước thì ngay từ bây giờ anh đã chọn được là nghỉ phép có lương rồi và cuối tháng thì không cần phải xem lại phép và không cần phải thay đổi lại cái cái đấy nữa.
+ N1
+ Người nói 1 01:31:40 
+ Cái bàn tay.
+ N2
+ Người nói 2 01:31:40 
+ Ờ xong rồi còn câu chuyện là được phê duyệt hay không phê duyệt. Xong rồi cái cấp phép đấy nó còn giữ chỗ. Ví dụ như là mày được sử dụng bốn ngày phép đúng không? Mày xin nghỉ cái này bốn ngày phép mày chỉ cần submit lên là đã bị giữ chỗ rồi đúng không? Thì mày sẽ không thể submit một cái mới được nữa. Và cái submit cái mới của mày sẽ không phải trả lời nghỉ không nữa. Nhưng mà cái nghỉ phép của mày mà bị từ chối thì cái submit kia của mày lại đổi thành ngày nghỉ có phép. Bởi vì về bản chất ý là cái việc nghỉ phép hay không nghỉ phép thì có hai đối tượng quan tâm. Một là hành chính nhân sự để tính lương, hai là người lao động. Còn cái thằng mà quản lý ở giữa ấy là nó chỉ quyết định cái câu chuyện mày có được nghỉ ngày đấy hay không. Còn mày nghỉ chế độ nào tao không cần biết. Ừ. Đó. Còn phép của mình ngoài mấy cái phép đấy ra còn một cái phép đặc biệt là phép OT. Có nghĩa là mày làm OT xong rồi mày sẽ được cộng cái ngày phép OT sang. Thì sẽ phải có một cái loại phép đấy riêng. Thì cứ mỗi một lần OT là mình sẽ phải cộng thêm cho nó ngày phép nếu như công ty setup chế độ làm phép OT. Và cái nữa là liên quan đến lịch gọi là bảo toàn phép của năm trước. Thông thường mọi một công ty sẽ là hết quý một của năm sau là sẽ phải sử dụng hết phép của năm trước. Đó thì cái đấy cũng là một cái phép tồn. Nó có cộng dồn. Phép đấy có cộng dồn hay không cộng dồn để mình phải có cấu hình. Ờ còn một cái nữa là gì? Có hoàn trả phép cho nhân sự khi mà họ nghỉ việc hay không? Có những công ty chế độ là phép chưa sử dụng hết của người lao động thì khi nhân lao động nghỉ việc trả lương theo những ngày tương ứng với ngày phép. Có những công ty thì không. Ờ tiếp đoạn này có một cái cấu hình là lương cơ sở của phép. Lương cơ sở của phép thì chính là lương hay là lương đó bảo hiểm là để tính căn cứ khi mà nhân sự nghỉ ốm. Em biết là nghỉ ốm đúng không? Nghỉ ốm thì là trang chi trả tiền cho nhân sự là tiền của bên bảo hiểm không phải tiền của nhân viên mà của công ty. Thì có những công ty họ làm rất là rộng ròi là ừ mày đóng bảo hiểm bao nhiêu thì mày nghỉ ốm thì mày chỉ được nhận theo cái ngày nghỉ ốm thôi chứ công ty không hỗ trợ cái phần chênh lệch còn lại. Có những công ty thì họ hỗ trợ cái phần đấy luôn. Thì đối với nhân sự thì coi như là cứ nghỉ phép thì sẽ là được tính lương như bình thường. Kiểu như vậy. Có những công ty thì mày nghỉ phép nhưng mà chỉ được tính lương bằng bảo hiểm thôi. Đó thì cái đấy là một cái cấu hình mà mình phải quan tâm. Phép này còn mấy cái khủng khoảng chung đấy ra. À còn nghỉ phép là cái thể loại là tính cái ngày phép nghỉ ấy trong một cái lượt xin nghỉ phép ấy thì mình phải tính được là cái phép đấy là nghỉ theo ngày hay nghỉ theo giờ. Công ty có cho đến mức độ là nghỉ phép theo tiếng không? Có những công ty thì là đơn vị nhỏ nhất là nửa ngày. Có những công ty thì đơn vị là ngày xin nghỉ một tiếng cũng được. Thì trong cái đơn xin nghỉ phép ý thì nó sẽ chỉ điền là cái thời gian bắt đầu nghỉ và thời gian kết thúc nghỉ. Còn hệ thống sẽ phải có quy tắc để tự tính toán ra được cái số thời gian nó nghỉ. Nếu như nghỉ trong một ngày thì dễ nhưng mà nghỉ từ hôm trước sang hôm sau là khoai cộng với cái câu chuyện mà nó nghỉ xuyên thuần chủ nhật thì khoai nữa mà nó nghỉ lễ thì còn khoai hơn. Ví dụ nhá là nó xin nghỉ từ chiều thứ sáu đến hết sáng thứ hai. Tức là lúc mà nó xin nghỉ nó chỉ kéo từ chiều thứ sáu đến sáng thứ hai thôi. Nhưng hệ thống phải tự động tính toán được là nếu như công ty không phải là thứ bảy thì nó đang xin nghỉ có một ngày. Chứ còn nếu như mình lấy start date à lấy end date trừ start date là nó thành ra nghỉ ba ngày. Trừ ba ngày phép của nó là có kiện vào ngay. Thì cái đống đấy lại phụ thuộc vào cái cái phần mà giữ cấu hình ngày làm việc đúng không? Cấu hình ngày làm việc và thứ hai là cái ngày nghỉ lễ. Đó thì cái đoạn đấy là phải tính. Thì cái đoạn đấy là cái đoạn khoai nhất là điền là ngày bắt đầu ngày kết thúc hoặc là giờ bắt đầu giờ kết thúc tính ra được cái đống thời gian nghỉ ở giữa. Cái đống đấy là cái đống khó tính nhất. Dùng rất nhiều cây.
+ N1
+ Người nói 1 01:36:11 
+ Rất nhiều cây. Phết ở đây.
+ N2
+ Người nói 2 01:36:19 
+ Sắp mưa to.
+ N1
+ Người nói 1 01:36:20 
+ Không sao anh còn phần tiền lương xong là chiều ở đây đến buổi chiều để làm nốt phần tiền lương đi. Xong rồi xong rồi em sạch một phát để cho xong cái khối tọt ỏi xong rồi các anh chốt lại bắt đầu.
+ N2
+ Người nói 2 01:36:44 
+ Xử lý nốt đi.
+ N1
+ Người nói 1 01:36:46 
+ Thôi thì anh chọn nốt đây. Em thấy còn mỗi phần tiền lương này thôi.
+ N2
+ Người nói 2 01:36:49 
+ Tiền lương của mình thì à à phần công chưa xong đâu.
+ N1
+ Người nói 1 01:36:54 
+ Phần công chưa xong đâu đúng không?
+ N2
+ Người nói 2 01:36:55 
+ Còn công của mình ý thì cái kết quả cuối cùng của cả phần trống công nghỉ phép OT tất cả mọi thứ là bảng công thì tôi phải có một cái dữ liệu gen bảng công cuối cùng trong đấy bao gồm các trường thông tin ví dụ như là công chuẩn này, công chấm công này, công nghỉ phép này, công gì gì đấy. Nói chung là công lễ các thể loại rồi ngồi phạt đi muộn về sớm gì gì đó ăn ca rồi OT các kiểu như nào thì nó sẽ ra được cái bảng công cuối cùng thì bắt buộc phải có cái bảng công đấy thì cái bảng công đấy là cái bảng mà nhân viên sẽ ký chốt nhân sự sẽ có thư hoàn tháng và đấy sẽ là dữ liệu của bảng lương sẽ gì cái dữ liệu trống công cuối cùng đấy thôi chứ không chọc trong từng module là OT nghỉ phép hay cái gì cả mà nó sẽ có một cái chung là bảng gọi là anh hay gọi là bảng công bảng công đấy là dữ liệu lương chứ lương không làm việc với module nghỉ phép module chấm công module OT làm việc đấy thì chết chỉ làm việc với bảng công thôi thì phải có cái đấy thì mới sang tức là bản chất là bảng lương là cái nơi thu gom hết lại các cái bảng công chứ bảng công bảng công là gom hết lại của cái việc là thứ nhất là mày chấm công được bao nhiêu mày nghỉ phép bao nhiêu mày nghỉ lễ bao nhiêu mày OT bao nhiêu đó tính hết từng đấy ra rồi quy định thông thường của mình là sẽ ra đơn vị là giờ mày chấm công là công chuẩn là bao nhiêu giờ nhá ừ nhá xong rồi chấm công là bao nhiêu giờ này nghỉ phép bao nhiêu giờ này nghỉ không lương bao nhiêu giờ này à OT bao nhiêu giờ này đó OT bao nhiêu giờ thì là mình đã phải nhân rồi ví dụ 4 tiếng OT 150% thì nó phải nhân ra thành 6 tiếng rồi thì về sau mình sẽ chỉ được cộng lại thành con số cuối cùng là công tính lương công tính lương là 200/160 chẳng hạn kiểu như vậy thì hiểu là sau này lương của nó 16 triệu thì là lương tháng đấy của nó sẽ là 20 triệu nếu như mà tính theo kiểu công ăn lương thì chỉ thế thôi thì đấy là cái công thức cuối cùng để mình tính thì cuối cùng bắt buộc phải tính ra là công tính lương là bao nhiêu ok về phần bảng lương thì bắt đầu nó sẽ phải là cấu trúc lương hay thành phần lương thành phần lương rồi thêm đi anh xem đã từ đâu nào à cái này chưa phải chưa làm được rồi cái này chính là cái new check mà nó sẽ phải có một cái nơi là cấu hình ra được các cái công thức tính lương và chúng ta sẽ kéo vào một cái công thức tính lương đấy thì nó lại phụ thuộc ở mấy nguồn cơ chính là cái thứ nhất như anh nói lúc đầu tiên mà gọi là kể cả lương chống công tính cơ bản nhất thì nó phụ thuộc vào lương và phụ cấp thì lương phụ cấp đấy là tính theo cả trọn gói theo nghi thức tháng hay là theo ngày công thì nó đã là khác nhau rồi đó tiếp theo nữa là liên quan đến bảng công thì chỉ riêng hai cái đấy thôi là mình đã phải có đủ thông tin đầu vào để mình tính rồi tiếp theo nữa là cái số khấu trừ thuế và bảo hiểm đúng không thì cái đấy là một cái phải có thì cần phải có một cái cấu hình liên quan đến câu chuyện là khấu trừ thu nhập ví dụ như cá nhân là 11 triệu người phụ thuộc là 1,4 triệu thì tất cả những cái đấy là mình bắt đầu phải có cấu hình để mình có thể giảm trừ giá cảnh hoặc là giảm trừ bản thân nó sẽ phải có thì nó là đầu vào của phần chứng công tính lương gọi là theo ngày công cơ bản nhất là đã cần cái đống đấy rồi tiếp theo nữa là một số đơn vị đặc thù thì có KPI thì phải ghi nguyên KPI tạm thời chưa có thì mình tính sau kể cả phần chống công tính lương cơ bản thì mình đã phải tính các đoạn đấy rồi cái này là mình chưa có làm được này tiếp theo nữa như anh nói là cái phần mà công thức tính ấy công thức tính đấy thì nên là dưới dạng là ngày xưa anh có cái gọi là code tức là đép sẽ là cái người cấu hình các cái công thức đúng rồi và viết công thức vào đấy còn lại là cái đấy thì là bên anh chị thôi ừ đó thì cái đấy là bắt buộc phải là các ông mà hiểu về database biết các trường bên dưới là ông nghe người ta nói nhiều vụ của ông cấu hình hộ thì cái đấy là cái câu chuyện bắt buộc không thể nào mà lại gọi là muốn linh động là đoạn đấy người dùng mình là muốn người dùng người ta đó thì cái phần lương như vậy thôi tiếp theo nữa là gen ra được cái bảng lương sau khi xong thì có bảng lương của nhân sự đúng không bảng lương của nhân sự ấy thì có một cái cái rào cản đó là một nhân sự một tháng có hai bảng lương do có thay đổi lương ở giữa tháng hoặc là chuyển từ chính thức lên thử việc ở giữa tháng à thử việc lên chính thức ở giữa tháng thì là có hai bảng lương thì hai cái bảng lương đấy anh hay có một cái gọi là nghiệp vụ là mượt bảng lương ấy bởi vì nếu như mình gen ra hai bảng lương thì mình làm không khéo thì nó sẽ thứ nhất là tính từ thu nhập cá nhân bị sai bởi vì mình phải theo bậc tổng chứ không phải là theo từng bảng lương thứ hai là cái phần liên quan đến bảo hiểm là giảm trừ giá cảnh giảm trừ phụ thuộc nếu như mà mình tính không khéo thì nó được giảm trừ bản thân hai lần giảm trừ giá cảnh hai lần nếu đều bị sai thì cái đoạn đấy nó nó liên quan đến câu chuyện là mượt bảng lương thì mình phải có một cái nghiệp vụ tính toán cho cái việc đấy thì cái câu chuyện mượt bảng lương ấy thì công thức tính lương trong công thức tính lương thì nó có một cái là cộng dồn và có một cái là giảm trừ đó thì phải định nghĩa được cái nào là cộng dồn cộng dồn thì ta cứ cộng lại là xong dựa hai thứ lương là xong có những cái giảm trừ tức là chỉ được tính một trong hai cái còn lại là không được tính nữa và phải tính rôi lên để tính lại đó thì cái đấy là có hai phần liên quan đến cái đó ừ rồi tiếp theo nữa là tính toán xong thì mình có một cái gọi là payslip là cái phiếu lương thì cái phiếu lương đấy là cái gọi là preview ra bảng lương theo template mà mình gửi cho nhân sự để nhân sự confirm thì cái phiếu lương đấy thì thông thường là mình sẽ có bảo mật theo kiểu gửi theo kiểu mã như nào đấy để ai người ta sẽ xem được cái bảng lương của người ta thông thường như vậy nó liên quan đến phiếu lương phiếu lương xong thì bắt đầu sẽ có đến câu chuyện là thanh toán lương hay chưa thì đánh dấu lại nếu như chưa thanh toán như nào đấy thì nó còn gọi là cộng dồn hoặc là nó gọi là thanh toán lương hoặc là công nợ với nhân sự ở tháng sau cộng vào đó là có phần như vậy đó thì thì kể cả vẫn gọi riêng cái phần lương của chống công thì nó đã có từng này thứ rồi thì mình phải thiết lập các phần khác trước thì mình mới nhìn được cái cái việc là phần bảng lương của mình công thức tính như nào ok như vậy là cái thành phần lương này em phải chỉnh lại một tí bởi bản chất là đây là em đang à nói thành phần lương em em đang hơi bị chụp chung chung đúng không đang ừ cái thành phần lương xong nó còn có một cái nữa là bảng lương và cái bảng lương đấy xong rồi nó sẽ còn áp dụng cho đối tượng nhân sự nào bởi vì mỗi một đối tượng nhân sự nó sẽ gen bảng lương khác nhau ví dụ lương của bên hành chính nhân sự lương của phòng văn phòng nó sẽ khác lương của nhân viên chuyên kinh doanh tổng đài khác với lương của tài xế khác với lương của vận hành tải thì mỗi một cái đống đấy nó sẽ có những cái bảng lương khác nhau và mỗi một bảng lương thì nó sẽ liên quan đến cái gọi là thành phần lương khác nhau một thành phần lương thì có thể nằm ở nhiều bảng lương một bảng lương thì sẽ chọn sang nhiều thành phần lương xong rồi cái bảng lương đấy nó còn áp dụng cho đối tượng nào thì đối tượng của mình thì sẽ qua theo kiểu là thứ nhất là phòng ban thứ hai là chức vụ thế là mình sẽ chọn đối tượng áp dụng thứ ba là theo kiểu danh sách nhân sự theo kiểu select thủ công đặc thù những cái người mà riêng của bảng lương đấy và có một cái cấu trúc nữa có một cái nghiệp vụ nữa là nghiệp vụ gen bảng lương ừ đó gen bảng lương xong thì review review swap đó là gửi cái payslip sau khi đối soát ok thì gửi payslip ok rồi xong đến phần này thì coi như là HRM đã làm ngon lắm rồi xong rồi xong rồi rồi thì đó tổng quan liên quan đến module của HRM thì anh đang thấy là còn tồn đọng những cái như vậy thì anh kỳ vọng là mình sẽ làm dưới dạng tài liệu trước thậm chí là dưới dạng trình bày mắc cao hay là dưới dạng task luôn thì càng tốt ok ờ thì anh sẽ cần confirm cái đấy trước khi mà anh nghĩ là mình vai code tiếp theo bởi vì quá trình mình vai code thì sẽ có bug có lỗi có kiểm thử các thứ sẽ rất là lâu đúng không bởi vì mấy buổi demo rồi là chưa có buổi nào mà gọi là thuận lợi theo kiểu là phần mềm nó chạy ổn định cả thì anh nghĩ là nên dừng lại cái việc gọi là vai code và demo phần mềm mà mình nên confirm từ tài liệu trước để mình cùng hiểu chắc chắn về cái nghiệp vụ sau mình vai code thì nó sẽ đỡ bị mất token cũng như mất cái thời gian để làm bởi vì thứ mà mình đang cần nhất bây giờ là thời gian rồi thì bắt buộc phải hiểu được nghiệp vụ càng sớm càng tốt để mình bắt đầu triển khai ok rồi à thế thì xong rồi nãy em sẽ tổng hợp lại thành một cái WBS nhá ừ WBS và trong WBS thì cấu trúc thì sẽ phân rã thành các task theo từng các module đấy đấy từng task một thì có những cái nghiệp vụ gì đấy là em sẽ phân bổ cái đấy bao giờ gửi được cho anh nhỉ ờ tối nay muộn nhất tối nay ok ok tốt WBS này rồi module này task này task này rồi đến UK UK của mình task ok rồi đấy còn cái này xong thì anh em rõ ràng để để làm á ừ thì anh confirm được cái này xong thì mình làm buổi xong thì review anh anh cho em xin cái tổng hợp cuộc họp nhá cái cái file đấy cả cái file lần trước à thôi cái file lần hôm nay chắc đủ hơn đấy thì có gì anh anh.

@@ -1,0 +1,645 @@
+[
+  {
+    "fragmentId": "FRG-CHUNG-127A-01",
+    "docId": "POL-CHUNG-20250601-127A",
+    "scope": "CHUNG",
+    "effectiveFrom": "01/06/2025",
+    "fragmentType": "PHU_CAP",
+    "ruleTextVi": "Phụ lục 01 — Định mức thu nhập bổ sung (TNBS) theo chức danh Mức 1/2",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-CHUNG-127A-02",
+    "docId": "POL-CHUNG-20250601-127A",
+    "scope": "CHUNG",
+    "effectiveFrom": "01/06/2025",
+    "fragmentType": "THUONG",
+    "ruleTextVi": "Phụ lục 02 — Thưởng hiệu quả công việc (KPD/KPI)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-CHUNG-2A-01",
+    "docId": "POL-CHUNG-20260102-2A",
+    "scope": "CHUNG",
+    "effectiveFrom": "01/01/2026",
+    "fragmentType": "THANG_LUONG",
+    "ruleTextVi": "Ban hành hệ thống thang lương, bảng lương toàn Công ty; mức LTT vùng 5.310.000đ/tháng",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-CHUNG-2A-02",
+    "docId": "POL-CHUNG-20260102-2A",
+    "scope": "CHUNG",
+    "effectiveFrom": "01/01/2026",
+    "fragmentType": "THANG_LUONG",
+    "ruleTextVi": "Bảng lương Lãnh đạo (D1–D3): CEO 11.1M–21.4M theo bậc",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-CHUNG-2A-03",
+    "docId": "POL-CHUNG-20260102-2A",
+    "scope": "CHUNG",
+    "effectiveFrom": "01/01/2026",
+    "fragmentType": "THANG_LUONG",
+    "ruleTextVi": "Bảng lương quản lý M1–M2 và L1–L2 (Trưởng phòng → Trưởng BP)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-CHUNG-2A-04",
+    "docId": "POL-CHUNG-20260102-2A",
+    "scope": "CHUNG",
+    "effectiveFrom": "01/01/2026",
+    "fragmentType": "THANG_LUONG",
+    "ruleTextVi": "Bảng lương NV E1–E2: NV nghiệp vụ 5.7M–9.4M; thừa hành từ 5.31M",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-BASE-01",
+    "docId": "POL-DPHH-20220401-001",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/04/2022",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "Tổng lương ĐPHH = KPI + Doanh thu + Thưởng + PC + OT − giảm trừ",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-DT-HG-01",
+    "docId": "POL-DPHH-20220401-001",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/04/2022",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Lương DT hàng gửi: %HH bậc thang DT + Đơn giá DTHG × T",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-DT-HG-02",
+    "docId": "POL-DPHH-20241003-4034",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/10/2024",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Điều chỉnh % hoa hồng hàng gửi",
+    "overrides": [
+      "FRG-DPHH-DT-HG-01"
+    ],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-DT-HN-01",
+    "docId": "POL-DPHH-20220401-001",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/04/2022",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Lương DT hàng nhận: 1% × Đơn giá DTHN × T",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-DT-HN-02",
+    "docId": "POL-DPHH-20241003-4034",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/10/2024",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Điều chỉnh % hoa hồng hàng nhận",
+    "overrides": [
+      "FRG-DPHH-DT-HN-01"
+    ],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-KPI-01",
+    "docId": "POL-DPHH-20220401-001",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/04/2022",
+    "fragmentType": "KPI",
+    "ruleTextVi": "Lương KPI = KPI × Quỹ KPI khu vực / Ncc",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-SHIP-01",
+    "docId": "POL-DPHH-20240422-044",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "22/04/2024",
+    "fragmentType": "THUONG",
+    "ruleTextVi": "Thưởng DT giao hàng = Thưởng giao hàng + Thưởng nỗ lực − giảm trừ",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-SHIP-02",
+    "docId": "POL-DPHH-20240422-044",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "22/04/2024",
+    "fragmentType": "THUONG",
+    "ruleTextVi": "Thưởng nỗ lực team theo DT bưu cục (4M–16M)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-SHIP-03",
+    "docId": "POL-DPHH-20240710-DX",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/07/2024",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "VP tỉnh NB/ND/TB: ship giao-nhận 50% tổng cước, không tính DT/thưởng khác",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-SHIP-04",
+    "docId": "POL-DPHH-20250822-SHIP",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "22/08/2025",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Điều chỉnh cách tính lương ship điều phối",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-THANG-01",
+    "docId": "POL-DPHH-20220401-001",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/04/2022",
+    "fragmentType": "THANG_LUONG",
+    "ruleTextVi": "Thang bậc ĐPHH local (hệ số 1.00–2.35; mức 4.8M–11.28M triệu)",
+    "overrides": [
+      "FRG-CHUNG-2A-04"
+    ],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-THUONG-DT-01",
+    "docId": "POL-DPHH-20220401-001",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/04/2022",
+    "fragmentType": "THUONG",
+    "ruleTextVi": "Thưởng vượt mốc DTHG: vượt 15% mốc VP → thưởng 20% phần chênh (lặp mốc)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-TV-01",
+    "docId": "POL-DPHH-20220401-001",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/04/2022",
+    "fragmentType": "THU_VIEC",
+    "ruleTextVi": "Thử việc tính như CT, hưởng 85% tổng thu nhập (bản QC 2022)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-TV-02",
+    "docId": "POL-DPHH-20250218-TV",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "01/12/2024",
+    "fragmentType": "THU_VIEC",
+    "ruleTextVi": "TV ĐPHH: không lương cứng; hưởng 85% chính sách Lương Doanh thu",
+    "overrides": [
+      "FRG-DPHH-TV-01"
+    ],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-DPHH-VP-TDN-01",
+    "docId": "POL-DPHH-20250404-TDN",
+    "scope": "RIÊNG-ĐPHH",
+    "effectiveFrom": "04/04/2025",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "Điều chỉnh thời gian làm việc và mức lương VP Trần Đại Nghĩa",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-816",
+    "docId": "POL-LXT-20251213-816",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "13/12/2025",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "QĐ 816 — điều chỉnh CS lương LX tuyến VTHK",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-BASE-01",
+    "docId": "POL-LXT-20200901-ND",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/09/2020",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "Tổng lương LX tuyến = Lượt + CLDV + CPN + Khăn nước + HĐ − giảm trừ",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-CC-169",
+    "docId": "POL-LXT-20260326-169",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/04/2026",
+    "fragmentType": "CHUYEN_CAN",
+    "ruleTextVi": "Thưởng chuyên cần LX: ≥24 ngày công, không nghỉ T6–CN",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-CLDV-01",
+    "docId": "POL-LXT-20200901-ND",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/09/2020",
+    "fragmentType": "KPI",
+    "ruleTextVi": "Lương CLDV = Quỹ DT × hệ số C (9.0–10 điểm)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-CPN-01",
+    "docId": "POL-LXT-20200901-ND",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/09/2020",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Lương CPN = 10% DT CPN cá nhân",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-DCNB",
+    "docId": "POL-LXT-20251230-NB",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "30/12/2025",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "LX điều chuyển sang Ninh Bình — chính sách lương riêng",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-DT-01",
+    "docId": "POL-LXT-20200901-ND",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/09/2020",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Quỹ lương DT: ≤100M×4%; >100M×8% (cá nhân, trừ HĐ tour)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-GT-01",
+    "docId": "POL-LXT-20200901-ND",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/09/2020",
+    "fragmentType": "KHOAN",
+    "ruleTextVi": "Giảm trừ chung sửa chữa BD (GTC) chia tổ",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-HD-01",
+    "docId": "POL-LXT-20200901-ND",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/09/2020",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Lương HĐ khác tỉnh / ngoại giao / Nội Bài",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-HD-02",
+    "docId": "POL-LXT-20230828-HD",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "28/08/2023",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "QĐ điều chỉnh lương HĐ khác tỉnh & ngoại giao",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-LUOT-01",
+    "docId": "POL-LXT-20200901-ND",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/09/2020",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Lương lượt = Số lượt × Đơn giá (bậc 1–100:45k; >100:55k Nam Định mẫu)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-LUOT-NB",
+    "docId": "POL-LXT-20200901-NB",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/09/2020",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Quy chế Ninh Bình — đơn giá lượt (tương tự ND, khác biên)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-LUOT-PT",
+    "docId": "POL-LXT-20231001-PT",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/10/2023",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Quy chế lương tuyến Tỉnh Phú Thọ (ban hành 01.10.2023)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-LUOT-TB",
+    "docId": "POL-LXT-20200901-TB",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/10/2020",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Quy chế Thái Bình — đơn giá lượt",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-LUOT-VTP",
+    "docId": "POL-LXT-20250905-VTP",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/07/2025",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Đề xuất đơn giá lượt Việt Trì, Phú Thọ",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-NB-837",
+    "docId": "POL-LXT-20251223-837",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "23/12/2025",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "QĐ 837 — cách tính lương lượt tuyến Nội Bài",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-PC-753",
+    "docId": "POL-LXT-20251128-753",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "28/11/2025",
+    "fragmentType": "PHU_CAP",
+    "ruleTextVi": "QĐ 753 — chi phụ cấp hỗ trợ NV lái xe tuyến",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-QD439-ANCA",
+    "docId": "POL-LXT-20251029-439",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/09/2025",
+    "fragmentType": "PHU_CAP",
+    "ruleTextVi": "Tiền ăn ca Chủ nhật",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-QD439-LUOT",
+    "docId": "POL-LXT-20251029-439",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": "01/09/2025",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "QĐ 439 — điều chỉnh đơn giá lượt theo tuyến/tỉnh",
+    "overrides": [
+      "FRG-LXT-LUOT-ND",
+      "FRG-LXT-LUOT-NB",
+      "FRG-LXT-LUOT-TB",
+      "FRG-LXT-LUOT-PT"
+    ],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXT-YB-DX",
+    "docId": "POL-LXT-DX-YB",
+    "scope": "RIÊNG-LX-T",
+    "effectiveFrom": null,
+    "fragmentType": "KHAC",
+    "ruleTextVi": "Đề xuất chuyển đổi hình thức trả lương Tăng cường Yên Bái dài ngày",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXTR-BASE-01",
+    "docId": "POL-LXTR-20260401-206",
+    "scope": "RIÊNG-LX-TR",
+    "effectiveFrom": "01/04/2026",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "TTN LX tải = Lương cứng + Lương QLPT + Thưởng DT + PC đặc thù + KPI(CPN) − GT",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXTR-CUNG-01",
+    "docId": "POL-LXTR-20260401-206",
+    "scope": "RIÊNG-LX-TR",
+    "effectiveFrom": "01/04/2026",
+    "fragmentType": "HE_SO",
+    "ruleTextVi": "Lương cứng theo vị trí & tải trọng xe (PL1)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXTR-DT-01",
+    "docId": "POL-LXTR-20260401-206",
+    "scope": "RIÊNG-LX-TR",
+    "effectiveFrom": "01/04/2026",
+    "fragmentType": "THUONG",
+    "ruleTextVi": "Thưởng doanh thu theo DT thực & bậc (6.3)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXTR-KPI-01",
+    "docId": "POL-LXTR-20260401-206",
+    "scope": "RIÊNG-LX-TR",
+    "effectiveFrom": "01/04/2026",
+    "fragmentType": "KPI",
+    "ruleTextVi": "Lương KPI — chỉ lái tải trung chuyển CPN",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXTR-NL-01",
+    "docId": "POL-LXTR-20260401-NL",
+    "scope": "RIÊNG-LX-TR",
+    "effectiveFrom": "01/04/2026",
+    "fragmentType": "KHOAN",
+    "ruleTextVi": "Thông báo thay đổi mức khoán nhiên liệu theo dòng xe",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXTR-PC-01",
+    "docId": "POL-LXTR-20260401-206",
+    "scope": "RIÊNG-LX-TR",
+    "effectiveFrom": "01/04/2026",
+    "fragmentType": "PHU_CAP",
+    "ruleTextVi": "PC giao hàng phân phối & PC khác (XDTN, đi đường)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXTR-QLPT-01",
+    "docId": "POL-LXTR-20260401-206",
+    "scope": "RIÊNG-LX-TR",
+    "effectiveFrom": "01/04/2026",
+    "fragmentType": "PHU_CAP",
+    "ruleTextVi": "Lương trách nhiệm QLPT",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-LXTR-TV-01",
+    "docId": "POL-LXTR-20260401-206",
+    "scope": "RIÊNG-LX-TR",
+    "effectiveFrom": "01/04/2026",
+    "fragmentType": "THU_VIEC",
+    "ruleTextVi": "TV LX tải: 85% lương cứng + QLPT; các khoản khác như CT",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-TDHK-BASE-01",
+    "docId": "POL-TDHK-20240619-1500",
+    "scope": "RIÊNG-TĐHK",
+    "effectiveFrom": "01/07/2024",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "Tổng lương TĐ = Cuộc nghe + HĐ + TG + Top + Hạn chế nhỡ + Phép + PC",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-TDHK-CUOC-01",
+    "docId": "POL-TDHK-20240619-1500",
+    "scope": "RIÊNG-TĐHK",
+    "effectiveFrom": "01/07/2024",
+    "fragmentType": "KPI",
+    "ruleTextVi": "Lương cuộc nghe = Đơn giá/cuộc × Số cuộc",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-TDHK-HD-01",
+    "docId": "POL-TDHK-20240619-1500",
+    "scope": "RIÊNG-TĐHK",
+    "effectiveFrom": "01/07/2024",
+    "fragmentType": "DOANH_THU",
+    "ruleTextVi": "Lương HĐ = Số HĐ × Đơn giá HĐ",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-TDHK-MISS-01",
+    "docId": "POL-TDHK-20240619-1500",
+    "scope": "RIÊNG-TĐHK",
+    "effectiveFrom": "01/07/2024",
+    "fragmentType": "THUONG",
+    "ruleTextVi": "Thưởng hạn chế gọi nhỡ",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-TDHK-PC-01",
+    "docId": "POL-TDHK-20251128-752",
+    "scope": "RIÊNG-TĐHK",
+    "effectiveFrom": "28/11/2025",
+    "fragmentType": "PHU_CAP",
+    "ruleTextVi": "QĐ 752 — chi phụ cấp nhân viên tổng đài hành khách",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-TDHK-TG-01",
+    "docId": "POL-TDHK-20240619-1500",
+    "scope": "RIÊNG-TĐHK",
+    "effectiveFrom": "01/07/2024",
+    "fragmentType": "KPI",
+    "ruleTextVi": "Lương thời gian = Giờ TT × Đơn giá TG",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-TDHK-TOP-01",
+    "docId": "POL-TDHK-20240619-1500",
+    "scope": "RIÊNG-TĐHK",
+    "effectiveFrom": "01/07/2024",
+    "fragmentType": "THUONG",
+    "ruleTextVi": "Thưởng Top theo CLDV và số cuộc",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-TDHK-TV-01",
+    "docId": "POL-TDHK-20250918-TV",
+    "scope": "RIÊNG-TĐHK",
+    "effectiveFrom": "01/09/2025",
+    "fragmentType": "THU_VIEC",
+    "ruleTextVi": "Mức lương TV tổng đài: ca sáng 6M; ca chiều 6.8M (từ 5.5M)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-VPT-BASE-01",
+    "docId": "POL-VPT-20201001-ND",
+    "scope": "RIÊNG-VP-T",
+    "effectiveFrom": "01/10/2020",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "Quỹ lương CN = (A) NV + (B) tổng + (C) chi phí − (D) TV",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-VPT-CONG-01",
+    "docId": "POL-VPT-20201001-ND",
+    "scope": "RIÊNG-VP-T",
+    "effectiveFrom": "01/10/2020",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "Giờ công TT 220–290h/tháng; quy đổi hệ số → đơn giá → tổng lương",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-VPT-HS-01",
+    "docId": "POL-VPT-20201001-ND",
+    "scope": "RIÊNG-VP-T",
+    "effectiveFrom": "01/10/2020",
+    "fragmentType": "HE_SO",
+    "ruleTextVi": "Hệ số lương theo chức vụ CN (TCN=20 … KT=12)",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-VPT-NB-01",
+    "docId": "POL-VPT-20201001-NB",
+    "scope": "RIÊNG-VP-T",
+    "effectiveFrom": "01/10/2020",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "Quy chế VP Ninh Bình — cùng khung QT-XeVN, biên CN NB",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-VPT-TB-01",
+    "docId": "POL-VPT-20201001-TB",
+    "scope": "RIÊNG-VP-T",
+    "effectiveFrom": "01/10/2020",
+    "fragmentType": "KHAC",
+    "ruleTextVi": "Quy chế VP Thái Bình — cùng khung QT-XeVN",
+    "overrides": [],
+    "extends": []
+  },
+  {
+    "fragmentId": "FRG-VPT-TV-01",
+    "docId": "POL-VPT-20201001-ND",
+    "scope": "RIÊNG-VP-T",
+    "effectiveFrom": "01/10/2020",
+    "fragmentType": "THU_VIEC",
+    "ruleTextVi": "TV VP: lương cứng/ngày × ngày TT",
+    "overrides": [],
+    "extends": []
+  }
+]

@@ -1,0 +1,3 @@
+CLAUDE LANE PARKED (2026-08-10). Sponsor thu hồi — Cursor team execution.
+SoT: docs/program/dispatch/CURSOR-RECLAIM-CLAUDE-UC-WAVE-01.md
+Không chạy queue §3. Terminal có thể Ctrl+C.

@@ -1,0 +1,239 @@
+[121|CUSTOMER] 27:55   Bản thân trong cái tuyển dụng thì là cái GD nó chỉ là cái đầu vào thôi. Nó sẽ tracking được là ví dụ như vừa nói là tao cần tuyển 3 Dev Java thì tao có bao nhiêu CV rồi, tao phỏng vấn được bao nhiêu CV rồi, chốt offer được bao nhiêu CV rồi, dự kiến bao nhiêu ngày nó onboard. Thì nó sẽ cả một cái danh sách đấy bên dưới là tao sẽ rất quan tâm để tao biết được rằng là tao cần phải tuyển dụng hơn hay là tao cần phải làm gì nhanh để có có người cho vị trí đấy.  N1
+
+[122|SPONSOR] 28:16   Gọi là tracking cái cái cái chỉ tiêu này là đã hoàn thành được bao nhiêu phần trăm chẳng hạn đúng không?  N2
+
+[123|CUSTOMER] 28:21   Thế còn bây giờ cái GD nó chỉ là cái đầu vào để tôi đi tuyển dụng thôi thì nó bắt buộc phải có.  N1
+
+[124|SPONSOR] 28:26   Thì nó sẽ tách thành một phân hệ khác gọi là phân hệ hỗ trợ cho người tuyển dụng. Còn là cái một cái nó phân hệ là quản lý chỉ tiêu của công ty trong cái thời điểm năm nay hoặc là thời gian tới hay như nào đấy. Đúng không? Các chỉ tiêu đấy hoàn thiện được đến đâu thì nó là tách ra hai cái. Còn một cái kia là hỗ trợ dành cho người tuyển dụng. Thì sẽ việc quản lý ứng viên hay là hồ sơ cái nào thì đấy là một cái. Việc đứng từ góc nhìn từ trên xuống là sẽ là muốn là tracking từng chỉ tiêu mộ
+
+[125|CUSTOMER] 28:56   Đó thì cái đấy là cái quan trọng. Thì tôi không quan tâm đến GD, tôi cũng không quan tâm đến ứng viên mà tôi quan tâm là bao giờ tôi có người.  N1
+
+[126|SPONSOR] 29:05   Bao giờ tôi có người.  N2
+
+[127|CUSTOMER] 29:06   Riêng phòng tuyển dụng là bao giờ có người và bao giờ có đủ người. Thì cái đấy là cái câu hỏi quan trọng nhất. Kể cả từ cấp nào nhìn xuống cũng thế thôi. Tôi là người đi yêu cầu tuyển dụng thì là lúc nào bao giờ có người. Tôi là nhân viên tuyển dụng thì bao giờ tôi hoàn thành được cái cái cái cái cái tuyển dụng đấy. Xong rồi nếu như là giám đốc hoặc là trưởng phòng tuyển dụng thì cũng là bọn nó đã đủ chỉ tiêu vào tháng này hay chưa. Ví dụ cần tuyển 60 người mà bây giờ giữa tháng rồi mới 
+
+[128|SPONSOR] 29:40   Nhưng mà cái chỉ tiêu lắm lúc nó cũng còn có cái là ứng viên onboard vào chẳng hạn như là từ 49 lên 50 đúng không? Xong rồi sau hai tuần thử nghiệm nó nghỉ.  N2
+
+[129|CUSTOMER] 29:49   Thì thì lúc đấy nó lại đi qua những cái câu chuyện là bản thân nó cũng phải ghi nhận nhé. Còn cái câu chuyện là tính KPI là cứ tuyển được onboard rồi là được tính KPI hay qua 2 tháng thử việc thì đấy là thuộc về KPI của vị trí đấy và mình do do xây dựng.  N1
+
+[130|SPONSOR] 30:03   Do cái chính sách đúng không?  N2
+
+[131|CUSTOMER] 30:04   Do chính sách. Nhưng còn cái câu chuyện là trạng thái thì tôi vẫn phải cập nhật. Ví dụ như là không qua hoặc là tôi cứ đến câu chuyện onboard rồi thì là tôi kết thúc tuyển dụng. Còn lại câu chuyện sau đấy là liên quan đến đào tạo và giữ người thì là câu chuyện của phần sau, không liên quan đến tuyển dụng nữa cả. Thì cái đấy là do quy trình mình làm.  N1
+
+[132|SPONSOR] 30:19   Thì.  N2
+
+[133|CUSTOMER] 30:20   Trong quá trình tuyển dụng cơ là tôi cứ trước khi đến câu chuyện onboard ấy là tôi phải trích lọc được cái trạng thái. Kiểu như vậy. Chứ không là mọi người cứ yêu cầu tuyển dụng xong bản thân đang yêu cầu cũng bận việc xong nó quên ấy. Bởi vì nó cũng cần người thật nhưng nó quá bận. Nó quên con mẹ nó là phải đi boost người. Còn thằng tuyển dụng thì cũng đeo thêm vài phút thì tao cũng quên con mẹ nó.  N1
+
+[134|SPONSOR] 30:39   Quên con mẹ nó.  N2
+
+[135|CUSTOMER] 30:40   Ừ. Thì đó là câu chuyện mà mọi người phải cập nhật.  N1
+
+[136|SPONSOR] 30:43   Anh anh so note cho em xem em còn thiếu chừng nào không tắt.  N2
+
+[137|CUSTOMER] 30:46   Đây là cái yêu cầu tuyển dụng đúng không?  N1
+
+[138|SPONSOR] 30:48   Vâng. Cái này là cái.  N2
+
+[139|CUSTOMER] 30:53   Tiêu đề phòng ban này, vị trí này, định biên hiện tại, số lượng cần tuyển thêm này, lại đề xuất, mức độ ưu tiên, ngày bắt đầu. Đang ngày onboard đấy đúng không? Người đề xuất ok, mức độ này ok, lý do đề xuất là định biên rồi. Cá bên dưới giúp anh mô tả công việc như cái này để sẽ lấy cái review sang đúng không? Rồi cái này thì nó chính là cái đề xuất tuyển dụng của mình. Đó. Cái này là đề xuất tuyển dụng hoặc là cái yêu cầu tuyển dụng cụ thể. Gọi một trong hai tên là đề xuất tuyển dụng h
+
+[140|SPONSOR] 32:31   Nền tảng nào đẩy hay chưa đẩy.  N2
+
+[141|CUSTOMER] 32:33   Nền tảng nào đẩy hay chưa đẩy đúng không? Và một cái chiến dịch này nó có thể là chạy cho một vài cái đề xuất tuyển dụng, một vài cái yêu cầu tuyển dụng chứ không phải chạy một hộp.  N1
+
+[142|SPONSOR] 32:45   Chiến dịch tuyển dụng đầu tiên là tham chiếu theo nhiều à?  N2
+
+[143|CUSTOMER] 32:57   Ừ, một nhiều.  N1
+
+[144|SPONSOR] 32:58   Nhiều đề xuất tuyển dụng à nhiều yêu cầu tuyển dụng.  N2
+
+[145|CUSTOMER] 33:02   Đề xuất yêu cầu như nhau. Thì cái này nó gần như là nó song song với câu chuyện là tuyển dụng của truyền thông, chuyên dụng của branding thương hiệu nên nó không chỉ có thể là cả hai.  N1
+
+[146|SPONSOR] 33:15   Chạy trên nền tảng nào.  N2
+
+[147|CUSTOMER] 33:16   Trong một cái chiến dịch này có thể danh sách yêu cầu hoặc là danh sách các vị trí chúng tôi cần tuyển theo kiểu như thế.  N1
+
+[148|SPONSOR] 33:41   Số lượng cần tuyển các thứ à đúng rồi. Số lượng cần tuyển các thứ là nó sẽ tự theo các cái yêu cầu tuyển dụng kia xong nó tự gom lại đúng không?  N2
+
+[149|CUSTOMER] 33:49   Đúng rồi.  N1
+
+[150|SPONSOR] 33:49   Từng phân bên theo từng cái yêu cầu tuyển dụng kia nó tự lọc ra, tự tổng hợp ra chứ nó không phải là từng cái phát như thế này. Thì này có nghĩa là đang tham chiếu, tham chiếu 11.  N2
+
+[151|CUSTOMER] 34:01   Tham chiếu 11 nhưng mà đang chưa liên quan. Cái của mình là mình sẽ tham chiếu một nhiều. Bởi vì đôi khi là cùng vị trí marketing nhưng mà ở nhiều phòng ban khác nhau à nhiều nhóm bán hàng khác nhau cùng tuyển vị trí marketing trong cùng công ty ấy. Những tập đoàn to chẳng hạn thì bán hàng sản phẩm A, sản phẩm B, sản phẩm C đều cần tuyển nhân viên marketing để mạnh thị trường thì họ cũng có nhu cầu tuyển dụng để nhân viên marketing. Thế nên trong lúc mà có một ứng viên ý là mình phải thô
+
+[152|SPONSOR] 34:38   Trong cùng công ty á?  N2
+
+[153|CUSTOMER] 34:39   Đúng rồi. Em làm các tập đoàn to trước đấy là bình thường mà em. Ví dụ như bây giờ nhá, em có một nhóm em bên mình đi, có hai ba dự án khác nhau cần tuyển Dev Java đúng không? Cùng yêu cầu là hai bên.  N1
+
+[154|SPONSOR] 34:52   Nhưng mà hai ông có offer lương khác nhau về.  N2
+
+[155|CUSTOMER] 34:53   Hai bên dự án nào có chính sách lương hơn thì có thể nó sẽ cùng join vào công ty này nhưng mà nó sẽ sang dự án đấy làm. Hoặc là nó thích ông leader đấy thôi nhưng nó sang bên đấy làm bởi vì trong quá trình tuyển dụng tôi ấn tượng hơn ông leader đấy. Tôi thích làm việc với ông leader đấy. Chuyện đấy là bình thường mà.  N1
+
+[156|SPONSOR] 35:47   Ok. Nói vậy thì cái phần chiến dịch này thì em sẽ nên tách ra. Em sẽ tách ra.  N2
+
+[157|CUSTOMER] 35:55   Cái này là tạm thời thì nên làm chiến dịch. Chiến dịch em làm khi mà em có đối tác bên thứ ba nó sẵn sàng mở cổng API cho em viết cái này sang. Không thì làm giai đoạn này nó chỉ là thông tin thì nó chẳng khác gì cái đề xuất cả. Em không thể đồng bộ đẩy được cái chiến dịch đấy lên Facebook, không thể đồng bộ lên một chỗ nào khác đẩy bài. Thì chiến dịch tạo ra bây giờ nó là không có giá trị gì hết. Nên làm chiến dịch khi mà chỉ khi là em đã có sẵn những cái đối tác mà họ sẵn sàng làm việc
+
+[158|SPONSOR] 37:24   Chưa chưa tới đây. Ok thì em lại tắt rồi.  N2
+
+[159|CUSTOMER] 37:29   Làm đúng cho anh có ba phần thôi. Thứ nhất là liên quan đến cái phần job detail là cái phần mô tả công việc của mình. Nó là cái master ta đọc vào của yêu cầu tuyển dụng. Cái thứ hai là yêu cầu tuyển dụng. Cái thứ ba là thông tin về ứng viên. Và cái thứ tư là báo cáo. Trong đấy phải liên kết bằng được cái việc ứng viên và trạng thái của ứng viên với yêu cầu tuyển dụng nó đang như nào. Thì đấy là quan trọng nhất. Mình phải tracking được cái trạng thái của yêu cầu đấy và trả lời cho câu hỏi
+
+[160|SPONSOR] 38:03   Liên kết được thông tin ứng viên với lại yêu cầu tuyển dụng. Rồi. Tức là phần tuyển dụng là chỉ nên nằm đây thôi. Thế còn cái phần lên lịch phỏng vấn này em?  N2
+
+[161|CUSTOMER] 38:52   Nó là một phần trong cái ấy thôi. Nó là một cái phần thêm ở trong tuyển dụng thôi. Phỏng vấn đánh giá cái đấy thì là một phần gộp chung lại trong phỏng vấn đánh giá.  N1
+
+[162|SPONSOR] 39:04   Đúng rồi. Đây cái phần tắt cái này trước em thêm cái đây tức là theo tháng này. Đây này. Tức là thêm vị trí này. Và cái này chưa tham dự theo vị trí. Tức là ví dụ như kiểu là năm 2026 đúng không? Tháng 1, tháng 12 đây thì em sẽ thêm các cái phòng ban ở đây. Từng phòng ban ở đây em em chưa sợ theo. Tức là tức là dự kiến đúng không? Dự kiến và sau đó là đề xuất thì sẽ có phần ở đây. Đấy theo 12 tháng đấy. Ví dụ như kiểu là số lượng nhân sự cần bao nhiêu người. Đề xuất trong tháng này là ba
+
+[163|CUSTOMER] 40:00   Không cần đâu. Bản thân cái việc đấy là số lượng tổng và nó bổ phân bổ vào các tháng ở phía sau thôi. Nó nó không cần chứa đâu. Để mình nhìn ngay được nhân viên kinh doanh tổng là bao nhiêu rồi. Về sau của mình từng tháng một là bao nhiêu. Trừ đi thì mọi người về sau cái con số đấy nó luôn là bằng 0 rồi thì là mấy thì nó.  N1
+
+[164|SPONSOR] 40:18   Mốt một tháng. À ok thế thôi em không trừ.  N2
+
+[165|CUSTOMER] 40:20   Mốt một tháng em lại đang có hai ô rồi. Kế hoạch và gì?  N1
+
+[166|SPONSOR] 40:23   Đấy kế hoạch và đề xuất.  N2
+
+[167|CUSTOMER] 40:26   Không em kế hoạch và đề xuất là sao?  N1
+
+[168|SPONSOR] 40:28   Tức là đây tức là bản chất là đây là cần bao nhiêu nhân sự và đề xuất là tuyển bao nhiêu người.  N2
+
+[169|CUSTOMER] 40:33   Cần bao nhiêu? Đề xuất tuyển bao nhiêu? Không. Hai cái đấy gần như là một mà. Nếu như mà trường thông tin phía trước là định biên đang có và cần tuyển thêm thì ok. Nhưng mà bây giờ là kế hoạch thực ra kế hoạch có đề xuất thì tôi kế hoạch bao nhiêu tôi phải đề xuất bấy nhiêu đấy.  N1
+
+[170|SPONSOR] 40:46   Cần bao nhiêu tuyển bấy nhiêu chứ.  N2
+
+[171|CUSTOMER] 40:48   Đúng rồi. Cả nhà cần năm tuyển có ba à? Thế thì cần làm gì đâu phải là cần.  N1
+
+[172|SPONSOR] 40:54   À ok. Thế thì để em chỉnh lại cái cái trường dữ liệu này thì em vẫn sẽ giữ nguyên hai cột này là trong tháng này có bao nhiêu nhân sự và cần tuyển thêm.  N2
+
+[173|CUSTOMER] 41:02   Thực ra có bao nhiêu nhân sự là mình không tính được bởi vì bây giờ là mình đang xét tuyển từ đầu năm. Bao nhiêu nhân sự mẹ biết được là tuyển bao nhiêu, có tuyển được hay không, nó có nghỉ được hay không. Nên là mình chỉ có kế hoạch là tháng đấy tôi cần tuyển bao nhiêu thôi. Còn lại cái câu chuyện nó phát sinh đối với việc kiểu cần tuyển thêm hoặc nó nghỉ cần tuyển bổ sung đấy là câu chuyện nó phát sinh. Mình không thể nào tính được cái số lượng nhân sự chính xác của tháng đấy đâu. Nó c
+
+[174|SPONSOR] 41:45   Có. Tức là em đang để thêm phòng ban đấy.  N2
+
+[175|CUSTOMER] 41:48   Bởi vì thêm phòng ban thì ai là cái người nhập cái này?  N1
+
+[176|SPONSOR] 41:50   Ờ cái này thì em đang để cho cái ông hành chính nhân sự ông sẽ nhập.  N2
+
+[177|CUSTOMER] 41:57   Không đúng. Cái này phải là từng phòng ban đẩy lên. Đúng rồi. Chứ hành chính nhân sự mà đẩy lên thì ông hành chính nhân sự chết. Làm sao ông biết kế hoạch tổng phòng ban như nào? Ông lại phải có một kênh bên ngoài đi hỏi là mày cần kế hoạch như nào xong ông đi đây ông nhập à. Cái này sẽ là từng phòng ban sẽ trình lên và được phê duyệt hay không phê duyệt. Sau khi phê duyệt xong thì tổng hợp cái này lại thành một cái báo cáo tuyển dụng hoặc là cái đề xuất tuyển dụng sinh ra sẵn trong phòn
+
+[178|SPONSOR] 44:24   Riêng cái này là riêng một con.  N2
+
+[179|CUSTOMER] 44:26   Ừ nó phải một con mà. Thường các công ty nó sẽ đều có một con như này hết. Chính là HRM ông Giang Quang Nam á. Chẳng qua là đợt đấy thì anh ấy cũng chưa trao đổi chi tiết mức độ này thôi.  N1
+
+[180|SPONSOR] 44:40   Thậm chí con này nó cũng độc lập, nó không cần chạy chung với bất kỳ cái gì.  N2
+
+[181|CUSTOMER] 44:43   Đúng rồi. Thì nó là đầu vào mà. Nó nó là đầu vào của funnel input ấy. Thì bất kỳ một doanh nghiệp nào cũng có thể chạy cái con này. Còn sau đấy kết quả đầu ra của con này sẽ cắm vào ERP quản lý nhân sự của bên các bên thoải mái mà. Thì chỉ cần là con này có API để code ra các công ty để.  N1
+
+[182|SPONSOR] 45:04   Dữ liệu dùng. Cái dữ liệu dùng chung là cái phòng ban thì thực ra nó ít.  N2
+
+[183|CUSTOMER] 45:08   Đúng rồi. Cũng không có đấy. Thứ hai nữa là liệu con này sẽ có thông tin là liệu thông tin nhân sự được tuyển xong thì bắt đầu sẽ đẩy sang một con nào đấy là về thông tin của ứng viên để đỡ phải nhập lại trong form nhân sự thôi. Còn không thì là cũng xong mà. Kể cả thậm chí kết thúc một con này vẫn là xong mà. Đấy cũng là nhân sự mới nhập mới. Đấy là câu chuyện quản lý nhân sự tuyển dụng vẫn có một con riêng mà. Có các con này như này bây giờ thì như kiểu tốt suy nghĩ các thứ nó cầm phân
+
+[184|SPONSOR] 46:16   Kế hoạch em sẽ tỉa lại một chút. Offer với onboarding.  N2
+
+[185|CUSTOMER] 46:25   Đúng rồi. Trước mình phỏng vấn xong thì sau đó sẽ có đánh giá phỏng vấn. Cái đánh giá đấy thông thường là sẽ có mẫu. Thì mọi người nên là có mẫu để điền luôn. Tức là khi tôi phỏng vấn xong tôi mở cái đấy ra tôi đánh giá ứng viên luôn thì nó sẽ có những thông tin theo từng công ty. Tốt nhất chỗ này nếu như làm được thì là nên làm động theo kiểu là tiêu chí đánh giá, điểm đánh giá, kết quả pass or fail kiểu như vậy. Mức đề xuất tuyển dụng và không tuyển dụng và đề xuất mức lương như thế nà
+
+[186|SPONSOR] 47:05   Là cái gì?  N2
+
+[187|CUSTOMER] 47:05   Mail gửi email. Gửi email khi qua từng cái một. Ví dụ như là scan CV mà fail thì cũng gửi về email là đã xem CV chẳng qua là mày chưa phù hợp, mày rất là tốt nhưng mà tao rất tiếc. Kiểu đấy là lưu lại thông tin lần sau mời xong rồi xếp lịch phỏng vấn ở trên này thì cũng sẽ tự động gửi mail cho ứng viên là ngày này giờ này mà đến đây phỏng vấn và mail cho cả CC cho cả những cái ông tham gia phỏng vấn. Sau khi có kết quả đánh giá luôn mà được phê duyệt thì cũng gửi email luôn cho ứng viên.
+
+[188|SPONSOR] 48:25   Nhiều nhỉ.  N2
+
+[189|CUSTOMER] 48:27   Nhiều quá. Cục này mà làm chi tiết các thứ cẩn thận ra cũng không ít đâu. Cả một con to.  N1
+
+[190|SPONSOR] 48:52   Ok. Để em sẽ bổ sung thêm. Em sẽ báo cáo này. Thế thì cái báo cáo này em sẽ.  N2
+
+[191|CUSTOMER] 49:12   Báo cáo thì.  N1
+
+[192|SPONSOR] 49:13   Báo cáo này là.  N2
+
+[193|CUSTOMER] 49:15   Sau khi mà có thông tin xong ấy thì sẽ có mẫu báo cáo sau. Báo cáo thì nó sẽ hơi đầu. File in to á.  N1
+
+[194|SPONSOR] 49:21   Không file tổng hợp nốt của họ ấy. Cho em xin thêm cái đấy. Ok. Tiếp theo.  N2
+
+[195|CUSTOMER] 49:33   Rồi sau nhân sự, sau phần tuyển dụng.  N1
+
+[196|SPONSOR] 49:35   Rồi đến phần nhân sự này. Nhân sự. Nhân sự thì ở đây là đang bao gồm các cái thông tin cơ bản về hành chính rồi.  N2
+
+[197|CUSTOMER] 49:44   Nhân sự nhá thì là mình sẽ có một cái gọi là hồ sơ nhân sự đúng không? Hồ sơ nhân sự thì nó sẽ bao gồm là cách chứa thông tin nhân sự. Thì bên mình đang phân thông tin nhân sự qua những cái nhóm thông tin nào?  N1
+
+[198|SPONSOR] 49:56   À hiện tại là đang phân theo nhóm đầu tiên là thông tin cơ bản này. À thông tin cá nhân này. Rồi công việc này. Thông tin công việc này. Rồi thông tin liên quan đến tài chính. Đấy thì cả bốn cái này nó đều được cấu hình ở input.  N2
+
+[199|CUSTOMER] 50:13   Rồi cho anh từng cái một đi. Thông tin cơ bản này, mã này, họ tên này, độ tuổi, chức vụ. Cái kia là cái gì nhỉ?  N1
+
+[200|SPONSOR] 50:23   Chức vụ là phụ cấp, phụ cấp, phụ cấp với cả công ty nào.  N2
+
+[201|CUSTOMER] 50:28   Không, phụ cấp thì lại không nằm ở đây. Phụ cấp thì nó nằm chỗ khác. Đúng không? Thông tin cơ bản mà. Thông tin cơ bản thì nó sẽ cần gì? Thứ nhất là họ tên đúng không? Mã, chức vụ, bộ phận phòng ban và cái thông tin liên quan đến đến nhân. Thông thường thì nó sẽ là thông tin công việc luôn ý. Nó sẽ có bao gồm email và số điện thoại làm việc của đồng chí này và vị trí làm việc đó. Rồi thì đấy là liên quan đến thông tin công việc. Tức là làm sao để một người cái thông tin này sẽ là cái thô
+
+[202|SPONSOR] 51:11   Email các thứ nữa đúng không?  N2
+
+[203|CUSTOMER] 51:12   Email, số điện thoại, các kiểu đó. Rồi tiếp theo nữa sang phần thông tin cá nhân. Thông tin cá nhân thì nó sẽ vừa tính những chất liệu bên kia. Có ngày sinh, căn cước, công dân, nơi cấp, địa chỉ thường trú, địa chỉ tạm trú. Ok. Liên hệ khẩn cấp, số điện thoại khẩn cấp. Năm sinh, ngày sinh ở trên phần năm sinh đây. Giới tính, giao diện, đáp ứng kết, căn cước công dân, nơi cấp, đáp ứng kết. Rồi cái đống này xong rồi thì mình còn đang thiếu thông tin liên quan đến người phụ thuộc. Thông tin
+
+[204|SPONSOR] 52:06   Có mấy con đúng không?  N2
+
+[205|CUSTOMER] 52:07   Nhân sự có bao nhiêu con và sinh năm bao nhiêu còn nằm trong mức tuổi nhận quà mùng 1 tháng 6 hay không thì mùng 1 tháng 6 nào em cũng sẽ phải đi thống kê và đi hỏi. Đúng không? Đó. Thì cái đấy là cái thông tin cần. Rồi tiếp theo thông tin công việc như thế này nó là loại hình công văn phòng thì là ok cho sang bên kia thôi. Email, số điện thoại các thứ hoàn toàn chưa có này. Thông tin rất là quan trọng mà nó không được. Tiếp tài chính cái chỗ này thì nên để sang nó là phần thông tin về l
+
+[206|SPONSOR] 55:19   Đây ngày hoàn làm ngày kết thúc này.  N2
+
+[207|CUSTOMER] 55:20   Cái này ý thì là dành cho ai xem. Đây là khi kích vào gọi là xem profile của nhân sự.  N1
+
+[208|SPONSOR] 55:25   Profile của nhân sự.  N2
+
+[209|CUSTOMER] 55:26   Đó thì ai là người xem và xem những thông tin nào đó.  N1
+
+[210|SPONSOR] 55:31   Chắc chắn là cái này đang chưa phân quyền nhưng mà.  N2
+
+[211|CUSTOMER] 55:33   Xong rồi còn bảo hiểm này. Bên kia có kỹ năng, có trình công tác. Nói chung anh thấy là cũng khá là đầy đủ đối tả kiểu một CV. Đó cũng nên trình bày đại như vậy. Nhưng mà thông tin này bây giờ đầu vào ở đâu, skill bên kia lấy ở đâu, quá trình công tác lấy ở đâu, gập tay ở đây thì thì không quản lý được đúng không?  N1
+
+[212|SPONSOR] 55:52   Đúng.  N2
+
+[213|CUSTOMER] 55:52   Mà nên có một module liên quan đến phần gọi là lịch trình thuyên chuyển công tác thì gọi là xem ở đấy thì là toàn bộ lịch trình thuyên chuyển công tác của cả công ty thì nó sẽ rõ ràng. Rồi skill cũng thế đúng không? Quản lý thì nó nên nằm ở module liên quan đến đánh giá, review. Bởi vì sau khi quản lý skill xong, đánh giá điểm skill xong thì tôi phải có những hoạt động review tăng lương hoặc làm gì đấy nên nằm ở module như vậy.  N1
+
+[214|SPONSOR] 56:22   Tức là cái này ví dụ như ở quá trình công tác này thì nên đổi đổi sang chỗ khác.  N2
+
+[215|CUSTOMER] 56:26   Không, nó tổng hợp hết vào đây là đúng nhưng mà sẽ có module để quản lý riêng và xem riêng. Đây nó giống như kiểu cái phần dashboard. Profile nhân sự, dashboard nhân sự là nơi tổng hợp tất cả thông tin về nhân sự đấy. Ok, đồng ý. Hoàn toàn như này là ok. Nhưng mà để gọi là đầu vào từng cái dữ liệu một thì nên có module để quản lý riêng.  N1
+
+[216|SPONSOR] 56:49   Anh sạc iPhone không anh? Anh sạc gì?  N2
+
+[217|CUSTOMER] 56:53   iPhone. Cái này là Lightning.  N1
+
+[218|SPONSOR] 56:55   Lightning.  N2
+
+[219|CUSTOMER] 56:56   iPhone không sạc ở đây.  N1
+
+[220|SPONSOR] 57:00   Nó chạy cả 3G xong nó hết pin.  N2
+
+[221|CUSTOMER] 57:02   Ơ anh bắt wifi ở trong team ý.  N1
+
+[222|SPONSOR] 57:09   Thế tôi cần sạc tôi 3G cũng được.  N2
+
+[223|CUSTOMER] 57:12   Thôi bắt wifi ở đây này. Chạy ngoài CD. Low battery.  N1
+
+[224|CUSTOMER] 57:30   Bài báo low battery. Do you want to disconnect? Chế độ bảo vệ cao, hết pin hết, dung lượng hết, 3G, tất cả mọi thứ bị disconnect.  N1
+
+[225|SPONSOR] 57:46   Còn nhiều không?  N2
+
+[226|CUSTOMER] 57:50   Nhưng mà anh nghĩ là vẫn chỉ nói gọn trong sáng nay xong module hành chính nhân sự thôi. Không bắt ông ấy gửi tài liệu trước. Còn khả năng cao là anh em vẫn phải có kế hoạch backup cho con này. Thì anh nhìn con này một thằng làm xong như thế này cái cái này.  N1
+
+[227|SPONSOR] 58:05   Chưa cần thiết.  N2
+
+[228|CUSTOMER] 58:06   Chưa cần thiết đúng không? Ok. Hành chính nhân sự nên để nó là hành chính nhân sự. Còn nếu như muốn quản lý công việc thì nó phải có phần module liên quan đến công việc. Lúc đấy nó sẽ phân theo dự án, theo phòng ban hoặc là các thứ khác nhau. Nó sẽ liên quan đến trích lấp tiến độ công việc. Nhét công việc vào đây thì không đúng.  N1
+
+[229|SPONSOR] 58:27   Con này thì con này tức là con này là có thể sau này là tích hợp các cái phần liên quan đến giao việc các thứ ấy.  N2
+
+[230|CUSTOMER] 58:34   Đồng ý. Nhưng mà nó sẽ không nằm ở phần nhân sự. Công việc nó sẽ có module quản lý công việc riêng. Bởi vì nhân sự này sẽ là hành chính nhân sự dùng được chủ yếu. Công việc thì lại liên quan đến trưởng bộ phận hoặc phòng theo kiểu là dự án hoặc là nhìn chéo nhau thì nó bắt buộc phải tổ chức thành cái kiểu module quản lý công việc dự án.  N1
+
+[231|SPONSOR] 58:50   Module quản lý công việc riêng.  N2
+
+[232|CUSTOMER] 58:51   Đó. Nhét vào đây thì thực ra hành chính nhân sự không xem. Và sau này em lại tự nhiên lại phân quyền theo kiểu là dự án PM kiểu vào xem thông tin nhân sự để xem công việc thì lại không đúng. Cách mình tổ chức bản thân về phần tính năng thì ok nhưng cái cách mình tổ chức thì nó chưa hợp lý lắm.  N1
+
+[233|SPONSOR] 59:15   Cái phần hợp đồng nữa. Hợp đồng này. Hợp đồng nhân sự.  N2
+
+[234|CUSTOMER] 59:24   Mã, ngày ký, trạng thái, hiệu lực ngày, hết hạn, mức lương, vị trí, công việc, phòng ban, địa điểm làm việc này. Thời gian thường được là kết thúc thường ngày của người đăng nhập công ty. Trước khi người ký file hợp đồng. Là cái lương phúc cấp này nó còn hai kiểu tính.  N1
+
+[235|SPONSOR] 01:00:09   Giá trị. Ok. À cái phần là sơ yếu lý lịch này thì có cần không nhỉ?  N2
+
+[236|CUSTOMER] 01:00:29   Sơ yếu lý lịch.  N1
+
+[237|SPONSOR] 01:00:30   Bản chất nó cũng như kiểu thông tin chung.  N2
+
+[238|CUSTOMER] 01:00:33   Nói thông tin cá nhân thôi thì cái này ok nhưng cái thông tin này ai nhập và nhập tên kiểu gì. Cái này thông thường ý nó sẽ là không nhập hoặc nó sẽ lưu trữ file. Thì cái này anh đang chưa thấy là với một bạn thì sẽ cần nộp cái hồ sơ nhân sự giấy tờ gì và đã còn nợ giấy tờ gì. Nó là một trong những vấn nạn của bên hành chính nhân sự. Có những.  N1
+
+[239|SPONSOR] 01:00:58   Các cái chế độ bảo hiểm cơ bản của công ty thôi.  N2
+
+[240|CUSTOMER] 01:01:00   Thế thì đang thiếu ở xã hội với cả.  N1

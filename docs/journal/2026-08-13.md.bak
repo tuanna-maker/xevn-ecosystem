@@ -1,0 +1,45 @@
+# Nhật ký 2026-08-13 — CHECKPOINT khẩn (sponsor báo sắp hết limit)
+
+## Trạng thái: 6/6 agent đọc dữ liệu khách hàng ĐÃ XONG. Đang chờ sponsor review trước khi làm file Excel tổng hợp chính thức.
+
+Sponsor vừa nói: "file excel đã được update đợi tôi review đã" — PM CHƯA tạo file Excel tổng hợp nào (chỉ có 6 báo cáo markdown từ 6 subagent, đầy đủ trong lịch sử chat phiên này). Cần hỏi lại sponsor rõ ý trước khi làm gì tiếp — KHÔNG tự đoán, KHÔNG tự tạo/insert gì thêm cho tới khi rõ.
+
+## Việc đang làm dở (task gốc, chưa đổi)
+Sponsor yêu cầu: đọc toàn bộ `docs/từ khách hàng/Gửi P.CNTT/` (~60 file PDF chính sách lương + Excel dữ liệu lương thật, 6 mảng nghiệp vụ: Điều phối hàng hóa / Tổng đài hành khách / Bảng lương thời gian / Lái xe tuyến / Lái xe tải / Văn phòng tỉnh), đối chiếu danh mục Cài đặt HRM, tự lấy dữ liệu liên quan, **làm 1 bản Excel tổng hợp gửi sponsor duyệt TRƯỚC**, sau đó mới "chạy autotest insert" vào hệ thống. **TUYỆT ĐỐI CẤM tự ý insert bất kỳ dữ liệu nào vào DB/hệ thống khi chưa có xác nhận rõ ràng bằng lời của sponsor sau khi xem file Excel.**
+
+## 6/6 agent đã hoàn thành — kết quả đầy đủ nằm trong lịch sử chat (task-notification), KHÔNG cần chạy lại
+| Agent | Phạm vi | agentId | Điểm nổi bật |
+|---|---|---|---|
+| extract-dphh | `1. Điều phối hàng hóa/` (7 PDF + 2 Excel) | afc8f059529aea67d | Quy chế lương ĐPHH 2022 + 6 QĐ điều chỉnh (hoa hồng DTHG/DTHN, lương ship 25%→50%→70%, lương thử việc 85%); thang lương bậc 1-10 (4.8tr→11.28tr); file bảng lương có 1.218 sheet rác "Kangatang" cần loại bỏ khi import |
+| extract-tdhk | `2. Bảng Tổng đài hành khách/` (3 PDF + 6 Excel) | a88e2397d69f516a3 | QĐ 196/2024 cơ chế lương tổng đài 1500; KPI 1500/1731 = 2 đầu số hotline khác nhau (không phải 2 chuẩn KPI); Thư viện KPI thật (scorecard trọng số) chỉ có cho Trưởng ca |
+| extract-misc | `3. Bảng lương thời gian/` + `Chính sách chung/` + `Lịch làm việc PVTHK.xlsx` | a0cd3000ea629765d | **QĐ 2A — bảng ngạch bậc CHÍNH THỨC toàn công ty, 11 ngạch D1→E2, lương tối thiểu công ty 5.310.000đ**; 18 sheet Ca làm việc KHÔNG thống nhất giữa các tỉnh (cùng mã "S"/"HC" nhưng giờ khác nhau) |
+| extract-lxtuyen | `4. Bảng lương lái xe tuyến/` (13 PDF + 6 Excel + 1 bảng lương) | a56a0ece36b2fef22 | Cơ chế lương khác nhau theo TỪNG TỈNH (Nam Định/Ninh Bình/Thái Bình/Phú Thọ/Việt Trì/Yên Bái/Nội Bài), đơn giá lượt thay đổi nhiều lần theo thời gian, các viết tắt CPN/CPSC/VTHK/Cldv/LXDP/ĐB/SC đã xác nhận chéo PDF+Excel |
+| extract-lxtai | `5. Bảng lương lái xe tải/` (2 PDF + 5 Excel + 1 bảng lương) | aa109afee18b9a988 | **QĐ 206/2026 — bảng định mức lương cứng/TN QLPT/mức doanh thu ĐẦY ĐỦ 19 loại tải trọng** + bảng khoán nhiên liệu 10 nhóm xe; lái xe tải KHÔNG hưởng OT (lương theo doanh thu); mã chấm công "NL" chưa rõ nghĩa |
+| extract-vptinh | `6. Bảng lương văn phòng tỉnh/` (3 PDF + 15 Excel) | a6b925159eb7a9263 | Quy chế lương VP 2020 (3/6 tỉnh có PDF: Nam Định/Ninh Bình/Thái Bình); hệ số lương theo chức danh (TCN=20, ĐH=17, LXTC=16, KT=12); phát hiện thêm chi nhánh con "Phù Ninh" thuộc Phú Thọ |
+
+**Toàn bộ nội dung chi tiết (3-4 bảng markdown/agent: Quyết định-chính sách, Dữ liệu Excel, Đề xuất danh mục, [Danh sách chi nhánh riêng cho vptinh]) đã nằm sẵn trong lịch sử hội thoại phiên này (task-notification results) — khi resume, đọc lại lịch sử chat để lấy nguyên văn, KHÔNG dispatch lại agent.**
+
+## Việc tiếp theo khi resume (ĐÚNG THỨ TỰ)
+1. **Hỏi lại sponsor** ý câu "file excel đã được update đợi tôi review đã" nghĩa là gì trước khi làm gì tiếp (PM chưa tạo Excel nào — có thể sponsor nói về việc khác, hoặc nhắc PM chờ duyệt trước khi tự động làm tiếp — cần hỏi rõ, đừng đoán).
+2. Nếu sponsor xác nhận tiếp tục: dùng skill `xlsx` tạo 1 file Excel thật (không chỉ markdown), gồm các sheet:
+   - "Tổng quan" (danh sách ~60 file đã đọc, phân loại)
+   - "Quyết định-Chính sách" (gộp Bảng 1 của 6 agent — file, số hiệu, ngày, tỉnh/đối tượng, tóm tắt, khoản lương/mức)
+   - "Cấu trúc dữ liệu Excel" (gộp Bảng 2 của 6 agent — file, sheet, cột)
+   - "Đề xuất danh mục" (gộp Bảng 3 của 6 agent — QUAN TRỌNG NHẤT, group theo bucket Cài đặt: Thành phần lương / Loại quyết định / Thư viện KPI / Ngạch bậc / Chức danh / Phòng ban / Loại hợp đồng / Ca làm việc / Loại OT / Loại nghỉ / Loại bảo hiểm, kèm cột mảng nghiệp vụ nguồn)
+   - "Bảng ngạch bậc" (nguyên bảng 11 ngạch từ QĐ 2A, agent misc đã trích đầy đủ)
+   - "Bảng định mức lái xe tải" (nguyên bảng 19 loại tải trọng từ QĐ 206, agent lxtai đã trích đầy đủ)
+   - "Câu hỏi cần sponsor xác nhận" (Ca làm việc không thống nhất theo tỉnh; mã chấm công NL/TCHN chưa rõ; vài QĐ nghi lỗi đánh máy số hiệu/ngày; Kênh tuyển dụng/Nhà bảo hiểm thương mại không có dữ liệu nguồn)
+3. Gửi file qua `SendUserFile`, tóm tắt ngắn bằng lời.
+4. **DỪNG, CHỜ SPONSOR DUYỆT** — không tự ý autotest insert.
+5. Sau khi duyệt: bàn phạm vi cụ thể việc insert (qua UI Settings Dialog vừa build hôm nay, hoặc qua API `upsertSettingsCatalogItem`, KHÔNG insert thẳng DB) trước khi code.
+
+## Trạng thái môi trường
+- `hrm-fe` cổng 8080 + `hrm-api` cổng 3001 chạy nền qua `preview_start` (Docker Desktop không chạy trên máy này). Login test: `ceo@xe.vn` / `Xevn@2026`.
+- `.claude/launch.json` đã sửa đúng (2 entry: hrm-fe, hrm-api).
+
+## Việc khác đã DONE hoàn toàn trong phiên hôm nay (không liên quan việc trên, không cần làm lại)
+Cụm "Settings UI/copy hygiene" theo yêu cầu sponsor trước đó (popup jargon, logo vỡ, list+dialog pattern) — DONE, verify sống. Chuẩn `_vibe-team-os/UX-PRODUCT-RULES.md` §10 đã ban hành. Còn 2 việc CHƯA quyết (không chặn): (1) dọn tiếp hệ thống "honesty banner" ~30 file khác; (2) xóa hộ 1 dòng data test "qa_test_dialog" sót lại. Chi tiết đầy đủ xem lịch sử chat cùng ngày, đoạn trước đoạn "Đọc dữ liệu lương khách hàng CNTT".
+
+## Lesson-learned
+- KHÔNG `cp` ghi đè file trạng thái chia sẻ — luôn append.
+- Nhiều agent chạy song song, viết file scratch tạm CHUNG 1 thư mục → dùng tên file DUY NHẤT (prefix theo work_item_id) để tránh đụng độ.
