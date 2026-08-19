@@ -71,3 +71,8 @@ scripts/tmp-*
 
 # Cursor team operational state — runtime bus, logs, incident queue (local only)
 .cursor/team/
+
+# QA / DevOps evidence files — local only, contain expired session tokens
+docs/qa/evidence/
+docs/ops/evidence/
+docs/docs/qa/evidence/

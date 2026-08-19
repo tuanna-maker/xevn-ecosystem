@@ -1,3 +1,0 @@
-﻿[xevn-ecosystem] Đã xử lý xong tin Tele trễ.
-«Chốt P0+P1» → XBOS G1 P0+P1: BE+FE+QA PASS · QC GO WITH CONDITIONS (HOLD_DEPLOY).
-Channel Telegram đang chạy lại — tin mới sẽ wake PM.

@@ -1,1 +1,0 @@
-﻿[xevn-ecosystem] E2 QA FAIL (Payroll crash) → FE hotfix đang chạy.

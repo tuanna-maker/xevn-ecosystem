@@ -1,9 +1,0 @@
-﻿[xevn-ecosystem] Đã nâng Telegram → Cursor gần như chat:
-
-• Tin bạn gửi → bridge ghi wake + inbox → hook Cursor (stop/subagentStop/sessionStart) TỰ inject vào Agent (không cần PM «kiểm tra inbox»)
-• Trả lời Cursor → mirror lại Telegram
-• Chỉ 1 bridge (đã lock). Giữ phiên Agent Cursor mở khi dùng Telegram.
-
-Giới hạn Cursor: máy/Agent tắt thì chỉ lưu inbox, chưa đẩy vào chat đến khi mở lại Agent.
-
-Thử gửi 1 tin ngắn «ping wake» — khi QA/agent xong lượt, Cursor sẽ nhảy tin TELEGRAM → CURSOR-PM.

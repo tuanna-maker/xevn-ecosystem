@@ -1,1 +1,0 @@
-﻿[xevn-ecosystem] E2 G1 SRS+DB/API xong → SA ack. E1-A/B CLOSED.

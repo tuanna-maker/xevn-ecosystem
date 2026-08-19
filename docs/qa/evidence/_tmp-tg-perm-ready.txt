@@ -1,2 +1,0 @@
-﻿[xevn-ecosystem] PermissionFallback FE READY → QA đang retest.
-EmptyState FE vẫn in-flight.

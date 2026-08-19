@@ -1,5 +1,0 @@
-﻿[xevn-ecosystem] Wave B QC: GO WITH CONDITIONS
-• EmptyState + PermissionFallback đóng
-• Điều kiện: R-C2-01 P3 · bland-list P2 · HOLD_DEPLOY
-• Không claim Phase1/PROD · không deploy
-Cohort trước (UX-09/P0-c/Profile) vẫn GWC.

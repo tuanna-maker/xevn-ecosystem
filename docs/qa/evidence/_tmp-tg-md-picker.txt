@@ -1,2 +1,0 @@
-﻿[xevn-ecosystem] HRM «Vị trí» free-text = lệch SRS (đã khóa Select từ Cài đặt).
-Đã mở program + ping Claude cùng audit. Chờ góp ý Claude rồi bạn chốt plan trước khi BA/Dev làm.

@@ -1,5 +1,0 @@
-﻿[xevn-ecosystem] U75 khóa:
-• Claude panel = phó/cố vấn (không claim code Done khi không edit được)
-• Claude CLI = đội code (tự điều phối)
-• Mọi YC của bạn → Cursor relay peer cho Claude
-Đã ping Claude ACK + đẩy Wave-B docs + XBOS G1 (sau bạn chốt P0).

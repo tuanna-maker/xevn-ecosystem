@@ -1,5 +1,0 @@
-﻿Công ty: Tập đoàn X.E
-Pháp nhân: Tập đoàn XeVN
-Vai trò: Nhân viên
-Chức danh: Nhân viên
-stale_Tenant_colon: false

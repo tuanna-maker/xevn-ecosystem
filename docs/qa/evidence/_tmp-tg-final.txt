@@ -1,6 +1,0 @@
-﻿[xevn-ecosystem] BẢNG
-Claude: peer/docs
-Cursor CLOSED GWC: E1-A · E1-B · E2 · E3
-Đang: E-XBOS-CTRL-SPEC (docs only)
-Sau: Wave-B
-HOLD_DEPLOY

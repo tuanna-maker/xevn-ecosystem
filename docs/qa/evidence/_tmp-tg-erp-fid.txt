@@ -1,2 +1,0 @@
-﻿[xevn-ecosystem] Bạn bác plan hẹp Position — đúng.
-Đã mở program ERP-class (toàn data/settings/CRUD/constraint). Cursor 4 seat + Claude max. Chưa Dev.

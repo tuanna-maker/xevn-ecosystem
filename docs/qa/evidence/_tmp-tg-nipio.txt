@@ -1,3 +1,0 @@
-﻿[xevn-ecosystem] nip.io:
-• FE + OPS: QC GWC CLOSED (HOLD_DEPLOY)
-• Mobile: đang QA

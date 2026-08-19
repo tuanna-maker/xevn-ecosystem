@@ -1,2 +1,0 @@
-﻿[xevn-ecosystem] Sponsor: max parallel 2 PM.
-Cursor đang chạy 4 seat G0. Claude: tự giao ≥4 WI (peer OPEN). Cấm Dev apps đến khi tổng hợp.

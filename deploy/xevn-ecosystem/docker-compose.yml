@@ -118,7 +118,7 @@ services:
       # Endurance: headroom for 1000 VU hold (no mem_limit — avoid OOM kill cliff)
       NODE_OPTIONS: "${HRM_BE_NODE_OPTIONS:---max-old-space-size=1536}"
       # S2S bridge — dev VPS: literal key (deploy/.env hash vs apps/*/.env mismatch caused XBOS-AUTH-001)
-      INTERNAL_API_KEY: xevn-dev-internal-key
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-xevn-dev-internal-key}
       # UF-XBOS-09/15 + UF-HRM-10 — service JWT must match xbos-be (apps/*/.env replace_with_strong_secret drift)
       SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-xevn-dev-jwt-secret}
       SERVICE_JWT_ISSUER: ${SERVICE_JWT_ISSUER:-xevn-internal}
@@ -166,7 +166,7 @@ services:
       HTTP_KEEPALIVE_TIMEOUT_MS: "${HTTP_KEEPALIVE_TIMEOUT_MS:-65000}"
       HTTP_HEADERS_TIMEOUT_MS: "${HTTP_HEADERS_TIMEOUT_MS:-70000}"
       NODE_OPTIONS: "${HRM_BE_NODE_OPTIONS:---max-old-space-size=1536}"
-      INTERNAL_API_KEY: xevn-dev-internal-key
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-xevn-dev-internal-key}
       SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-xevn-dev-jwt-secret}
       SERVICE_JWT_ISSUER: ${SERVICE_JWT_ISSUER:-xevn-internal}
       SERVICE_JWT_AUDIENCE: ${SERVICE_JWT_AUDIENCE:-xevn-api}
@@ -211,7 +211,7 @@ services:
       HTTP_KEEPALIVE_TIMEOUT_MS: "${HTTP_KEEPALIVE_TIMEOUT_MS:-65000}"
       HTTP_HEADERS_TIMEOUT_MS: "${HTTP_HEADERS_TIMEOUT_MS:-70000}"
       NODE_OPTIONS: "${HRM_BE_NODE_OPTIONS:---max-old-space-size=1536}"
-      INTERNAL_API_KEY: xevn-dev-internal-key
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-xevn-dev-internal-key}
       SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-xevn-dev-jwt-secret}
       SERVICE_JWT_ISSUER: ${SERVICE_JWT_ISSUER:-xevn-internal}
       SERVICE_JWT_AUDIENCE: ${SERVICE_JWT_AUDIENCE:-xevn-api}
@@ -256,7 +256,7 @@ services:
       HTTP_KEEPALIVE_TIMEOUT_MS: "${HTTP_KEEPALIVE_TIMEOUT_MS:-65000}"
       HTTP_HEADERS_TIMEOUT_MS: "${HTTP_HEADERS_TIMEOUT_MS:-70000}"
       NODE_OPTIONS: "${HRM_BE_NODE_OPTIONS:---max-old-space-size=1536}"
-      INTERNAL_API_KEY: xevn-dev-internal-key
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-xevn-dev-internal-key}
       SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-xevn-dev-jwt-secret}
       SERVICE_JWT_ISSUER: ${SERVICE_JWT_ISSUER:-xevn-internal}
       SERVICE_JWT_AUDIENCE: ${SERVICE_JWT_AUDIENCE:-xevn-api}
@@ -319,7 +319,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       DOCKER: "1"
       # S2S bridge — dev VPS: literal key (deploy/.env hash vs apps/*/.env mismatch caused XBOS-AUTH-001)
-      INTERNAL_API_KEY: xevn-dev-internal-key
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-xevn-dev-internal-key}
       # UF-XBOS-09/15 catalog-governance/workflows/start from hrm-be bridge (production rejects key-only)
       SERVICE_JWT_SECRET: ${SERVICE_JWT_SECRET:-xevn-dev-jwt-secret}
       SERVICE_JWT_ISSUER: ${SERVICE_JWT_ISSUER:-xevn-internal}

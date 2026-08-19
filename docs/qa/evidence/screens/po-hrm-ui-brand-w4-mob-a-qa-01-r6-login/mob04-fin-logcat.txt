@@ -1,3 +1,0 @@
-﻿--------- beginning of main
-08-05 16:50:46.882 11939 11973 I ReactNativeJS: [HRM-MOB] POST http://14.225.217.232:3001/api/hrm/attendance/records x-company-id=6efaa5d6-a4a8-4bfd-805a-3c4f003e4013 Authorization=Bearer â€¦
-08-05 16:50:47.640 11939 11973 I ReactNativeJS: [HRM-MOB] attendance/records POST ok=true code=HRM-ATT-201 http=201
