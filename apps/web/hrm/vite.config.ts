@@ -29,14 +29,11 @@
  * Change: Docker/VPS (`HRM_VITE_DISABLE_HMR=true`) tắt HMR — iframe :8088/hr không còn WS tới localhost:8080.
  * must_keep: local `pnpm` không set env → HMR overlay:false; cấm hardcode IP perimeter
  */
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { createRequire } from "module";
 import { componentTagger } from "lovable-tagger";
-
-/** Khớp deploy HRM_BE_PORT (28001) + portal vite default. Cổ 3001 → proxy 500 khi Nest không listen đó. */
-const proxyHrmApi = process.env.VITE_DEV_PROXY_HRM_API || "http://127.0.0.1:28001";
 
 /**
  * D-UX-C1-ENV-REACT-DEDUPE-01 — single React instance for Vite + @xevn/ui source alias.
@@ -63,7 +60,12 @@ const hrmAllowedHosts = (
 const disableHrmHmr = process.env.HRM_VITE_DISABLE_HMR === "true";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  /** Khớp deploy HRM_BE_PORT (28001). Local .env thường trỏ :3001 — loadEnv bắt buộc (không đọc process.env). */
+  const proxyHrmApi = env.VITE_DEV_PROXY_HRM_API || "http://127.0.0.1:28001";
+
+  return {
   test: {
     environment: "jsdom",
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
@@ -112,6 +114,17 @@ export default defineConfig(({ mode }) => ({
       },
     },
   ].filter(Boolean),
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react-dom/client",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+      "react-router-dom",
+      "@tanstack/react-query",
+    ],
+  },
   build: {
     rollupOptions: {
       output: {
@@ -135,4 +148,5 @@ export default defineConfig(({ mode }) => ({
       "react-dom": reactDomDir,
     },
   },
-}));
+  };
+});

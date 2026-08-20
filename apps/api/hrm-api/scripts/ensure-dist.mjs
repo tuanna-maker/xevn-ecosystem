@@ -1,7 +1,7 @@
 /**
  * Ensures dist emit is complete before nest start --watch / start:prod.
- * When spine files are missing, incremental nest build will NOT restore them (ts incremental).
- * Always run build:clean in that case.
+ * When spine files are missing, incremental nest build will NOT restore them.
+ * Prefer start:node (tsc → node) on OneDrive/Unicode paths (OBS-XBOS-DIST).
  */
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -17,7 +17,7 @@ if (missing.length === 0) {
 }
 
 console.log(
-  `[hrm-api] incomplete dist (${missing.join(', ')}) — running build:clean (incremental nest build cannot restore deleted emit)`,
+  `[hrm-api] incomplete dist (${missing.join(', ')}) — running build:clean (watch wipe / incremental cannot restore)`,
 );
 execSync('pnpm run build:clean', { cwd: root, stdio: 'inherit' });
 
