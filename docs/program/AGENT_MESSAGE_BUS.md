@@ -17116,3 +17116,95 @@ a0be5814acfdf8c72 (JD BE) · a4f73082a49695cd7 (JD FE) · a5fdadd0cddd672bc (PAY
 - **S7 QA retest DONE (browser, U65)**: `docs/qa/evidence/qa-ba-ctr-tpl-8-clause-map-01-s7-fe-01-retest.md` (4728 B, verified on disk). `ack_status: PASS_TO_PM`. BUG-1 (UUID clause_id 400) and BUG-2 (PK collision multi-tenant) both **FIXED** — retested from the real FE (`:8080` /hr/contracts → Chi tiết → tab 2) and via curl (`tenant_id:"xevn"` id `200175ef-...` vs `tenant_id:"xe-du-lich"` id `9c17d6b9-...`, distinct rows). The dead `qa` agent (a5fdadd0, 0-byte transcript) is now closed; evidence recovered by PM.
 - **S7 cluster status: ALL GREEN** — BE ✅ PASS_TO_PM · FE ✅ READY_FOR_QA · QC ✅ PASS_TO_PM · dev-be fix ✅ READY_FOR_QA · QA retest ✅ PASS_TO_PM → **CLOSE**.
 - Honest limitation recorded in the evidence file: the `ContractClauseOverrideEditor` **write** path was not exercised end-to-end in this retest (read path + curl PUT verified); no `tsc`/jest re-run in this session.
+
+## [2026-08-19] QA-UC-HRM-22-REC-SETTINGS-FULL-01 — PASS_WITH_HOLD (QA lane)
+- evidence: docs/qa/evidence/qa-uc-hrm-22-rec-settings-full-01.md
+- BE: LIVE (HRM-HEALTH-200); FE: LIVE (HTTP 200 port 8080)
+- jd-master-library: code audit PASS (Dialog writer; search; soft-delete; publish)
+- jd-dynamic: code audit PASS except 2 copy violations (F-01 + F-02)
+- rec-pipeline-stages: code audit PASS (SettingsCatalogScreenShell + Dialog; soft-delete)
+- rec-sources / rec-interview-types / rec-rejection-reasons / rec-positions / rec-health-requirements: STUB — copy clean
+- HOLD-1 (F-01): jd-dynamic sub-tab 4 TabsTrigger = "Rule chon goi" — English jargon, violates UX §10 R1. Fix: "Quy tac chon goi"
+- HOLD-2 (F-02): jd-dynamic sub-tab 5 TabsTrigger = "Bo cuc L1" — technical code L1, violates UX §10 R2. Fix: "Bo cuc mac dinh"
+- BLOCKED-live: Browser TC-ADD/EDIT/DELETE/F5 blocked — no valid credentials in dispatch
+- Next: dispatch dev-fe fix F-01+F-02; then re-QA with fixture login credentials
+
+## [2026-08-19] BA-PAY-09-DATA-SPEC-FIX-01 — PASS_TO_PM (ba-data, docs-only)
+- work_item: BA-PAY-09-DATA-SPEC-FIX-01 · updated **existing** spec only, no new file
+- evidence: docs/program/specs/PO-HRM-MVP-GD1-PAY-09-DATA-01.md (was 141 lines / 6539 B, now 242 lines / 13624 B; commit d2d610a9 → working tree, +115/-15). No new file created; allowed_paths respected (docs/program/specs/ only).
+- 3 sponsor-confirmed changes applied:
+  1. **U72 display labels** (tiếng Việt) added to every §3 column note + §5 state machine table (Mã đợt lương / Tên đợt lương / Mã kỳ lương / Từ ngày / Den ngày / Trạng thái / Số NV / Tổng cộng / Tổng ròng ...). status map: DRAFT=Bản nháp, ACTIVE=Đang xử lý, APPROVED=Đã duyệt, EXPORTED=Đã xuất, CANCELLED=Đã hủy.
+  2. **§9 Known gap** added: process engine not implemented → every payslip = 0đ; total_* counters structurally correct but numerically meaningless; APPROVED→EXPORTED must NOT be gated on total_net_vnd > 0.
+  3. **§3 DDL corrected**: removed self-contradictory table-level UNIQUE (tenant_id, company_id, code, deleted_at) (blocks soft-deleted code reuse) → partial unique index uq_pay_payroll_group_tenant_company_code_active, matching the **live** apps/api/hrm-api/src/payroll/pay-payroll-group.schema.ts. Header DOC-DELTA 2026-08-19 added.
+- Cross-check vs live code (read-only, no edits): pay-payroll-group.schema.ts already ships the partial index + pay_payroll_group (UUID, company_id/code/name_vi/priority/match_rule_json/formula_definition_id/status/archived_at) + payroll_periods.payroll_group_id + payroll_payslips.payroll_group_id; pay-payroll-group.service.ts has CRUD/resolve/persistPayslipGroupSnapshot; payroll.service.ts processPayrollPeriod calls upsertPayslip with gross_amount:0/deduction_amount:0/net_amount:0 → **confirms §9**. No total_employee_count/total_gross_vnd/total_net_vnd column exists in code → §3 counters remain spec-only (honest, flagged in §9).
+- ack_status: PASS_TO_PM
+- **Dispatch**:  rà lại pay_payroll_group DAL/service per sponsor rule ("nếu sửa nghiệp vụ thì phải rà lại code ngay") — queued as . PM note:  subagent type is **not registered** in this harness (only claude/Explore/general-purpose/Plan/statusline), so the read-only code cross-check was executed **directly by PM (ba-data role)** instead of via a subagent.
+
+## 2026-08-19T16:00+07:00 | pm | 4 background agents DIED (API error) + PAY-09 spec audit FAIL
+
+### 1. Agent death sweep (2026-08-19T15:56)
+All 4 background agents terminated with `API Error: API returned an empty or malformed response (HTTP 200)`.
+Output files 0 bytes; no live node processes. **No work was produced by any of them.**
+
+| agent | task | result |
+|---|---|---|
+| a64fce1952f3a1d26 | Re-audit PAY-09 cluster code | DEAD, 0 files |
+| a5d4da174985c6878 | Update PAY-09 spec 3 gaps | DEAD, 0 files |
+| a07a5bb099d922b82 | Synthesize recruitment SRS | DEAD, 0 files (40 tool_uses, 277s, 0 tokens) |
+| a6cc0928a74a767a5 | ATT spine regression QA | DEAD, 0 files |
+
+### 2. PAY-09 spec — recovered from disk, AUDITED by PM, FAIL_TO_PM
+`docs/program/specs/PO-HRM-MVP-GD1-PAY-09-DATA-01.md` (208 lines, 11232 B) **was** written to disk before
+the agent died. ba-data claimed `PASS_TO_PM`. PM cross-checked the canonical NFD root:
+
+- **U72 display labels** ( Vietnamese column + state-machine table) — PRESENT, PASS.
+- **§9 process-engine gap** (payslip = 0 dong) — PRESENT, and **verified TRUE** against
+  `payroll.service.ts` `processPayrollPeriod` -> `upsertPayslip` zero amounts. PASS.
+- **§3 DDL "matches the shipped migration"** — **FALSE.** No migration file for `pay_payroll_group`
+  exists in NFD `migrations/` (12 files, latest `202608192300_create_pay_salary_component.sql`), and the
+  live `pay-payroll-group.schema.ts` implements a **different entity**:
+  - `UUID gen_random_uuid()` PK, **no `tenant_id`**, `name_vi`/`priority`/`match_rule_json`/
+    `formula_definition_id`, soft-delete via `archived_at` (not `deleted_at`),
+    `status IN ('active','retired')` (2-state, **no DRAFT/EXPORTED/CANCELLED**),
+    unique index on `(company_id, code)` **without tenant_id**,
+    **two FKs** (`fk_payroll_periods_payroll_group_id`, `fk_payroll_payslips_payroll_group_id`)
+    violating the Plane A/B no-cross-plane-FK rule the spec itself mandates.
+- Audit delta appended to the spec file (section "AUDIT DELTA 2026-08-19T16:00").
+- **ack_status: FAIL_TO_PM** — spec §3-§5 is not a usable contract for dev-be; re-baseline required.
+- Forbidden zone respected: `apps/api/hrm-api/src/payroll/**` is Cursor-held; report only, no fix requested.
+
+### 3. Recruitment SRS synthesis — DEAD, NOT on disk
+`docs/program/specs/BA-REC-SRS-SYNTHESIS-01.md` does **not** exist. ba-process produced 0 tokens.
+Sponsor's request ("gộp lại chung thành 1 srs về tuyển dụng") is **UNFULFILLED**. Re-dispatch needed.
+
+### 4. ATT spine regression QA — DEAD, evidence from earlier run stands
+`docs/qa/evidence/qa-hrm-att-spine-regress-01.md` (5002 B, 22:35) is **FAIL**: 401 Unauthorized /
+404 Not Found / `ApiClientError: Unauthorized attendance access`. Root cause is **credential**, not code:
+HRM BE `:28001/api/hrm` and XBOS BE `:28002/api/xbos` are LIVE (health 200); HRM FE `:8080` and
+XBOS FE `:5173` are LIVE. The QA agent had no valid JWT. Re-dispatch with fixture creds.
+
+### 5. Menu sweep R3 — FAIL 8/17 (H1: None)
+`docs/qa/evidence/qa-hrm-menu-sweep-r3-01.md` (1026 B, 22:36): Dashboard / Contracts / Insurance /
+Decisions / Recruitment / Attendance / Payroll / Performance / Tasks all render **H1: None**.
+9 pages PASS. Needs a real H1 audit (FE lane).
+
+### 6. F-01/F-02 U72 copy violations — ALREADY FIXED (stale evidence)
+`qa-uc-hrm-22-rec-settings-full-01.md` (8649 B, 22:09) reported FAIL on `JdDynamicSettingsPanel.tsx`
+sub-tab 4 ("Rule chon goi") and sub-tab 5 ("Bo cuc L1"). **Re-checked the committed file: both are fixed.**
+Live TabsTrigger values are `Quy tắc chọn gói` (L665) and `Bố cục mặc định` (L666). Evidence is stale;
+no action needed.
+
+### 7. Servers verified LIVE (2026-08-19T15:56)
+- HRM BE `:28001/api/hrm` -> `HRM-HEALTH-200` (ok)
+- XBOS BE `:28002/api/xbos` -> `XBOS-HEALTH-200` (ok)
+- HRM FE `:8080/hr/` -> 200 (Vite)
+- XBOS FE `:5173/` -> 200 (Vite)
+- `:3001`, `:3002` — refused (not used; BE moved to 28001/28002)
+
+### Next (zero-residual)
+1. Re-dispatch ba-process: recruitment SRS synthesis -> `docs/program/specs/BA-REC-SRS-SYNTHESIS-01.md`
+2. Re-dispatch dev-be: PAY-09 **re-baseline** (spec FAIL_TO_PM; read the audit delta first)
+3. Re-dispatch qa: ATT spine regression **with fixture JWT** (creds not in repo — sponsor must supply)
+4. Re-dispatch dev-fe: H1 sweep 8/17 FAIL
+5. Dead agents still outstanding: a0be5814 (JD dynamic BE), a4f73082 (JD dynamic FE),
+   a5fdadd0 (QA retest, superseded), a0c00f7b (promote-matrix BE)

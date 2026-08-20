@@ -1,45 +1,58 @@
 # TEAM_WORKING_NOW
-_Last updated: 2026-08-18 (PM turn — S7-FE retest dispatched after BUG-1+BUG-2 fix)_
+_Last updated: 2026-08-19 16:05 (PM direct — 4 background agents DIED, PAY-09 spec audit FAIL, re-dispatched)_
 
-## Status: QA RETEST IN FLIGHT — BA-CTR-TPL-8-CLAUSE-MAP-01-S7-FE-RETEST-01
+## Status: RE-DISPATCHING (4 agents died to API error; 0 files produced)
 
-### Active agent
-- **qa lane** (ada119a082da1323b) — retest ContractClauseOverrideEditor browser QA
-  - Lý do retest: lần QA đầu FAIL_TO_PM vì BUG-1 (UUID clause_id bị 400) + BUG-2 (PK collision 500)
-  - Bugs đã fix: assertClauseIdFormat chấp nhận UUID v4, PK = crypto.randomUUID()
-  - Server đã hot-reload nhận code mới
+| lane | WI | ack_status |
+|---|---|---|
+| ba-data | BA-PAY-09-DATA-SPEC-FIX-01 | **FAIL_TO_PM** (spec written but §3 DDL false vs live code) |
+| ba-process | BA-REC-SRS-SYNTHESIS-01 | **DEAD** (0 tokens, file not on disk) |
+| dev-be | PAY-09 re-baseline | **DEAD** (API error) — re-dispatched |
+| qa | ATT spine regression | **DEAD** (0 files) — re-dispatched w/ fixture creds |
+| dev-fe | H1 sweep 8/17 FAIL | **DEAD** — re-dispatched |
 
-### Fix timeline (2026-08-18)
-1. QA #1 → FAIL_TO_PM: BUG-1 + BUG-2 phát hiện
-2. PM decision: A) relax validation, B) UUID PK
-3. dev-be (ab03bc2e96b3305a8) → READY_FOR_QA: cả 2 bugs fixed, curl live pass
-4. QA retest (ada119a082da1323b) → IN_PROGRESS
+### 2026-08-19 death sweep
+All 4 background agents terminated on `API Error: API returned an empty or malformed response (HTTP 200)`.
+Output files 0 bytes; no live node processes. **No work produced.** Full detail in
+`docs/program/AGENT_MESSAGE_BUS.md` (2026-08-19T16:00 entry).
 
-### TC expected
-| TC | Expected |
-|----|----------|
-| TC-S7-FE-01 | PASS (confirmed trước) |
-| TC-S7-FE-02 | PASS now (UUID → 200/404 not 400) |
-| TC-S7-FE-03 | PASS (PUT upsert + F5 persist) |
-| TC-S7-FE-04 | PASS or NOTE (warnings badge ft_*) |
-| TC-S7-FE-05 | PASS (3 source options) |
+### PAY-09 spec audit (PM cross-check, NOT trusted from ba-data's PASS_TO_PM)
+`docs/program/specs/PO-HRM-MVP-GD1-PAY-09-DATA-01.md` (208 lines) was on disk before the agent died.
+- **U72 labels** — PRESENT, PASS.
+- **§9 payslip=0đ gap** — PRESENT, **verified TRUE** against `payroll.service.ts`. PASS.
+- **§3 "partial unique index is live in pay-payroll-group.schema.ts"** — **FALSE**.
+  No migration file exists in NFD `migrations/` (12 files). The live schema is a **different entity**:
+  UUID PK, **no tenant_id**, `name_vi`/`priority`/`match_rule_json`, `archived_at` soft-delete,
+  `status IN ('active','retired')` (2-state), unique index on `(company_id, code)` without tenant_id,
+  **two cross-plane FKs** (`fk_payroll_periods_payroll_group_id`, `fk_payroll_payslips_payroll_group_id`)
+  violating the Plane A/B rule the spec itself mandates.
+- Audit delta appended to the spec ("AUDIT DELTA 2026-08-19T16:00"). **ack_status: FAIL_TO_PM.**
+- Forbidden zone respected: `apps/api/hrm-api/src/payroll/**` is Cursor-held — report only.
 
-### Known hold
-- TV tab hide: DEFERRED — ContractCreateWizardDialog.tsx Cursor-held (D-FE-CTR-CB-BOOT-01)
+### F-01/F-02 U72 copy violations — ALREADY FIXED (stale evidence)
+`qa-uc-hrm-22-rec-settings-full-01.md` (8649 B, 22:09) reported FAIL on `JdDynamicSettingsPanel.tsx`
+sub-tab 4 ("Rule chon goi") and sub-tab 5 ("Bo cuc L1"). **Re-checked committed file: both fixed.**
+Live TabsTrigger values: `Quy tắc chọn gói` (L665), `Bố cục mặc định` (L666). No action needed.
 
-### After QA
-- If PASS_WITH_HOLD: update queue #19/#21 to DONE, promote S7 cluster
-- Then: read rolling queue for next WI (#22+)
+### Menu sweep R3 — FAIL 8/17 (H1: None)
+Dashboard / Contracts / Insurance / Decisions / Recruitment / Attendance / Payroll / Performance /
+Tasks render **H1: None**. 9 pages PASS. Real H1 audit needed (FE lane).
 
-## Environment
-- HRM BE: :28001 (hot-reload, bug fix live)
-- HRM FE: :8080
+### Servers verified LIVE (2026-08-19T15:56)
+- HRM BE `:28001/api/hrm` -> `HRM-HEALTH-200` · XBOS BE `:28002/api/xbos` -> `XBOS-HEALTH-200`
+- HRM FE `:8080/hr/` -> 200 · XBOS FE `:5173/` -> 200
+- `:3001`, `:3002` — refused (BE moved to 28001/28002)
 
-## Queue snapshot
-- #19 BA-CTR-TPL-8-CLAUSE-MAP-01-S7-IMPL-01: IN_PROGRESS
-- #20 QA-S7-FE-01: FAIL_TO_PM (BUG-1+BUG-2)
-- #20b BA-CTR-TPL-8-S7-BE-FIX-01: DONE (READY_FOR_QA)
-- #21 QA-S7-FE-RETEST-01: IN_PROGRESS (current)
+## Next (zero-residual)
+1. ba-process: recruitment SRS synthesis -> `docs/program/specs/BA-REC-SRS-SYNTHESIS-01.md` (re-dispatched)
+2. dev-be: PAY-09 re-baseline against live schema (re-dispatched)
+3. qa: ATT spine regression **with fixture JWT** (re-dispatched; creds not in repo — sponsor supplies)
+4. dev-fe: H1 sweep 8/17 FAIL (re-dispatched)
+5. Dead agents still outstanding: a0be5814 (JD dynamic BE), a4f73082 (JD dynamic FE),
+   a5fdadd0 (QA retest, superseded), a0c00f7b (promote-matrix BE)
+
+## Environment (verified live)
+- HRM BE: :28001 · HRM FE: :8080 · XBOS BE: :28002 · XBOS FE: :5173
 
 ## Forbidden zones (Cursor-held)
 - apps/web/hrm/src/components/payroll/policy-pack/**
