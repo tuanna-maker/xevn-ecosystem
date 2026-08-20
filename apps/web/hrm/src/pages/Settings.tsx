@@ -130,6 +130,8 @@ import { DecDecisionTypeSettingsPanel } from '@/components/settings/DecDecisionT
 import { SiInsuranceTypeSettingsPanel } from '@/components/settings/SiInsuranceTypeSettingsPanel';
 import { SiInsurerSettingsPanel } from '@/components/settings/SiInsurerSettingsPanel';
 import { RecPipelineStageSettingsPanel } from '@/components/settings/RecPipelineStageSettingsPanel';
+import { RecCandidateSourceSettingsPanel } from '@/components/settings/RecCandidateSourceSettingsPanel';
+import { RecInterviewTypeSettingsPanel } from '@/components/settings/RecInterviewTypeSettingsPanel';
 import { SettingsDefaultsPanel } from '@/components/settings/SettingsDefaultsPanel';
 import { PaySalaryComponentList } from '@/components/settings/payroll/PaySalaryComponentList';
 import { PayFormulaSettingsPanel } from '@/components/settings/payroll/PayFormulaSettingsPanel';
@@ -574,15 +576,13 @@ export default function Settings() {
           </div>
         )}
         {settingsTab === 'rec-sources' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          <div className="space-y-4">
+             <RecCandidateSourceSettingsPanel />
           </div>
         )}
         {settingsTab === 'rec-interview-types' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          <div className="space-y-4">
+             <RecInterviewTypeSettingsPanel />
           </div>
         )}
         {settingsTab === 'rec-rejection-reasons' && (

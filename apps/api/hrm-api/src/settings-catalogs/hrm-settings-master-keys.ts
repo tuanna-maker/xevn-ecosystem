@@ -98,6 +98,16 @@ const CATALOG_FAMILIES: readonly CatalogFamilyDef[] = [
     storageKey: 'recruitment_channels',
   },
   {
+    familyId: 'interview_type',
+    aliases: ['interview_types', 'interview_type'],
+    storageKey: 'interview_types',
+  },
+  {
+    familyId: 'rec_stage',
+    aliases: ['recruitment_pipeline_stages', 'recruitment_stages', 'pipeline_stages'],
+    storageKey: 'recruitment_pipeline_stages',
+  },
+  {
     familyId: 'pay_nature',
     aliases: [
       'pay_types',

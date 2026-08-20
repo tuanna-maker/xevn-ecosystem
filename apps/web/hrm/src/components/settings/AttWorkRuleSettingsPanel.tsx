@@ -12,7 +12,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SettingsCatalogRowActions } from './SettingsCatalogRowActions';
 import { SettingsCatalogScreenShell } from './SettingsCatalogScreenShell';
 import { Plus } from 'lucide-react';
-import { useHrmSession } from '@/components/auth/HrmSessionProvider';
+import { hrmApi } from '@/integrations/hrmApi';
 import {
   listAttRules,
   upsertAttRule,
@@ -24,7 +24,7 @@ export function AttWorkRuleSettingsPanel() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { companyId } = useHrmSession();
+  const companyId = hrmApi.resolvePortalParentCompanyId();
 
   const [q, setQ] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);

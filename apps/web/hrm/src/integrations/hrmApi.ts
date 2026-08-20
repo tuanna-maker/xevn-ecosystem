@@ -10962,7 +10962,7 @@ export async function listAttShifts(params: { company_id: string; q?: string }) 
   search.set('company_id', normalizeHrmApiListCompanyId(params.company_id));
   if (params.q?.trim()) search.set('q', params.q.trim());
   const res = await requestHrm<{ total?: number; items?: HrmAttShiftRecord[] }>(
-    /api/hrm/attendance/shifts? + search.toString(),
+    `/api/hrm/attendance/shifts?${search.toString()}`,
     { method: 'GET' },
   );
   return { items: res.items ?? [], total: res.total ?? res.items?.length ?? 0 };
@@ -10979,7 +10979,7 @@ export async function retireAttShift(id: string, company_id: string) {
   const search = new URLSearchParams();
   search.set('company_id', normalizeHrmApiListCompanyId(company_id));
   return requestHrm<{ retired: boolean }>(
-    /api/hrm/attendance/shifts/ + encodeURIComponent(id) + /retire? + search.toString(),
+    `/api/hrm/attendance/shifts/${encodeURIComponent(id)}/retire?${search.toString()}`,
     { method: 'POST' },
   );
 }
@@ -11012,7 +11012,7 @@ export async function listAttRules(params: { company_id: string; q?: string }) {
   search.set('company_id', normalizeHrmApiListCompanyId(params.company_id));
   if (params.q?.trim()) search.set('q', params.q.trim());
   const res = await requestHrm<{ total?: number; items?: HrmAttRuleRecord[] }>(
-    /api/hrm/attendance/rules? + search.toString(),
+    `/api/hrm/attendance/rules?${search.toString()}`,
     { method: 'GET' },
   );
   return { items: res.items ?? [], total: res.total ?? res.items?.length ?? 0 };
@@ -11029,7 +11029,7 @@ export async function retireAttRule(id: string, company_id: string) {
   const search = new URLSearchParams();
   search.set('company_id', normalizeHrmApiListCompanyId(company_id));
   return requestHrm<{ retired: boolean }>(
-    /api/hrm/attendance/rules/ + encodeURIComponent(id) + /retire? + search.toString(),
+    `/api/hrm/attendance/rules/${encodeURIComponent(id)}/retire?${search.toString()}`,
     { method: 'POST' },
   );
 }
@@ -11062,7 +11062,7 @@ export async function listAttSchedules(params: { company_id: string; q?: string 
   search.set('company_id', normalizeHrmApiListCompanyId(params.company_id));
   if (params.q?.trim()) search.set('q', params.q.trim());
   const res = await requestHrm<{ total?: number; items?: HrmAttScheduleRecord[] }>(
-    /api/hrm/attendance/schedules? + search.toString(),
+    `/api/hrm/attendance/schedules?${search.toString()}`,
     { method: 'GET' },
   );
   return { items: res.items ?? [], total: res.total ?? res.items?.length ?? 0 };
@@ -11079,7 +11079,7 @@ export async function retireAttSchedule(id: string, company_id: string) {
   const search = new URLSearchParams();
   search.set('company_id', normalizeHrmApiListCompanyId(company_id));
   return requestHrm<{ retired: boolean }>(
-    /api/hrm/attendance/schedules/ + encodeURIComponent(id) + /retire? + search.toString(),
+    `/api/hrm/attendance/schedules/${encodeURIComponent(id)}/retire?${search.toString()}`,
     { method: 'POST' },
   );
 }

@@ -1,18 +1,8 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { SettingsCatalogF5ListPanels } from './SettingsCatalogF5ListPanels';
-
 export function ContractTypeSettingsPanel() {
-  const { t } = useTranslation();
-
   return (
-    <SettingsCatalogF5ListPanels
-      tabId="contract-types"
-      title="Loại hợp đồng"
-      description="Quản lý danh mục loại hợp đồng lao động, thử việc, dịch vụ."
-      catalogKeys={['contract_types']}
-      defaultWriteKey="contract_types"
-      enableRefresh={true}
-    />
+    <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+      <p className="text-sm font-medium">Tính năng đang được phát triển (Loại hợp đồng)</p>
+      <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+    </div>
   );
 }
