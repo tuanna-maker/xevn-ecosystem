@@ -42,7 +42,9 @@ export type EmployeeSummaryByCompanyRawRow = {
   archived_count: string | number;
 };
 
-export function buildSalaryRangesFromCounts(row: Record<string, string | number>): EmployeeSummarySalaryRange[] {
+export function buildSalaryRangesFromCounts(
+  row: Record<string, string | number>,
+): EmployeeSummarySalaryRange[] {
   const countKeys: Record<string, string> = {
     above_30m: 'salary_range_above_30m',
     range_20_30m: 'salary_range_20_30m',
@@ -93,7 +95,9 @@ export function buildEmployeeSummaryByCompany(
   }
 
   for (const row of rawRows) {
-    const slug = resolveHrmCompanySlugForId(String(row.company_id ?? '').trim());
+    const slug = resolveHrmCompanySlugForId(
+      String(row.company_id ?? '').trim(),
+    );
     if (!slug || UUID_RE.test(slug) || !OPERATING_SLUG_SET.has(slug)) {
       continue;
     }
@@ -108,8 +112,14 @@ export function buildEmployeeSummaryByCompany(
     HRM_GROUP_MEMBER_COMPANY_SLUGS.map((slug, index) => [slug, index] as const),
   );
   return [...merged.values()].sort((a, b) => {
-    const ai = orderIndex.get(a.company_id as (typeof HRM_GROUP_MEMBER_COMPANY_SLUGS)[number]) ?? 99;
-    const bi = orderIndex.get(b.company_id as (typeof HRM_GROUP_MEMBER_COMPANY_SLUGS)[number]) ?? 99;
+    const ai =
+      orderIndex.get(
+        a.company_id as (typeof HRM_GROUP_MEMBER_COMPANY_SLUGS)[number],
+      ) ?? 99;
+    const bi =
+      orderIndex.get(
+        b.company_id as (typeof HRM_GROUP_MEMBER_COMPANY_SLUGS)[number],
+      ) ?? 99;
     if (ai !== bi) {
       return ai - bi;
     }

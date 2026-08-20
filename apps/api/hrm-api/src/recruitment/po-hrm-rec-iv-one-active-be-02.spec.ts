@@ -22,10 +22,14 @@ import { RecruitmentService } from './recruitment.service';
 const CANDIDATE_ID = '73a7f4e2-b327-4308-8b9b-570cf1b04eb6';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
@@ -44,7 +48,11 @@ async function createRecruitmentHttpApp(scheduleInterview: jest.Mock) {
   const app = moduleRef.createNestApplication();
   app.setGlobalPrefix('api/hrm');
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
   );
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
   await app.init();
@@ -61,8 +69,14 @@ const SCHEDULE_BODY = {
 describe('PO-HRM-REC-IV-ONE-ACTIVE-BE-02 ScheduleInterviewDto slug company_id', () => {
   it('accepts company_id slug holding|main (not UUID-only)', () => {
     for (const slug of ['holding', 'main']) {
-      const dto = plainToInstance(ScheduleInterviewDto, { ...SCHEDULE_BODY, company_id: slug });
-      const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+      const dto = plainToInstance(ScheduleInterviewDto, {
+        ...SCHEDULE_BODY,
+        company_id: slug,
+      });
+      const errors = validateSync(dto, {
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      });
       expect(errors).toHaveLength(0);
     }
   });
@@ -72,7 +86,10 @@ describe('PO-HRM-REC-IV-ONE-ACTIVE-BE-02 ScheduleInterviewDto slug company_id', 
       ...SCHEDULE_BODY,
       company_id: 'x'.repeat(81),
     });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors.length).toBeGreaterThan(0);
     expect(JSON.stringify(errors)).toMatch(/company_id/);
   });
@@ -113,7 +130,10 @@ describe('PO-HRM-REC-IV-ONE-ACTIVE-BE-02 POST /recruitment/interviews HTTP', () 
       });
 
     expect(scheduleMock).toHaveBeenCalledWith(
-      expect.objectContaining({ company_id: 'holding', candidate_id: CANDIDATE_ID }),
+      expect.objectContaining({
+        company_id: 'holding',
+        candidate_id: CANDIDATE_ID,
+      }),
       auth,
     );
     await app.close();
@@ -121,12 +141,17 @@ describe('PO-HRM-REC-IV-ONE-ACTIVE-BE-02 POST /recruitment/interviews HTTP', () 
 
   it('returns 409 HRM-REC-IV-409-ACTIVE when one-active conflict (not HRM-VAL-001)', async () => {
     const scheduleMock = jest.fn().mockRejectedValue(
-      new ApiException('HRM-REC-IV-409-ACTIVE', 'Candidate already has an active interview', HttpStatus.CONFLICT, {
-        candidate_id: CANDIDATE_ID,
-        active_interview_id: 'active-1',
-        active_status: 'scheduled',
-        active_at: '2026-08-06T09:30:00.000Z',
-      }),
+      new ApiException(
+        'HRM-REC-IV-409-ACTIVE',
+        'Candidate already has an active interview',
+        HttpStatus.CONFLICT,
+        {
+          candidate_id: CANDIDATE_ID,
+          active_interview_id: 'active-1',
+          active_status: 'scheduled',
+          active_at: '2026-08-06T09:30:00.000Z',
+        },
+      ),
     );
     const app = await createRecruitmentHttpApp(scheduleMock);
 

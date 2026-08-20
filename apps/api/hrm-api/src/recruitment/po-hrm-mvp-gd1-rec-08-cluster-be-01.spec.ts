@@ -42,10 +42,12 @@ describe('PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01 formulas', () => {
       } catch (e) {
         expect((e as ApiException).code).toBe(HRM_REC_DASH_PERIOD_400);
       }
-      expect(() => parseDashboardPeriod({ year: 2026, from: '2026-01', to: '2026-02' })).toThrow(
-        ApiException,
-      );
-      expect(() => parseDashboardPeriod({ from: '2026-06', to: '2026-01' })).toThrow(ApiException);
+      expect(() =>
+        parseDashboardPeriod({ year: 2026, from: '2026-01', to: '2026-02' }),
+      ).toThrow(ApiException);
+      expect(() =>
+        parseDashboardPeriod({ from: '2026-06', to: '2026-01' }),
+      ).toThrow(ApiException);
     });
   });
 
@@ -95,9 +97,24 @@ describe('PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01 formulas', () => {
 
     it('catalog EFF>0: is_hired_outcome / is_reject_outcome win', () => {
       const catalog = [
-        { stageKey: 'done', isHiredOutcome: true, isRejectOutcome: false, nameVi: 'Đã tuyển' },
-        { stageKey: 'drop', isHiredOutcome: false, isRejectOutcome: true, nameVi: 'Loại' },
-        { stageKey: 'weird', isHiredOutcome: false, isRejectOutcome: false, nameVi: 'Lạ' },
+        {
+          stageKey: 'done',
+          isHiredOutcome: true,
+          isRejectOutcome: false,
+          nameVi: 'Đã tuyển',
+        },
+        {
+          stageKey: 'drop',
+          isHiredOutcome: false,
+          isRejectOutcome: true,
+          nameVi: 'Loại',
+        },
+        {
+          stageKey: 'weird',
+          isHiredOutcome: false,
+          isRejectOutcome: false,
+          nameVi: 'Lạ',
+        },
       ];
       expect(mapStageToBucket('done', catalog)).toBe('onboard');
       expect(mapStageToBucket('drop', catalog)).toBe('terminal_reject');
@@ -177,7 +194,12 @@ describe('PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01 formulas', () => {
             filled_count: 0,
             target_month: '2026-09-01',
           },
-          { status: 'draft', headcount: 5, filled_count: 0, target_month: '2026-01-01' },
+          {
+            status: 'draft',
+            headcount: 5,
+            filled_count: 0,
+            target_month: '2026-01-01',
+          },
         ]),
       ).toBe('2026-09');
       expect(OPEN_YCTD_STATUS_SET).toEqual(
@@ -198,13 +220,17 @@ describe('PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01 formulas', () => {
       expect(() =>
         assertNoForbiddenFields({ ...clean, offer_salary: 20000000 }),
       ).toThrow(/FORBIDDEN/);
-      expect(() => assertNoForbiddenFields({ cost_vnd: 1 })).toThrow(/FORBIDDEN/);
+      expect(() => assertNoForbiddenFields({ cost_vnd: 1 })).toThrow(
+        /FORBIDDEN/,
+      );
     });
   });
 });
 
 describe('PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01 service', () => {
-  function makeDb(handlers: Array<(sql: string, params: unknown[]) => { rows: unknown[] }>) {
+  function makeDb(
+    handlers: Array<(sql: string, params: unknown[]) => { rows: unknown[] }>,
+  ) {
     return {
       query: jest.fn(async (sql: string, params: unknown[] = []) => {
         for (const h of handlers) {
@@ -226,11 +252,16 @@ describe('PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01 service', () => {
       },
     ]);
     const pipeline = {
-      listEffective: jest.fn().mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null }),
+      listEffective: jest
+        .fn()
+        .mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null }),
       ensureSchema: jest.fn().mockResolvedValue(undefined),
     };
     const svc = new RecruitmentDashboardService(db as never, pipeline as never);
-    const dto = await svc.getDashboard({ company_id: 'holding', year: '2026' }, undefined);
+    const dto = await svc.getDashboard(
+      { company_id: 'holding', year: '2026' },
+      undefined,
+    );
     expect(dto.enough_people_status).toBe('no_plan');
     expect(dto.empty_guide?.code).toBe('NO_APPROVED_HEADCOUNT');
     expect(dto.completion_pct).toBeNull();
@@ -304,21 +335,44 @@ describe('PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01 service', () => {
       },
     ];
     const candRows = [
-      { id: 'a1', company_id: 'holding', requisition_id: 'y1', status: 'hired' },
-      { id: 'a2', company_id: 'holding', requisition_id: 'y2', status: 'hired' },
-      { id: 'a3', company_id: 'holding', requisition_id: 'y1', status: 'interview' },
-      { id: 'a4', company_id: 'holding', requisition_id: 'y3', status: 'screening' },
+      {
+        id: 'a1',
+        company_id: 'holding',
+        requisition_id: 'y1',
+        status: 'hired',
+      },
+      {
+        id: 'a2',
+        company_id: 'holding',
+        requisition_id: 'y2',
+        status: 'hired',
+      },
+      {
+        id: 'a3',
+        company_id: 'holding',
+        requisition_id: 'y1',
+        status: 'interview',
+      },
+      {
+        id: 'a4',
+        company_id: 'holding',
+        requisition_id: 'y3',
+        status: 'screening',
+      },
     ];
     const db = makeDb([
       (sql) => {
         if (sql.includes('recruitment_plans')) return { rows: planRows };
-        if (sql.includes('FROM public.job_requisitions')) return { rows: yctdRows };
+        if (sql.includes('FROM public.job_requisitions'))
+          return { rows: yctdRows };
         if (sql.includes('recruitment_candidates')) return { rows: candRows };
         return { rows: [] };
       },
     ]);
     const pipeline = {
-      listEffective: jest.fn().mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null }),
+      listEffective: jest
+        .fn()
+        .mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null }),
       ensureSchema: jest.fn().mockResolvedValue(undefined),
     };
     const svc = new RecruitmentDashboardService(db as never, pipeline as never);
@@ -358,12 +412,17 @@ describe('PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01 service', () => {
       }),
     };
     const pipeline = {
-      listEffective: jest.fn().mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null }),
+      listEffective: jest
+        .fn()
+        .mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null }),
       ensureSchema: jest.fn().mockResolvedValue(undefined),
     };
     const svc = new RecruitmentDashboardService(db as never, pipeline as never);
     await svc.getDashboard({ company_id: 'holding', year: '2026' }, undefined);
-    await svc.getDashboardYctd({ company_id: 'holding', year: '2026' }, undefined);
+    await svc.getDashboardYctd(
+      { company_id: 'holding', year: '2026' },
+      undefined,
+    );
     const planSqls = seen.filter((s) => s.includes('recruitment_plans'));
     const yctdSqls = seen.filter((s) => s.includes('job_requisitions'));
     expect(planSqls.length).toBeGreaterThanOrEqual(2);
@@ -374,10 +433,13 @@ describe('PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01 service', () => {
   });
 
   it('METHOD-405 deny mutate', () => {
-    const svc = new RecruitmentDashboardService({ query: jest.fn() } as never, {
-      listEffective: jest.fn(),
-      ensureSchema: jest.fn(),
-    } as never);
+    const svc = new RecruitmentDashboardService(
+      { query: jest.fn() } as never,
+      {
+        listEffective: jest.fn(),
+        ensureSchema: jest.fn(),
+      } as never,
+    );
     try {
       svc.denyMutate();
       fail('expected throw');

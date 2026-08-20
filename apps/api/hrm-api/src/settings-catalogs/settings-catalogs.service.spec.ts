@@ -52,12 +52,14 @@ describe('SettingsCatalogsService', () => {
   describe('appendExtensionItems batch upsert (D-U34-GHR-SYNC-SLOW-01)', () => {
     it('upserts all items in a single INSERT query via unnest', async () => {
       const insertCalls: Array<{ sql: string; params: unknown[] }> = [];
-      (db.query as jest.Mock).mockImplementation(async (sql: string, params?: unknown[]) => {
-        if (sql.includes('INSERT INTO public.hrm_catalog_extension_items')) {
-          insertCalls.push({ sql, params: params ?? [] });
-        }
-        return { rows: [] };
-      });
+      (db.query as jest.Mock).mockImplementation(
+        async (sql: string, params?: unknown[]) => {
+          if (sql.includes('INSERT INTO public.hrm_catalog_extension_items')) {
+            insertCalls.push({ sql, params: params ?? [] });
+          }
+          return { rows: [] };
+        },
+      );
 
       const items = [
         { code: 'field_a', label: 'Field A', unit: 'u1' },
@@ -98,7 +100,12 @@ describe('SettingsCatalogsService', () => {
         return { rows: [] };
       });
 
-      const out = await service.appendExtensionItems('xevn', 'holding', 'positions', []);
+      const out = await service.appendExtensionItems(
+        'xevn',
+        'holding',
+        'positions',
+        [],
+      );
       expect(out.upserted).toBe(0);
       expect(insertCount).toBe(0);
     });
@@ -132,14 +139,20 @@ describe('SettingsCatalogsService', () => {
         return { rows: [] };
       });
 
-      const out = await service.getExtensionBatchDetail(batchId, 'xevn', 'holding');
+      const out = await service.getExtensionBatchDetail(
+        batchId,
+        'xevn',
+        'holding',
+      );
       expect(out.batchId).toBe(batchId);
       expect(out.items).toHaveLength(1);
     });
 
     it('throws HRM-SET-404 when batch does not exist', async () => {
       (db.query as jest.Mock).mockResolvedValue({ rows: [] });
-      await expect(service.getExtensionBatchDetail(batchId, 'xevn', 'holding')).rejects.toMatchObject({
+      await expect(
+        service.getExtensionBatchDetail(batchId, 'xevn', 'holding'),
+      ).rejects.toMatchObject({
         response: { code: 'HRM-SET-404' },
       });
     });
@@ -165,7 +178,9 @@ describe('SettingsCatalogsService', () => {
         }
         return { rows: [] };
       });
-      await expect(service.getExtensionBatchDetail(batchId, 'xevn', 'holding')).rejects.toMatchObject({
+      await expect(
+        service.getExtensionBatchDetail(batchId, 'xevn', 'holding'),
+      ).rejects.toMatchObject({
         response: { code: 'HRM-SET-409' },
       });
     });
@@ -198,15 +213,25 @@ describe('SettingsCatalogsService', () => {
     expect(positions).toBeDefined();
     expect(positions!.xbosItems).toHaveLength(1);
     expect(positions!.hrmExtensionItems).toHaveLength(1);
-    expect(positions!.effectiveItems.map((i) => i.code).sort()).toEqual(['dev', 'pm']);
+    expect(positions!.effectiveItems.map((i) => i.code).sort()).toEqual([
+      'dev',
+      'pm',
+    ]);
     // O4 + allowance synthesize open keys when unsynced (honest empty / PC table).
-    expect(out.catalogs.some((c) => c.catalogKey === 'salary_components')).toBe(true);
-    expect(out.catalogs.some((c) => c.catalogKey === 'allowance_deduction_types')).toBe(true);
+    expect(out.catalogs.some((c) => c.catalogKey === 'salary_components')).toBe(
+      true,
+    );
+    expect(
+      out.catalogs.some((c) => c.catalogKey === 'allowance_deduction_types'),
+    ).toBe(true);
   });
 
   describe('getOverview salary_components O4 (PO-HRM-E2E-LINK-PAY-CFG-O4-SC-KEY-BE-01)', () => {
     it('synthesizes empty salary_components when XBOS/extension absent — Select can FE-append', async () => {
-      (catalogSync.listSyncedCatalogs as jest.Mock).mockResolvedValue({ total: 0, data: [] });
+      (catalogSync.listSyncedCatalogs as jest.Mock).mockResolvedValue({
+        total: 0,
+        data: [],
+      });
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
         if (sql.includes('FROM public.hrm_catalog_extension_items')) {
           return { rows: [] };
@@ -225,11 +250,16 @@ describe('SettingsCatalogsService', () => {
       expect(sc!.effectiveItems).toEqual([]);
       expect(sc!.xbosItems).toEqual([]);
       expect(sc!.hrmExtensionItems).toEqual([]);
-      expect(sc!.aliases).toEqual(expect.arrayContaining(['salary_components', 'payroll_components']));
+      expect(sc!.aliases).toEqual(
+        expect.arrayContaining(['salary_components', 'payroll_components']),
+      );
     });
 
     it('does not duplicate salary_components when extension already present', async () => {
-      (catalogSync.listSyncedCatalogs as jest.Mock).mockResolvedValue({ total: 0, data: [] });
+      (catalogSync.listSyncedCatalogs as jest.Mock).mockResolvedValue({
+        total: 0,
+        data: [],
+      });
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
         if (sql.includes('FROM public.hrm_catalog_extension_items')) {
           return {
@@ -253,7 +283,9 @@ describe('SettingsCatalogsService', () => {
       const out = await service.getOverview('xevn', 'holding');
       const scRows = out.catalogs.filter((c) => c.familyId === 'pay_comp');
       expect(scRows).toHaveLength(1);
-      expect(scRows[0].effectiveItems.map((i) => i.code)).toEqual(['PC_AN_TRUA']);
+      expect(scRows[0].effectiveItems.map((i) => i.code)).toEqual([
+        'PC_AN_TRUA',
+      ]);
     });
   });
 
@@ -308,7 +340,9 @@ describe('SettingsCatalogsService', () => {
   describe('listPickerItems invalid catalogKey', () => {
     it('throws HRM-SET-001 400 for invalid :catalogKey (deterministic, not HRM-SYS-001)', async () => {
       await expect(
-        service.listPickerItems('xevn', 'holding', 'not valid key!', { status: 'active' }),
+        service.listPickerItems('xevn', 'holding', 'not valid key!', {
+          status: 'active',
+        }),
       ).rejects.toMatchObject({
         response: { code: 'HRM-SET-001' },
         status: HttpStatus.BAD_REQUEST,
@@ -322,7 +356,9 @@ describe('SettingsCatalogsService', () => {
         total: 2,
         data: [{ key: 'job_titles' }, { key: 'departments' }],
       });
-      (catalogSync.pullCatalogFromXbos as jest.Mock).mockResolvedValue({ key: 'ok' });
+      (catalogSync.pullCatalogFromXbos as jest.Mock).mockResolvedValue({
+        key: 'ok',
+      });
 
       const out = await service.syncAllFromXbos('xevn', 'holding', 'Bearer t');
       expect(out.pulledKeys).toEqual(['job_titles', 'departments']);
@@ -340,7 +376,9 @@ describe('SettingsCatalogsService', () => {
       (catalogSync.listRemoteCatalogsFromXbos as jest.Mock).mockRejectedValue(
         new TypeError('fetch failed'),
       );
-      await expect(service.syncAllFromXbos('xevn', 'holding')).rejects.toMatchObject({
+      await expect(
+        service.syncAllFromXbos('xevn', 'holding'),
+      ).rejects.toMatchObject({
         code: 'HRM-SYNC-001',
         status: HttpStatus.BAD_GATEWAY,
       });
@@ -351,12 +389,18 @@ describe('SettingsCatalogsService', () => {
         total: 2,
         data: [{ key: 'leave_types' }, { key: 'candidate_statuses' }],
       });
-      (catalogSync.pullCatalogFromXbos as jest.Mock).mockImplementation(async (key: string) => {
-        if (key === 'candidate_statuses') {
-          throw new ApiException('HRM-SYNC-001', 'XBOS API error 500', HttpStatus.BAD_GATEWAY);
-        }
-        return { key };
-      });
+      (catalogSync.pullCatalogFromXbos as jest.Mock).mockImplementation(
+        async (key: string) => {
+          if (key === 'candidate_statuses') {
+            throw new ApiException(
+              'HRM-SYNC-001',
+              'XBOS API error 500',
+              HttpStatus.BAD_GATEWAY,
+            );
+          }
+          return { key };
+        },
+      );
       const out = await service.syncAllFromXbos('xevn', 'trsport');
       expect(out.pulledKeys).toEqual(['leave_types']);
       expect(out.skippedKeys).toEqual(['candidate_statuses']);
@@ -368,9 +412,15 @@ describe('SettingsCatalogsService', () => {
         data: [{ key: 'job_titles' }],
       });
       (catalogSync.pullCatalogFromXbos as jest.Mock).mockRejectedValue(
-        new ApiException('HRM-SYNC-001', 'XBOS API request timed out', HttpStatus.BAD_GATEWAY),
+        new ApiException(
+          'HRM-SYNC-001',
+          'XBOS API request timed out',
+          HttpStatus.BAD_GATEWAY,
+        ),
       );
-      await expect(service.syncAllFromXbos('xevn', 'holding')).rejects.toMatchObject({
+      await expect(
+        service.syncAllFromXbos('xevn', 'holding'),
+      ).rejects.toMatchObject({
         code: 'HRM-SYNC-001',
         status: HttpStatus.BAD_GATEWAY,
       });
@@ -381,12 +431,18 @@ describe('SettingsCatalogsService', () => {
         total: 2,
         data: [{ key: 'job_titles' }, { key: 'ghost_catalog' }],
       });
-      (catalogSync.pullCatalogFromXbos as jest.Mock).mockImplementation(async (key: string) => {
-        if (key === 'ghost_catalog') {
-          throw new ApiException('HRM-SYNC-002', 'missing', HttpStatus.NOT_FOUND);
-        }
-        return { key };
-      });
+      (catalogSync.pullCatalogFromXbos as jest.Mock).mockImplementation(
+        async (key: string) => {
+          if (key === 'ghost_catalog') {
+            throw new ApiException(
+              'HRM-SYNC-002',
+              'missing',
+              HttpStatus.NOT_FOUND,
+            );
+          }
+          return { key };
+        },
+      );
       const out = await service.syncAllFromXbos('xevn', 'holding');
       expect(out.pulledKeys).toEqual(['job_titles']);
       expect(out.skippedKeys).toEqual(['ghost_catalog']);

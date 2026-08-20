@@ -17,7 +17,9 @@ export type PayGtgcStatutoryCfgRow = {
   gtgc_per_dependent_amount: string;
 };
 
-export async function ensurePayGtgcStatutoryCfgSchema(db: HrmDbService): Promise<void> {
+export async function ensurePayGtgcStatutoryCfgSchema(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     CREATE TABLE IF NOT EXISTS public.pay_gtgc_statutory_cfg (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

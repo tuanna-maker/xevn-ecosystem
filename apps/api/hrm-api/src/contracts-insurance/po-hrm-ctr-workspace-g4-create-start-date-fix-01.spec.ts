@@ -15,7 +15,8 @@ function schemaNoop(sql: string): boolean {
     s.includes('CREATE INDEX') ||
     s.includes('CREATE UNIQUE') ||
     s.includes('ALTER TABLE') ||
-    (s.includes('INSERT INTO public.employee_contracts') && s.includes('holding'))
+    (s.includes('INSERT INTO public.employee_contracts') &&
+      s.includes('holding'))
   );
 }
 
@@ -23,36 +24,38 @@ describe('PO-HRM-CTR-WORKSPACE-G4-CREATE-START-DATE-FIX-01', () => {
   it('createContract without start_date persists default ISO effective date for wizard draft', async () => {
     let insertStartDate: string | undefined;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaNoop(s)) return { rows: [] };
-        if (s.includes('INSERT INTO public.employee_contracts')) {
-          insertStartDate = params?.[8] as string;
-          return {
-            rows: [
-              {
-                id: 'ct-wizard-draft-1',
-                company_id: 'holding',
-                employee_id: EMP_ID,
-                candidate_id: null,
-                requisition_id: null,
-                subject_type: 'employee',
-                contract_type: 'indefinite',
-                start_date: insertStartDate,
-                end_date: null,
-                status: 'active',
-                template_id: TPL_ID,
-                signed_at: '2026-08-11',
-                work_arrangement: 'full_time',
-                salary_ratio_percent: 100,
-                created_at: '2026-08-11T00:00:00.000Z',
-                updated_at: '2026-08-11T00:00:00.000Z',
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaNoop(s)) return { rows: [] };
+          if (s.includes('INSERT INTO public.employee_contracts')) {
+            insertStartDate = params?.[8] as string;
+            return {
+              rows: [
+                {
+                  id: 'ct-wizard-draft-1',
+                  company_id: 'holding',
+                  employee_id: EMP_ID,
+                  candidate_id: null,
+                  requisition_id: null,
+                  subject_type: 'employee',
+                  contract_type: 'indefinite',
+                  start_date: insertStartDate,
+                  end_date: null,
+                  status: 'active',
+                  template_id: TPL_ID,
+                  signed_at: '2026-08-11',
+                  work_arrangement: 'full_time',
+                  salary_ratio_percent: 100,
+                  created_at: '2026-08-11T00:00:00.000Z',
+                  updated_at: '2026-08-11T00:00:00.000Z',
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
 
     const service = new ContractsInsuranceService(db);
@@ -76,29 +79,31 @@ describe('PO-HRM-CTR-WORKSPACE-G4-CREATE-START-DATE-FIX-01', () => {
 
   it('createContract accepts effective_from alias when start_date omitted', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaNoop(s)) return { rows: [] };
-        if (s.includes('INSERT INTO public.employee_contracts')) {
-          expect(params?.[8]).toBe('2026-09-01');
-          return {
-            rows: [
-              {
-                id: 'ct-alias-1',
-                company_id: 'holding',
-                employee_id: EMP_ID,
-                contract_type: 'indefinite',
-                start_date: '2026-09-01',
-                end_date: null,
-                status: 'active',
-                created_at: '2026-09-01T00:00:00.000Z',
-                updated_at: '2026-09-01T00:00:00.000Z',
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaNoop(s)) return { rows: [] };
+          if (s.includes('INSERT INTO public.employee_contracts')) {
+            expect(params?.[8]).toBe('2026-09-01');
+            return {
+              rows: [
+                {
+                  id: 'ct-alias-1',
+                  company_id: 'holding',
+                  employee_id: EMP_ID,
+                  contract_type: 'indefinite',
+                  start_date: '2026-09-01',
+                  end_date: null,
+                  status: 'active',
+                  created_at: '2026-09-01T00:00:00.000Z',
+                  updated_at: '2026-09-01T00:00:00.000Z',
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const service = new ContractsInsuranceService(db);
     await service.createContract({

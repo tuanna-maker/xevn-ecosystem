@@ -3,7 +3,10 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 
-const describeDb = process.env.DB_HOST || process.env.DATABASE_URL_HRM ? describe : describe.skip;
+const describeDb =
+  process.env.DB_HOST || process.env.DATABASE_URL_HRM
+    ? describe
+    : describe.skip;
 
 describeDb('Tenant isolation (e2e)', () => {
   let app: INestApplication;

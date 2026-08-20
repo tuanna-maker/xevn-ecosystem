@@ -39,7 +39,10 @@ function mockBridge() {
 describe('PO-E2E-SPINE-01-BE-CAND-DTO-01 CreateCandidateDto FE parity', () => {
   it('accepts CandidateFormDialog FE-shaped payload (forbidNonWhitelisted)', () => {
     const dto = plainToInstance(CreateCandidateDto, FE_SHAPED_CREATE_BODY);
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors).toHaveLength(0);
   });
 
@@ -48,7 +51,10 @@ describe('PO-E2E-SPINE-01-BE-CAND-DTO-01 CreateCandidateDto FE parity', () => {
       ...FE_SHAPED_CREATE_BODY,
       invent_only_field: 'nope',
     });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors.length).toBeGreaterThan(0);
     expect(JSON.stringify(errors)).toMatch(/invent_only_field/);
   });
@@ -69,7 +75,10 @@ describe('PO-E2E-SPINE-01-BE-CAND-DTO-01 CreateCandidateDto FE parity', () => {
       marital_status: 'single',
       notes: null,
     });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors).toHaveLength(0);
   });
 });
@@ -160,7 +169,9 @@ describe('PO-E2E-SPINE-01-BE-CAND-DTO-01 createCandidatePool persist', () => {
       }),
     ).rejects.toMatchObject({ code: 'HRM-REC-HIRE-400' });
     expect(
-      db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.candidates')),
+      db.query.mock.calls.some(([sql]) =>
+        String(sql).includes('INSERT INTO public.candidates'),
+      ),
     ).toBe(false);
   });
 });
@@ -212,7 +223,8 @@ describe('G-DB-01 updateCandidatePool hired bind (PO-SPEC-UNIT-TEST-IMPL-01)', (
     expect(
       db.query.mock.calls.some(
         ([sql]) =>
-          String(sql).includes('UPDATE public.candidates') && String(sql).includes('stage'),
+          String(sql).includes('UPDATE public.candidates') &&
+          String(sql).includes('stage'),
       ),
     ).toBe(false);
   });
@@ -225,35 +237,37 @@ describe('G-DB-01 updateCandidatePool hired bind (PO-SPEC-UNIT-TEST-IMPL-01)', (
       employee_id: employeeId,
     };
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        if (
-          String(sql).includes('FROM public.candidates WHERE id') &&
-          String(sql).includes('SELECT company_id')
-        ) {
-          return {
-            rows: [
-              {
-                company_id: 'holding',
-                stage: 'offer',
-                workflow_instance_id: null,
-                employee_id: null,
-              },
-            ],
-          };
-        }
-        if (
-          String(sql).includes('FROM public.employees') &&
-          String(sql).includes('WHERE id =')
-        ) {
-          return { rows: [{ id: employeeId, company_id: 'holding' }] };
-        }
-        if (String(sql).includes('UPDATE public.candidates SET')) {
-          expect(params?.[15]).toBe(employeeId);
-          expect(params?.[6]).toBe('hired');
-          return { rows: [stamped] };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          if (
+            String(sql).includes('FROM public.candidates WHERE id') &&
+            String(sql).includes('SELECT company_id')
+          ) {
+            return {
+              rows: [
+                {
+                  company_id: 'holding',
+                  stage: 'offer',
+                  workflow_instance_id: null,
+                  employee_id: null,
+                },
+              ],
+            };
+          }
+          if (
+            String(sql).includes('FROM public.employees') &&
+            String(sql).includes('WHERE id =')
+          ) {
+            return { rows: [{ id: employeeId, company_id: 'holding' }] };
+          }
+          if (String(sql).includes('UPDATE public.candidates SET')) {
+            expect(params?.[15]).toBe(employeeId);
+            expect(params?.[6]).toBe('hired');
+            return { rows: [stamped] };
+          }
+          return { rows: [] };
+        }),
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
 
@@ -274,7 +288,9 @@ describe('G-DB-01 updateCandidatePool hired bind (PO-SPEC-UNIT-TEST-IMPL-01)', (
 
     expect(row).toEqual(stamped);
     expect(
-      db.query.mock.calls.some(([sql]) => String(sql).includes('UPDATE public.candidates SET')),
+      db.query.mock.calls.some(([sql]) =>
+        String(sql).includes('UPDATE public.candidates SET'),
+      ),
     ).toBe(true);
   });
 });

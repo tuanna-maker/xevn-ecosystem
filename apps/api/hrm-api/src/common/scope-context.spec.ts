@@ -19,9 +19,16 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
   });
 
   it('throws SCOPE_CONTEXT_MISMATCH when header tenant differs from token', () => {
-    const token = signServiceJwt({ sub: 'user-1', tenantId: 'xevn', companyId: 'main' });
+    const token = signServiceJwt({
+      sub: 'user-1',
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
     expect(() =>
-      resolveScopeContext(`Bearer ${token}`, { tenantId: 'other-tenant', companyId: 'main' }),
+      resolveScopeContext(`Bearer ${token}`, {
+        tenantId: 'other-tenant',
+        companyId: 'main',
+      }),
     ).toThrow(
       expect.objectContaining<Partial<ApiException>>({
         code: 'SCOPE_CONTEXT_MISMATCH',
@@ -31,9 +38,16 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
   });
 
   it('throws SCOPE_CONTEXT_MISMATCH when header company differs from token', () => {
-    const token = signServiceJwt({ sub: 'user-1', tenantId: 'xevn', companyId: 'main' });
+    const token = signServiceJwt({
+      sub: 'user-1',
+      tenantId: 'xevn',
+      companyId: 'main',
+    });
     try {
-      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xevn', companyId: 'other-co' });
+      resolveScopeContext(`Bearer ${token}`, {
+        tenantId: 'xevn',
+        companyId: 'other-co',
+      });
       fail('expected mismatch');
     } catch (error) {
       expect(error).toBeInstanceOf(ApiException);
@@ -49,7 +63,13 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    for (const slug of ['holding', 'trsport', 'logistics', 'finance', 'services'] as const) {
+    for (const slug of [
+      'holding',
+      'trsport',
+      'logistics',
+      'finance',
+      'services',
+    ] as const) {
       const scope = resolveScopeContext(`Bearer ${token}`, {
         tenantId: 'xevn',
         companyId: slug,
@@ -66,7 +86,10 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
       roleCode: 'subsidiary_ceo',
     });
     expect(() =>
-      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xe-du-lich', companyId: 'holding' }),
+      resolveScopeContext(`Bearer ${token}`, {
+        tenantId: 'xe-du-lich',
+        companyId: 'holding',
+      }),
     ).toThrow(
       expect.objectContaining<Partial<ApiException>>({
         code: 'SCOPE_CONTEXT_MISMATCH',
@@ -102,7 +125,10 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
       roleCode: 'subsidiary_ceo',
     });
     expect(() =>
-      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xevn', companyId: 'main' }),
+      resolveScopeContext(`Bearer ${token}`, {
+        tenantId: 'xevn',
+        companyId: 'main',
+      }),
     ).toThrow(
       expect.objectContaining<Partial<ApiException>>({
         code: 'SCOPE_CONTEXT_MISMATCH',
@@ -110,7 +136,10 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
       }),
     );
     try {
-      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xevn', companyId: 'main' });
+      resolveScopeContext(`Bearer ${token}`, {
+        tenantId: 'xevn',
+        companyId: 'main',
+      });
     } catch (error) {
       expect((error as ApiException).getStatus()).toBe(HttpStatus.CONFLICT);
     }
@@ -124,7 +153,10 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
       roleCode: 'subsidiary_ceo',
     });
     expect(() =>
-      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xe-du-lich', companyId: 'holding' }),
+      resolveScopeContext(`Bearer ${token}`, {
+        tenantId: 'xe-du-lich',
+        companyId: 'holding',
+      }),
     ).toThrow(
       expect.objectContaining<Partial<ApiException>>({
         code: 'SCOPE_CONTEXT_MISMATCH',
@@ -183,7 +215,11 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
   });
 
   it('throws SCOPE_CONTEXT_MISMATCH when token lacks company_uuid and request uses foreign UUID', () => {
-    const token = signServiceJwt({ sub: 'user-1', tenantId: 'xevn', companyId: 'holding' });
+    const token = signServiceJwt({
+      sub: 'user-1',
+      tenantId: 'xevn',
+      companyId: 'holding',
+    });
     expect(() =>
       resolveScopeContext(`Bearer ${token}`, {
         tenantId: 'xevn',
@@ -280,7 +316,10 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
       roles: ['employee'],
     });
     expect(() =>
-      resolveScopeContext(`Bearer ${token}`, { tenantId: 'xevn', companyId: 'main' }),
+      resolveScopeContext(`Bearer ${token}`, {
+        tenantId: 'xevn',
+        companyId: 'main',
+      }),
     ).toThrow(
       expect.objectContaining<Partial<ApiException>>({
         code: 'SCOPE_CONTEXT_MISMATCH',

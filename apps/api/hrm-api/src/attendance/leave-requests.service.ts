@@ -357,7 +357,9 @@ export function isSickLeaveTypeCode(leaveType: string): boolean {
 }
 
 /** Catalog item → nghỉ ốm via code, VI label, or metadata flag (is_sick / category). */
-export function catalogLeaveTypeIndicatesSick(item: LeaveCatalogItemHint): boolean {
+export function catalogLeaveTypeIndicatesSick(
+  item: LeaveCatalogItemHint,
+): boolean {
   if (item.code && isSickLeaveTypeCode(item.code)) {
     return true;
   }
@@ -371,7 +373,10 @@ export function catalogLeaveTypeIndicatesSick(item: LeaveCatalogItemHint): boole
   if (meta.is_sick === true || meta.sick === true) {
     return true;
   }
-  if (meta.requires_doctor_note === true || meta.requires_medical_attachment === true) {
+  if (
+    meta.requires_doctor_note === true ||
+    meta.requires_medical_attachment === true
+  ) {
     return true;
   }
   const category = normalizeLeaveTypeToken(
@@ -384,7 +389,10 @@ export function catalogLeaveTypeIndicatesSick(item: LeaveCatalogItemHint): boole
     return true;
   }
   // Attachment-required flag alone only when category/label already smells like sick — avoid annual.
-  if (meta.requires_attachment === true && (category.includes('sick') || isSickLeaveLabel(String(meta.label ?? '')))) {
+  if (
+    meta.requires_attachment === true &&
+    (category.includes('sick') || isSickLeaveLabel(String(meta.label ?? '')))
+  ) {
     return true;
   }
   return false;
@@ -413,7 +421,8 @@ export function toLeaveDisplayRow(row: LeaveRow): LeaveDisplayRow {
     ...row,
     status_label: leaveStatusLabelVi(row.status),
     leave_type_label: leaveTypeLabelVi(row.leave_type),
-    employee_display_name: name || (row.employee_code ?? '').trim() || String(row.employee_id ?? ''),
+    employee_display_name:
+      name || (row.employee_code ?? '').trim() || String(row.employee_id ?? ''),
     total_days_number: toDayNumber(row.total_days),
     working_days_number:
       row.working_days == null || row.working_days === ''
@@ -466,13 +475,15 @@ export class LeaveRequestsService {
     @Optional() private readonly catalogSync?: LeaveCatalogSyncPort,
     @Optional() private readonly moduleRef?: ModuleRef,
     /** Option A leave→attendance funnel — optional so legacy unit tests keep 3-arg ctor. */
-    @Optional() private readonly leaveAttendanceFunnel?: LeaveAttendanceFunnelService,
+    @Optional()
+    private readonly leaveAttendanceFunnel?: LeaveAttendanceFunnelService,
     /** F-ATT-CAT-EFF-01 — optional for legacy specs; production injects AttLeaveTypeService. */
     @Optional() private readonly attLeaveTypeCatalog?: AttLeaveTypeService,
     /** F-ATT-HOL-01 thin year set — optional for legacy specs. */
     @Optional() private readonly holidayCalendar?: AttHolidayCalendarService,
     /** F-ATT-SICK-DAY-BRANCH — optional for legacy specs. */
-    @Optional() private readonly attSickLeaveFundOrder?: AttSickLeaveFundOrderService,
+    @Optional()
+    private readonly attSickLeaveFundOrder?: AttSickLeaveFundOrderService,
   ) {}
 
   private async materializeLeaveFunnel(row: LeaveRow): Promise<{
@@ -506,11 +517,17 @@ export class LeaveRequestsService {
     }
   }
 
-  private async reverseLeaveFunnel(leaveRequestId: string, companyId?: string): Promise<void> {
+  private async reverseLeaveFunnel(
+    leaveRequestId: string,
+    companyId?: string,
+  ): Promise<void> {
     if (!this.leaveAttendanceFunnel) {
       return;
     }
-    await this.leaveAttendanceFunnel.reverseLeaveMarkers(leaveRequestId, companyId);
+    await this.leaveAttendanceFunnel.reverseLeaveMarkers(
+      leaveRequestId,
+      companyId,
+    );
   }
 
   private resolveHolidayCalendar(): AttHolidayCalendarService | undefined {
@@ -552,7 +569,9 @@ export class LeaveRequestsService {
       // Lazy require — keeps leave service loadable when settings master-keys file is absent.
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mod = require('../settings-catalogs/settings-catalogs.service') as {
-        SettingsCatalogsService: new (...args: never[]) => LeaveSettingsCatalogPort;
+        SettingsCatalogsService: new (
+          ...args: never[]
+        ) => LeaveSettingsCatalogPort;
       };
       return this.moduleRef.get(mod.SettingsCatalogsService, { strict: false });
     } catch {
@@ -592,7 +611,11 @@ export class LeaveRequestsService {
       return;
     }
     const active = (
-      await settingsCatalogs.getEffectiveItemsForKey(tenantId, catalogCompanyId, HRM_SC_LEAVE_KEY)
+      await settingsCatalogs.getEffectiveItemsForKey(
+        tenantId,
+        catalogCompanyId,
+        HRM_SC_LEAVE_KEY,
+      )
     ).filter((item) => item.status === 'active');
     if (active.length > 0) {
       return;
@@ -815,9 +838,13 @@ export class LeaveRequestsService {
     }
 
     // U19 — same persist/list scope family as leave-requests mutate.
-    const companyId = resolveHrmPersistCompanyIdText(authorization, companyRaw, {
-      tenantId: options?.tenantId,
-    });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      companyRaw,
+      {
+        tenantId: options?.tenantId,
+      },
+    );
     normalizePayrollListCompanyId(authorization, companyRaw);
 
     const attLeaveCatalog = this.resolveAttLeaveTypeCatalog();
@@ -870,7 +897,9 @@ export class LeaveRequestsService {
   }
 
   /** Reload leave row after workflow bridge UPDATE (POST 201 must include workflow_instance_id). */
-  private async loadLeaveRequestById(requestId: string): Promise<LeaveRow | null> {
+  private async loadLeaveRequestById(
+    requestId: string,
+  ): Promise<LeaveRow | null> {
     const res = await this.db.query<LeaveRow>(
       `SELECT * FROM public.leave_requests WHERE id = $1::uuid LIMIT 1`,
       [requestId],
@@ -998,7 +1027,9 @@ export class LeaveRequestsService {
       );
       source = 'employee_leave_balances';
     } else {
-      const empRes = await this.db.query<{ custom_fields: Record<string, unknown> | null }>(
+      const empRes = await this.db.query<{
+        custom_fields: Record<string, unknown> | null;
+      }>(
         `
           SELECT custom_fields
           FROM public.employees
@@ -1061,7 +1092,13 @@ export class LeaveRequestsService {
           AND leave_type = $3
           AND balance_year = $4;
       `,
-      [input.companyId, input.employeeId, leaveType, balanceYear, input.totalDays],
+      [
+        input.companyId,
+        input.employeeId,
+        leaveType,
+        balanceYear,
+        input.totalDays,
+      ],
     );
   }
 
@@ -1146,7 +1183,10 @@ export class LeaveRequestsService {
       }
     }
     const settingsCatalogs = this.resolveSettingsCatalogs();
-    if (!settingsCatalogs || typeof settingsCatalogs.getEffectiveItemsForKey !== 'function') {
+    if (
+      !settingsCatalogs ||
+      typeof settingsCatalogs.getEffectiveItemsForKey !== 'function'
+    ) {
       return false;
     }
     const tenantForCatalog =
@@ -1157,7 +1197,11 @@ export class LeaveRequestsService {
       tenantForCatalog,
       options?.companySlug?.trim() || 'holding',
     );
-    await this.ensureLeaveTypeCatalogAvailable(authorization, tenantForCatalog, catalogCompanyId);
+    await this.ensureLeaveTypeCatalogAvailable(
+      authorization,
+      tenantForCatalog,
+      catalogCompanyId,
+    );
     const itemsRaw = await settingsCatalogs.getEffectiveItemsForKey(
       tenantForCatalog,
       catalogCompanyId,
@@ -1165,7 +1209,9 @@ export class LeaveRequestsService {
     );
     const items = Array.isArray(itemsRaw) ? itemsRaw : [];
     const codeKey = leaveType.trim().toLowerCase();
-    const match = items.find((item) => (item.code ?? '').trim().toLowerCase() === codeKey);
+    const match = items.find(
+      (item) => (item.code ?? '').trim().toLowerCase() === codeKey,
+    );
     if (!match) {
       return false;
     }
@@ -1237,23 +1283,32 @@ export class LeaveRequestsService {
     if (!input.isSick || !this.attSickLeaveFundOrder) {
       return undefined;
     }
-    const typeFlags = await this.resolveSickLeaveTypeFlags(input.leaveType, input.authorization, {
-      tenantId: input.tenantId,
-      companySlug: input.companySlug,
-    });
-    const spanDays = expandLeaveDateRange(input.startDate, input.endDate).length;
+    const typeFlags = await this.resolveSickLeaveTypeFlags(
+      input.leaveType,
+      input.authorization,
+      {
+        tenantId: input.tenantId,
+        companySlug: input.companySlug,
+      },
+    );
+    const spanDays = expandLeaveDateRange(
+      input.startDate,
+      input.endDate,
+    ).length;
     const unitPerDay =
       input.persistDays > 0 && spanDays > 0 ? input.persistDays / spanDays : 1;
-    const branches = await this.attSickLeaveFundOrder.allocateAndPersistSickDayBranches({
-      companyId: input.companyId,
-      leaveRequestId: input.leaveRequestId,
-      employeeId: input.employeeId,
-      startDate: input.startDate,
-      endDate: input.endDate,
-      typeFlags,
-      deductUnitsPerDay: unitPerDay,
-    });
-    const annualUnits = this.attSickLeaveFundOrder.sumAnnualBranchUnits(branches);
+    const branches =
+      await this.attSickLeaveFundOrder.allocateAndPersistSickDayBranches({
+        companyId: input.companyId,
+        leaveRequestId: input.leaveRequestId,
+        employeeId: input.employeeId,
+        startDate: input.startDate,
+        endDate: input.endDate,
+        typeFlags,
+        deductUnitsPerDay: unitPerDay,
+      });
+    const annualUnits =
+      this.attSickLeaveFundOrder.sumAnnualBranchUnits(branches);
     if (annualUnits > 0) {
       await this.lockPendingLeaveBalance({
         companyId: input.companyId,
@@ -1274,8 +1329,12 @@ export class LeaveRequestsService {
     if (!this.attSickLeaveFundOrder) {
       return;
     }
-    const branches = await this.attSickLeaveFundOrder.listDayBranchesForRequest(leaveRequestId);
-    const annualUnits = this.attSickLeaveFundOrder.sumAnnualBranchUnits(branches);
+    const branches =
+      await this.attSickLeaveFundOrder.listDayBranchesForRequest(
+        leaveRequestId,
+      );
+    const annualUnits =
+      this.attSickLeaveFundOrder.sumAnnualBranchUnits(branches);
     if (annualUnits > 0) {
       await this.ensureLeaveBalanceSchema();
       const balanceYear = balanceYearFromStartDate(String(row.start_date));
@@ -1289,15 +1348,13 @@ export class LeaveRequestsService {
             AND leave_type = 'annual'
             AND balance_year = $4;
         `,
-        [
-          row.company_id,
-          row.employee_id,
-          balanceYear,
-          annualUnits,
-        ],
+        [row.company_id, row.employee_id, balanceYear, annualUnits],
       );
     }
-    await this.attSickLeaveFundOrder.voidDayBranchesForRequest(leaveRequestId, voidReason);
+    await this.attSickLeaveFundOrder.voidDayBranchesForRequest(
+      leaveRequestId,
+      voidReason,
+    );
   }
 
   /**
@@ -1308,7 +1365,11 @@ export class LeaveRequestsService {
   async createLeaveRequest(
     body: CreateLeaveRequestDto,
     authorization?: string,
-    options?: { submitterUserId?: string; tenantId?: string; companySlug?: string },
+    options?: {
+      submitterUserId?: string;
+      tenantId?: string;
+      companySlug?: string;
+    },
   ) {
     await this.ensureSchema();
     // Thất bại: Diễn biến #4 — đến ngày trước từ ngày.
@@ -1320,9 +1381,13 @@ export class LeaveRequestsService {
       );
     }
     // G-AT10-01: slug/main/UUID → holding TEXT (parity OT/requisition); không ép ::uuid.
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.company_id, {
-      tenantId: options?.tenantId,
-    });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.company_id,
+      {
+        tenantId: options?.tenantId,
+      },
+    );
     const attachmentUrl = assertValidLeaveAttachmentUrl(body.attachment_url);
     const leaveType = body.leave_type.trim();
 
@@ -1346,7 +1411,11 @@ export class LeaveRequestsService {
           tenantForCatalog,
           body.company_id,
         );
-        await this.ensureLeaveTypeCatalogAvailable(authorization, tenantForCatalog, catalogCompanyId);
+        await this.ensureLeaveTypeCatalogAvailable(
+          authorization,
+          tenantForCatalog,
+          catalogCompanyId,
+        );
         await settingsCatalogs.assertCodeInEffectiveCatalog({
           tenantId: tenantForCatalog,
           companyId: catalogCompanyId,
@@ -1404,7 +1473,11 @@ export class LeaveRequestsService {
     const persistDays = engine ? engine.deductible_units : body.total_days;
 
     // Diễn biến #5 — chồng pending/approved.
-    await this.assertNoLeaveOverlap(body.employee_id, body.start_date, body.end_date);
+    await this.assertNoLeaveOverlap(
+      body.employee_id,
+      body.start_date,
+      body.end_date,
+    );
     // Diễn biến #6 — hết phép khi có số dư tracked.
     await this.assertSufficientLeaveBalance({
       companyId,
@@ -1451,7 +1524,11 @@ export class LeaveRequestsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-LEAVE-500', 'Failed to create leave request', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiException(
+        'HRM-LEAVE-500',
+        'Failed to create leave request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     // Diễn biến #3 — khóa số dư tạm khi hệ thống theo dõi (row balance tồn tại).
     await this.lockPendingLeaveBalance({
@@ -1463,15 +1540,16 @@ export class LeaveRequestsService {
     });
     const payload = this.toPayload(row);
     await this.fanout.onLeaveRequestCreated(payload);
-    const wfResult = await this.leaveWorkflowBridge.startLeaveWorkflowIfConfigured({
-      leaveRequestId: row.id,
-      companyId: row.company_id,
-      employeeId: row.employee_id,
-      submitterUserId: options?.submitterUserId,
-      tenantId: options?.tenantId,
-      companySlug: options?.companySlug ?? companyId,
-      authorization,
-    });
+    const wfResult =
+      await this.leaveWorkflowBridge.startLeaveWorkflowIfConfigured({
+        leaveRequestId: row.id,
+        companyId: row.company_id,
+        employeeId: row.employee_id,
+        submitterUserId: options?.submitterUserId,
+        tenantId: options?.tenantId,
+        companySlug: options?.companySlug ?? companyId,
+        authorization,
+      });
     const refreshed = await this.loadLeaveRequestById(row.id);
     const workflowInstanceId =
       refreshed?.workflow_instance_id?.trim() ||
@@ -1491,11 +1569,17 @@ export class LeaveRequestsService {
       tenantId: options?.tenantId,
       companySlug: options?.companySlug ?? companyId,
     });
-    const display = toLeaveDisplayRow({ ...base, workflow_instance_id: workflowInstanceId });
+    const display = toLeaveDisplayRow({
+      ...base,
+      workflow_instance_id: workflowInstanceId,
+    });
     return dayBranches?.length ? { ...display, dayBranches } : display;
   }
 
-  async approveLeaveRequestInternal(requestId: string, body: DecideLeaveRequestDto) {
+  async approveLeaveRequestInternal(
+    requestId: string,
+    body: DecideLeaveRequestDto,
+  ) {
     const res = await this.db.query<LeaveRow>(
       `
         UPDATE public.leave_requests
@@ -1510,7 +1594,11 @@ export class LeaveRequestsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-LEAVE-404', 'Leave request not found or not pending', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-LEAVE-404',
+        'Leave request not found or not pending',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.settleApprovedLeaveBalance(row);
     await this.fanout.onLeaveRequestDecided('approved', this.toPayload(row));
@@ -1528,7 +1616,10 @@ export class LeaveRequestsService {
     };
   }
 
-  async rejectLeaveRequestInternal(requestId: string, body: DecideLeaveRequestDto) {
+  async rejectLeaveRequestInternal(
+    requestId: string,
+    body: DecideLeaveRequestDto,
+  ) {
     const res = await this.db.query<LeaveRow>(
       `
         UPDATE public.leave_requests
@@ -1549,7 +1640,11 @@ export class LeaveRequestsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-LEAVE-404', 'Leave request not found or not pending', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-LEAVE-404',
+        'Leave request not found or not pending',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.releasePendingLeaveBalance(row);
     await this.releaseSickDayBranchHolds(requestId, row, 'rejected');
@@ -1563,8 +1658,13 @@ export class LeaveRequestsService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
     const params: unknown[] = [];
     const filters: string[] = [];
     pushWorkforceEmployeeScopeFilter(filters, params, scope, 'lr.employee_id');
@@ -1586,7 +1686,10 @@ export class LeaveRequestsService {
     }
     sql += ` ORDER BY lr.requested_at DESC LIMIT 200`;
     const res = await this.db.query<LeaveRow>(sql, params);
-    return { total: res.rows.length, data: res.rows.map((r) => toLeaveDisplayRow(r)) };
+    return {
+      total: res.rows.length,
+      data: res.rows.map((r) => toLeaveDisplayRow(r)),
+    };
   }
 
   private async loadLeaveRequestCompany(
@@ -1607,8 +1710,13 @@ export class LeaveRequestsService {
     tenantId?: string,
   ) {
     // G-AT10-01 / AT-12 — UUID query → slug ladder (parity list); row.company_id is TEXT.
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
     const existing = await this.loadLeaveRequestCompany(requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-LEAVE-404',
@@ -1634,7 +1742,11 @@ export class LeaveRequestsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-LEAVE-404', 'Leave request not found or not pending', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-LEAVE-404',
+        'Leave request not found or not pending',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.settleApprovedLeaveBalance(row);
     await this.fanout.onLeaveRequestDecided('approved', this.toPayload(row));
@@ -1660,8 +1772,13 @@ export class LeaveRequestsService {
     tenantId?: string,
   ) {
     // G-AT10-01 / AT-13 — same slug/TEXT scope ladder as approve + list.
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
     const existing = await this.loadLeaveRequestCompany(requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-LEAVE-404',
@@ -1693,7 +1810,11 @@ export class LeaveRequestsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-LEAVE-404', 'Leave request not found or not pending', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-LEAVE-404',
+        'Leave request not found or not pending',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.releasePendingLeaveBalance(row);
     await this.releaseSickDayBranchHolds(requestId, row, 'rejected');
@@ -1712,8 +1833,13 @@ export class LeaveRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
     const existing = await this.loadLeaveRequestCompany(requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-LEAVE-404',
@@ -1739,11 +1865,19 @@ export class LeaveRequestsService {
         WHERE id = $1::uuid AND status IN ('pending', 'approved')
         RETURNING *;
       `,
-      [requestId, body.reviewer_name.trim(), body.rejected_reason?.trim() ?? null],
+      [
+        requestId,
+        body.reviewer_name.trim(),
+        body.rejected_reason?.trim() ?? null,
+      ],
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-LEAVE-404', 'Leave request not found or not cancellable', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-LEAVE-404',
+        'Leave request not found or not cancellable',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (fromStatus === 'pending') {
       await this.releasePendingLeaveBalance(row);

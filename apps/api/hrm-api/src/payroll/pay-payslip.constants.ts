@@ -10,7 +10,8 @@ export const PAY_PAYSLIP_PAYMENT_STATUSES = [
   'budget_hold',
 ] as const;
 
-export type PayPayslipPaymentStatus = (typeof PAY_PAYSLIP_PAYMENT_STATUSES)[number];
+export type PayPayslipPaymentStatus =
+  (typeof PAY_PAYSLIP_PAYMENT_STATUSES)[number];
 
 /** Body keys that attempt calculator override on payslip mutate (AC-PAY-SLIP-DENY-MANUAL). */
 export const PAY_PAYSLIP_FORBIDDEN_BODY_KEYS = [
@@ -33,7 +34,10 @@ export const PAY_PAYSLIP_FORBIDDEN_BODY_KEYS = [
   'segments',
 ] as const;
 
-export const PAY_PAYSLIP_PAYMENT_STATUS_LABEL_VI: Record<PayPayslipPaymentStatus, string> = {
+export const PAY_PAYSLIP_PAYMENT_STATUS_LABEL_VI: Record<
+  PayPayslipPaymentStatus,
+  string
+> = {
   unpaid: 'Chưa thanh toán',
   partial: 'Thanh toán một phần',
   paid: 'Đã thanh toán',

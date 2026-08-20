@@ -29,7 +29,10 @@ describe('P1-BROWSER-E2E-INBOX-09 UF-XBOS-09 catalog workflow bridge', () => {
   it('startCatalogWorkflowIfConfigured posts to catalog-governance for xevn/holding batch', async () => {
     const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
-      json: async () => ({ success: true, data: { workflowInstanceId: 'inst-cat-1' } }),
+      json: async () => ({
+        success: true,
+        data: { workflowInstanceId: 'inst-cat-1' },
+      }),
     } as Response);
 
     const out = await bridge.startCatalogWorkflowIfConfigured(
@@ -50,7 +53,9 @@ describe('P1-BROWSER-E2E-INBOX-09 UF-XBOS-09 catalog workflow bridge', () => {
         body: expect.stringContaining('"batchId":"batch-uf15"'),
       }),
     );
-    const body = JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit)?.body));
+    const body = JSON.parse(
+      String((fetchMock.mock.calls[0]?.[1] as RequestInit)?.body),
+    );
     expect(body).toMatchObject({
       batchId: 'batch-uf15',
       memberTenantId: 'xevn',

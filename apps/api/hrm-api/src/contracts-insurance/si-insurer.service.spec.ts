@@ -66,12 +66,20 @@ describe('SiInsurerService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-BE
     } as unknown as HrmDbService;
     const svc = new SiInsurerService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.si_insurer'))).toBe(
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.si_insurer'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('uq_si_insurer_company_key_active')),
+    ).toBe(true);
+    expect(sqls.some((q) => q.includes('chk_si_insurer_key_format'))).toBe(
       true,
     );
-    expect(sqls.some((q) => q.includes('uq_si_insurer_company_key_active'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_si_insurer_key_format'))).toBe(true);
-    expect(sqls.some((q) => q.includes('ix_si_insurer_company_effective'))).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('ix_si_insurer_company_effective')),
+    ).toBe(true);
     expect(sqls.every((q) => !q.includes('insurer_key IN ('))).toBe(true);
     expect(sqls.every((q) => !q.includes('si_insurance_type'))).toBe(true);
     expect(sqls.every((q) => !q.includes("'VSS'"))).toBe(true);
@@ -102,7 +110,10 @@ describe('SiInsurerService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-BE
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.si_insurer') && s.includes('archived_at IS NULL')) {
+        if (
+          s.includes('FROM public.si_insurer') &&
+          s.includes('archived_at IS NULL')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.si_insurer')) {
@@ -127,7 +138,10 @@ describe('SiInsurerService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-BE
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.si_insurer') && s.includes('archived_at IS NULL')) {
+        if (
+          s.includes('FROM public.si_insurer') &&
+          s.includes('archived_at IS NULL')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.si_insurer')) {
@@ -150,18 +164,23 @@ describe('SiInsurerService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-BE
 
   it('VAL-SI-INR-CAT-06 / VAL-SI-INR-SCP-01: list id → getById 200 (group CEO main→holding)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        if (schemaPassthrough(sql)) return { rows: [] };
-        const s = String(sql);
-        if (s.includes('FROM public.si_insurer') && s.includes('ORDER BY sort_order')) {
-          expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
-          return { rows: [baseRow()] };
-        }
-        if (s.includes('FROM public.si_insurer') && s.includes('id = $1')) {
-          return { rows: [baseRow()] };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          if (schemaPassthrough(sql)) return { rows: [] };
+          const s = String(sql);
+          if (
+            s.includes('FROM public.si_insurer') &&
+            s.includes('ORDER BY sort_order')
+          ) {
+            expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
+            return { rows: [baseRow()] };
+          }
+          if (s.includes('FROM public.si_insurer') && s.includes('id = $1')) {
+            return { rows: [baseRow()] };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const svc = new SiInsurerService(db);
     const auth = groupCeoToken();
@@ -176,7 +195,10 @@ describe('SiInsurerService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-BE
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
-        if (String(sql).includes('FROM public.si_insurer') && String(sql).includes('id = $1')) {
+        if (
+          String(sql).includes('FROM public.si_insurer') &&
+          String(sql).includes('id = $1')
+        ) {
           return { rows: [baseRow({ company_id: 'holding' })] };
         }
         return { rows: [] };
@@ -220,9 +242,13 @@ describe('SiInsurerService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-BE
       }),
     } as unknown as HrmDbService;
     const svc = new SiInsurerService(db, settings);
-    const effective = await svc.listEffective({ company_id: 'holding' }, groupCeoToken(), {
-      tenantId: 'xevn',
-    });
+    const effective = await svc.listEffective(
+      { company_id: 'holding' },
+      groupCeoToken(),
+      {
+        tenantId: 'xevn',
+      },
+    );
     expect(effective.total).toBe(2);
     const vss = effective.data.find((r) => r.insurerKey === 'VSS');
     expect(vss?.nameVi).toBe('VSS SI native');
@@ -306,7 +332,10 @@ describe('SiInsurerService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-BE
         if (s.includes('FROM public.si_insurer') && s.includes('id = $1')) {
           return { rows: [baseRow()] };
         }
-        if (s.includes('UPDATE public.si_insurer') && s.includes("status = 'retired'")) {
+        if (
+          s.includes('UPDATE public.si_insurer') &&
+          s.includes("status = 'retired'")
+        ) {
           return {
             rows: [
               baseRow({
@@ -320,10 +349,16 @@ describe('SiInsurerService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-SI-INSURER-CATALOG-BE
       }),
     } as unknown as HrmDbService;
     const svc = new SiInsurerService(db);
-    const retired = await svc.retireInsurer(INSURER_ID, 'holding', groupCeoToken());
+    const retired = await svc.retireInsurer(
+      INSURER_ID,
+      'holding',
+      groupCeoToken(),
+    );
     expect(retired.status).toBe('retired');
     expect(retired.archivedAt).toBeTruthy();
-    expect(sqls.every((q) => !q.includes('DELETE FROM public.si_insurer'))).toBe(true);
+    expect(
+      sqls.every((q) => !q.includes('DELETE FROM public.si_insurer')),
+    ).toBe(true);
   });
 
   it('VAL-SI-INR-CNS-07: invent insurer KEY ≠ type KEY taxonomy', async () => {

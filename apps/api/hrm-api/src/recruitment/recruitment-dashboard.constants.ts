@@ -40,10 +40,20 @@ export const HRM_REC_DASH_VAL_400 = 'HRM-REC-DASH-VAL-400';
 export const HRM_SCOPE_409 = 'HRM-SCOPE-409';
 
 /** API-01 §4.2 — dashboard open YCTD (read). */
-export const OPEN_YCTD_STATUS_SET = ['open_for_hire', 'open', 'approved'] as const;
+export const OPEN_YCTD_STATUS_SET = [
+  'open_for_hire',
+  'open',
+  'approved',
+] as const;
 export type OpenYctdStatus = (typeof OPEN_YCTD_STATUS_SET)[number];
 
-export const FUNNEL_KEYS = ['cv', 'screening', 'interview', 'offer', 'onboard'] as const;
+export const FUNNEL_KEYS = [
+  'cv',
+  'screening',
+  'interview',
+  'offer',
+  'onboard',
+] as const;
 export type FunnelKey = (typeof FUNNEL_KEYS)[number];
 
 export const DEFAULT_FUNNEL_LABELS_VI: Record<FunnelKey, string> = {
@@ -54,7 +64,11 @@ export const DEFAULT_FUNNEL_LABELS_VI: Record<FunnelKey, string> = {
   onboard: 'Onboard / Đã tuyển',
 };
 
-export type EnoughPeopleStatus = 'no_plan' | 'enough' | 'in_progress' | 'at_risk';
+export type EnoughPeopleStatus =
+  | 'no_plan'
+  | 'enough'
+  | 'in_progress'
+  | 'at_risk';
 
 export const EMPTY_GUIDE_NO_PLAN = {
   code: 'NO_APPROVED_HEADCOUNT',

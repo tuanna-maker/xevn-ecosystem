@@ -94,7 +94,10 @@ import {
 } from './dto/pay-sheet-template.dto';
 import { assertComponentIdInEffectiveCatalog } from './salary-component-consumer-assert';
 import { HRM_PAY_SETUP_404_PACK } from './pay-cntt-setup.constants';
-import { ensurePayCnttSetupSchema, PayCnttSetupService } from './pay-cntt-setup.service';
+import {
+  ensurePayCnttSetupSchema,
+  PayCnttSetupService,
+} from './pay-cntt-setup.service';
 
 type PaySheetTemplateRow = {
   id: string;
@@ -369,7 +372,11 @@ export class PaySheetTemplateService {
   private assertStatus(status: string): PaySheetTemplateStatus {
     const s = status.trim().toLowerCase() as PaySheetTemplateStatus;
     if (!(PAY_SHEET_TPL_STATUSES as readonly string[]).includes(s)) {
-      throw new ApiException('HRM-VAL-400', 'Invalid pay sheet template status', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'Invalid pay sheet template status',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return s;
   }
@@ -377,17 +384,29 @@ export class PaySheetTemplateService {
   private assertApplicability(scope: string): PaySheetApplicabilityScope {
     const s = scope.trim().toLowerCase() as PaySheetApplicabilityScope;
     if (!(PAY_SHEET_TPL_APPLICABILITY as readonly string[]).includes(s)) {
-      throw new ApiException('HRM-VAL-400', 'Invalid applicability_scope', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'Invalid applicability_scope',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return s;
   }
 
   private softAssertApplicabilityFields(
     scope: PaySheetApplicabilityScope,
-    fields: { ouId?: string | null; positionKey?: string | null; employeeId?: string | null },
+    fields: {
+      ouId?: string | null;
+      positionKey?: string | null;
+      employeeId?: string | null;
+    },
   ): void {
     if (scope === 'ou' && !String(fields.ouId ?? '').trim()) {
-      throw new ApiException('HRM-VAL-400', 'ouId required when applicability_scope=ou', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'ouId required when applicability_scope=ou',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (scope === 'position' && !String(fields.positionKey ?? '').trim()) {
       throw new ApiException(
@@ -427,7 +446,11 @@ export class PaySheetTemplateService {
     excludeId?: string,
   ): Promise<void> {
     if (!provinceCode) return;
-    const filters: string[] = ['company_id = $1', 'archived_at IS NULL', 'applicability_province_code = $2'];
+    const filters: string[] = [
+      'company_id = $1',
+      'archived_at IS NULL',
+      'applicability_province_code = $2',
+    ];
     const values: unknown[] = [companyId, provinceCode];
     const tag = String(businessLineTag ?? '').trim();
     if (tag) {
@@ -471,7 +494,8 @@ export class PaySheetTemplateService {
       policyPackId: row.policy_pack_id,
       policyPackDisplayLabel: row.policy_pack_display_label ?? null,
       inputPackProfileId: row.input_pack_profile_id,
-      inputPackProfileDisplayLabel: row.input_pack_profile_display_label ?? null,
+      inputPackProfileDisplayLabel:
+        row.input_pack_profile_display_label ?? null,
       archivedAt: row.archived_at,
       createdBy: row.created_by,
       updatedBy: row.updated_by,
@@ -496,7 +520,9 @@ export class PaySheetTemplateService {
       formulaOverrideJson: row.formula_override_json,
       formulaOverrideCode: row.formula_override_code ?? null,
       formulaOverrideVersion:
-        row.formula_override_version != null ? Number(row.formula_override_version) : null,
+        row.formula_override_version != null
+          ? Number(row.formula_override_version)
+          : null,
       archivedAt: row.archived_at,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
@@ -541,10 +567,18 @@ export class PaySheetTemplateService {
       );
     }
     if (policyPackId) {
-      await this.cnttSetup.assertPolicyPackFk(policyPackId, companyId, authorization);
+      await this.cnttSetup.assertPolicyPackFk(
+        policyPackId,
+        companyId,
+        authorization,
+      );
     }
     if (inputPackProfileId) {
-      await this.cnttSetup.assertInputProfileFk(inputPackProfileId, companyId, authorization);
+      await this.cnttSetup.assertInputProfileFk(
+        inputPackProfileId,
+        companyId,
+        authorization,
+      );
     }
   }
 
@@ -553,7 +587,10 @@ export class PaySheetTemplateService {
     requestedCompanyId: string,
     authorization?: string,
   ): Promise<PaySheetTemplateRow> {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['t.id = $1::uuid'];
     const values: unknown[] = [id];
@@ -576,7 +613,11 @@ export class PaySheetTemplateService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_PAY_TPL_404, 'Pay sheet template not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_TPL_404,
+        'Pay sheet template not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_PAY_TPL_404,
@@ -618,9 +659,15 @@ export class PaySheetTemplateService {
     return res.rows;
   }
 
-  async listTemplates(query: ListPaySheetTemplatesQueryDto, authorization?: string) {
+  async listTemplates(
+    query: ListPaySheetTemplatesQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = [];
     const values: unknown[] = [];
@@ -633,7 +680,8 @@ export class PaySheetTemplateService {
       filters.push(`t.company_id = ANY($${values.length}::text[])`);
     }
 
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     if (!includeArchived) {
       filters.push('t.archived_at IS NULL');
     }
@@ -673,7 +721,9 @@ export class PaySheetTemplateService {
 
     if (query.q?.trim()) {
       values.push(`%${query.q.trim().toLowerCase()}%`);
-      filters.push(`(lower(t.code) LIKE $${values.length} OR lower(t.name) LIKE $${values.length})`);
+      filters.push(
+        `(lower(t.code) LIKE $${values.length} OR lower(t.name) LIKE $${values.length})`,
+      );
     }
 
     const where = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
@@ -687,12 +737,16 @@ export class PaySheetTemplateService {
       values,
     );
 
-    const includeLines = String(query.include_lines ?? '').toLowerCase() === 'true';
+    const includeLines =
+      String(query.include_lines ?? '').toLowerCase() === 'true';
     const items = [];
     for (const row of res.rows) {
       const mapped = this.mapHeader(row);
       if (includeLines) {
-        const lines = await this.listLinesForTemplate(row.id, expandPayrollPeriodCompanyIds(scope));
+        const lines = await this.listLinesForTemplate(
+          row.id,
+          expandPayrollPeriodCompanyIds(scope),
+        );
         items.push({ ...mapped, lines: lines.map((l) => this.mapLine(l)) });
       } else {
         items.push(mapped);
@@ -711,22 +765,38 @@ export class PaySheetTemplateService {
     const row = await this.loadHeaderInScope(id, companyId, authorization);
     const mapped = this.mapHeader(row);
     if (opts?.includeLines) {
-      const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+      const scopeCompanyId = normalizePayrollListCompanyId(
+        authorization,
+        companyId,
+      );
       const scope = resolveHrmListScope(authorization, scopeCompanyId);
-      const lines = await this.listLinesForTemplate(row.id, expandPayrollPeriodCompanyIds(scope));
+      const lines = await this.listLinesForTemplate(
+        row.id,
+        expandPayrollPeriodCompanyIds(scope),
+      );
       return { ...mapped, lines: lines.map((l) => this.mapLine(l)) };
     }
     return mapped;
   }
 
-  async createTemplate(payload: CreatePaySheetTemplateDto, authorization?: string) {
+  async createTemplate(
+    payload: CreatePaySheetTemplateDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const actor = this.resolveActorSub(authorization);
-    const persistCompanyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const code = this.assertCode(payload.code);
     const name = payload.name?.trim();
     if (!name) {
-      throw new ApiException('HRM-VAL-400', 'name required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'name required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const status = this.assertStatus(payload.status ?? 'draft');
     const applicability = this.assertApplicability(
@@ -735,17 +805,35 @@ export class PaySheetTemplateService {
     const ouId = payload.ouId ?? payload.ou_id ?? null;
     const positionKey = payload.positionKey ?? payload.position_key ?? null;
     const employeeId = payload.employeeId ?? payload.employee_id ?? null;
-    this.softAssertApplicabilityFields(applicability, { ouId, positionKey, employeeId });
+    this.softAssertApplicabilityFields(applicability, {
+      ouId,
+      positionKey,
+      employeeId,
+    });
     const isDefault = Boolean(payload.isDefault ?? payload.is_default ?? false);
-    const businessLineTag = payload.businessLineTag ?? payload.business_line_tag ?? null;
+    const businessLineTag =
+      payload.businessLineTag ?? payload.business_line_tag ?? null;
     const applicabilityProvinceCode =
-      (payload.applicabilityProvinceCode ?? payload.applicability_province_code ?? null)?.trim() ||
-      null;
+      (
+        payload.applicabilityProvinceCode ??
+        payload.applicability_province_code ??
+        null
+      )?.trim() || null;
     this.assertProvinceScope(applicabilityProvinceCode, businessLineTag);
     const policyPackId = payload.policyPackId ?? payload.policy_pack_id ?? null;
-    const inputPackProfileId = payload.inputPackProfileId ?? payload.input_pack_profile_id ?? null;
-    await this.assertCnttPackFks(persistCompanyId, policyPackId, inputPackProfileId, authorization);
-    await this.assertNoProvinceDuplicate(persistCompanyId, businessLineTag, applicabilityProvinceCode);
+    const inputPackProfileId =
+      payload.inputPackProfileId ?? payload.input_pack_profile_id ?? null;
+    await this.assertCnttPackFks(
+      persistCompanyId,
+      policyPackId,
+      inputPackProfileId,
+      authorization,
+    );
+    await this.assertNoProvinceDuplicate(
+      persistCompanyId,
+      businessLineTag,
+      applicabilityProvinceCode,
+    );
 
     if (isDefault) {
       await this.db.query(
@@ -799,7 +887,7 @@ export class PaySheetTemplateService {
         ...res.rows[0],
         policy_pack_display_label: null,
         input_pack_profile_display_label: null,
-      } as PaySheetTemplateRow);
+      });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       if (/uq_pay_sheet_templates_company_line_province_active/i.test(msg)) {
@@ -820,10 +908,18 @@ export class PaySheetTemplateService {
     }
   }
 
-  async updateTemplate(id: string, payload: UpdatePaySheetTemplateDto, authorization?: string) {
+  async updateTemplate(
+    id: string,
+    payload: UpdatePaySheetTemplateDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const actor = this.resolveActorSub(authorization);
-    const existing = await this.loadHeaderInScope(id, payload.company_id, authorization);
+    const existing = await this.loadHeaderInScope(
+      id,
+      payload.company_id,
+      authorization,
+    );
     if (existing.archived_at) {
       throw new ApiException(
         HRM_PAY_TPL_404,
@@ -842,13 +938,21 @@ export class PaySheetTemplateService {
     if (payload.code != null) set('code', this.assertCode(payload.code));
     if (payload.name != null) {
       const name = payload.name.trim();
-      if (!name) throw new ApiException('HRM-VAL-400', 'name required', HttpStatus.BAD_REQUEST);
+      if (!name)
+        throw new ApiException(
+          'HRM-VAL-400',
+          'name required',
+          HttpStatus.BAD_REQUEST,
+        );
       set('name', name);
     }
-    if (payload.description !== undefined) set('description', payload.description?.trim() ?? null);
-    if (payload.status != null) set('status', this.assertStatus(payload.status));
+    if (payload.description !== undefined)
+      set('description', payload.description?.trim() ?? null);
+    if (payload.status != null)
+      set('status', this.assertStatus(payload.status));
 
-    const applicabilityRaw = payload.applicabilityScope ?? payload.applicability_scope;
+    const applicabilityRaw =
+      payload.applicabilityScope ?? payload.applicability_scope;
     const ouId =
       payload.ouId !== undefined
         ? payload.ouId
@@ -878,7 +982,8 @@ export class PaySheetTemplateService {
 
     this.softAssertApplicabilityFields(nextApplicability, {
       ouId: ouId !== undefined ? ouId : existing.ou_id,
-      positionKey: positionKey !== undefined ? positionKey : existing.position_key,
+      positionKey:
+        positionKey !== undefined ? positionKey : existing.position_key,
       employeeId: employeeId !== undefined ? employeeId : existing.employee_id,
     });
 
@@ -914,9 +1019,14 @@ export class PaySheetTemplateService {
         authorization,
       );
     }
-    if (businessLineTag !== undefined || applicabilityProvinceCode !== undefined) {
+    if (
+      businessLineTag !== undefined ||
+      applicabilityProvinceCode !== undefined
+    ) {
       const finalBusinessLineTag =
-        businessLineTag !== undefined ? businessLineTag : existing.business_line_tag;
+        businessLineTag !== undefined
+          ? businessLineTag
+          : existing.business_line_tag;
       const finalProvinceCode =
         (applicabilityProvinceCode !== undefined
           ? applicabilityProvinceCode
@@ -930,12 +1040,17 @@ export class PaySheetTemplateService {
         existing.id,
       );
     }
-    if (businessLineTag !== undefined) set('business_line_tag', businessLineTag);
+    if (businessLineTag !== undefined)
+      set('business_line_tag', businessLineTag);
     if (applicabilityProvinceCode !== undefined) {
-      set('applicability_province_code', applicabilityProvinceCode?.trim() || null);
+      set(
+        'applicability_province_code',
+        applicabilityProvinceCode?.trim() || null,
+      );
     }
     if (policyPackId !== undefined) set('policy_pack_id', policyPackId);
-    if (inputPackProfileId !== undefined) set('input_pack_profile_id', inputPackProfileId);
+    if (inputPackProfileId !== undefined)
+      set('input_pack_profile_id', inputPackProfileId);
 
     const isDefault = payload.isDefault ?? payload.is_default;
     if (isDefault === true) {
@@ -970,7 +1085,7 @@ export class PaySheetTemplateService {
         ...res.rows[0],
         policy_pack_display_label: null,
         input_pack_profile_display_label: null,
-      } as PaySheetTemplateRow);
+      });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       if (/uq_pay_sheet_templates_company_line_province_active/i.test(msg)) {
@@ -991,12 +1106,26 @@ export class PaySheetTemplateService {
     }
   }
 
-  async getLines(templateId: string, companyId: string, authorization?: string) {
+  async getLines(
+    templateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const header = await this.loadHeaderInScope(templateId, companyId, authorization);
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+    const header = await this.loadHeaderInScope(
+      templateId,
+      companyId,
+      authorization,
+    );
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const lines = await this.listLinesForTemplate(header.id, expandPayrollPeriodCompanyIds(scope));
+    const lines = await this.listLinesForTemplate(
+      header.id,
+      expandPayrollPeriodCompanyIds(scope),
+    );
     return { templateId: header.id, lines: lines.map((l) => this.mapLine(l)) };
   }
 
@@ -1066,18 +1195,31 @@ export class PaySheetTemplateService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const header = await this.loadHeaderInScope(templateId, payload.company_id, authorization);
+    const header = await this.loadHeaderInScope(
+      templateId,
+      payload.company_id,
+      authorization,
+    );
     if (header.archived_at) {
-      throw new ApiException(HRM_PAY_TPL_404, 'Cannot mutate lines on archived template', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_TPL_404,
+        'Cannot mutate lines on archived template',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, payload.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      payload.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const companyIds = expandPayrollPeriodCompanyIds(scope);
     const lines = payload.lines ?? [];
 
     const seen = new Set<string>();
     for (const line of lines) {
-      const cid = String(line.componentId ?? '').trim().toLowerCase();
+      const cid = String(line.componentId ?? '')
+        .trim()
+        .toLowerCase();
       if (seen.has(cid)) {
         throw new ApiException(
           HRM_PAY_TPL_409_LINE,
@@ -1099,7 +1241,10 @@ export class PaySheetTemplateService {
         authorization,
       );
       if (line.formulaOverrideDefinitionId) {
-        await this.assertFormulaDefinitionInScope(line.formulaOverrideDefinitionId, companyIds);
+        await this.assertFormulaDefinitionInScope(
+          line.formulaOverrideDefinitionId,
+          companyIds,
+        );
       }
       resolved.push({ input: line, componentCode: component.code });
     }
@@ -1140,7 +1285,9 @@ export class PaySheetTemplateService {
       );
       const existingId = existingRes.rows[0]?.id;
       const overrideJson =
-        line.formulaOverrideJson == null ? null : JSON.stringify(line.formulaOverrideJson);
+        line.formulaOverrideJson == null
+          ? null
+          : JSON.stringify(line.formulaOverrideJson);
       if (existingId) {
         await this.db.query(
           `
@@ -1223,10 +1370,18 @@ export class PaySheetTemplateService {
     return this.mapHeader(res.rows[0]);
   }
 
-  async archiveLine(templateId: string, lineId: string, companyId: string, authorization?: string) {
+  async archiveLine(
+    templateId: string,
+    lineId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     await this.loadHeaderInScope(templateId, companyId, authorization);
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['id = $1::uuid', 'template_id = $2::uuid'];
     const values: unknown[] = [lineId, templateId];
@@ -1245,7 +1400,11 @@ export class PaySheetTemplateService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException(HRM_PAY_TPL_404, 'Pay sheet template line not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_TPL_404,
+        'Pay sheet template line not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapLine(res.rows[0]);
   }
@@ -1255,10 +1414,20 @@ export class PaySheetTemplateService {
     companyId: string,
     authorization?: string,
   ): Promise<SheetTemplateSnapshotColumn[]> {
-    const header = await this.loadHeaderInScope(templateId, companyId, authorization);
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+    const header = await this.loadHeaderInScope(
+      templateId,
+      companyId,
+      authorization,
+    );
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const lines = await this.listLinesForTemplate(header.id, expandPayrollPeriodCompanyIds(scope));
+    const lines = await this.listLinesForTemplate(
+      header.id,
+      expandPayrollPeriodCompanyIds(scope),
+    );
     return lines.map((l) => ({
       component_code: l.component_code,
       display_label: l.display_label,
@@ -1278,7 +1447,10 @@ export class PaySheetTemplateService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, payload.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      payload.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [periodId];
@@ -1300,7 +1472,11 @@ export class PaySheetTemplateService {
     );
     const period = periodRes.rows[0];
     if (!period) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(period, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -1389,7 +1565,10 @@ export class PaySheetTemplateService {
     authorization?: string,
   ): Promise<PaySheetTemplateResolveResult> {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, periodContext.companyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      periodContext.companyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const companyIds = expandPayrollPeriodCompanyIds(scope);
 
@@ -1422,7 +1601,7 @@ export class PaySheetTemplateService {
         ...row,
         policy_pack_display_label: null,
         input_pack_profile_display_label: null,
-      } as PaySheetTemplateRow),
+      }),
     );
 
     const provinceCode = employee.provinceCode?.trim() || null;
@@ -1432,11 +1611,19 @@ export class PaySheetTemplateService {
     const tiered: Array<{ row: PaySheetTemplateHeaderView; tier: number }> = [];
     let hasProvinceCandidate = false;
     for (const row of candidates) {
-      if (row.applicabilityScope === 'province' && businessLineTag && row.businessLineTag === businessLineTag) {
+      if (
+        row.applicabilityScope === 'province' &&
+        businessLineTag &&
+        row.businessLineTag === businessLineTag
+      ) {
         hasProvinceCandidate = true;
       }
       let tier: number | null = null;
-      if (row.applicabilityScope === 'employee' && row.employeeId && row.employeeId === employee.id) {
+      if (
+        row.applicabilityScope === 'employee' &&
+        row.employeeId &&
+        row.employeeId === employee.id
+      ) {
         tier = 1;
       } else if (
         row.applicabilityScope === 'position' &&
@@ -1453,7 +1640,12 @@ export class PaySheetTemplateService {
         row.applicabilityProvinceCode === provinceCode
       ) {
         tier = 3;
-      } else if (row.applicabilityScope === 'ou' && row.ouId && ouId && row.ouId === ouId) {
+      } else if (
+        row.applicabilityScope === 'ou' &&
+        row.ouId &&
+        ouId &&
+        row.ouId === ouId
+      ) {
         tier = 4;
       } else if (row.applicabilityScope === 'company') {
         tier = 5;
@@ -1484,13 +1676,18 @@ export class PaySheetTemplateService {
     if (top.length > 1) {
       // Tie-break mọi tier: is_default=true trước, rồi updated_at DESC.
       const sorted = [...top].sort((a, b) => {
-        if (a.row.isDefault !== b.row.isDefault) return a.row.isDefault ? -1 : 1;
-        return new Date(b.row.updatedAt).getTime() - new Date(a.row.updatedAt).getTime();
+        if (a.row.isDefault !== b.row.isDefault)
+          return a.row.isDefault ? -1 : 1;
+        return (
+          new Date(b.row.updatedAt).getTime() -
+          new Date(a.row.updatedAt).getTime()
+        );
       });
       const [first, second] = sorted;
       const stillTied =
         first.row.isDefault === second.row.isDefault &&
-        new Date(first.row.updatedAt).getTime() === new Date(second.row.updatedAt).getTime();
+        new Date(first.row.updatedAt).getTime() ===
+          new Date(second.row.updatedAt).getTime();
       // BR-TPL-RESOLVE-02 — ≥2 template cùng tier cao nhất VÀ cùng tie-break → AMBIGUOUS, không tự chọn 1.
       if (stillTied) {
         return {

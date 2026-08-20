@@ -283,10 +283,7 @@ describe('PO-HRM-MVP-GD1-CORE-07-CLUSTER-BE-01', () => {
       // ensureSchema DDL
       return { rows: [], rowCount: 0 };
     });
-    const chk = new EmpDocumentChecklistService(
-      chkDb,
-      docType as never,
-    );
+    const chk = new EmpDocumentChecklistService(chkDb, docType as never);
     const gate = await chk.evaluateActivationGate(
       employeeId,
       'main',

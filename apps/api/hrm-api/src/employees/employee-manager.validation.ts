@@ -105,10 +105,23 @@ export async function assertManagerAssignment(
   }
 
   // Resolve list scope to validate manager is within allowed companies
-  const listScope = resolveHrmListScope(options.authorization, options.companyId, options.scopeContext);
-  const allowedCompanyIds = expandHrmTextCompanyIds(listScope, options.authorization);
-  const normalizedManagerCompanyId = normalizeCompanyId(String(manager.company_id));
-  if (!allowedCompanyIds.map(normalizeCompanyId).includes(normalizedManagerCompanyId)) {
+  const listScope = resolveHrmListScope(
+    options.authorization,
+    options.companyId,
+    options.scopeContext,
+  );
+  const allowedCompanyIds = expandHrmTextCompanyIds(
+    listScope,
+    options.authorization,
+  );
+  const normalizedManagerCompanyId = normalizeCompanyId(
+    String(manager.company_id),
+  );
+  if (
+    !allowedCompanyIds
+      .map(normalizeCompanyId)
+      .includes(normalizedManagerCompanyId)
+  ) {
     throw new ApiException(
       'HRM-EMP-MGR-SCOPE',
       'manager_id must belong to the same company as the employee',

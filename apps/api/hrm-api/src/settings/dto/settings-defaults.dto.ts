@@ -27,10 +27,16 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { POS_CALC_MODES, POS_STATUSES, SI_STATUSES } from '../settings-defaults.constants';
+import {
+  POS_CALC_MODES,
+  POS_STATUSES,
+  SI_STATUSES,
+} from '../settings-defaults.constants';
 
 function toBool(value: unknown): boolean {
-  return value === true || value === 'true' || value === '1' || value === 'TRUE';
+  return (
+    value === true || value === 'true' || value === '1' || value === 'TRUE'
+  );
 }
 
 export class GetSettingsCompanySettingsQueryDto {

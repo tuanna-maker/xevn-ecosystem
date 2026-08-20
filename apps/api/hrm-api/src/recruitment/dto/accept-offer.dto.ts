@@ -12,7 +12,13 @@
  * must_keep:  physical /recruitment · DENY Nest /rec · DENY payroll invent · U65 no seed
  * LastVerified: po-hrm-mvp-gd1-rec-07-cluster-be-01.spec.ts
  */
-import { IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsUUID,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 
 export class AcceptOfferDto {
   /** Prefer → employees.hired_at (ISO date YYYY-MM-DD). */

@@ -44,4 +44,9 @@ export const SI_INSURANCE_TYPES_GROUP_REF_KEY = 'insurance_types';
  * Docs-only bootstrap examples — NOT a product ceiling; NEVER enforce IN (…).
  * Optional ensure upsert later; U65 UF must not treat as required seed.
  */
-export const SI_INSURANCE_TYPE_STARTER_KEYS = ['BHXH', 'BHYT', 'BHTN', 'social'] as const;
+export const SI_INSURANCE_TYPE_STARTER_KEYS = [
+  'BHXH',
+  'BHYT',
+  'BHTN',
+  'social',
+] as const;

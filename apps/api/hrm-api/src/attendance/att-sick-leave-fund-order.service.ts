@@ -135,10 +135,14 @@ export function normalizeFundSequence(raw: string[]): SickFundSequenceToken[] {
  * BR-BP-LV-04 allocator — one branch per calendar day in inclusive span.
  * Insurance cap counts allocated insurance days across the request; post-cap uses overInsuranceAction.
  */
-export function allocateSickDayBranches(input: AllocateSickDayBranchesInput): SickDayBranchDisplay[] {
+export function allocateSickDayBranches(
+  input: AllocateSickDayBranchesInput,
+): SickDayBranchDisplay[] {
   const dates = expandLeaveDateRange(input.startDate, input.endDate);
   const units = input.deductUnitsPerDay ?? 1;
-  const seq = input.fundSequence.length ? input.fundSequence : [...DEFAULT_SICK_FUND_SEQUENCE];
+  const seq = input.fundSequence.length
+    ? input.fundSequence
+    : [...DEFAULT_SICK_FUND_SEQUENCE];
   const cap =
     input.insuranceDayCap != null && input.insuranceDayCap >= 0
       ? input.insuranceDayCap
@@ -152,8 +156,7 @@ export function allocateSickDayBranches(input: AllocateSickDayBranchesInput): Si
 
     for (const token of seq) {
       if (token === 'annual') {
-        const annualFirst =
-          input.annualFirstEnabled || seq[0] === 'annual';
+        const annualFirst = input.annualFirstEnabled || seq[0] === 'annual';
         if (annualFirst) {
           assigned = 'annual';
           break;
@@ -310,8 +313,14 @@ export class AttSickLeaveFundOrderService {
       authorization,
       requestedCompanyId ?? '',
     );
-    const scope = resolveHrmListScope(authorization, persistCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, persistCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, persistCompanyId };
   }
 
@@ -344,9 +353,7 @@ export class AttSickLeaveFundOrderService {
       insuranceDayCap:
         row.insurance_day_cap == null ? null : toNum(row.insurance_day_cap),
       overInsuranceAction:
-        over === 'unpaid' || over === 'company_topup'
-          ? (over as 'company_topup' | 'unpaid')
-          : null,
+        over === 'unpaid' || over === 'company_topup' ? over : null,
       status: row.status,
       effectiveFrom: row.effective_from,
       updatedAt: row.updated_at,
@@ -434,10 +441,14 @@ export class AttSickLeaveFundOrderService {
 
     let row: FundOrderRow;
     if (existing.rows[0]) {
-      assertResourceInHrmScope({ company_id: existing.rows[0].company_id }, scope, {
-        notFoundCode: 'HRM-SCOPE-409',
-        mismatchCode: 'HRM-SCOPE-409',
-      });
+      assertResourceInHrmScope(
+        { company_id: existing.rows[0].company_id },
+        scope,
+        {
+          notFoundCode: 'HRM-SCOPE-409',
+          mismatchCode: 'HRM-SCOPE-409',
+        },
+      );
       const upd = await this.db.query<FundOrderRow>(
         `
           UPDATE public.att_sick_leave_fund_order
@@ -508,7 +519,9 @@ export class AttSickLeaveFundOrderService {
     return this.displayPolicy(row, row.company_id);
   }
 
-  async loadActivePolicyForCompany(companyId: string): Promise<SickLeaveFundOrderDisplay> {
+  async loadActivePolicyForCompany(
+    companyId: string,
+  ): Promise<SickLeaveFundOrderDisplay> {
     await this.ensureSchema();
     const res = await this.db.query<FundOrderRow>(
       `
@@ -527,7 +540,9 @@ export class AttSickLeaveFundOrderService {
     return this.displayPolicy(res.rows[0] ?? null, companyId);
   }
 
-  async listDayBranchesForRequest(leaveRequestId: string): Promise<SickDayBranchDisplay[]> {
+  async listDayBranchesForRequest(
+    leaveRequestId: string,
+  ): Promise<SickDayBranchDisplay[]> {
     await this.ensureSchema();
     const res = await this.db.query<{
       calendar_date: string;
@@ -647,7 +662,9 @@ export class AttSickLeaveFundOrderService {
   static assertMvpPanelKeysUnmerged(): void {
     const keys = MVP_LEAVE_BALANCE_TYPES.map((k) => k.toLowerCase());
     if (!keys.includes('compensatory')) {
-      throw new Error('compensatory bucket missing from MVP_LEAVE_BALANCE_TYPES');
+      throw new Error(
+        'compensatory bucket missing from MVP_LEAVE_BALANCE_TYPES',
+      );
     }
     if (keys.includes('sick') || keys.includes('sick_leave')) {
       throw new Error('sick bucket must not appear on MVP panel');

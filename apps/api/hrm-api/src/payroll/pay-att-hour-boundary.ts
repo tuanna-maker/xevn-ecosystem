@@ -25,7 +25,9 @@ const BOUNDARY_VI_MESSAGE =
 let payAttHourCrossreadViolationForTests = false;
 
 /** @internal jest */
-export function __setPayAttHourCrossreadViolationForTests(value: boolean): void {
+export function __setPayAttHourCrossreadViolationForTests(
+  value: boolean,
+): void {
   payAttHourCrossreadViolationForTests = value;
 }
 
@@ -34,10 +36,18 @@ export function __setPayAttHourCrossreadViolationForTests(value: boolean): void 
  */
 export function assertPayrollAttHourBoundaryLocked(): void {
   if (process.env.HRM_PAY_ALLOW_ATT_HTTP_CROSSREAD === '1') {
-    throw new ApiException(HRM_PAY_BOUNDARY_403, BOUNDARY_VI_MESSAGE, HttpStatus.FORBIDDEN);
+    throw new ApiException(
+      HRM_PAY_BOUNDARY_403,
+      BOUNDARY_VI_MESSAGE,
+      HttpStatus.FORBIDDEN,
+    );
   }
   if (payAttHourCrossreadViolationForTests) {
-    throw new ApiException(HRM_PAY_BOUNDARY_403, BOUNDARY_VI_MESSAGE, HttpStatus.FORBIDDEN);
+    throw new ApiException(
+      HRM_PAY_BOUNDARY_403,
+      BOUNDARY_VI_MESSAGE,
+      HttpStatus.FORBIDDEN,
+    );
   }
 }
 

@@ -45,7 +45,10 @@ import {
   resolveHrmPersistCompanyIdText,
 } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
-import { parseLeaveDateInput, yearsSpanningLeaveRange } from './leave-deduction-engine';
+import {
+  parseLeaveDateInput,
+  yearsSpanningLeaveRange,
+} from './leave-deduction-engine';
 
 export const HRM_LEAVE_HOL_MISSING = 'HRM-LEAVE-HOL-MISSING';
 export const HRM_ATT_HOL_404 = 'HRM-ATT-HOL-404';
@@ -140,7 +143,9 @@ function dayTypeLabelVi(dayType: string | null | undefined): string | null {
   return dayType.trim();
 }
 
-function normalizeCalendarType(raw: string | undefined | null): AttHolidayCalendarType | null {
+function normalizeCalendarType(
+  raw: string | undefined | null,
+): AttHolidayCalendarType | null {
   if (raw == null || String(raw).trim() === '') return null;
   const v = String(raw).trim().toLowerCase();
   if (v === 'solar' || v === 'duong' || v === 'dương') return 'solar';
@@ -152,11 +157,18 @@ function normalizeCalendarType(raw: string | undefined | null): AttHolidayCalend
   );
 }
 
-function normalizeStatus(raw: string | undefined | null): AttHolidayCalendarStatus {
+function normalizeStatus(
+  raw: string | undefined | null,
+): AttHolidayCalendarStatus {
   if (raw == null || String(raw).trim() === '') return 'draft';
   const v = String(raw).trim().toLowerCase();
   if (v === 'draft' || v === 'nhap' || v === 'nháp') return 'draft';
-  if (v === 'effective' || v === 'published' || v === 'phat_hanh' || v === 'phát hành') {
+  if (
+    v === 'effective' ||
+    v === 'published' ||
+    v === 'phat_hanh' ||
+    v === 'phát hành'
+  ) {
     return 'effective';
   }
   throw new ApiException(
@@ -236,14 +248,29 @@ export class AttHolidayCalendarService {
     this.schemaReady = true;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
-  private safeCalendarType(raw: string | null | undefined): AttHolidayCalendarType | null {
+  private safeCalendarType(
+    raw: string | null | undefined,
+  ): AttHolidayCalendarType | null {
     try {
       return normalizeCalendarType(raw);
     } catch {
@@ -306,7 +333,11 @@ export class AttHolidayCalendarService {
     tenantId?: string;
   }): Promise<Set<string>> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(input.authorization, input.companyId, input.tenantId);
+    const { companyKeys } = this.resolveScope(
+      input.authorization,
+      input.companyId,
+      input.tenantId,
+    );
     if (input.years.length === 0) {
       return new Set();
     }
@@ -356,7 +387,11 @@ export class AttHolidayCalendarService {
       );
     }
     const years = yearsSpanningLeaveRange(start, end);
-    const { companyKeys } = this.resolveScope(input.authorization, input.companyId, input.tenantId);
+    const { companyKeys } = this.resolveScope(
+      input.authorization,
+      input.companyId,
+      input.tenantId,
+    );
     const filters: string[] = ['archived_at IS NULL'];
     const values: unknown[] = [];
     pushCompanyIdTextColumnFilter(filters, values, companyKeys);
@@ -398,9 +433,17 @@ export class AttHolidayCalendarService {
   ): Promise<AttHolidayCalendarDisplay> {
     await this.ensureSchema();
     if (!Number.isFinite(year) || year < 2000 || year > 2100) {
-      throw new ApiException('HRM-VAL-400', 'year must be a valid calendar year', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'year must be a valid calendar year',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const { scope, companyKeys } = this.resolveScope(authorization, companyId, tenantId);
+    const { scope, companyKeys } = this.resolveScope(
+      authorization,
+      companyId,
+      tenantId,
+    );
     const filters: string[] = ['archived_at IS NULL', 'calendar_year = $1'];
     const values: unknown[] = [year];
     pushCompanyIdTextColumnFilter(filters, values, companyKeys);
@@ -454,10 +497,22 @@ export class AttHolidayCalendarService {
   ): Promise<AttHolidayCalendarDisplay> {
     await this.ensureSchema();
     if (!Number.isFinite(year) || year < 2000 || year > 2100) {
-      throw new ApiException('HRM-VAL-400', 'year must be a valid calendar year', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'year must be a valid calendar year',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
-    const { scope } = this.resolveScope(authorization, body.companyId, tenantId);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
+    const { scope } = this.resolveScope(
+      authorization,
+      body.companyId,
+      tenantId,
+    );
     const status = normalizeStatus(body.status);
     const calendarType = normalizeCalendarType(body.calendarType);
     const dayInputs = Array.isArray(body.days) ? body.days : [];
@@ -560,10 +615,17 @@ export class AttHolidayCalendarService {
       cal = calRes.rows[0] ?? cal;
     }
     if (!cal) {
-      throw new ApiException('HRM-ATT-HOL-500', 'Failed to upsert holiday calendar', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiException(
+        'HRM-ATT-HOL-500',
+        'Failed to upsert holiday calendar',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
 
-    await this.db.query(`DELETE FROM public.att_holiday_day WHERE calendar_id = $1::uuid`, [cal.id]);
+    await this.db.query(
+      `DELETE FROM public.att_holiday_day WHERE calendar_id = $1::uuid`,
+      [cal.id],
+    );
     for (const day of normalized) {
       await this.db.query(
         `
@@ -584,7 +646,12 @@ export class AttHolidayCalendarService {
       );
     }
 
-    const fresh = await this.getYearCalendar(year, body.companyId, authorization, tenantId);
+    const fresh = await this.getYearCalendar(
+      year,
+      body.companyId,
+      authorization,
+      tenantId,
+    );
     return {
       ...fresh,
       midYearPendingLeaveRecalcRequired,

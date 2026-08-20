@@ -6,7 +6,11 @@ import { IsIn, IsOptional, IsString } from 'class-validator';
 
 export type ClauseSource = 'template_file' | 'company_specific' | 'manual';
 
-export const VALID_CLAUSE_SOURCES: ClauseSource[] = ['template_file', 'company_specific', 'manual'];
+export const VALID_CLAUSE_SOURCES: ClauseSource[] = [
+  'template_file',
+  'company_specific',
+  'manual',
+];
 
 export class UpsertClauseOverrideDto {
   @IsOptional()

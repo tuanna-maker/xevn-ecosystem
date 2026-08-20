@@ -76,6 +76,7 @@ import { AllowanceCatalogController } from './settings/allowance-catalog.control
 import { AllowanceCatalogSyncService } from './settings/allowance-catalog-sync.service';
 import { SettingsCompanySettingsController } from './settings/settings-company-settings.controller';
 import { SettingsTaxParamsService } from './settings/settings-tax-params.service';
+import { SettingsPayrollParamsService } from './settings/settings-payroll-params.service';
 import { InsuranceRateCfgController } from './settings/insurance-rate-cfg.controller';
 import { InsuranceRateCfgService } from './settings/insurance-rate-cfg.service';
 import { PositionCompensationPolicyController } from './settings/position-compensation-policy.controller';
@@ -100,7 +101,15 @@ import { HomeService } from './home/home.service';
 import { ContractTemplatesModule } from './contract-templates/contract-templates.module';
 
 @Module({
-  imports: [CoreModule, SettingsCatalogsModule, EmployeesModule, FleetModule, SpreadsheetModule, TenantProvisionModule, ContractTemplatesModule],
+  imports: [
+    CoreModule,
+    SettingsCatalogsModule,
+    EmployeesModule,
+    FleetModule,
+    SpreadsheetModule,
+    TenantProvisionModule,
+    ContractTemplatesModule,
+  ],
   controllers: [
     AppController,
     HrmAdminController,
@@ -140,6 +149,7 @@ import { ContractTemplatesModule } from './contract-templates/contract-templates
     HrmAdminService,
     AllowanceCatalogSyncService,
     SettingsTaxParamsService,
+    SettingsPayrollParamsService,
     InsuranceRateCfgService,
     PositionCompensationPolicyService,
     PayrollService,

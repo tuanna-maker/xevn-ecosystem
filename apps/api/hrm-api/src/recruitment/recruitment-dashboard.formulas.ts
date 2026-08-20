@@ -70,7 +70,9 @@ export function monthKey(year: number, month: number): string {
   return `${year}-${padMonth(month)}`;
 }
 
-export function parseYearMonth(raw: string): { year: number; month: number } | null {
+export function parseYearMonth(
+  raw: string,
+): { year: number; month: number } | null {
   const m = YM_RE.exec(String(raw ?? '').trim());
   if (!m) return null;
   const year = Number(m[1]);
@@ -108,10 +110,13 @@ export function parseDashboardPeriod(query: {
   to?: string | null;
 }): DashboardPeriod {
   const yearRaw =
-    query.year !== undefined && query.year !== null && String(query.year).trim() !== ''
+    query.year !== undefined &&
+    query.year !== null &&
+    String(query.year).trim() !== ''
       ? Number(query.year)
       : NaN;
-  const hasYear = Number.isFinite(yearRaw) && yearRaw >= 2000 && yearRaw <= 2100;
+  const hasYear =
+    Number.isFinite(yearRaw) && yearRaw >= 2000 && yearRaw <= 2100;
   const from = query.from?.trim() || '';
   const to = query.to?.trim() || '';
   const hasRange = Boolean(from || to);
@@ -173,7 +178,9 @@ export function isOpenYctdStatus(status: string | null | undefined): boolean {
 }
 
 /** DATE / ISO / yyyy-MM → yyyy-MM or null. */
-export function targetMonthToYm(raw: string | Date | null | undefined): string | null {
+export function targetMonthToYm(
+  raw: string | Date | null | undefined,
+): string | null {
   if (raw == null) return null;
   if (raw instanceof Date && !Number.isNaN(raw.getTime())) {
     return monthKey(raw.getUTCFullYear(), raw.getUTCMonth() + 1);
@@ -197,19 +204,34 @@ export function mapStageToBucket(
   stageRaw: string | null | undefined,
   catalog: StageCatalogHint[] | null | undefined,
 ): StageBucket {
-  const key = String(stageRaw ?? '')
-    .trim()
-    .toLowerCase() || 'new';
+  const key =
+    String(stageRaw ?? '')
+      .trim()
+      .toLowerCase() || 'new';
   const eff = Array.isArray(catalog) ? catalog : [];
   const byKey = new Map(eff.map((r) => [r.stageKey.trim().toLowerCase(), r]));
 
   const applySynonyms = (k: string): StageBucket | null => {
-    if (k === 'hired' || k === 'onboard' || k === 'onboarding') return 'onboard';
-    if (k === 'rejected' || k === 'withdrawn' || k === 'reject') return 'terminal_reject';
-    if (k === 'screening' || k === 'screen' || k === 'hr_screen') return 'screening';
-    if (k === 'interview' || k === 'interviewing' || k === 'technical_interview') return 'interview';
+    if (k === 'hired' || k === 'onboard' || k === 'onboarding')
+      return 'onboard';
+    if (k === 'rejected' || k === 'withdrawn' || k === 'reject')
+      return 'terminal_reject';
+    if (k === 'screening' || k === 'screen' || k === 'hr_screen')
+      return 'screening';
+    if (
+      k === 'interview' ||
+      k === 'interviewing' ||
+      k === 'technical_interview'
+    )
+      return 'interview';
     if (k === 'offer' || k === 'offered') return 'offer';
-    if (k === 'new' || k === 'applied' || k === 'cv' || k === 'cv_received' || k === 'resume') {
+    if (
+      k === 'new' ||
+      k === 'applied' ||
+      k === 'cv' ||
+      k === 'cv_received' ||
+      k === 'resume'
+    ) {
       return 'cv';
     }
     return null;
@@ -225,8 +247,10 @@ export function mapStageToBucket(
     if (hit.isRejectOutcome) return 'terminal_reject';
   }
   // Priority 1–2 synonyms even without catalog hit
-  if (key === 'hired' || key === 'onboard' || key === 'onboarding') return 'onboard';
-  if (key === 'rejected' || key === 'withdrawn' || key === 'reject') return 'terminal_reject';
+  if (key === 'hired' || key === 'onboard' || key === 'onboarding')
+    return 'onboard';
+  if (key === 'rejected' || key === 'withdrawn' || key === 'reject')
+    return 'terminal_reject';
   if (hit) {
     const syn = applySynonyms(key);
     if (syn && syn !== 'unmapped') return syn;
@@ -240,7 +264,9 @@ export function emptyFunnel(): FunnelCounts {
   return { cv: 0, screening: 0, interview: 0, offer: 0, onboard: 0 };
 }
 
-export function buildFunnelLabels(catalog: StageCatalogHint[] | null | undefined): Record<FunnelKey, string> {
+export function buildFunnelLabels(
+  catalog: StageCatalogHint[] | null | undefined,
+): Record<FunnelKey, string> {
   const labels: Record<FunnelKey, string> = { ...DEFAULT_FUNNEL_LABELS_VI };
   const eff = Array.isArray(catalog) ? catalog : [];
   for (const row of eff) {
@@ -268,7 +294,9 @@ export function cellCountsForPlannedNeed(cell: {
     .trim()
     .toLowerCase();
   if (life !== 'need_hire_approved') return false;
-  const qty = Math.trunc(Number(cell.need_hire ?? cell.headcount_need_hire ?? 0));
+  const qty = Math.trunc(
+    Number(cell.need_hire ?? cell.headcount_need_hire ?? 0),
+  );
   return Number.isFinite(qty) && qty >= 1;
 }
 
@@ -301,9 +329,15 @@ export function gapCount(plannedNeed: number, filledCount: number): number {
 }
 
 /** O9 — null when planned_need=0. */
-export function completionPct(plannedNeed: number, filledCount: number): number | null {
+export function completionPct(
+  plannedNeed: number,
+  filledCount: number,
+): number | null {
   if (Math.trunc(plannedNeed) <= 0) return null;
-  return Math.min(100, Math.round((100 * Math.trunc(filledCount)) / Math.trunc(plannedNeed)));
+  return Math.min(
+    100,
+    Math.round((100 * Math.trunc(filledCount)) / Math.trunc(plannedNeed)),
+  );
 }
 
 /**
@@ -325,14 +359,21 @@ export function enoughPeopleStatus(input: {
   if (input.gap > 0 && (input.openYctdCount > 0 || input.inPipelineCount > 0)) {
     return 'in_progress';
   }
-  if (input.gap > 0 && input.openYctdCount === 0 && input.inPipelineCount === 0) {
+  if (
+    input.gap > 0 &&
+    input.openYctdCount === 0 &&
+    input.inPipelineCount === 0
+  ) {
     return 'at_risk';
   }
   if (input.plannedNeed <= 0) return 'no_plan';
   return 'in_progress';
 }
 
-export function formatEtaLabel(etaYm: string | null, status: EnoughPeopleStatus): string {
+export function formatEtaLabel(
+  etaYm: string | null,
+  status: EnoughPeopleStatus,
+): string {
   if (status === 'enough' || status === 'no_plan') {
     if (!etaYm) return ETA_LABEL_UNKNOWN;
   }
@@ -376,7 +417,10 @@ export function deriveMetrics(input: {
   } else if (enough_people_status === 'no_plan') {
     enough_people_eta_label = ETA_LABEL_UNKNOWN;
   } else {
-    enough_people_eta_label = formatEtaLabel(enough_people_eta, enough_people_status);
+    enough_people_eta_label = formatEtaLabel(
+      enough_people_eta,
+      enough_people_status,
+    );
   }
   return {
     planned_need,
@@ -414,7 +458,11 @@ export function parseIncludeYctd(include: string | undefined): boolean {
   return parts.includes('yctd');
 }
 
-export function parsePageSize(raw: string | number | undefined, fallback = 50, max = 200): number {
+export function parsePageSize(
+  raw: string | number | undefined,
+  fallback = 50,
+  max = 200,
+): number {
   if (raw === undefined || raw === null || raw === '') return fallback;
   const n = Math.trunc(Number(raw));
   if (!Number.isFinite(n) || n < 1) {
@@ -427,7 +475,10 @@ export function parsePageSize(raw: string | number | undefined, fallback = 50, m
   return Math.min(n, max);
 }
 
-export function parsePage(raw: string | number | undefined, fallback = 1): number {
+export function parsePage(
+  raw: string | number | undefined,
+  fallback = 1,
+): number {
   if (raw === undefined || raw === null || raw === '') return fallback;
   const n = Math.trunc(Number(raw));
   if (!Number.isFinite(n) || n < 1) {
@@ -475,7 +526,9 @@ export function assertNoForbiddenFields(payload: unknown): void {
     }
     for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
       if (
-        /offer_salary|salary_|c_and_b_|compensation_|bank_|mst|tax_code|cost_/i.test(k)
+        /offer_salary|salary_|c_and_b_|compensation_|bank_|mst|tax_code|cost_/i.test(
+          k,
+        )
       ) {
         throw new Error(`FORBIDDEN dashboard field leaked: ${path}.${k}`);
       }

@@ -38,7 +38,9 @@ describe('DepartmentsService', () => {
   });
 
   it('getDepartmentById returns 404 when row missing', async () => {
-    await expect(service.getDepartmentById('00000000-0000-4000-8000-000000000001', 'main')).rejects.toMatchObject({
+    await expect(
+      service.getDepartmentById('00000000-0000-4000-8000-000000000001', 'main'),
+    ).rejects.toMatchObject({
       code: 'HRM-DEPT-404',
     });
   });

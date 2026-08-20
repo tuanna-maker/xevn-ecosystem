@@ -38,7 +38,11 @@ export class InsuranceRateCfgController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized settings access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized settings access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -50,7 +54,10 @@ export class InsuranceRateCfgController {
     @Query() query: ListInsuranceRateCfgQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.service
       .list(query, authorization, tenantId)
       .then((data) => ok(data, HRM_SET_SI_200, 'Insurance rate cfg list'));
@@ -66,7 +73,11 @@ export class InsuranceRateCfgController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
@@ -99,7 +110,11 @@ export class InsuranceRateCfgController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
@@ -117,7 +132,11 @@ export class InsuranceRateCfgController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service

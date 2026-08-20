@@ -14,14 +14,18 @@
  */
 
 export const EMP_EMPLOYMENT_TYPE_STATUSES = ['active', 'retired'] as const;
-export type EmpEmploymentTypeStatus = (typeof EMP_EMPLOYMENT_TYPE_STATUSES)[number];
+export type EmpEmploymentTypeStatus =
+  (typeof EMP_EMPLOYMENT_TYPE_STATUSES)[number];
 
 /** Format-only — FORBIDDEN closed employment_type_key enum (BR-PLT-05). */
 export const EMP_EMPLOYMENT_TYPE_KEY_FORMAT = /^[a-z][a-z0-9_]*$/;
 
 export const EMP_EMPLOYMENT_TYPE_CATALOG_KIND = 'emp_employment_type' as const;
 
-export type EmpEmploymentTypeSource = 'emp_native' | 'group_ref' | 'emp_override';
+export type EmpEmploymentTypeSource =
+  | 'emp_native'
+  | 'group_ref'
+  | 'emp_override';
 
 /** Platform taxonomy (VAL-EMP-ET-02/03). */
 export const HRM_PLT_CAT_CODE_INVALID = 'HRM-PLT-CAT-CODE-INVALID';

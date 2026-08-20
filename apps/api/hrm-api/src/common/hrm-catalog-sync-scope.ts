@@ -6,7 +6,10 @@ import {
 import { getVerifiedInternalJwtPayload } from './internal-auth';
 import { resolveScopeContext } from './scope-context';
 
-function readClaim(payload: Record<string, unknown>, ...keys: string[]): string | undefined {
+function readClaim(
+  payload: Record<string, unknown>,
+  ...keys: string[]
+): string | undefined {
   for (const key of keys) {
     const value = payload[key];
     if (typeof value === 'string' && value.trim()) {
@@ -31,12 +34,17 @@ export function normalizeHrmCatalogSyncRequestCompanyId(
   if (requested !== 'holding') {
     return requestedCompanyId.trim();
   }
-  const jwtPayload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+  const jwtPayload = getVerifiedInternalJwtPayload(authorization);
   if (!jwtPayload) {
     return requestedCompanyId.trim();
   }
   const claimTenantId = readClaim(jwtPayload, 'tenantId', 'tenant_id', 'tid');
-  const claimCompanyId = readClaim(jwtPayload, 'companyId', 'company_id', 'cid');
+  const claimCompanyId = readClaim(
+    jwtPayload,
+    'companyId',
+    'company_id',
+    'cid',
+  );
   if (
     claimTenantId === MASTER_TENANT_ID &&
     claimCompanyId === HRM_PILOT_OPERATING_COMPANY_ID
@@ -57,7 +65,10 @@ export function resolveHrmCatalogSyncScope(
   requested: { tenantId?: string; companyId?: string },
 ): HrmCatalogSyncScope {
   const tenantId = requested.tenantId?.trim();
-  const companyId = normalizeHrmCatalogSyncRequestCompanyId(authorization, requested.companyId);
+  const companyId = normalizeHrmCatalogSyncRequestCompanyId(
+    authorization,
+    requested.companyId,
+  );
   const scope = resolveScopeContext(authorization, { tenantId, companyId });
   const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
     authorization,

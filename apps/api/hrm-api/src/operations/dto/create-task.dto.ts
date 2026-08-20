@@ -1,4 +1,10 @@
-import { IsDateString, IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsDateString,
+  IsIn,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 const TASK_PRIORITIES = ['low', 'medium', 'high'] as const;
 

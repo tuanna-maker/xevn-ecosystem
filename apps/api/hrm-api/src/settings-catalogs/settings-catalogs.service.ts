@@ -132,7 +132,10 @@ import {
 } from './tenant-position-catalog';
 import { XbosCatalogWorkflowBridge } from './xbos-catalog-workflow.bridge';
 import { SettingsCatalogItemMutationDto } from './dto/settings-catalog-item.dto';
-import { assertResourceInHrmScope, resolveHrmListScope } from '../common/hrm-list-scope';
+import {
+  assertResourceInHrmScope,
+  resolveHrmListScope,
+} from '../common/hrm-list-scope';
 import { HRM_PLT_CAT_CODE_INVALID } from '../merge-tokens/merge-token.constants';
 import {
   isEmpExtensionFieldCatalogKey,
@@ -186,13 +189,19 @@ export class SettingsCatalogsService {
 
   private normalizeCatalogKey(catalogKey: string): string {
     if (!isValidCatalogKeyFormat(catalogKey)) {
-      throw new ApiException('HRM-SET-001', 'Invalid catalog key format', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-SET-001',
+        'Invalid catalog key format',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return catalogKey.trim().toLowerCase();
   }
 
   /** Overview merge only — never throw; corrupt L1 rows must not 500 the whole catalog GET. */
-  private tryNormalizeOverviewCatalogKey(catalogKey: string | null | undefined): string | null {
+  private tryNormalizeOverviewCatalogKey(
+    catalogKey: string | null | undefined,
+  ): string | null {
     if (!isValidCatalogKeyFormat(catalogKey)) return null;
     return catalogKey.trim().toLowerCase();
   }
@@ -278,16 +287,31 @@ export class SettingsCatalogsService {
   }
 
   private parseLeadershipEmails(): string[] {
-    const raw = process.env.HRM_XBOS_LEADERSHIP_EMAILS ?? process.env.XBOS_LEADERSHIP_EMAILS ?? '';
+    const raw =
+      process.env.HRM_XBOS_LEADERSHIP_EMAILS ??
+      process.env.XBOS_LEADERSHIP_EMAILS ??
+      '';
     if (!raw.trim()) return [];
-    return [...new Set(raw.split(',').map((v) => v.trim()).filter((v) => v.length > 0))];
+    return [
+      ...new Set(
+        raw
+          .split(',')
+          .map((v) => v.trim())
+          .filter((v) => v.length > 0),
+      ),
+    ];
   }
 
   private parsePayloadItems(payload: unknown): {
     name: string | null;
     domain: string | null;
     key: string | null;
-    items: Array<{ code: string; label: string; unit?: string | null; status?: string }>;
+    items: Array<{
+      code: string;
+      label: string;
+      unit?: string | null;
+      status?: string;
+    }>;
   } {
     if (!payload || typeof payload !== 'object') {
       return { name: null, domain: null, key: null, items: [] };
@@ -295,11 +319,19 @@ export class SettingsCatalogsService {
     const p = payload as Record<string, unknown>;
     const rawItems = Array.isArray(p.items) ? p.items : [];
     const items = rawItems
-      .filter((row): row is Record<string, unknown> => !!row && typeof row === 'object')
+      .filter(
+        (row): row is Record<string, unknown> =>
+          !!row && typeof row === 'object',
+      )
       .map((row) => ({
         code: typeof row.code === 'string' ? row.code : '',
         label: typeof row.label === 'string' ? row.label : '',
-        unit: typeof row.unit === 'string' ? row.unit : row.unit === null ? null : undefined,
+        unit:
+          typeof row.unit === 'string'
+            ? row.unit
+            : row.unit === null
+              ? null
+              : undefined,
         status: typeof row.status === 'string' ? row.status : 'active',
       }))
       .filter((row) => row.code.length > 0 && row.label.length > 0);
@@ -312,7 +344,12 @@ export class SettingsCatalogsService {
   }
 
   private toXbosOriginItems(
-    items: Array<{ code: string; label: string; unit?: string | null; status?: string }>,
+    items: Array<{
+      code: string;
+      label: string;
+      unit?: string | null;
+      status?: string;
+    }>,
   ): SettingsCatalogItem[] {
     return items.map((row) => ({
       code: row.code,
@@ -323,7 +360,10 @@ export class SettingsCatalogsService {
     }));
   }
 
-  private mergeEffective(xbos: SettingsCatalogItem[], hrm: SettingsCatalogItem[]): SettingsCatalogItem[] {
+  private mergeEffective(
+    xbos: SettingsCatalogItem[],
+    hrm: SettingsCatalogItem[],
+  ): SettingsCatalogItem[] {
     const byCode = new Map<string, SettingsCatalogItem>();
     for (const row of xbos) {
       byCode.set(row.code.toLowerCase(), { ...row, origin: 'xbos' });
@@ -364,7 +404,9 @@ export class SettingsCatalogsService {
     }
     const get = this.catalogSync.getSyncedCatalog;
     if (typeof get === 'function') {
-      return get.call(this.catalogSync, catalogKey, tenantId, companyId).catch(() => null);
+      return get
+        .call(this.catalogSync, catalogKey, tenantId, companyId)
+        .catch(() => null);
     }
     return null;
   }
@@ -390,10 +432,16 @@ export class SettingsCatalogsService {
     return fam.storageKey;
   }
 
-  private matchesPickerQuery(item: SettingsCatalogItem, q: string | undefined): boolean {
+  private matchesPickerQuery(
+    item: SettingsCatalogItem,
+    q: string | undefined,
+  ): boolean {
     if (!q?.trim()) return true;
     const needle = q.trim().toLowerCase();
-    return item.code.toLowerCase().includes(needle) || item.label.toLowerCase().includes(needle);
+    return (
+      item.code.toLowerCase().includes(needle) ||
+      item.label.toLowerCase().includes(needle)
+    );
   }
 
   private matchesActiveFilter(
@@ -406,8 +454,15 @@ export class SettingsCatalogsService {
     if (status === 'draft') return item.status === 'draft';
     if (activeRaw == null || activeRaw.trim() === '') return true;
     const a = activeRaw.trim().toLowerCase();
-    if (a === '1' || a === 'true' || a === 'active' || a === 'yes') return item.status === 'active';
-    if (a === '0' || a === 'false' || a === 'draft' || a === 'inactive' || a === 'no') {
+    if (a === '1' || a === 'true' || a === 'active' || a === 'yes')
+      return item.status === 'active';
+    if (
+      a === '0' ||
+      a === 'false' ||
+      a === 'draft' ||
+      a === 'inactive' ||
+      a === 'no'
+    ) {
       return item.status !== 'active';
     }
     return true;
@@ -441,7 +496,10 @@ export class SettingsCatalogsService {
               status?: string;
             }>,
           };
-      xbosMerged = this.mergeByCodePreferFirst(xbosMerged, this.toXbosOriginItems(parsed.items));
+      xbosMerged = this.mergeByCodePreferFirst(
+        xbosMerged,
+        this.toXbosOriginItems(parsed.items),
+      );
 
       const extRes = await this.db.query<{
         code: string;
@@ -478,7 +536,11 @@ export class SettingsCatalogsService {
     tenantId: string,
     companyId: string,
     catalogKey: string,
-    query?: { q?: string; active?: string; status?: 'active' | 'draft' | 'all' },
+    query?: {
+      q?: string;
+      active?: string;
+      status?: 'active' | 'draft' | 'all';
+    },
   ): Promise<{
     catalog_key: string;
     aliases: string[];
@@ -488,8 +550,16 @@ export class SettingsCatalogsService {
     data: SettingsCatalogItem[];
   }> {
     const fam = resolveCatalogFamily(this.normalizeCatalogKey(catalogKey));
-    const storageKey = await this.resolveWriteStorageKey(tenantId, companyId, catalogKey);
-    const items = await this.getEffectiveItemsForKey(tenantId, companyId, catalogKey);
+    const storageKey = await this.resolveWriteStorageKey(
+      tenantId,
+      companyId,
+      catalogKey,
+    );
+    const items = await this.getEffectiveItemsForKey(
+      tenantId,
+      companyId,
+      catalogKey,
+    );
     const filtered = items.filter(
       (item) =>
         this.matchesActiveFilter(item, query?.active, query?.status) &&
@@ -526,7 +596,11 @@ export class SettingsCatalogsService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const items = await this.getEffectiveItemsForKey(opts.tenantId, opts.companyId, opts.catalogKey);
+    const items = await this.getEffectiveItemsForKey(
+      opts.tenantId,
+      opts.companyId,
+      opts.catalogKey,
+    );
     const activeOnly = items.filter((i) => i.status === 'active');
     if (activeOnly.length === 0) {
       throw new ApiException(
@@ -536,7 +610,9 @@ export class SettingsCatalogsService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const hit = activeOnly.find((i) => i.code.toLowerCase() === code.toLowerCase());
+    const hit = activeOnly.find(
+      (i) => i.code.toLowerCase() === code.toLowerCase(),
+    );
     if (!hit) {
       throw new ApiException(
         opts.errorCode,
@@ -553,7 +629,10 @@ export class SettingsCatalogsService {
    * SRS bước: Diễn biến #2/#3/#4 — merge snapshot + extension; empty chưa sync OK
    * TechSpec: §14.8 ref_srs FR-HRM-SC-01
    */
-  async getOverview(tenantId: string, companyId: string): Promise<{ catalogs: SettingsCatalogOverviewRow[] }> {
+  async getOverview(
+    tenantId: string,
+    companyId: string,
+  ): Promise<{ catalogs: SettingsCatalogOverviewRow[] }> {
     await this.ensureExtensionSchema();
     // Xử lý: đọc partition đã resolve (main→holding ở controller).
     const t = tenantId.trim().toLowerCase();
@@ -608,7 +687,12 @@ export class SettingsCatalogsService {
         code: row.code,
         label: row.label,
         unit: row.unit,
-        status: row.status === 'pending' ? 'draft' : row.status === 'draft' ? 'draft' : 'active',
+        status:
+          row.status === 'pending'
+            ? 'draft'
+            : row.status === 'draft'
+              ? 'draft'
+              : 'active',
         origin: 'hrm',
       });
       extByKey.set(storageKey, list);
@@ -632,7 +716,10 @@ export class SettingsCatalogsService {
     const catalogs: SettingsCatalogOverviewRow[] = [];
     // E1-B: family effectiveItems from in-memory L1+L2a so dual DEC keys share one merged set.
     const familyEffectiveCache = new Map<string, SettingsCatalogItem[]>();
-    const effectiveForFamily = (familyId: string, aliases: readonly string[]): SettingsCatalogItem[] => {
+    const effectiveForFamily = (
+      familyId: string,
+      aliases: readonly string[],
+    ): SettingsCatalogItem[] => {
       const cached = familyEffectiveCache.get(familyId);
       if (cached) return cached;
       let xbosMerged: SettingsCatalogItem[] = [];
@@ -646,7 +733,10 @@ export class SettingsCatalogsService {
             this.toXbosOriginItems(parsedAlias.items),
           );
         }
-        hrmMerged = this.mergeByCodePreferFirst(hrmMerged, extByKey.get(alias) ?? []);
+        hrmMerged = this.mergeByCodePreferFirst(
+          hrmMerged,
+          extByKey.get(alias) ?? [],
+        );
       }
       const merged = this.mergeEffective(xbosMerged, hrmMerged);
       familyEffectiveCache.set(familyId, merged);
@@ -688,7 +778,11 @@ export class SettingsCatalogsService {
     if (!catalogs.some((c) => c.catalogKey === allowFam.storageKey)) {
       let allowItems: SettingsCatalogItem[] = [];
       try {
-        const allowRes = await this.db.query<{ code: string; name_vi: string; status: string }>(
+        const allowRes = await this.db.query<{
+          code: string;
+          name_vi: string;
+          status: string;
+        }>(
           `SELECT code, name_vi, status FROM public.hrm_allowance_deduction_types
            WHERE company_id = $1 AND archived_at IS NULL AND status <> 'retired'
            ORDER BY sort_order ASC, code ASC
@@ -767,7 +861,9 @@ export class SettingsCatalogsService {
         authorization,
       );
       const keys = (remote.data as Array<{ key?: string }>)
-        .map((entry) => (typeof entry?.key === 'string' ? entry.key.trim() : ''))
+        .map((entry) =>
+          typeof entry?.key === 'string' ? entry.key.trim() : '',
+        )
         .filter((key) => key.length > 0);
       const pulledKeys: string[] = [];
       const skippedKeys: string[] = [];
@@ -778,7 +874,12 @@ export class SettingsCatalogsService {
         const batch = keys.slice(i, i + concurrency);
         const settled = await Promise.allSettled(
           batch.map(async (key) => {
-            await this.catalogSync.pullCatalogFromXbos(key, tenantId, companyId, authorization);
+            await this.catalogSync.pullCatalogFromXbos(
+              key,
+              tenantId,
+              companyId,
+              authorization,
+            );
             return key;
           }),
         );
@@ -790,7 +891,10 @@ export class SettingsCatalogsService {
             continue;
           }
           const reason = result.reason;
-          if (reason instanceof ApiException && reason.code === 'HRM-SYNC-002') {
+          if (
+            reason instanceof ApiException &&
+            reason.code === 'HRM-SYNC-002'
+          ) {
             skippedKeys.push(key);
             continue;
           }
@@ -939,7 +1043,9 @@ export class SettingsCatalogsService {
     authorization?: string,
   ): Promise<void> {
     await this.ensureExtensionSchema();
-    const scope = resolveHrmListScope(authorization, catalogCompanyId, { tenantId });
+    const scope = resolveHrmListScope(authorization, catalogCompanyId, {
+      tenantId,
+    });
     const peek = await this.db.query<{ tenant_id: string; company_id: string }>(
       `SELECT tenant_id, company_id
        FROM public.hrm_catalog_extension_requests
@@ -949,7 +1055,11 @@ export class SettingsCatalogsService {
     );
     const row = peek.rows[0];
     if (!row) {
-      throw new ApiException('HRM-SET-404', 'Extension batch not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-SET-404',
+        'Extension batch not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const normalizedTenant = tenantId.trim().toLowerCase();
     if (row.tenant_id?.trim().toLowerCase() !== normalizedTenant) {
@@ -972,7 +1082,12 @@ export class SettingsCatalogsService {
     catalogCompanyId: string,
     authorization?: string,
   ): Promise<void> {
-    await this.assertExtensionBatchInCatalogScope(batchId, tenantId, catalogCompanyId, authorization);
+    await this.assertExtensionBatchInCatalogScope(
+      batchId,
+      tenantId,
+      catalogCompanyId,
+      authorization,
+    );
     await this.db.query(
       `UPDATE public.hrm_catalog_extension_requests
        SET workflow_instance_id = $2::uuid
@@ -990,7 +1105,12 @@ export class SettingsCatalogsService {
     catalogCompanyId: string,
     authorization?: string,
   ) {
-    await this.assertExtensionBatchInCatalogScope(batchId, tenantId, catalogCompanyId, authorization);
+    await this.assertExtensionBatchInCatalogScope(
+      batchId,
+      tenantId,
+      catalogCompanyId,
+      authorization,
+    );
     const res = await this.db.query<{ id: string }>(
       `SELECT id FROM public.hrm_catalog_extension_requests
        WHERE batch_id = $1::uuid AND status = 'pending'`,
@@ -998,7 +1118,14 @@ export class SettingsCatalogsService {
     );
     const results = [];
     for (const row of res.rows) {
-      results.push(await this.reviewExtensionRequest(row.id, decision, reviewerUserId, reviewNote));
+      results.push(
+        await this.reviewExtensionRequest(
+          row.id,
+          decision,
+          reviewerUserId,
+          reviewNote,
+        ),
+      );
     }
     return { batchId, decision, reviewed: results.length, results };
   }
@@ -1009,7 +1136,12 @@ export class SettingsCatalogsService {
     catalogCompanyId: string,
     authorization?: string,
   ) {
-    await this.assertExtensionBatchInCatalogScope(batchId, tenantId, catalogCompanyId, authorization);
+    await this.assertExtensionBatchInCatalogScope(
+      batchId,
+      tenantId,
+      catalogCompanyId,
+      authorization,
+    );
     const normalizedTenant = tenantId.trim().toLowerCase();
     const normalizedCompany = catalogCompanyId.trim().toLowerCase();
     const res = await this.db.query(
@@ -1023,7 +1155,11 @@ export class SettingsCatalogsService {
       [batchId, normalizedTenant, normalizedCompany],
     );
     if (!res.rows.length) {
-      throw new ApiException('HRM-SET-404', 'Extension batch not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-SET-404',
+        'Extension batch not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { batchId, items: res.rows };
   }
@@ -1051,22 +1187,36 @@ export class SettingsCatalogsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-SET-420', 'Extension request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-SET-420',
+        'Extension request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (row.status !== 'pending') {
-      throw new ApiException('HRM-SET-421', 'Request already reviewed', HttpStatus.CONFLICT, {
-        status: row.status,
-      });
+      throw new ApiException(
+        'HRM-SET-421',
+        'Request already reviewed',
+        HttpStatus.CONFLICT,
+        {
+          status: row.status,
+        },
+      );
     }
     if (decision === 'approved') {
-      await this.appendExtensionItems(row.tenant_id, row.company_id, row.catalog_key, [
-        {
-          code: row.code,
-          label: row.label,
-          unit: row.unit ?? undefined,
-          status: 'active',
-        },
-      ]);
+      await this.appendExtensionItems(
+        row.tenant_id,
+        row.company_id,
+        row.catalog_key,
+        [
+          {
+            code: row.code,
+            label: row.label,
+            unit: row.unit ?? undefined,
+            status: 'active',
+          },
+        ],
+      );
     }
     await this.db.query(
       `
@@ -1076,7 +1226,12 @@ export class SettingsCatalogsService {
     `,
       [requestId, decision, reviewerUserId, reviewNote?.trim() ?? null],
     );
-    return { requestId, status: decision, catalogKey: row.catalog_key, code: row.code };
+    return {
+      requestId,
+      status: decision,
+      catalogKey: row.catalog_key,
+      code: row.code,
+    };
   }
 
   async appendExtensionItems(
@@ -1122,7 +1277,10 @@ export class SettingsCatalogsService {
     const insertParams: unknown[] = [t, c, ck, codes, labels, units, statuses];
 
     // F-EMP-TOK-03 — allow-list EMP field catalogs: same TX → custom.emp.* (Option B′)
-    if (isEmpExtensionFieldCatalogKey(ck) || isEmpExtensionFieldCatalogKey(inputKey)) {
+    if (
+      isEmpExtensionFieldCatalogKey(ck) ||
+      isEmpExtensionFieldCatalogKey(inputKey)
+    ) {
       await this.db.withTransaction(async (query) => {
         await query(insertSql, insertParams);
         for (let i = 0; i < items.length; i += 1) {
@@ -1142,16 +1300,24 @@ export class SettingsCatalogsService {
     return { upserted: items.length, storageKey: ck };
   }
 
-  async upsertCatalogItem(tenantId: string, body: SettingsCatalogItemMutationDto) {
+  async upsertCatalogItem(
+    tenantId: string,
+    body: SettingsCatalogItemMutationDto,
+  ) {
     const status = body.status === 'draft' ? 'draft' : 'active';
-    const result = await this.appendExtensionItems(tenantId, body.company_id, body.category_key, [
-      {
-        code: body.item_key,
-        label: body.item_name,
-        unit: body.item_value ?? undefined,
-        status,
-      },
-    ]);
+    const result = await this.appendExtensionItems(
+      tenantId,
+      body.company_id,
+      body.category_key,
+      [
+        {
+          code: body.item_key,
+          label: body.item_name,
+          unit: body.item_value ?? undefined,
+          status,
+        },
+      ],
+    );
     return {
       upserted: result.upserted,
       item_key: body.item_key,
@@ -1166,7 +1332,13 @@ export class SettingsCatalogsService {
    * E1-B: locate across family aliases; prefer storageKey row.
    * F-EMP-TOK-03: allow-list EMP field catalogs soft-retire matching custom.emp.* same TX.
    */
-  async deleteCatalogItem(tenantId: string, body: Pick<SettingsCatalogItemMutationDto, 'company_id' | 'category_key' | 'item_key'>) {
+  async deleteCatalogItem(
+    tenantId: string,
+    body: Pick<
+      SettingsCatalogItemMutationDto,
+      'company_id' | 'category_key' | 'item_key'
+    >,
+  ) {
     await this.ensureExtensionSchema();
     const t = tenantId.trim().toLowerCase();
     const c = body.company_id.trim().toLowerCase();
@@ -1332,7 +1504,8 @@ export class SettingsCatalogsService {
         ck,
         code,
         payload.label?.trim() || extRes.rows[0].label,
-        payload.reason?.trim() || 'Company requested field removal from HRM extension catalog',
+        payload.reason?.trim() ||
+          'Company requested field removal from HRM extension catalog',
         payload.requested_by_name?.trim() || null,
         payload.requested_by_email?.trim() || null,
         this.parseLeadershipEmails(),
@@ -1354,10 +1527,17 @@ export class SettingsCatalogsService {
    * Count active items across FR-HRM-SC-POS catalog keys (XBOS snapshot + HRM extension).
    * When > 0, hardcoded tenant-position registry must not write as SoT.
    */
-  async countActivePosMasterItems(tenantId: string, companyId: string): Promise<number> {
+  async countActivePosMasterItems(
+    tenantId: string,
+    companyId: string,
+  ): Promise<number> {
     let total = 0;
     for (const key of HRM_SC_POS_KEYS) {
-      const items = await this.getEffectiveItemsForKey(tenantId, companyId, key);
+      const items = await this.getEffectiveItemsForKey(
+        tenantId,
+        companyId,
+        key,
+      );
       total += items.filter((i) => i.status === 'active').length;
     }
     return total;
@@ -1388,7 +1568,10 @@ export class SettingsCatalogsService {
     }
   }
 
-  async seedEmployeeProfileTemplate(tenantId: string, companyId: string): Promise<{
+  async seedEmployeeProfileTemplate(
+    tenantId: string,
+    companyId: string,
+  ): Promise<{
     catalogs: Array<{ catalogKey: string; upserted: number }>;
     totalUpserted: number;
   }> {
@@ -1404,46 +1587,149 @@ export class SettingsCatalogsService {
     const c = companyId.trim().toLowerCase();
     // Xử lý: dept/position field defs = empty select — SoT là job_titles/departments (XBOS), không hardcode (G-ORPH-BE-03).
     const deptPositionItems = buildEmptyPositionFieldDefs();
-    const templates: Array<{ catalogKey: string; items: CatalogExtensionItemDto[] }> = [
+    const templates: Array<{
+      catalogKey: string;
+      items: CatalogExtensionItemDto[];
+    }> = [
       {
         catalogKey: 'hrm_employee_basic_fields',
         items: [
-            { code: 'employee_code', label: 'Mã nhân sự', unit: 'text', status: 'active' },
-            { code: 'full_name', label: 'Họ và tên', unit: 'text', status: 'active' },
-            ...deptPositionItems,
-            { code: 'status', label: 'Trạng thái lao động', unit: 'select:active|probation|inactive', status: 'active' },
-            { code: 'xbos_basic_badge_id', label: 'Mã thẻ nội bộ', unit: 'text', status: 'active' },
+          {
+            code: 'employee_code',
+            label: 'Mã nhân sự',
+            unit: 'text',
+            status: 'active',
+          },
+          {
+            code: 'full_name',
+            label: 'Họ và tên',
+            unit: 'text',
+            status: 'active',
+          },
+          ...deptPositionItems,
+          {
+            code: 'status',
+            label: 'Trạng thái lao động',
+            unit: 'select:active|probation|inactive',
+            status: 'active',
+          },
+          {
+            code: 'xbos_basic_badge_id',
+            label: 'Mã thẻ nội bộ',
+            unit: 'text',
+            status: 'active',
+          },
         ],
       },
       {
         catalogKey: 'hrm_employee_personal_fields',
         items: [
-          { code: 'date_of_birth', label: 'Ngày sinh', unit: 'date', status: 'active' },
-          { code: 'gender', label: 'Giới tính', unit: 'select:Nam|Nữ|Khác', status: 'active' },
-          { code: 'national_id', label: 'CCCD/CMND', unit: 'text', status: 'active' },
-          { code: 'phone_number', label: 'Số điện thoại', unit: 'phone', status: 'active' },
-          { code: 'permanent_address', label: 'Địa chỉ thường trú', unit: 'text', status: 'active' },
-          { code: 'xbos_personal_hometown', label: 'Quê quán', unit: 'text', status: 'active' },
+          {
+            code: 'date_of_birth',
+            label: 'Ngày sinh',
+            unit: 'date',
+            status: 'active',
+          },
+          {
+            code: 'gender',
+            label: 'Giới tính',
+            unit: 'select:Nam|Nữ|Khác',
+            status: 'active',
+          },
+          {
+            code: 'national_id',
+            label: 'CCCD/CMND',
+            unit: 'text',
+            status: 'active',
+          },
+          {
+            code: 'phone_number',
+            label: 'Số điện thoại',
+            unit: 'phone',
+            status: 'active',
+          },
+          {
+            code: 'permanent_address',
+            label: 'Địa chỉ thường trú',
+            unit: 'text',
+            status: 'active',
+          },
+          {
+            code: 'xbos_personal_hometown',
+            label: 'Quê quán',
+            unit: 'text',
+            status: 'active',
+          },
         ],
       },
       {
         catalogKey: 'hrm_employee_work_fields',
         items: [
-          { code: 'join_date', label: 'Ngày vào làm', unit: 'date', status: 'active' },
-          { code: 'work_location', label: 'Địa điểm làm việc', unit: 'text', status: 'active' },
-          { code: 'manager', label: 'Quản lý trực tiếp', unit: 'text', status: 'active' },
-          { code: 'employment_type', label: 'Loại hợp đồng', unit: 'select:full-time|part-time|contract|intern', status: 'active' },
-          { code: 'xbos_work_shift_group', label: 'Nhóm ca làm việc', unit: 'select:Ca hành chính|Ca xoay 2|Ca xoay 3', status: 'active' },
+          {
+            code: 'join_date',
+            label: 'Ngày vào làm',
+            unit: 'date',
+            status: 'active',
+          },
+          {
+            code: 'work_location',
+            label: 'Địa điểm làm việc',
+            unit: 'text',
+            status: 'active',
+          },
+          {
+            code: 'manager',
+            label: 'Quản lý trực tiếp',
+            unit: 'text',
+            status: 'active',
+          },
+          {
+            code: 'employment_type',
+            label: 'Loại hợp đồng',
+            unit: 'select:full-time|part-time|contract|intern',
+            status: 'active',
+          },
+          {
+            code: 'xbos_work_shift_group',
+            label: 'Nhóm ca làm việc',
+            unit: 'select:Ca hành chính|Ca xoay 2|Ca xoay 3',
+            status: 'active',
+          },
         ],
       },
       {
         catalogKey: 'hrm_employee_finance_fields',
         items: [
-          { code: 'bank_account_number', label: 'Số tài khoản ngân hàng', unit: 'text', status: 'active' },
-          { code: 'bank_name', label: 'Ngân hàng', unit: 'text', status: 'active' },
-          { code: 'tax_code', label: 'Mã số thuế TNCN', unit: 'text', status: 'active' },
-          { code: 'salary_grade', label: 'Bậc lương', unit: 'text', status: 'active' },
-          { code: 'xbos_finance_salary_band', label: 'Nhóm lương XBOS', unit: 'select:Band A|Band B|Band C', status: 'active' },
+          {
+            code: 'bank_account_number',
+            label: 'Số tài khoản ngân hàng',
+            unit: 'text',
+            status: 'active',
+          },
+          {
+            code: 'bank_name',
+            label: 'Ngân hàng',
+            unit: 'text',
+            status: 'active',
+          },
+          {
+            code: 'tax_code',
+            label: 'Mã số thuế TNCN',
+            unit: 'text',
+            status: 'active',
+          },
+          {
+            code: 'salary_grade',
+            label: 'Bậc lương',
+            unit: 'text',
+            status: 'active',
+          },
+          {
+            code: 'xbos_finance_salary_band',
+            label: 'Nhóm lương XBOS',
+            unit: 'select:Band A|Band B|Band C',
+            status: 'active',
+          },
         ],
       },
     ];
@@ -1451,7 +1737,12 @@ export class SettingsCatalogsService {
     const catalogs: Array<{ catalogKey: string; upserted: number }> = [];
     let totalUpserted = 0;
     for (const tpl of templates) {
-      const result = await this.appendExtensionItems(t, c, tpl.catalogKey, tpl.items);
+      const result = await this.appendExtensionItems(
+        t,
+        c,
+        tpl.catalogKey,
+        tpl.items,
+      );
       catalogs.push({ catalogKey: tpl.catalogKey, upserted: result.upserted });
       totalUpserted += result.upserted;
     }
@@ -1479,7 +1770,9 @@ export class SettingsCatalogsService {
         status: row.status ?? 'active',
       })),
     };
-    const checksum = createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+    const checksum = createHash('sha256')
+      .update(JSON.stringify(payload))
+      .digest('hex');
     await this.db.query(
       `
       INSERT INTO public.synced_catalogs (tenant_id, company_id, catalog_key, source_system, payload, version, checksum, synced_at)
@@ -1518,8 +1811,20 @@ export class SettingsCatalogsService {
     const catalogs: Array<{ catalogKey: string; upserted: number }> = [];
     let totalUpserted = 0;
     for (const def of GROUP_EMPLOYEE_IMPORT_CATALOGS) {
-      await this.upsertGroupCatalogMeta(t, c, def.catalogKey, def.name, def.domain, def.items);
-      const result = await this.appendExtensionItems(t, c, def.catalogKey, def.items);
+      await this.upsertGroupCatalogMeta(
+        t,
+        c,
+        def.catalogKey,
+        def.name,
+        def.domain,
+        def.items,
+      );
+      const result = await this.appendExtensionItems(
+        t,
+        c,
+        def.catalogKey,
+        def.items,
+      );
       catalogs.push({ catalogKey: def.catalogKey, upserted: result.upserted });
       totalUpserted += result.upserted;
     }
@@ -1543,7 +1848,10 @@ export class SettingsCatalogsService {
     }> = [];
     let totalUpserted = 0;
     for (const scope of GROUP_HRM_TENANT_SCOPES) {
-      const row = await this.seedGroupEmployeeImportCatalog(scope.tenantId, scope.companyId);
+      const row = await this.seedGroupEmployeeImportCatalog(
+        scope.tenantId,
+        scope.companyId,
+      );
       scopes.push({
         tenantId: row.tenantId,
         companyId: row.companyId,
@@ -1566,8 +1874,20 @@ export class SettingsCatalogsService {
     const catalogs: Array<{ catalogKey: string; upserted: number }> = [];
     let totalUpserted = 0;
     for (const def of TOURISM_FLEET_CATALOGS) {
-      await this.upsertGroupCatalogMeta(t, c, def.catalogKey, def.name, def.domain, def.items);
-      const result = await this.appendExtensionItems(t, c, def.catalogKey, def.items);
+      await this.upsertGroupCatalogMeta(
+        t,
+        c,
+        def.catalogKey,
+        def.name,
+        def.domain,
+        def.items,
+      );
+      const result = await this.appendExtensionItems(
+        t,
+        c,
+        def.catalogKey,
+        def.items,
+      );
       catalogs.push({ catalogKey: def.catalogKey, upserted: result.upserted });
       totalUpserted += result.upserted;
     }
@@ -1604,14 +1924,25 @@ export class SettingsCatalogsService {
       );
     }
     const items = buildPositionCatalogItems(catalog);
-    const result = await this.appendExtensionItems(t, c, 'hrm_employee_basic_fields', items);
+    const result = await this.appendExtensionItems(
+      t,
+      c,
+      'hrm_employee_basic_fields',
+      items,
+    );
     const deptUnit = items.find((i) => i.code === 'department')?.unit ?? '';
     const posUnit = items.find((i) => i.code === 'position')?.unit ?? '';
     return {
       tenantId: t,
       companyId: c,
-      departmentOptions: deptUnit.replace(/^select:/, '').split('|').filter(Boolean).length,
-      positionOptions: posUnit.replace(/^select:/, '').split('|').filter(Boolean).length,
+      departmentOptions: deptUnit
+        .replace(/^select:/, '')
+        .split('|')
+        .filter(Boolean).length,
+      positionOptions: posUnit
+        .replace(/^select:/, '')
+        .split('|')
+        .filter(Boolean).length,
       upserted: result.upserted,
       source: 'bootstrap_hardcode',
       sot: 'deprecated_use_xbos_settings',
@@ -1645,7 +1976,9 @@ export class SettingsCatalogsService {
       source: 'bootstrap_hardcode';
       sot: 'deprecated_use_xbos_settings';
     }> = [];
-    for (const { tenantId, companyId } of GROUP_HRM_TENANT_SCOPES.filter((s) => s.tenantId !== 'xevn')) {
+    for (const { tenantId, companyId } of GROUP_HRM_TENANT_SCOPES.filter(
+      (s) => s.tenantId !== 'xevn',
+    )) {
       const row = await this.seedTenantPositionCatalog(tenantId, companyId);
       scopes.push({
         tenantId: row.tenantId,

@@ -25,10 +25,17 @@ describe('P1-BROWSER-E2E-CAT-S2S-AUTH-8088 catalog workflow bridge auth', () => 
     jest.restoreAllMocks();
   });
 
-  function createJwt(payload: Record<string, unknown>, secret = 'xevn-dev-jwt-secret'): string {
-    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  function createJwt(
+    payload: Record<string, unknown>,
+    secret = 'xevn-dev-jwt-secret',
+  ): string {
+    const header = Buffer.from(
+      JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+    ).toString('base64url');
     const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
-    const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+    const sig = createHmac('sha256', secret)
+      .update(`${header}.${body}`)
+      .digest('base64url');
     return `${header}.${body}.${sig}`;
   }
 
@@ -38,10 +45,18 @@ describe('P1-BROWSER-E2E-CAT-S2S-AUTH-8088 catalog workflow bridge auth', () => 
 
     const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
-      json: async () => ({ success: true, data: { workflowInstanceId: 'inst-prod-1' } }),
+      json: async () => ({
+        success: true,
+        data: { workflowInstanceId: 'inst-prod-1' },
+      }),
     } as Response);
 
-    await bridge.startCatalogWorkflowIfConfigured('batch-s2s', 'xevn', 'holding', 'ceo@xe.vn');
+    await bridge.startCatalogWorkflowIfConfigured(
+      'batch-s2s',
+      'xevn',
+      'holding',
+      'ceo@xe.vn',
+    );
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
@@ -70,10 +85,18 @@ describe('P1-BROWSER-E2E-CAT-S2S-AUTH-8088 catalog workflow bridge auth', () => 
     const buildSpy = jest.spyOn(catalogSync, 'buildXbosUpstreamHeaders');
     jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
-      json: async () => ({ success: true, data: { workflowInstanceId: 'inst-1' } }),
+      json: async () => ({
+        success: true,
+        data: { workflowInstanceId: 'inst-1' },
+      }),
     } as Response);
 
-    await bridge.startCatalogWorkflowIfConfigured('batch-1', 'xe-du-lich', 'main', 'du-lich.ceo@xe.vn');
+    await bridge.startCatalogWorkflowIfConfigured(
+      'batch-1',
+      'xe-du-lich',
+      'main',
+      'du-lich.ceo@xe.vn',
+    );
 
     expect(buildSpy).toHaveBeenCalledWith(undefined, {
       tenantId: 'xe-du-lich',

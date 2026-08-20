@@ -83,7 +83,8 @@ export class AttendanceRequestsService {
     /** F-ATT-CAT-OTC — optional for legacy specs; production injects AttOtCompTypeService. */
     @Optional() private readonly attOtCompTypeCatalog?: AttOtCompTypeService,
     /** F-ATT-OT-COMP-POLICY / ACCRUE — optional for legacy specs. */
-    @Optional() private readonly attOtCompLeavePolicy?: AttOtCompLeavePolicyService,
+    @Optional()
+    private readonly attOtCompLeavePolicy?: AttOtCompLeavePolicyService,
   ) {}
 
   async ensureSchema() {
@@ -213,7 +214,12 @@ export class AttendanceRequestsService {
     const params: unknown[] = [];
     const filters: string[] = [];
     if (scope.masterTenantPartition || scope.memberTenantId) {
-      pushWorkforceEmployeeScopeFilter(filters, params, scope, `${alias}.employee_id`);
+      pushWorkforceEmployeeScopeFilter(
+        filters,
+        params,
+        scope,
+        `${alias}.employee_id`,
+      );
     } else {
       pushCompanyIdFilter(filters, params, scope.companyIds);
     }
@@ -230,7 +236,10 @@ export class AttendanceRequestsService {
     return { sql, params };
   }
 
-  private async loadCompanyId(table: string, requestId: string): Promise<ScopedRow | null> {
+  private async loadCompanyId(
+    table: string,
+    requestId: string,
+  ): Promise<ScopedRow | null> {
     const res = await this.db.query<ScopedRow>(
       `SELECT company_id FROM public.${table} WHERE id = $1::uuid LIMIT 1;`,
       [requestId],
@@ -247,8 +256,13 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
     const existing = await this.loadCompanyId(table, requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-ATT-REQ-404',
@@ -268,7 +282,7 @@ export class AttendanceRequestsService {
       [
         requestId,
         decision,
-        decision === 'rejected' ? body.rejected_reason?.trim() ?? null : null,
+        decision === 'rejected' ? (body.rejected_reason?.trim() ?? null) : null,
         body.reviewer_name.trim(),
       ],
     );
@@ -290,8 +304,13 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
     const existing = await this.loadCompanyId(table, requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-ATT-REQ-404',
@@ -302,7 +321,11 @@ export class AttendanceRequestsService {
       [requestId],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-ATT-REQ-404', 'Attendance request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-REQ-404',
+        'Attendance request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: requestId, deleted: true };
   }
@@ -313,9 +336,19 @@ export class AttendanceRequestsService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const { sql, params } = this.buildListSql('overtime_requests', 'ot', scope, query);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const { sql, params } = this.buildListSql(
+      'overtime_requests',
+      'ot',
+      scope,
+      query,
+    );
     const res = await this.db.query(sql, params);
     return { total: res.rows.length, data: res.rows };
   }
@@ -350,11 +383,12 @@ export class AttendanceRequestsService {
     // KEEP overtime_requests.compensation_type TEXT soft key; orthogonal vs overtime_type.
     let compensationType = body.compensation_type?.trim() || 'salary';
     if (this.attOtCompTypeCatalog) {
-      const compHit = await this.attOtCompTypeCatalog.assertCompTypeInEffectiveCatalog({
-        companyId,
-        compensationType,
-        authorization,
-      });
+      const compHit =
+        await this.attOtCompTypeCatalog.assertCompTypeInEffectiveCatalog({
+          companyId,
+          compensationType,
+          authorization,
+        });
       if (compHit) {
         compensationType = compHit.code;
       }
@@ -394,7 +428,11 @@ export class AttendanceRequestsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-OT-500', 'Failed to create overtime request', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiException(
+        'HRM-OT-500',
+        'Failed to create overtime request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     return row;
   }
@@ -407,8 +445,13 @@ export class AttendanceRequestsService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
     const loaded = await this.db.query(
       `
         SELECT id, company_id, employee_id, status, total_hours, compensation_type, overtime_date
@@ -430,7 +473,11 @@ export class AttendanceRequestsService {
         }
       | undefined;
     if (!before) {
-      throw new ApiException('HRM-ATT-REQ-404', 'Attendance request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-REQ-404',
+        'Attendance request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope({ company_id: before.company_id }, scope, {
       notFoundCode: 'HRM-ATT-REQ-404',
@@ -500,11 +547,30 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    return this.decideRequest('overtime_requests', requestId, 'rejected', body, companyId, authorization, tenantId);
+    return this.decideRequest(
+      'overtime_requests',
+      requestId,
+      'rejected',
+      body,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 
-  deleteOvertimeRequest(requestId: string, companyId: string, authorization?: string, tenantId?: string) {
-    return this.deleteRequest('overtime_requests', requestId, companyId, authorization, tenantId);
+  deleteOvertimeRequest(
+    requestId: string,
+    companyId: string,
+    authorization?: string,
+    tenantId?: string,
+  ) {
+    return this.deleteRequest(
+      'overtime_requests',
+      requestId,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 
   async listBusinessTripRequests(
@@ -513,13 +579,23 @@ export class AttendanceRequestsService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
-    const { sql, params } = this.buildListSql('business_trip_requests', 'bt', scope, query);
+    const scope = resolveHrmListScope(authorization, query.company_id, {
+      tenantId,
+    });
+    const { sql, params } = this.buildListSql(
+      'business_trip_requests',
+      'bt',
+      scope,
+      query,
+    );
     const res = await this.db.query(sql, params);
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createBusinessTripRequest(body: CreateBusinessTripRequestDto, authorization?: string) {
+  async createBusinessTripRequest(
+    body: CreateBusinessTripRequestDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     if (body.start_date > body.end_date) {
       throw new ApiException(
@@ -528,7 +604,10 @@ export class AttendanceRequestsService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.company_id,
+    );
     const id = randomUUID();
     const res = await this.db.query(
       `
@@ -567,7 +646,11 @@ export class AttendanceRequestsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-BT-500', 'Failed to create business trip request', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiException(
+        'HRM-BT-500',
+        'Failed to create business trip request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     return row;
   }
@@ -579,7 +662,15 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    return this.decideRequest('business_trip_requests', requestId, 'approved', body, companyId, authorization, tenantId);
+    return this.decideRequest(
+      'business_trip_requests',
+      requestId,
+      'approved',
+      body,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 
   rejectBusinessTripRequest(
@@ -589,11 +680,30 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    return this.decideRequest('business_trip_requests', requestId, 'rejected', body, companyId, authorization, tenantId);
+    return this.decideRequest(
+      'business_trip_requests',
+      requestId,
+      'rejected',
+      body,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 
-  deleteBusinessTripRequest(requestId: string, companyId: string, authorization?: string, tenantId?: string) {
-    return this.deleteRequest('business_trip_requests', requestId, companyId, authorization, tenantId);
+  deleteBusinessTripRequest(
+    requestId: string,
+    companyId: string,
+    authorization?: string,
+    tenantId?: string,
+  ) {
+    return this.deleteRequest(
+      'business_trip_requests',
+      requestId,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 
   async listLateEarlyRequests(
@@ -602,15 +712,28 @@ export class AttendanceRequestsService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
-    const { sql, params } = this.buildListSql('late_early_requests', 'le', scope, query);
+    const scope = resolveHrmListScope(authorization, query.company_id, {
+      tenantId,
+    });
+    const { sql, params } = this.buildListSql(
+      'late_early_requests',
+      'le',
+      scope,
+      query,
+    );
     const res = await this.db.query(sql, params);
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createLateEarlyRequest(body: CreateLateEarlyRequestDto, authorization?: string) {
+  async createLateEarlyRequest(
+    body: CreateLateEarlyRequestDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.company_id,
+    );
     const id = randomUUID();
     const res = await this.db.query(
       `
@@ -645,7 +768,11 @@ export class AttendanceRequestsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-LE-500', 'Failed to create late/early request', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiException(
+        'HRM-LE-500',
+        'Failed to create late/early request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     return row;
   }
@@ -657,7 +784,15 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    return this.decideRequest('late_early_requests', requestId, 'approved', body, companyId, authorization, tenantId);
+    return this.decideRequest(
+      'late_early_requests',
+      requestId,
+      'approved',
+      body,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 
   rejectLateEarlyRequest(
@@ -667,11 +802,30 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    return this.decideRequest('late_early_requests', requestId, 'rejected', body, companyId, authorization, tenantId);
+    return this.decideRequest(
+      'late_early_requests',
+      requestId,
+      'rejected',
+      body,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 
-  deleteLateEarlyRequest(requestId: string, companyId: string, authorization?: string, tenantId?: string) {
-    return this.deleteRequest('late_early_requests', requestId, companyId, authorization, tenantId);
+  deleteLateEarlyRequest(
+    requestId: string,
+    companyId: string,
+    authorization?: string,
+    tenantId?: string,
+  ) {
+    return this.deleteRequest(
+      'late_early_requests',
+      requestId,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 
   async listShiftChangeRequests(
@@ -680,15 +834,28 @@ export class AttendanceRequestsService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
-    const { sql, params } = this.buildListSql('shift_change_requests', 'sc', scope, query);
+    const scope = resolveHrmListScope(authorization, query.company_id, {
+      tenantId,
+    });
+    const { sql, params } = this.buildListSql(
+      'shift_change_requests',
+      'sc',
+      scope,
+      query,
+    );
     const res = await this.db.query(sql, params);
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createShiftChangeRequest(body: CreateShiftChangeRequestDto, authorization?: string) {
+  async createShiftChangeRequest(
+    body: CreateShiftChangeRequestDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.company_id,
+    );
     // VAL-ATT-SHIFT-CNS-01 — invent KEY when Nest active>0; skip when empty (01c · U65).
     if (this.attendanceCatalog) {
       await this.attendanceCatalog.assertShiftKeysForConsumer({
@@ -737,7 +904,11 @@ export class AttendanceRequestsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-SC-500', 'Failed to create shift change request', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiException(
+        'HRM-SC-500',
+        'Failed to create shift change request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     return row;
   }
@@ -749,7 +920,15 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    return this.decideRequest('shift_change_requests', requestId, 'approved', body, companyId, authorization, tenantId);
+    return this.decideRequest(
+      'shift_change_requests',
+      requestId,
+      'approved',
+      body,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 
   rejectShiftChangeRequest(
@@ -759,10 +938,29 @@ export class AttendanceRequestsService {
     authorization?: string,
     tenantId?: string,
   ) {
-    return this.decideRequest('shift_change_requests', requestId, 'rejected', body, companyId, authorization, tenantId);
+    return this.decideRequest(
+      'shift_change_requests',
+      requestId,
+      'rejected',
+      body,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 
-  deleteShiftChangeRequest(requestId: string, companyId: string, authorization?: string, tenantId?: string) {
-    return this.deleteRequest('shift_change_requests', requestId, companyId, authorization, tenantId);
+  deleteShiftChangeRequest(
+    requestId: string,
+    companyId: string,
+    authorization?: string,
+    tenantId?: string,
+  ) {
+    return this.deleteRequest(
+      'shift_change_requests',
+      requestId,
+      companyId,
+      authorization,
+      tenantId,
+    );
   }
 }

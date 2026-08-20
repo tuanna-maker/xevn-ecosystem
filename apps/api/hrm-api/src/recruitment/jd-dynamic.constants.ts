@@ -12,7 +12,13 @@
  * LastVerified: po-hrm-jd-dynamic-be-01.md
  */
 
-export const JD_FIELD_TYPES = ['short_text', 'long_text', 'select', 'number', 'date'] as const;
+export const JD_FIELD_TYPES = [
+  'short_text',
+  'long_text',
+  'select',
+  'number',
+  'date',
+] as const;
 export type JdFieldType = (typeof JD_FIELD_TYPES)[number];
 
 export const JD_SYSTEM_FIELD_KEYS = ['title', 'code', 'position_code'] as const;
@@ -58,8 +64,20 @@ export const SYSTEM_GROUP_DEFS: ReadonlyArray<{
   view_style: string;
   sort_order: number;
 }> = [
-  { code: 'SEC_META', label: 'Thông tin đăng tuyển', usage: 'default_eligible', view_style: 'chips', sort_order: 0 },
-  { code: 'SEC_ABOUT_ROLE', label: 'Giới thiệu vị trí', usage: 'default_eligible', view_style: 'plain', sort_order: 1 },
+  {
+    code: 'SEC_META',
+    label: 'Thông tin đăng tuyển',
+    usage: 'default_eligible',
+    view_style: 'chips',
+    sort_order: 0,
+  },
+  {
+    code: 'SEC_ABOUT_ROLE',
+    label: 'Giới thiệu vị trí',
+    usage: 'default_eligible',
+    view_style: 'plain',
+    sort_order: 1,
+  },
   {
     code: 'SEC_RESPONSIBILITIES',
     label: 'Mô tả / trách nhiệm',
@@ -67,8 +85,20 @@ export const SYSTEM_GROUP_DEFS: ReadonlyArray<{
     view_style: 'bullets',
     sort_order: 2,
   },
-  { code: 'SEC_REQ_MIN', label: 'Yêu cầu bắt buộc', usage: 'default_eligible', view_style: 'bullets', sort_order: 3 },
-  { code: 'SEC_REQ_PREF', label: 'Yêu cầu ưu tiên', usage: 'default_eligible', view_style: 'bullets', sort_order: 4 },
+  {
+    code: 'SEC_REQ_MIN',
+    label: 'Yêu cầu bắt buộc',
+    usage: 'default_eligible',
+    view_style: 'bullets',
+    sort_order: 3,
+  },
+  {
+    code: 'SEC_REQ_PREF',
+    label: 'Yêu cầu ưu tiên',
+    usage: 'default_eligible',
+    view_style: 'bullets',
+    sort_order: 4,
+  },
   {
     code: 'SEC_WORKING',
     label: 'Thời gian & điều kiện làm việc',
@@ -76,8 +106,20 @@ export const SYSTEM_GROUP_DEFS: ReadonlyArray<{
     view_style: 'plain',
     sort_order: 5,
   },
-  { code: 'SEC_BENEFITS', label: 'Chế độ đãi ngộ', usage: 'default_eligible', view_style: 'bullets', sort_order: 6 },
-  { code: 'SEC_GROWTH', label: 'Lộ trình phát triển', usage: 'optional_only', view_style: 'bullets', sort_order: 10 },
+  {
+    code: 'SEC_BENEFITS',
+    label: 'Chế độ đãi ngộ',
+    usage: 'default_eligible',
+    view_style: 'bullets',
+    sort_order: 6,
+  },
+  {
+    code: 'SEC_GROWTH',
+    label: 'Lộ trình phát triển',
+    usage: 'optional_only',
+    view_style: 'bullets',
+    sort_order: 10,
+  },
   {
     code: 'SEC_ABOUT_COMPANY',
     label: 'Về công ty / đội ngũ',
@@ -85,8 +127,20 @@ export const SYSTEM_GROUP_DEFS: ReadonlyArray<{
     view_style: 'plain',
     sort_order: 11,
   },
-  { code: 'SEC_LICENSE', label: 'Giấy phép & chứng chỉ', usage: 'default_eligible', view_style: 'bullets', sort_order: 12 },
-  { code: 'SEC_SAFETY', label: 'An toàn & tuân thủ', usage: 'default_eligible', view_style: 'bullets', sort_order: 13 },
+  {
+    code: 'SEC_LICENSE',
+    label: 'Giấy phép & chứng chỉ',
+    usage: 'default_eligible',
+    view_style: 'bullets',
+    sort_order: 12,
+  },
+  {
+    code: 'SEC_SAFETY',
+    label: 'An toàn & tuân thủ',
+    usage: 'default_eligible',
+    view_style: 'bullets',
+    sort_order: 13,
+  },
   {
     code: 'SEC_PHYSICAL',
     label: 'Yêu cầu thể chất / môi trường',
@@ -101,7 +155,13 @@ export const SYSTEM_GROUP_DEFS: ReadonlyArray<{
     view_style: 'plain',
     sort_order: 15,
   },
-  { code: 'SEC_AI_TOOLS', label: 'Yêu cầu / ưu tiên AI', usage: 'optional_only', view_style: 'bullets', sort_order: 16 },
+  {
+    code: 'SEC_AI_TOOLS',
+    label: 'Yêu cầu / ưu tiên AI',
+    usage: 'optional_only',
+    view_style: 'bullets',
+    sort_order: 16,
+  },
 ];
 
 export type PackMembershipSpec = {
@@ -133,7 +193,12 @@ export const PACK_MEMBERSHIP: Record<string, PackMembershipSpec> = {
       'SEC_SAFETY',
       'SEC_BENEFITS',
     ],
-    optional: ['SEC_REQ_PREF', 'SEC_PHYSICAL', 'SEC_GROWTH', 'SEC_ABOUT_COMPANY'],
+    optional: [
+      'SEC_REQ_PREF',
+      'SEC_PHYSICAL',
+      'SEC_GROWTH',
+      'SEC_ABOUT_COMPANY',
+    ],
   },
   [PACK_CORP_DEFAULT]: {
     always_on: [

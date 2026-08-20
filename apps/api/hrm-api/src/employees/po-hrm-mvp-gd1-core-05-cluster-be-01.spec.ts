@@ -46,7 +46,9 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
   let db: jest.Mocked<HrmDbService>;
 
   beforeEach(() => {
-    db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as jest.Mocked<HrmDbService>;
+    db = {
+      query: jest.fn().mockResolvedValue({ rows: [] }),
+    } as unknown as jest.Mocked<HrmDbService>;
     employees = {
       getEmployeeById: jest.fn().mockResolvedValue({
         id: EMPLOYEE_ID,
@@ -59,19 +61,31 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
   it('ensureSchema ADD handover_confirmed_* soft cols · HOLD spine · DENY Nest /core dual invent', async () => {
     const token = groupCeoToken();
     db.query.mockResolvedValue({ rows: [] });
-    await profile.listAssets(EMPLOYEE_ID, { company_id: 'main' }, `Bearer ${token}`);
+    await profile.listAssets(
+      EMPLOYEE_ID,
+      { company_id: 'main' },
+      `Bearer ${token}`,
+    );
 
     const ddl = db.query.mock.calls.map(([sql]) => String(sql)).join('\n');
     expect(ddl).toMatch(/handover_confirmed_at\s+TIMESTAMPTZ/i);
     expect(ddl).toMatch(/handover_confirmed_by\s+TEXT/i);
     expect(ddl).toMatch(/handover_receiver_name\s+TEXT/i);
     expect(ddl).toMatch(/CREATE TABLE IF NOT EXISTS public\.employee_assets/i);
-    expect(ddl).not.toMatch(/CREATE TABLE IF NOT EXISTS public\.hrm_asset_handover/i);
+    expect(ddl).not.toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.hrm_asset_handover/i,
+    );
     expect(ddl).not.toMatch(/UNIQUE.*serial_number/i);
 
-    const src = readFileSync(join(__dirname, 'employee-profile.service.ts'), 'utf8');
+    const src = readFileSync(
+      join(__dirname, 'employee-profile.service.ts'),
+      'utf8',
+    );
     expect(src).not.toMatch(/@Controller\(['"]core['"]\)/);
-    const ctrl = readFileSync(join(__dirname, 'employees.controller.ts'), 'utf8');
+    const ctrl = readFileSync(
+      join(__dirname, 'employees.controller.ts'),
+      'utf8',
+    );
     expect(ctrl).not.toMatch(/@Controller\(['"]core['"]\)/);
     expect(ctrl).toMatch(/:employeeId\/assets/);
     // Cite OUT invent DONE only — no return/thu hồi route invent this seat
@@ -82,7 +96,11 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
   it('listAssets display-ready: statusLabelVi · handoverConfirmed · handoverDocId alias', async () => {
     const token = groupCeoToken();
     db.query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('FROM public.employee_assets') && sql.includes('SELECT')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.employee_assets') &&
+        sql.includes('SELECT')
+      ) {
         if (isAssetPeek(sql)) return { rows: [] };
         if (sql.includes('ORDER BY')) {
           return {
@@ -105,7 +123,11 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
       return { rows: [] };
     });
 
-    const res = await profile.listAssets(EMPLOYEE_ID, { company_id: 'main' }, `Bearer ${token}`);
+    const res = await profile.listAssets(
+      EMPLOYEE_ID,
+      { company_id: 'main' },
+      `Bearer ${token}`,
+    );
     expect(res.total).toBe(1);
     const row = res.data[0];
     expect(row.statusLabelVi).toBe('Đang sử dụng');
@@ -117,7 +139,10 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
   it('createAsset default assigned · confirm NULL · empty serial allowed', async () => {
     const token = groupCeoToken();
     db.query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('INSERT INTO public.employee_assets')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('INSERT INTO public.employee_assets')
+      ) {
         return {
           rows: [
             {
@@ -145,18 +170,29 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
     expect(row.handoverConfirmed).toBe(false);
     expect(row.handoverDocId).toBeNull();
     expect(row.statusLabelVi).toBe('Đang sử dụng');
-    const insert = db.query.mock.calls.find(([sql]) => String(sql).includes('INSERT INTO public.employee_assets'));
+    const insert = db.query.mock.calls.find(([sql]) =>
+      String(sql).includes('INSERT INTO public.employee_assets'),
+    );
     expect(insert?.[1]).toEqual(
-      expect.arrayContaining([EMPLOYEE_ID, 'holding', 'Máy in', 'equipment', 'assigned']),
+      expect.arrayContaining([
+        EMPLOYEE_ID,
+        'holding',
+        'Máy in',
+        'equipment',
+        'assigned',
+      ]),
     );
     expect(typeof insert?.[1]?.[0]).toBe('string');
   });
 
   /** R-CORE-05-EMPTY-DATE-500 — FE blank assignedDate/returnDate → null · create succeeds (201). */
-  it('createAsset assignedDate:\'\' / returnDate:\'\' → null DATE · 201 (not 500)', async () => {
+  it("createAsset assignedDate:'' / returnDate:'' → null DATE · 201 (not 500)", async () => {
     const token = groupCeoToken();
     db.query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('INSERT INTO public.employee_assets')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('INSERT INTO public.employee_assets')
+      ) {
         return {
           rows: [
             {
@@ -241,9 +277,13 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
         `Bearer ${token}`,
       ),
     ).rejects.toThrow(
-      expect.objectContaining<ApiException>({ code: HRM_EMP_ASSET_SERIAL_CONFLICT }),
+      expect.objectContaining<ApiException>({
+        code: HRM_EMP_ASSET_SERIAL_CONFLICT,
+      }),
     );
-    const insert = db.query.mock.calls.find(([sql]) => String(sql).includes('INSERT INTO public.employee_assets'));
+    const insert = db.query.mock.calls.find(([sql]) =>
+      String(sql).includes('INSERT INTO public.employee_assets'),
+    );
     expect(insert).toBeUndefined();
   });
 
@@ -262,10 +302,16 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
           ],
         };
       }
-      if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_assets')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('SELECT company_id FROM public.employee_assets')
+      ) {
         return { rows: [{ company_id: 'holding' }] };
       }
-      if (typeof sql === 'string' && sql.includes('UPDATE public.employee_assets')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('UPDATE public.employee_assets')
+      ) {
         return {
           rows: [
             {
@@ -295,7 +341,9 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
     expect(row.handoverDocId).toBe(ASSET_ID);
     expect(row.handoverReceiverName).toBe('Tran B');
     const updateSql = String(
-      db.query.mock.calls.find(([sql]) => String(sql).includes('UPDATE public.employee_assets'))?.[0] ?? '',
+      db.query.mock.calls.find(([sql]) =>
+        String(sql).includes('UPDATE public.employee_assets'),
+      )?.[0] ?? '',
     );
     expect(updateSql).toMatch(/handover_confirmed_at/);
     expect(updateSql).toMatch(/handover_confirmed_by/);
@@ -317,10 +365,16 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
           ],
         };
       }
-      if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_assets')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('SELECT company_id FROM public.employee_assets')
+      ) {
         return { rows: [{ company_id: 'holding' }] };
       }
-      if (typeof sql === 'string' && sql.includes('UPDATE public.employee_assets')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('UPDATE public.employee_assets')
+      ) {
         return {
           rows: [
             {
@@ -345,7 +399,9 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
     expect(row.handoverConfirmed).toBe(false);
     expect(row.handoverDocId).toBeNull();
     const updateSql = String(
-      db.query.mock.calls.find(([sql]) => String(sql).includes('UPDATE public.employee_assets'))?.[0] ?? '',
+      db.query.mock.calls.find(([sql]) =>
+        String(sql).includes('UPDATE public.employee_assets'),
+      )?.[0] ?? '',
     );
     expect(updateSql).toMatch(/notes/);
     expect(updateSql).not.toMatch(/handover_confirmed_at/);
@@ -385,9 +441,13 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
         `Bearer ${token}`,
       ),
     ).rejects.toThrow(
-      expect.objectContaining<ApiException>({ code: HRM_EMP_ASSET_SERIAL_CONFLICT }),
+      expect.objectContaining<ApiException>({
+        code: HRM_EMP_ASSET_SERIAL_CONFLICT,
+      }),
     );
-    const update = db.query.mock.calls.find(([sql]) => String(sql).includes('UPDATE public.employee_assets'));
+    const update = db.query.mock.calls.find(([sql]) =>
+      String(sql).includes('UPDATE public.employee_assets'),
+    );
     expect(update).toBeUndefined();
   });
 
@@ -410,11 +470,20 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
     });
 
     await expect(
-      profile.deleteAsset(ASSET_ID, EMPLOYEE_ID, { company_id: 'main' }, `Bearer ${token}`),
+      profile.deleteAsset(
+        ASSET_ID,
+        EMPLOYEE_ID,
+        { company_id: 'main' },
+        `Bearer ${token}`,
+      ),
     ).rejects.toThrow(
-      expect.objectContaining<ApiException>({ code: HRM_EMP_ASSET_DELETE_FORBIDDEN }),
+      expect.objectContaining<ApiException>({
+        code: HRM_EMP_ASSET_DELETE_FORBIDDEN,
+      }),
     );
-    const del = db.query.mock.calls.find(([sql]) => String(sql).includes('DELETE FROM public.employee_assets'));
+    const del = db.query.mock.calls.find(([sql]) =>
+      String(sql).includes('DELETE FROM public.employee_assets'),
+    );
     expect(del).toBeUndefined();
   });
 
@@ -433,10 +502,16 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
           ],
         };
       }
-      if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_assets')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('SELECT company_id FROM public.employee_assets')
+      ) {
         return { rows: [{ company_id: 'holding' }] };
       }
-      if (typeof sql === 'string' && sql.includes('UPDATE public.employee_assets')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('UPDATE public.employee_assets')
+      ) {
         return {
           rows: [
             {
@@ -469,7 +544,10 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
   });
 
   it('DENY invent Asset ledger / F-CORE-AST-02 return path in this service', () => {
-    const src = readFileSync(join(__dirname, 'employee-profile.service.ts'), 'utf8');
+    const src = readFileSync(
+      join(__dirname, 'employee-profile.service.ts'),
+      'utf8',
+    );
     expect(src).not.toMatch(/hrm_asset_ledger|asset_depreciation|AssetLedger/i);
     expect(src).toMatch(/HRM_EMP_ASSET_SERIAL_CONFLICT/);
     expect(src).toMatch(/handover_confirmed_at/);

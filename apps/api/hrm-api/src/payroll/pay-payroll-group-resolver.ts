@@ -27,29 +27,46 @@ export type EmployeePayrollGroupAttrs = {
   position_key: string | null;
 };
 
-export function parsePayPayrollGroupMatchRule(raw: unknown): PayPayrollGroupMatchRule {
+export function parsePayPayrollGroupMatchRule(
+  raw: unknown,
+): PayPayrollGroupMatchRule {
   if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) {
     throw new Error('INVALID_MATCH_RULE');
   }
   const obj = raw as Record<string, unknown>;
   const rule: PayPayrollGroupMatchRule = {};
   if (obj.department_ids != null) {
-    if (!Array.isArray(obj.department_ids) || obj.department_ids.some((v) => typeof v !== 'string')) {
+    if (
+      !Array.isArray(obj.department_ids) ||
+      obj.department_ids.some((v) => typeof v !== 'string')
+    ) {
       throw new Error('INVALID_MATCH_RULE');
     }
-    rule.department_ids = obj.department_ids.map((v) => String(v).trim()).filter(Boolean);
+    rule.department_ids = obj.department_ids
+      .map((v) => String(v).trim())
+      .filter(Boolean);
   }
   if (obj.position_keys != null) {
-    if (!Array.isArray(obj.position_keys) || obj.position_keys.some((v) => typeof v !== 'string')) {
+    if (
+      !Array.isArray(obj.position_keys) ||
+      obj.position_keys.some((v) => typeof v !== 'string')
+    ) {
       throw new Error('INVALID_MATCH_RULE');
     }
-    rule.position_keys = obj.position_keys.map((v) => String(v).trim()).filter(Boolean);
+    rule.position_keys = obj.position_keys
+      .map((v) => String(v).trim())
+      .filter(Boolean);
   }
   if (obj.employee_ids != null) {
-    if (!Array.isArray(obj.employee_ids) || obj.employee_ids.some((v) => typeof v !== 'string')) {
+    if (
+      !Array.isArray(obj.employee_ids) ||
+      obj.employee_ids.some((v) => typeof v !== 'string')
+    ) {
       throw new Error('INVALID_MATCH_RULE');
     }
-    rule.employee_ids = obj.employee_ids.map((v) => String(v).trim()).filter(Boolean);
+    rule.employee_ids = obj.employee_ids
+      .map((v) => String(v).trim())
+      .filter(Boolean);
   }
   return rule;
 }
@@ -82,12 +99,20 @@ export function resolvePayrollGroupWinner(
   group_ids?: string[];
   match_source?: PayPayrollGroupMatchSource;
 } {
-  const matched: Array<{ id: string; priority: number; match_source: PayPayrollGroupMatchSource }> = [];
+  const matched: Array<{
+    id: string;
+    priority: number;
+    match_source: PayPayrollGroupMatchSource;
+  }> = [];
   for (const group of groups) {
     const rule = group.match_rule_json ?? {};
     const hit = employeeMatchesPayrollGroupRule(attrs, rule);
     if (hit.match && hit.match_source) {
-      matched.push({ id: group.id, priority: group.priority, match_source: hit.match_source });
+      matched.push({
+        id: group.id,
+        priority: group.priority,
+        match_source: hit.match_source,
+      });
     }
   }
   if (matched.length === 0) {
@@ -96,12 +121,22 @@ export function resolvePayrollGroupWinner(
   const maxPriority = Math.max(...matched.map((m) => m.priority));
   const top = matched.filter((m) => m.priority === maxPriority);
   if (top.length > 1) {
-    return { winner_id: null, ambiguous: true, group_ids: top.map((t) => t.id) };
+    return {
+      winner_id: null,
+      ambiguous: true,
+      group_ids: top.map((t) => t.id),
+    };
   }
-  return { winner_id: top[0].id, ambiguous: false, match_source: top[0].match_source };
+  return {
+    winner_id: top[0].id,
+    ambiguous: false,
+    match_source: top[0].match_source,
+  };
 }
 
-export function assertPayGroupMatchSource(value: string): PayPayrollGroupMatchSource {
+export function assertPayGroupMatchSource(
+  value: string,
+): PayPayrollGroupMatchSource {
   if ((PAY_GROUP_MATCH_SOURCES as readonly string[]).includes(value)) {
     return value as PayPayrollGroupMatchSource;
   }

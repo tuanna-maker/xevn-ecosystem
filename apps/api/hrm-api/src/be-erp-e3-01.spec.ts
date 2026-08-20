@@ -4,7 +4,10 @@
  */
 import 'reflect-metadata';
 import { ApiException } from './common/api.exception';
-import { assertStatusTransition, HRM_SM_001 } from './common/assert-status-transition';
+import {
+  assertStatusTransition,
+  HRM_SM_001,
+} from './common/assert-status-transition';
 import { signServiceJwt } from './common/jwt-sign';
 import {
   ContractsInsuranceService,
@@ -29,7 +32,9 @@ function ceoAuth(): string {
   })}`;
 }
 
-function ddlAwareQuery(extra?: (sql: string, params?: unknown[]) => { rows: unknown[] } | null) {
+function ddlAwareQuery(
+  extra?: (sql: string, params?: unknown[]) => { rows: unknown[] } | null,
+) {
   return jest.fn().mockImplementation((sql: string, params?: unknown[]) => {
     const s = String(sql);
     if (
@@ -50,13 +55,21 @@ function ddlAwareQuery(extra?: (sql: string, params?: unknown[]) => { rows: unkn
 describe('D-BE-ERP-E3-01 assertStatusTransition', () => {
   it('idempotent from===to', () => {
     expect(() =>
-      assertStatusTransition({ domain: 'performance_evaluation', from: 'draft', to: 'draft' }),
+      assertStatusTransition({
+        domain: 'performance_evaluation',
+        from: 'draft',
+        to: 'draft',
+      }),
     ).not.toThrow();
   });
 
   it('eval draft→completed skip → HRM-SM-001', () => {
     try {
-      assertStatusTransition({ domain: 'performance_evaluation', from: 'draft', to: 'completed' });
+      assertStatusTransition({
+        domain: 'performance_evaluation',
+        from: 'draft',
+        to: 'completed',
+      });
       fail('expected throw');
     } catch (e) {
       expect(e).toMatchObject<ApiException>({ code: HRM_SM_001 });
@@ -65,7 +78,11 @@ describe('D-BE-ERP-E3-01 assertStatusTransition', () => {
 
   it('cycle closed→active → HRM-SM-001', () => {
     try {
-      assertStatusTransition({ domain: 'performance_cycle', from: 'closed', to: 'active' });
+      assertStatusTransition({
+        domain: 'performance_cycle',
+        from: 'closed',
+        to: 'active',
+      });
       fail('expected throw');
     } catch (e) {
       expect(e).toMatchObject<ApiException>({ code: HRM_SM_001 });
@@ -74,7 +91,11 @@ describe('D-BE-ERP-E3-01 assertStatusTransition', () => {
 
   it('policy active→draft → HRM-SM-001', () => {
     try {
-      assertStatusTransition({ domain: 'insurance_policy', from: 'active', to: 'draft' });
+      assertStatusTransition({
+        domain: 'insurance_policy',
+        from: 'active',
+        to: 'draft',
+      });
       fail('expected throw');
     } catch (e) {
       expect(e).toMatchObject<ApiException>({ code: HRM_SM_001 });
@@ -83,7 +104,11 @@ describe('D-BE-ERP-E3-01 assertStatusTransition', () => {
 
   it('leave approved→pending → HRM-SM-001', () => {
     try {
-      assertStatusTransition({ domain: 'leave', from: 'approved', to: 'pending' });
+      assertStatusTransition({
+        domain: 'leave',
+        from: 'approved',
+        to: 'pending',
+      });
       fail('expected throw');
     } catch (e) {
       expect(e).toMatchObject<ApiException>({ code: HRM_SM_001 });
@@ -92,7 +117,11 @@ describe('D-BE-ERP-E3-01 assertStatusTransition', () => {
 
   it('eval draft→submitted allowed', () => {
     expect(() =>
-      assertStatusTransition({ domain: 'performance_evaluation', from: 'draft', to: 'submitted' }),
+      assertStatusTransition({
+        domain: 'performance_evaluation',
+        from: 'draft',
+        to: 'submitted',
+      }),
     ).not.toThrow();
   });
 });
@@ -100,7 +129,9 @@ describe('D-BE-ERP-E3-01 assertStatusTransition', () => {
 describe('D-BE-ERP-E3-01 catalog family aliases', () => {
   it('insurers aliases resolve', () => {
     expect(resolveCatalogFamily('insurers').storageKey).toBe('insurers');
-    expect(resolveCatalogFamily('insurance_providers').familyId).toBe('insurers');
+    expect(resolveCatalogFamily('insurance_providers').familyId).toBe(
+      'insurers',
+    );
     expect(resolveCatalogFamily('kpi_metrics').storageKey).toBe('kpi_library');
   });
 });
@@ -121,7 +152,10 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
   it('updateCycle draft→active OK; closed content → HRM-PERF-LOCKED', async () => {
     const db = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('FROM public.performance_cycles') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.performance_cycles') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [cycleRow] };
         }
         if (sql.includes('UPDATE public.performance_cycles')) {
@@ -142,7 +176,10 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
 
     const closedDb = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('FROM public.performance_cycles') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.performance_cycles') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [{ ...cycleRow, status: 'closed' }] };
         }
         return null;
@@ -151,17 +188,28 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
     };
     const closedSvc = new PerformanceService(closedDb as never);
     await expect(
-      closedSvc.updateCycle(cycleRow.id, { cycle_name: 'X' }, 'holding', ceoAuth()),
+      closedSvc.updateCycle(
+        cycleRow.id,
+        { cycle_name: 'X' },
+        'holding',
+        ceoAuth(),
+      ),
     ).rejects.toMatchObject<ApiException>({ code: HRM_PERF_LOCKED });
   });
 
   it('deleteCycle with submitted eval → HRM-PERF-DEL-BLOCK', async () => {
     const db = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('FROM public.performance_cycles') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.performance_cycles') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [cycleRow] };
         }
-        if (sql.includes('COUNT(*)') && sql.includes('performance_evaluations')) {
+        if (
+          sql.includes('COUNT(*)') &&
+          sql.includes('performance_evaluations')
+        ) {
           return { rows: [{ total: '1' }] };
         }
         return null;
@@ -169,7 +217,9 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
       onModuleDestroy: jest.fn(),
     };
     const svc = new PerformanceService(db as never);
-    await expect(svc.deleteCycle(cycleRow.id, 'holding', ceoAuth())).rejects.toMatchObject<ApiException>({
+    await expect(
+      svc.deleteCycle(cycleRow.id, 'holding', ceoAuth()),
+    ).rejects.toMatchObject<ApiException>({
       code: HRM_PERF_DEL_BLOCK,
     });
   });
@@ -196,7 +246,10 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
     };
     const db = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('FROM public.performance_evaluations') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.performance_evaluations') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [evalRow] };
         }
         return null;
@@ -210,7 +263,12 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
     };
     const svc = new PerformanceService(db as never, catalogs as never);
     await expect(
-      svc.updateEvaluation(evalRow.id, { kpi_code: 'FAKE' }, 'holding', ceoAuth()),
+      svc.updateEvaluation(
+        evalRow.id,
+        { kpi_code: 'FAKE' },
+        'holding',
+        ceoAuth(),
+      ),
     ).rejects.toMatchObject<ApiException>({ code: HRM_PERF_KPI_KEY });
   });
 
@@ -236,7 +294,10 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
     };
     const db = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('FROM public.performance_evaluations') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.performance_evaluations') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [evalRow] };
         }
         return null;
@@ -245,7 +306,12 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
     };
     const svc = new PerformanceService(db as never);
     await expect(
-      svc.updateEvaluation(evalRow.id, { status: 'completed' }, 'holding', ceoAuth()),
+      svc.updateEvaluation(
+        evalRow.id,
+        { status: 'completed' },
+        'holding',
+        ceoAuth(),
+      ),
     ).rejects.toMatchObject<ApiException>({ code: HRM_SM_001 });
   });
 });
@@ -254,12 +320,14 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
   it('createInsurancePolicy invents insurer → HRM-INS-INSURER-KEY', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { catalogKey: string }) => {
-        if (opts.catalogKey === 'insurers') {
-          throw new ApiException(HRM_INS_INSURER_KEY, 'invent', 400);
-        }
-        return { code: 'BHXH', label: 'BHXH' };
-      }),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockImplementation(async (opts: { catalogKey: string }) => {
+          if (opts.catalogKey === 'insurers') {
+            throw new ApiException(HRM_INS_INSURER_KEY, 'invent', 400);
+          }
+          return { code: 'BHXH', label: 'BHXH' };
+        }),
     };
     const svc = new ContractsInsuranceService(db as never, catalogs as never);
     await expect(
@@ -280,12 +348,16 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
   it('createInsurancePolicy invents type → HRM-INS-TYPE-KEY', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { catalogKey: string; code: string }) => {
-        if (opts.catalogKey === 'insurance_types') {
-          throw new ApiException(HRM_INS_TYPE_KEY, 'invent', 400);
-        }
-        return { code: opts.code, label: opts.code };
-      }),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockImplementation(
+          async (opts: { catalogKey: string; code: string }) => {
+            if (opts.catalogKey === 'insurance_types') {
+              throw new ApiException(HRM_INS_TYPE_KEY, 'invent', 400);
+            }
+            return { code: opts.code, label: opts.code };
+          },
+        ),
     };
     const svc = new ContractsInsuranceService(db as never, catalogs as never);
     await expect(
@@ -333,10 +405,14 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
       onModuleDestroy: jest.fn(),
     };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { code: string; catalogKey: string }) => ({
-        code: opts.code,
-        label: opts.catalogKey === 'insurers' ? 'Bao Viet' : opts.code,
-      })),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockImplementation(
+          async (opts: { code: string; catalogKey: string }) => ({
+            code: opts.code,
+            label: opts.catalogKey === 'insurers' ? 'Bao Viet' : opts.code,
+          }),
+        ),
     };
     const svc = new ContractsInsuranceService(db as never, catalogs as never);
     const row = await svc.createInsurancePolicy(
@@ -352,10 +428,18 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
     );
     expect(row.insurer_key).toBe('BV');
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
-      expect.objectContaining({ catalogKey: 'insurers', code: 'BV', errorCode: HRM_INS_INSURER_KEY }),
+      expect.objectContaining({
+        catalogKey: 'insurers',
+        code: 'BV',
+        errorCode: HRM_INS_INSURER_KEY,
+      }),
     );
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
-      expect.objectContaining({ catalogKey: 'insurance_types', code: 'BHXH', errorCode: HRM_INS_TYPE_KEY }),
+      expect.objectContaining({
+        catalogKey: 'insurance_types',
+        code: 'BHXH',
+        errorCode: HRM_INS_TYPE_KEY,
+      }),
     );
   });
 
@@ -378,7 +462,10 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
     };
     const db = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('FROM public.hrm_insurance_policies') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.hrm_insurance_policies') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [policy] };
         }
         return null;
@@ -387,7 +474,12 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
     };
     const svc = new ContractsInsuranceService(db as never);
     await expect(
-      svc.updateInsurancePolicy(policy.id, { status: 'draft' }, 'holding', ceoAuth()),
+      svc.updateInsurancePolicy(
+        policy.id,
+        { status: 'draft' },
+        'holding',
+        ceoAuth(),
+      ),
     ).rejects.toMatchObject<ApiException>({ code: HRM_SM_001 });
   });
 
@@ -395,7 +487,12 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX') || s.includes('CREATE UNIQUE')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.hrm_insurance_policies')) {
@@ -408,7 +505,9 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
       onModuleDestroy: jest.fn(),
     };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockResolvedValue({ code: 'BV', label: 'Bao Viet' }),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockResolvedValue({ code: 'BV', label: 'Bao Viet' }),
     };
     const svc = new ContractsInsuranceService(db as never, catalogs as never);
     await expect(

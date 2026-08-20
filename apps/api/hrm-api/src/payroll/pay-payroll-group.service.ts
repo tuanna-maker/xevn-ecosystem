@@ -88,7 +88,10 @@ export class PayPayrollGroupService {
     requestedCompanyId: string,
     authorization?: string,
   ): Promise<PayPayrollGroupRow | undefined> {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [groupId];
@@ -111,7 +114,10 @@ export class PayPayrollGroupService {
 
   async listGroups(query: ListPayrollGroupsQueryDto, authorization?: string) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = [];
     const values: unknown[] = [];
@@ -137,13 +143,28 @@ export class PayPayrollGroupService {
     return { items: res.rows.map((row) => this.mapGroup(row)) };
   }
 
-  async getGroupById(groupId: string, requestedCompanyId: string, authorization?: string) {
+  async getGroupById(
+    groupId: string,
+    requestedCompanyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const row = await this.loadGroupRowInScope(groupId, requestedCompanyId, authorization);
+    const row = await this.loadGroupRowInScope(
+      groupId,
+      requestedCompanyId,
+      authorization,
+    );
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Payroll group not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll group not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -154,17 +175,28 @@ export class PayPayrollGroupService {
 
   async createGroup(payload: CreatePayrollGroupDto, authorization?: string) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const code = payload.code.trim();
     const nameVi = payload.name_vi.trim();
     if (!code || !nameVi) {
-      throw new ApiException('HRM-VAL-400', 'code and name_vi required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'code and name_vi required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     let matchRule: PayPayrollGroupMatchRule = {};
     try {
       matchRule = parsePayPayrollGroupMatchRule(payload.match_rule_json ?? {});
     } catch {
-      throw new ApiException('HRM-VAL-400', 'match_rule_json invalid shape', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'match_rule_json invalid shape',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const status = payload.status ?? PAY_PAYROLL_GROUP_STATUS_ACTIVE;
     const priority = payload.priority ?? 0;
@@ -215,11 +247,22 @@ export class PayPayrollGroupService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const existing = await this.loadGroupRowInScope(groupId, requestedCompanyId, authorization);
+    const existing = await this.loadGroupRowInScope(
+      groupId,
+      requestedCompanyId,
+      authorization,
+    );
     if (!existing) {
-      throw new ApiException('HRM-PAY-404', 'Payroll group not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll group not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -233,7 +276,11 @@ export class PayPayrollGroupService {
       try {
         nextRule = parsePayPayrollGroupMatchRule(payload.match_rule_json);
       } catch {
-        throw new ApiException('HRM-VAL-400', 'match_rule_json invalid shape', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-VAL-400',
+          'match_rule_json invalid shape',
+          HttpStatus.BAD_REQUEST,
+        );
       }
     }
     const nextStatus = payload.status ?? existing.status;
@@ -242,7 +289,8 @@ export class PayPayrollGroupService {
         ? payload.formula_definition_id
         : existing.formula_definition_id;
     const archivedAt =
-      nextStatus === PAY_PAYROLL_GROUP_STATUS_RETIRED && existing.status !== PAY_PAYROLL_GROUP_STATUS_RETIRED
+      nextStatus === PAY_PAYROLL_GROUP_STATUS_RETIRED &&
+      existing.status !== PAY_PAYROLL_GROUP_STATUS_RETIRED
         ? new Date().toISOString()
         : existing.archived_at;
 
@@ -282,9 +330,17 @@ export class PayPayrollGroupService {
     authorization?: string,
   ): Promise<PayPayrollGroupRow> {
     await this.ensureSchema();
-    const row = await this.loadGroupRowInScope(payrollGroupId, periodCompanyId, authorization);
+    const row = await this.loadGroupRowInScope(
+      payrollGroupId,
+      periodCompanyId,
+      authorization,
+    );
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Payroll group not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll group not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (row.status === PAY_PAYROLL_GROUP_STATUS_RETIRED) {
       throw new ApiException(
@@ -294,14 +350,23 @@ export class PayPayrollGroupService {
         { reason_code: 'RETIRED_GROUP_BIND' },
       );
     }
-    const persistCompany = resolveHrmPersistCompanyIdText(authorization, periodCompanyId);
+    const persistCompany = resolveHrmPersistCompanyIdText(
+      authorization,
+      periodCompanyId,
+    );
     if (row.company_id !== persistCompany) {
-      throw new ApiException('HRM-SCOPE-409', 'Payroll group company mismatch', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-SCOPE-409',
+        'Payroll group company mismatch',
+        HttpStatus.CONFLICT,
+      );
     }
     return row;
   }
 
-  private async loadActiveGroupsForCompany(companyId: string): Promise<PayPayrollGroupCatalogRow[]> {
+  private async loadActiveGroupsForCompany(
+    companyId: string,
+  ): Promise<PayPayrollGroupCatalogRow[]> {
     const res = await this.db.query<{
       id: string;
       company_id: string;
@@ -339,7 +404,11 @@ export class PayPayrollGroupService {
     const filters: string[] = ['e.archived_at IS NULL'];
     const values: unknown[] = [];
     pushEmployeeListScopeFilters(filters, values, scope);
-    pushCompanyIdFilter(filters, values, expandPayrollAttendanceSheetCompanyIds(companyId));
+    pushCompanyIdFilter(
+      filters,
+      values,
+      expandPayrollAttendanceSheetCompanyIds(companyId),
+    );
     const res = await this.db.query<{
       id: string;
       employee_code: string;
@@ -396,7 +465,11 @@ export class PayPayrollGroupService {
     companyId: string,
     attrs: EmployeePayrollGroupAttrs,
     scope: ReturnType<typeof resolveHrmListScope>,
-  ): Promise<{ winner_id: string | null; ambiguous: boolean; group_ids?: string[] }> {
+  ): Promise<{
+    winner_id: string | null;
+    ambiguous: boolean;
+    group_ids?: string[];
+  }> {
     const persistCompany = resolveHrmPersistCompanyIdText(undefined, companyId);
     const groups = await this.loadActiveGroupsForCompany(persistCompany);
     if (groups.length === 0) {
@@ -416,13 +489,24 @@ export class PayPayrollGroupService {
     scope?: ReturnType<typeof resolveHrmListScope>,
   ): Promise<string[]> {
     await this.ensureSchema();
-    const group = await this.loadGroupRowInScope(groupId, periodCompanyId, authorization);
+    const group = await this.loadGroupRowInScope(
+      groupId,
+      periodCompanyId,
+      authorization,
+    );
     if (!group || group.status !== PAY_PAYROLL_GROUP_STATUS_ACTIVE) {
       return [];
     }
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, periodCompanyId);
-    const resolvedScope = scope ?? resolveHrmListScope(authorization, scopeCompanyId);
-    const employees = await this.loadEmployeeAttrsForCompany(periodCompanyId, resolvedScope);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      periodCompanyId,
+    );
+    const resolvedScope =
+      scope ?? resolveHrmListScope(authorization, scopeCompanyId);
+    const employees = await this.loadEmployeeAttrsForCompany(
+      periodCompanyId,
+      resolvedScope,
+    );
     const catalog = await this.loadActiveGroupsForCompany(group.company_id);
     const memberIds: string[] = [];
     for (const emp of employees) {
@@ -444,8 +528,17 @@ export class PayPayrollGroupService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const group = await this.getGroupById(groupId, requestedCompanyId, authorization);
-    const periodRes = await this.db.query<{ id: string; company_id: string; start_date: string; end_date: string }>(
+    const group = await this.getGroupById(
+      groupId,
+      requestedCompanyId,
+      authorization,
+    );
+    const periodRes = await this.db.query<{
+      id: string;
+      company_id: string;
+      start_date: string;
+      end_date: string;
+    }>(
       `
         SELECT id::text AS id, company_id, start_date::text AS start_date, end_date::text AS end_date
         FROM public.payroll_periods
@@ -456,12 +549,22 @@ export class PayPayrollGroupService {
     );
     const period = periodRes.rows[0];
     if (!period) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const catalog = await this.loadActiveGroupsForCompany(group.company_id);
-    const employees = await this.loadEmployeeAttrsForCompany(period.company_id, scope);
+    const employees = await this.loadEmployeeAttrsForCompany(
+      period.company_id,
+      scope,
+    );
     const items: Array<{
       employee_id: string;
       employee_code: string;
@@ -478,12 +581,16 @@ export class PayPayrollGroupService {
       }
       const winner = resolvePayrollGroupWinner(catalog, emp);
       if (winner.ambiguous) {
-        warnings.push(`employee ${emp.employee_id}: ambiguous priority across groups`);
+        warnings.push(
+          `employee ${emp.employee_id}: ambiguous priority across groups`,
+        );
         items.push({
           employee_id: emp.employee_id,
           employee_code: emp.employee_code,
           employee_name: emp.employee_name,
-          match_source: assertPayGroupMatchSource(direct.match_source ?? 'explicit_list'),
+          match_source: assertPayGroupMatchSource(
+            direct.match_source ?? 'explicit_list',
+          ),
           conflict: true,
         });
         continue;
@@ -495,7 +602,9 @@ export class PayPayrollGroupService {
         employee_id: emp.employee_id,
         employee_code: emp.employee_code,
         employee_name: emp.employee_name,
-        match_source: assertPayGroupMatchSource(direct.match_source ?? 'explicit_list'),
+        match_source: assertPayGroupMatchSource(
+          direct.match_source ?? 'explicit_list',
+        ),
       });
     }
     return {
@@ -506,7 +615,10 @@ export class PayPayrollGroupService {
     };
   }
 
-  async persistPayslipGroupSnapshot(payslipId: string, payrollGroupId: string | null): Promise<void> {
+  async persistPayslipGroupSnapshot(
+    payslipId: string,
+    payrollGroupId: string | null,
+  ): Promise<void> {
     await this.db.query(
       `
         UPDATE public.payroll_payslips
@@ -517,11 +629,17 @@ export class PayPayrollGroupService {
     );
   }
 
-  async loadGroupLabelsByIds(ids: string[]): Promise<Map<string, { code: string; name_vi: string }>> {
+  async loadGroupLabelsByIds(
+    ids: string[],
+  ): Promise<Map<string, { code: string; name_vi: string }>> {
     if (ids.length === 0) {
       return new Map();
     }
-    const res = await this.db.query<{ id: string; code: string; name_vi: string }>(
+    const res = await this.db.query<{
+      id: string;
+      code: string;
+      name_vi: string;
+    }>(
       `
         SELECT id::text AS id, code, name_vi
         FROM public.pay_payroll_group

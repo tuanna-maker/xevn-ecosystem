@@ -24,7 +24,16 @@
  * Why: blank ViDateField posted "" → PG date cast HRM-SYS-001
  * must_keep: open type KEY assert; omit/null dates still optional; invent HRM-INS-TYPE-KEY
  */
-import { IsDateString, IsIn, IsNumber, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import {
+  IsDateString,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class CreateEmployeeInsuranceDto {
   @IsString()

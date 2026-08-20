@@ -116,7 +116,8 @@ export class InsuranceRateCfgService {
 
   constructor(
     private readonly db: HrmDbService,
-    @Optional() private readonly siInsuranceTypeCatalog?: SiInsuranceTypeService,
+    @Optional()
+    private readonly siInsuranceTypeCatalog?: SiInsuranceTypeService,
     @Optional() private readonly moduleRef?: ModuleRef,
   ) {}
 
@@ -238,19 +239,34 @@ export class InsuranceRateCfgService {
     tenantId: string | undefined,
     companyId: string,
   ) {
-    const tenant = (tenantId ?? this.resolveTenant()).trim().toLowerCase() || this.resolveTenant();
-    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(authorization, tenant, companyId);
-    const scope = resolveHrmListScope(authorization, companyId, { tenantId: tenant });
+    const tenant =
+      (tenantId ?? this.resolveTenant()).trim().toLowerCase() ||
+      this.resolveTenant();
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      tenant,
+      companyId,
+    );
+    const scope = resolveHrmListScope(authorization, companyId, {
+      tenantId: tenant,
+    });
     return { tenant, catalogCompanyId, scope };
   }
 
   /** D-SETDEF-QA-SI-DATE-01 — pg `date` arrives as Date; String(Date).slice ≠ YYYY-MM-DD. */
-  private toDateOnly(raw: string | Date | undefined | null, field: string): string | null {
+  private toDateOnly(
+    raw: string | Date | undefined | null,
+    field: string,
+  ): string | null {
     if (raw == null) return null;
     if (typeof raw === 'string' && raw.trim() === '') return null;
     const s = toLeaveDayKey(raw);
     if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-      throw new ApiException('HRM-VAL-001', `${field} must be YYYY-MM-DD`, HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        `${field} must be YYYY-MM-DD`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return s;
   }
@@ -311,9 +327,10 @@ export class InsuranceRateCfgService {
     };
   }
 
-  private buildCompanyFilters(
-    catalogCompanyId: string,
-  ): { filters: string[]; values: unknown[] } {
+  private buildCompanyFilters(catalogCompanyId: string): {
+    filters: string[];
+    values: unknown[];
+  } {
     const filters: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, [catalogCompanyId]);
@@ -440,7 +457,11 @@ export class InsuranceRateCfgService {
     tenantId?: string,
   ): Promise<InsuranceRateCfgDisplay> {
     await this.ensureSchema();
-    const { catalogCompanyId, scope } = this.resolvePartition(authorization, tenantId, companyId);
+    const { catalogCompanyId, scope } = this.resolvePartition(
+      authorization,
+      tenantId,
+      companyId,
+    );
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [id];
     pushCompanyIdFilter(filters, values, [catalogCompanyId]);
@@ -452,7 +473,11 @@ export class InsuranceRateCfgService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_SET_SI_404, 'Insurance rate cfg not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_SET_SI_404,
+        'Insurance rate cfg not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope({ company_id: row.company_id }, scope, {
       notFoundCode: HRM_SET_SI_404,
@@ -486,19 +511,35 @@ export class InsuranceRateCfgService {
     );
     const from = this.toDateOnly(body.effectiveFrom, 'effectiveFrom');
     if (!from) {
-      throw new ApiException('HRM-VAL-001', 'effectiveFrom is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'effectiveFrom is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const to = this.toDateOnly(body.effectiveTo ?? null, 'effectiveTo');
     this.assertDateWindow(from, to);
-    const status = (body.status ?? 'active') as SiStatus;
+    const status = body.status ?? 'active';
     if (!(SI_STATUSES as readonly string[]).includes(status)) {
-      throw new ApiException('HRM-VAL-001', 'status invalid', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'status invalid',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (!Number.isFinite(body.employeeRatePct) || body.employeeRatePct < 0) {
-      throw new ApiException('HRM-VAL-001', 'employeeRatePct must be ≥ 0', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'employeeRatePct must be ≥ 0',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (!Number.isFinite(body.employerRatePct) || body.employerRatePct < 0) {
-      throw new ApiException('HRM-VAL-001', 'employerRatePct must be ≥ 0', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'employerRatePct must be ≥ 0',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const ouId = body.ouId?.trim() ? body.ouId.trim() : null;
 
@@ -575,14 +616,24 @@ export class InsuranceRateCfgService {
   ): Promise<InsuranceRateCfgDisplay> {
     await this.ensureSchema();
     if (!body || Object.keys(body).length === 0) {
-      throw new ApiException('HRM-VAL-001', 'Empty PATCH body', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'Empty PATCH body',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const current = await this.getById(id, companyId, authorization, tenantId);
-    const { catalogCompanyId } = this.resolvePartition(authorization, tenantId, companyId);
+    const { catalogCompanyId } = this.resolvePartition(
+      authorization,
+      tenantId,
+      companyId,
+    );
 
     const from =
-      this.toDateOnly(body.effectiveFrom ?? current.effectiveFrom, 'effectiveFrom') ??
-      current.effectiveFrom;
+      this.toDateOnly(
+        body.effectiveFrom ?? current.effectiveFrom,
+        'effectiveFrom',
+      ) ?? current.effectiveFrom;
     const to =
       body.effectiveTo !== undefined
         ? this.toDateOnly(body.effectiveTo, 'effectiveTo')
@@ -590,7 +641,11 @@ export class InsuranceRateCfgService {
     this.assertDateWindow(from, to);
     const status = (body.status ?? current.status) as SiStatus;
     const ouId =
-      body.ouId !== undefined ? (body.ouId?.trim() ? body.ouId.trim() : null) : current.ouId;
+      body.ouId !== undefined
+        ? body.ouId?.trim()
+          ? body.ouId.trim()
+          : null
+        : current.ouId;
 
     if (status === 'active') {
       await this.assertNoOverlap({
@@ -715,7 +770,12 @@ export class InsuranceRateCfgService {
         HRM_SET_SI_412_MISSING,
         `No active insurance rate for ${typeKey} in period — configure Settings BH (cấm silent 0%)`,
         HttpStatus.PRECONDITION_FAILED,
-        { companyId: catalogCompanyId, insuranceTypeKey: typeKey, periodStart: start, periodEnd: end },
+        {
+          companyId: catalogCompanyId,
+          insuranceTypeKey: typeKey,
+          periodStart: start,
+          periodEnd: end,
+        },
       );
     }
     return this.display(row);

@@ -40,7 +40,10 @@ export class SpreadsheetService {
     opts: { mimetype?: string; originalname?: string; dryRun: boolean },
   ): Promise<ImportPreviewResult> {
     const startedAt = Date.now();
-    const grid = await this.ingest.parseEmployeeImportFile(buffer, { ...opts, startedAt });
+    const grid = await this.ingest.parseEmployeeImportFile(buffer, {
+      ...opts,
+      startedAt,
+    });
     const limits = getSpreadsheetLimits();
     const errors: import('./spreadsheet-ingest.service').SheetRowError[] = [];
     for (let i = 0; i < grid.rows.length; i++) {
@@ -78,17 +81,30 @@ export class SpreadsheetService {
       authorization?: string;
       tenantId?: string;
     },
-  ): Promise<{ importedCount: number; ids: string[]; errors: import('./spreadsheet-ingest.service').SheetRowError[] }> {
+  ): Promise<{
+    importedCount: number;
+    ids: string[];
+    errors: import('./spreadsheet-ingest.service').SheetRowError[];
+  }> {
     const startedAt = Date.now();
-    const grid = await this.ingest.parseEmployeeImportFile(buffer, { ...opts, startedAt });
-    const validationErrors: import('./spreadsheet-ingest.service').SheetRowError[] = [];
+    const grid = await this.ingest.parseEmployeeImportFile(buffer, {
+      ...opts,
+      startedAt,
+    });
+    const validationErrors: import('./spreadsheet-ingest.service').SheetRowError[] =
+      [];
     for (let i = 0; i < grid.rows.length; i++) {
       validationErrors.push(...validateEmployeeImportRow(grid.rows[i], i + 1));
     }
     if (validationErrors.length > 0) {
-      throw new ApiException('SHEET-422', 'Import validation failed', HttpStatus.UNPROCESSABLE_ENTITY, {
-        rowErrors: validationErrors,
-      });
+      throw new ApiException(
+        'SHEET-422',
+        'Import validation failed',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        {
+          rowErrors: validationErrors,
+        },
+      );
     }
     const ids: string[] = [];
     const errors: import('./spreadsheet-ingest.service').SheetRowError[] = [];
@@ -103,9 +119,13 @@ export class SpreadsheetService {
         hired_at: c.hired_at || undefined,
       };
       try {
-        const created = await this.employees.createEmployee(dto, opts.authorization, {
-          tenantId: opts.tenantId,
-        });
+        const created = await this.employees.createEmployee(
+          dto,
+          opts.authorization,
+          {
+            tenantId: opts.tenantId,
+          },
+        );
         ids.push(created.id);
       } catch (e) {
         const msg = e instanceof ApiException ? e.message : 'Create failed';
@@ -113,18 +133,36 @@ export class SpreadsheetService {
       }
     }
     if (errors.length > 0) {
-      throw new ApiException('SHEET-422', 'Import commit partially failed', HttpStatus.UNPROCESSABLE_ENTITY, {
-        rowErrors: errors,
-        importedCount: ids.length,
-        importedIds: ids,
-      });
+      throw new ApiException(
+        'SHEET-422',
+        'Import commit partially failed',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        {
+          rowErrors: errors,
+          importedCount: ids.length,
+          importedIds: ids,
+        },
+      );
     }
     return { importedCount: ids.length, ids, errors: [] };
   }
 
-  async exportEmployeesCsv(query: ListEmployeesQueryDto): Promise<{ filename: string; body: string }> {
-    const list = await this.employees.listEmployees({ ...query, page: 1, page_size: 100 });
-    const headers = ['employee_code', 'email', 'full_name', 'job_title_key', 'status', 'hired_at'];
+  async exportEmployeesCsv(
+    query: ListEmployeesQueryDto,
+  ): Promise<{ filename: string; body: string }> {
+    const list = await this.employees.listEmployees({
+      ...query,
+      page: 1,
+      page_size: 100,
+    });
+    const headers = [
+      'employee_code',
+      'email',
+      'full_name',
+      'job_title_key',
+      'status',
+      'hired_at',
+    ];
     const lines = [headers.join(',')];
     for (const e of list.data) {
       const cells = [

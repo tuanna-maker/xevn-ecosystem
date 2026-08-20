@@ -11,7 +11,10 @@ describe('uat-mobile-pilot-data-ensure', () => {
     const db = {
       query: jest.fn(async (sql: string) => {
         sqlLog.push(sql);
-        if (sql.includes('FROM public.payroll_payslips') && sql.includes('employee_id')) {
+        if (
+          sql.includes('FROM public.payroll_payslips') &&
+          sql.includes('employee_id')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -25,14 +28,21 @@ describe('uat-mobile-pilot-data-ensure', () => {
       full_name: 'Nguyễn Văn An',
     });
 
-    expect(sqlLog.some((s) => s.includes('INSERT INTO public.payroll_payslips'))).toBe(true);
-    expect(sqlLog.some((s) => s.includes('INSERT INTO public.payroll_periods'))).toBe(true);
+    expect(
+      sqlLog.some((s) => s.includes('INSERT INTO public.payroll_payslips')),
+    ).toBe(true);
+    expect(
+      sqlLog.some((s) => s.includes('INSERT INTO public.payroll_periods')),
+    ).toBe(true);
   });
 
   it('ensureUatMobilePilotTransactionData skips payslip when row exists', async () => {
     const db = {
       query: jest.fn(async (sql: string) => {
-        if (sql.includes('FROM public.payroll_payslips') && sql.includes('employee_id')) {
+        if (
+          sql.includes('FROM public.payroll_payslips') &&
+          sql.includes('employee_id')
+        ) {
           return { rows: [{ id: 'ps-existing' }] };
         }
         return { rows: [] };
@@ -59,15 +69,23 @@ describe('uat-mobile-pilot-data-ensure', () => {
     const db = {
       query: jest.fn(async (sql: string) => {
         sqlLog.push(sql);
-        if (sql.includes('FROM public.payroll_payslips') && sql.includes('employee_id')) {
+        if (
+          sql.includes('FROM public.payroll_payslips') &&
+          sql.includes('employee_id')
+        ) {
           return { rows: [{ id: 'ps-ok' }] };
         }
-        if (sql.includes('FROM public.leave_requests') && sql.includes("status = 'pending'")) {
+        if (
+          sql.includes('FROM public.leave_requests') &&
+          sql.includes("status = 'pending'")
+        ) {
           return { rows: [] };
         }
         if (sql.includes('FROM public.employees') && sql.includes('id <>')) {
           return {
-            rows: [{ id: subId, employee_code: 'TRS-0007', full_name: 'Sub NV' }],
+            rows: [
+              { id: subId, employee_code: 'TRS-0007', full_name: 'Sub NV' },
+            ],
           };
         }
         return { rows: [] };
@@ -81,17 +99,24 @@ describe('uat-mobile-pilot-data-ensure', () => {
       full_name: 'Manager NV',
     });
 
-    expect(sqlLog.some((s) => s.includes('INSERT INTO public.leave_requests'))).toBe(true);
+    expect(
+      sqlLog.some((s) => s.includes('INSERT INTO public.leave_requests')),
+    ).toBe(true);
   });
 
   it('ensureUatMobilePilotTransactionData no-op for seq outside pilot lane', async () => {
     const db = { query: jest.fn(async () => ({ rows: [] })) };
-    await ensureUatMobilePilotTransactionData(db as never, 42, 'xevn-uat-2026', {
-      id: '42424242-4242-4242-8242-424242424242',
-      company_id: 'holding',
-      employee_code: 'HLD-0042',
-      full_name: 'Other',
-    });
+    await ensureUatMobilePilotTransactionData(
+      db as never,
+      42,
+      'xevn-uat-2026',
+      {
+        id: '42424242-4242-4242-8242-424242424242',
+        company_id: 'holding',
+        employee_code: 'HLD-0042',
+        full_name: 'Other',
+      },
+    );
     expect(db.query).not.toHaveBeenCalled();
   });
 });

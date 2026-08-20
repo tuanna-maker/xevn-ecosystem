@@ -17,7 +17,11 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/hrm');
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
     );
     app.useGlobalFilters(new GlobalHttpExceptionFilter());
     await app.init();

@@ -54,14 +54,21 @@ function schemaPassthrough(sql: string): boolean {
 }
 
 function mockDb(
-  queryImpl: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
+  queryImpl: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
 ): HrmDbService {
-  const query = jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-    return queryImpl(sql, params);
-  });
+  const query = jest
+    .fn()
+    .mockImplementation(async (sql: string, params?: unknown[]) => {
+      return queryImpl(sql, params);
+    });
   return {
     query,
-    withTransaction: jest.fn(async (fn: (q: typeof query) => Promise<unknown>) => fn(query)),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof query) => Promise<unknown>) => fn(query),
+    ),
   } as unknown as HrmDbService;
 }
 
@@ -88,12 +95,16 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
   });
 
   it('VAL-EMP-TOK-02/03: key builders emp.doc.* + emp.et.full_time from full-time', () => {
-    expect(mergeTokenKeyForEmpDoc('hr_doc_custom_09')).toBe('emp.doc.hr_doc_custom_09');
+    expect(mergeTokenKeyForEmpDoc('hr_doc_custom_09')).toBe(
+      'emp.doc.hr_doc_custom_09',
+    );
     expect(mergeTokenSourcePathForEmpDoc('hr_doc_custom_09')).toBe(
       'emp.document_types.hr_doc_custom_09',
     );
     expect(mergeTokenKeyForEmpEt('full-time')).toBe('emp.et.full_time');
-    expect(mergeTokenSourcePathForEmpEt('full-time')).toBe('emp.employment_types.full_time');
+    expect(mergeTokenSourcePathForEmpEt('full-time')).toBe(
+      'emp.employment_types.full_time',
+    );
   });
 
   it('VAL-EMP-TOK-02: DOC upsert same TX inserts emp.doc token origin=emp_catalog', async () => {
@@ -101,7 +112,10 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
     const db = mockDb(async (sql: string, params?: unknown[]) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_document_type') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.emp_document_type') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.emp_document_type')) {
@@ -127,7 +141,10 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
           ],
         };
       }
-      if (s.includes('FROM public.hrm_merge_tokens') && s.includes('SELECT id, version')) {
+      if (
+        s.includes('FROM public.hrm_merge_tokens') &&
+        s.includes('SELECT id, version')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.hrm_merge_tokens')) {
@@ -163,7 +180,10 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
     const db = mockDb(async (sql: string, params?: unknown[]) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_employment_type') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.emp_employment_type') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.emp_employment_type')) {
@@ -187,7 +207,10 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
           ],
         };
       }
-      if (s.includes('FROM public.hrm_merge_tokens') && s.includes('SELECT id, version')) {
+      if (
+        s.includes('FROM public.hrm_merge_tokens') &&
+        s.includes('SELECT id, version')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.hrm_merge_tokens')) {
@@ -206,7 +229,11 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
       groupCeoToken(),
     );
     expect(tokenInserts[0]).toEqual(
-      expect.arrayContaining(['emp.et.full_time', 'emp.employment_types.full_time', 'emp_catalog']),
+      expect.arrayContaining([
+        'emp.et.full_time',
+        'emp.employment_types.full_time',
+        'emp_catalog',
+      ]),
     );
   });
 
@@ -216,7 +243,10 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
       sqls.push(String(sql));
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_document_type') && s.includes('id = $1')) {
+      if (
+        s.includes('FROM public.emp_document_type') &&
+        s.includes('id = $1')
+      ) {
         return {
           rows: [
             {
@@ -266,11 +296,14 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
     });
     const svc = new EmpDocumentTypeService(db);
     await svc.retireDocumentType(DOC_ID, 'main', groupCeoToken());
-    expect(sqls.some((q) => /DELETE\s+FROM\s+public\.hrm_merge_tokens/i.test(q))).toBe(false);
+    expect(
+      sqls.some((q) => /DELETE\s+FROM\s+public\.hrm_merge_tokens/i.test(q)),
+    ).toBe(false);
     expect(
       sqls.some(
         (q) =>
-          q.includes('UPDATE public.hrm_merge_tokens') && q.includes("status = 'retired'"),
+          q.includes('UPDATE public.hrm_merge_tokens') &&
+          q.includes("status = 'retired'"),
       ),
     ).toBe(true);
   });
@@ -299,7 +332,9 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
       valueBag: bag,
       tokenKeys: ['emp.doc.hr_doc_custom_09'],
     });
-    const tok = result.tokens.find((t) => t.tokenKey === 'emp.doc.hr_doc_custom_09');
+    const tok = result.tokens.find(
+      (t) => t.tokenKey === 'emp.doc.hr_doc_custom_09',
+    );
     expect(tok?.source).toBe('registry');
     expect(tok?.value).toBe('Giấy tờ registry');
   });
@@ -361,10 +396,16 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.hrm_merge_tokens') && s.includes('ORDER BY')) {
+        if (
+          s.includes('FROM public.hrm_merge_tokens') &&
+          s.includes('ORDER BY')
+        ) {
           return { rows: [tokenRow] };
         }
-        if (s.includes('FROM public.hrm_merge_tokens') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.hrm_merge_tokens') &&
+          s.includes('id = $1')
+        ) {
           return { rows: [tokenRow] };
         }
         return { rows: [] };
@@ -385,7 +426,10 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_document_type') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.emp_document_type') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.emp_document_type')) {
@@ -411,7 +455,10 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
           ],
         };
       }
-      if (s.includes('FROM public.hrm_merge_tokens') && s.includes('SELECT id, version')) {
+      if (
+        s.includes('FROM public.hrm_merge_tokens') &&
+        s.includes('SELECT id, version')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.hrm_merge_tokens')) {
@@ -430,7 +477,9 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-BE-01', () => {
         groupCeoToken(),
       ),
     ).rejects.toThrow(/simulated token insert failure/);
-    expect((db as { withTransaction: jest.Mock }).withTransaction).toHaveBeenCalled();
+    expect(
+      (db as { withTransaction: jest.Mock }).withTransaction,
+    ).toHaveBeenCalled();
   });
 
   it('VAL-EMP-TOK-11: upsertEmpCatalogMergeToken retire path never DELETE', async () => {

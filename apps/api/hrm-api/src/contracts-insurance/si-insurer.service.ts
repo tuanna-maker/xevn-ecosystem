@@ -226,7 +226,10 @@ export class SiInsurerService {
       .filter((x) => x.length > 0 && SI_INSURER_KEY_FORMAT.test(x));
   }
 
-  private display(row: SiInsurerRow, source: SiInsurerSource): SiInsurerDisplay {
+  private display(
+    row: SiInsurerRow,
+    source: SiInsurerSource,
+  ): SiInsurerDisplay {
     return {
       id: row.id,
       companyId: row.company_id,
@@ -268,10 +271,23 @@ export class SiInsurerService {
     return s;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -322,7 +338,8 @@ export class SiInsurerService {
     if (String(item.status ?? '').toLowerCase() !== 'active') {
       return null;
     }
-    const meta = item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
+    const meta =
+      item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
     const nameVi = String(item.label ?? item.name ?? code).trim() || code;
     const now = new Date().toISOString();
     return {
@@ -351,7 +368,11 @@ export class SiInsurerService {
     options?: { tenantId?: string },
   ): Promise<{ total: number; data: SiInsurerDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, options?.tenantId);
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      options?.tenantId,
+    );
     const siRows = await this.loadSiNativeRows(companyKeys, {
       includeArchived: false,
       status: 'active',
@@ -364,7 +385,8 @@ export class SiInsurerService {
 
     const settings = this.resolveSettingsCatalogs();
     if (settings) {
-      const tenantId = options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
+      const tenantId =
+        options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
       const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
         authorization,
         tenantId,
@@ -403,7 +425,8 @@ export class SiInsurerService {
     }
 
     const data = [...byKey.values()].sort(
-      (a, b) => a.sortOrder - b.sortOrder || a.insurerKey.localeCompare(b.insurerKey),
+      (a, b) =>
+        a.sortOrder - b.sortOrder || a.insurerKey.localeCompare(b.insurerKey),
     );
     return { total: data.length, data };
   }
@@ -466,7 +489,8 @@ export class SiInsurerService {
     tenantId?: string,
   ): Promise<{ total: number; data: SiInsurerDisplay[] }> {
     await this.ensureSchema();
-    const includeGroupRef = String(query.include_group_ref ?? '').toLowerCase() === 'true';
+    const includeGroupRef =
+      String(query.include_group_ref ?? '').toLowerCase() === 'true';
     if (includeGroupRef) {
       return this.listEffective(
         { company_id: query.company_id, q: query.q },
@@ -474,8 +498,13 @@ export class SiInsurerService {
         { tenantId },
       );
     }
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     const rows = await this.loadSiNativeRows(companyKeys, {
       includeArchived,
       status: query.status,
@@ -503,7 +532,11 @@ export class SiInsurerService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_SI_INSURER_404, 'Insurer not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_SI_INSURER_404,
+        'Insurer not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_SI_INSURER_404,
@@ -519,7 +552,11 @@ export class SiInsurerService {
     tenantId?: string,
   ): Promise<SiInsurerDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const insurerKey = this.assertKeyFormat(body.insurerKey);
     const nameVi = body.nameVi.trim();
     if (!nameVi) {
@@ -622,7 +659,11 @@ export class SiInsurerService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_SI_INSURER_404, 'Insurer not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_SI_INSURER_404,
+        'Insurer not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_SI_INSURER_404,
@@ -660,7 +701,8 @@ export class SiInsurerService {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertStatus(body.status));
 
     if (!sets.length) {
       return this.display(row, 'si_native');
@@ -692,7 +734,11 @@ export class SiInsurerService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_SI_INSURER_404, 'Insurer not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_SI_INSURER_404,
+        'Insurer not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_SI_INSURER_404,

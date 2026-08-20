@@ -31,12 +31,19 @@ function readConfiguredJwtSecrets(): string[] {
 }
 
 function base64UrlDecode(input: string): string {
-  const padded = input.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(input.length / 4) * 4, '=');
+  const padded = input
+    .replace(/-/g, '+')
+    .replace(/_/g, '/')
+    .padEnd(Math.ceil(input.length / 4) * 4, '=');
   return Buffer.from(padded, 'base64').toString('utf8');
 }
 
 function base64UrlEncode(input: Buffer): string {
-  return input.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  return input
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
 }
 
 function verifyHs256Signature(token: string, secret: string): boolean {
@@ -62,7 +69,9 @@ function parseJwtPayload(token: string): InternalJwtPayload | null {
   }
 }
 
-export function getVerifiedInternalJwtPayload(authorizationHeader?: string): InternalJwtPayload | null {
+export function getVerifiedInternalJwtPayload(
+  authorizationHeader?: string,
+): InternalJwtPayload | null {
   const bearerToken = extractBearerToken(authorizationHeader);
   const secrets = readConfiguredJwtSecrets();
   const issuer = process.env.SERVICE_JWT_ISSUER ?? 'xevn-internal';
@@ -71,7 +80,9 @@ export function getVerifiedInternalJwtPayload(authorizationHeader?: string): Int
   if (!bearerToken || secrets.length === 0) {
     return null;
   }
-  const signatureMatches = secrets.some((secret) => verifyHs256Signature(bearerToken, secret));
+  const signatureMatches = secrets.some((secret) =>
+    verifyHs256Signature(bearerToken, secret),
+  );
   if (!signatureMatches) {
     return null;
   }
@@ -79,7 +90,11 @@ export function getVerifiedInternalJwtPayload(authorizationHeader?: string): Int
   const payload = parseJwtPayload(bearerToken);
   if (!payload) return null;
   const nowSec = Math.floor(Date.now() / 1000);
-  const payloadAud = Array.isArray(payload.aud) ? payload.aud : payload.aud ? [payload.aud] : [];
+  const payloadAud = Array.isArray(payload.aud)
+    ? payload.aud
+    : payload.aud
+      ? [payload.aud]
+      : [];
   const audienceOk = payloadAud.length === 0 || payloadAud.includes(audience);
   const issuerOk = !payload.iss || payload.iss === issuer;
   const expOk = !payload.exp || payload.exp > nowSec;
@@ -88,13 +103,18 @@ export function getVerifiedInternalJwtPayload(authorizationHeader?: string): Int
   return payload;
 }
 
-function readHeaderValue(headers: Record<string, unknown>, key: string): string | undefined {
+function readHeaderValue(
+  headers: Record<string, unknown>,
+  key: string,
+): string | undefined {
   const value = headers[key];
   if (typeof value === 'string' && value.trim()) {
     return value.trim();
   }
   if (Array.isArray(value)) {
-    const firstString = value.find((item) => typeof item === 'string' && item.trim());
+    const firstString = value.find(
+      (item) => typeof item === 'string' && item.trim(),
+    );
     if (typeof firstString === 'string') {
       return firstString.trim();
     }
@@ -102,7 +122,10 @@ function readHeaderValue(headers: Record<string, unknown>, key: string): string 
   return undefined;
 }
 
-function parseCookie(cookieHeader: string, cookieName: string): string | undefined {
+function parseCookie(
+  cookieHeader: string,
+  cookieName: string,
+): string | undefined {
   const pairs = cookieHeader.split(';');
   for (const pair of pairs) {
     const [rawName, ...rest] = pair.split('=');
@@ -122,7 +145,9 @@ function parseCookie(cookieHeader: string, cookieName: string): string | undefin
   return undefined;
 }
 
-export function extractBearerToken(rawAuthorization?: string): string | undefined {
+export function extractBearerToken(
+  rawAuthorization?: string,
+): string | undefined {
   if (!rawAuthorization) return undefined;
   const trimmed = rawAuthorization.trim();
   if (!trimmed) return undefined;
@@ -178,9 +203,14 @@ export function resolveAuthorizationHeader(
  * Canonicalizes browser-session auth transport into `authorization` header.
  * This runs before controllers so guard checks share one extraction path.
  */
-export function normalizeAuthorizationHeaderInPlace(headers: Record<string, unknown>): void {
+export function normalizeAuthorizationHeaderInPlace(
+  headers: Record<string, unknown>,
+): void {
   const currentAuthorization = readHeaderValue(headers, 'authorization');
-  const resolvedAuthorization = resolveAuthorizationHeader(currentAuthorization, headers);
+  const resolvedAuthorization = resolveAuthorizationHeader(
+    currentAuthorization,
+    headers,
+  );
   if (resolvedAuthorization) {
     headers.authorization = resolvedAuthorization;
   }
@@ -197,6 +227,8 @@ export function isAuthorizedInternalRequest(
   const fallbackKey = 'xevn-dev-internal-key';
   const canUseStaticKey = process.env.NODE_ENV !== 'production';
   return Boolean(
-    canUseStaticKey && internalApiKey && (internalApiKey === configuredKey || internalApiKey === fallbackKey),
+    canUseStaticKey &&
+    internalApiKey &&
+    (internalApiKey === configuredKey || internalApiKey === fallbackKey),
   );
 }

@@ -6,7 +6,9 @@ import { ApiException } from '../common/api.exception';
 /** UF-HRM-11 — metadata submit accepts slug company_id; employees expose company_uuid */
 describe('P1-WEB-ACCEPTANCE-FIX-WAVE-02 UF-HRM-11 metadata company_uuid', () => {
   const repository = {
-    submitChange: jest.fn().mockResolvedValue({ id: 'req-1', status: 'pending' }),
+    submitChange: jest
+      .fn()
+      .mockResolvedValue({ id: 'req-1', status: 'pending' }),
   } as unknown as EmployeeMetadataRepository;
 
   let service: EmployeeMetadataService;
@@ -47,7 +49,10 @@ describe('P1-WEB-ACCEPTANCE-FIX-WAVE-02 UF-HRM-11 metadata company_uuid', () => 
         field_key: 'job_title',
         requested_value: JSON.stringify({ code: 'QA' }),
       }),
-    ).rejects.toMatchObject({ code: 'HRM-VAL-001', status: HttpStatus.BAD_REQUEST });
+    ).rejects.toMatchObject({
+      code: 'HRM-VAL-001',
+      status: HttpStatus.BAD_REQUEST,
+    });
   });
 
   it('rejects XBOS LE UUID with HRM-PLANE-409 (D-HRM-MD-DUAL-PLANE-GUARD-01)', async () => {
@@ -58,7 +63,10 @@ describe('P1-WEB-ACCEPTANCE-FIX-WAVE-02 UF-HRM-11 metadata company_uuid', () => 
         field_key: 'job_title',
         requested_value: JSON.stringify({ code: 'LE' }),
       }),
-    ).rejects.toMatchObject({ code: 'HRM-PLANE-409', status: HttpStatus.CONFLICT });
+    ).rejects.toMatchObject({
+      code: 'HRM-PLANE-409',
+      status: HttpStatus.CONFLICT,
+    });
     expect(repository.submitChange).not.toHaveBeenCalled();
   });
 });

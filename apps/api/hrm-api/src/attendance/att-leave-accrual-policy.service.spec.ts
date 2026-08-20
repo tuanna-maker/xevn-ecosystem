@@ -7,7 +7,10 @@ import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
 import { AttLeaveAccrualPolicyService } from './att-leave-accrual-policy.service';
 import { AttLeaveTypeService } from './att-leave-type.service';
-import { HRM_ATT_LVRULE_KEY, HRM_ATT_LVRULE_TYPE } from './att-leave-accrual-policy.constants';
+import {
+  HRM_ATT_LVRULE_KEY,
+  HRM_ATT_LVRULE_TYPE,
+} from './att-leave-accrual-policy.constants';
 import { HRM_LEAVE_TYPE_UNKNOWN } from './att-leave-type.constants';
 
 const POL_ID = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
@@ -82,7 +85,9 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
     await svc.ensureSchema();
     expect(
       sqls.some((q) =>
-        q.includes('CREATE TABLE IF NOT EXISTS public.att_leave_accrual_policy'),
+        q.includes(
+          'CREATE TABLE IF NOT EXISTS public.att_leave_accrual_policy',
+        ),
       ),
     ).toBe(true);
     expect(
@@ -91,12 +96,16 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
       ),
     ).toBe(true);
     expect(
-      sqls.some((q) => q.includes('ix_att_leave_accrual_policy_resolve_effective')),
+      sqls.some((q) =>
+        q.includes('ix_att_leave_accrual_policy_resolve_effective'),
+      ),
     ).toBe(true);
-    expect(sqls.every((q) => !q.includes("leave_type_key IN ("))).toBe(true);
-    expect(sqls.every((q) => !q.includes('DELETE FROM public.att_leave_accrual_policy'))).toBe(
-      true,
-    );
+    expect(sqls.every((q) => !q.includes('leave_type_key IN ('))).toBe(true);
+    expect(
+      sqls.every(
+        (q) => !q.includes('DELETE FROM public.att_leave_accrual_policy'),
+      ),
+    ).toBe(true);
   });
 
   it('VAL-ATT-LVRULE-CNS-01: invent policy_id when active>0 → HRM-ATT-LVRULE-KEY', async () => {
@@ -107,7 +116,10 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
         if (s.includes('COUNT(*)') && s.includes('att_leave_accrual_policy')) {
           return { rows: [{ c: '1' }] };
         }
-        if (s.includes('FROM public.att_leave_accrual_policy') && s.includes('p.id')) {
+        if (
+          s.includes('FROM public.att_leave_accrual_policy') &&
+          s.includes('p.id')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -134,7 +146,10 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
         if (s.includes('COUNT(*)') && s.includes('att_leave_accrual_policy')) {
           return { rows: [{ c: '1' }] };
         }
-        if (s.includes('FROM public.att_leave_accrual_policy') && s.includes('p.id')) {
+        if (
+          s.includes('FROM public.att_leave_accrual_policy') &&
+          s.includes('p.id')
+        ) {
           idSelects.push(s);
           return { rows: [] };
         }
@@ -246,7 +261,9 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
     const leaveTypes = {
       listEffective: jest.fn().mockResolvedValue({
         total: 1,
-        data: [{ leaveTypeKey: 'annual', nameVi: 'Phép năm', status: 'active' }],
+        data: [
+          { leaveTypeKey: 'annual', nameVi: 'Phép năm', status: 'active' },
+        ],
       }),
     } as unknown as AttLeaveTypeService;
     const db = {
@@ -256,13 +273,19 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
         if (s.includes('MAX(version)')) {
           return { rows: [{ m: '1' }] };
         }
-        if (s.includes('SELECT id::text AS id') && s.includes('status = \'active\'')) {
+        if (
+          s.includes('SELECT id::text AS id') &&
+          s.includes("status = 'active'")
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.att_leave_accrual_policy')) {
           return { rows: [basePolicy({ version: 2 })] };
         }
-        if (s.includes('FROM public.att_leave_accrual_policy') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.att_leave_accrual_policy') &&
+          s.includes('id = $1')
+        ) {
           return {
             rows: [
               basePolicy({
@@ -299,7 +322,9 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
     const leaveTypes = {
       listEffective: jest.fn().mockResolvedValue({
         total: 1,
-        data: [{ leaveTypeKey: 'annual', nameVi: 'Phép năm', status: 'active' }],
+        data: [
+          { leaveTypeKey: 'annual', nameVi: 'Phép năm', status: 'active' },
+        ],
       }),
     } as unknown as AttLeaveTypeService;
     const db = {
@@ -309,7 +334,10 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
         if (s.includes('MAX(version)')) {
           return { rows: [{ m: '1' }] };
         }
-        if (s.includes('SELECT id::text AS id') && s.includes('status = \'active\'')) {
+        if (
+          s.includes('SELECT id::text AS id') &&
+          s.includes("status = 'active'")
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.att_leave_accrual_policy')) {
@@ -322,7 +350,10 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
             ],
           };
         }
-        if (s.includes('FROM public.att_leave_accrual_policy') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.att_leave_accrual_policy') &&
+          s.includes('id = $1')
+        ) {
           return {
             rows: [
               basePolicy({
@@ -355,9 +386,7 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
     const insertCall = (db.query as jest.Mock).mock.calls.find((c) =>
       String(c[0]).includes('INSERT INTO public.att_leave_accrual_policy'),
     );
-    expect(insertCall?.[1]).toEqual(
-      expect.arrayContaining([5, 30]),
-    );
+    expect(insertCall?.[1]).toEqual(expect.arrayContaining([5, 30]));
   });
 
   it('list default hides retired; include_inactive shows them (AC-01e)', async () => {
@@ -381,7 +410,9 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
       groupCeoToken(),
       'xevn',
     );
-    const inactiveSql = sqls.find((q) => q.includes('ORDER BY p.leave_type_key'));
+    const inactiveSql = sqls.find((q) =>
+      q.includes('ORDER BY p.leave_type_key'),
+    );
     expect(inactiveSql).toBeTruthy();
     expect(inactiveSql).not.toContain("p.status = 'active'");
   });
@@ -399,7 +430,10 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
         if (s.includes("status = 'retired'") && s.includes('UPDATE')) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.att_leave_accrual_policy p') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.att_leave_accrual_policy p') &&
+          s.includes('id = $1')
+        ) {
           return {
             rows: [
               basePolicy({
@@ -413,12 +447,19 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
       }),
     } as unknown as HrmDbService;
     const svc = new AttLeaveAccrualPolicyService(db);
-    const retired = await svc.retirePolicy(POL_ID, 'holding', groupCeoToken(), 'xevn');
+    const retired = await svc.retirePolicy(
+      POL_ID,
+      'holding',
+      groupCeoToken(),
+      'xevn',
+    );
     expect(retired.status).toBe('retired');
     expect(retired.archivedAt).toBeTruthy();
-    expect(sqls.every((q) => !q.includes('DELETE FROM public.att_leave_accrual_policy'))).toBe(
-      true,
-    );
+    expect(
+      sqls.every(
+        (q) => !q.includes('DELETE FROM public.att_leave_accrual_policy'),
+      ),
+    ).toBe(true);
 
     // resolveEffective must filter active only
     sqls.length = 0;
@@ -453,7 +494,12 @@ describe('AttLeaveAccrualPolicyService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-LEAVE
       }),
     } as unknown as HrmDbService;
     const svc = new AttLeaveAccrualPolicyService(db);
-    const row = await svc.getPolicyById(POL_ID, 'main', groupCeoToken(), 'xevn');
+    const row = await svc.getPolicyById(
+      POL_ID,
+      'main',
+      groupCeoToken(),
+      'xevn',
+    );
     expect(row.companyId).toBe('holding');
     expect(row.leaveTypeNameVi).toBe('Phép năm');
   });

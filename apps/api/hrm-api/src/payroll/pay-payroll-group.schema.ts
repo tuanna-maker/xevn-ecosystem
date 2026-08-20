@@ -1,7 +1,9 @@
 import type { HrmDbService } from '../db/hrm-db.service';
 
 /** DATA-01 §6.1–6.3 — pay_payroll_group + period/payslip FK (PAY-09). */
-export async function ensurePayPayrollGroupSchema(db: HrmDbService): Promise<void> {
+export async function ensurePayPayrollGroupSchema(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     CREATE TABLE IF NOT EXISTS public.pay_payroll_group (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

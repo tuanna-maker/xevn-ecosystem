@@ -78,7 +78,10 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       query: jest.fn().mockResolvedValue({ rows: [] }),
       withTransaction: jest.fn(async (fn) => fn(db.query)),
     };
-    service = new RecruitmentService(db as unknown as HrmDbService, mockBridge() as never);
+    service = new RecruitmentService(
+      db as unknown as HrmDbService,
+      mockBridge() as never,
+    );
   });
 
   it('ensureSchema ADD employees.candidate_id + Lane A accept-audit (DATA-01)', async () => {
@@ -87,17 +90,23 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       sqlLog.push(sql);
       return { rows: [] } as never;
     });
-    await expect(service.getCandidateById(APP_ID, HOLDING)).rejects.toMatchObject({
+    await expect(
+      service.getCandidateById(APP_ID, HOLDING),
+    ).rejects.toMatchObject({
       code: 'HRM-REC-404',
     });
     const joined = sqlLog.join('\n');
-    expect(joined).toMatch(/ALTER TABLE public\.employees[\s\S]*candidate_id UUID NULL/);
+    expect(joined).toMatch(
+      /ALTER TABLE public\.employees[\s\S]*candidate_id UUID NULL/,
+    );
     expect(joined).toMatch(/idx_employees_candidate_id_active/);
     expect(joined).toMatch(/offer_accepted_at TIMESTAMPTZ NULL/);
     expect(joined).toMatch(/accepted_application_id UUID NULL/);
     expect(joined).toMatch(/idx_rec_cand_accepted_app/);
     expect(joined).not.toMatch(/CREATE TABLE IF NOT EXISTS public\.rec_hire/);
-    expect(joined).not.toMatch(/FOREIGN KEY \(employee_id\) REFERENCES public\.employees/);
+    expect(joined).not.toMatch(
+      /FOREIGN KEY \(employee_id\) REFERENCES public\.employees/,
+    );
     expect(joined).not.toMatch(/\/rec\//);
   });
 
@@ -113,9 +122,14 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       ) {
         return { rows: [offerAppRow()] } as never;
       }
-      if (sql.includes('WHERE candidate_id = $1::uuid AND archived_at IS NULL')) {
+      if (
+        sql.includes('WHERE candidate_id = $1::uuid AND archived_at IS NULL')
+      ) {
         // Pre-create reverse empty; post-stamp reverse returns created emp.
-        if (sqlLog.filter((s) => s.includes('INSERT INTO public.employees')).length > 0) {
+        if (
+          sqlLog.filter((s) => s.includes('INSERT INTO public.employees'))
+            .length > 0
+        ) {
           return { rows: [{ id: createdEmpId, company_id: HOLDING }] } as never;
         }
         return { rows: [] } as never;
@@ -132,7 +146,10 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
           ],
         } as never;
       }
-      if (sql.includes('UPDATE public.recruitment_candidates') && sql.includes('employee_id')) {
+      if (
+        sql.includes('UPDATE public.recruitment_candidates') &&
+        sql.includes('employee_id')
+      ) {
         return {
           rows: [
             {
@@ -153,7 +170,10 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       ) {
         return { rows: [{ employee_id: createdEmpId }] } as never;
       }
-      if (sql.includes('FROM public.employees') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.employees') &&
+        sql.includes('id = $1::uuid')
+      ) {
         return { rows: [empRow({ id: createdEmpId })] } as never;
       }
       return { rows: [] } as never;
@@ -175,11 +195,14 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
     expect(dto.department_key).toBe('ops');
     expect(dto.event).toBe(OFFER_ACCEPTED_EVENT);
     expect(dto.history_id).toBeNull();
-    expect(sqlLog.some((s) => s.includes('INSERT INTO public.employees'))).toBe(true);
+    expect(sqlLog.some((s) => s.includes('INSERT INTO public.employees'))).toBe(
+      true,
+    );
     expect(
       sqlLog.some(
         (s) =>
-          s.includes('UPDATE public.recruitment_candidates') && s.includes('SET status'),
+          s.includes('UPDATE public.recruitment_candidates') &&
+          s.includes('SET status'),
       ),
     ).toBe(false);
   });
@@ -202,7 +225,9 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
           ],
         } as never;
       }
-      if (sql.includes('WHERE candidate_id = $1::uuid AND archived_at IS NULL')) {
+      if (
+        sql.includes('WHERE candidate_id = $1::uuid AND archived_at IS NULL')
+      ) {
         return { rows: [{ id: EMP_ID, company_id: HOLDING }] } as never;
       }
       if (
@@ -213,14 +238,20 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       ) {
         return { rows: [{ employee_id: EMP_ID }] } as never;
       }
-      if (sql.includes('FROM public.employees') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.employees') &&
+        sql.includes('id = $1::uuid')
+      ) {
         return { rows: [empRow()] } as never;
       }
       if (sql.includes('INSERT INTO public.employees')) {
         empInserts += 1;
         return { rows: [empRow()] } as never;
       }
-      if (sql.includes('UPDATE public.recruitment_candidates') && sql.includes('employee_id')) {
+      if (
+        sql.includes('UPDATE public.recruitment_candidates') &&
+        sql.includes('employee_id')
+      ) {
         return {
           rows: [
             {
@@ -251,12 +282,16 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       ) {
         return { rows: [offerAppRow({ employee_id: EMP_ID })] } as never;
       }
-      if (sql.includes('WHERE candidate_id = $1::uuid AND archived_at IS NULL')) {
+      if (
+        sql.includes('WHERE candidate_id = $1::uuid AND archived_at IS NULL')
+      ) {
         return { rows: [{ id: EMP_OTHER, company_id: HOLDING }] } as never;
       }
       return { rows: [] } as never;
     });
-    await expect(service.acceptOfferApplication(APP_ID, {}, HOLDING)).rejects.toMatchObject({
+    await expect(
+      service.acceptOfferApplication(APP_ID, {}, HOLDING),
+    ).rejects.toMatchObject({
       code: HRM_REC_HIRE_DUP,
     });
   });
@@ -271,12 +306,16 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       }
       return { rows: [] } as never;
     });
-    await expect(service.acceptOfferApplication(APP_ID, {}, HOLDING)).rejects.toMatchObject({
+    await expect(
+      service.acceptOfferApplication(APP_ID, {}, HOLDING),
+    ).rejects.toMatchObject({
       code: HRM_REC_HIRE_OFFER_INVALID,
     });
-    expect(db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.employees'))).toBe(
-      false,
-    );
+    expect(
+      db.query.mock.calls.some(([sql]) =>
+        String(sql).includes('INSERT INTO public.employees'),
+      ),
+    ).toBe(false);
   });
 
   it('cancelled stage → HRM-REC-HIRE-CANCELLED', async () => {
@@ -289,7 +328,9 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       }
       return { rows: [] } as never;
     });
-    await expect(service.acceptOfferApplication(APP_ID, {}, HOLDING)).rejects.toMatchObject({
+    await expect(
+      service.acceptOfferApplication(APP_ID, {}, HOLDING),
+    ).rejects.toMatchObject({
       code: HRM_REC_HIRE_CANCELLED,
     });
   });
@@ -307,7 +348,9 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       }
       return { rows: [] } as never;
     });
-    await expect(service.acceptOfferApplication(APP_ID, {}, HOLDING)).rejects.toMatchObject({
+    await expect(
+      service.acceptOfferApplication(APP_ID, {}, HOLDING),
+    ).rejects.toMatchObject({
       code: HRM_REC_HIRE_PREFILL_FAIL,
     });
   });
@@ -335,19 +378,26 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       }
       return { rows: [] } as never;
     });
-    await expect(service.acceptOfferApplication(APP_ID, {}, HOLDING)).rejects.toMatchObject({
+    await expect(
+      service.acceptOfferApplication(APP_ID, {}, HOLDING),
+    ).rejects.toMatchObject({
       code: 'HRM-REC-HIRE-409',
     });
   });
 
   it('thin candidate alias without YCTD neo → OFFER-INVALID', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates c') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates c') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [{ id: APP_ID, requisition_id: null }] } as never;
       }
       return { rows: [] } as never;
     });
-    await expect(service.acceptOfferByCandidateId(APP_ID, {}, HOLDING)).rejects.toMatchObject({
+    await expect(
+      service.acceptOfferByCandidateId(APP_ID, {}, HOLDING),
+    ).rejects.toMatchObject({
       code: HRM_REC_HIRE_OFFER_INVALID,
     });
   });
@@ -358,10 +408,14 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-01 accept-offer', () => {
       sqlLog.push(sql);
       return { rows: [] } as never;
     });
-    await expect(service.getCandidateById(APP_ID, HOLDING)).rejects.toBeInstanceOf(ApiException);
+    await expect(
+      service.getCandidateById(APP_ID, HOLDING),
+    ).rejects.toBeInstanceOf(ApiException);
     const joined = sqlLog.join('\n');
     expect(joined).not.toMatch(/CREATE TABLE IF NOT EXISTS public\.rec_offer/);
-    expect(joined).not.toMatch(/CREATE TABLE IF NOT EXISTS public\.rec_hire_event/);
+    expect(joined).not.toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.rec_hire_event/,
+    );
     expect(joined).not.toMatch(/REFERENCES public\.employees \(id\)/);
   });
 });

@@ -6,7 +6,9 @@ import {
   PAY_TERM_FORBIDDEN_BODY_KEYS,
 } from './pay-term.constants';
 
-function collectForbiddenTermPayoutKeys(body: Record<string, unknown> | null | undefined): string[] {
+function collectForbiddenTermPayoutKeys(
+  body: Record<string, unknown> | null | undefined,
+): string[] {
   if (!body || typeof body !== 'object') return [];
   const hits: string[] = [];
   for (const key of Object.keys(body)) {
@@ -15,7 +17,11 @@ function collectForbiddenTermPayoutKeys(body: Record<string, unknown> | null | u
       hits.push(key);
       continue;
     }
-    if (PAY_TERM_FORBIDDEN_BODY_KEYS.includes(key as (typeof PAY_TERM_FORBIDDEN_BODY_KEYS)[number])) {
+    if (
+      PAY_TERM_FORBIDDEN_BODY_KEYS.includes(
+        key as (typeof PAY_TERM_FORBIDDEN_BODY_KEYS)[number],
+      )
+    ) {
       hits.push(key);
     }
   }
@@ -23,7 +29,9 @@ function collectForbiddenTermPayoutKeys(body: Record<string, unknown> | null | u
 }
 
 /** AC-PAY-TERM-DENY-MANUAL — cấm nhập tay severance / leave cashout trên settle hoặc process. */
-export function assertNoPayTermPayoutOverrideInBody(body: Record<string, unknown> | null | undefined): void {
+export function assertNoPayTermPayoutOverrideInBody(
+  body: Record<string, unknown> | null | undefined,
+): void {
   const hits = collectForbiddenTermPayoutKeys(body);
   if (hits.length === 0) return;
   throw new ApiException(

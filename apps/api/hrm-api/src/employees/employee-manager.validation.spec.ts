@@ -16,7 +16,9 @@ describe('assertManagerAssignment (R-SPINE-MGR-HIER-01-BE)', () => {
     roleCode: 'group_ceo',
   });
 
-  function mockDb(handlers: Array<(sql: string, params?: unknown[]) => { rows: unknown[] }>) {
+  function mockDb(
+    handlers: Array<(sql: string, params?: unknown[]) => { rows: unknown[] }>,
+  ) {
     let i = 0;
     return {
       query: jest.fn(async (sql: string, params?: unknown[]) => {

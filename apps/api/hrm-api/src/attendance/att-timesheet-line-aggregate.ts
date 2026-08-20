@@ -65,7 +65,9 @@ export type AggregateSheetResult = {
 };
 
 /** FUNNEL-DB-01 §4.2 unpaid bucket — no invent catalog is_paid column. */
-export function isUnpaidLeaveTypeKey(leaveTypeKey: string | null | undefined): boolean {
+export function isUnpaidLeaveTypeKey(
+  leaveTypeKey: string | null | undefined,
+): boolean {
   const raw = String(leaveTypeKey ?? '')
     .trim()
     .toLowerCase();
@@ -75,7 +77,8 @@ export function isUnpaidLeaveTypeKey(leaveTypeKey: string | null | undefined): b
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/\s+/g, ' ');
-  if (stripped.includes('khong luong') || stripped.includes('unpaid')) return true;
+  if (stripped.includes('khong luong') || stripped.includes('unpaid'))
+    return true;
   return false;
 }
 
@@ -249,7 +252,9 @@ export async function aggregateAttendanceSheetLines(
 ): Promise<AggregateSheetResult> {
   await ensureAttTimesheetLineSchema(db);
 
-  const status = String(header.status ?? '').trim().toLowerCase();
+  const status = String(header.status ?? '')
+    .trim()
+    .toLowerCase();
   if (status === 'closed') {
     throw new ApiException(
       'HRM-ATT-SHEET-LOCKED',
@@ -262,13 +267,23 @@ export async function aggregateAttendanceSheetLines(
   const companyId = String(header.company_id);
   // Policy = sheet header write / leave funnel: pg DATE → local Y-M-D; ISO/plain → lead-10.
   // Cấm String(Date).slice(0,10) → "Tue Sep 01…" → AGG_SHEET_DATE_INVALID → line_count=0.
-  const startDate = toLeaveDayKey(header.start_date as string | Date | null | undefined) ?? '';
-  const endDate = toLeaveDayKey(header.end_date as string | Date | null | undefined) ?? '';
+  const startDate =
+    toLeaveDayKey(header.start_date as string | Date | null | undefined) ?? '';
+  const endDate =
+    toLeaveDayKey(header.end_date as string | Date | null | undefined) ?? '';
   const warnings: string[] = [];
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(startDate) ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(endDate)
+  ) {
     warnings.push('AGG_SHEET_DATE_INVALID');
-    return { sheet_id: sheetId, status: String(header.status), line_count: 0, warnings };
+    return {
+      sheet_id: sheetId,
+      status: String(header.status),
+      line_count: 0,
+      warnings,
+    };
   }
 
   const companyIds = expandPayrollAttendanceSheetCompanyIds(companyId);
@@ -346,7 +361,13 @@ export async function aggregateAttendanceSheetLines(
 
   let lineCount = 0;
   for (const [employeeId, empRecords] of byEmployee) {
-    const otWeighted = await sumOtWeightedHours(db, companyIds, employeeId, startDate, endDate);
+    const otWeighted = await sumOtWeightedHours(
+      db,
+      companyIds,
+      employeeId,
+      startDate,
+      endDate,
+    );
     const hours = computeLineHoursFromRecords({
       records: empRecords,
       otWeightedHours: otWeighted,

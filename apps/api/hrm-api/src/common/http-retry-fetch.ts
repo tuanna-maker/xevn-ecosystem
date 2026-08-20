@@ -73,5 +73,7 @@ export async function fetchWithTimeoutAndRetry(
       throw err;
     }
   }
-  throw lastError instanceof Error ? lastError : new Error('fetchWithTimeoutAndRetry failed');
+  throw lastError instanceof Error
+    ? lastError
+    : new Error('fetchWithTimeoutAndRetry failed');
 }

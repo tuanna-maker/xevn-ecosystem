@@ -127,7 +127,10 @@ function toNum(v: string | number | null | undefined): number {
 }
 
 /** Half-day step 0.5 aligned with employee_leave_balances NUMERIC(5,1). */
-export function computeOtCompCreditedDays(otHours: number, hoursPerLeaveDay: number): number {
+export function computeOtCompCreditedDays(
+  otHours: number,
+  hoursPerLeaveDay: number,
+): number {
   if (hoursPerLeaveDay <= 0 || otHours <= 0) return 0;
   const raw = otHours / hoursPerLeaveDay;
   return Math.round(raw * 2) / 2;
@@ -238,12 +241,21 @@ export class AttOtCompLeavePolicyService {
       authorization,
       requestedCompanyId ?? '',
     );
-    const scope = resolveHrmListScope(authorization, persistCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, persistCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, persistCompanyId };
   }
 
-  private displayPolicy(row: PolicyRow | null, companyId: string): OtCompLeavePolicyDisplay {
+  private displayPolicy(
+    row: PolicyRow | null,
+    companyId: string,
+  ): OtCompLeavePolicyDisplay {
     if (!row) {
       return {
         modeEnabled: false,
@@ -258,7 +270,9 @@ export class AttOtCompLeavePolicyService {
     }
     return {
       modeEnabled: row.mode_enabled,
-      hoursPerLeaveDay: row.mode_enabled ? toNum(row.hours_per_leave_day) : toNum(row.hours_per_leave_day) || null,
+      hoursPerLeaveDay: row.mode_enabled
+        ? toNum(row.hours_per_leave_day)
+        : toNum(row.hours_per_leave_day) || null,
       compBalanceKey: row.comp_balance_key,
       mapsCompCodes: row.maps_comp_codes,
       status: row.status,
@@ -310,7 +324,9 @@ export class AttOtCompLeavePolicyService {
     tenantId?: string,
   ): Promise<OtCompLeavePolicyDisplay> {
     await this.ensureSchema();
-    const compKey = (body.comp_balance_key?.trim() || ATT_OT_COMP_BALANCE_KEY_DEFAULT).toLowerCase();
+    const compKey = (
+      body.comp_balance_key?.trim() || ATT_OT_COMP_BALANCE_KEY_DEFAULT
+    ).toLowerCase();
     if (compKey === 'annual' || compKey === 'carry_over') {
       throw new ApiException(
         HRM_ATT_OT_COMP_POLICY_RATIO,
@@ -357,10 +373,14 @@ export class AttOtCompLeavePolicyService {
 
     let row: PolicyRow;
     if (existing.rows[0]) {
-      assertResourceInHrmScope({ company_id: existing.rows[0].company_id }, scope, {
-        notFoundCode: 'HRM-SCOPE-409',
-        mismatchCode: 'HRM-SCOPE-409',
-      });
+      assertResourceInHrmScope(
+        { company_id: existing.rows[0].company_id },
+        scope,
+        {
+          notFoundCode: 'HRM-SCOPE-409',
+          mismatchCode: 'HRM-SCOPE-409',
+        },
+      );
       const upd = await this.db.query<PolicyRow>(
         `
           UPDATE public.att_ot_comp_leave_policy
@@ -428,16 +448,23 @@ export class AttOtCompLeavePolicyService {
     return this.displayPolicy(row, row.company_id);
   }
 
-  private mapsToLeaveComp(compensationType: string | null | undefined, policy: PolicyRow | null): boolean {
+  private mapsToLeaveComp(
+    compensationType: string | null | undefined,
+    policy: PolicyRow | null,
+  ): boolean {
     const code = (compensationType ?? '').trim().toLowerCase();
     if (!code) return false;
     if (policy?.maps_comp_codes?.length) {
       return policy.maps_comp_codes.map((c) => c.toLowerCase()).includes(code);
     }
-    return (ATT_OT_COMP_LEAVE_ACCRUE_DEFAULT_CODES as readonly string[]).includes(code);
+    return (
+      ATT_OT_COMP_LEAVE_ACCRUE_DEFAULT_CODES as readonly string[]
+    ).includes(code);
   }
 
-  async loadActivePolicyForCompany(companyId: string): Promise<PolicyRow | null> {
+  async loadActivePolicyForCompany(
+    companyId: string,
+  ): Promise<PolicyRow | null> {
     await this.ensureSchema();
     const res = await this.db.query<PolicyRow>(
       `
@@ -478,7 +505,9 @@ export class AttOtCompLeavePolicyService {
   }
 
   /** Partition key for employee_leave_balances — aligns with LeaveBalanceService read path. */
-  private async loadEmployeeBalancePartitionCompanyId(employeeId: string): Promise<string | null> {
+  private async loadEmployeeBalancePartitionCompanyId(
+    employeeId: string,
+  ): Promise<string | null> {
     const res = await this.db.query<{ company_id: string }>(
       `
         SELECT company_id
@@ -530,7 +559,9 @@ export class AttOtCompLeavePolicyService {
       `,
       [partitionCompanyId, employeeId, balanceKey, balanceYear],
     );
-    const currentEntitled = balRes.rows[0] ? toNum(balRes.rows[0].entitled_days) : 0;
+    const currentEntitled = balRes.rows[0]
+      ? toNum(balRes.rows[0].entitled_days)
+      : 0;
     if (currentEntitled >= ledgerTotal) {
       return;
     }
@@ -581,9 +612,14 @@ export class AttOtCompLeavePolicyService {
       );
     }
     const existing = await this.findCreditedLedger(ot.company_id, ot.id);
-    const balanceKey = (policy.comp_balance_key || ATT_OT_COMP_BALANCE_KEY_DEFAULT).trim().toLowerCase();
+    const balanceKey = (
+      policy.comp_balance_key || ATT_OT_COMP_BALANCE_KEY_DEFAULT
+    )
+      .trim()
+      .toLowerCase();
     const balancePartitionCompanyId =
-      (await this.loadEmployeeBalancePartitionCompanyId(ot.employee_id)) ?? ot.company_id;
+      (await this.loadEmployeeBalancePartitionCompanyId(ot.employee_id)) ??
+      ot.company_id;
 
     if (existing) {
       await this.syncLeaveBalanceEntitledFromLedgerSum(
@@ -611,7 +647,8 @@ export class AttOtCompLeavePolicyService {
           ? new Date(ot.overtime_date)
           : new Date();
     const balanceYear = calendarYearInHoChiMinh(otDate);
-    const compType = (ot.compensation_type ?? '').trim() || 'compensatory_leave';
+    const compType =
+      (ot.compensation_type ?? '').trim() || 'compensatory_leave';
 
     const accrualResult = await this.db.withTransaction(async (query) => {
       const ledgerId = randomUUID();
@@ -672,7 +709,13 @@ export class AttOtCompLeavePolicyService {
             entitled_days = employee_leave_balances.entitled_days + EXCLUDED.entitled_days,
             updated_at = NOW();
         `,
-        [balancePartitionCompanyId, ot.employee_id, balanceKey, balanceYear, creditedDays],
+        [
+          balancePartitionCompanyId,
+          ot.employee_id,
+          balanceKey,
+          balanceYear,
+          creditedDays,
+        ],
       );
       return {
         credited_days: creditedDays,

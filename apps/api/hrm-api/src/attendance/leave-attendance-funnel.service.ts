@@ -80,7 +80,9 @@ export type LeaveFunnelMaterializeResult = {
  * pg DATE → JS Date at **local** midnight (node-pg default) → use local Y-M-D;
  * ISO/plain strings starting with yyyy-MM-dd → take leading 10 chars (UTC-safe for Z).
  */
-export function toLeaveDayKey(value: string | Date | null | undefined): string | null {
+export function toLeaveDayKey(
+  value: string | Date | null | undefined,
+): string | null {
   if (value == null) {
     return null;
   }
@@ -111,13 +113,22 @@ export function expandLeaveDateRange(
 ): string[] {
   const start = toLeaveDayKey(startDate);
   const end = toLeaveDayKey(endDate);
-  if (!start || !end || !/^\d{4}-\d{2}-\d{2}$/.test(start) || !/^\d{4}-\d{2}-\d{2}$/.test(end)) {
+  if (
+    !start ||
+    !end ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(start) ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(end)
+  ) {
     return [];
   }
   const out: string[] = [];
   const cursor = new Date(`${start}T00:00:00.000Z`);
   const last = new Date(`${end}T00:00:00.000Z`);
-  if (!Number.isFinite(cursor.getTime()) || !Number.isFinite(last.getTime()) || cursor > last) {
+  if (
+    !Number.isFinite(cursor.getTime()) ||
+    !Number.isFinite(last.getTime()) ||
+    cursor > last
+  ) {
     return [];
   }
   while (cursor <= last) {
@@ -177,13 +188,17 @@ export class LeaveAttendanceFunnelService {
    * F-ATT-LEAVE-FUNNEL-01 — UPSERT status=leave + soft FK for each day in range.
    * present → 409 CONFLICT; day in submitted/closed sheet → 409 LOCKED.
    */
-  async materializeApprovedLeave(leave: LeaveFunnelSourceRow): Promise<LeaveFunnelMaterializeResult> {
+  async materializeApprovedLeave(
+    leave: LeaveFunnelSourceRow,
+  ): Promise<LeaveFunnelMaterializeResult> {
     await this.ensureLeaveFunnelSchema();
     const days = expandLeaveDateRange(leave.start_date, leave.end_date);
     if (days.length === 0) {
       return { materialized_days: [], materialized_record_ids: [] };
     }
-    const companyKeys = expandPayrollAttendanceSheetCompanyIds(leave.company_id);
+    const companyKeys = expandPayrollAttendanceSheetCompanyIds(
+      leave.company_id,
+    );
     await this.assertNoLockedSheetOverlap(companyKeys, days, 'materialize');
     await this.assertNoPresentConflict(companyKeys, leave.employee_id, days);
 
@@ -216,7 +231,15 @@ export class LeaveAttendanceFunnelService {
              OR public.attendance_records.leave_request_id = EXCLUDED.leave_request_id
           RETURNING id::text AS id, attendance_date::text AS attendance_date;
         `,
-        [id, leave.company_id, leave.employee_id, day, note, leave.id, leaveTypeKey || null],
+        [
+          id,
+          leave.company_id,
+          leave.employee_id,
+          day,
+          note,
+          leave.id,
+          leaveTypeKey || null,
+        ],
       );
       const row = res.rows[0];
       if (!row) {
@@ -241,7 +264,10 @@ export class LeaveAttendanceFunnelService {
    * F-ATT-LEAVE-FUNNEL-02 — clear markers by leave_request_id when leaving approved.
    * Closed sheet covering any marker date → 409 LOCKED (no silent wipe).
    */
-  async reverseLeaveMarkers(leaveRequestId: string, companyIdHint?: string): Promise<{ cleared: number }> {
+  async reverseLeaveMarkers(
+    leaveRequestId: string,
+    companyIdHint?: string,
+  ): Promise<{ cleared: number }> {
     await this.ensureLeaveFunnelSchema();
     const existing = await this.db.query<{
       id: string;
@@ -288,7 +314,10 @@ export class LeaveAttendanceFunnelService {
     employeeId: string,
     days: string[],
   ): Promise<void> {
-    const res = await this.db.query<{ attendance_date: string; status: string }>(
+    const res = await this.db.query<{
+      attendance_date: string;
+      status: string;
+    }>(
       `
         SELECT attendance_date::text AS attendance_date, status
         FROM public.attendance_records
@@ -326,7 +355,11 @@ export class LeaveAttendanceFunnelService {
       mode === 'materialize'
         ? `s.status IN ('submitted', 'closed')`
         : `s.status = 'closed'`;
-    const res = await this.db.query<{ id: string; status: string; day: string }>(
+    const res = await this.db.query<{
+      id: string;
+      status: string;
+      day: string;
+    }>(
       `
         SELECT s.id::text AS id, s.status, d.day::text AS day
         FROM public.attendance_sheets s

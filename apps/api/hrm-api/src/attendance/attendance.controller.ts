@@ -169,7 +169,11 @@ import {
 } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
-import { isAuthorizedInternalRequest, resolveAuthorizationHeader, getVerifiedInternalJwtPayload } from '../common/internal-auth';
+import {
+  isAuthorizedInternalRequest,
+  resolveAuthorizationHeader,
+  getVerifiedInternalJwtPayload,
+} from '../common/internal-auth';
 import { toHrmListScopeContext } from '../common/hrm-list-scope-context';
 import { resolveScopeContext } from '../common/scope-context';
 import { AttendanceService } from './attendance.service';
@@ -293,9 +297,16 @@ export class AttendanceController {
     private readonly attendanceSheetSign: AttendanceSheetSignService,
   ) {}
 
-  private assertBusinessAccess(authorization?: string, internalApiKey?: string) {
+  private assertBusinessAccess(
+    authorization?: string,
+    internalApiKey?: string,
+  ) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized attendance access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized attendance access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -314,11 +325,16 @@ export class AttendanceController {
   ) {
     // Xử lý: Diễn biến #1 — auth trước ghi điểm danh.
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.attendanceService
-      .createRecord(body, authorization, tenantId)
-      // Thành công: Diễn biến #7 — bản ghi trên danh sách/lưới kỳ.
-      .then((data) => ok(data, 'HRM-ATT-201', 'Attendance record created'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
+    return (
+      this.attendanceService
+        .createRecord(body, authorization, tenantId)
+        // Thành công: Diễn biến #7 — bản ghi trên danh sách/lưới kỳ.
+        .then((data) => ok(data, 'HRM-ATT-201', 'Attendance record created'))
+    );
   }
 
   /**
@@ -337,7 +353,10 @@ export class AttendanceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attendanceService
       .listRecords(query, authHeader, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-ATT-200', 'Attendance records listed'));
@@ -355,9 +374,17 @@ export class AttendanceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attendanceService
-      .getRecordById(recordId, query, authHeader, toHrmListScopeContext(tenantId))
+      .getRecordById(
+        recordId,
+        query,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-ATT-200', 'Attendance record loaded'));
   }
 
@@ -373,7 +400,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceService
-      .updateStatus(recordId, body, companyId ?? 'main', authorization, tenantId)
+      .updateStatus(
+        recordId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-ATT-202', 'Attendance status updated'));
   }
 
@@ -386,10 +419,15 @@ export class AttendanceController {
     @Body() body: CreateAttendanceUpdateRequestDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.attendanceService
       .createUpdateRequest(body, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-REQ-201', 'Attendance update request created'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-REQ-201', 'Attendance update request created'),
+      );
   }
 
   @Get('update-requests')
@@ -401,10 +439,15 @@ export class AttendanceController {
     @Query() query: ListAttendanceUpdateRequestsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attendanceService
       .listUpdateRequests(query, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-REQ-200', 'Attendance update requests listed'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-REQ-200', 'Attendance update requests listed'),
+      );
   }
 
   @Patch('update-requests/:requestId')
@@ -420,8 +463,16 @@ export class AttendanceController {
     // U78-U84 — use resolved scope.companyId (member portal main→JWT slug) for mutate guard.
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceService
-      .updateUpdateRequest(requestId, body, scope.companyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-REQ-202', 'Attendance update request updated'));
+      .updateUpdateRequest(
+        requestId,
+        body,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-ATT-REQ-202', 'Attendance update request updated'),
+      );
   }
 
   @Post('update-requests/:requestId/approve')
@@ -436,8 +487,16 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceService
-      .approveUpdateRequest(requestId, body, scope.companyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-REQ-203', 'Attendance update request approved'));
+      .approveUpdateRequest(
+        requestId,
+        body,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-ATT-REQ-203', 'Attendance update request approved'),
+      );
   }
 
   @Post('update-requests/:requestId/reject')
@@ -452,8 +511,16 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceService
-      .rejectUpdateRequest(requestId, body, scope.companyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-REQ-204', 'Attendance update request rejected'));
+      .rejectUpdateRequest(
+        requestId,
+        body,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-ATT-REQ-204', 'Attendance update request rejected'),
+      );
   }
 
   @Delete('update-requests/:requestId')
@@ -468,7 +535,9 @@ export class AttendanceController {
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceService
       .deleteUpdateRequest(requestId, scope.companyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-REQ-205', 'Attendance update request deleted'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-REQ-205', 'Attendance update request deleted'),
+      );
   }
 
   /**
@@ -498,14 +567,16 @@ export class AttendanceController {
       tenantId,
       companyId: body.company_id ?? headerCompanyId,
     });
-    return this.leaveRequestsService
-      .createLeaveRequest(body, authorization, {
-        tenantId: scope.tenantId,
-        companySlug: headerCompanyId ?? scope.companyId,
-        submitterUserId,
-      })
-      // Thành công: Diễn biến #7 — đơn chờ duyệt trên list (+ workflow_instance_id khi spawn OK).
-      .then((data) => ok(data, 'HRM-LEAVE-201', 'Leave request created'));
+    return (
+      this.leaveRequestsService
+        .createLeaveRequest(body, authorization, {
+          tenantId: scope.tenantId,
+          companySlug: headerCompanyId ?? scope.companyId,
+          submitterUserId,
+        })
+        // Thành công: Diễn biến #7 — đơn chờ duyệt trên list (+ workflow_instance_id khi spawn OK).
+        .then((data) => ok(data, 'HRM-LEAVE-201', 'Leave request created'))
+    );
   }
 
   /**
@@ -530,7 +601,9 @@ export class AttendanceController {
         tenantId: scope.tenantId,
         companySlug: headerCompanyId ?? scope.companyId,
       })
-      .then((data) => ok(data, 'HRM-LEAVE-PREVIEW-200', 'Leave deduction preview'));
+      .then((data) =>
+        ok(data, 'HRM-LEAVE-PREVIEW-200', 'Leave deduction preview'),
+      );
   }
 
   /** F-ATT-HOL-01 thin — GET year holiday set (≠ ATT-03b admin DONE). */
@@ -584,7 +657,10 @@ export class AttendanceController {
     @Query() query: AttendanceOverviewQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attendanceOverviewService
       .getOverview(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-ATT-OVERVIEW-200', 'Attendance overview'));
@@ -605,10 +681,15 @@ export class AttendanceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.leaveBalanceService
       .getLeaveBalancePanel(query, authHeader, tenantId)
-      .then((data) => ok(data, 'HRM-LEAVE-BAL-PANEL-200', 'Leave balance panel loaded'));
+      .then((data) =>
+        ok(data, 'HRM-LEAVE-BAL-PANEL-200', 'Leave balance panel loaded'),
+      );
   }
 
   /**
@@ -625,10 +706,15 @@ export class AttendanceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.leaveBalanceService
       .upsertTrackedEntitlement(body, authHeader, tenantId)
-      .then((data) => ok(data, 'HRM-LEAVE-BAL-201', 'Tracked leave entitlement upserted'));
+      .then((data) =>
+        ok(data, 'HRM-LEAVE-BAL-201', 'Tracked leave entitlement upserted'),
+      );
   }
 
   /**
@@ -645,7 +731,10 @@ export class AttendanceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.attActivateEnrollService
       .enrollOnActivate({
         employeeId: body.employee_id,
@@ -655,7 +744,9 @@ export class AttendanceController {
         authorization: authHeader,
         tenantId,
       })
-      .then((data) => ok(data, 'HRM-ATT-ENROLL-200', 'Activate enroll processed'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-ENROLL-200', 'Activate enroll processed'),
+      );
   }
 
   /** F-ATT-SHIFT-02 narrow — activate_default shift bind. */
@@ -670,7 +761,10 @@ export class AttendanceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attActivateEnrollService
       .getActivateDefaultShiftAssignment({
         employeeId: query.employee_id,
@@ -705,7 +799,10 @@ export class AttendanceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.attActivateEnrollService
       .upsertActivateDefaultShift({
         employeeId: body.employee_id,
@@ -716,7 +813,9 @@ export class AttendanceController {
         authorization: authHeader,
         tenantId,
       })
-      .then((data) => ok(data, 'HRM-ATT-SHIFT-ASSIGN-200', 'Shift assignment upserted'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-SHIFT-ASSIGN-200', 'Shift assignment upserted'),
+      );
   }
 
   @Get('leave-balance')
@@ -730,7 +829,10 @@ export class AttendanceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.leaveBalanceService
       .getLeaveBalance(query, authHeader, tenantId)
       .then((data) => ok(data, 'HRM-LEAVE-BAL-200', 'Leave balance loaded'));
@@ -750,7 +852,10 @@ export class AttendanceController {
     @Query() query: ListLeaveRequestsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.leaveRequestsService
       .listLeaveRequests(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-LEAVE-200', 'Leave requests listed'));
@@ -768,7 +873,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.leaveRequestsService
-      .approveLeaveRequest(requestId, body, scope.companyId, authorization, tenantId)
+      .approveLeaveRequest(
+        requestId,
+        body,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-LEAVE-203', 'Leave request approved'));
   }
 
@@ -784,7 +895,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.leaveRequestsService
-      .rejectLeaveRequest(requestId, body, scope.companyId, authorization, tenantId)
+      .rejectLeaveRequest(
+        requestId,
+        body,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-LEAVE-204', 'Leave request rejected'));
   }
 
@@ -801,7 +918,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.leaveRequestsService
-      .cancelLeaveRequest(requestId, body, scope.companyId, authorization, tenantId)
+      .cancelLeaveRequest(
+        requestId,
+        body,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-LEAVE-205', 'Leave request cancelled'));
   }
 
@@ -814,7 +937,10 @@ export class AttendanceController {
     @Query() query: ListAttendanceRequestsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attendanceRequestsService
       .listOvertimeRequests(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-OT-200', 'Overtime requests listed'));
@@ -850,7 +976,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .approveOvertimeRequest(requestId, body, scope.companyId, authorization, tenantId)
+      .approveOvertimeRequest(
+        requestId,
+        body,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-OT-203', 'Overtime request approved'));
   }
 
@@ -866,7 +998,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .rejectOvertimeRequest(requestId, body, scope.companyId, authorization, tenantId)
+      .rejectOvertimeRequest(
+        requestId,
+        body,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-OT-204', 'Overtime request rejected'));
   }
 
@@ -881,7 +1019,12 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .deleteOvertimeRequest(requestId, scope.companyId, authorization, tenantId)
+      .deleteOvertimeRequest(
+        requestId,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-OT-205', 'Overtime request deleted'));
   }
 
@@ -894,7 +1037,10 @@ export class AttendanceController {
     @Query() query: ListAttendanceRequestsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attendanceRequestsService
       .listBusinessTripRequests(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-BT-200', 'Business trip requests listed'));
@@ -924,7 +1070,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .approveBusinessTripRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
+      .approveBusinessTripRequest(
+        requestId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-BT-203', 'Business trip request approved'));
   }
 
@@ -940,7 +1092,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .rejectBusinessTripRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
+      .rejectBusinessTripRequest(
+        requestId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-BT-204', 'Business trip request rejected'));
   }
 
@@ -955,7 +1113,12 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .deleteBusinessTripRequest(requestId, companyId ?? 'main', authorization, tenantId)
+      .deleteBusinessTripRequest(
+        requestId,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-BT-205', 'Business trip request deleted'));
   }
 
@@ -968,7 +1131,10 @@ export class AttendanceController {
     @Query() query: ListAttendanceRequestsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attendanceRequestsService
       .listLateEarlyRequests(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-LE-REQ-200', 'Late/early requests listed'));
@@ -998,8 +1164,16 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .approveLateEarlyRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
-      .then((data) => ok(data, 'HRM-LE-REQ-203', 'Late/early request approved'));
+      .approveLateEarlyRequest(
+        requestId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-LE-REQ-203', 'Late/early request approved'),
+      );
   }
 
   @Post('late-early-requests/:requestId/reject')
@@ -1014,8 +1188,16 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .rejectLateEarlyRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
-      .then((data) => ok(data, 'HRM-LE-REQ-204', 'Late/early request rejected'));
+      .rejectLateEarlyRequest(
+        requestId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-LE-REQ-204', 'Late/early request rejected'),
+      );
   }
 
   @Delete('late-early-requests/:requestId')
@@ -1029,7 +1211,12 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .deleteLateEarlyRequest(requestId, companyId ?? 'main', authorization, tenantId)
+      .deleteLateEarlyRequest(
+        requestId,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-LE-REQ-205', 'Late/early request deleted'));
   }
 
@@ -1042,7 +1229,10 @@ export class AttendanceController {
     @Query() query: ListAttendanceRequestsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attendanceRequestsService
       .listShiftChangeRequests(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-SC-200', 'Shift change requests listed'));
@@ -1072,7 +1262,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .approveShiftChangeRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
+      .approveShiftChangeRequest(
+        requestId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-SC-203', 'Shift change request approved'));
   }
 
@@ -1088,7 +1284,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .rejectShiftChangeRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
+      .rejectShiftChangeRequest(
+        requestId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-SC-204', 'Shift change request rejected'));
   }
 
@@ -1123,7 +1325,9 @@ export class AttendanceController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceConfig
       .patchRules(companyId, body, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-RULES-200', 'Attendance rules updated'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-RULES-200', 'Attendance rules updated'),
+      );
   }
 
   /**
@@ -1142,7 +1346,9 @@ export class AttendanceController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceConfig
       .patchLatePenalty(companyId, body, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-RULES-200', 'Late-penalty rules updated'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-RULES-200', 'Late-penalty rules updated'),
+      );
   }
 
   @Get('leave-types/effective')
@@ -1153,10 +1359,15 @@ export class AttendanceController {
     @Query() query: ListEffectiveAttLeaveTypesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attLeaveTypeService
       .listEffective(query, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-ATT-LVT-200', 'Effective leave types listed'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-LVT-200', 'Effective leave types listed'),
+      );
   }
 
   /** F-ATT-LVRULE-04 — resolve before :policyId route. */
@@ -1168,11 +1379,18 @@ export class AttendanceController {
     @Query() query: ResolveEffectiveAttLeaveAccrualPolicyQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attLeaveAccrualPolicyService
       .resolveEffective(query, authorization, tenantId)
       .then((data) =>
-        ok(data, 'HRM-ATT-LVRULE-200', 'Effective leave accrual policy resolved'),
+        ok(
+          data,
+          'HRM-ATT-LVRULE-200',
+          'Effective leave accrual policy resolved',
+        ),
       );
   }
 
@@ -1185,10 +1403,15 @@ export class AttendanceController {
     @Query() query: ListAttLeaveAccrualPoliciesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attLeaveAccrualPolicyService
       .listPolicies(query, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-LVRULE-200', 'Leave accrual policies listed'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-LVRULE-200', 'Leave accrual policies listed'),
+      );
   }
 
   /** F-ATT-LVRULE-02 admin CREATE open N+1. */
@@ -1253,10 +1476,15 @@ export class AttendanceController {
     @Query() query: GetAttLeaveAccrualPolicyQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attLeaveAccrualPolicyService
       .getPolicyById(policyId, query.company_id, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-LVRULE-200', 'Leave accrual policy loaded'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-LVRULE-200', 'Leave accrual policy loaded'),
+      );
   }
 
   /** F-ATT-LVRULE-03 PATCH. */
@@ -1304,10 +1532,15 @@ export class AttendanceController {
     @Query() query: ListEffectiveAttAttendanceCodesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attAttendanceCodeService
       .listEffective(query, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-ATT-CODE-200', 'Effective attendance codes listed'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-CODE-200', 'Effective attendance codes listed'),
+      );
   }
 
   @Get('attendance-codes')
@@ -1318,7 +1551,10 @@ export class AttendanceController {
     @Query() query: ListAttAttendanceCodesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attAttendanceCodeService
       .listAttendanceCodes(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-ATT-CODE-200', 'Attendance codes listed'));
@@ -1361,7 +1597,10 @@ export class AttendanceController {
     @Query() query: GetAttAttendanceCodeQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attAttendanceCodeService
       .getAttendanceCodeById(codeId, query.company_id, authorization, tenantId)
       .then((data) => ok(data, 'HRM-ATT-CODE-200', 'Attendance code loaded'));
@@ -1406,7 +1645,10 @@ export class AttendanceController {
     @Query() query: ListAttLeaveTypesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attLeaveTypeService
       .listLeaveTypes(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-ATT-LVT-200', 'Leave types listed'));
@@ -1449,7 +1691,10 @@ export class AttendanceController {
     @Query() query: GetAttLeaveTypeQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attLeaveTypeService
       .getLeaveTypeById(leaveTypeId, query.company_id, authorization, tenantId)
       .then((data) => ok(data, 'HRM-ATT-LVT-200', 'Leave type loaded'));
@@ -1495,7 +1740,10 @@ export class AttendanceController {
     @Query() query: ListEffectiveAttOtTypesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attOtTypeService
       .listEffective(query, authorization, { tenantId })
       .then((data) => ok(data, 'HRM-ATT-OT-200', 'Effective OT types listed'));
@@ -1510,7 +1758,10 @@ export class AttendanceController {
     @Query() query: ListAttOtTypesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attOtTypeService
       .listOtTypes(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-ATT-OT-200', 'OT types listed'));
@@ -1554,7 +1805,10 @@ export class AttendanceController {
     @Query() query: GetAttOtTypeQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attOtTypeService
       .getOtTypeById(otTypeId, query.company_id, authorization, tenantId)
       .then((data) => ok(data, 'HRM-ATT-OT-200', 'OT type loaded'));
@@ -1626,10 +1880,15 @@ export class AttendanceController {
     @Query() query: GetOtCompLeavePolicyQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attOtCompLeavePolicyService
       .getPolicy(query.company_id ?? headerCompanyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-OT-COMP-POLICY-200', 'OT comp leave policy read'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-OT-COMP-POLICY-200', 'OT comp leave policy read'),
+      );
   }
 
   @Put('ot-comp-leave-policy')
@@ -1648,7 +1907,9 @@ export class AttendanceController {
     const payload = { ...body, company_id: body.company_id ?? scope.companyId };
     return this.attOtCompLeavePolicyService
       .putPolicy(payload, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-OT-COMP-POLICY-200', 'OT comp leave policy saved'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-OT-COMP-POLICY-200', 'OT comp leave policy saved'),
+      );
   }
 
   // ── F-ATT-SICK-POLICY-ORDER — sick fund sequence (FR-UC-BP-ATT-07) ──
@@ -1662,10 +1923,19 @@ export class AttendanceController {
     @Query() query: GetSickLeaveFundOrderQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.attSickLeaveFundOrderService
-      .getFundOrder(query.company_id ?? headerCompanyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-SICK-FUND-ORDER-200', 'Sick leave fund order read'));
+      .getFundOrder(
+        query.company_id ?? headerCompanyId,
+        authorization,
+        tenantId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-ATT-SICK-FUND-ORDER-200', 'Sick leave fund order read'),
+      );
   }
 
   @Put('sick-leave-fund-order')
@@ -1684,7 +1954,9 @@ export class AttendanceController {
     const payload = { ...body, company_id: body.company_id ?? scope.companyId };
     return this.attSickLeaveFundOrderService
       .putFundOrder(payload, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-SICK-FUND-ORDER-200', 'Sick leave fund order saved'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-SICK-FUND-ORDER-200', 'Sick leave fund order saved'),
+      );
   }
 
   // ── F-ATT-CAT-OTC — OT compensation-type open catalog (orthogonal vs ot-types) ──
@@ -1698,10 +1970,15 @@ export class AttendanceController {
     @Query() query: ListEffectiveAttOtCompTypesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attOtCompTypeService
       .listEffective(query, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-ATT-OTC-200', 'Effective OT compensation types listed'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-OTC-200', 'Effective OT compensation types listed'),
+      );
   }
 
   /** F-ATT-CAT-OTC-01 list — default active; include_inactive audit. */
@@ -1713,10 +1990,15 @@ export class AttendanceController {
     @Query() query: ListAttOtCompTypesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attOtCompTypeService
       .listOtCompTypes(query, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-OTC-200', 'OT compensation types listed'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-OTC-200', 'OT compensation types listed'),
+      );
   }
 
   /** F-ATT-CAT-OTC-02 admin CREATE open N+1. */
@@ -1731,7 +2013,9 @@ export class AttendanceController {
     resolveScopeContext(authorization, { tenantId, companyId: body.companyId });
     return this.attOtCompTypeService
       .upsertOtCompType(body, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-OTC-201', 'OT compensation type created'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-OTC-201', 'OT compensation type created'),
+      );
   }
 
   @Put('ot-comp-types')
@@ -1745,7 +2029,9 @@ export class AttendanceController {
     resolveScopeContext(authorization, { tenantId, companyId: body.companyId });
     return this.attOtCompTypeService
       .upsertOtCompType(body, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-OTC-200', 'OT compensation type upserted'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-OTC-200', 'OT compensation type upserted'),
+      );
   }
 
   @Get('ot-comp-types/:compTypeId')
@@ -1757,10 +2043,15 @@ export class AttendanceController {
     @Query() query: GetAttOtCompTypeQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.attOtCompTypeService
       .getOtCompTypeById(compTypeId, query.company_id, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-OTC-200', 'OT compensation type loaded'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-OTC-200', 'OT compensation type loaded'),
+      );
   }
 
   @Patch('ot-comp-types/:compTypeId')
@@ -1776,7 +2067,9 @@ export class AttendanceController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attOtCompTypeService
       .patchOtCompType(compTypeId, companyId, body, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-OTC-200', 'OT compensation type updated'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-OTC-200', 'OT compensation type updated'),
+      );
   }
 
   @Post('ot-comp-types/:compTypeId/retire')
@@ -1791,7 +2084,9 @@ export class AttendanceController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attOtCompTypeService
       .retireOtCompType(compTypeId, companyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-OTC-200', 'OT compensation type retired'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-OTC-200', 'OT compensation type retired'),
+      );
   }
 
   /** Soft-delete alias — FORBIDDEN hard delete (VAL-ATT-COMP-CAT-05). */
@@ -1806,7 +2101,10 @@ export class AttendanceController {
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
-    if (String(hard ?? '').toLowerCase() === 'true' || String(hard ?? '') === '1') {
+    if (
+      String(hard ?? '').toLowerCase() === 'true' ||
+      String(hard ?? '') === '1'
+    ) {
       throw new ApiException(
         'HRM-ATT-OTC-405',
         'Hard delete forbidden — use soft-retire (BR-PLT-04)',
@@ -1815,7 +2113,9 @@ export class AttendanceController {
     }
     return this.attOtCompTypeService
       .retireOtCompType(compTypeId, companyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ATT-OTC-200', 'OT compensation type soft-retired'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-OTC-200', 'OT compensation type soft-retired'),
+      );
   }
 
   @Get('work-sites')
@@ -1829,9 +2129,13 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     const include =
-      includeInactive === 'true' || includeInactive === '1' || includeInactive === 'yes';
+      includeInactive === 'true' ||
+      includeInactive === '1' ||
+      includeInactive === 'yes';
     return this.attendanceConfig
-      .listWorkSites(companyId, authorization, tenantId, { includeInactive: include })
+      .listWorkSites(companyId, authorization, tenantId, {
+        includeInactive: include,
+      })
       .then((data) => ok(data, 'HRM-ATT-SITE-200', 'Work sites listed'));
   }
 
@@ -1843,7 +2147,10 @@ export class AttendanceController {
     @Body() body: CreateWorkSiteDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.attendanceConfig
       .createWorkSite(body, authorization, tenantId)
       .then((data) => ok(data, 'HRM-ATT-SITE-201', 'Work site created'));
@@ -1878,7 +2185,9 @@ export class AttendanceController {
     resolveScopeContext(authorization, { tenantId, companyId });
     const hardDelete = hard === 'true' || hard === '1' || hard === 'yes';
     return this.attendanceConfig
-      .deleteWorkSite(siteId, companyId, authorization, tenantId, { hard: hardDelete })
+      .deleteWorkSite(siteId, companyId, authorization, tenantId, {
+        hard: hardDelete,
+      })
       .then((data) =>
         ok(
           data,
@@ -1899,7 +2208,9 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     const include =
-      includeInactive === 'true' || includeInactive === '1' || includeInactive === 'yes';
+      includeInactive === 'true' ||
+      includeInactive === '1' ||
+      includeInactive === 'yes';
     return this.attendanceCatalog
       .listWorkShifts(companyId, authorization, { includeInactive: include })
       .then((data) => ok(data, 'HRM-WS-200', 'Work shifts listed'));
@@ -2016,10 +2327,12 @@ export class AttendanceController {
     @Body() body: CreateAttendanceSheetDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    return this.attendanceCatalog
-      .createAttendanceSheet(body, authorization)
-      // Thành công: Diễn biến #8 — dòng bảng mới ngay (F5 = #11).
-      .then((data) => ok(data, 'HRM-AS-201', 'Attendance sheet created'));
+    return (
+      this.attendanceCatalog
+        .createAttendanceSheet(body, authorization)
+        // Thành công: Diễn biến #8 — dòng bảng mới ngay (F5 = #11).
+        .then((data) => ok(data, 'HRM-AS-201', 'Attendance sheet created'))
+    );
   }
 
   @Patch('attendance-sheets/:sheetId')
@@ -2033,7 +2346,10 @@ export class AttendanceController {
     @Body() body: UpdateAttendanceSheetDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.attendanceCatalog
       .updateAttendanceSheet(sheetId, body, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-AS-200', 'Attendance sheet updated'));
@@ -2049,7 +2365,10 @@ export class AttendanceController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.attendanceCatalog
       .deleteAttendanceSheet(sheetId, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-AS-200', 'Attendance sheet deleted'));
@@ -2066,7 +2385,10 @@ export class AttendanceController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.attendanceSheetSign
       .getAttendanceSheetById(sheetId, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-AS-200', 'Attendance sheet loaded'));
@@ -2083,10 +2405,15 @@ export class AttendanceController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.attendanceSheetSign
       .listSignatures(sheetId, scope.companyId, authorization)
-      .then((data) => ok(data, 'HRM-ATT-SIGN-200', 'Attendance sheet signatures listed'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-SIGN-200', 'Attendance sheet signatures listed'),
+      );
   }
 
   /** F-ATT-SHEET-AGG-01 · FR-UC-BP-ATT-10 — tổng hợp dòng giờ (att_timesheet_line). */
@@ -2100,7 +2427,10 @@ export class AttendanceController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.attendanceSheetSign
       .aggregateAttendanceSheet(sheetId, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-AS-200', 'Attendance sheet aggregated'));
@@ -2117,10 +2447,15 @@ export class AttendanceController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.attendanceSheetSign
       .submitAttendanceSheetForSign(sheetId, scope.companyId, authorization)
-      .then((data) => ok(data, 'HRM-AS-200', 'Attendance sheet submitted for sign-off'));
+      .then((data) =>
+        ok(data, 'HRM-AS-200', 'Attendance sheet submitted for sign-off'),
+      );
   }
 
   /** F-ATT-WF-SIGN-01 */
@@ -2135,10 +2470,15 @@ export class AttendanceController {
     @Body() body: CreateAttendanceSheetSignatureDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.attendanceSheetSign
       .createSignature(sheetId, body, scope.companyId, authorization)
-      .then((data) => ok(data, 'HRM-ATT-SIGN-201', 'Attendance sheet signature recorded'));
+      .then((data) =>
+        ok(data, 'HRM-ATT-SIGN-201', 'Attendance sheet signature recorded'),
+      );
   }
 
   /** F-ATT-SHEET-02 */
@@ -2152,7 +2492,10 @@ export class AttendanceController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.attendanceSheetSign
       .closeAttendanceSheet(sheetId, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-AS-200', 'Attendance sheet closed'));
@@ -2170,7 +2513,10 @@ export class AttendanceController {
     @Body() body: ReopenAttendanceSheetDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.attendanceSheetSign
       .reopenAttendanceSheet(sheetId, body, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-AS-200', 'Attendance sheet reopened'));
@@ -2187,7 +2533,12 @@ export class AttendanceController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.attendanceRequestsService
-      .deleteShiftChangeRequest(requestId, companyId ?? 'main', authorization, tenantId)
+      .deleteShiftChangeRequest(
+        requestId,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-SC-205', 'Shift change request deleted'));
   }
 }

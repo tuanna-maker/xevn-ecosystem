@@ -21,7 +21,10 @@
  * Why: start:dev blocked → stale :28001 without submit/sign routes
  * must_keep: HRM-AS-404/409 codes; parity chain unchanged
  */
-import { assertResourceInHrmScope, resolveHrmListScope } from '../common/hrm-list-scope';
+import {
+  assertResourceInHrmScope,
+  resolveHrmListScope,
+} from '../common/hrm-list-scope';
 
 export type AttendanceSheetHeaderRow = {
   id: string;
@@ -47,7 +50,7 @@ export function assertAttendanceSheetHeaderInScope(
     row === null || row === undefined
       ? row
       : typeof row === 'object'
-        ? (row as AttendanceSheetScopeResource)
+        ? row
         : undefined;
   assertResourceInHrmScope(resource, scope, {
     notFoundCode: 'HRM-AS-404',

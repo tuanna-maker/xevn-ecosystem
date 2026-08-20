@@ -35,7 +35,10 @@ describe('P1-PHASE1-BE-CRUD-RD-PARITY-01 scope_parity', () => {
       });
       const requisitionId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.job_requisitions') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.job_requisitions') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -77,7 +80,10 @@ describe('P1-PHASE1-BE-CRUD-RD-PARITY-01 scope_parity', () => {
         roleCode: 'group_ceo',
       });
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.job_requisitions') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.job_requisitions') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [] } as never;
         }
         return { rows: [] } as never;
@@ -107,7 +113,9 @@ describe('P1-PHASE1-BE-CRUD-RD-PARITY-01 scope_parity', () => {
         db,
         { fanoutCheckIn: jest.fn() } as unknown as AttendanceEventFanoutService,
         // ensureSchema() delegates work-site DDL to AttendanceConfigService — DI-only stub.
-        { ensureWorkSitesSchema: jest.fn() } as unknown as AttendanceConfigService,
+        {
+          ensureWorkSitesSchema: jest.fn(),
+        } as unknown as AttendanceConfigService,
       );
     });
 
@@ -120,7 +128,10 @@ describe('P1-PHASE1-BE-CRUD-RD-PARITY-01 scope_parity', () => {
       });
       const recordId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.attendance_records') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.attendance_records') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -152,7 +163,9 @@ describe('P1-PHASE1-BE-CRUD-RD-PARITY-01 scope_parity', () => {
       expect(result.id).toBe(recordId);
       const getSql =
         db.query.mock.calls.find(
-          (c) => String(c[0]).includes('FROM public.attendance_records') && String(c[0]).includes('LIMIT 1'),
+          (c) =>
+            String(c[0]).includes('FROM public.attendance_records') &&
+            String(c[0]).includes('LIMIT 1'),
         )?.[0] ?? '';
       expect(String(getSql)).toContain('employee_id IN');
     });
@@ -165,7 +178,10 @@ describe('P1-PHASE1-BE-CRUD-RD-PARITY-01 scope_parity', () => {
         roleCode: 'group_ceo',
       });
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.attendance_records') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.attendance_records') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [] } as never;
         }
         return { rows: [] } as never;

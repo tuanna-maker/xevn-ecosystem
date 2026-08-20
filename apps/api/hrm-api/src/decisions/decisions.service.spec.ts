@@ -35,7 +35,10 @@ describe('DecisionsService', () => {
       return { rows: [] } as never;
     });
 
-    await service.listDecisions({ company_id: 'main', page_size: '20', page: '1' }, `Bearer ${token}`);
+    await service.listDecisions(
+      { company_id: 'main', page_size: '20', page: '1' },
+      `Bearer ${token}`,
+    );
 
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('company_id = ANY'),
@@ -86,7 +89,10 @@ describe('DecisionsService', () => {
     });
     const decisionId = 'dec-holding-1';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.hr_decisions WHERE') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.hr_decisions WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
         return {
           rows: [
             {
@@ -118,7 +124,11 @@ describe('DecisionsService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.getDecisionById(decisionId, 'main', `Bearer ${token}`);
+    const result = await service.getDecisionById(
+      decisionId,
+      'main',
+      `Bearer ${token}`,
+    );
 
     expect(result.id).toBe(decisionId);
     expect(db.query).toHaveBeenCalledWith(
@@ -135,7 +145,10 @@ describe('DecisionsService', () => {
       roleCode: 'subsidiary_ceo',
     });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.hr_decisions WHERE') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.hr_decisions WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [] } as never;
       }
       return { rows: [] } as never;
@@ -154,7 +167,10 @@ describe('DecisionsService', () => {
       roleCode: 'group_ceo',
     });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.hr_decisions WHERE') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.hr_decisions WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
         return {
           rows: [
             {
@@ -187,7 +203,11 @@ describe('DecisionsService', () => {
     });
 
     await expect(
-      service.updateDecision('dec-1', { company_id: 'main', title: 'x' }, `Bearer ${token}`),
+      service.updateDecision(
+        'dec-1',
+        { company_id: 'main', title: 'x' },
+        `Bearer ${token}`,
+      ),
     ).rejects.toMatchObject({ code: 'HRM-DEC-409' });
   });
 
@@ -222,22 +242,38 @@ describe('DecisionsService', () => {
       updated_at: '2026-01-01',
     };
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.hr_decisions WHERE') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.hr_decisions WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [decisionRow] } as never;
       }
-      if (sql.includes('UPDATE public.hr_decisions') && sql.includes('file_url')) {
+      if (
+        sql.includes('UPDATE public.hr_decisions') &&
+        sql.includes('file_url')
+      ) {
         return {
-          rows: [{ ...decisionRow, file_url: '/api/hrm/decisions/files/dec-1-test.pdf' }],
+          rows: [
+            {
+              ...decisionRow,
+              file_url: '/api/hrm/decisions/files/dec-1-test.pdf',
+            },
+          ],
         } as never;
       }
       return { rows: [] } as never;
     });
 
-    const out = await service.saveDecisionFile('dec-1', 'main', `Bearer ${token}`, {
-      buffer: Buffer.from('pdf'),
-      originalname: 'scan.pdf',
-      mimetype: 'application/pdf',
-    });
+    const out = await service.saveDecisionFile(
+      'dec-1',
+      'main',
+      `Bearer ${token}`,
+      {
+        buffer: Buffer.from('pdf'),
+        originalname: 'scan.pdf',
+        mimetype: 'application/pdf',
+      },
+    );
 
     expect(mkdir).toHaveBeenCalled();
     expect(writeFile).toHaveBeenCalled();

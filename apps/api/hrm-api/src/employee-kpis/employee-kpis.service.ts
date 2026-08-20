@@ -1,7 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
-import { pushCompanyIdFilter, resolveHrmListScope, resolveHrmPersistCompanyIdText } from '../common/hrm-list-scope';
+import {
+  pushCompanyIdFilter,
+  resolveHrmListScope,
+  resolveHrmPersistCompanyIdText,
+} from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import { CreateEmployeeKpiDto } from './dto/create-employee-kpi.dto';
 import { ListEmployeeKpisQueryDto } from './dto/list-employee-kpis.query.dto';
@@ -53,7 +57,10 @@ export class EmployeeKpisService {
 
   async create(payload: CreateEmployeeKpiDto, authorization?: string) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const id = randomUUID();
     const res = await this.db.query(
       `INSERT INTO public.employee_kpis (
@@ -92,7 +99,11 @@ export class EmployeeKpisService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-KPI-404', 'Employee KPI not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-KPI-404',
+        'Employee KPI not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id };
   }

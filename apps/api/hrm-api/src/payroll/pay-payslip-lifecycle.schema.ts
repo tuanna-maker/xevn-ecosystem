@@ -1,7 +1,9 @@
 import type { HrmDbService } from '../db/hrm-db.service';
 
 /** DATA-01 §6.1–6.3 — PAY-08 lifecycle cols + TT audit (ensureSchema ADD). */
-export async function ensurePayPayslipLifecycleSchema(db: HrmDbService): Promise<void> {
+export async function ensurePayPayslipLifecycleSchema(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     ALTER TABLE public.payroll_periods
       ADD COLUMN IF NOT EXISTS payroll_locked BOOLEAN NOT NULL DEFAULT false;

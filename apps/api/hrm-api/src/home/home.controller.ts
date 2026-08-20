@@ -13,7 +13,11 @@ export class HomeController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized home access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized home access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -36,7 +40,11 @@ export class HomeController {
     );
     resolveScopeContext(authorization, { tenantId, companyId: scopeCompanyId });
     return this.homeService
-      .getSummary({ ...query, company_id: scopeCompanyId }, authorization, tenantId)
+      .getSummary(
+        { ...query, company_id: scopeCompanyId },
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-HOME-200', 'Home summary loaded'));
   }
 }

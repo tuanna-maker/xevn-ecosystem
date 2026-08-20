@@ -50,16 +50,29 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-02 active_interview_id projection', 
 
   it('listCandidates embeds nested + flat active_interview_id when ACTIVE', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('CREATE TABLE') || sql.includes('ALTER TABLE') || sql.includes('DO $$')) {
+      if (
+        sql.includes('CREATE TABLE') ||
+        sql.includes('ALTER TABLE') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] } as never;
       }
-      if (sql.includes('pool_candidate_id') || sql.includes('FROM public.candidates')) {
+      if (
+        sql.includes('pool_candidate_id') ||
+        sql.includes('FROM public.candidates')
+      ) {
         return { rows: [] } as never;
       }
-      if (sql.includes('SELECT COUNT(*)') && sql.includes('recruitment_candidates')) {
+      if (
+        sql.includes('SELECT COUNT(*)') &&
+        sql.includes('recruitment_candidates')
+      ) {
         return { rows: [{ total: '1' }] } as never;
       }
-      if (sql.includes('LEFT JOIN LATERAL') && sql.includes('FROM public.recruitment_candidates')) {
+      if (
+        sql.includes('LEFT JOIN LATERAL') &&
+        sql.includes('FROM public.recruitment_candidates')
+      ) {
         return { rows: [activeCandidateRow()] } as never;
       }
       return { rows: [] } as never;
@@ -78,7 +91,11 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-02 active_interview_id projection', 
 
   it('getCandidateById embeds nested + flat active_interview_id (list/get parity)', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('CREATE TABLE') || sql.includes('ALTER TABLE') || sql.includes('DO $$')) {
+      if (
+        sql.includes('CREATE TABLE') ||
+        sql.includes('ALTER TABLE') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] } as never;
       }
       if (
@@ -107,10 +124,16 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-02 active_interview_id projection', 
 
   it('inactive candidate projection clears active_interview_id', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('SELECT COUNT(*)') && sql.includes('recruitment_candidates')) {
+      if (
+        sql.includes('SELECT COUNT(*)') &&
+        sql.includes('recruitment_candidates')
+      ) {
         return { rows: [{ total: '1' }] } as never;
       }
-      if (sql.includes('LEFT JOIN LATERAL') && sql.includes('FROM public.recruitment_candidates')) {
+      if (
+        sql.includes('LEFT JOIN LATERAL') &&
+        sql.includes('FROM public.recruitment_candidates')
+      ) {
         return {
           rows: [
             {

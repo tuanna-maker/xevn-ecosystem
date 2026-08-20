@@ -25,7 +25,9 @@ function ceoAuth(): string {
   })}`;
 }
 
-function ddlAwareQuery(extra?: (sql: string, params?: unknown[]) => { rows: unknown[] } | null) {
+function ddlAwareQuery(
+  extra?: (sql: string, params?: unknown[]) => { rows: unknown[] } | null,
+) {
   return jest.fn().mockImplementation((sql: string, params?: unknown[]) => {
     const s = String(sql);
     if (
@@ -78,9 +80,9 @@ describe('D-BE-ERP-E2-01 PayrollCatalogService pay_types + unique', () => {
   it('create invents nature → HRM-PAY-TYPE-KEY via pay_types assert', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
-        new ApiException(HRM_PAY_TYPE_KEY, 'invent', 400),
-      ),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockRejectedValue(new ApiException(HRM_PAY_TYPE_KEY, 'invent', 400)),
     };
     const svc = new PayrollCatalogService(db as never, catalogs as never);
     await expect(
@@ -182,7 +184,10 @@ describe('D-BE-ERP-E2-01 PayrollCatalogService pay_types + unique', () => {
   it('update invents component_type → HRM-PAY-TYPE-KEY', async () => {
     const db = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('FROM public.salary_components') && sql.includes('WHERE id')) {
+        if (
+          sql.includes('FROM public.salary_components') &&
+          sql.includes('WHERE id')
+        ) {
           return {
             rows: [
               {
@@ -202,9 +207,9 @@ describe('D-BE-ERP-E2-01 PayrollCatalogService pay_types + unique', () => {
       onModuleDestroy: jest.fn(),
     };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
-        new ApiException(HRM_PAY_TYPE_KEY, 'invent', 400),
-      ),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockRejectedValue(new ApiException(HRM_PAY_TYPE_KEY, 'invent', 400)),
     };
     const svc = new PayrollCatalogService(db as never, catalogs as never);
     await expect(
@@ -222,15 +227,19 @@ describe('D-BE-ERP-E2-01 ContractsInsuranceService contract_types', () => {
   it('create invents contract_type → HRM-CON-TYPE-KEY', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { catalogKey: string; errorCode: string }) => {
-        if (opts.catalogKey === 'contract_types') {
-          throw new ApiException(HRM_CON_TYPE_KEY, 'invent', 400);
-        }
-        return { code: 'NV_KD', label: 'NV', status: 'active' };
-      }),
-      getEffectiveItemsForKey: jest.fn().mockResolvedValue([
-        { code: 'NV_KD', label: 'NV', status: 'active' },
-      ]),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockImplementation(
+          async (opts: { catalogKey: string; errorCode: string }) => {
+            if (opts.catalogKey === 'contract_types') {
+              throw new ApiException(HRM_CON_TYPE_KEY, 'invent', 400);
+            }
+            return { code: 'NV_KD', label: 'NV', status: 'active' };
+          },
+        ),
+      getEffectiveItemsForKey: jest
+        .fn()
+        .mockResolvedValue([{ code: 'NV_KD', label: 'NV', status: 'active' }]),
     };
     const svc = new ContractsInsuranceService(db as never, catalogs as never);
     await expect(
@@ -274,14 +283,18 @@ describe('D-BE-ERP-E2-01 ContractsInsuranceService contract_types', () => {
       onModuleDestroy: jest.fn(),
     };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { code: string; catalogKey: string }) => ({
-        code: opts.code,
-        label: opts.code,
-        status: 'active',
-      })),
-      getEffectiveItemsForKey: jest.fn().mockResolvedValue([
-        { code: 'NV_KD', label: 'NV', status: 'active' },
-      ]),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockImplementation(
+          async (opts: { code: string; catalogKey: string }) => ({
+            code: opts.code,
+            label: opts.code,
+            status: 'active',
+          }),
+        ),
+      getEffectiveItemsForKey: jest
+        .fn()
+        .mockResolvedValue([{ code: 'NV_KD', label: 'NV', status: 'active' }]),
     };
     const svc = new ContractsInsuranceService(db as never, catalogs as never);
     await svc.createContract(
@@ -295,17 +308,26 @@ describe('D-BE-ERP-E2-01 ContractsInsuranceService contract_types', () => {
       ceoAuth(),
     );
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
-      expect.objectContaining({ catalogKey: 'contract_types', errorCode: HRM_CON_TYPE_KEY }),
+      expect.objectContaining({
+        catalogKey: 'contract_types',
+        errorCode: HRM_CON_TYPE_KEY,
+      }),
     );
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
-      expect.objectContaining({ catalogKey: 'job_titles', errorCode: HRM_CON_POS_KEY }),
+      expect.objectContaining({
+        catalogKey: 'job_titles',
+        errorCode: HRM_CON_POS_KEY,
+      }),
     );
   });
 
   it('update invents contract_type → HRM-CON-TYPE-KEY', async () => {
     const db = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('FROM public.employee_contracts') && sql.includes('WHERE id')) {
+        if (
+          sql.includes('FROM public.employee_contracts') &&
+          sql.includes('WHERE id')
+        ) {
           return { rows: [{ id: 'con-1', company_id: 'holding' }] };
         }
         return null;
@@ -313,13 +335,18 @@ describe('D-BE-ERP-E2-01 ContractsInsuranceService contract_types', () => {
       onModuleDestroy: jest.fn(),
     };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
-        new ApiException(HRM_CON_TYPE_KEY, 'invent', 400),
-      ),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockRejectedValue(new ApiException(HRM_CON_TYPE_KEY, 'invent', 400)),
     };
     const svc = new ContractsInsuranceService(db as never, catalogs as never);
     await expect(
-      svc.updateContract('con-1', { contract_type: 'INVENT' }, 'holding', ceoAuth()),
+      svc.updateContract(
+        'con-1',
+        { contract_type: 'INVENT' },
+        'holding',
+        ceoAuth(),
+      ),
     ).rejects.toMatchObject<ApiException>({ code: HRM_CON_TYPE_KEY });
   });
 });
@@ -330,7 +357,10 @@ describe('D-BE-ERP-E2-01 non-goals', () => {
     const fs = require('node:fs') as typeof import('node:fs');
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const path = require('node:path') as typeof import('node:path');
-    const ctrl = fs.readFileSync(path.join(__dirname, 'payroll', 'payroll.controller.ts'), 'utf8');
+    const ctrl = fs.readFileSync(
+      path.join(__dirname, 'payroll', 'payroll.controller.ts'),
+      'utf8',
+    );
     expect(ctrl).not.toMatch(/tax-settlement|tax_settlements|TaxSettlement/);
   });
 });

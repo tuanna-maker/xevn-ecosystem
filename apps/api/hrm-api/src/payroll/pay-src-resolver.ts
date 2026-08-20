@@ -47,7 +47,11 @@ import { resolveEffectiveCompensationPackage } from './pay-formula-variable-bag'
 import type { SheetTemplateSnapshotColumn } from './pay-sheet-template.service';
 
 /** Audit tier on payslip line — BR-AMIS-PAY-SRC storage map (DATA §4). */
-export type PaySrcTier = 'emp_cb' | 'period_input' | 'template_override' | 'formula_default';
+export type PaySrcTier =
+  | 'emp_cb'
+  | 'period_input'
+  | 'template_override'
+  | 'formula_default';
 
 const PAY_SRC_TIERS: readonly PaySrcTier[] = [
   'emp_cb',
@@ -64,15 +68,21 @@ export function resolvePayslipLineSourceTier(
   stored: string | null | undefined,
   sourceRef: string | null | undefined,
 ): PaySrcTier | null {
-  const tier = String(stored ?? '').trim().toLowerCase();
+  const tier = String(stored ?? '')
+    .trim()
+    .toLowerCase();
   if ((PAY_SRC_TIERS as readonly string[]).includes(tier)) {
     return tier as PaySrcTier;
   }
-  const ref = String(sourceRef ?? '').trim().toLowerCase();
+  const ref = String(sourceRef ?? '')
+    .trim()
+    .toLowerCase();
   if (!ref) return null;
   if (ref === 'emp_cb' || ref.startsWith('emp_cb:')) return 'emp_cb';
-  if (ref === 'period_input' || ref.startsWith('period_input:')) return 'period_input';
-  if (ref === 'template_override' || ref.startsWith('template_override:')) return 'template_override';
+  if (ref === 'period_input' || ref.startsWith('period_input:'))
+    return 'period_input';
+  if (ref === 'template_override' || ref.startsWith('template_override:'))
+    return 'template_override';
   if (
     ref === 'formula_default' ||
     ref.startsWith('formula_default:') ||
@@ -122,7 +132,11 @@ const BASE_COMPONENT_ALIASES = new Set([
   'lcb',
   'luong_cb',
 ]);
-const PROBATION_COMPONENT_ALIASES = new Set(['probation', 'probation_salary', 'thu_viec']);
+const PROBATION_COMPONENT_ALIASES = new Set([
+  'probation',
+  'probation_salary',
+  'thu_viec',
+]);
 
 export type EmpCbFixedAmount = {
   amount: number;
@@ -131,14 +145,21 @@ export type EmpCbFixedAmount = {
 };
 
 function normalizeComponentCode(code: string): string {
-  return code.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+  return code
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, '_');
 }
 
 /** Coerce pg Date / ISO / yyyy-MM-dd → calendar day for C&B as-of (D-PAY-SRC-01). */
-export function normalizePayrollAsOfDate(value: string | Date | null | undefined): string {
+export function normalizePayrollAsOfDate(
+  value: string | Date | null | undefined,
+): string {
   const key = toLeaveDayKey(value);
   if (key) return key;
-  return String(value ?? '').trim().slice(0, 10);
+  return String(value ?? '')
+    .trim()
+    .slice(0, 10);
 }
 
 /** Map compensation line row → catalog component_code per DATA-01 §4.2. */
@@ -162,11 +183,17 @@ export function resolveLineComponentCode(row: {
 }
 
 /** True when template/formula code and C&B line code refer to the same pay component. */
-export function componentCodesMatch(targetRaw: string, lineCodeRaw: string): boolean {
+export function componentCodesMatch(
+  targetRaw: string,
+  lineCodeRaw: string,
+): boolean {
   const target = normalizeComponentCode(targetRaw);
   const lineCode = normalizeComponentCode(lineCodeRaw);
   if (target === lineCode) return true;
-  if (BASE_COMPONENT_ALIASES.has(target) && BASE_COMPONENT_ALIASES.has(lineCode)) {
+  if (
+    BASE_COMPONENT_ALIASES.has(target) &&
+    BASE_COMPONENT_ALIASES.has(lineCode)
+  ) {
     return true;
   }
   if (BASE_COMPONENT_ALIASES.has(target) && lineCode === 'base') {
@@ -188,7 +215,9 @@ export function componentCodesMatch(targetRaw: string, lineCodeRaw: string): boo
  * Soft ADD column + idempotent backfill so PROCESS SRC-02 works even when
  * compensation ensureSchema has not run on this process (live packages may lack mapping).
  */
-export async function ensureCompensationComponentCodeForSrc(db: HrmDbService): Promise<void> {
+export async function ensureCompensationComponentCodeForSrc(
+  db: HrmDbService,
+): Promise<void> {
   try {
     await db.query(`
       ALTER TABLE public.employee_compensation_lines
@@ -259,7 +288,9 @@ function roundMoney(n: number): number {
 }
 
 /** Parse period sheet_template_snapshot_json → ordered column defs (AC-PAY-TPL-05 immutability). */
-export function parsePeriodSnapshotColumns(snapshot: unknown): PaySrcColumnDef[] {
+export function parsePeriodSnapshotColumns(
+  snapshot: unknown,
+): PaySrcColumnDef[] {
   if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)) {
     return [];
   }
@@ -274,7 +305,9 @@ export function parsePeriodSnapshotColumns(snapshot: unknown): PaySrcColumnDef[]
         display_label: col.display_label ?? null,
         sort_order: Number(col.sort_order ?? idx),
         formula_definition_id: col.formula_definition_id ?? null,
-        override_applied: Boolean(col.override_applied ?? col.formula_definition_id),
+        override_applied: Boolean(
+          col.override_applied ?? col.formula_definition_id,
+        ),
       };
       return def;
     })
@@ -300,7 +333,9 @@ export function aggregateSrcPayslipTotals(lines: PaySrcResolvedLine[]): {
   return { gross, deduction, net: roundMoney(gross - deduction) };
 }
 
-export async function probePeriodInputTable(db: HrmDbService): Promise<boolean> {
+export async function probePeriodInputTable(
+  db: HrmDbService,
+): Promise<boolean> {
   try {
     const res = await db.query<{ exists: boolean }>(
       `
@@ -449,7 +484,11 @@ export async function loadPeriodInputAmount(
 ): Promise<PeriodInputPackRow | null> {
   const present = await probePeriodInputTable(db);
   if (!present) return null;
-  const res = await db.query<{ id: string; amount: string; source_kind: string }>(
+  const res = await db.query<{
+    id: string;
+    amount: string;
+    source_kind: string;
+  }>(
     `
       SELECT id::text AS id, amount::text AS amount, source_kind
       FROM public.pay_period_input_lines
@@ -522,8 +561,12 @@ export async function loadSalaryComponentMeta(
   }
 }
 
-export function natureToSign(nature: string | undefined | null): PayFormulaEvalSign {
-  const n = String(nature ?? 'income').trim().toLowerCase();
+export function natureToSign(
+  nature: string | undefined | null,
+): PayFormulaEvalSign {
+  const n = String(nature ?? 'income')
+    .trim()
+    .toLowerCase();
   return n === 'deduction' ? 'deduction' : 'earning';
 }
 
@@ -567,10 +610,16 @@ export function pickSrcTierAvailable(input: {
   catalogDefaultFormulaId: string | null;
   catalogDefaultValue: number | null;
 }): PaySrcTier | 'blocked' {
-  if (input.empCbAmount != null && Number.isFinite(input.empCbAmount)) return 'emp_cb';
-  if (input.periodInputAmount != null && Number.isFinite(input.periodInputAmount)) return 'period_input';
+  if (input.empCbAmount != null && Number.isFinite(input.empCbAmount))
+    return 'emp_cb';
+  if (
+    input.periodInputAmount != null &&
+    Number.isFinite(input.periodInputAmount)
+  )
+    return 'period_input';
   if (input.templateOverrideFormulaId) return 'template_override';
   if (input.catalogDefaultFormulaId) return 'formula_default';
-  if (input.catalogDefaultValue != null && input.catalogDefaultValue > 0) return 'formula_default';
+  if (input.catalogDefaultValue != null && input.catalogDefaultValue > 0)
+    return 'formula_default';
   return 'blocked';
 }

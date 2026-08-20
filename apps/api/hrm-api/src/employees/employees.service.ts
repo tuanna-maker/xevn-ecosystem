@@ -236,9 +236,11 @@ export class EmployeesService implements OnModuleInit {
   constructor(
     private readonly db: HrmDbService,
     @Optional() private readonly settingsCatalogs?: SettingsCatalogsService,
-    @Optional() private readonly empEmploymentStatus?: EmpEmploymentStatusService,
+    @Optional()
+    private readonly empEmploymentStatus?: EmpEmploymentStatusService,
     @Optional() private readonly empStatusReason?: EmpStatusReasonService,
-    @Optional() private readonly empDocumentChecklist?: EmpDocumentChecklistService,
+    @Optional()
+    private readonly empDocumentChecklist?: EmpDocumentChecklistService,
     @Optional() private readonly realtime?: HrmRealtimeService,
   ) {}
 
@@ -323,8 +325,12 @@ export class EmployeesService implements OnModuleInit {
         id DESC
       );
     `);
-    await this.db.query(`DROP INDEX IF EXISTS public.idx_employees_company_archived;`);
-    await this.db.query(`DROP INDEX IF EXISTS public.idx_employees_active_created_id;`);
+    await this.db.query(
+      `DROP INDEX IF EXISTS public.idx_employees_company_archived;`,
+    );
+    await this.db.query(
+      `DROP INDEX IF EXISTS public.idx_employees_active_created_id;`,
+    );
     await this.db.query(`
       ALTER TABLE public.employees
       ADD COLUMN IF NOT EXISTS custom_fields JSONB NOT NULL DEFAULT '{}'::jsonb;
@@ -439,7 +445,14 @@ export class EmployeesService implements OnModuleInit {
     const day = Number(m[1]);
     const month = Number(m[2]);
     const year = Number(m[3]);
-    if (year < 1900 || year > 2100 || month < 1 || month > 12 || day < 1 || day > 31) {
+    if (
+      year < 1900 ||
+      year > 2100 ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > 31
+    ) {
       throw new ApiException(
         HRM_EMP_ACT_400,
         'effective_date is out of range',
@@ -560,7 +573,10 @@ export class EmployeesService implements OnModuleInit {
     const companyUuid = resolveHrmCompanyUuidForSlug(row.company_id);
     // Plane A / ĐVTV LE SoT — never Khối* (AC-EMP-COL-01/03).
     // company_slug_map sync (upgrade Khối → LE) lives in OperatingUnitsService (AC-EMP-COL-04).
-    const company_display_name = resolveCompanyDisplayNameVi(row.company_id, null);
+    const company_display_name = resolveCompanyDisplayNameVi(
+      row.company_id,
+      null,
+    );
     const statusKey = String(row.status ?? '')
       .trim()
       .replace(/-/g, '_')
@@ -570,12 +586,16 @@ export class EmployeesService implements OnModuleInit {
     const display = buildEmployeeDisplayReadyFields(row, {
       statusCatalogLabel: catalogLabel,
     });
-    const statusLabelVi = this.resolveCore07StatusLabelVi(row.status, catalogLabel);
+    const statusLabelVi = this.resolveCore07StatusLabelVi(
+      row.status,
+      catalogLabel,
+    );
     const gate = options?.activationGate;
     const activatedAt =
       options?.activatedAtDisplay === undefined
         ? null
-        : options.activatedAtDisplay === null || options.activatedAtDisplay === ''
+        : options.activatedAtDisplay === null ||
+            options.activatedAtDisplay === ''
           ? '—'
           : options.activatedAtDisplay;
     return {
@@ -603,7 +623,7 @@ export class EmployeesService implements OnModuleInit {
       created_at: row.created_at,
       updated_at: row.updated_at,
       checklist_complete: gate?.checklist_complete ?? null,
-      blocking_items: (gate?.blocking_items ?? null) as EmpActivationBlockingItem[] | null,
+      blocking_items: gate?.blocking_items ?? null,
       can_activate: gate?.can_activate ?? null,
       activated_at: activatedAt,
       ...(options?.events ? { events: options.events } : {}),
@@ -656,12 +676,14 @@ export class EmployeesService implements OnModuleInit {
     let canonical = rawStatus.replace(/-/g, '_').toLowerCase();
     let requiresReason = false;
     if (this.empEmploymentStatus) {
-      const hit = await this.empEmploymentStatus.assertStatusInEffectiveCatalog({
-        companyId: input.companyId,
-        status: rawStatus,
-        authorization: input.authorization,
-        tenantId: input.tenantId,
-      });
+      const hit = await this.empEmploymentStatus.assertStatusInEffectiveCatalog(
+        {
+          companyId: input.companyId,
+          status: rawStatus,
+          authorization: input.authorization,
+          tenantId: input.tenantId,
+        },
+      );
       if (hit) {
         canonical = hit.statusKey;
         requiresReason = hit.requiresReason;
@@ -692,20 +714,34 @@ export class EmployeesService implements OnModuleInit {
   ) {
     // O3 — CB deny keys → 403 HRM-CORE-CB-403 (no silent strip-and-200).
     assertNoCorePublicCbDenyKeys(payload as unknown as Record<string, unknown>);
-    const scope = resolveHrmListScope(authorization, payload.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      payload.company_id,
+      scopeContext,
+    );
     // Xử lý: persist company_id theo ladder (main→holding) — khóa đơn vị Diễn biến #7/#8.
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id, scopeContext);
-    const customFields: Record<string, string> = { ...(payload.custom_fields ?? {}) };
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+      scopeContext,
+    );
+    const customFields: Record<string, string> = {
+      ...(payload.custom_fields ?? {}),
+    };
     if (scope.memberTenantId && !customFields.tenant_id?.trim()) {
       customFields.tenant_id = scope.memberTenantId;
     } else if (scope.masterTenantPartition && !customFields.tenant_id?.trim()) {
       customFields.tenant_id = MASTER_TENANT_ID;
     }
 
-    await this.assertJobTitleKeyInCatalog(companyId, payload.job_title_key, scopeContext);
+    await this.assertJobTitleKeyInCatalog(
+      companyId,
+      payload.job_title_key,
+      scopeContext,
+    );
     // F-EMP-CF-CNS-01 — invent extension codes ∈ Settings EFF when count>0 (AC-01c); empty skip (AC-01d).
     await assertEmpCustomFieldsAgainstEffectiveCatalog({
-      query: this.db.query.bind(this.db) as typeof this.db.query,
+      query: this.db.query.bind(this.db),
       companyId,
       customFields,
       authorization,
@@ -720,7 +756,10 @@ export class EmployeesService implements OnModuleInit {
       tenantId: scopeContext?.tenantId ?? MASTER_TENANT_ID,
     });
     if (payload.status_reason_key?.trim()) {
-      customFields.status_reason_key = payload.status_reason_key.trim().replace(/-/g, '_').toLowerCase();
+      customFields.status_reason_key = payload.status_reason_key
+        .trim()
+        .replace(/-/g, '_')
+        .toLowerCase();
     }
 
     const employeeId = randomUUID();
@@ -760,7 +799,11 @@ export class EmployeesService implements OnModuleInit {
           JSON.stringify(customFields),
         ],
       );
-      const labelLookup = await this.resolveStatusLabelLookup(companyId, authorization, scopeContext);
+      const labelLookup = await this.resolveStatusLabelLookup(
+        companyId,
+        authorization,
+        scopeContext,
+      );
       // Thành công: Diễn biến #7 — trả hồ sơ mới (khóa id mang sang CI/AT).
       return this.mapEmployee(res.rows[0], { statusLabelLookup: labelLookup });
     } catch (error) {
@@ -776,7 +819,8 @@ export class EmployeesService implements OnModuleInit {
       if (error instanceof ApiException) {
         throw error;
       }
-      const message = error instanceof Error ? error.message : 'Cannot create employee';
+      const message =
+        error instanceof Error ? error.message : 'Cannot create employee';
       throw new ApiException('HRM-EMP-001', message, HttpStatus.BAD_REQUEST, {
         original: error instanceof Error ? error.message : String(error),
       });
@@ -789,7 +833,11 @@ export class EmployeesService implements OnModuleInit {
     scopeContext: HrmListScopeContext | undefined,
     options?: { directoryDefaults?: boolean },
   ) {
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const filters: string[] = [];
     const values: unknown[] = [];
     pushEmployeeListScopeFilters(filters, values, scope);
@@ -799,7 +847,8 @@ export class EmployeesService implements OnModuleInit {
       filters.push('archived_at IS NULL');
     }
 
-    const status = query.status ?? (options?.directoryDefaults ? 'active' : undefined);
+    const status =
+      query.status ?? (options?.directoryDefaults ? 'active' : undefined);
     if (status) {
       filters.push(`status = $${idx}`);
       values.push(status);
@@ -808,7 +857,9 @@ export class EmployeesService implements OnModuleInit {
 
     const searchTerm = resolveDirectorySearchTerm(query.keyword, query.q);
     if (searchTerm) {
-      filters.push(`(full_name ILIKE $${idx} OR email ILIKE $${idx} OR employee_code ILIKE $${idx})`);
+      filters.push(
+        `(full_name ILIKE $${idx} OR email ILIKE $${idx} OR employee_code ILIKE $${idx})`,
+      );
       values.push(`%${searchTerm}%`);
       idx += 1;
     }
@@ -818,7 +869,10 @@ export class EmployeesService implements OnModuleInit {
 
   private async loadAttendanceTodayByEmployeeIds(employeeIds: string[]) {
     if (employeeIds.length === 0) {
-      return new Map<string, { check_in_at: string | null; status: string | null }>();
+      return new Map<
+        string,
+        { check_in_at: string | null; status: string | null }
+      >();
     }
     const today = todayIsoInHoChiMinh();
     const res = await this.db.query<{
@@ -850,9 +904,14 @@ export class EmployeesService implements OnModuleInit {
     const pageSize = query.page_size ?? 30;
     const offset = (page - 1) * pageSize;
     const includeAttendanceToday = query.include_attendance_today === true;
-    const { filters, values, idx } = this.buildEmployeeListFilters(query, authorization, scopeContext, {
-      directoryDefaults: true,
-    });
+    const { filters, values, idx } = this.buildEmployeeListFilters(
+      query,
+      authorization,
+      scopeContext,
+      {
+        directoryDefaults: true,
+      },
+    );
 
     const whereClause = filters.join(' AND ');
     // P1-HRM-SCALE-BE-W2 — single round-trip: window COUNT + page rows (ADR §5.4 COUNT strategy)
@@ -880,8 +939,13 @@ export class EmployeesService implements OnModuleInit {
     }
 
     const attendanceByEmployee = includeAttendanceToday
-      ? await this.loadAttendanceTodayByEmployeeIds(dataRes.rows.map((row) => row.id))
-      : new Map<string, { check_in_at: string | null; status: string | null }>();
+      ? await this.loadAttendanceTodayByEmployeeIds(
+          dataRes.rows.map((row) => row.id),
+        )
+      : new Map<
+          string,
+          { check_in_at: string | null; status: string | null }
+        >();
 
     let data = dataRes.rows.map((row) =>
       mapDirectoryListItem(
@@ -892,7 +956,9 @@ export class EmployeesService implements OnModuleInit {
     );
 
     if (includeAttendanceToday && query.attendance_filter) {
-      data = data.filter((item) => directoryItemPassesAttendanceFilter(item, query.attendance_filter));
+      data = data.filter((item) =>
+        directoryItemPassesAttendanceFilter(item, query.attendance_filter),
+      );
     }
 
     return {
@@ -1137,8 +1203,13 @@ export class EmployeesService implements OnModuleInit {
   ) {
     const page = query.page ?? 1;
     const pageSize = query.page_size ?? 20;
-    const cursorRaw = typeof query.cursor === 'string' ? query.cursor.trim() : '';
-    const { filters, values, idx } = this.buildEmployeeListFilters(query, authorization, scopeContext);
+    const cursorRaw =
+      typeof query.cursor === 'string' ? query.cursor.trim() : '';
+    const { filters, values, idx } = this.buildEmployeeListFilters(
+      query,
+      authorization,
+      scopeContext,
+    );
     const whereClause = filters.join(' AND ');
     const labelLookup = await this.resolveStatusLabelLookup(
       query.company_id,
@@ -1160,8 +1231,13 @@ export class EmployeesService implements OnModuleInit {
       try {
         cursor = decodeEmployeeListCursor(cursorRaw);
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'invalid cursor';
-        throw new ApiException('HRM-EMP-CURSOR-001', message, HttpStatus.BAD_REQUEST);
+        const message =
+          error instanceof Error ? error.message : 'invalid cursor';
+        throw new ApiException(
+          'HRM-EMP-CURSOR-001',
+          message,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       const fetchSize = pageSize + 1;
@@ -1189,9 +1265,12 @@ export class EmployeesService implements OnModuleInit {
 
       const hasMore = dataRes.rows.length > pageSize;
       const pageRows = hasMore ? dataRes.rows.slice(0, pageSize) : dataRes.rows;
-      const total = Number(pageRows[0]?.list_total ?? dataRes.rows[0]?.list_total ?? 0);
+      const total = Number(
+        pageRows[0]?.list_total ?? dataRes.rows[0]?.list_total ?? 0,
+      );
       const last = pageRows[pageRows.length - 1];
-      const nextCursor = hasMore && last ? encodeEmployeeListCursorFromRow(last) : null;
+      const nextCursor =
+        hasMore && last ? encodeEmployeeListCursorFromRow(last) : null;
 
       return {
         total,
@@ -1232,7 +1311,9 @@ export class EmployeesService implements OnModuleInit {
 
     const last = dataRes.rows[dataRes.rows.length - 1];
     const nextCursor =
-      dataRes.rows.length === pageSize && last && offset + dataRes.rows.length < total
+      dataRes.rows.length === pageSize &&
+      last &&
+      offset + dataRes.rows.length < total
         ? encodeEmployeeListCursorFromRow(last)
         : null;
 
@@ -1277,20 +1358,40 @@ export class EmployeesService implements OnModuleInit {
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
-    let row = await this.queryEmployeeById(employeeId, scope, query.include_archived);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
+    let row = await this.queryEmployeeById(
+      employeeId,
+      scope,
+      query.include_archived,
+    );
     if (!row && scope.masterTenantPartition) {
-      row = await this.queryEmployeeById(employeeId, scope, query.include_archived, {
-        skipTenantPartition: true,
-      });
+      row = await this.queryEmployeeById(
+        employeeId,
+        scope,
+        query.include_archived,
+        {
+          skipTenantPartition: true,
+        },
+      );
     }
     if (!row) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const includeAttendanceToday = query.include_attendance_today === true;
     const attendanceByEmployee = includeAttendanceToday
       ? await this.loadAttendanceTodayByEmployeeIds([employeeId])
-      : new Map<string, { check_in_at: string | null; status: string | null }>();
+      : new Map<
+          string,
+          { check_in_at: string | null; status: string | null }
+        >();
     return mapDirectoryDetail(
       row,
       authorization,
@@ -1310,15 +1411,32 @@ export class EmployeesService implements OnModuleInit {
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
-    let row = await this.queryEmployeeById(employeeId, scope, query.include_archived);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
+    let row = await this.queryEmployeeById(
+      employeeId,
+      scope,
+      query.include_archived,
+    );
     if (!row && scope.masterTenantPartition) {
-      row = await this.queryEmployeeById(employeeId, scope, query.include_archived, {
-        skipTenantPartition: true,
-      });
+      row = await this.queryEmployeeById(
+        employeeId,
+        scope,
+        query.include_archived,
+        {
+          skipTenantPartition: true,
+        },
+      );
     }
     if (!row) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const labelLookup = await this.resolveStatusLabelLookup(
       row.company_id,
@@ -1349,7 +1467,11 @@ export class EmployeesService implements OnModuleInit {
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      requestedCompanyId,
+      scopeContext,
+    );
     let existing = await this.queryEmployeeById(employeeId, scope, false);
     if (!existing && scope.masterTenantPartition) {
       existing = await this.queryEmployeeById(employeeId, scope, false, {
@@ -1357,7 +1479,11 @@ export class EmployeesService implements OnModuleInit {
       });
     }
     if (!existing) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-EMP-404',
@@ -1377,7 +1503,9 @@ export class EmployeesService implements OnModuleInit {
       );
     }
 
-    const effectiveDateDisplay = this.assertEffectiveDateDdMmYyyy(payload.effective_date);
+    const effectiveDateDisplay = this.assertEffectiveDateDdMmYyyy(
+      payload.effective_date,
+    );
     const gate = await this.loadActivationGateForMutate(
       employeeId,
       existing.company_id,
@@ -1407,7 +1535,11 @@ export class EmployeesService implements OnModuleInit {
     );
     const updated = res.rows[0];
     if (!updated) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const event = this.emitEmployeeActivated({
@@ -1445,7 +1577,11 @@ export class EmployeesService implements OnModuleInit {
     assertNoCorePublicCbDenyKeys(payload as unknown as Record<string, unknown>);
     assertEmployeeUpdateAllowed(employeeId, payload, authorization);
     // U19 / FR-UC-HRM-21 — patch dùng cùng resolveHrmListScope + scopeContext như list/get-by-id.
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      requestedCompanyId,
+      scopeContext,
+    );
     // Load RAW row for CF merge — public map strips CB keys; writing filtered CF would wipe legacy storage.
     let existing = await this.queryEmployeeById(employeeId, scope, false);
     if (!existing && scope.masterTenantPartition) {
@@ -1454,7 +1590,11 @@ export class EmployeesService implements OnModuleInit {
       });
     }
     if (!existing) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-EMP-404',
@@ -1491,11 +1631,17 @@ export class EmployeesService implements OnModuleInit {
     if (payload.custom_fields !== undefined) {
       // Option A: self always merges phone keys only (even manager|hr_manager JWT).
       nextCustomFields = isSelfEmployeeTarget(employeeId, authorization)
-        ? mergeSelfEssCustomFields(existing.custom_fields, payload.custom_fields)
+        ? mergeSelfEssCustomFields(
+            existing.custom_fields,
+            payload.custom_fields,
+          )
         : (payload.custom_fields ?? {});
     }
 
-    if (payload.status !== undefined || payload.status_reason_key !== undefined) {
+    if (
+      payload.status !== undefined ||
+      payload.status_reason_key !== undefined
+    ) {
       const statusAssert = await this.assertEmployeeStatusPayload({
         companyId: existing.company_id,
         status: payload.status !== undefined ? payload.status : existing.status,
@@ -1510,7 +1656,10 @@ export class EmployeesService implements OnModuleInit {
           .replace(/-/g, '_')
           .toLowerCase();
         // O5 — unrestricted status→active without GATE = FAIL once residual live.
-        if (nextStatus === EMP_STATUS_ACTIVE && currentStatus !== EMP_STATUS_ACTIVE) {
+        if (
+          nextStatus === EMP_STATUS_ACTIVE &&
+          currentStatus !== EMP_STATUS_ACTIVE
+        ) {
           if (currentStatus !== EMP_STATUS_PENDING_DOCS) {
             throw new ApiException(
               HRM_EMP_ACT_ILLEGAL_TRANSITION,
@@ -1546,11 +1695,15 @@ export class EmployeesService implements OnModuleInit {
       if (payload.status_reason_key !== undefined) {
         nextCustomFields = {
           ...(nextCustomFields ??
-            (typeof existing.custom_fields === 'object' && existing.custom_fields
+            (typeof existing.custom_fields === 'object' &&
+            existing.custom_fields
               ? { ...existing.custom_fields }
               : {})),
         };
-        const rk = payload.status_reason_key.trim().replace(/-/g, '_').toLowerCase();
+        const rk = payload.status_reason_key
+          .trim()
+          .replace(/-/g, '_')
+          .toLowerCase();
         if (rk) {
           nextCustomFields.status_reason_key = rk;
         } else {
@@ -1562,7 +1715,7 @@ export class EmployeesService implements OnModuleInit {
     if (nextCustomFields !== undefined) {
       // F-EMP-CF-CNS-01 — HR invent KEY when EFF>0; ESS merge keeps phone builtins; history retain OK.
       await assertEmpCustomFieldsAgainstEffectiveCatalog({
-        query: this.db.query.bind(this.db) as typeof this.db.query,
+        query: this.db.query.bind(this.db),
         companyId: existing.company_id,
         customFields: nextCustomFields,
         previousCustomFields: existing.custom_fields,
@@ -1590,7 +1743,11 @@ export class EmployeesService implements OnModuleInit {
     }
 
     if (updates.length === 0) {
-      throw new ApiException('HRM-EMP-002', 'No fields to update', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-EMP-002',
+        'No fields to update',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const res = await this.db.query<EmployeeRow>(
@@ -1606,7 +1763,11 @@ export class EmployeesService implements OnModuleInit {
     );
     const updated = res.rows[0];
     if (!updated) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const labelLookup = await this.resolveStatusLabelLookup(
       updated.company_id,
@@ -1634,7 +1795,11 @@ export class EmployeesService implements OnModuleInit {
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      requestedCompanyId,
+      scopeContext,
+    );
     let existing = await this.queryEmployeeById(employeeId, scope, false);
     if (!existing && scope.masterTenantPartition) {
       existing = await this.queryEmployeeById(employeeId, scope, false, {
@@ -1642,7 +1807,11 @@ export class EmployeesService implements OnModuleInit {
       });
     }
     if (!existing) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-EMP-404',
@@ -1661,7 +1830,11 @@ export class EmployeesService implements OnModuleInit {
     );
     const archived = res.rows[0];
     if (!archived) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found or already archived', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found or already archived',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapPublicEmployee(archived);
   }
@@ -1672,7 +1845,11 @@ export class EmployeesService implements OnModuleInit {
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      requestedCompanyId,
+      scopeContext,
+    );
     let existing = await this.queryEmployeeById(employeeId, scope, true);
     if (!existing && scope.masterTenantPartition) {
       existing = await this.queryEmployeeById(employeeId, scope, true, {
@@ -1680,14 +1857,22 @@ export class EmployeesService implements OnModuleInit {
       });
     }
     if (!existing) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-EMP-404',
       mismatchCode: 'HRM-EMP-409',
     });
     if (existing.archived_at === null) {
-      throw new ApiException('HRM-EMP-409', 'Employee is already active', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-EMP-409',
+        'Employee is already active',
+        HttpStatus.CONFLICT,
+      );
     }
 
     const filters: string[] = ['id = $1::uuid', 'archived_at IS NOT NULL'];
@@ -1706,7 +1891,11 @@ export class EmployeesService implements OnModuleInit {
     );
     const restored = res.rows[0];
     if (!restored) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found or not archived', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found or not archived',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapPublicEmployee(restored);
   }
@@ -1721,7 +1910,12 @@ export class EmployeesService implements OnModuleInit {
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    const employee = await this.getEmployeeById(employeeId, query, authorization, scopeContext);
+    const employee = await this.getEmployeeById(
+      employeeId,
+      query,
+      authorization,
+      scopeContext,
+    );
     const asOf = query.as_of?.trim() || new Date().toISOString().slice(0, 10);
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.employee_contracts (
@@ -1759,7 +1953,9 @@ export class EmployeesService implements OnModuleInit {
       employee_id: employee.id,
       company_id: employee.company_id,
       profile_ok: profileOk,
-      active_contract: active ? { contract_id: active.id, status: active.status } : null,
+      active_contract: active
+        ? { contract_id: active.id, status: active.status }
+        : null,
       ready_for_payroll: profileOk && active != null,
       blockers,
       as_of: asOf,

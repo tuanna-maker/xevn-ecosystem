@@ -13,7 +13,10 @@ describe('HRM query validation regression (HTTPS R5/R6)', () => {
       page_size: '100',
       pageSize: '100',
     });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors).toHaveLength(0);
   });
 
@@ -23,7 +26,10 @@ describe('HRM query validation regression (HTTPS R5/R6)', () => {
       page_size: '100',
       pageSize: '100',
     });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors).toHaveLength(0);
   });
 
@@ -33,7 +39,10 @@ describe('HRM query validation regression (HTTPS R5/R6)', () => {
       page_size: '100',
       pageSize: '100',
     });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors).toHaveLength(0);
   });
 
@@ -43,7 +52,10 @@ describe('HRM query validation regression (HTTPS R5/R6)', () => {
       page_size: '100',
       pageSize: '100',
     });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors).toHaveLength(0);
   });
 
@@ -53,8 +65,10 @@ describe('HRM query validation regression (HTTPS R5/R6)', () => {
       page_size: '100',
       pageSize: '100',
     });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors).toHaveLength(0);
   });
-
 });

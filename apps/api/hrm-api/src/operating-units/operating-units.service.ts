@@ -40,20 +40,27 @@ import {
   ensureCompanySlugMapLegalDisplayNames,
   resolveCompanyDisplayNameVi,
 } from './hrm-company-display-name';
-import { type HrmOperatingUnitRow, rollupOrderForSlug } from './hrm-operating-unit-registry';
+import {
+  type HrmOperatingUnitRow,
+  rollupOrderForSlug,
+} from './hrm-operating-unit-registry';
 
 @Injectable()
 export class OperatingUnitsService {
   constructor(private readonly db: HrmDbService) {}
 
-  private resolveVisibleSlugs(scope: ReturnType<typeof resolveHrmListScope>): string[] {
+  private resolveVisibleSlugs(
+    scope: ReturnType<typeof resolveHrmListScope>,
+  ): string[] {
     if (scope.masterTenantPartition) {
       return [...HRM_GROUP_MEMBER_COMPANY_SLUGS];
     }
     if (scope.memberTenantId) {
       return [];
     }
-    const allowed = new Set(scope.companyIds.map((id) => id.trim().toLowerCase()));
+    const allowed = new Set(
+      scope.companyIds.map((id) => id.trim().toLowerCase()),
+    );
     return HRM_GROUP_MEMBER_COMPANY_SLUGS.filter((slug) => allowed.has(slug));
   }
 
@@ -65,13 +72,20 @@ export class OperatingUnitsService {
       async <T extends QueryResultRow>(sql: string, params?: unknown[]) =>
         this.db.query<T>(sql, params ?? []),
     );
-    const scope = resolveHrmListScope(authorization, HRM_PILOT_OPERATING_COMPANY_ID, context);
+    const scope = resolveHrmListScope(
+      authorization,
+      HRM_PILOT_OPERATING_COMPANY_ID,
+      context,
+    );
     const visibleSlugs = this.resolveVisibleSlugs(scope);
     if (!visibleSlugs.length) {
       return [];
     }
 
-    const res = await this.db.query<{ company_slug: string; display_name: string | null }>(
+    const res = await this.db.query<{
+      company_slug: string;
+      display_name: string | null;
+    }>(
       `SELECT company_slug, display_name
        FROM public.company_slug_map
        WHERE tenant_id = $1 AND company_slug = ANY($2::text[])
@@ -79,14 +93,18 @@ export class OperatingUnitsService {
       [MASTER_TENANT_ID, visibleSlugs],
     );
     const labelBySlug = new Map(
-      res.rows.map((row) => [row.company_slug.trim().toLowerCase(), row.display_name]),
+      res.rows.map((row) => [
+        row.company_slug.trim().toLowerCase(),
+        row.display_name,
+      ]),
     );
 
     return visibleSlugs
       .map((slug) => {
         const key = slug as (typeof HRM_GROUP_MEMBER_COMPANY_SLUGS)[number];
         const display_name_vi =
-          resolveCompanyDisplayNameVi(slug, labelBySlug.get(slug) ?? null) ?? '';
+          resolveCompanyDisplayNameVi(slug, labelBySlug.get(slug) ?? null) ??
+          '';
         return {
           operating_slug: key,
           display_name_vi,

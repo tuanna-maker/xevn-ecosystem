@@ -148,7 +148,9 @@ describe('ATT sheet scope parity (SP-ATT-SIGN-01..04)', () => {
     const token = memberCeoToken();
     const auth = `Bearer ${token}`;
 
-    await expect(svc.getAttendanceSheetById(SHEET_ID, 'main', auth)).rejects.toMatchObject({
+    await expect(
+      svc.getAttendanceSheetById(SHEET_ID, 'main', auth),
+    ).rejects.toMatchObject({
       code: 'HRM-AS-409',
     });
   });
@@ -184,7 +186,9 @@ describe('ATT sheet scope parity (SP-ATT-SIGN-01..04)', () => {
       });
     });
     const svc = new AttendanceSheetSignService({ query: queryMock } as never);
-    await expect(svc.listSignatures(SHEET_ID, 'main', auth)).rejects.toMatchObject({
+    await expect(
+      svc.listSignatures(SHEET_ID, 'main', auth),
+    ).rejects.toMatchObject({
       code: 'HRM-AS-409',
     });
   });
@@ -224,7 +228,11 @@ describe('assertAttendanceSheetHeaderInScope (unit)', () => {
     });
     const catalog = new AttendanceCatalogService({ query: queryMock } as never);
     const token = groupCeoToken();
-    const row = await catalog.assertAttendanceSheetHeaderInScope(SHEET_ID, 'main', `Bearer ${token}`);
+    const row = await catalog.assertAttendanceSheetHeaderInScope(
+      SHEET_ID,
+      'main',
+      `Bearer ${token}`,
+    );
     expect(row.company_id).toBe('holding');
   });
 });

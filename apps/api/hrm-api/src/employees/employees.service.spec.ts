@@ -152,7 +152,11 @@ describe('EmployeesService', () => {
     db.query.mockResolvedValueOnce({ rows: [row] } as never);
 
     await expect(
-      service.updateEmployee('633e95b7-cf1b-469f-a0f8-4c91f3f35f80', {}, 'holding'),
+      service.updateEmployee(
+        '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+        {},
+        'holding',
+      ),
     ).rejects.toMatchObject<ApiException>({
       code: 'HRM-EMP-002',
     });
@@ -177,7 +181,9 @@ describe('EmployeesService', () => {
     };
     db.query.mockResolvedValueOnce({ rows: [row] } as never);
 
-    const result = await service.getEmployeeById(row.id, { company_id: 'holding' });
+    const result = await service.getEmployeeById(row.id, {
+      company_id: 'holding',
+    });
     expect(result.id).toBe(row.id);
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('company_id = $2::text'),
@@ -262,7 +268,9 @@ describe('EmployeesService', () => {
   it('throws deterministic not-found for get-by-id', async () => {
     db.query.mockResolvedValueOnce({ rows: [] } as never);
     await expect(
-      service.getEmployeeById('633e95b7-cf1b-469f-a0f8-4c91f3f35f80', { company_id: 'holding' }),
+      service.getEmployeeById('633e95b7-cf1b-469f-a0f8-4c91f3f35f80', {
+        company_id: 'holding',
+      }),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-404' });
   });
 
@@ -274,7 +282,10 @@ describe('EmployeesService', () => {
       .mockResolvedValueOnce({ rows: [] } as never);
 
     await expect(
-      service.archiveEmployee('633e95b7-cf1b-469f-a0f8-4c91f3f35f80', 'holding'),
+      service.archiveEmployee(
+        '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+        'holding',
+      ),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-404' });
   });
 
@@ -306,7 +317,12 @@ describe('EmployeesService', () => {
       .mockResolvedValueOnce({ rows: [archivedRow] } as never)
       .mockResolvedValueOnce({ rows: [restoredRow] } as never);
 
-    const result = await service.restoreEmployee(employeeId, 'main', `Bearer ${token}`, { tenantId: 'xevn' });
+    const result = await service.restoreEmployee(
+      employeeId,
+      'main',
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
     expect(result.id).toBe(employeeId);
     expect(result.archived_at).toBeNull();
     expect(db.query).toHaveBeenCalledWith(
@@ -316,10 +332,15 @@ describe('EmployeesService', () => {
   });
 
   it('P1-PHASE1-BE-SCOPE-P0-S5-01: restore rejects out-of-scope employee id', async () => {
-    db.query.mockResolvedValueOnce({ rows: [] } as never).mockResolvedValueOnce({ rows: [] } as never);
+    db.query
+      .mockResolvedValueOnce({ rows: [] } as never)
+      .mockResolvedValueOnce({ rows: [] } as never);
 
     await expect(
-      service.restoreEmployee('633e95b7-cf1b-469f-a0f8-4c91f3f35f80', 'holding'),
+      service.restoreEmployee(
+        '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+        'holding',
+      ),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-404' });
   });
 
@@ -334,7 +355,9 @@ describe('EmployeesService', () => {
     db.query.mockResolvedValueOnce({ rows: [] } as never);
 
     await expect(
-      service.restoreEmployee(employeeId, 'main', `Bearer ${token}`, { tenantId: 'xe-du-lich' }),
+      service.restoreEmployee(employeeId, 'main', `Bearer ${token}`, {
+        tenantId: 'xe-du-lich',
+      }),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-404' });
   });
 
@@ -364,7 +387,9 @@ describe('EmployeesService', () => {
     db.query.mockResolvedValueOnce({ rows: [archivedRow] } as never);
 
     await expect(
-      service.restoreEmployee(employeeId, 'main', `Bearer ${token}`, { tenantId: 'xe-du-lich' }),
+      service.restoreEmployee(employeeId, 'main', `Bearer ${token}`, {
+        tenantId: 'xe-du-lich',
+      }),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-409' });
   });
 
@@ -398,7 +423,13 @@ describe('EmployeesService', () => {
       } as never);
 
       const result = await service.listEmployeeDirectory(
-        { company_id: 'main', view: 'directory', q: 'nguyen', page: 1, page_size: 30 },
+        {
+          company_id: 'main',
+          view: 'directory',
+          q: 'nguyen',
+          page: 1,
+          page_size: 30,
+        },
         `Bearer ${token}`,
         { tenantId: 'xevn' },
       );
@@ -440,7 +471,9 @@ describe('EmployeesService', () => {
 
     it('listEmployeeDirectory loads attendance_today when include_attendance_today=true', async () => {
       db.query
-        .mockResolvedValueOnce({ rows: [{ ...directoryRow, list_total: '1' }] } as never)
+        .mockResolvedValueOnce({
+          rows: [{ ...directoryRow, list_total: '1' }],
+        } as never)
         .mockResolvedValueOnce({
           rows: [
             {
@@ -496,7 +529,11 @@ describe('EmployeesService', () => {
         employee_id: employeeId,
         roles: ['employee'],
       });
-      const updatedRow = { ...baseRow, avatar_url: avatarUrl, updated_at: '2026-06-07T00:00:00.000Z' };
+      const updatedRow = {
+        ...baseRow,
+        avatar_url: avatarUrl,
+        updated_at: '2026-06-07T00:00:00.000Z',
+      };
       db.query
         .mockResolvedValueOnce({ rows: [baseRow] } as never)
         .mockResolvedValueOnce({ rows: [updatedRow] } as never);
@@ -525,7 +562,12 @@ describe('EmployeesService', () => {
       });
 
       await expect(
-        service.updateEmployee(employeeId, { full_name: 'Hacked' }, 'holding', `Bearer ${token}`),
+        service.updateEmployee(
+          employeeId,
+          { full_name: 'Hacked' },
+          'holding',
+          `Bearer ${token}`,
+        ),
       ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
     });
 
@@ -646,7 +688,12 @@ describe('EmployeesService', () => {
       });
 
       await expect(
-        service.updateEmployee(employeeId, { full_name: 'SHOULD_NOT_APPLY' }, 'holding', `Bearer ${token}`),
+        service.updateEmployee(
+          employeeId,
+          { full_name: 'SHOULD_NOT_APPLY' },
+          'holding',
+          `Bearer ${token}`,
+        ),
       ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
 
       await expect(
@@ -707,10 +754,18 @@ describe('EmployeesService', () => {
     });
 
     it('listEmployees returns avatar_url in data rows', async () => {
-      const rowWithAvatar = { ...baseRow, avatar_url: avatarUrl, list_total: '1' };
+      const rowWithAvatar = {
+        ...baseRow,
+        avatar_url: avatarUrl,
+        list_total: '1',
+      };
       db.query.mockResolvedValueOnce({ rows: [rowWithAvatar] } as never);
 
-      const result = await service.listEmployees({ company_id: 'holding', page: 1, page_size: 20 });
+      const result = await service.listEmployees({
+        company_id: 'holding',
+        page: 1,
+        page_size: 20,
+      });
 
       expect(result.data[0]?.avatar_url).toBe(avatarUrl);
       expect(db.query).toHaveBeenCalledWith(
@@ -723,7 +778,9 @@ describe('EmployeesService', () => {
       const rowWithAvatar = { ...baseRow, avatar_url: avatarUrl };
       db.query.mockResolvedValueOnce({ rows: [rowWithAvatar] } as never);
 
-      const result = await service.getEmployeeById(employeeId, { company_id: 'holding' });
+      const result = await service.getEmployeeById(employeeId, {
+        company_id: 'holding',
+      });
 
       expect(result.avatar_url).toBe(avatarUrl);
     });
@@ -755,10 +812,20 @@ describe('EmployeesService', () => {
 
     it('list + get return display-ready status_label / department / job_title_label', async () => {
       db.query.mockResolvedValueOnce({
-        rows: [{ ...displayRow, list_total: '1', created_at_cursor: '2024-01-01T00:00:00.000000Z' }],
+        rows: [
+          {
+            ...displayRow,
+            list_total: '1',
+            created_at_cursor: '2024-01-01T00:00:00.000000Z',
+          },
+        ],
       } as never);
 
-      const listed = await service.listEmployees({ company_id: 'holding', page: 1, page_size: 20 });
+      const listed = await service.listEmployees({
+        company_id: 'holding',
+        page: 1,
+        page_size: 20,
+      });
       expect(listed.data[0]).toMatchObject({
         display_name: 'Phạm Đức Hùng',
         department: 'Pháp chế',
@@ -769,7 +836,9 @@ describe('EmployeesService', () => {
       });
 
       db.query.mockResolvedValueOnce({ rows: [displayRow] } as never);
-      const got = await service.getEmployeeById(employeeId, { company_id: 'holding' });
+      const got = await service.getEmployeeById(employeeId, {
+        company_id: 'holding',
+      });
       expect(got).toMatchObject({
         display_name: 'Phạm Đức Hùng',
         department: 'Pháp chế',
@@ -844,7 +913,9 @@ describe('EmployeesService', () => {
       };
       db.query.mockResolvedValueOnce({ rows: [rawKeyRow] } as never);
 
-      const result = await service.getEmployeeById(employeeId, { company_id: 'holding' });
+      const result = await service.getEmployeeById(employeeId, {
+        company_id: 'holding',
+      });
       expect(result.job_title_key).toBe('LEGAL_SPECIALIST');
       expect(result.job_title_label).toBeNull();
       expect(result.department).toBe('Pháp chế');

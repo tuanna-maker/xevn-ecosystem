@@ -101,13 +101,17 @@ export async function renderContractPrintPdfBuffer(
   const merged = input.merged_fields;
   doc.fontSize(16).text('HỢP ĐỒNG LAO ĐỘNG', { align: 'center' });
   doc.moveDown(0.5);
-  doc.fontSize(11).text(
-    `Số: ${fieldText(merged, 'contract_code')} · Gói: ${input.pack_code} · v${input.version_no}`,
-    { align: 'center' },
-  );
+  doc
+    .fontSize(11)
+    .text(
+      `Số: ${fieldText(merged, 'contract_code')} · Gói: ${input.pack_code} · v${input.version_no}`,
+      { align: 'center' },
+    );
   doc.moveDown();
   doc.fontSize(10);
-  doc.text(`Bên B (Người lao động): ${fieldText(merged, 'employee_full_name')}`);
+  doc.text(
+    `Bên B (Người lao động): ${fieldText(merged, 'employee_full_name')}`,
+  );
   doc.text(`Công việc: ${fieldText(merged, 'job_title')}`);
   doc.text(`Địa điểm làm việc: ${fieldText(merged, 'work_location')}`);
   doc.text(
@@ -120,7 +124,9 @@ export async function renderContractPrintPdfBuffer(
   );
   clauses.forEach((c, idx) => {
     const rawTitle = (c.title_vi || c.code).trim();
-    const formattedTitle = /^điều\s+\d+/i.test(rawTitle) ? rawTitle : `Điều ${idx + 1}. ${rawTitle}`;
+    const formattedTitle = /^điều\s+\d+/i.test(rawTitle)
+      ? rawTitle
+      : `Điều ${idx + 1}. ${rawTitle}`;
     doc.fontSize(11).text(formattedTitle, { underline: false });
     doc.moveDown(0.25);
     doc.fontSize(10).text(c.body_vi || '', { align: 'justify' });
@@ -128,23 +134,30 @@ export async function renderContractPrintPdfBuffer(
   });
 
   doc.moveDown();
-  doc.fontSize(8).fillColor('#555555').text(
-    `Phiên bản in snapshot · contract_id=${input.contract_id} · engine=pdfkit`,
-    { align: 'left' },
-  );
+  doc
+    .fontSize(8)
+    .fillColor('#555555')
+    .text(
+      `Phiên bản in snapshot · contract_id=${input.contract_id} · engine=pdfkit`,
+      { align: 'left' },
+    );
 
   doc.end();
   return done;
 }
 
 /** HTML debug fallback — same snapshot fields as PDF (not live library). */
-export function renderContractPrintHtmlDocument(input: ContractPrintPdfInput): string {
+export function renderContractPrintHtmlDocument(
+  input: ContractPrintPdfInput,
+): string {
   const merged = input.merged_fields;
   const clauseHtml = [...input.clauses]
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
     .map((c, idx) => {
       const rawTitle = (c.title_vi || c.code).trim();
-      const formattedTitle = /^điều\s+\d+/i.test(rawTitle) ? rawTitle : `Điều ${idx + 1}. ${rawTitle}`;
+      const formattedTitle = /^điều\s+\d+/i.test(rawTitle)
+        ? rawTitle
+        : `Điều ${idx + 1}. ${rawTitle}`;
       return `<section><h3>${escapeHtml(formattedTitle)}</h3><p>${escapeHtml(c.body_vi || '')}</p></section>`;
     })
     .join('\n');

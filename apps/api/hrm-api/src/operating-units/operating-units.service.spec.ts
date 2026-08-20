@@ -22,7 +22,9 @@ const MEMBER_CEO_TOKEN = () =>
 
 describe('OperatingUnitsService', () => {
   const query = jest.fn();
-  const service = new OperatingUnitsService({ query } as unknown as HrmDbService);
+  const service = new OperatingUnitsService({
+    query,
+  } as unknown as HrmDbService);
 
   beforeEach(() => {
     query.mockReset();
@@ -31,7 +33,10 @@ describe('OperatingUnitsService', () => {
 
   it('group CEO on main returns all 5 GROUP_MEMBER_SLUGS with LE/ĐVTV display names (BE-HRM-EMP-COMPANY-COL-01)', async () => {
     query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('FROM public.company_slug_map')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.company_slug_map')
+      ) {
         return {
           rows: HRM_GROUP_MEMBER_COMPANY_SLUGS.map((slug) => ({
             company_slug: slug,
@@ -42,9 +47,14 @@ describe('OperatingUnitsService', () => {
       return { rows: [] };
     });
 
-    const rows = await service.listOperatingUnits(`Bearer ${GROUP_CEO_TOKEN()}`, { tenantId: 'xevn' });
+    const rows = await service.listOperatingUnits(
+      `Bearer ${GROUP_CEO_TOKEN()}`,
+      { tenantId: 'xevn' },
+    );
     expect(rows).toHaveLength(5);
-    expect(rows.map((r) => r.operating_slug)).toEqual([...HRM_GROUP_MEMBER_COMPANY_SLUGS]);
+    expect(rows.map((r) => r.operating_slug)).toEqual([
+      ...HRM_GROUP_MEMBER_COMPANY_SLUGS,
+    ]);
     expect(rows[0]).toMatchObject({
       operating_slug: 'holding',
       display_name_vi: 'Tập đoàn XeVN',
@@ -59,9 +69,12 @@ describe('OperatingUnitsService', () => {
   });
 
   it('member CEO sees empty partition (no GROUP_MEMBER rollup slugs)', async () => {
-    const rows = await service.listOperatingUnits(`Bearer ${MEMBER_CEO_TOKEN()}`, {
-      tenantId: 'xe-du-lich',
-    });
+    const rows = await service.listOperatingUnits(
+      `Bearer ${MEMBER_CEO_TOKEN()}`,
+      {
+        tenantId: 'xe-du-lich',
+      },
+    );
     expect(rows).toEqual([]);
     const selectCall = query.mock.calls.find(([sql]) =>
       String(sql).includes('FROM public.company_slug_map'),
@@ -71,7 +84,10 @@ describe('OperatingUnitsService', () => {
 
   it('falls back to seed defaults when company_slug_map.display_name is blank', async () => {
     query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('FROM public.company_slug_map')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.company_slug_map')
+      ) {
         return {
           rows: [{ company_slug: 'holding', display_name: '  ' }],
         };
@@ -79,13 +95,18 @@ describe('OperatingUnitsService', () => {
       return { rows: [] };
     });
 
-    const rows = await service.listOperatingUnits(`Bearer ${GROUP_CEO_TOKEN()}`, { tenantId: 'xevn' });
+    const rows = await service.listOperatingUnits(
+      `Bearer ${GROUP_CEO_TOKEN()}`,
+      { tenantId: 'xevn' },
+    );
     const holding = rows.find((r) => r.operating_slug === 'holding');
     expect(holding?.display_name_vi).toBe('Tập đoàn XeVN');
   });
 
   it('seeds company_slug_map display_name rows on first call', async () => {
-    await service.listOperatingUnits(`Bearer ${GROUP_CEO_TOKEN()}`, { tenantId: 'xevn' });
+    await service.listOperatingUnits(`Bearer ${GROUP_CEO_TOKEN()}`, {
+      tenantId: 'xevn',
+    });
     const alterCall = query.mock.calls.find(([sql]) =>
       String(sql).includes('ADD COLUMN IF NOT EXISTS display_name'),
     );

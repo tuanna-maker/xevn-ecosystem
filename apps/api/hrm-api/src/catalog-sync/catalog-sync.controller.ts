@@ -36,7 +36,12 @@ export class CatalogSyncController {
       companyId: companyId ?? queryCompanyId,
     });
     return this.catalogSyncService
-      .pullCatalogFromXbos(catalogKey, scope.tenantId, scope.catalogCompanyId, authorization)
+      .pullCatalogFromXbos(
+        catalogKey,
+        scope.tenantId,
+        scope.catalogCompanyId,
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-SYNC-200', 'Catalog pulled from XBOS'));
   }
 

@@ -50,7 +50,10 @@
  * must_keep: G-DB-03 · CD-FB-07 · WAIVE_L2 · no AGG
  */
 import { Injectable, Logger, Optional } from '@nestjs/common';
-import { CatalogSyncService, resolveXbosApiBaseUrl } from '../catalog-sync/catalog-sync.service';
+import {
+  CatalogSyncService,
+  resolveXbosApiBaseUrl,
+} from '../catalog-sync/catalog-sync.service';
 import {
   HRM_COMPANY_UUID_BY_SLUG,
   HRM_GROUP_MEMBER_COMPANY_SLUGS,
@@ -78,7 +81,8 @@ export function expandWorkflowResolverCompanyIds(companyId: string): string[] {
   const raw = companyId.trim().toLowerCase();
   if (!raw) return [];
   const out = new Set<string>();
-  const normalized = raw === HRM_PILOT_OPERATING_COMPANY_ID ? GROUP_HOLDING_COMPANY_ID : raw;
+  const normalized =
+    raw === HRM_PILOT_OPERATING_COMPANY_ID ? GROUP_HOLDING_COMPANY_ID : raw;
   out.add(normalized);
 
   if (UUID_RE.test(normalized)) {
@@ -89,7 +93,10 @@ export function expandWorkflowResolverCompanyIds(companyId: string): string[] {
       }
     }
   } else {
-    const uuid = HRM_COMPANY_UUID_BY_SLUG[normalized as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+    const uuid =
+      HRM_COMPANY_UUID_BY_SLUG[
+        normalized as keyof typeof HRM_COMPANY_UUID_BY_SLUG
+      ];
     if (uuid) out.add(uuid);
   }
   return [...out];
@@ -114,7 +121,8 @@ export class LeaveWorkflowBridge {
     private readonly catalogSync: CatalogSyncService,
     private readonly db: HrmDbService,
     private readonly fanout: AttendanceEventFanoutService,
-    @Optional() private readonly leaveAttendanceFunnel?: LeaveAttendanceFunnelService,
+    @Optional()
+    private readonly leaveAttendanceFunnel?: LeaveAttendanceFunnelService,
   ) {}
 
   private xbosBaseUrl(): string {
@@ -160,7 +168,10 @@ export class LeaveWorkflowBridge {
     `);
   }
 
-  async resolveManagerForWorkflow(employeeId: string, companyId?: string): Promise<{
+  async resolveManagerForWorkflow(
+    employeeId: string,
+    companyId?: string,
+  ): Promise<{
     manager_user_id: string | null;
     manager_employee_id: string | null;
   }> {
@@ -194,54 +205,73 @@ export class LeaveWorkflowBridge {
     };
   }
 
-  async startLeaveWorkflowIfConfigured(ctx: LeaveWorkflowSpawnContext): Promise<{ workflowInstanceId?: string } | null> {
+  async startLeaveWorkflowIfConfigured(
+    ctx: LeaveWorkflowSpawnContext,
+  ): Promise<{ workflowInstanceId?: string } | null> {
     await this.ensureSchema();
     const tenantId = (ctx.tenantId ?? MASTER_TENANT_ID).trim().toLowerCase();
     const companySlug =
-      (ctx.companySlug ?? GROUP_HOLDING_COMPANY_ID).trim().toLowerCase() || GROUP_HOLDING_COMPANY_ID;
+      (ctx.companySlug ?? GROUP_HOLDING_COMPANY_ID).trim().toLowerCase() ||
+      GROUP_HOLDING_COMPANY_ID;
     const isGroupCeoPortal =
       tenantId === MASTER_TENANT_ID &&
-      (companySlug === GROUP_OPERATING_MAIN || companySlug === GROUP_HOLDING_COMPANY_ID);
-    const xbosHeaderCompanyId = isGroupCeoPortal ? GROUP_HOLDING_COMPANY_ID : companySlug;
-    const memberCompanyId = isGroupCeoPortal ? GROUP_HOLDING_COMPANY_ID : companySlug;
-    const entityCompanyId = (ctx.companyId?.trim().toLowerCase() || memberCompanyId);
-    const upstreamHeaders = this.catalogSync.buildXbosUpstreamHeaders(ctx.authorization, {
-      tenantId,
-      companyId: xbosHeaderCompanyId,
-    });
+      (companySlug === GROUP_OPERATING_MAIN ||
+        companySlug === GROUP_HOLDING_COMPANY_ID);
+    const xbosHeaderCompanyId = isGroupCeoPortal
+      ? GROUP_HOLDING_COMPANY_ID
+      : companySlug;
+    const memberCompanyId = isGroupCeoPortal
+      ? GROUP_HOLDING_COMPANY_ID
+      : companySlug;
+    const entityCompanyId =
+      ctx.companyId?.trim().toLowerCase() || memberCompanyId;
+    const upstreamHeaders = this.catalogSync.buildXbosUpstreamHeaders(
+      ctx.authorization,
+      {
+        tenantId,
+        companyId: xbosHeaderCompanyId,
+      },
+    );
 
     try {
-      const res = await fetch(`${this.xbosBaseUrl()}/api/xbos/workflow-engine/instances/start`, {
-        method: 'POST',
-        headers: {
-          ...upstreamHeaders,
-          'content-type': 'application/json',
-          'x-tenant-id': tenantId,
-          'x-company-id': xbosHeaderCompanyId,
+      const res = await fetch(
+        `${this.xbosBaseUrl()}/api/xbos/workflow-engine/instances/start`,
+        {
+          method: 'POST',
+          headers: {
+            ...upstreamHeaders,
+            'content-type': 'application/json',
+            'x-tenant-id': tenantId,
+            'x-company-id': xbosHeaderCompanyId,
+          },
+          body: JSON.stringify({
+            workflowCode: WF_HRM_LEAVE_APPROVAL_CODE,
+            businessType: WF_BUSINESS_TYPE_HRM_LEAVE,
+            businessId: ctx.leaveRequestId,
+            submitter: {
+              userId: ctx.submitterUserId ?? null,
+              employeeId: ctx.employeeId,
+              companyId: entityCompanyId,
+              companySlug: memberCompanyId,
+            },
+            context: {
+              memberTenantId: tenantId,
+              memberCompanyId,
+              entityCompanyId,
+              leaveRequestId: ctx.leaveRequestId,
+            },
+          }),
         },
-        body: JSON.stringify({
-          workflowCode: WF_HRM_LEAVE_APPROVAL_CODE,
-          businessType: WF_BUSINESS_TYPE_HRM_LEAVE,
-          businessId: ctx.leaveRequestId,
-          submitter: {
-            userId: ctx.submitterUserId ?? null,
-            employeeId: ctx.employeeId,
-            companyId: entityCompanyId,
-            companySlug: memberCompanyId,
-          },
-          context: {
-            memberTenantId: tenantId,
-            memberCompanyId,
-            entityCompanyId,
-            leaveRequestId: ctx.leaveRequestId,
-          },
-        }),
-      });
+      );
       const json = (await res.json()) as {
         success?: boolean;
         code?: string;
         message?: string;
-        data?: { id?: string; workflowInstanceId?: string; instanceId?: string };
+        data?: {
+          id?: string;
+          workflowInstanceId?: string;
+          instanceId?: string;
+        };
       };
       if (!res.ok || !json.success) {
         this.logger.warn(
@@ -252,7 +282,8 @@ export class LeaveWorkflowBridge {
       const data = json.data ?? {};
       const instanceId =
         (typeof data.id === 'string' && data.id.trim()) ||
-        (typeof data.workflowInstanceId === 'string' && data.workflowInstanceId.trim()) ||
+        (typeof data.workflowInstanceId === 'string' &&
+          data.workflowInstanceId.trim()) ||
         (typeof data.instanceId === 'string' && data.instanceId.trim()) ||
         '';
       if (!instanceId) {
@@ -269,7 +300,8 @@ export class LeaveWorkflowBridge {
          RETURNING workflow_instance_id::text AS workflow_instance_id`,
         [ctx.leaveRequestId, instanceId],
       );
-      const persistedId = updateRes.rows[0]?.workflow_instance_id?.trim() || instanceId;
+      const persistedId =
+        updateRes.rows[0]?.workflow_instance_id?.trim() || instanceId;
       return { workflowInstanceId: persistedId };
     } catch (err) {
       this.logger.warn(
@@ -297,11 +329,15 @@ export class LeaveWorkflowBridge {
       throw new Error('HRM-LEAVE-404');
     }
     if (currentStatus !== 'pending') {
-      this.logger.log(`HRM-WF-CALLBACK-SKIP leave=${payload.leaveRequestId} status=${currentStatus}`);
+      this.logger.log(
+        `HRM-WF-CALLBACK-SKIP leave=${payload.leaveRequestId} status=${currentStatus}`,
+      );
       return { applied: false, status: currentStatus };
     }
 
-    const reviewerName = (payload.reviewerName ?? payload.reviewerUserId).trim();
+    const reviewerName = (
+      payload.reviewerName ?? payload.reviewerUserId
+    ).trim();
     if (payload.terminalStatus === 'completed') {
       const res = await this.db.query<LeaveRow>(
         `
@@ -342,7 +378,11 @@ export class LeaveWorkflowBridge {
         WHERE id = $1::uuid AND status = 'pending'
         RETURNING *;
       `,
-      [payload.leaveRequestId, reviewerName, payload.rejectedReason ?? 'Workflow rejected'],
+      [
+        payload.leaveRequestId,
+        reviewerName,
+        payload.rejectedReason ?? 'Workflow rejected',
+      ],
     );
     const row = res.rows[0];
     if (!row) {

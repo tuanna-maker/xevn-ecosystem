@@ -25,11 +25,16 @@ describe('pay-term-guard', () => {
   });
 
   it('assertNoIncludeTerminationsSettleSoT — dedicated settle route only', () => {
-    expect(() => assertNoIncludeTerminationsSettleSoT(null, { include_terminations: 'true' })).toThrow(
-      ApiException,
-    );
+    expect(() =>
+      assertNoIncludeTerminationsSettleSoT(null, {
+        include_terminations: 'true',
+      }),
+    ).toThrow(ApiException);
     try {
-      assertNoIncludeTerminationsSettleSoT({ include_terminations: true }, null);
+      assertNoIncludeTerminationsSettleSoT(
+        { include_terminations: true },
+        null,
+      );
     } catch (e) {
       expect(e).toMatchObject<ApiException>({
         code: HRM_PAY_TERM_400_USE_DEDICATED_SETTLE,

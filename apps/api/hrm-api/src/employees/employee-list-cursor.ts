@@ -19,7 +19,8 @@
  * must_keep: toEmployeeListCursorIso Z-normalize · base64url payload
  */
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ISO_INSTANT_RE =
   /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?)(Z|[+-]\d{2}:?\d{2})$/i;
 
@@ -43,7 +44,13 @@ export function toEmployeeListCursorIso(createdAt: string | Date): string {
   if (iso) {
     const head = iso[1];
     const off = iso[2].toUpperCase();
-    if (off === 'Z' || off === '+00:00' || off === '+0000' || off === '-00:00' || off === '-0000') {
+    if (
+      off === 'Z' ||
+      off === '+00:00' ||
+      off === '+0000' ||
+      off === '-00:00' ||
+      off === '-0000'
+    ) {
       return `${head}Z`;
     }
     const ms = Date.parse(trimmed);
@@ -59,7 +66,10 @@ export function toEmployeeListCursorIso(createdAt: string | Date): string {
   return new Date(ms).toISOString();
 }
 
-export function encodeEmployeeListCursor(createdAt: string | Date, id: string): string {
+export function encodeEmployeeListCursor(
+  createdAt: string | Date,
+  id: string,
+): string {
   const iso = toEmployeeListCursorIso(createdAt);
   return Buffer.from(`${iso}\n${id}`, 'utf8').toString('base64url');
 }

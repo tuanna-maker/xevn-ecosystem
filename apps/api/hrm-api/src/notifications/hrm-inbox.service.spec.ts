@@ -26,7 +26,9 @@ describe('HrmInboxService listInbox SQL', () => {
     await svc.listInbox('holding', employeeId, 40, `Bearer ${token}`, 'xevn');
 
     const listCall = queryMock.mock.calls.find(
-      ([sql]) => String(sql).includes('hrm_inbox_notifications') && String(sql).includes('SELECT'),
+      ([sql]) =>
+        String(sql).includes('hrm_inbox_notifications') &&
+        String(sql).includes('SELECT'),
     );
     expect(listCall).toBeDefined();
     const [sql, params] = listCall as [string, unknown[]];
@@ -34,7 +36,10 @@ describe('HrmInboxService listInbox SQL', () => {
     expect(sql).not.toContain('holding::uuid');
     const companyParam = params[0];
     expect(Array.isArray(companyParam) ? companyParam : [companyParam]).toEqual(
-      expect.arrayContaining([holdingUuid, '10000000-0000-4000-8000-000000000001']),
+      expect.arrayContaining([
+        holdingUuid,
+        '10000000-0000-4000-8000-000000000001',
+      ]),
     );
   });
 
@@ -46,17 +51,28 @@ describe('HrmInboxService listInbox SQL', () => {
       .mockResolvedValue({ rows: [{ id: 'inbox-1' }] });
     const svc = new HrmInboxService({ query: queryMock } as never);
     const token = uatNv1Token();
-    const out = await svc.listInbox(holdingUuid, employeeId, 40, `Bearer ${token}`, 'xevn');
+    const out = await svc.listInbox(
+      holdingUuid,
+      employeeId,
+      40,
+      `Bearer ${token}`,
+      'xevn',
+    );
 
     const listCall = queryMock.mock.calls.find(
-      ([sql]) => String(sql).includes('hrm_inbox_notifications') && String(sql).includes('SELECT'),
+      ([sql]) =>
+        String(sql).includes('hrm_inbox_notifications') &&
+        String(sql).includes('SELECT'),
     );
     expect(listCall).toBeDefined();
     const [sql, params] = listCall as [string, unknown[]];
     expect(sql).toMatch(/company_id = \$|company_id = ANY/);
     const companyParam = params[0];
     expect(Array.isArray(companyParam) ? companyParam : [companyParam]).toEqual(
-      expect.arrayContaining([holdingUuid, '10000000-0000-4000-8000-000000000001']),
+      expect.arrayContaining([
+        holdingUuid,
+        '10000000-0000-4000-8000-000000000001',
+      ]),
     );
     expect(out.total).toBe(1);
   });
@@ -85,8 +101,8 @@ describe('HrmInboxService listInbox SQL', () => {
         rejected_reason: null,
       },
     });
-    const insertCall = queryMock.mock.calls.find(
-      ([sql]) => String(sql).includes('INSERT INTO public.hrm_inbox_notifications'),
+    const insertCall = queryMock.mock.calls.find(([sql]) =>
+      String(sql).includes('INSERT INTO public.hrm_inbox_notifications'),
     );
     expect(insertCall).toBeDefined();
     const [, params] = insertCall as [string, unknown[]];

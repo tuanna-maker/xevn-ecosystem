@@ -44,7 +44,10 @@ describe('PerformanceService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.listCycles({ company_id: 'main' }, `Bearer ${token}`);
+    const result = await service.listCycles(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+    );
 
     expect(result.total).toBe(1);
     expect(result.data[0].company_id).toBe('holding');
@@ -82,7 +85,10 @@ describe('PerformanceService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.listEvaluations({ company_id: 'main' }, `Bearer ${token}`);
+    const result = await service.listEvaluations(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+    );
 
     expect(result.total).toBe(1);
     expect(db.query).toHaveBeenCalledWith(
@@ -100,7 +106,10 @@ describe('PerformanceService', () => {
     });
     const cycleId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.performance_cycles WHERE') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.performance_cycles WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [{ id: cycleId, company_id: 'holding' }] } as never;
       }
       if (sql.includes('INSERT INTO public.performance_evaluations')) {
@@ -153,7 +162,8 @@ describe('PerformanceService', () => {
     db.query.mockImplementation(async (sql: string) => {
       if (
         sql.includes('performance_evaluations') &&
-        (sql.includes('NOT IN') || sql.includes('chk_performance_evaluation_status'))
+        (sql.includes('NOT IN') ||
+          sql.includes('chk_performance_evaluation_status'))
       ) {
         schemaSql.push(sql);
       }

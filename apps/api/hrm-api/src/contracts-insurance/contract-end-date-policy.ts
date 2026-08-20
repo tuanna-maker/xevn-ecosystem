@@ -69,7 +69,10 @@ export function resolveContractStartDateForCreate(input: {
   if (trimmed) return trimmed;
   const fallback =
     input.defaultToday ??
-    (() => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date()));
+    (() =>
+      new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(
+        new Date(),
+      ));
   return fallback();
 }
 
@@ -90,6 +93,10 @@ export function assertContractEndDateForCreate(input: {
     return;
   }
   if (new Date(input.startDate).getTime() > new Date(end).getTime()) {
-    throw new ApiException('HRM-CON-001', 'start_date must be <= end_date', HttpStatus.BAD_REQUEST);
+    throw new ApiException(
+      'HRM-CON-001',
+      'start_date must be <= end_date',
+      HttpStatus.BAD_REQUEST,
+    );
   }
 }

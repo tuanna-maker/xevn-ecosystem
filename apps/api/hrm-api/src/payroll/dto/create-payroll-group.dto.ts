@@ -1,4 +1,12 @@
-import { IsIn, IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import {
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import type { PayPayrollGroupMatchRule } from '../pay-payroll-group-resolver';
 
 export class CreatePayrollGroupDto {

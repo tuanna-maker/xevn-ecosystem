@@ -41,7 +41,10 @@ export const HRM_VAL_400 = 'HRM-VAL-400';
  * Family aliases `decision_types` ↔ storage `hr_decision_types`.
  */
 export const HR_DECISION_TYPES_GROUP_REF_KEY = 'hr_decision_types';
-export const HR_DECISION_TYPES_GROUP_REF_ALIASES = ['hr_decision_types', 'decision_types'] as const;
+export const HR_DECISION_TYPES_GROUP_REF_ALIASES = [
+  'hr_decision_types',
+  'decision_types',
+] as const;
 
 /**
  * Optional bootstrap starter keys — ensure may upsert later; U65 UF must not treat as required seed.

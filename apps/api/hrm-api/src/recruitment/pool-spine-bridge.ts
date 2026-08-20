@@ -35,7 +35,10 @@ export async function resolveOpenRequisitionIdForCompany(
   companyId: string,
   scopeCompanyIds: readonly string[],
 ): Promise<string | null> {
-  const tryIds = [companyId, ...scopeCompanyIds.filter((id) => id !== companyId)];
+  const tryIds = [
+    companyId,
+    ...scopeCompanyIds.filter((id) => id !== companyId),
+  ];
   for (const cid of tryIds) {
     const res = await db.query<{ id: string }>(
       `SELECT id
@@ -86,12 +89,20 @@ export async function ensureSpineRecruitmentCandidateFromPool(
   const normalizedEmail = normalizeEmail(pool.email);
   if (!normalizedEmail) return null;
 
-  const existingId = await findSpineRecruitmentCandidateIdByEmail(db, normalizedEmail, scopeCompanyIds);
+  const existingId = await findSpineRecruitmentCandidateIdByEmail(
+    db,
+    normalizedEmail,
+    scopeCompanyIds,
+  );
   if (existingId) {
     return { id: existingId, created: false };
   }
 
-  const requisitionId = await resolveOpenRequisitionIdForCompany(db, pool.company_id, scopeCompanyIds);
+  const requisitionId = await resolveOpenRequisitionIdForCompany(
+    db,
+    pool.company_id,
+    scopeCompanyIds,
+  );
   if (!requisitionId) {
     return null;
   }
@@ -122,10 +133,7 @@ export async function materializeMissingSpineCandidatesFromPool(
 ): Promise<number> {
   if (scopeCompanyIds.length === 0) return 0;
 
-  const poolFilters: string[] = [
-    `email IS NOT NULL`,
-    `btrim(email) <> ''`,
-  ];
+  const poolFilters: string[] = [`email IS NOT NULL`, `btrim(email) <> ''`];
   const poolValues: unknown[] = [];
   pushCompanyIdFilter(poolFilters, poolValues, [...scopeCompanyIds]);
 
@@ -138,7 +146,11 @@ export async function materializeMissingSpineCandidatesFromPool(
 
   let created = 0;
   for (const row of poolRes.rows) {
-    const result = await ensureSpineRecruitmentCandidateFromPool(db, row, scopeCompanyIds);
+    const result = await ensureSpineRecruitmentCandidateFromPool(
+      db,
+      row,
+      scopeCompanyIds,
+    );
     if (result?.created) {
       created += 1;
     }

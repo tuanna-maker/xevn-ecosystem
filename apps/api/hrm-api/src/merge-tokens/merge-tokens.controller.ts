@@ -78,7 +78,10 @@ export class MergeTokensController {
     @Query() query: ListMergeTokensQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.service
       .listTokens(query, authorization, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-PLT-TOK-200', 'Merge tokens listed'));
@@ -122,11 +125,20 @@ export class MergeTokensController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-400', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
-      .getTokenById(tokenId, companyId, authorization, toHrmListScopeContext(tenantId))
+      .getTokenById(
+        tokenId,
+        companyId,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-PLT-TOK-200', 'Merge token loaded'));
   }
 
@@ -141,11 +153,21 @@ export class MergeTokensController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-400', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
-      .patchToken(tokenId, companyId, body, authorization, toHrmListScopeContext(tenantId))
+      .patchToken(
+        tokenId,
+        companyId,
+        body,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-PLT-TOK-200', 'Merge token patched'));
   }
 
@@ -159,11 +181,20 @@ export class MergeTokensController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-400', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
-      .retireToken(tokenId, companyId, authorization, toHrmListScopeContext(tenantId))
+      .retireToken(
+        tokenId,
+        companyId,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-PLT-TOK-200', 'Merge token retired'));
   }
 }

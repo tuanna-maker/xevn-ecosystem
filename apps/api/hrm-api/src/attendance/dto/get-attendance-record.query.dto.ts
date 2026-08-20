@@ -12,7 +12,12 @@ function pickScalar(value: unknown): string | undefined {
 
 export class GetAttendanceRecordQueryDto {
   @IsString()
-  @Transform(({ value, obj }) => pickScalar(value) ?? pickScalar(obj?.companyId) ?? pickScalar(obj?.company_id))
+  @Transform(
+    ({ value, obj }) =>
+      pickScalar(value) ??
+      pickScalar(obj?.companyId) ??
+      pickScalar(obj?.company_id),
+  )
   @MaxLength(64)
   company_id!: string;
 }

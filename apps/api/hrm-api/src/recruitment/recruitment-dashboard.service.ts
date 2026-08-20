@@ -37,7 +37,10 @@
  */
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
-import { type HrmListScopeContext, resolveHrmListScope } from '../common/hrm-list-scope';
+import {
+  type HrmListScopeContext,
+  resolveHrmListScope,
+} from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import type { RecruitmentDashboardQueryDto } from './dto/recruitment-dashboard.query.dto';
 import {
@@ -274,7 +277,7 @@ export class RecruitmentDashboardService {
           continue;
         }
         pipeline += 1;
-        if (bucket !== 'unmapped' && FUNNEL_KEYS.includes(bucket as FunnelKey)) {
+        if (bucket !== 'unmapped' && FUNNEL_KEYS.includes(bucket)) {
           funnel[bucket as FunnelKey] += 1;
         }
       }
@@ -283,7 +286,9 @@ export class RecruitmentDashboardService {
       return { yctd: y, filled, pipeline };
     });
 
-    const openYctdCount = yctds.filter((y) => isOpenYctdStatus(y.status)).length;
+    const openYctdCount = yctds.filter((y) =>
+      isOpenYctdStatus(y.status),
+    ).length;
     const etaYm = earliestEtaYm(
       yctdStats.map(({ yctd, filled }) => ({
         status: yctd.status,
@@ -303,7 +308,12 @@ export class RecruitmentDashboardService {
     });
 
     const byYctdAll = this.buildDrillRows(yctdStats, periodMonths);
-    const byMonth = this.buildByMonth(period, cells.cellDetails, yctdStats, catalog);
+    const byMonth = this.buildByMonth(
+      period,
+      cells.cellDetails,
+      yctdStats,
+      catalog,
+    );
     const byOrgUnit = this.buildByOrgUnit(cells.cellDetails, yctdStats);
 
     const empty_guide = !hasO2Cells ? { ...EMPTY_GUIDE_NO_PLAN } : null;
@@ -321,7 +331,10 @@ export class RecruitmentDashboardService {
       gap_count: metrics.gap_count,
       completion_pct: metrics.completion_pct,
       enough_people_status: metrics.enough_people_status,
-      enough_people_eta: metrics.enough_people_status === 'no_plan' ? null : metrics.enough_people_eta,
+      enough_people_eta:
+        metrics.enough_people_status === 'no_plan'
+          ? null
+          : metrics.enough_people_eta,
       enough_people_eta_label: metrics.enough_people_eta_label,
       funnel,
       funnel_labels: buildFunnelLabels(catalog),
@@ -395,7 +408,10 @@ export class RecruitmentDashboardService {
         filled_count: filled,
         in_pipeline_count: pipeline,
         gap_count: gap,
-        completion_pct: planned <= 0 ? null : Math.min(100, Math.round((100 * filled) / planned)),
+        completion_pct:
+          planned <= 0
+            ? null
+            : Math.min(100, Math.round((100 * filled) / planned)),
       };
     });
   }
@@ -457,7 +473,10 @@ export class RecruitmentDashboardService {
       completion_pct:
         row.planned_need <= 0
           ? null
-          : Math.min(100, Math.round((100 * row.filled_count) / row.planned_need)),
+          : Math.min(
+              100,
+              Math.round((100 * row.filled_count) / row.planned_need),
+            ),
     }));
   }
 
@@ -511,7 +530,9 @@ export class RecruitmentDashboardService {
 
     // Year filter: when year param, match plan.year; when from/to, match any plan year overlapping months
     const years = new Set(
-      period.months.map((m) => Number(m.slice(0, 4))).filter((y) => Number.isFinite(y)),
+      period.months
+        .map((m) => Number(m.slice(0, 4)))
+        .filter((y) => Number.isFinite(y)),
     );
     if (period.year != null) {
       values.push(period.year);
@@ -546,10 +567,20 @@ export class RecruitmentDashboardService {
     }> = [];
 
     for (const row of res.rows) {
-      if (deptKey && String(row.department_key ?? '').trim().toLowerCase() !== deptKey.toLowerCase()) {
+      if (
+        deptKey &&
+        String(row.department_key ?? '')
+          .trim()
+          .toLowerCase() !== deptKey.toLowerCase()
+      ) {
         continue;
       }
-      if (posKey && String(row.position_key ?? '').trim().toLowerCase() !== posKey.toLowerCase()) {
+      if (
+        posKey &&
+        String(row.position_key ?? '')
+          .trim()
+          .toLowerCase() !== posKey.toLowerCase()
+      ) {
         continue;
       }
       if (!isPlanApprovedStatus(row.plan_status)) continue;
@@ -561,7 +592,9 @@ export class RecruitmentDashboardService {
       );
       for (const c of cells) {
         const life = String(c.lifecycle_status ?? '').toLowerCase();
-        const qty = Math.trunc(Number(c.need_hire ?? c.headcount_need_hire ?? 0));
+        const qty = Math.trunc(
+          Number(c.need_hire ?? c.headcount_need_hire ?? 0),
+        );
         if (life !== 'need_hire_approved' || qty < 1) continue;
         const mk = `${row.plan_year}-${c.month < 10 ? `0${c.month}` : c.month}`;
         if (!periodMonths.has(mk)) continue;
@@ -618,7 +651,10 @@ export class RecruitmentDashboardService {
     return res.rows;
   }
 
-  private async loadCandidates(companyIds: string[], requisitionIds: string[]): Promise<CandRow[]> {
+  private async loadCandidates(
+    companyIds: string[],
+    requisitionIds: string[],
+  ): Promise<CandRow[]> {
     if (requisitionIds.length === 0) return [];
     const filters: string[] = [];
     const values: unknown[] = [];

@@ -249,19 +249,32 @@ export class MergeTokensService {
     requestedCompanyId: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
-    const expandedCompanyIds = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
+    const expandedCompanyIds = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, expandedCompanyIds, scopeCompanyId };
   }
 
   private parseMeta(raw: unknown): Record<string, unknown> | null {
     if (raw == null) return null;
-    if (typeof raw === 'object' && !Array.isArray(raw)) return raw as Record<string, unknown>;
+    if (typeof raw === 'object' && !Array.isArray(raw))
+      return raw as Record<string, unknown>;
     if (typeof raw === 'string') {
       try {
         const p = JSON.parse(raw) as unknown;
-        if (p && typeof p === 'object' && !Array.isArray(p)) return p as Record<string, unknown>;
+        if (p && typeof p === 'object' && !Array.isArray(p))
+          return p as Record<string, unknown>;
       } catch {
         /* ignore */
       }
@@ -360,7 +373,8 @@ export class MergeTokensService {
       query.company_id,
       scopeContext,
     );
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     const filters: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, expandedCompanyIds);
@@ -403,7 +417,10 @@ export class MergeTokensService {
        ORDER BY token_key ASC;`,
       values,
     );
-    return { items: res.rows.map((r) => this.display(r)), total: res.rows.length };
+    return {
+      items: res.rows.map((r) => this.display(r)),
+      total: res.rows.length,
+    };
   }
 
   async getTokenById(
@@ -432,7 +449,11 @@ export class MergeTokensService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_PLT_TOK_404, 'Merge token not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PLT_TOK_404,
+        'Merge token not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_PLT_TOK_404,
@@ -453,7 +474,11 @@ export class MergeTokensService {
       payload.companyId,
       scopeContext,
     );
-    const { scope } = this.resolveScope(authorization, payload.companyId, scopeContext);
+    const { scope } = this.resolveScope(
+      authorization,
+      payload.companyId,
+      scopeContext,
+    );
     assertResourceInHrmScope({ company_id: companyId }, scope, {
       notFoundCode: 'HRM-SCOPE-404',
       mismatchCode: 'HRM-SCOPE-409',
@@ -481,7 +506,9 @@ export class MergeTokensService {
     const status = this.assertStatus(payload.status ?? 'active');
     const origin = this.assertOrigin(payload.origin ?? 'builtin');
     const extensionFieldRef =
-      payload.extensionFieldRef != null ? String(payload.extensionFieldRef).trim() || null : null;
+      payload.extensionFieldRef != null
+        ? String(payload.extensionFieldRef).trim() || null
+        : null;
     if (origin === 'extension_field' && !extensionFieldRef) {
       throw new ApiException(
         HRM_PLT_CAT_CODE_INVALID,
@@ -510,7 +537,9 @@ export class MergeTokensService {
         prev.label_vi !== labelVi ||
         prev.origin !== origin ||
         (prev.extension_field_ref ?? null) !== extensionFieldRef;
-      const nextVersion = materialChange ? Number(prev.version) + 1 : Number(prev.version);
+      const nextVersion = materialChange
+        ? Number(prev.version) + 1
+        : Number(prev.version);
       const upd = await this.db.query<TokenRow>(
         `UPDATE public.hrm_merge_tokens
          SET source_path = $2,
@@ -668,10 +697,20 @@ export class MergeTokensService {
       payload.companyId,
       scopeContext,
     );
-    assertResourceInHrmScope({ company_id: resolveHrmPersistCompanyIdText(authorization, payload.companyId, scopeContext) }, scope, {
-      notFoundCode: 'HRM-SCOPE-404',
-      mismatchCode: 'HRM-SCOPE-409',
-    });
+    assertResourceInHrmScope(
+      {
+        company_id: resolveHrmPersistCompanyIdText(
+          authorization,
+          payload.companyId,
+          scopeContext,
+        ),
+      },
+      scope,
+      {
+        notFoundCode: 'HRM-SCOPE-404',
+        mismatchCode: 'HRM-SCOPE-409',
+      },
+    );
 
     const registry = await this.loadActiveRegistry(
       payload.companyId,
@@ -696,7 +735,11 @@ export class MergeTokensService {
       );
       const row = tpl.rows[0];
       if (!row) {
-        throw new ApiException('HRM-CTR-TPL-404', 'Template not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          'HRM-CTR-TPL-404',
+          'Template not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       assertResourceInHrmScope(row, scope, {
         notFoundCode: 'HRM-CTR-TPL-404',
@@ -742,7 +785,11 @@ export class MergeTokensService {
       );
       const row = ctr.rows[0];
       if (!row) {
-        throw new ApiException('HRM-CON-404', 'Contract not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          'HRM-CON-404',
+          'Contract not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       assertResourceInHrmScope(row, scope, {
         notFoundCode: 'HRM-CON-404',
@@ -791,7 +838,10 @@ export class MergeTokensService {
       throw err;
     }
 
-    if (payload.strict && resolved.warnings.some((w) => w.startsWith('HRM-PLT-TOKEN-UNKNOWN'))) {
+    if (
+      payload.strict &&
+      resolved.warnings.some((w) => w.startsWith('HRM-PLT-TOKEN-UNKNOWN'))
+    ) {
       throw new ApiException(
         HRM_PLT_TOKEN_UNKNOWN,
         'Mandatory merge token missing',
@@ -827,10 +877,15 @@ export class MergeTokensService {
         ? `company_id = $1::text`
         : `company_id = ANY($1::text[])`;
     const companyArg =
-      expandedCompanyIds.length === 1 ? expandedCompanyIds[0] : expandedCompanyIds;
+      expandedCompanyIds.length === 1
+        ? expandedCompanyIds[0]
+        : expandedCompanyIds;
 
     try {
-      const docs = await this.db.query<{ document_type_key: string; name_vi: string }>(
+      const docs = await this.db.query<{
+        document_type_key: string;
+        name_vi: string;
+      }>(
         `SELECT document_type_key, name_vi
          FROM public.emp_document_type
          WHERE ${companyPred}
@@ -849,7 +904,10 @@ export class MergeTokensService {
     }
 
     try {
-      const ets = await this.db.query<{ employment_type_key: string; name_vi: string }>(
+      const ets = await this.db.query<{
+        employment_type_key: string;
+        name_vi: string;
+      }>(
         `SELECT employment_type_key, name_vi
          FROM public.emp_employment_type
          WHERE ${companyPred}

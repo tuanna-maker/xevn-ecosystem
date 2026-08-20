@@ -5,7 +5,10 @@ import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
-import { generateInviteTempPassword, HrmAdminService } from './hrm-admin.service';
+import {
+  generateInviteTempPassword,
+  HrmAdminService,
+} from './hrm-admin.service';
 
 describe('HrmAdminService', () => {
   let service: HrmAdminService;
@@ -50,7 +53,10 @@ describe('HrmAdminService', () => {
 
     expect(result.success).toBe(true);
     expect(result.user_id).toBeDefined();
-    expect(db.query).not.toHaveBeenCalledWith(expect.stringContaining('platform_admins WHERE'), expect.anything());
+    expect(db.query).not.toHaveBeenCalledWith(
+      expect.stringContaining('platform_admins WHERE'),
+      expect.anything(),
+    );
   });
 
   it('ensureAdminSchema creates admin_audit_logs (G-ADM-01)', async () => {
@@ -76,7 +82,9 @@ describe('HrmAdminService', () => {
     });
 
     expect(db.query).toHaveBeenCalledWith(
-      expect.stringContaining('CREATE TABLE IF NOT EXISTS public.admin_audit_logs'),
+      expect.stringContaining(
+        'CREATE TABLE IF NOT EXISTS public.admin_audit_logs',
+      ),
     );
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('ix_admin_audit_logs_target_time'),
@@ -91,7 +99,9 @@ describe('HrmAdminService', () => {
       roleCode: 'group_ceo',
     });
     const plainPassword = 'newpass123';
-    const expectedHash = createHash('sha256').update(plainPassword).digest('hex');
+    const expectedHash = createHash('sha256')
+      .update(plainPassword)
+      .digest('hex');
 
     db.query.mockImplementation(async (sql: string) => {
       if (sql.includes('UPDATE public.profiles SET password_hash')) {
@@ -112,7 +122,10 @@ describe('HrmAdminService', () => {
     expect(db.withTransaction).toHaveBeenCalled();
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('UPDATE public.profiles SET password_hash'),
-      expect.arrayContaining(['11111111-1111-4111-8111-111111111111', expectedHash]),
+      expect.arrayContaining([
+        '11111111-1111-4111-8111-111111111111',
+        expectedHash,
+      ]),
     );
 
     const auditCall = db.query.mock.calls.find(([sql]) =>
@@ -161,7 +174,10 @@ describe('HrmAdminService', () => {
       String(sql).includes('INSERT INTO public.admin_audit_logs'),
     );
     expect(auditCall?.[1]?.[3]).toBe('credential_password_and_email');
-    const detail = JSON.parse(String(auditCall?.[1]?.[4])) as Record<string, unknown>;
+    const detail = JSON.parse(String(auditCall?.[1]?.[4])) as Record<
+      string,
+      unknown
+    >;
     expect(detail.email_after).toBe('target.user@xe.vn');
     expect(detail.password_changed).toBe(true);
     expect(detail.email_changed).toBe(true);
@@ -293,8 +309,12 @@ describe('HrmAdminService', () => {
       expect(result.invited).toBe(2);
       expect(insertedHashes).toHaveLength(2);
       expect(insertedHashes[0]).not.toBe(insertedHashes[1]);
-      expect(insertedHashes[0]).not.toBe(createHash('sha256').update('12345678').digest('hex'));
-      expect(JSON.stringify(result)).not.toMatch(/password|temp_password|plainPassword/i);
+      expect(insertedHashes[0]).not.toBe(
+        createHash('sha256').update('12345678').digest('hex'),
+      );
+      expect(JSON.stringify(result)).not.toMatch(
+        /password|temp_password|plainPassword/i,
+      );
       for (const row of result.results) {
         expect(row).not.toHaveProperty('password');
         expect(row).not.toHaveProperty('temp_password');
@@ -328,7 +348,13 @@ describe('HrmAdminService', () => {
 
       const result = await service.inviteEmployees(inviteAuth(), {
         company_id: 'holding',
-        employees: [{ email: 'Existing.User@Xe.Vn', full_name: 'Existing', employee_id: null }],
+        employees: [
+          {
+            email: 'Existing.User@Xe.Vn',
+            full_name: 'Existing',
+            employee_id: null,
+          },
+        ],
       });
 
       expect(result.success).toBe(true);
@@ -353,7 +379,9 @@ describe('HrmAdminService', () => {
 
     it('upsertCompanyMembership source has no literal fixed temp password', () => {
       const src = readFileSync(join(__dirname, 'hrm-admin.service.ts'), 'utf8');
-      const upsertBlock = src.slice(src.indexOf('async upsertCompanyMembership'));
+      const upsertBlock = src.slice(
+        src.indexOf('async upsertCompanyMembership'),
+      );
       expect(upsertBlock).not.toContain("'12345678'");
       expect(upsertBlock).not.toContain('"12345678"');
       expect(upsertBlock).toContain('generateInviteTempPassword');
@@ -383,7 +411,9 @@ describe('HrmAdminService', () => {
         if (sql.includes('INSERT INTO public.user_company_memberships')) {
           return { rows: [membershipRow], rowCount: 1 } as never;
         }
-        if (sql.includes('FROM public.user_company_memberships WHERE user_id')) {
+        if (
+          sql.includes('FROM public.user_company_memberships WHERE user_id')
+        ) {
           return { rows: [membershipRow], rowCount: 1 } as never;
         }
         return { rows: [], rowCount: 0 } as never;
@@ -397,9 +427,13 @@ describe('HrmAdminService', () => {
       });
 
       expect(insertedHashes).toHaveLength(1);
-      expect(insertedHashes[0]).not.toBe(createHash('sha256').update('12345678').digest('hex'));
+      expect(insertedHashes[0]).not.toBe(
+        createHash('sha256').update('12345678').digest('hex'),
+      );
       expect(insertedHashes[0]).toMatch(/^[a-f0-9]{64}$/);
-      expect(JSON.stringify(result)).not.toMatch(/password|temp_password|plainPassword/i);
+      expect(JSON.stringify(result)).not.toMatch(
+        /password|temp_password|plainPassword/i,
+      );
       expect(result).not.toHaveProperty('password');
       expect(result).not.toHaveProperty('temp_password');
     });
@@ -431,7 +465,9 @@ describe('HrmAdminService', () => {
         if (sql.includes('INSERT INTO public.user_company_memberships')) {
           return { rows: [membershipRow], rowCount: 1 } as never;
         }
-        if (sql.includes('FROM public.user_company_memberships WHERE user_id')) {
+        if (
+          sql.includes('FROM public.user_company_memberships WHERE user_id')
+        ) {
           return { rows: [membershipRow], rowCount: 1 } as never;
         }
         return { rows: [], rowCount: 0 } as never;

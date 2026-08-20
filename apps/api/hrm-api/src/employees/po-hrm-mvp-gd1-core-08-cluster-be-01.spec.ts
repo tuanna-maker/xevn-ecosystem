@@ -97,18 +97,37 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
         const id = String(params?.[0] ?? '');
         if (id === periodOpenId) {
           return {
-            rows: [{ id: periodOpenId, company_id: 'holding', status: 'draft', period_label: '2026-08' }],
+            rows: [
+              {
+                id: periodOpenId,
+                company_id: 'holding',
+                status: 'draft',
+                period_label: '2026-08',
+              },
+            ],
           } as never;
         }
         if (id === periodOpen2Id) {
           return {
-            rows: [{ id: periodOpen2Id, company_id: 'holding', status: 'open', period_label: '2026-09' }],
+            rows: [
+              {
+                id: periodOpen2Id,
+                company_id: 'holding',
+                status: 'open',
+                period_label: '2026-09',
+              },
+            ],
           } as never;
         }
         if (id === periodLockedId) {
           return {
             rows: [
-              { id: periodLockedId, company_id: 'holding', status: 'closed', period_label: '2026-07' },
+              {
+                id: periodLockedId,
+                company_id: 'holding',
+                status: 'closed',
+                period_label: '2026-07',
+              },
             ],
           } as never;
         }
@@ -159,13 +178,23 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
           ],
         } as never;
       }
-      if (s.includes('FROM public.employee_rewards') && s.includes('SELECT *') && s.includes('LIMIT 1')) {
+      if (
+        s.includes('FROM public.employee_rewards') &&
+        s.includes('SELECT *') &&
+        s.includes('LIMIT 1')
+      ) {
         return { rows: [{ ...caseRow }] } as never;
       }
-      if (s.includes('FROM public.employee_rewards') && s.includes('ORDER BY updated_at DESC')) {
+      if (
+        s.includes('FROM public.employee_rewards') &&
+        s.includes('ORDER BY updated_at DESC')
+      ) {
         return { rows: [{ ...caseRow }] } as never;
       }
-      if (s.includes('UPDATE public.employee_rewards') && s.includes("status = $3")) {
+      if (
+        s.includes('UPDATE public.employee_rewards') &&
+        s.includes('status = $3')
+      ) {
         caseRow = {
           ...caseRow,
           status: params?.[2],
@@ -177,7 +206,10 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
         };
         return { rows: [{ ...caseRow }] } as never;
       }
-      if (s.includes('UPDATE public.employee_rewards') && s.includes("status = 'cancelled'")) {
+      if (
+        s.includes('UPDATE public.employee_rewards') &&
+        s.includes("status = 'cancelled'")
+      ) {
         caseRow = {
           ...caseRow,
           status: 'cancelled',
@@ -187,26 +219,50 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
         };
         return { rows: [{ ...caseRow }] } as never;
       }
-      if (s.includes('UPDATE public.employee_rewards') && s.includes('archived_at = NOW()')) {
+      if (
+        s.includes('UPDATE public.employee_rewards') &&
+        s.includes('archived_at = NOW()')
+      ) {
         return { rows: [{ id: rewardId }] } as never;
       }
       if (s.includes('UPDATE public.employee_rewards')) {
-        return { rows: [{ ...caseRow, updated_at: '2026-08-09T03:00:00.000Z' }] } as never;
+        return {
+          rows: [{ ...caseRow, updated_at: '2026-08-09T03:00:00.000Z' }],
+        } as never;
       }
       return { rows: [] } as never;
     });
 
-    service = new EmployeeRewardDisciplineService(db, employees as unknown as EmployeesService);
+    service = new EmployeeRewardDisciplineService(
+      db,
+      employees as unknown as EmployeesService,
+    );
   });
 
   it('ensureSchema ADD payroll_link cols on BOTH dual tables', async () => {
     await service.ensureSchema();
     const sqls = db.query.mock.calls.map((c) => String(c[0]));
-    expect(sqls.some((s) => s.includes('employee_rewards') && s.includes('payroll_link_status'))).toBe(true);
-    expect(sqls.some((s) => s.includes('employee_discipline') && s.includes('payroll_link_status'))).toBe(true);
+    expect(
+      sqls.some(
+        (s) =>
+          s.includes('employee_rewards') && s.includes('payroll_link_status'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some(
+        (s) =>
+          s.includes('employee_discipline') &&
+          s.includes('payroll_link_status'),
+      ),
+    ).toBe(true);
     expect(sqls.some((s) => s.includes('payroll_period_id'))).toBe(true);
     expect(sqls.some((s) => s.includes('archived_at'))).toBe(true);
-    expect(sqls.some((s) => s.includes('CREATE TABLE') && s.includes('hrm_reward_discipline'))).toBe(false);
+    expect(
+      sqls.some(
+        (s) =>
+          s.includes('CREATE TABLE') && s.includes('hrm_reward_discipline'),
+      ),
+    ).toBe(false);
   });
 
   it('create money without period → HRM-CORE-RD-VAL-400', async () => {
@@ -214,7 +270,12 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
       service.createReward(
         employeeId,
         query,
-        { title: 'Bonus', reward_type: 'bonus', reward_date: '2026-08-01', amount: 500000 },
+        {
+          title: 'Bonus',
+          reward_type: 'bonus',
+          reward_date: '2026-08-01',
+          amount: 500000,
+        },
         groupCeoAuth(),
       ),
     ).rejects.toMatchObject({ code: HRM_CORE_RD_VAL_400 });
@@ -224,7 +285,12 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
     const row = await service.createReward(
       employeeId,
       query,
-      { title: 'Ghi nhận', reward_type: 'note', reward_date: '2026-08-01', amount: 0 },
+      {
+        title: 'Ghi nhận',
+        reward_type: 'note',
+        reward_date: '2026-08-01',
+        amount: 0,
+      },
       groupCeoAuth(),
     );
     expect(row.status).toBe('pending');
@@ -254,12 +320,23 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
   });
 
   it('enforce → in_force + linked (U19 get parity)', async () => {
-    const enforced = await service.enforceReward(rewardId, employeeId, query, {}, groupCeoAuth());
+    const enforced = await service.enforceReward(
+      rewardId,
+      employeeId,
+      query,
+      {},
+      groupCeoAuth(),
+    );
     expect(enforced.status).toBe('in_force');
     expect(enforced.payroll_link_status).toBe('linked');
     expect(enforced.status_label).toBe('Đang thi hành');
 
-    const got = await service.getReward(rewardId, employeeId, query, groupCeoAuth());
+    const got = await service.getReward(
+      rewardId,
+      employeeId,
+      query,
+      groupCeoAuth(),
+    );
     expect(got.id).toBe(rewardId);
     expect(got.payroll_link_status).toBe('linked');
 
@@ -270,14 +347,18 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
   it('enforce amount>0 missing period → HRM-CORE-RD-ENFORCE-409', async () => {
     caseRow.payroll_period_id = null;
     caseRow.payroll_link_status = 'none';
-    await expect(service.enforceReward(rewardId, employeeId, query, {}, groupCeoAuth())).rejects.toMatchObject({
+    await expect(
+      service.enforceReward(rewardId, employeeId, query, {}, groupCeoAuth()),
+    ).rejects.toMatchObject({
       code: HRM_CORE_RD_ENFORCE_409,
     });
   });
 
   it('enforce locked period → HRM-CORE-RD-LOCKED-PERIOD-409', async () => {
     caseRow.payroll_period_id = periodLockedId;
-    await expect(service.enforceReward(rewardId, employeeId, query, {}, groupCeoAuth())).rejects.toMatchObject({
+    await expect(
+      service.enforceReward(rewardId, employeeId, query, {}, groupCeoAuth()),
+    ).rejects.toMatchObject({
       code: HRM_CORE_RD_LOCKED_PERIOD_409,
     });
   });
@@ -297,7 +378,12 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
   it('cancel-enforce unlocked → cancelled + none', async () => {
     caseRow.status = 'in_force';
     caseRow.payroll_link_status = 'linked';
-    const cancelled = await service.cancelEnforceReward(rewardId, employeeId, query, groupCeoAuth());
+    const cancelled = await service.cancelEnforceReward(
+      rewardId,
+      employeeId,
+      query,
+      groupCeoAuth(),
+    );
     expect(cancelled.status).toBe('cancelled');
     expect(cancelled.payroll_link_status).toBe('none');
     expect(cancelled.status_label).toBe('Hủy');
@@ -321,7 +407,12 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
       service.createReward(
         employeeId,
         query,
-        { title: 'X', reward_type: 'bonus', reward_date: '2026-08-01', amount: 0 },
+        {
+          title: 'X',
+          reward_type: 'bonus',
+          reward_date: '2026-08-01',
+          amount: 0,
+        },
         groupCeoAuth(),
       ),
     ).rejects.toMatchObject({ code: HRM_CORE_RD_EMP_INACTIVE_409 });
@@ -357,7 +448,12 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
   });
 
   it('soft archive delete preferred', async () => {
-    const res = await service.deleteReward(rewardId, employeeId, query, groupCeoAuth());
+    const res = await service.deleteReward(
+      rewardId,
+      employeeId,
+      query,
+      groupCeoAuth(),
+    );
     expect(res).toEqual({ id: rewardId, archived: true });
     const sqls = db.query.mock.calls.map((c) => String(c[0]));
     expect(sqls.some((s) => s.includes('archived_at = NOW()'))).toBe(true);
@@ -368,10 +464,15 @@ describe('PO-HRM-MVP-GD1-CORE-08-CLUSTER-BE-01', () => {
       join(__dirname, 'employee-reward-discipline.service.ts'),
       'utf8',
     );
-    const ctrl = readFileSync(join(__dirname, 'employees.controller.ts'), 'utf8');
+    const ctrl = readFileSync(
+      join(__dirname, 'employees.controller.ts'),
+      'utf8',
+    );
     expect(src).not.toMatch(/INSERT\s+INTO\s+.*pay_reward_link/i);
     expect(src).not.toMatch(/INSERT\s+INTO\s+.*payslip_line/i);
-    expect(src).not.toMatch(/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+public\.hrm_reward_discipline/i);
+    expect(src).not.toMatch(
+      /CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+public\.hrm_reward_discipline/i,
+    );
     expect(ctrl).not.toMatch(/@Controller\(['"]core['"]\)/);
     expect(ctrl).toMatch(/rewards\/:rewardId\/enforce/);
     expect(ctrl).toMatch(/discipline\/:disciplineId\/cancel-enforce/);

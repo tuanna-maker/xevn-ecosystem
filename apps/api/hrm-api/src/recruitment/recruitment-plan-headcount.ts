@@ -42,7 +42,11 @@ export const HRM_HC_SPAWN_QTY_DRIFT = 'HRM-HC-SPAWN-QTY-DRIFT';
 export const HRM_HC_ACTIVATION_CFG = 'HRM-HC-ACTIVATION-CFG';
 
 export type CellStatus = 'current' | 'need_hire' | 'projected';
-export type LifecycleStatus = 'open' | 'need_hire_approved' | 'fulfilled' | 'cancelled';
+export type LifecycleStatus =
+  | 'open'
+  | 'need_hire_approved'
+  | 'fulfilled'
+  | 'cancelled';
 
 export type HeadcountCell = {
   cell_id: string;
@@ -65,10 +69,15 @@ function asNonNegInt(value: unknown, fallback = 0): number {
 }
 
 /** DENY dual SoT editors ns+dx on write (VAL-REC-HC-15 · O1). */
-export function assertNoLegacyDualSotWriters(raw: unknown, path = 'months'): void {
+export function assertNoLegacyDualSotWriters(
+  raw: unknown,
+  path = 'months',
+): void {
   if (raw == null) return;
   if (Array.isArray(raw)) {
-    raw.forEach((item, i) => assertNoLegacyDualSotWriters(item, `${path}[${i}]`));
+    raw.forEach((item, i) =>
+      assertNoLegacyDualSotWriters(item, `${path}[${i}]`),
+    );
     return;
   }
   if (typeof raw !== 'object') return;
@@ -83,7 +92,12 @@ export function assertNoLegacyDualSotWriters(raw: unknown, path = 'months'): voi
     );
   }
   for (const [k, v] of Object.entries(obj)) {
-    if (k === 'departments' || k === 'positions' || k === 'months' || k === 'months_data') {
+    if (
+      k === 'departments' ||
+      k === 'positions' ||
+      k === 'months' ||
+      k === 'months_data'
+    ) {
       assertNoLegacyDualSotWriters(v, `${path}.${k}`);
     }
   }
@@ -98,7 +112,7 @@ export function normalizeHeadcountCell(
   monthHint: number,
   opts?: { planApproved?: boolean; mintWhenMissing?: boolean },
 ): HeadcountCell {
-  const obj = (raw && typeof raw === 'object' ? (raw as RawCell) : {}) as RawCell;
+  const obj = raw && typeof raw === 'object' ? (raw as RawCell) : {};
   const monthRaw = asNonNegInt(obj.month, monthHint);
   const month = monthRaw >= 1 && monthRaw <= 12 ? monthRaw : monthHint;
 
@@ -124,22 +138,31 @@ export function normalizeHeadcountCell(
   );
 
   let cell_status: CellStatus = 'current';
-  const statusRaw = typeof obj.cell_status === 'string' ? obj.cell_status.trim() : '';
-  if (statusRaw === 'current' || statusRaw === 'need_hire' || statusRaw === 'projected') {
+  const statusRaw =
+    typeof obj.cell_status === 'string' ? obj.cell_status.trim() : '';
+  if (
+    statusRaw === 'current' ||
+    statusRaw === 'need_hire' ||
+    statusRaw === 'projected'
+  ) {
     cell_status = statusRaw;
   } else if (headcount_need_hire >= 1) {
     cell_status = 'need_hire';
   }
 
   let headcount_projected: number | null = null;
-  if (obj.headcount_projected !== undefined && obj.headcount_projected !== null) {
+  if (
+    obj.headcount_projected !== undefined &&
+    obj.headcount_projected !== null
+  ) {
     headcount_projected = asNonNegInt(obj.headcount_projected, 0);
   } else if (cell_status === 'projected') {
     headcount_projected = headcount_need_hire;
   }
 
   let lifecycle_status: LifecycleStatus = 'open';
-  const lifeRaw = typeof obj.lifecycle_status === 'string' ? obj.lifecycle_status.trim() : '';
+  const lifeRaw =
+    typeof obj.lifecycle_status === 'string' ? obj.lifecycle_status.trim() : '';
   if (
     lifeRaw === 'open' ||
     lifeRaw === 'need_hire_approved' ||
@@ -147,7 +170,11 @@ export function normalizeHeadcountCell(
     lifeRaw === 'cancelled'
   ) {
     lifecycle_status = lifeRaw;
-  } else if (opts?.planApproved && cell_status === 'need_hire' && headcount_need_hire >= 1) {
+  } else if (
+    opts?.planApproved &&
+    cell_status === 'need_hire' &&
+    headcount_need_hire >= 1
+  ) {
     lifecycle_status = 'need_hire_approved';
   }
 
@@ -155,7 +182,9 @@ export function normalizeHeadcountCell(
   // (read/GET projection) but allow callers to DEFER minting (mintWhenMissing:false) so the write
   // path can reuse an existing cell_id by natural key before minting a new surrogate.
   const explicitCellId =
-    typeof obj.cell_id === 'string' && obj.cell_id.trim() ? obj.cell_id.trim() : '';
+    typeof obj.cell_id === 'string' && obj.cell_id.trim()
+      ? obj.cell_id.trim()
+      : '';
   const cell_id = explicitCellId
     ? explicitCellId
     : opts?.mintWhenMissing === false
@@ -189,7 +218,11 @@ export function toPersistCell(cell: HeadcountCell): Record<string, unknown> {
 
 export function normalizeMonthsData(
   raw: unknown,
-  opts?: { planApproved?: boolean; requireTwelve?: boolean; mintWhenMissing?: boolean },
+  opts?: {
+    planApproved?: boolean;
+    requireTwelve?: boolean;
+    mintWhenMissing?: boolean;
+  },
 ): HeadcountCell[] {
   const arr = Array.isArray(raw) ? raw : [];
   if (opts?.requireTwelve && arr.length > 0 && arr.length !== 12) {
@@ -200,7 +233,11 @@ export function normalizeMonthsData(
     );
   }
   const cells: HeadcountCell[] = [];
-  for (let i = 0; i < Math.max(arr.length, opts?.requireTwelve ? 12 : arr.length); i++) {
+  for (
+    let i = 0;
+    i < Math.max(arr.length, opts?.requireTwelve ? 12 : arr.length);
+    i++
+  ) {
     const hint = i + 1;
     const source = arr[i] ?? { month: hint, cell_status: 'current' };
     const cell = normalizeHeadcountCell(source, hint, opts);
@@ -226,23 +263,31 @@ export function lockNeedHireCells(cells: HeadcountCell[]): HeadcountCell[] {
   });
 }
 
-export function projectMonthsForApi(raw: unknown, planApproved?: boolean): HeadcountCell[] {
+export function projectMonthsForApi(
+  raw: unknown,
+  planApproved?: boolean,
+): HeadcountCell[] {
   const arr = Array.isArray(raw) ? raw : [];
   if (arr.length === 0) return [];
-  return arr.map((item, i) => normalizeHeadcountCell(item, i + 1, { planApproved }));
+  return arr.map((item, i) =>
+    normalizeHeadcountCell(item, i + 1, { planApproved }),
+  );
 }
 
 export function isPlanApprovedStatus(status: unknown): boolean {
-  return String(status ?? '')
-    .trim()
-    .toLowerCase() === 'approved';
+  return (
+    String(status ?? '')
+      .trim()
+      .toLowerCase() === 'approved'
+  );
 }
 
 export function normalizePlanStatusToken(status: unknown): string {
   const s = String(status ?? '')
     .trim()
     .toLowerCase();
-  if (s === 'pending' || s === 'draft') return s === 'draft' ? 'draft' : 'pending';
+  if (s === 'pending' || s === 'draft')
+    return s === 'draft' ? 'draft' : 'pending';
   if (s === 'submitted') return 'pending_approval';
   return s || 'pending';
 }

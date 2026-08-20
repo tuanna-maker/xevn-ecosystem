@@ -34,12 +34,19 @@ export class WebhookOutboundService {
             const sig = createHmac('sha256', secret).update(body).digest('hex');
             headers['X-HRM-Signature'] = `sha256=${sig}`;
           }
-          const res = await fetch(url, { method: 'POST', headers, body, signal: AbortSignal.timeout(8_000) });
+          const res = await fetch(url, {
+            method: 'POST',
+            headers,
+            body,
+            signal: AbortSignal.timeout(8_000),
+          });
           if (!res.ok) {
             this.logger.warn(`Webhook ${url} returned HTTP ${res.status}`);
           }
         } catch (e) {
-          this.logger.warn(`Webhook ${url} failed: ${e instanceof Error ? e.message : String(e)}`);
+          this.logger.warn(
+            `Webhook ${url} failed: ${e instanceof Error ? e.message : String(e)}`,
+          );
         }
       }),
     );

@@ -4,10 +4,14 @@ import { CatalogSyncController } from './catalog-sync.controller';
 import { CatalogSyncService } from './catalog-sync.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
@@ -17,7 +21,9 @@ describe('CatalogSyncController', () => {
   const serviceMock = {
     pullCatalogFromXbos: jest.fn().mockResolvedValue({ key: 'job_titles' }),
     getSyncedCatalog: jest.fn().mockResolvedValue({ key: 'job_titles' }),
-    listSyncedCatalogs: jest.fn().mockResolvedValue({ total: 1, data: [{ key: 'job_titles' }] }),
+    listSyncedCatalogs: jest
+      .fn()
+      .mockResolvedValue({ total: 1, data: [{ key: 'job_titles' }] }),
     getCatalogSyncStatus: jest.fn().mockResolvedValue({
       key: 'status',
       status: 'connected',
@@ -38,7 +44,9 @@ describe('CatalogSyncController', () => {
   });
 
   it('requires either bearer token or internal key', async () => {
-    await expect(controller.listLocalCatalogs(undefined, undefined)).rejects.toThrow('Unauthorized sync access');
+    await expect(
+      controller.listLocalCatalogs(undefined, undefined),
+    ).rejects.toThrow('Unauthorized sync access');
     expect(serviceMock.listSyncedCatalogs).not.toHaveBeenCalled();
   });
 
@@ -99,12 +107,23 @@ describe('CatalogSyncController', () => {
         totalSyncedCatalogs: 0,
       }),
     );
-    expect(serviceMock.getCatalogSyncStatus).toHaveBeenCalledWith('xevn', 'holding');
+    expect(serviceMock.getCatalogSyncStatus).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+    );
   });
 
   it('rejects missing scope before service mutation', async () => {
     expect(() =>
-      controller.pullFromXbos('job_titles', 'xevn', '', undefined, undefined, undefined, 'test-key'),
+      controller.pullFromXbos(
+        'job_titles',
+        'xevn',
+        '',
+        undefined,
+        undefined,
+        undefined,
+        'test-key',
+      ),
     ).toThrow('companyId is required');
     expect(serviceMock.pullCatalogFromXbos).not.toHaveBeenCalled();
   });
@@ -117,7 +136,14 @@ describe('CatalogSyncController', () => {
       companyId: 'vtc',
     });
     await expect(
-      controller.listLocalCatalogs('xevn', 'vtc', undefined, undefined, `Bearer ${token}`, 'test-key'),
+      controller.listLocalCatalogs(
+        'xevn',
+        'vtc',
+        undefined,
+        undefined,
+        `Bearer ${token}`,
+        'test-key',
+      ),
     ).resolves.toBeDefined();
     await expect(
       controller.listLocalCatalogs(
@@ -148,7 +174,10 @@ describe('CatalogSyncController', () => {
       `Bearer ${token}`,
       undefined,
     );
-    expect(serviceMock.listSyncedCatalogs).toHaveBeenCalledWith('xevn', 'holding');
+    expect(serviceMock.listSyncedCatalogs).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+    );
   });
 
   it('J-XBOS-02: group CEO accepts holding query alias for pull', async () => {
@@ -185,8 +214,18 @@ describe('CatalogSyncController', () => {
       roleCode: 'group_ceo',
     });
     const auth = `Bearer ${token}`;
-    await controller.listLocalCatalogs('xevn', 'holding', undefined, undefined, auth, undefined);
-    expect(serviceMock.listSyncedCatalogs).toHaveBeenCalledWith('xevn', 'holding');
+    await controller.listLocalCatalogs(
+      'xevn',
+      'holding',
+      undefined,
+      undefined,
+      auth,
+      undefined,
+    );
+    expect(serviceMock.listSyncedCatalogs).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+    );
     await controller.pullFromXbos(
       'contract_types',
       'xevn',

@@ -14,14 +14,18 @@
  */
 
 export const REC_PIPELINE_STAGE_STATUSES = ['active', 'retired'] as const;
-export type RecPipelineStageStatus = (typeof REC_PIPELINE_STAGE_STATUSES)[number];
+export type RecPipelineStageStatus =
+  (typeof REC_PIPELINE_STAGE_STATUSES)[number];
 
 /** Format-only — FORBIDDEN closed stage_key enum (BR-PLT-05 / starter six). */
 export const REC_PIPELINE_STAGE_KEY_FORMAT = /^[a-z][a-z0-9_]*$/;
 
 export const REC_PIPELINE_STAGE_CATALOG_KIND = 'rec_pipeline_stage' as const;
 
-export type RecPipelineStageSource = 'rec_native' | 'group_ref' | 'rec_override';
+export type RecPipelineStageSource =
+  | 'rec_native'
+  | 'group_ref'
+  | 'rec_override';
 
 /** Platform taxonomy (VAL-REC-STG-02/03). */
 export const HRM_PLT_CAT_CODE_INVALID = 'HRM-PLT-CAT-CODE-INVALID';
@@ -41,7 +45,8 @@ export const HRM_REC_STAGE_REJECT_REASON = 'HRM-REC-STAGE-REJECT-REASON';
 /**
  * FR-UC-BP-REC-05 / O6 — reverse khi CFG recruitment.allow_reverse_stage=false.
  */
-export const HRM_REC_STAGE_REVERSE_FORBIDDEN = 'HRM-REC-STAGE-REVERSE-FORBIDDEN';
+export const HRM_REC_STAGE_REVERSE_FORBIDDEN =
+  'HRM-REC-STAGE-REVERSE-FORBIDDEN';
 /**
  * FR-UC-BP-REC-05 / O4 — transition khi EFF=0 (preferred ≠ invent soft-allow).
  */
@@ -61,7 +66,11 @@ export const HRM_VAL_400 = 'HRM-VAL-400';
 export const CFG_ALLOW_REVERSE_STAGE = 'recruitment.allow_reverse_stage';
 
 /** Fallback reject-class keys when catalog is_reject_outcome absent (API-01 §4.2). */
-export const REC_STAGE_REJECT_KEY_FALLBACK = ['rejected', 'reject', 'withdrawn'] as const;
+export const REC_STAGE_REJECT_KEY_FALLBACK = [
+  'rejected',
+  'reject',
+  'withdrawn',
+] as const;
 
 /**
  * Docs-only bootstrap examples — NOT a product ceiling; NEVER enforce IN (…).

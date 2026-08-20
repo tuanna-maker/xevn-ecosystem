@@ -70,7 +70,9 @@ export function calendarYearFromIsoDate(effectiveDateIso: string): number {
 }
 
 export function todayIsoInHcm(): string {
-  const iso = new Intl.DateTimeFormat('en-CA', { timeZone: HCM_TIMEZONE }).format(new Date());
+  const iso = new Intl.DateTimeFormat('en-CA', {
+    timeZone: HCM_TIMEZONE,
+  }).format(new Date());
   const match = /^(\d{4}-\d{2}-\d{2})/.exec(iso);
   return match ? match[1] : new Date().toISOString().slice(0, 10);
 }

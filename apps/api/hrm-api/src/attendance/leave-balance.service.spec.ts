@@ -22,7 +22,12 @@ describe('LeaveBalanceService', () => {
 
   function mockEmployeeLoad() {
     db.query.mockImplementation((sql: string) => {
-      if (typeof sql === 'string' && sql.includes('CREATE TABLE IF NOT EXISTS public.employee_leave_balances')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes(
+          'CREATE TABLE IF NOT EXISTS public.employee_leave_balances',
+        )
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
       if (typeof sql === 'string' && sql.includes('FROM public.employees e')) {
@@ -92,7 +97,9 @@ describe('LeaveBalanceService', () => {
       }
       if (typeof sql === 'string' && sql.includes('FROM public.employees e')) {
         return Promise.resolve({
-          rows: [{ id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} }],
+          rows: [
+            { id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} },
+          ],
         } as never);
       }
       return Promise.resolve({ rows: [] } as never);
@@ -153,7 +160,9 @@ describe('LeaveBalanceService', () => {
       }
       if (typeof sql === 'string' && sql.includes('FROM public.employees e')) {
         return Promise.resolve({
-          rows: [{ id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} }],
+          rows: [
+            { id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} },
+          ],
         } as never);
       }
       return Promise.resolve({ rows: [] } as never);
@@ -204,7 +213,9 @@ describe('LeaveBalanceService', () => {
       }
       if (typeof sql === 'string' && sql.includes('FROM public.employees e')) {
         return Promise.resolve({
-          rows: [{ id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} }],
+          rows: [
+            { id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} },
+          ],
         } as never);
       }
       return Promise.resolve({ rows: [] } as never);
@@ -221,7 +232,8 @@ describe('LeaveBalanceService', () => {
     );
 
     const employeeSql = db.query.mock.calls.find(
-      ([sql]) => typeof sql === 'string' && sql.includes('FROM public.employees e'),
+      ([sql]) =>
+        typeof sql === 'string' && sql.includes('FROM public.employees e'),
     )?.[0] as string;
     expect(employeeSql).toContain('e.id IN');
   });
@@ -234,10 +246,15 @@ describe('LeaveBalanceService', () => {
       }
       if (typeof sql === 'string' && sql.includes('FROM public.employees e')) {
         return Promise.resolve({
-          rows: [{ id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} }],
+          rows: [
+            { id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} },
+          ],
         } as never);
       }
-      if (typeof sql === 'string' && sql.includes('FROM public.employee_leave_balances')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.employee_leave_balances')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -278,7 +295,8 @@ describe('LeaveBalanceService', () => {
     );
 
     const employeeSql = db.query.mock.calls.find(
-      ([sql]) => typeof sql === 'string' && sql.includes('FROM public.employees e'),
+      ([sql]) =>
+        typeof sql === 'string' && sql.includes('FROM public.employees e'),
     )?.[0] as string;
     expect(employeeSql).toContain('e.id IN');
     expect(employeeSql).not.toMatch(/e\.company_id\s*=\s*\$\d+::uuid/);
@@ -302,7 +320,10 @@ describe('LeaveBalanceService', () => {
           ],
         } as never);
       }
-      if (typeof sql === 'string' && sql.includes('FROM public.employee_leave_balances')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.employee_leave_balances')
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
       return Promise.resolve({ rows: [] } as never);
@@ -330,10 +351,15 @@ describe('LeaveBalanceService', () => {
       }
       if (typeof sql === 'string' && sql.includes('FROM public.employees e')) {
         return Promise.resolve({
-          rows: [{ id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} }],
+          rows: [
+            { id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} },
+          ],
         } as never);
       }
-      if (typeof sql === 'string' && sql.includes('FROM public.employee_leave_balances')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.employee_leave_balances')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -393,10 +419,12 @@ describe('LeaveBalanceService', () => {
     expect(seniority?.source).toBe('default');
     expect(seniority?.available_days).toBe(0);
     expect(seniority?.leave_type_label).toBe('Phép thâm niên');
-    expect(panel.items.find((i) => i.leave_type === 'carry_over')?.leave_type_label).toBe(
-      'Phép chuyển kỳ',
-    );
-    expect(panel.items.find((i) => i.leave_type === 'advance')?.leave_type_label).toBe('Ứng phép');
+    expect(
+      panel.items.find((i) => i.leave_type === 'carry_over')?.leave_type_label,
+    ).toBe('Phép chuyển kỳ');
+    expect(
+      panel.items.find((i) => i.leave_type === 'advance')?.leave_type_label,
+    ).toBe('Ứng phép');
   });
 
   it('ATT-05b: panel rejects foreign employee for non-HR JWT (scope parity)', async () => {
@@ -425,15 +453,27 @@ describe('LeaveBalanceService', () => {
         if (typeof sql === 'string' && sql.includes('CREATE TABLE')) {
           return Promise.resolve({ rows: [] } as never);
         }
-        if (typeof sql === 'string' && sql.includes('FROM public.employees e')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('FROM public.employees e')
+        ) {
           return Promise.resolve({
-            rows: [{ id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} }],
+            rows: [
+              { id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} },
+            ],
           } as never);
         }
-        if (typeof sql === 'string' && sql.includes('FROM public.employee_leave_balances') && sql.includes('LIMIT 1')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('FROM public.employee_leave_balances') &&
+          sql.includes('LIMIT 1')
+        ) {
           return Promise.resolve({ rows: [] } as never);
         }
-        if (typeof sql === 'string' && sql.includes('INSERT INTO public.employee_leave_balances')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('INSERT INTO public.employee_leave_balances')
+        ) {
           return Promise.resolve({
             rows: [
               {
@@ -487,12 +527,20 @@ describe('LeaveBalanceService', () => {
         if (typeof sql === 'string' && sql.includes('CREATE TABLE')) {
           return Promise.resolve({ rows: [] } as never);
         }
-        if (typeof sql === 'string' && sql.includes('FROM public.employees e')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('FROM public.employees e')
+        ) {
           return Promise.resolve({
-            rows: [{ id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} }],
+            rows: [
+              { id: EMPLOYEE_ID, company_id: COMPANY_SLUG, custom_fields: {} },
+            ],
           } as never);
         }
-        if (typeof sql === 'string' && sql.includes('FROM public.employee_leave_balances')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('FROM public.employee_leave_balances')
+        ) {
           return Promise.resolve({
             rows: [
               {
@@ -536,15 +584,25 @@ describe('LeaveBalanceService', () => {
   it('ATT-06 BE-02: compensatory entitled from holding row when employee.company_id is pilot UUID', async () => {
     const HOLDING_UUID = '10000000-0000-4000-8000-000000000001';
     db.query.mockImplementation((sql: string, params?: unknown[]) => {
-      if (typeof sql === 'string' && sql.includes('CREATE TABLE IF NOT EXISTS public.employee_leave_balances')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes(
+          'CREATE TABLE IF NOT EXISTS public.employee_leave_balances',
+        )
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
       if (typeof sql === 'string' && sql.includes('FROM public.employees e')) {
         return Promise.resolve({
-          rows: [{ id: EMPLOYEE_ID, company_id: HOLDING_UUID, custom_fields: {} }],
+          rows: [
+            { id: EMPLOYEE_ID, company_id: HOLDING_UUID, custom_fields: {} },
+          ],
         } as never);
       }
-      if (typeof sql === 'string' && sql.includes('FROM public.employee_leave_balances')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.employee_leave_balances')
+      ) {
         const keys = params?.[0] as string[];
         expect(keys).toEqual(expect.arrayContaining(['holding', HOLDING_UUID]));
         return Promise.resolve({

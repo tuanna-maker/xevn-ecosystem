@@ -70,7 +70,8 @@ import { ResetUserPasswordDto } from './dto/reset-user-password.dto';
 /** §C.1 charset: A–Z a–z 0–9 + optional symbols (no whitespace/quotes). */
 const INVITE_TEMP_CHARSET =
   'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*-_=+';
-const INVITE_TEMP_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const INVITE_TEMP_LETTERS =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 const INVITE_TEMP_DIGITS = '0123456789';
 const INVITE_TEMP_DEFAULT_LENGTH = 16;
 
@@ -78,18 +79,20 @@ const INVITE_TEMP_DEFAULT_LENGTH = 16;
  * CSPRNG temporary password for invite create (new profile only).
  * BR-ADM-04-TEMP-PWD-03..05 · AC-ADM-04-TEMP-05
  */
-export function generateInviteTempPassword(length = INVITE_TEMP_DEFAULT_LENGTH): string {
+export function generateInviteTempPassword(
+  length = INVITE_TEMP_DEFAULT_LENGTH,
+): string {
   const len = Math.max(12, Math.floor(length));
   const chars: string[] = [
-    INVITE_TEMP_LETTERS[randomInt(INVITE_TEMP_LETTERS.length)]!,
-    INVITE_TEMP_DIGITS[randomInt(INVITE_TEMP_DIGITS.length)]!,
+    INVITE_TEMP_LETTERS[randomInt(INVITE_TEMP_LETTERS.length)],
+    INVITE_TEMP_DIGITS[randomInt(INVITE_TEMP_DIGITS.length)],
   ];
   for (let i = chars.length; i < len; i += 1) {
-    chars.push(INVITE_TEMP_CHARSET[randomInt(INVITE_TEMP_CHARSET.length)]!);
+    chars.push(INVITE_TEMP_CHARSET[randomInt(INVITE_TEMP_CHARSET.length)]);
   }
   for (let i = chars.length - 1; i > 0; i -= 1) {
     const j = randomInt(i + 1);
-    const tmp = chars[i]!;
+    const tmp = chars[i];
     chars[i] = chars[j]!;
     chars[j] = tmp;
   }
@@ -98,7 +101,8 @@ export function generateInviteTempPassword(length = INVITE_TEMP_DEFAULT_LENGTH):
 
 @Injectable()
 export class HrmAdminService {
-  private readonly internalApiKey = process.env.INTERNAL_API_KEY ?? process.env.HRM_INTERNAL_API_KEY ?? '';
+  private readonly internalApiKey =
+    process.env.INTERNAL_API_KEY ?? process.env.HRM_INTERNAL_API_KEY ?? '';
 
   constructor(private readonly db: HrmDbService) {}
 
@@ -219,7 +223,10 @@ export class HrmAdminService {
   private resolveCredentialAuditAction(
     passwordChanged: boolean,
     emailChanged: boolean,
-  ): 'credential_password_reset' | 'credential_email_change' | 'credential_password_and_email' {
+  ):
+    | 'credential_password_reset'
+    | 'credential_email_change'
+    | 'credential_password_and_email' {
     if (passwordChanged && emailChanged) {
       return 'credential_password_and_email';
     }
@@ -231,14 +238,24 @@ export class HrmAdminService {
 
   private async assertPlatformAdmin(authorization: string): Promise<string> {
     if (!authorization?.startsWith('Bearer ')) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     const payload = getVerifiedInternalJwtPayload(authorization);
     if (!payload?.sub) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     const callerKey = String(payload.sub);
-    const roleCode = String(payload.roleCode ?? payload.role ?? '').toLowerCase();
+    const roleCode = String(
+      payload.roleCode ?? payload.role ?? '',
+    ).toLowerCase();
     if (roleCode === 'platform_admin' || roleCode === 'group_ceo') {
       return callerKey;
     }
@@ -253,7 +270,11 @@ export class HrmAdminService {
       [callerKey, callerKey],
     );
     if (!adminRes.rows[0]) {
-      throw new ApiException('HRM-AUTH-002', 'Not a platform admin', HttpStatus.FORBIDDEN);
+      throw new ApiException(
+        'HRM-AUTH-002',
+        'Not a platform admin',
+        HttpStatus.FORBIDDEN,
+      );
     }
     return adminRes.rows[0].user_id;
   }
@@ -288,10 +309,17 @@ export class HrmAdminService {
     return { userId, isExisting: false };
   }
 
-  async createPlatformAdmin(authorization: string | undefined, payload: CreatePlatformAdminDto) {
+  async createPlatformAdmin(
+    authorization: string | undefined,
+    payload: CreatePlatformAdminDto,
+  ) {
     await this.assertPlatformAdmin(authorization ?? '');
     const fullName = payload.full_name || payload.email.split('@')[0];
-    const { userId } = await this.findOrCreatePortalUser(payload.email, payload.password, fullName);
+    const { userId } = await this.findOrCreatePortalUser(
+      payload.email,
+      payload.password,
+      fullName,
+    );
     await this.db.query(
       `
         INSERT INTO public.platform_admins (user_id, email, granted_by)
@@ -303,7 +331,10 @@ export class HrmAdminService {
     return { success: true, user_id: userId };
   }
 
-  async createCompanyAdmin(authorization: string | undefined, payload: CreateCompanyAdminDto) {
+  async createCompanyAdmin(
+    authorization: string | undefined,
+    payload: CreateCompanyAdminDto,
+  ) {
     await this.assertPlatformAdmin(authorization ?? '');
     const fullName = payload.full_name || payload.email.split('@')[0];
     const { userId, isExisting } = await this.findOrCreatePortalUser(
@@ -335,20 +366,33 @@ export class HrmAdminService {
     return { success: true, user_id: userId, is_existing_user: isExisting };
   }
 
-  async inviteEmployees(authorization: string | undefined, payload: InviteEmployeesDto) {
+  async inviteEmployees(
+    authorization: string | undefined,
+    payload: InviteEmployeesDto,
+  ) {
     if (!authorization?.startsWith('Bearer ')) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     const token = authorization.replace('Bearer ', '');
-    const isServiceRole = Boolean(this.internalApiKey) && token === this.internalApiKey;
+    const isServiceRole =
+      Boolean(this.internalApiKey) && token === this.internalApiKey;
     if (!isServiceRole) {
       await this.assertPlatformAdmin(authorization);
     }
-    const results: Array<{ email: string; success: boolean; error?: string }> = [];
+    const results: Array<{ email: string; success: boolean; error?: string }> =
+      [];
     for (const employee of payload.employees) {
       try {
         if (!employee.email) {
-          results.push({ email: 'N/A', success: false, error: 'No email provided' });
+          results.push({
+            email: 'N/A',
+            success: false,
+            error: 'No email provided',
+          });
           continue;
         }
         const fullName = employee.full_name || employee.email.split('@')[0];
@@ -381,7 +425,8 @@ export class HrmAdminService {
         );
         results.push({ email: employee.email, success: true });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Unknown error';
+        const message =
+          error instanceof Error ? error.message : 'Unknown error';
         results.push({ email: employee.email, success: false, error: message });
       }
     }
@@ -395,15 +440,23 @@ export class HrmAdminService {
     };
   }
 
-  async resetUserPassword(authorization: string | undefined, payload: ResetUserPasswordDto) {
+  async resetUserPassword(
+    authorization: string | undefined,
+    payload: ResetUserPasswordDto,
+  ) {
     await this.assertPlatformAdmin(authorization ?? '');
     await this.ensureAdminSchema();
     const actorSub = this.resolveActorSub(authorization ?? '');
     const actorUserId = await this.resolveActorUserId(actorSub);
     const passwordChanged = Boolean(payload.new_password);
     const emailChanged = Boolean(payload.new_email);
-    const emailAfter = emailChanged ? String(payload.new_email).trim().toLowerCase() : undefined;
-    const action = this.resolveCredentialAuditAction(passwordChanged, emailChanged);
+    const emailAfter = emailChanged
+      ? String(payload.new_email).trim().toLowerCase()
+      : undefined;
+    const action = this.resolveCredentialAuditAction(
+      passwordChanged,
+      emailChanged,
+    );
 
     // Same TX preferred — fail-closed if audit INSERT fails (API_DESIGN §D / §D.1)
     await this.db.withTransaction(async (query) => {
@@ -459,14 +512,23 @@ export class HrmAdminService {
             $1::uuid, $2, $3::uuid, $4, 'success', $5::jsonb
           );
         `,
-        [actorUserId, actorSub, payload.user_id, action, JSON.stringify(detail)],
+        [
+          actorUserId,
+          actorSub,
+          payload.user_id,
+          action,
+          JSON.stringify(detail),
+        ],
       );
     });
 
     return { success: true };
   }
 
-  async listCompanyMemberships(authorization: string | undefined, companyId?: string) {
+  async listCompanyMemberships(
+    authorization: string | undefined,
+    companyId?: string,
+  ) {
     await this.assertPlatformAdmin(authorization ?? '');
     await this.ensureAdminSchema();
     const filters: string[] = [];
@@ -500,7 +562,13 @@ export class HrmAdminService {
   async updateCompanyMembership(
     authorization: string | undefined,
     membershipId: string,
-    payload: { role?: string; employee_id?: string | null; status?: string; full_name?: string; email?: string },
+    payload: {
+      role?: string;
+      employee_id?: string | null;
+      status?: string;
+      full_name?: string;
+      email?: string;
+    },
   ) {
     await this.assertPlatformAdmin(authorization ?? '');
     await this.ensureAdminSchema();
@@ -523,12 +591,19 @@ export class HrmAdminService {
       ],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-ADMIN-404', 'Membership not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ADMIN-404',
+        'Membership not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return res.rows[0];
   }
 
-  async deleteCompanyMembership(authorization: string | undefined, membershipId: string) {
+  async deleteCompanyMembership(
+    authorization: string | undefined,
+    membershipId: string,
+  ) {
     await this.assertPlatformAdmin(authorization ?? '');
     await this.ensureAdminSchema();
     const res = await this.db.query(
@@ -536,7 +611,11 @@ export class HrmAdminService {
       [membershipId],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-ADMIN-404', 'Membership not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ADMIN-404',
+        'Membership not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: membershipId };
   }

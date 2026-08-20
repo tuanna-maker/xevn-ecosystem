@@ -52,7 +52,11 @@ export async function loadPayTaxProcessContext(
   companyId: string,
   authorization?: string,
 ): Promise<PayTaxProcessContext> {
-  const regime = await settingsTax.readRequiredTaxValue(companyId, PAY_TAX_REGIME, authorization);
+  const regime = await settingsTax.readRequiredTaxValue(
+    companyId,
+    PAY_TAX_REGIME,
+    authorization,
+  );
   const regimeCode = String(regime.code ?? '').trim();
   if (regimeCode === 'other') {
     return {
@@ -64,11 +68,17 @@ export async function loadPayTaxProcessContext(
     };
   }
 
-  const flags = await settingsTax.readRequiredTaxValue(companyId, PAY_TAX_FLAGS, authorization);
-  const applyPersonal =
-    Boolean(flags.applyPersonalDeduction ?? flags.apply_personal_deduction ?? false);
-  const applyDependent =
-    Boolean(flags.applyDependentDeduction ?? flags.apply_dependent_deduction ?? false);
+  const flags = await settingsTax.readRequiredTaxValue(
+    companyId,
+    PAY_TAX_FLAGS,
+    authorization,
+  );
+  const applyPersonal = Boolean(
+    flags.applyPersonalDeduction ?? flags.apply_personal_deduction ?? false,
+  );
+  const applyDependent = Boolean(
+    flags.applyDependentDeduction ?? flags.apply_dependent_deduction ?? false,
+  );
 
   let personalDeductionVnd = 0;
   let dependentDeductionPerUnitVnd = 0;
@@ -112,7 +122,10 @@ export function computePayTncnBreakdown(input: {
     ? roundMoney(input.taxContext.personalDeductionVnd)
     : 0;
   const dependent = input.taxContext.applyDependentDeduction
-    ? roundMoney(input.taxContext.dependentDeductionPerUnitVnd * Math.max(0, input.dependentsCount))
+    ? roundMoney(
+        input.taxContext.dependentDeductionPerUnitVnd *
+          Math.max(0, input.dependentsCount),
+      )
     : 0;
 
   const taxableIncomeVnd = roundMoney(Math.max(0, gross - gtgc - siEe));
@@ -136,7 +149,9 @@ export function computePayTncnBreakdown(input: {
   };
 }
 
-export async function ensurePayrollPayslipsTaxColumn(db: HrmDbService): Promise<void> {
+export async function ensurePayrollPayslipsTaxColumn(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     ALTER TABLE public.payroll_payslips
       ADD COLUMN IF NOT EXISTS tax_amount NUMERIC(15,2) NULL;

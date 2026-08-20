@@ -28,39 +28,47 @@ describe('D-HDSD-MUTATE-BE-03 listJobDescriptionTemplates scope_parity', () => {
     const templateId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
     const listSqlParams: unknown[][] = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE')) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE')) {
+            return { rows: [] };
+          }
+          if (s.includes('FROM public.job_description_templates')) {
+            listSqlParams.push(params ?? []);
+            return {
+              rows: [
+                {
+                  id: templateId,
+                  company_id: 'holding',
+                  code: 'JD-HDSDUS0BK',
+                  title: 'QA JD HDSDUS0BK',
+                  position_name: 'Tổng Giám đốc',
+                  position_code: 'CEO',
+                  job_description: null,
+                  requirements: null,
+                  notes: null,
+                  is_active: true,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
           return { rows: [] };
-        }
-        if (s.includes('FROM public.job_description_templates')) {
-          listSqlParams.push(params ?? []);
-          return {
-            rows: [
-              {
-                id: templateId,
-                company_id: 'holding',
-                code: 'JD-HDSDUS0BK',
-                title: 'QA JD HDSDUS0BK',
-                position_name: 'Tổng Giám đốc',
-                position_code: 'CEO',
-                job_description: null,
-                requirements: null,
-                notes: null,
-                is_active: true,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+        }),
       onModuleDestroy: jest.fn(),
     };
-    const svc = new RecruitmentCatalogService(db as never, mockBridge() as never);
+    const svc = new RecruitmentCatalogService(
+      db as never,
+      mockBridge() as never,
+    );
 
-    const result = await svc.listJobDescriptionTemplates('main', groupCeoAuth());
+    const result = await svc.listJobDescriptionTemplates(
+      'main',
+      groupCeoAuth(),
+    );
 
     expect(result.total).toBe(1);
     expect(result.data[0]?.company_id).toBe('holding');
@@ -70,38 +78,50 @@ describe('D-HDSD-MUTATE-BE-03 listJobDescriptionTemplates scope_parity', () => {
       expect.arrayContaining([expect.arrayContaining(['holding'])]),
     );
     expect(listSqlParams[0]?.[0]).toEqual(
-      expect.arrayContaining(['holding', 'trsport', 'logistics', 'finance', 'services']),
+      expect.arrayContaining([
+        'holding',
+        'trsport',
+        'logistics',
+        'finance',
+        'services',
+      ]),
     );
   });
 
   it('create persists main→holding so list rollup finds new JD (parity with resolveHrmPersistCompanyIdText)', async () => {
     const insertParams: unknown[][] = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE')) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE')) {
+            return { rows: [] };
+          }
+          if (
+            s.includes(
+              'SELECT id FROM public.job_description_templates WHERE company_id',
+            )
+          ) {
+            return { rows: [] };
+          }
+          if (s.includes('INSERT INTO public.job_description_templates')) {
+            insertParams.push(params ?? []);
+            return {
+              rows: [
+                {
+                  id: params?.[0],
+                  company_id: params?.[1],
+                  code: params?.[2],
+                  title: params?.[3],
+                  position_code: params?.[5],
+                  is_active: true,
+                },
+              ],
+            };
+          }
           return { rows: [] };
-        }
-        if (s.includes('SELECT id FROM public.job_description_templates WHERE company_id')) {
-          return { rows: [] };
-        }
-        if (s.includes('INSERT INTO public.job_description_templates')) {
-          insertParams.push(params ?? []);
-          return {
-            rows: [
-              {
-                id: params?.[0],
-                company_id: params?.[1],
-                code: params?.[2],
-                title: params?.[3],
-                position_code: params?.[5],
-                is_active: true,
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+        }),
       onModuleDestroy: jest.fn(),
     };
     const catalogs = {
@@ -111,7 +131,11 @@ describe('D-HDSD-MUTATE-BE-03 listJobDescriptionTemplates scope_parity', () => {
         status: 'active',
       }),
     };
-    const svc = new RecruitmentCatalogService(db as never, mockBridge() as never, catalogs as never);
+    const svc = new RecruitmentCatalogService(
+      db as never,
+      mockBridge() as never,
+      catalogs as never,
+    );
 
     const created = await svc.createJobDescriptionTemplate(
       {
@@ -127,5 +151,4 @@ describe('D-HDSD-MUTATE-BE-03 listJobDescriptionTemplates scope_parity', () => {
     expect(created.company_id).toBe('holding');
     expect(insertParams[0]?.[1]).toBe('holding');
   });
-
 });

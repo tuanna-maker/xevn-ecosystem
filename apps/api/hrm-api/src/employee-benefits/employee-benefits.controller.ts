@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -14,7 +25,11 @@ export class EmployeeBenefitsController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized employee benefits access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized employee benefits access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -27,7 +42,10 @@ export class EmployeeBenefitsController {
     @Query() query: ListEmployeeBenefitsQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .list(query, authorization)
       .then((data) => ok(data, 'HRM-EBEN-200', 'Employee benefits listed'));
@@ -43,7 +61,10 @@ export class EmployeeBenefitsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.service
       .getById(benefitId, companyId, authorization)
       .then((data) => ok(data, 'HRM-EBEN-200', 'Employee benefit loaded'));
@@ -58,7 +79,10 @@ export class EmployeeBenefitsController {
     @Body() body: CreateEmployeeBenefitDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.service
       .create(body, authorization)
       .then((data) => ok(data, 'HRM-EBEN-201', 'Employee benefit created'));
@@ -74,7 +98,10 @@ export class EmployeeBenefitsController {
     @Body() body: UpdateEmployeeBenefitDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.service
       .update(benefitId, body, authorization)
       .then((data) => ok(data, 'HRM-EBEN-200', 'Employee benefit updated'));
@@ -90,7 +117,10 @@ export class EmployeeBenefitsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.service
       .remove(benefitId, companyId, authorization)
       .then((data) => ok(data, 'HRM-EBEN-200', 'Employee benefit deleted'));

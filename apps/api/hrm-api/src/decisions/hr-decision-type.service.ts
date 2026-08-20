@@ -268,7 +268,10 @@ export class HrDecisionTypeService {
     return null;
   }
 
-  private display(row: HrDecisionTypeRow, source: HrDecisionTypeSource): HrDecisionTypeDisplay {
+  private display(
+    row: HrDecisionTypeRow,
+    source: HrDecisionTypeSource,
+  ): HrDecisionTypeDisplay {
     return {
       id: row.id,
       companyId: row.company_id,
@@ -342,10 +345,23 @@ export class HrDecisionTypeService {
     return wh;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -400,14 +416,18 @@ export class HrDecisionTypeService {
     if (String(item.status ?? '').toLowerCase() !== 'active') {
       return null;
     }
-    const meta = item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
+    const meta =
+      item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
     const nameVi = String(item.label ?? item.name ?? code).trim() || code;
     const now = new Date().toISOString();
-    const isPersonBound = Boolean(meta?.is_person_bound ?? meta?.isPersonBound ?? meta?.person_bound);
+    const isPersonBound = Boolean(
+      meta?.is_person_bound ?? meta?.isPersonBound ?? meta?.person_bound,
+    );
     const writesWorkHistory = Boolean(
       meta?.writes_work_history ?? meta?.writesWorkHistory,
     );
-    const whEventType = String(meta?.wh_event_type ?? meta?.whEventType ?? '').trim() || null;
+    const whEventType =
+      String(meta?.wh_event_type ?? meta?.whEventType ?? '').trim() || null;
     const requiresPositionKey =
       meta?.requires_position_key != null || meta?.requiresPositionKey != null
         ? Boolean(meta?.requires_position_key ?? meta?.requiresPositionKey)
@@ -448,8 +468,13 @@ export class HrDecisionTypeService {
     workHistoryNeoKeys: string[];
   }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, options?.tenantId);
-    const personBoundOnly = String(query.person_bound_only ?? '').toLowerCase() === 'true';
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      options?.tenantId,
+    );
+    const personBoundOnly =
+      String(query.person_bound_only ?? '').toLowerCase() === 'true';
     const decRows = await this.loadDecNativeRows(companyKeys, {
       includeArchived: false,
       status: 'active',
@@ -458,12 +483,16 @@ export class HrDecisionTypeService {
     });
     const byKey = new Map<string, HrDecisionTypeDisplay>();
     for (const row of decRows) {
-      byKey.set(row.decision_type_key.toLowerCase(), this.display(row, 'dec_native'));
+      byKey.set(
+        row.decision_type_key.toLowerCase(),
+        this.display(row, 'dec_native'),
+      );
     }
 
     const settings = this.resolveSettingsCatalogs();
     if (settings) {
-      const tenantId = options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
+      const tenantId =
+        options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
       const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
         authorization,
         tenantId,
@@ -504,14 +533,19 @@ export class HrDecisionTypeService {
       if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
       return a.decisionTypeKey.localeCompare(b.decisionTypeKey);
     });
-    const personBoundKeys = data.filter((r) => r.isPersonBound).map((r) => r.decisionTypeKey.toLowerCase());
+    const personBoundKeys = data
+      .filter((r) => r.isPersonBound)
+      .map((r) => r.decisionTypeKey.toLowerCase());
     const workHistoryNeoKeys = data
       .filter((r) => r.writesWorkHistory)
       .map((r) => r.decisionTypeKey.toLowerCase());
     return { total: data.length, data, personBoundKeys, workHistoryNeoKeys };
   }
 
-  private matchesKeyOrAlias(row: HrDecisionTypeDisplay, needle: string): boolean {
+  private matchesKeyOrAlias(
+    row: HrDecisionTypeDisplay,
+    needle: string,
+  ): boolean {
     const n = needle.toLowerCase();
     if (row.decisionTypeKey.toLowerCase() === n) return true;
     return (row.legacyAliasKeys ?? []).some((a) => a === n);
@@ -562,7 +596,8 @@ export class HrDecisionTypeService {
     tenantId?: string,
   ): Promise<{ total: number; data: HrDecisionTypeDisplay[] }> {
     await this.ensureSchema();
-    const includeGroupRef = String(query.include_group_ref ?? '').toLowerCase() === 'true';
+    const includeGroupRef =
+      String(query.include_group_ref ?? '').toLowerCase() === 'true';
     if (includeGroupRef) {
       const eff = await this.listEffective(
         {
@@ -575,9 +610,15 @@ export class HrDecisionTypeService {
       );
       return { total: eff.total, data: eff.data };
     }
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
-    const personBoundOnly = String(query.person_bound_only ?? '').toLowerCase() === 'true';
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
+    const personBoundOnly =
+      String(query.person_bound_only ?? '').toLowerCase() === 'true';
     const rows = await this.loadDecNativeRows(companyKeys, {
       includeArchived,
       status: query.status,
@@ -606,7 +647,11 @@ export class HrDecisionTypeService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_DEC_TYP_404, 'Decision type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_DEC_TYP_404,
+        'Decision type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_DEC_TYP_404,
@@ -622,11 +667,19 @@ export class HrDecisionTypeService {
     tenantId?: string,
   ): Promise<HrDecisionTypeDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const decisionTypeKey = this.assertKeyFormat(body.decisionTypeKey);
     const nameVi = body.nameVi.trim();
     if (!nameVi) {
-      throw new ApiException(HRM_PLT_CAT_CODE_INVALID, 'nameVi is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_PLT_CAT_CODE_INVALID,
+        'nameVi is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const writesWorkHistory = body.writesWorkHistory ?? false;
     const isPersonBound = body.isPersonBound ?? false;
@@ -639,10 +692,15 @@ export class HrDecisionTypeService {
       body.requiresPositionKey ?? (writesWorkHistory ? true : false);
     const status = body.status ? this.assertStatus(body.status) : 'active';
     const sortOrder = body.sortOrder ?? 100;
-    const metadataJson = body.metadata != null ? JSON.stringify(body.metadata) : null;
+    const metadataJson =
+      body.metadata != null ? JSON.stringify(body.metadata) : null;
     const aliasJson =
       body.legacyAliasKeys != null
-        ? JSON.stringify(body.legacyAliasKeys.map((k) => k.trim().toLowerCase()).filter(Boolean))
+        ? JSON.stringify(
+            body.legacyAliasKeys
+              .map((k) => k.trim().toLowerCase())
+              .filter(Boolean),
+          )
         : null;
 
     const existing = await this.db.query<HrDecisionTypeRow>(
@@ -715,7 +773,11 @@ export class HrDecisionTypeService {
       return this.display(inserted.rows[0], 'dec_native');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (/uq_hr_decision_type_company_key_active|duplicate key|chk_hr_decision_type_wh_flags/i.test(msg)) {
+      if (
+        /uq_hr_decision_type_company_key_active|duplicate key|chk_hr_decision_type_wh_flags/i.test(
+          msg,
+        )
+      ) {
         if (/chk_hr_decision_type_wh_flags/i.test(msg)) {
           throw new ApiException(
             HRM_VAL_400,
@@ -748,7 +810,11 @@ export class HrDecisionTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_DEC_TYP_404, 'Decision type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_DEC_TYP_404,
+        'Decision type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_DEC_TYP_404,
@@ -763,7 +829,9 @@ export class HrDecisionTypeService {
     }
 
     const nextIsPersonBound =
-      body.isPersonBound !== undefined ? body.isPersonBound : Boolean(row.is_person_bound);
+      body.isPersonBound !== undefined
+        ? body.isPersonBound
+        : Boolean(row.is_person_bound);
     const nextWritesWh =
       body.writesWorkHistory !== undefined
         ? body.writesWorkHistory
@@ -784,8 +852,10 @@ export class HrDecisionTypeService {
     };
     if (body.nameVi !== undefined) assign('name_vi', body.nameVi.trim());
     if (body.sortOrder !== undefined) assign('sort_order', body.sortOrder);
-    if (body.isPersonBound !== undefined) assign('is_person_bound', body.isPersonBound);
-    if (body.writesWorkHistory !== undefined) assign('writes_work_history', body.writesWorkHistory);
+    if (body.isPersonBound !== undefined)
+      assign('is_person_bound', body.isPersonBound);
+    if (body.writesWorkHistory !== undefined)
+      assign('writes_work_history', body.writesWorkHistory);
     if (body.whEventType !== undefined) {
       assign('wh_event_type', body.whEventType?.trim() || null);
     }
@@ -797,17 +867,21 @@ export class HrDecisionTypeService {
         body.legacyAliasKeys == null
           ? null
           : JSON.stringify(
-              body.legacyAliasKeys.map((k) => k.trim().toLowerCase()).filter(Boolean),
+              body.legacyAliasKeys
+                .map((k) => k.trim().toLowerCase())
+                .filter(Boolean),
             ),
       );
       sets.push(`legacy_alias_keys_json = $${values.length}::jsonb`);
     }
-    if (body.colorToken !== undefined) assign('color_token', body.colorToken?.trim() || null);
+    if (body.colorToken !== undefined)
+      assign('color_token', body.colorToken?.trim() || null);
     if (body.metadata !== undefined) {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertStatus(body.status));
 
     if (!sets.length) {
       return this.display(row, 'dec_native');
@@ -843,14 +917,22 @@ export class HrDecisionTypeService {
     tenantId?: string,
   ): Promise<HrDecisionTypeDisplay> {
     await this.ensureSchema();
-    const { scope, companyKeys } = this.resolveScope(authorization, companyId, tenantId);
+    const { scope, companyKeys } = this.resolveScope(
+      authorization,
+      companyId,
+      tenantId,
+    );
     const existing = await this.db.query<HrDecisionTypeRow>(
       `SELECT ${ROW_SELECT} FROM public.hr_decision_type WHERE id = $1::uuid LIMIT 1;`,
       [decisionTypeId],
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_DEC_TYP_404, 'Decision type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_DEC_TYP_404,
+        'Decision type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_DEC_TYP_404,

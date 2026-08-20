@@ -55,7 +55,6 @@ export const PAY_FORMULA_REQUIRED_VAR_ALLOWLIST = [
 
 export const PAY_FORMULA_ALLOWANCE_VAR_RE = /^allowance_[a-z0-9_]{1,48}$/;
 
-
 /**
  * W10: source_kind taxonomy -- 13 values per PO-HRM-PAY-INPUT-PACKS-SPEC-01.md §2.
  * Mo allowlist cho bien tu Input Pack (pay_period_input_lines).
@@ -68,9 +67,19 @@ export const PAY_FORMULA_ALLOWANCE_VAR_RE = /^allowance_[a-z0-9_]{1,48}$/;
  * BR: BR-W10-03 -- PAY_FORMULA_REQUIRED_VAR_ALLOWLIST takes precedence over IP source_kinds
  */
 export const PAY_FORMULA_INPUT_PACK_SOURCE_KINDS = [
-  'manual', 'kpi', 'dll_cpn', 'cpsc', 'cldv', 'route_count',
-  'revenue', 'advance', 'xdtn', 'vp_cost', 'vp_allowance',
-  'other_income', 'rd_transfer',
+  'manual',
+  'kpi',
+  'dll_cpn',
+  'cpsc',
+  'cldv',
+  'route_count',
+  'revenue',
+  'advance',
+  'xdtn',
+  'vp_cost',
+  'vp_allowance',
+  'other_income',
+  'rd_transfer',
 ] as const;
 
 export type PayFormulaInputPackSourceKind =
@@ -121,11 +130,15 @@ export type PayFormulaLeaveTypeSourceKind =
 export function isAllowedFormulaVarKey(key: string): boolean {
   const k = key.trim();
   if (!k) return false;
-  if ((PAY_FORMULA_REQUIRED_VAR_ALLOWLIST as readonly string[]).includes(k)) return true;
+  if ((PAY_FORMULA_REQUIRED_VAR_ALLOWLIST as readonly string[]).includes(k))
+    return true;
   if (PAY_FORMULA_ALLOWANCE_VAR_RE.test(k)) return true;
-  if ((PAY_FORMULA_INPUT_PACK_SOURCE_KINDS as readonly string[]).includes(k)) return true;
-  if ((PAY_FORMULA_INSURANCE_SOURCE_KINDS as readonly string[]).includes(k)) return true;
-  if ((PAY_FORMULA_LEAVE_TYPE_SOURCE_KINDS as readonly string[]).includes(k)) return true;
+  if ((PAY_FORMULA_INPUT_PACK_SOURCE_KINDS as readonly string[]).includes(k))
+    return true;
+  if ((PAY_FORMULA_INSURANCE_SOURCE_KINDS as readonly string[]).includes(k))
+    return true;
+  if ((PAY_FORMULA_LEAVE_TYPE_SOURCE_KINDS as readonly string[]).includes(k))
+    return true;
   return false;
 }
 
@@ -136,15 +149,19 @@ export const HRM_PAY_FORMULA_CODE_INVALID = 'HRM-PAY-FORMULA-CODE-INVALID';
 export const HRM_PAY_FORMULA_CODE_CONFLICT = 'HRM-PAY-FORMULA-CODE-CONFLICT';
 export const HRM_PAY_FORMULA_412 = 'HRM-PAY-FORMULA-412';
 export const HRM_PAY_FORMULA_412_VARS = 'HRM-PAY-FORMULA-412-VARS';
-export const HRM_PAY_FORMULA_412_PREVIEW_STUB = 'HRM-PAY-FORMULA-412-PREVIEW-STUB';
+export const HRM_PAY_FORMULA_412_PREVIEW_STUB =
+  'HRM-PAY-FORMULA-412-PREVIEW-STUB';
 export const HRM_PAY_FORMULA_404 = 'HRM-PAY-FORMULA-404';
 /** Process/preview when published formula expression is not in evaluable subset. */
-export const HRM_PAY_FORMULA_412_NOT_EVALUABLE = 'HRM-PAY-FORMULA-412-NOT-EVALUABLE';
+export const HRM_PAY_FORMULA_412_NOT_EVALUABLE =
+  'HRM-PAY-FORMULA-412-NOT-EVALUABLE';
 export const HRM_PAY_ATT_412 = 'HRM-PAY-ATT-412';
 
 /** Dual-control default ON (GĐ1). Set HRM_PAY_FORMULA_DUAL_CONTROL=0 to disable (dev only). */
 export function isPayFormulaDualControlEnabled(): boolean {
-  const raw = (process.env.HRM_PAY_FORMULA_DUAL_CONTROL ?? '').trim().toLowerCase();
+  const raw = (process.env.HRM_PAY_FORMULA_DUAL_CONTROL ?? '')
+    .trim()
+    .toLowerCase();
   if (!raw) return true;
   return !['0', 'false', 'no', 'off'].includes(raw);
 }

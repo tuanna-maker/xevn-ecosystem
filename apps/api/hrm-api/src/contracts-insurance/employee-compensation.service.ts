@@ -160,13 +160,19 @@ export class EmployeeCompensationService {
 
   constructor(private readonly db: HrmDbService) {}
 
-  private resolvePage(value: number | string | undefined, fallback: number): number {
+  private resolvePage(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.trunc(parsed);
   }
 
-  private resolvePageSize(value: number | string | undefined, fallback: number): number {
+  private resolvePageSize(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.min(100, Math.trunc(parsed));
@@ -177,18 +183,34 @@ export class EmployeeCompensationService {
     requestedCompanyId: string,
     scopeContext?: HrmListScopeContext,
   ): { scope: HrmListScope; expandedCompanyIds: string[] } {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
-    const expandedCompanyIds = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
+    const expandedCompanyIds = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, expandedCompanyIds };
   }
 
   /** True when concurrent CREATE TABLE IF NOT EXISTS lost the pg_type race (still idempotent). */
   private isIgnorableSchemaRace(error: unknown): boolean {
     const pg = error as { code?: string; message?: string };
-    const message = String(pg.message ?? (error instanceof Error ? error.message : error));
+    const message = String(
+      pg.message ?? (error instanceof Error ? error.message : error),
+    );
     if (pg.code === '42P07' || pg.code === '42710') return true;
-    if (pg.code === '23505' && /pg_type_typname_nsp_index|already exists/i.test(message)) {
+    if (
+      pg.code === '23505' &&
+      /pg_type_typname_nsp_index|already exists/i.test(message)
+    ) {
       return true;
     }
     return /duplicate key.*pg_type_typname_nsp_index/i.test(message);
@@ -209,10 +231,12 @@ export class EmployeeCompensationService {
    */
   async ensureCompensationSchema(): Promise<void> {
     if (!this.compensationSchemaReady) {
-      this.compensationSchemaReady = this.applyCompensationSchema().catch((error) => {
-        this.compensationSchemaReady = null;
-        throw error;
-      });
+      this.compensationSchemaReady = this.applyCompensationSchema().catch(
+        (error) => {
+          this.compensationSchemaReady = null;
+          throw error;
+        },
+      );
     }
     await this.compensationSchemaReady;
   }
@@ -346,7 +370,10 @@ export class EmployeeCompensationService {
   }
 
   private normalizeComponentCode(code: string): string {
-    return code.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+    return code
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, '_');
   }
 
   private deriveComponentCodeForLine(line: CompensationLineDto): string | null {
@@ -367,14 +394,16 @@ export class EmployeeCompensationService {
     authorization?: string,
   ): Promise<void> {
     await assertComponentCodeInEffectiveCatalog({
-      query: this.db.query.bind(this.db) as HrmDbQueryFn,
+      query: this.db.query.bind(this.db),
       companyId,
       componentCode,
       authorization,
     });
   }
 
-  private assertUniqueComponentCodesOnPayload(lines: CompensationLineDto[]): void {
+  private assertUniqueComponentCodesOnPayload(
+    lines: CompensationLineDto[],
+  ): void {
     const seen = new Set<string>();
     for (const line of lines) {
       const code = this.deriveComponentCodeForLine(line);
@@ -431,13 +460,17 @@ export class EmployeeCompensationService {
     }
   }
 
-  private normalizeOptionalText(value: string | null | undefined): string | null {
+  private normalizeOptionalText(
+    value: string | null | undefined,
+  ): string | null {
     if (value == null) return null;
     const trimmed = String(value).trim();
     return trimmed.length > 0 ? trimmed : null;
   }
 
-  private assertEffectiveFromPresent(effectiveFrom: string | undefined): string {
+  private assertEffectiveFromPresent(
+    effectiveFrom: string | undefined,
+  ): string {
     const v = effectiveFrom?.trim();
     if (!v) {
       throw new ApiException(
@@ -481,7 +514,10 @@ export class EmployeeCompensationService {
             HttpStatus.BAD_REQUEST,
           );
         }
-      } else if (line.allowance_code != null && String(line.allowance_code).trim() !== '') {
+      } else if (
+        line.allowance_code != null &&
+        String(line.allowance_code).trim() !== ''
+      ) {
         throw new ApiException(
           'HRM-COMP-003',
           'allowance_code is only valid for allowance lines',
@@ -519,7 +555,11 @@ export class EmployeeCompensationService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['e.id = $1::uuid', 'e.archived_at IS NULL'];
     const values: unknown[] = [employeeId];
-    pushCompanyIdFilter(filters, values, expandHrmTextCompanyIds(scope, authorization, companyId));
+    pushCompanyIdFilter(
+      filters,
+      values,
+      expandHrmTextCompanyIds(scope, authorization, companyId),
+    );
     const res = await this.db.query<{
       id: string;
       company_id: string;
@@ -544,7 +584,11 @@ export class EmployeeCompensationService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-COMP-404', 'Employee not found in scope', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-COMP-404',
+        'Employee not found in scope',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return row;
   }
@@ -555,11 +599,22 @@ export class EmployeeCompensationService {
     authorization: string | undefined,
     contractId?: string | null,
   ): Promise<boolean> {
-    const employee = await this.assertEmployeeInScope(employeeId, companyId, authorization);
+    const employee = await this.assertEmployeeInScope(
+      employeeId,
+      companyId,
+      authorization,
+    );
     const statusHints = [employee.status, employee.employment_status]
       .filter(Boolean)
       .map((s) => String(s).toLowerCase());
-    if (statusHints.some((s) => s.includes('probation') || s.includes('thử việc') || s.includes('thu viec'))) {
+    if (
+      statusHints.some(
+        (s) =>
+          s.includes('probation') ||
+          s.includes('thử việc') ||
+          s.includes('thu viec'),
+      )
+    ) {
       return true;
     }
     if (contractId) {
@@ -568,7 +623,11 @@ export class EmployeeCompensationService {
         [contractId],
       );
       const type = (contract.rows[0]?.contract_type ?? '').toLowerCase();
-      if (type.includes('probation') || type.includes('thử việc') || type.includes('thu viec')) {
+      if (
+        type.includes('probation') ||
+        type.includes('thử việc') ||
+        type.includes('thu viec')
+      ) {
         return true;
       }
     }
@@ -584,7 +643,12 @@ export class EmployeeCompensationService {
   ): Promise<void> {
     const hasProbation = lines.some((l) => l.line_type === 'probation');
     if (!hasProbation) return;
-    const ok = await this.isEmployeeProbation(employeeId, companyId, authorization, contractId);
+    const ok = await this.isEmployeeProbation(
+      employeeId,
+      companyId,
+      authorization,
+      contractId,
+    );
     if (!ok) {
       throw new ApiException(
         'HRM-COMP-002',
@@ -601,7 +665,9 @@ export class EmployeeCompensationService {
       amount,
       amount_display: formatAmountDisplayVi(amount),
       created_at:
-        row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at),
+        row.created_at instanceof Date
+          ? row.created_at.toISOString()
+          : String(row.created_at),
     };
   }
 
@@ -613,9 +679,13 @@ export class EmployeeCompensationService {
       bank_branch: row.bank_branch ?? null,
       tax_id: row.tax_id ?? null,
       created_at:
-        row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at),
+        row.created_at instanceof Date
+          ? row.created_at.toISOString()
+          : String(row.created_at),
       updated_at:
-        row.updated_at instanceof Date ? row.updated_at.toISOString() : String(row.updated_at),
+        row.updated_at instanceof Date
+          ? row.updated_at.toISOString()
+          : String(row.updated_at),
     };
   }
 
@@ -756,7 +826,10 @@ export class EmployeeCompensationService {
     authorization?: string,
   ): Promise<CompensationPackageDetail> {
     await this.ensureCompensationSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     await assertCompensationCbAccess({
       db: this.db,
       authorization,
@@ -764,9 +837,15 @@ export class EmployeeCompensationService {
       companyId,
       employeeId: payload.employee_id,
     });
-    const effectiveFrom = this.assertEffectiveFromPresent(payload.effective_from);
+    const effectiveFrom = this.assertEffectiveFromPresent(
+      payload.effective_from,
+    );
     await this.validateLinesForWrite(payload.lines, companyId, authorization);
-    await this.assertEmployeeInScope(payload.employee_id, companyId, authorization);
+    await this.assertEmployeeInScope(
+      payload.employee_id,
+      companyId,
+      authorization,
+    );
     await this.assertProbationLinesAllowed(
       payload.lines,
       payload.employee_id,
@@ -777,7 +856,8 @@ export class EmployeeCompensationService {
 
     if (
       payload.effective_to &&
-      new Date(effectiveFrom).getTime() > new Date(payload.effective_to).getTime()
+      new Date(effectiveFrom).getTime() >
+        new Date(payload.effective_to).getTime()
     ) {
       throw new ApiException(
         'HRM-COMP-001',
@@ -787,14 +867,22 @@ export class EmployeeCompensationService {
     }
 
     if (payload.contract_id) {
-      const contract = await this.db.query<{ id: string; company_id: string; employee_id: string }>(
+      const contract = await this.db.query<{
+        id: string;
+        company_id: string;
+        employee_id: string;
+      }>(
         `SELECT id, company_id::text AS company_id, employee_id::text AS employee_id
          FROM public.employee_contracts WHERE id = $1::uuid LIMIT 1;`,
         [payload.contract_id],
       );
       const row = contract.rows[0];
       if (!row) {
-        throw new ApiException('HRM-CON-404', 'Contract not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          'HRM-CON-404',
+          'Contract not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       const scope = resolveHrmListScope(authorization, companyId);
       assertResourceInHrmScope(row, scope, {
@@ -898,9 +986,17 @@ export class EmployeeCompensationService {
       requestedCompanyId,
       scopeContext,
     );
-    const existing = await this.loadPackageRow(packageId, expandedCompanyIds, scope);
+    const existing = await this.loadPackageRow(
+      packageId,
+      expandedCompanyIds,
+      scope,
+    );
     if (!existing) {
-      throw new ApiException('HRM-COMP-404', 'Compensation package not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-COMP-404',
+        'Compensation package not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await assertCompensationCbAccess({
       db: this.db,
@@ -910,8 +1006,14 @@ export class EmployeeCompensationService {
       employeeId: existing.employee_id,
       resourceId: packageId,
     });
-    const effectiveFrom = this.assertEffectiveFromPresent(payload.effective_from);
-    await this.validateLinesForWrite(payload.lines, existing.company_id, authorization);
+    const effectiveFrom = this.assertEffectiveFromPresent(
+      payload.effective_from,
+    );
+    await this.validateLinesForWrite(
+      payload.lines,
+      existing.company_id,
+      authorization,
+    );
     await this.assertProbationLinesAllowed(
       payload.lines,
       existing.employee_id,
@@ -922,7 +1024,8 @@ export class EmployeeCompensationService {
 
     if (
       payload.effective_to &&
-      new Date(effectiveFrom).getTime() > new Date(payload.effective_to).getTime()
+      new Date(effectiveFrom).getTime() >
+        new Date(payload.effective_to).getTime()
     ) {
       throw new ApiException(
         'HRM-COMP-001',
@@ -970,7 +1073,9 @@ export class EmployeeCompensationService {
         ? this.normalizeOptionalText(payload.bank_branch)
         : existing.bank_branch;
     const taxId =
-      payload.tax_id !== undefined ? this.normalizeOptionalText(payload.tax_id) : existing.tax_id;
+      payload.tax_id !== undefined
+        ? this.normalizeOptionalText(payload.tax_id)
+        : existing.tax_id;
 
     const newId = randomUUID();
     const currency = payload.currency?.trim() || existing.currency || 'VND';
@@ -1053,7 +1158,11 @@ export class EmployeeCompensationService {
     );
     const row = await this.loadPackageRow(packageId, expandedCompanyIds, scope);
     if (!row) {
-      throw new ApiException('HRM-COMP-404', 'Compensation package not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-COMP-404',
+        'Compensation package not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await assertCompensationCbAccess({
       db: this.db,
@@ -1071,7 +1180,12 @@ export class EmployeeCompensationService {
     query: ListCompensationQueryDto,
     authorization?: string,
     scopeContext?: HrmListScopeContext,
-  ): Promise<{ total: number; page: number; page_size: number; data: CompensationPackageDetail[] }> {
+  ): Promise<{
+    total: number;
+    page: number;
+    page_size: number;
+    data: CompensationPackageDetail[];
+  }> {
     await this.ensureCompensationSchema();
     await assertCompensationCbAccess({
       db: this.db,
@@ -1112,7 +1226,9 @@ export class EmployeeCompensationService {
       `,
       values,
     );
-    const slice = res.rows.slice((page - 1) * pageSize, page * pageSize).map((r) => this.mapPackage(r));
+    const slice = res.rows
+      .slice((page - 1) * pageSize, page * pageSize)
+      .map((r) => this.mapPackage(r));
     const data: CompensationPackageDetail[] = [];
     for (const pkg of slice) {
       data.push({ ...pkg, lines: await this.loadLines(pkg.id) });
@@ -1155,7 +1271,9 @@ export class EmployeeCompensationService {
     values.push(asOf);
     const asOfIdx = values.length;
     filters.push(`p.effective_from <= $${asOfIdx}::date`);
-    filters.push(`(p.effective_to IS NULL OR p.effective_to >= $${asOfIdx}::date)`);
+    filters.push(
+      `(p.effective_to IS NULL OR p.effective_to >= $${asOfIdx}::date)`,
+    );
     const qualified = filters.map((clause) => {
       if (clause.includes('FROM public.employees')) {
         return clause.replace(/^(\s*)employee_id\b/, '$1p.employee_id');
@@ -1185,7 +1303,12 @@ export class EmployeeCompensationService {
     query: ListCompensationQueryDto,
     authorization?: string,
     scopeContext?: HrmListScopeContext,
-  ): Promise<{ total: number; page: number; page_size: number; data: CompensationHistoryRow[] }> {
+  ): Promise<{
+    total: number;
+    page: number;
+    page_size: number;
+    data: CompensationHistoryRow[];
+  }> {
     await this.ensureCompensationSchema();
     await assertCompensationCbAccess({
       db: this.db,
@@ -1234,15 +1357,19 @@ export class EmployeeCompensationService {
       `,
       values,
     );
-    const data = res.rows.slice((page - 1) * pageSize, page * pageSize).map((row) => ({
-      ...row,
-      created_at:
-        row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at),
-      snapshot:
-        typeof row.snapshot === 'string'
-          ? (JSON.parse(row.snapshot) as Record<string, unknown>)
-          : (row.snapshot as Record<string, unknown>),
-    }));
+    const data = res.rows
+      .slice((page - 1) * pageSize, page * pageSize)
+      .map((row) => ({
+        ...row,
+        created_at:
+          row.created_at instanceof Date
+            ? row.created_at.toISOString()
+            : String(row.created_at),
+        snapshot:
+          typeof row.snapshot === 'string'
+            ? (JSON.parse(row.snapshot) as Record<string, unknown>)
+            : row.snapshot,
+      }));
     return { total: res.rows.length, page, page_size: pageSize, data };
   }
 }

@@ -8,7 +8,10 @@ describe('P1-WEB-ACCEPTANCE-FIX-WAVE-02 UF-HRM-12 UpdateJobRequisitionDto', () =
       status: 'on_hold',
       notes: 'UF12-probe-note',
     });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors).toHaveLength(0);
   });
 });

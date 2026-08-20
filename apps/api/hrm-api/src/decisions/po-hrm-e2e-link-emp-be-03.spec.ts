@@ -54,7 +54,9 @@ describe('PO-HRM-E2E-LINK-EMP-BE-03 catalog neo', () => {
     let db: jest.Mocked<HrmDbService>;
 
     beforeEach(() => {
-      db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as jest.Mocked<HrmDbService>;
+      db = {
+        query: jest.fn().mockResolvedValue({ rows: [] }),
+      } as unknown as jest.Mocked<HrmDbService>;
       service = new DecisionsService(db);
     });
 
@@ -75,11 +77,19 @@ describe('PO-HRM-E2E-LINK-EMP-BE-03 catalog neo', () => {
       db.query.mockImplementation(async (sql: string, params?: unknown[]) => {
         if (sql.includes('FROM public.employees WHERE')) {
           return {
-            rows: [{ id: EMP_ID, full_name: 'UAT NV 0100', employee_code: 'UAT-0100' }],
+            rows: [
+              {
+                id: EMP_ID,
+                full_name: 'UAT NV 0100',
+                employee_code: 'UAT-0100',
+              },
+            ],
           } as never;
         }
         if (sql.includes('INSERT INTO public.hr_decisions')) {
-          expect(params).toEqual(expect.arrayContaining(['HRD_01', EMP_ID, 'effective']));
+          expect(params).toEqual(
+            expect.arrayContaining(['HRD_01', EMP_ID, 'effective']),
+          );
           return {
             rows: [
               {
@@ -111,7 +121,10 @@ describe('PO-HRM-E2E-LINK-EMP-BE-03 catalog neo', () => {
             ],
           } as never;
         }
-        if (sql.includes('FROM public.employee_work_timeline') && sql.includes('decision_id')) {
+        if (
+          sql.includes('FROM public.employee_work_timeline') &&
+          sql.includes('decision_id')
+        ) {
           return { rows: [] } as never;
         }
         if (sql.includes('INSERT INTO public.employee_work_timeline')) {
@@ -146,7 +159,9 @@ describe('PO-HRM-E2E-LINK-EMP-BE-03 catalog neo', () => {
         work_history_id: 'wh-hrd01-1',
       });
       expect(
-        db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.employee_work_timeline')),
+        db.query.mock.calls.some(([sql]) =>
+          String(sql).includes('INSERT INTO public.employee_work_timeline'),
+        ),
       ).toBe(true);
     });
 
@@ -155,7 +170,13 @@ describe('PO-HRM-E2E-LINK-EMP-BE-03 catalog neo', () => {
       db.query.mockImplementation(async (sql: string) => {
         if (sql.includes('FROM public.employees WHERE')) {
           return {
-            rows: [{ id: EMP_ID, full_name: 'UAT NV 0100', employee_code: 'UAT-0100' }],
+            rows: [
+              {
+                id: EMP_ID,
+                full_name: 'UAT NV 0100',
+                employee_code: 'UAT-0100',
+              },
+            ],
           } as never;
         }
         if (sql.includes('INSERT INTO public.hr_decisions')) {
@@ -205,9 +226,13 @@ describe('PO-HRM-E2E-LINK-EMP-BE-03 catalog neo', () => {
         `Bearer ${token}`,
       );
 
-      expect((out as { work_history_id?: string | null }).work_history_id).toBeUndefined();
       expect(
-        db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.employee_work_timeline')),
+        (out as { work_history_id?: string | null }).work_history_id,
+      ).toBeUndefined();
+      expect(
+        db.query.mock.calls.some(([sql]) =>
+          String(sql).includes('INSERT INTO public.employee_work_timeline'),
+        ),
       ).toBe(false);
     });
 
@@ -216,7 +241,9 @@ describe('PO-HRM-E2E-LINK-EMP-BE-03 catalog neo', () => {
       db.query.mockImplementation(async (sql: string) => {
         if (sql.includes('FROM public.employees WHERE')) {
           return {
-            rows: [{ id: EMP_ID, full_name: 'Nguyen A', employee_code: 'NV001' }],
+            rows: [
+              { id: EMP_ID, full_name: 'Nguyen A', employee_code: 'NV001' },
+            ],
           } as never;
         }
         if (sql.includes('INSERT INTO public.hr_decisions')) {
@@ -251,7 +278,10 @@ describe('PO-HRM-E2E-LINK-EMP-BE-03 catalog neo', () => {
             ],
           } as never;
         }
-        if (sql.includes('FROM public.employee_work_timeline') && sql.includes('decision_id')) {
+        if (
+          sql.includes('FROM public.employee_work_timeline') &&
+          sql.includes('decision_id')
+        ) {
           return { rows: [] } as never;
         }
         if (sql.includes('INSERT INTO public.employee_work_timeline')) {
@@ -271,7 +301,9 @@ describe('PO-HRM-E2E-LINK-EMP-BE-03 catalog neo', () => {
         },
         `Bearer ${token}`,
       );
-      expect((out as { work_history_id?: string }).work_history_id).toBe('wh-legacy');
+      expect((out as { work_history_id?: string }).work_history_id).toBe(
+        'wh-legacy',
+      );
     });
   });
 });

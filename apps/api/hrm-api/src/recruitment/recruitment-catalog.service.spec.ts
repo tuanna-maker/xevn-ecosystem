@@ -1,7 +1,10 @@
 import { ApiException } from '../common/api.exception';
 import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
-import { HRM_REC_JD_POS, RecruitmentCatalogService } from './recruitment-catalog.service';
+import {
+  HRM_REC_JD_POS,
+  RecruitmentCatalogService,
+} from './recruitment-catalog.service';
 
 function mockBridge() {
   return {
@@ -46,7 +49,11 @@ describe('RecruitmentCatalogService', () => {
       origin: 'xbos',
     });
     const settingsCatalogs = { assertCodeInEffectiveCatalog: assertCode };
-    const service = new RecruitmentCatalogService(db, mockBridge() as never, settingsCatalogs as never);
+    const service = new RecruitmentCatalogService(
+      db,
+      mockBridge() as never,
+      settingsCatalogs as never,
+    );
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
       tenantId: 'xevn',
@@ -83,9 +90,11 @@ describe('RecruitmentCatalogService', () => {
       query: jest.fn().mockResolvedValue({ rows: [] }),
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
-    const assertCode = jest.fn().mockRejectedValue(
-      new ApiException(HRM_REC_JD_POS, 'not in catalog', 400),
-    );
+    const assertCode = jest
+      .fn()
+      .mockRejectedValue(
+        new ApiException(HRM_REC_JD_POS, 'not in catalog', 400),
+      );
     const service = new RecruitmentCatalogService(
       db,
       mockBridge() as never,
@@ -110,7 +119,10 @@ describe('RecruitmentCatalogService', () => {
       ),
     ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
     expect(assertCode).toHaveBeenCalledWith(
-      expect.objectContaining({ companyId: 'holding', code: 'NOT_A_REAL_CODE' }),
+      expect.objectContaining({
+        companyId: 'holding',
+        code: 'NOT_A_REAL_CODE',
+      }),
     );
   });
 
@@ -127,7 +139,9 @@ describe('RecruitmentCatalogService', () => {
       roleCode: 'group_ceo',
     });
     await service.listJobPostings({ company_id: 'main' }, `Bearer ${token}`);
-    const listCall = db.query.mock.calls.find(([sql]) => String(sql).includes('FROM public.job_postings'));
+    const listCall = db.query.mock.calls.find(([sql]) =>
+      String(sql).includes('FROM public.job_postings'),
+    );
     expect(listCall?.[1]).toEqual(expect.arrayContaining([expect.any(Array)]));
   });
 

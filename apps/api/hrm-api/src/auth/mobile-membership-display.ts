@@ -62,7 +62,9 @@ export function mobileCompanyLabelVi(
   return COMPANY_LABELS_VI[slug] ?? slug;
 }
 
-export function mobileTenantLabelVi(tenantId: string | null | undefined): string {
+export function mobileTenantLabelVi(
+  tenantId: string | null | undefined,
+): string {
   const key = String(tenantId ?? '')
     .trim()
     .toLowerCase();
@@ -79,7 +81,9 @@ export function mobileRoleLabelVi(roles: string[] | null | undefined): string {
   return first ? first.replace(/_/g, ' ') : ROLE_LABELS_VI.employee;
 }
 
-export function mobileJobTitleLabelVi(jobTitleKey: string | null | undefined): string {
+export function mobileJobTitleLabelVi(
+  jobTitleKey: string | null | undefined,
+): string {
   const raw = String(jobTitleKey ?? '').trim();
   if (!raw) return '—';
   const key = raw.toLowerCase();

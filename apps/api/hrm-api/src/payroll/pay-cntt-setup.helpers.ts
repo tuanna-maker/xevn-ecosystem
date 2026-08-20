@@ -20,7 +20,9 @@ type ProfileRow = {
   required_component_codes_json: unknown;
 };
 
-export function parseSetupContextFromSnapshot(snapshot: unknown): PaySetupContextSnapshot | null {
+export function parseSetupContextFromSnapshot(
+  snapshot: unknown,
+): PaySetupContextSnapshot | null {
   if (!snapshot || typeof snapshot !== 'object') return null;
   const setup = (snapshot as Record<string, unknown>).setupContext;
   if (!setup || typeof setup !== 'object') return null;
@@ -29,23 +31,35 @@ export function parseSetupContextFromSnapshot(snapshot: unknown): PaySetupContex
     ? ctx.allowedSourceKinds.filter((k): k is string => typeof k === 'string')
     : undefined;
   const required = Array.isArray(ctx.requiredComponentCodes)
-    ? ctx.requiredComponentCodes.filter((c): c is string => typeof c === 'string')
+    ? ctx.requiredComponentCodes.filter(
+        (c): c is string => typeof c === 'string',
+      )
     : undefined;
   return {
-    policyPackId: typeof ctx.policyPackId === 'string' ? ctx.policyPackId : undefined,
-    policyPackCode: typeof ctx.policyPackCode === 'string' ? ctx.policyPackCode : undefined,
+    policyPackId:
+      typeof ctx.policyPackId === 'string' ? ctx.policyPackId : undefined,
+    policyPackCode:
+      typeof ctx.policyPackCode === 'string' ? ctx.policyPackCode : undefined,
     policyPackVersionAt:
-      typeof ctx.policyPackVersionAt === 'string' ? ctx.policyPackVersionAt : undefined,
+      typeof ctx.policyPackVersionAt === 'string'
+        ? ctx.policyPackVersionAt
+        : undefined,
     policyPackRateParams:
       ctx.policyPackRateParams && typeof ctx.policyPackRateParams === 'object'
         ? (ctx.policyPackRateParams as Record<string, unknown>)
         : undefined,
     inputPackProfileId:
-      typeof ctx.inputPackProfileId === 'string' ? ctx.inputPackProfileId : undefined,
+      typeof ctx.inputPackProfileId === 'string'
+        ? ctx.inputPackProfileId
+        : undefined,
     inputPackProfileCode:
-      typeof ctx.inputPackProfileCode === 'string' ? ctx.inputPackProfileCode : undefined,
+      typeof ctx.inputPackProfileCode === 'string'
+        ? ctx.inputPackProfileCode
+        : undefined,
     inputPackProfileVersionAt:
-      typeof ctx.inputPackProfileVersionAt === 'string' ? ctx.inputPackProfileVersionAt : undefined,
+      typeof ctx.inputPackProfileVersionAt === 'string'
+        ? ctx.inputPackProfileVersionAt
+        : undefined,
     allowedSourceKinds: allowed,
     requiredComponentCodes: required,
   };
@@ -77,8 +91,14 @@ export function buildSetupContextFromPackRows(
     ctx.policyPackId = policy.id;
     ctx.policyPackCode = policy.code;
     ctx.policyPackVersionAt = policy.updated_at;
-    if (policy.rate_params_json && typeof policy.rate_params_json === 'object') {
-      ctx.policyPackRateParams = policy.rate_params_json as Record<string, unknown>;
+    if (
+      policy.rate_params_json &&
+      typeof policy.rate_params_json === 'object'
+    ) {
+      ctx.policyPackRateParams = policy.rate_params_json as Record<
+        string,
+        unknown
+      >;
     }
   }
   if (profile) {
@@ -103,18 +123,34 @@ export function buildSetupContextFromPackRows(
 export function assertPolicyDocRefsShape(refs: unknown): void {
   if (refs == null) return;
   if (!Array.isArray(refs)) {
-    throw new ApiException('HRM-VAL-400', 'policyDocRefs must be an array', HttpStatus.BAD_REQUEST);
+    throw new ApiException(
+      'HRM-VAL-400',
+      'policyDocRefs must be an array',
+      HttpStatus.BAD_REQUEST,
+    );
   }
   for (const item of refs) {
     if (!item || typeof item !== 'object') {
-      throw new ApiException('HRM-VAL-400', 'policyDocRefs items must be objects', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'policyDocRefs items must be objects',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const row = item as Record<string, unknown>;
     if (row.docId != null && typeof row.docId !== 'string') {
-      throw new ApiException('HRM-VAL-400', 'policyDocRefs.docId must be string', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'policyDocRefs.docId must be string',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (row.path != null && typeof row.path !== 'string') {
-      throw new ApiException('HRM-VAL-400', 'policyDocRefs.path must be string', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'policyDocRefs.path must be string',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (row.fragmentIds != null && !Array.isArray(row.fragmentIds)) {
       throw new ApiException(
@@ -140,9 +176,15 @@ export function assertRateParamsShape(params: unknown, path = ''): void {
     return;
   }
   if (typeof params !== 'object' || Array.isArray(params)) {
-    throw new ApiException('HRM-VAL-400', 'rateParams must be object', HttpStatus.BAD_REQUEST);
+    throw new ApiException(
+      'HRM-VAL-400',
+      'rateParams must be object',
+      HttpStatus.BAD_REQUEST,
+    );
   }
-  for (const [key, value] of Object.entries(params as Record<string, unknown>)) {
+  for (const [key, value] of Object.entries(
+    params as Record<string, unknown>,
+  )) {
     assertRateParamsShape(value, `${path}.${key}`);
   }
 }

@@ -3,7 +3,12 @@ import ExcelJS from 'exceljs';
 import { ApiException } from '../common/api.exception';
 import { getSpreadsheetLimits } from './spreadsheet-limits';
 
-export type SheetRowError = { row: number; field?: string; code: string; message?: string };
+export type SheetRowError = {
+  row: number;
+  field?: string;
+  code: string;
+  message?: string;
+};
 
 export type ParsedImportGrid = {
   headers: string[];
@@ -52,21 +57,38 @@ function uniqueHeaderNames(raw: string[]): string[] {
   });
 }
 
-function assertSyncBudget(startedAt: number, limits: ReturnType<typeof getSpreadsheetLimits>) {
+function assertSyncBudget(
+  startedAt: number,
+  limits: ReturnType<typeof getSpreadsheetLimits>,
+) {
   if (Date.now() - startedAt > limits.maxSyncMs) {
-    throw new ApiException('SHEET-408', 'Spreadsheet operation exceeded server time limit', HttpStatus.REQUEST_TIMEOUT, {
-      maxSyncMs: limits.maxSyncMs,
-    });
+    throw new ApiException(
+      'SHEET-408',
+      'Spreadsheet operation exceeded server time limit',
+      HttpStatus.REQUEST_TIMEOUT,
+      {
+        maxSyncMs: limits.maxSyncMs,
+      },
+    );
   }
 }
 
-function isLikelyXlsx(buffer: Buffer, mimetype?: string, filename?: string): boolean {
+function isLikelyXlsx(
+  buffer: Buffer,
+  mimetype?: string,
+  filename?: string,
+): boolean {
   if (mimetype?.includes('spreadsheetml')) return true;
   if (filename?.toLowerCase().endsWith('.xlsx')) return true;
   return buffer.length >= 4 && buffer.subarray(0, 4).equals(XLSX_MAGIC);
 }
 
-function assertCellLen(value: string, limits: ReturnType<typeof getSpreadsheetLimits>, rowIdx: number, field: string) {
+function assertCellLen(
+  value: string,
+  limits: ReturnType<typeof getSpreadsheetLimits>,
+  rowIdx: number,
+  field: string,
+) {
   if (value.length > limits.maxCellChars) {
     throw new ApiException(
       'SHEET-413',
@@ -80,7 +102,8 @@ function assertCellLen(value: string, limits: ReturnType<typeof getSpreadsheetLi
 function cellToScalar(cell: ExcelJS.Cell): string {
   const v = cell.value;
   if (v === null || v === undefined) return '';
-  if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') return String(v);
+  if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean')
+    return String(v);
   if (v instanceof Date) return v.toISOString().slice(0, 10);
   if (typeof v === 'object' && v !== null && 'text' in v) {
     return String((v as { text?: string }).text ?? '');
@@ -103,9 +126,14 @@ export class SpreadsheetIngestService {
       throw new ApiException('SHEET-400', 'Empty file', HttpStatus.BAD_REQUEST);
     }
     if (buffer.length > limits.maxUploadBytes) {
-      throw new ApiException('SHEET-413', 'File exceeds upload limit', HttpStatus.PAYLOAD_TOO_LARGE, {
-        maxUploadBytes: limits.maxUploadBytes,
-      });
+      throw new ApiException(
+        'SHEET-413',
+        'File exceeds upload limit',
+        HttpStatus.PAYLOAD_TOO_LARGE,
+        {
+          maxUploadBytes: limits.maxUploadBytes,
+        },
+      );
     }
 
     if (isLikelyXlsx(buffer, opts.mimetype, opts.originalname)) {
@@ -114,38 +142,65 @@ export class SpreadsheetIngestService {
     return this.parseEmployeeImportCsv(buffer, opts.startedAt);
   }
 
-  private parseEmployeeImportCsv(buffer: Buffer, startedAt: number): ParsedImportGrid {
+  private parseEmployeeImportCsv(
+    buffer: Buffer,
+    startedAt: number,
+  ): ParsedImportGrid {
     const limits = getSpreadsheetLimits();
     const csvText = buffer.toString('utf8');
     const bytes = Buffer.byteLength(csvText, 'utf8');
     if (bytes > limits.maxUploadBytes) {
-      throw new ApiException('SHEET-413', 'CSV exceeds byte limit', HttpStatus.PAYLOAD_TOO_LARGE);
+      throw new ApiException(
+        'SHEET-413',
+        'CSV exceeds byte limit',
+        HttpStatus.PAYLOAD_TOO_LARGE,
+      );
     }
 
     const normalized = normalizeNewlines(csvText).replace(/^\uFEFF/, '');
     const lines = normalized.split('\n');
-    const nonEmpty = lines.map((l) => l.replace(/\r$/, '').trim()).filter((l) => l.length > 0);
+    const nonEmpty = lines
+      .map((l) => l.replace(/\r$/, '').trim())
+      .filter((l) => l.length > 0);
 
     if (nonEmpty.length < 1) {
-      throw new ApiException('SHEET-400', 'CSV has no header row', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'SHEET-400',
+        'CSV has no header row',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const headerCells = splitCsvLine(nonEmpty[0]);
     if (headerCells.length === 0 || headerCells.every((h) => h === '')) {
-      throw new ApiException('SHEET-400', 'CSV header row is empty', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'SHEET-400',
+        'CSV header row is empty',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (headerCells.length > limits.maxColumns) {
-      throw new ApiException('SHEET-413', 'CSV exceeds maximum column count', HttpStatus.PAYLOAD_TOO_LARGE, {
-        maxColumns: limits.maxColumns,
-      });
+      throw new ApiException(
+        'SHEET-413',
+        'CSV exceeds maximum column count',
+        HttpStatus.PAYLOAD_TOO_LARGE,
+        {
+          maxColumns: limits.maxColumns,
+        },
+      );
     }
 
     const headers = uniqueHeaderNames(headerCells);
     const dataLines = nonEmpty.slice(1);
     if (dataLines.length > limits.maxCsvDataRows) {
-      throw new ApiException('SHEET-413', 'CSV exceeds maximum row count', HttpStatus.PAYLOAD_TOO_LARGE, {
-        maxRows: limits.maxCsvDataRows,
-      });
+      throw new ApiException(
+        'SHEET-413',
+        'CSV exceeds maximum row count',
+        HttpStatus.PAYLOAD_TOO_LARGE,
+        {
+          maxRows: limits.maxCsvDataRows,
+        },
+      );
     }
 
     const rows: Record<string, string>[] = [];
@@ -166,18 +221,31 @@ export class SpreadsheetIngestService {
     return { headers, rows };
   }
 
-  private async parseEmployeeImportXlsx(buffer: Buffer, startedAt: number): Promise<ParsedImportGrid> {
+  private async parseEmployeeImportXlsx(
+    buffer: Buffer,
+    startedAt: number,
+  ): Promise<ParsedImportGrid> {
     const limits = getSpreadsheetLimits();
     const wb = new ExcelJS.Workbook();
     try {
-      await wb.xlsx.load(buffer as unknown as Parameters<ExcelJS.Xlsx['load']>[0]);
+      await wb.xlsx.load(
+        buffer as unknown as Parameters<ExcelJS.Xlsx['load']>[0],
+      );
     } catch {
-      throw new ApiException('SHEET-400', 'Could not read Excel workbook', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'SHEET-400',
+        'Could not read Excel workbook',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     assertSyncBudget(startedAt, limits);
     const ws = wb.worksheets[0];
     if (!ws) {
-      throw new ApiException('SHEET-400', 'Workbook has no sheets', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'SHEET-400',
+        'Workbook has no sheets',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const rowArrays: string[][] = [];
@@ -197,16 +265,25 @@ export class SpreadsheetIngestService {
     });
 
     if (rowArrays.length < 1) {
-      throw new ApiException('SHEET-400', 'XLSX has no rows', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'SHEET-400',
+        'XLSX has no rows',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const headerCells = rowArrays[0];
     const headers = uniqueHeaderNames(headerCells);
     const dataRowArrays = rowArrays.slice(1);
     if (dataRowArrays.length > limits.maxXlsxDataRows) {
-      throw new ApiException('SHEET-413', 'XLSX exceeds maximum row count', HttpStatus.PAYLOAD_TOO_LARGE, {
-        maxRows: limits.maxXlsxDataRows,
-      });
+      throw new ApiException(
+        'SHEET-413',
+        'XLSX exceeds maximum row count',
+        HttpStatus.PAYLOAD_TOO_LARGE,
+        {
+          maxRows: limits.maxXlsxDataRows,
+        },
+      );
     }
 
     const objects: Record<string, string>[] = [];

@@ -94,159 +94,176 @@ function createStatefulDb(initial?: StoreRow[]) {
   const clone = (r: StoreRow) => ({ ...r });
 
   const db = {
-    query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-      const s = String(sql).replace(/\s+/g, ' ');
-      sqls.push(s);
+    query: jest
+      .fn()
+      .mockImplementation(async (sql: string, params?: unknown[]) => {
+        const s = String(sql).replace(/\s+/g, ' ');
+        sqls.push(s);
 
-      if (
-        s.includes('CREATE TABLE') ||
-        s.includes('CREATE INDEX') ||
-        s.includes('CREATE UNIQUE') ||
-        s.includes('ALTER TABLE') ||
-        s.includes('DO $$')
-      ) {
-        return { rows: [] };
-      }
-
-      if (s.includes('INSERT INTO public.pay_formula_definitions')) {
-        const row = baseRow({
-          id: String(params?.[0]),
-          company_id: String(params?.[1]),
-          code: String(params?.[2]),
-          version: Number(params?.[3] ?? 1),
-          status: 'draft',
-          expression_json: params?.[4] ? JSON.parse(String(params[4])) : {},
-          required_vars_json: params?.[5] ? JSON.parse(String(params[5])) : null,
-          meta_json: params?.[6] ? JSON.parse(String(params[6])) : null,
-          authored_by: String(params?.[7] ?? ''),
-        });
-        if (s.includes("$4, 'draft'")) {
-          row.version = Number(params?.[3]);
-        } else {
-          row.version = 1;
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$')
+        ) {
+          return { rows: [] };
         }
-        store.push(row);
-        return { rows: [clone(row)] };
-      }
 
-      // Retire prior overlapping active rows (publish step)
-      if (
-        s.includes('UPDATE public.pay_formula_definitions') &&
-        s.includes("status = 'retired'") &&
-        s.includes("status = 'active'") &&
-        s.includes('id <>')
-      ) {
-        const companyId = String(params?.[0]);
-        const code = String(params?.[1]);
-        const keepId = String(params?.[2]);
-        for (const r of store) {
-          if (
-            r.company_id === companyId &&
-            r.code === code &&
-            r.status === 'active' &&
-            !r.archived_at &&
-            r.id !== keepId
-          ) {
-            r.status = 'retired';
+        if (s.includes('INSERT INTO public.pay_formula_definitions')) {
+          const row = baseRow({
+            id: String(params?.[0]),
+            company_id: String(params?.[1]),
+            code: String(params?.[2]),
+            version: Number(params?.[3] ?? 1),
+            status: 'draft',
+            expression_json: params?.[4] ? JSON.parse(String(params[4])) : {},
+            required_vars_json: params?.[5]
+              ? JSON.parse(String(params[5]))
+              : null,
+            meta_json: params?.[6] ? JSON.parse(String(params[6])) : null,
+            authored_by: String(params?.[7] ?? ''),
+          });
+          if (s.includes("$4, 'draft'")) {
+            row.version = Number(params?.[3]);
+          } else {
+            row.version = 1;
           }
-        }
-        return { rows: [] };
-      }
-
-      // Soft-delete retire by id
-      if (
-        s.includes('UPDATE public.pay_formula_definitions') &&
-        s.includes("status = 'retired'") &&
-        s.includes('archived_at = NOW()')
-      ) {
-        const id = String(params?.[0]);
-        const row = store.find((r) => r.id === id);
-        if (row) {
-          row.status = 'retired';
-          row.archived_at = '2026-08-07T12:00:00Z';
+          store.push(row);
           return { rows: [clone(row)] };
         }
+
+        // Retire prior overlapping active rows (publish step)
+        if (
+          s.includes('UPDATE public.pay_formula_definitions') &&
+          s.includes("status = 'retired'") &&
+          s.includes("status = 'active'") &&
+          s.includes('id <>')
+        ) {
+          const companyId = String(params?.[0]);
+          const code = String(params?.[1]);
+          const keepId = String(params?.[2]);
+          for (const r of store) {
+            if (
+              r.company_id === companyId &&
+              r.code === code &&
+              r.status === 'active' &&
+              !r.archived_at &&
+              r.id !== keepId
+            ) {
+              r.status = 'retired';
+            }
+          }
+          return { rows: [] };
+        }
+
+        // Soft-delete retire by id
+        if (
+          s.includes('UPDATE public.pay_formula_definitions') &&
+          s.includes("status = 'retired'") &&
+          s.includes('archived_at = NOW()')
+        ) {
+          const id = String(params?.[0]);
+          const row = store.find((r) => r.id === id);
+          if (row) {
+            row.status = 'retired';
+            row.archived_at = '2026-08-07T12:00:00Z';
+            return { rows: [clone(row)] };
+          }
+          return { rows: [] };
+        }
+
+        // submit-publish (SET status pending — do not match publish RETURNING)
+        if (
+          s.includes('UPDATE public.pay_formula_definitions') &&
+          s.includes("SET status = 'pending_publish'")
+        ) {
+          const id = String(params?.[0]);
+          const row = store.find((r) => r.id === id && r.status === 'draft');
+          if (!row) return { rows: [] };
+          row.status = 'pending_publish';
+          if (params?.[1]) {
+            row.required_vars_json = JSON.parse(String(params[1]));
+          }
+          return { rows: [clone(row)] };
+        }
+
+        // publish → active
+        if (
+          s.includes('UPDATE public.pay_formula_definitions') &&
+          s.includes("SET status = 'active'") &&
+          s.includes('published_by')
+        ) {
+          const id = String(params?.[0]);
+          const row = store.find(
+            (r) => r.id === id && r.status === 'pending_publish',
+          );
+          if (!row) return { rows: [] };
+          row.status = 'active';
+          row.published_by = String(params?.[1]);
+          row.published_at = '2026-08-07T12:00:00Z';
+          return { rows: [clone(row)] };
+        }
+
+        // withdraw → draft
+        if (
+          s.includes('UPDATE public.pay_formula_definitions') &&
+          s.includes("SET status = 'draft'")
+        ) {
+          const id = String(params?.[0]);
+          const row = store.find(
+            (r) => r.id === id && r.status === 'pending_publish',
+          );
+          if (!row) return { rows: [] };
+          row.status = 'draft';
+          return { rows: [clone(row)] };
+        }
+
+        // draft update
+        if (
+          s.includes('UPDATE public.pay_formula_definitions') &&
+          s.includes('expression_json = COALESCE')
+        ) {
+          const id = String(params?.[0]);
+          const row = store.find((r) => r.id === id && r.status === 'draft');
+          if (!row) return { rows: [] };
+          if (params?.[1]) row.expression_json = JSON.parse(String(params[1]));
+          if (params?.[2] === true && params?.[3]) {
+            row.required_vars_json = JSON.parse(String(params[3]));
+          }
+          row.authored_by = String(params?.[7] ?? row.authored_by);
+          return { rows: [clone(row)] };
+        }
+
+        if (
+          s.includes('FROM public.pay_formula_definitions') &&
+          s.includes('ORDER BY code')
+        ) {
+          return { rows: store.filter((r) => !r.archived_at).map(clone) };
+        }
+
+        if (
+          s.includes('FROM public.pay_formula_definitions') &&
+          s.includes('ORDER BY version DESC')
+        ) {
+          const code = String(params?.[0]);
+          const matches = store
+            .filter((r) => r.code === code && !r.archived_at)
+            .sort((a, b) => b.version - a.version);
+          return { rows: matches.slice(0, 1).map(clone) };
+        }
+
+        if (
+          s.includes('FROM public.pay_formula_definitions') &&
+          s.includes('id = $1')
+        ) {
+          const id = String(params?.[0]);
+          const row = store.find((r) => r.id === id);
+          return { rows: row ? [clone(row)] : [] };
+        }
+
         return { rows: [] };
-      }
-
-      // submit-publish (SET status pending — do not match publish RETURNING)
-      if (
-        s.includes('UPDATE public.pay_formula_definitions') &&
-        s.includes("SET status = 'pending_publish'")
-      ) {
-        const id = String(params?.[0]);
-        const row = store.find((r) => r.id === id && r.status === 'draft');
-        if (!row) return { rows: [] };
-        row.status = 'pending_publish';
-        if (params?.[1]) {
-          row.required_vars_json = JSON.parse(String(params[1]));
-        }
-        return { rows: [clone(row)] };
-      }
-
-      // publish → active
-      if (
-        s.includes('UPDATE public.pay_formula_definitions') &&
-        s.includes("SET status = 'active'") &&
-        s.includes('published_by')
-      ) {
-        const id = String(params?.[0]);
-        const row = store.find((r) => r.id === id && r.status === 'pending_publish');
-        if (!row) return { rows: [] };
-        row.status = 'active';
-        row.published_by = String(params?.[1]);
-        row.published_at = '2026-08-07T12:00:00Z';
-        return { rows: [clone(row)] };
-      }
-
-      // withdraw → draft
-      if (
-        s.includes('UPDATE public.pay_formula_definitions') &&
-        s.includes("SET status = 'draft'")
-      ) {
-        const id = String(params?.[0]);
-        const row = store.find((r) => r.id === id && r.status === 'pending_publish');
-        if (!row) return { rows: [] };
-        row.status = 'draft';
-        return { rows: [clone(row)] };
-      }
-
-      // draft update
-      if (
-        s.includes('UPDATE public.pay_formula_definitions') &&
-        s.includes('expression_json = COALESCE')
-      ) {
-        const id = String(params?.[0]);
-        const row = store.find((r) => r.id === id && r.status === 'draft');
-        if (!row) return { rows: [] };
-        if (params?.[1]) row.expression_json = JSON.parse(String(params[1]));
-        if (params?.[2] === true && params?.[3]) {
-          row.required_vars_json = JSON.parse(String(params[3]));
-        }
-        row.authored_by = String(params?.[7] ?? row.authored_by);
-        return { rows: [clone(row)] };
-      }
-
-      if (s.includes('FROM public.pay_formula_definitions') && s.includes('ORDER BY code')) {
-        return { rows: store.filter((r) => !r.archived_at).map(clone) };
-      }
-
-      if (s.includes('FROM public.pay_formula_definitions') && s.includes('ORDER BY version DESC')) {
-        const code = String(params?.[0]);
-        const matches = store
-          .filter((r) => r.code === code && !r.archived_at)
-          .sort((a, b) => b.version - a.version);
-        return { rows: matches.slice(0, 1).map(clone) };
-      }
-
-      if (s.includes('FROM public.pay_formula_definitions') && s.includes('id = $1')) {
-        const id = String(params?.[0]);
-        const row = store.find((r) => r.id === id);
-        return { rows: row ? [clone(row)] : [] };
-      }
-
-      return { rows: [] };
-    }),
+      }),
   } as unknown as HrmDbService;
 
   return { db, store, sqls };
@@ -263,28 +280,44 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
     } as unknown as HrmDbService;
     const svc = new PayFormulaService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.pay_formula_definitions'))).toBe(
-      true,
-    );
     expect(
-      sqls.some((q) => q.includes('uq_pay_formula_definitions_company_code_version')),
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.pay_formula_definitions'),
+      ),
     ).toBe(true);
-    expect(sqls.some((q) => q.includes('ix_pay_formula_definitions_company_code_status'))).toBe(
-      true,
-    );
+    expect(
+      sqls.some((q) =>
+        q.includes('uq_pay_formula_definitions_company_code_version'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) =>
+        q.includes('ix_pay_formula_definitions_company_code_status'),
+      ),
+    ).toBe(true);
     expect(sqls.some((q) => q.includes('formula_definition_id'))).toBe(true);
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.payroll_payslip_lines'))).toBe(
-      true,
-    );
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.payroll_payslip_lines'),
+      ),
+    ).toBe(true);
     expect(sqls.some((q) => /CHECK\s*\(\s*code\s+IN/i.test(q))).toBe(false);
-    expect(sqls.some((q) => q.includes('salary_components') && q.includes('formula'))).toBe(false);
+    expect(
+      sqls.some(
+        (q) => q.includes('salary_components') && q.includes('formula'),
+      ),
+    ).toBe(false);
   });
 
   it('SM draft → pending_publish → active with dual-control publisher ≠ author', async () => {
     const { db, store } = createStatefulDb([baseRow()]);
     const svc = new PayFormulaService(db);
 
-    const submitted = await svc.submitPublish(FORMULA_ID, 'main', authorToken());
+    const submitted = await svc.submitPublish(
+      FORMULA_ID,
+      'main',
+      authorToken(),
+    );
     expect(submitted.status).toBe('pending_publish');
     expect(store[0].status).toBe('pending_publish');
 
@@ -299,7 +332,9 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
       baseRow({ status: 'pending_publish', authored_by: 'cb.author@xe.vn' }),
     ]);
     const svc = new PayFormulaService(db);
-    await expect(svc.publish(FORMULA_ID, 'main', authorToken())).rejects.toMatchObject({
+    await expect(
+      svc.publish(FORMULA_ID, 'main', authorToken()),
+    ).rejects.toMatchObject({
       code: HRM_PAY_FORMULA_403_DUAL,
     });
   });
@@ -319,7 +354,9 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
   it('submit-publish without required_vars → 412-VARS', async () => {
     const { db } = createStatefulDb([baseRow({ required_vars_json: null })]);
     const svc = new PayFormulaService(db);
-    await expect(svc.submitPublish(FORMULA_ID, 'main', authorToken())).rejects.toMatchObject({
+    await expect(
+      svc.submitPublish(FORMULA_ID, 'main', authorToken()),
+    ).rejects.toMatchObject({
       code: HRM_PAY_FORMULA_412_VARS,
     });
   });
@@ -338,18 +375,23 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
   it('scope_parity: member CEO cannot get holding formula', async () => {
     const { db } = createStatefulDb([baseRow({ company_id: 'holding' })]);
     const svc = new PayFormulaService(db);
-    await expect(svc.getFormulaById(FORMULA_ID, 'main', memberCeoToken())).rejects.toBeInstanceOf(
-      ApiException,
-    );
+    await expect(
+      svc.getFormulaById(FORMULA_ID, 'main', memberCeoToken()),
+    ).rejects.toBeInstanceOf(ApiException);
   });
 
   it('scope_parity: member CEO cannot mutate holding formula (list=get=mutate U19)', async () => {
-    const { db } = createStatefulDb([baseRow({ company_id: 'holding', status: 'draft' })]);
+    const { db } = createStatefulDb([
+      baseRow({ company_id: 'holding', status: 'draft' }),
+    ]);
     const svc = new PayFormulaService(db);
     await expect(
       svc.updateFormula(
         FORMULA_ID,
-        { company_id: 'main', expressionJson: { form: 'gd1_eval_v1', lines: [] } },
+        {
+          company_id: 'main',
+          expressionJson: { form: 'gd1_eval_v1', lines: [] },
+        },
         memberCeoToken(),
       ),
     ).rejects.toBeInstanceOf(ApiException);
@@ -412,7 +454,9 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
     expect(preview.gross).toBe(8_000_000);
     expect(preview.net).toBe(8_000_000);
     expect(preview.lines[0].component_code).toBe('BASE');
-    expect(preview.warnings).toEqual(expect.arrayContaining(['STAGED_EVAL_SUBSET', 'PREVIEW_DRY_RUN']));
+    expect(preview.warnings).toEqual(
+      expect.arrayContaining(['STAGED_EVAL_SUBSET', 'PREVIEW_DRY_RUN']),
+    );
   });
 
   it('evaluateBoundFormula uses CORE C&B base_salary without variableOverrides (R-PAY-F-CB-BAG)', async () => {
@@ -449,14 +493,24 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
       if (s.includes("table_name = 'att_timesheet_line'")) {
         return { rows: [{ exists: false }] };
       }
-      if (s.includes('FROM public.employees') && s.includes('company_id::text')) {
+      if (
+        s.includes('FROM public.employees') &&
+        s.includes('company_id::text')
+      ) {
         return { rows: [{ company_id: 'trsport' }] };
       }
-      if (s.includes('FROM public.employee_compensation_packages') && s.includes('ANY($2::text[])')) {
+      if (
+        s.includes('FROM public.employee_compensation_packages') &&
+        s.includes('ANY($2::text[])')
+      ) {
         return { rows: [{ id: pkgId, company_id: 'trsport' }] };
       }
       if (s.includes('FROM public.employee_compensation_lines')) {
-        return { rows: [{ line_type: 'base', amount: '10000000', allowance_code: null }] };
+        return {
+          rows: [
+            { line_type: 'base', amount: '10000000', allowance_code: null },
+          ],
+        };
       }
       return inner ? inner(sql, params) : { rows: [] };
     });
@@ -498,7 +552,9 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
     expect(evaluated.result.net).toBe(9_000_000);
     expect(evaluated.result.lines).toHaveLength(2);
     expect(evaluated.sourcePrecedence).toContain('emp_cb');
-    expect(evaluated.bagWarnings.some((w) => w.startsWith('OVERRIDES_APPLIED'))).toBe(false);
+    expect(
+      evaluated.bagWarnings.some((w) => w.startsWith('OVERRIDES_APPLIED')),
+    ).toBe(false);
   });
 
   it('evaluateBoundFormula returns FORMULA-412-VARS when C&B package absent (no silent zero)', async () => {
@@ -647,15 +703,23 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
   });
 
   it('soft-delete retire sets archived_at + status=retired (no hard DELETE)', async () => {
-    const { db, store, sqls } = createStatefulDb([baseRow({ status: 'active' })]);
+    const { db, store, sqls } = createStatefulDb([
+      baseRow({ status: 'active' }),
+    ]);
     const svc = new PayFormulaService(db);
-    const retired = await svc.retireFormula(FORMULA_ID, 'main', publisherToken());
+    const retired = await svc.retireFormula(
+      FORMULA_ID,
+      'main',
+      publisherToken(),
+    );
     expect(retired.status).toBe('retired');
     expect(retired.archivedAt).toBeTruthy();
     expect(store[0].archived_at).toBeTruthy();
-    expect(sqls.some((q) => /DELETE\s+FROM\s+public\.pay_formula_definitions/i.test(q))).toBe(
-      false,
-    );
+    expect(
+      sqls.some((q) =>
+        /DELETE\s+FROM\s+public\.pay_formula_definitions/i.test(q),
+      ),
+    ).toBe(false);
   });
 
   describe('processEmployeePayslipViaSrc (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
@@ -668,7 +732,12 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
       expression_json: {
         form: 'gd1_eval_v1',
         lines: [
-          { component_code: 'BASE', sign: 'earning', source: 'var', var: 'base_salary' },
+          {
+            component_code: 'BASE',
+            sign: 'earning',
+            source: 'var',
+            var: 'base_salary',
+          },
         ],
       },
       required_vars_json: { keys: ['base_salary'] },
@@ -678,7 +747,10 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
     it('SRC-02: emp C&B fixed amount wins — skips template/catalog evaluate', async () => {
       const db = {
         query: jest.fn(async (sql: string) => {
-          if (sql.includes('ALTER TABLE') || sql.includes('UPDATE public.employee_compensation_lines')) {
+          if (
+            sql.includes('ALTER TABLE') ||
+            sql.includes('UPDATE public.employee_compensation_lines')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('information_schema')) {
@@ -704,7 +776,16 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
             };
           }
           if (sql.includes('FROM public.salary_components')) {
-            return { rows: [{ id: 'sc-1', nature: 'income', default_value: '0', value_type: 'fixed' }] };
+            return {
+              rows: [
+                {
+                  id: 'sc-1',
+                  nature: 'income',
+                  default_value: '0',
+                  value_type: 'fixed',
+                },
+              ],
+            };
           }
           if (sql.includes('FROM public.pay_period_input_lines')) {
             return { rows: [] };
@@ -746,7 +827,10 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
     it('SRC-02 D-PAY-SRC-01: LUONG_CO_BAN snapshot matches C&B base → emp_cb', async () => {
       const db = {
         query: jest.fn(async (sql: string) => {
-          if (sql.includes('ALTER TABLE') || sql.includes('UPDATE public.employee_compensation_lines')) {
+          if (
+            sql.includes('ALTER TABLE') ||
+            sql.includes('UPDATE public.employee_compensation_lines')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('information_schema')) {
@@ -772,7 +856,16 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
             };
           }
           if (sql.includes('FROM public.salary_components')) {
-            return { rows: [{ id: 'sc-lcb', nature: 'income', default_value: '0', value_type: 'fixed' }] };
+            return {
+              rows: [
+                {
+                  id: 'sc-lcb',
+                  nature: 'income',
+                  default_value: '0',
+                  value_type: 'fixed',
+                },
+              ],
+            };
           }
           return { rows: [] };
         }),
@@ -810,7 +903,10 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
     it('SRC-05: blocked when no tier resolves — FORMULA-412 not silent zero', async () => {
       const db = {
         query: jest.fn(async (sql: string) => {
-          if (sql.includes('ALTER TABLE') || sql.includes('UPDATE public.employee_compensation_lines')) {
+          if (
+            sql.includes('ALTER TABLE') ||
+            sql.includes('UPDATE public.employee_compensation_lines')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('information_schema')) {
@@ -823,7 +919,16 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
             return { rows: [] };
           }
           if (sql.includes('FROM public.salary_components')) {
-            return { rows: [{ id: 'sc-1', nature: 'income', default_value: '0', value_type: 'fixed' }] };
+            return {
+              rows: [
+                {
+                  id: 'sc-1',
+                  nature: 'income',
+                  default_value: '0',
+                  value_type: 'fixed',
+                },
+              ],
+            };
           }
           if (sql.includes('FROM public.pay_formula_definitions')) {
             return { rows: [] };
@@ -840,7 +945,13 @@ describe('PayFormulaService (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01)', () => {
         periodFrom: '2026-04-01',
         periodTo: '2026-04-30',
         sheetTemplateSnapshotJson: {
-          columns: [{ component_code: 'MYSTERY', sort_order: 0, formula_definition_id: null }],
+          columns: [
+            {
+              component_code: 'MYSTERY',
+              sort_order: 0,
+              formula_definition_id: null,
+            },
+          ],
         },
         boundFormula,
       });

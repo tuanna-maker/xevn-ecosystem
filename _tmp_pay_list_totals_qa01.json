@@ -1,0 +1,113 @@
+{
+  "stamp": "PAYLISTTOTQA-MSIYQJRA",
+  "list_status": 200,
+  "list_code": "HRM-PAY-200",
+  "pick": {
+    "label": "PROCESSED",
+    "id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+    "status": "processed",
+    "list": {
+      "employee_count": 53
+    },
+    "get": {
+      "status": 404
+    },
+    "payslip_sum": {
+      "count": 53,
+      "sumGross": 797413000,
+      "sumNet": 797413000,
+      "sumDed": 0,
+      "sample": [
+        {
+          "id": "e1ac365a-473a-4f9b-bc00-15acc4cccf05",
+          "gross": 19500000,
+          "net": 19500000,
+          "ded": 0
+        },
+        {
+          "id": "8ca0679c-49de-4097-8c01-3a74900df3bf",
+          "gross": 17000000,
+          "net": 17000000,
+          "ded": 0
+        }
+      ]
+    },
+    "match_list_vs_sum": {
+      "gross": false,
+      "net": false,
+      "ded": true
+    },
+    "match_list_vs_get": {
+      "gross": false,
+      "net": false,
+      "nested": true
+    },
+    "nested_eq_top": false,
+    "nested_has_deduction": false
+  },
+  "draft": {
+    "label": "DRAFT",
+    "id": "4d2111d7-c8cd-4dcf-a7a0-acb713f93581",
+    "status": "draft",
+    "list": {
+      "employee_count": 0
+    },
+    "get": {
+      "status": 404
+    },
+    "payslip_sum": {
+      "count": 0,
+      "sumGross": 0,
+      "sumNet": 0,
+      "sumDed": 0,
+      "sample": []
+    },
+    "match_list_vs_sum": {
+      "gross": false,
+      "net": false,
+      "ded": true
+    },
+    "match_list_vs_get": {
+      "gross": false,
+      "net": false,
+      "nested": true
+    },
+    "nested_eq_top": false,
+    "nested_has_deduction": false
+  },
+  "honesty": {
+    "any_list_ready_true": false
+  },
+  "sample": [
+    {
+      "id": "28875e75-4c5f-49f4-8725-121e22654100",
+      "status": "processed",
+      "ec": 1
+    },
+    {
+      "id": "bb206be7-3195-410f-9979-85a5215c127b",
+      "status": "processed",
+      "ec": 1
+    },
+    {
+      "id": "4d2111d7-c8cd-4dcf-a7a0-acb713f93581",
+      "status": "draft",
+      "ec": 0
+    },
+    {
+      "id": "5f739175-d08a-4939-9d10-eb6e19024bd5",
+      "status": "draft",
+      "ec": 0
+    },
+    {
+      "id": "daffe3ee-f1f6-4a9e-866d-4641e8b50822",
+      "status": "draft",
+      "ec": 0
+    },
+    {
+      "id": "ae0c4dbc-3a77-4879-8076-3bddc54947ea",
+      "status": "draft",
+      "ec": 0
+    }
+  ]
+}

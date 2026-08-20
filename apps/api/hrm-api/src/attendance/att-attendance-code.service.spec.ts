@@ -66,14 +66,21 @@ function schemaPassthrough(sql: string): boolean {
 }
 
 function mockDb(
-  queryImpl: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
+  queryImpl: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
 ): HrmDbService {
-  const query = jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-    return queryImpl(sql, params);
-  });
+  const query = jest
+    .fn()
+    .mockImplementation(async (sql: string, params?: unknown[]) => {
+      return queryImpl(sql, params);
+    });
   return {
     query,
-    withTransaction: jest.fn(async (fn: (q: typeof query) => Promise<unknown>) => fn(query)),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof query) => Promise<unknown>) => fn(query),
+    ),
   } as unknown as HrmDbService;
 }
 
@@ -88,23 +95,40 @@ describe('AttAttendanceCodeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATA
     } as unknown as HrmDbService;
     const svc = new AttAttendanceCodeService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.att_attendance_code'))).toBe(
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.att_attendance_code'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) =>
+        q.includes('uq_att_attendance_code_company_code_active'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('ix_att_attendance_code_effective')),
+    ).toBe(true);
+    expect(sqls.some((q) => q.includes('chk_att_att_code_format'))).toBe(true);
+    expect(sqls.some((q) => q.includes('chk_att_att_code_counts_as'))).toBe(
       true,
     );
-    expect(sqls.some((q) => q.includes('uq_att_attendance_code_company_code_active'))).toBe(true);
-    expect(sqls.some((q) => q.includes('ix_att_attendance_code_effective'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_att_att_code_format'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_att_att_code_counts_as'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_att_att_code_day_weight'))).toBe(true);
-    expect(sqls.every((q) => !q.includes("code IN ("))).toBe(true);
-    expect(sqls.every((q) => !q.includes("CHECK (code IN ('pending'"))).toBe(true);
+    expect(sqls.some((q) => q.includes('chk_att_att_code_day_weight'))).toBe(
+      true,
+    );
+    expect(sqls.every((q) => !q.includes('code IN ('))).toBe(true);
+    expect(sqls.every((q) => !q.includes("CHECK (code IN ('pending'"))).toBe(
+      true,
+    );
   });
 
   it('VAL-ATT-CODE-CNS-02: admin CREATE open N+1 code business_trip', async () => {
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.att_attendance_code') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.att_attendance_code') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.att_attendance_code')) {
@@ -147,7 +171,10 @@ describe('AttAttendanceCodeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATA
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.att_attendance_code') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.att_attendance_code') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.att_attendance_code')) {
@@ -160,7 +187,12 @@ describe('AttAttendanceCodeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATA
     const svc = new AttAttendanceCodeService(db);
     await expect(
       svc.upsertAttendanceCode(
-        { companyId: 'holding', code: 'business_trip', nameVi: 'x', symbol: 'CT' },
+        {
+          companyId: 'holding',
+          code: 'business_trip',
+          nameVi: 'x',
+          symbol: 'CT',
+        },
         groupCeoToken(),
       ),
     ).rejects.toMatchObject({ code: 'HRM-PLT-CAT-CODE-CONFLICT' });
@@ -170,39 +202,60 @@ describe('AttAttendanceCodeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATA
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('SELECT') && s.includes('FROM public.att_attendance_code') && s.includes('id = $1')) {
+      if (
+        s.includes('SELECT') &&
+        s.includes('FROM public.att_attendance_code') &&
+        s.includes('id = $1')
+      ) {
         return { rows: [baseRow()] };
       }
       if (s.includes('UPDATE') && s.includes("status = 'retired'")) {
         return {
-          rows: [baseRow({ status: 'retired', archived_at: '2026-08-08T01:00:00Z' })],
+          rows: [
+            baseRow({ status: 'retired', archived_at: '2026-08-08T01:00:00Z' }),
+          ],
         };
       }
       return { rows: [] };
     });
     const svc = new AttAttendanceCodeService(db);
-    const row = await svc.retireAttendanceCode(CODE_ID, 'holding', groupCeoToken());
+    const row = await svc.retireAttendanceCode(
+      CODE_ID,
+      'holding',
+      groupCeoToken(),
+    );
     expect(row.status).toBe('retired');
     expect(row.archivedAt).toBeTruthy();
   });
 
   it('VAL-ATT-CODE-CNS dual-SoT: EFF ATT wins group REF on same code', async () => {
     const settings = {
-      getEffectiveItemsForKey: jest.fn().mockResolvedValue([
-        { status: 'active', code: 'present', label: 'REF Có mặt' },
-      ]),
+      getEffectiveItemsForKey: jest
+        .fn()
+        .mockResolvedValue([
+          { status: 'active', code: 'present', label: 'REF Có mặt' },
+        ]),
     };
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       if (String(sql).includes('FROM public.att_attendance_code')) {
         return {
-          rows: [baseRow({ code: 'present', name_vi: 'ATT Có mặt override', symbol: 'X' })],
+          rows: [
+            baseRow({
+              code: 'present',
+              name_vi: 'ATT Có mặt override',
+              symbol: 'X',
+            }),
+          ],
         };
       }
       return { rows: [] };
     });
     const svc = new AttAttendanceCodeService(db, settings);
-    const eff = await svc.listEffective({ company_id: 'holding' }, groupCeoToken());
+    const eff = await svc.listEffective(
+      { company_id: 'holding' },
+      groupCeoToken(),
+    );
     expect(eff.total).toBe(1);
     expect(eff.data[0].nameVi).toBe('ATT Có mặt override');
     expect(eff.data[0].source).toBe('att_override');
@@ -212,7 +265,9 @@ describe('AttAttendanceCodeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATA
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       if (String(sql).includes('FROM public.att_attendance_code')) {
-        return { rows: [baseRow({ code: 'present', symbol: 'X', name_vi: 'Có mặt' })] };
+        return {
+          rows: [baseRow({ code: 'present', symbol: 'X', name_vi: 'Có mặt' })],
+        };
       }
       return { rows: [] };
     });
@@ -243,7 +298,10 @@ describe('AttAttendanceCodeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATA
   it('VAL-ATT-CODE-CNS-03: scope_parity list↔get-by-id same resolver (member OOS → 409)', async () => {
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
-      if (String(sql).includes('FROM public.att_attendance_code') && String(sql).includes('id = $1')) {
+      if (
+        String(sql).includes('FROM public.att_attendance_code') &&
+        String(sql).includes('id = $1')
+      ) {
         return { rows: [baseRow({ company_id: 'holding' })] };
       }
       return { rows: [] };
@@ -274,7 +332,10 @@ describe('AttAttendanceCodeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATA
     const svc = new AttAttendanceCodeService(db);
     const map = await svc.buildCodeDisplayLookup('holding', groupCeoToken());
     expect(map.get('wfh')).toEqual({ statusLabel: 'Làm từ xa', symbol: 'WFH' });
-    expect(map.get('remote')).toEqual({ statusLabel: 'Làm từ xa', symbol: 'WFH' });
+    expect(map.get('remote')).toEqual({
+      statusLabel: 'Làm từ xa',
+      symbol: 'WFH',
+    });
   });
 
   it('VAL-ATT-CODE-CNS-09: KEY taxonomy is HRM-ATT-CODE-KEY (≠ leave/EMP)', async () => {
@@ -286,7 +347,12 @@ describe('AttAttendanceCodeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATA
   it('VAL-ATT-CODE-CNS-10: aggregate file path not rewritten by this seat (process marker)', () => {
     // L-ATT-CODE-07 — this suite must not import/mutate att-timesheet-line-aggregate counting.
     // Presence of typed flags on catalog row ≠ aggregate rewrite claim.
-    const row = baseRow({ counts_as: 'work', day_weight: 0.5, is_paid: true, is_present: true });
+    const row = baseRow({
+      counts_as: 'work',
+      day_weight: 0.5,
+      is_paid: true,
+      is_present: true,
+    });
     expect(row.counts_as).toBe('work');
     expect(Number(row.day_weight)).toBe(0.5);
   });
@@ -301,15 +367,18 @@ describe('AttAttendanceCodeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATA
       return { rows: [] };
     });
     const svc = new AttAttendanceCodeService(db);
-    const eff = await svc.listEffective({ company_id: 'holding' }, groupCeoToken());
+    const eff = await svc.listEffective(
+      { company_id: 'holding' },
+      groupCeoToken(),
+    );
     expect(eff.total).toBe(0);
   });
 
   it('VAL-ATT-CODE-CNS-01 wire: AttendanceService createRecord invent → HRM-ATT-CODE-KEY', async () => {
     const catalog = {
-      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
-        new ApiException(HRM_ATT_CODE_KEY, 'invent', 400),
-      ),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockRejectedValue(new ApiException(HRM_ATT_CODE_KEY, 'invent', 400)),
       buildCodeDisplayLookup: jest.fn().mockResolvedValue(new Map()),
     };
     const db = mockDb(async (sql: string) => {
@@ -349,9 +418,11 @@ describe('AttAttendanceCodeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-CODE-CATA
         statusLabel: 'Làm từ xa',
         symbol: 'WFH',
       }),
-      buildCodeDisplayLookup: jest.fn().mockResolvedValue(
-        new Map([['wfh', { statusLabel: 'Làm từ xa', symbol: 'WFH' }]]),
-      ),
+      buildCodeDisplayLookup: jest
+        .fn()
+        .mockResolvedValue(
+          new Map([['wfh', { statusLabel: 'Làm từ xa', symbol: 'WFH' }]]),
+        ),
     };
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };

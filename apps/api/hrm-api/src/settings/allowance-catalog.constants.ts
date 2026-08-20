@@ -49,25 +49,41 @@ export const ALLOWANCE_CATALOG_DUAL_WRITE_VI =
 export const ALLOWANCE_CATALOG_LINKED_VI =
   'Sửa/ngừng theo dõi thành phần đã liên kết PC/KT qua Cài đặt → Danh mục PC/KT';
 
-export function isAllowanceDeductionComponentType(componentType: string | null | undefined): boolean {
+export function isAllowanceDeductionComponentType(
+  componentType: string | null | undefined,
+): boolean {
   const t = (componentType ?? '').trim().toLowerCase();
   return (PAY_PC_KT_COMPONENT_TYPES as readonly string[]).includes(t);
 }
 
-export function defaultComponentTypeForEntryKind(entryKind: AllowanceEntryKind): PayPcKtComponentType {
+export function defaultComponentTypeForEntryKind(
+  entryKind: AllowanceEntryKind,
+): PayPcKtComponentType {
   return entryKind === 'deduction' ? 'khau_tru' : 'phu_cap';
 }
 
-export function defaultNatureForEntryKind(entryKind: AllowanceEntryKind): AllowanceNature {
+export function defaultNatureForEntryKind(
+  entryKind: AllowanceEntryKind,
+): AllowanceNature {
   return entryKind === 'deduction' ? 'deduction' : 'income';
 }
 
-export function mergeTokenKeyForEntry(entryKind: AllowanceEntryKind, code: string): string {
+export function mergeTokenKeyForEntry(
+  entryKind: AllowanceEntryKind,
+  code: string,
+): string {
   const lower = code.trim().toLowerCase();
-  return entryKind === 'deduction' ? `cb.deduction_${lower}` : `cb.allowance_${lower}`;
+  return entryKind === 'deduction'
+    ? `cb.deduction_${lower}`
+    : `cb.allowance_${lower}`;
 }
 
-export function mergeTokenSourcePathForEntry(entryKind: AllowanceEntryKind, code: string): string {
+export function mergeTokenSourcePathForEntry(
+  entryKind: AllowanceEntryKind,
+  code: string,
+): string {
   const c = code.trim();
-  return entryKind === 'deduction' ? `cb.deductions.${c}` : `cb.allowances.${c}`;
+  return entryKind === 'deduction'
+    ? `cb.deductions.${c}`
+    : `cb.allowances.${c}`;
 }

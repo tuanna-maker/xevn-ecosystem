@@ -304,7 +304,10 @@ import {
   type CellCapacitySnapshot,
   type YctdHeadcountMode,
 } from './yctd-requisition-gates';
-import { isPlanApprovedStatus, projectMonthsForApi } from './recruitment-plan-headcount';
+import {
+  isPlanApprovedStatus,
+  projectMonthsForApi,
+} from './recruitment-plan-headcount';
 
 type JobRequisitionRow = {
   id: string;
@@ -459,13 +462,19 @@ export class RecruitmentService {
       return undefined;
     }
   }
-  private resolvePage(value: number | string | undefined, fallback: number): number {
+  private resolvePage(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.trunc(parsed);
   }
 
-  private resolvePageSize(value: number | string | undefined, fallback: number): number {
+  private resolvePageSize(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.min(100, Math.trunc(parsed));
@@ -962,13 +971,18 @@ export class RecruitmentService {
         active_interview_badge_label: null,
       };
     }
-    const id = typeof row.active_interview_id === 'string' ? row.active_interview_id.trim() : '';
+    const id =
+      typeof row.active_interview_id === 'string'
+        ? row.active_interview_id.trim()
+        : '';
     return {
       has_active_interview: true,
       active_interview_id: id || null,
       active_interview_status: row.active_interview_status,
       active_interview_at: row.active_interview_at,
-      active_interview_display_time_vi_vn: this.toViVnDateTime(row.active_interview_at),
+      active_interview_display_time_vi_vn: this.toViVnDateTime(
+        row.active_interview_at,
+      ),
       active_interview_badge_label: ACTIVE_INTERVIEW_BADGE_LABEL,
     };
   }
@@ -989,16 +1003,23 @@ export class RecruitmentService {
       [companyId, candidateId],
     );
     const current = active.rows[0];
-    throw new ApiException('HRM-REC-IV-409-ACTIVE', message, HttpStatus.CONFLICT, {
-      candidate_id: candidateId,
-      active_interview_id: current?.id ?? null,
-      active_status: current?.status ?? null,
-      active_at: current?.scheduled_at ?? null,
-    });
+    throw new ApiException(
+      'HRM-REC-IV-409-ACTIVE',
+      message,
+      HttpStatus.CONFLICT,
+      {
+        candidate_id: candidateId,
+        active_interview_id: current?.id ?? null,
+        active_status: current?.status ?? null,
+        active_at: current?.scheduled_at ?? null,
+      },
+    );
   }
 
   private isActiveInterviewStatus(status: string): boolean {
-    return ACTIVE_INTERVIEW_STATUSES.includes(status as (typeof ACTIVE_INTERVIEW_STATUSES)[number]);
+    return ACTIVE_INTERVIEW_STATUSES.includes(
+      status as (typeof ACTIVE_INTERVIEW_STATUSES)[number],
+    );
   }
 
   private isTerminalInterviewStatus(status: string): boolean {
@@ -1012,7 +1033,10 @@ export class RecruitmentService {
       return false;
     }
     const pgError = error as { code?: string; constraint?: string };
-    return pgError.code === '23505' && pgError.constraint === 'uniq_recruitment_interviews_active_candidate';
+    return (
+      pgError.code === '23505' &&
+      pgError.constraint === 'uniq_recruitment_interviews_active_candidate'
+    );
   }
 
   /** Tenant CFG boolean — unset → defaultValue (O6/O7). Soft-fail if settings table absent. */
@@ -1057,7 +1081,10 @@ export class RecruitmentService {
     }
   }
 
-  private assertScheduledAtNotPastOrThrow(scheduledAt: string, allowPast: boolean): void {
+  private assertScheduledAtNotPastOrThrow(
+    scheduledAt: string,
+    allowPast: boolean,
+  ): void {
     const ts = Date.parse(scheduledAt);
     if (Number.isNaN(ts)) {
       throw new ApiException(
@@ -1079,7 +1106,10 @@ export class RecruitmentService {
    * F-REC-IV-02 transition matrix (API-01 §4.2).
    * ACTIVE → TERMINAL / confirmed (from scheduled) only; TERMINAL → anything = INVALID.
    */
-  private assertInterviewStatusTransitionOrThrow(fromStatus: string, toStatus: string): void {
+  private assertInterviewStatusTransitionOrThrow(
+    fromStatus: string,
+    toStatus: string,
+  ): void {
     if (this.isTerminalInterviewStatus(fromStatus)) {
       throw new ApiException(
         'HRM-REC-IV-400-INVALID-TRANSITION',
@@ -1166,7 +1196,9 @@ export class RecruitmentService {
     const positionName =
       (row.position_name ?? '').trim() || row.title || positionKey || '—';
     const pipeline_flags = parsePipelineFlags(row.pipeline_flags_json);
-    const classification_required = isLegacyUnclassifiedMode(row.headcount_mode);
+    const classification_required = isLegacyUnclassifiedMode(
+      row.headcount_mode,
+    );
     const mode = normalizeHeadcountMode(row.headcount_mode);
     const requires_bod =
       mode === 'out_of_plan' &&
@@ -1370,11 +1402,16 @@ export class RecruitmentService {
     let recruitment_plan_id: string | null = null;
 
     if (opts.requireComplete) {
-      const hire = requireHireReasonOrThrow(opts.hire_reason, opts.replace_employee_id);
+      const hire = requireHireReasonOrThrow(
+        opts.hire_reason,
+        opts.replace_employee_id,
+      );
       hire_reason = hire.hire_reason;
       replace_employee_id = hire.replace_employee_id;
       if (mode === 'out_of_plan') {
-        out_of_plan_reason = requireOutOfPlanReasonOrThrow(opts.out_of_plan_reason);
+        out_of_plan_reason = requireOutOfPlanReasonOrThrow(
+          opts.out_of_plan_reason,
+        );
         headcount_cell_id = null;
       }
     }
@@ -1387,7 +1424,10 @@ export class RecruitmentService {
           HttpStatus.CONFLICT,
         );
       }
-      const cell = await this.resolveInPlanCellOrThrow(headcount_cell_id, opts.companyIds);
+      const cell = await this.resolveInPlanCellOrThrow(
+        headcount_cell_id,
+        opts.companyIds,
+      );
       assertCellQtyOrThrow(opts.headcount, cell.headcount_need_hire);
       await this.assertNoSpawnDupOrThrow(
         opts.companyIdPersist,
@@ -1412,9 +1452,15 @@ export class RecruitmentService {
    * SRS bước: Diễn biến #4 Số lượng ≤0 · REC-02 1c/1d bind JD · #6 Lưu nháp draft
    * TechSpec: §14.7 · API-01 §5.1 — create status=draft (Y-S7 cấm open)
    */
-  async createJobRequisition(payload: CreateJobRequisitionDto, authorization?: string) {
+  async createJobRequisition(
+    payload: CreateJobRequisitionDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const scope = resolveHrmListScope(authorization, payload.company_id);
     const headcount = Math.trunc(Number(payload.headcount));
     // Thất bại: Diễn biến #4 — số lượng ≤ 0 (defense + DTO @Min(1)).
@@ -1427,9 +1473,15 @@ export class RecruitmentService {
     }
     // BR-YCTD-JD-REF-01 — JD soft FK bắt buộc khi tạo YCTD (GĐ1).
     const templateId = requireYctdJdTemplateId(payload);
-    const jd = await this.resolveYctdBindTemplate(templateId, payload.company_id, authorization);
+    const jd = await this.resolveYctdBindTemplate(
+      templateId,
+      payload.company_id,
+      authorization,
+    );
     const snapshotDesc =
-      payload.job_description?.trim() || (jd.job_description ?? '').trim() || null;
+      payload.job_description?.trim() ||
+      (jd.job_description ?? '').trim() ||
+      null;
     const snapshotReq =
       payload.requirements?.trim() || (jd.requirements ?? '').trim() || null;
 
@@ -1449,7 +1501,10 @@ export class RecruitmentService {
     // If mode set on create, still run in_plan cell gates via validate when mode=in_plan.
     if (modeHint === 'in_plan' || modeHint === 'out_of_plan') {
       // re-validate with same path — already done; for out_of_plan reason optional on draft
-    } else if (payload.headcount_mode != null && String(payload.headcount_mode).trim() !== '') {
+    } else if (
+      payload.headcount_mode != null &&
+      String(payload.headcount_mode).trim() !== ''
+    ) {
       throw new ApiException(
         HRM_YCTD_MODE_REQUIRED,
         'headcount_mode phải là in_plan | out_of_plan',
@@ -1458,7 +1513,11 @@ export class RecruitmentService {
     }
 
     const hireNorm = normalizeHireReason(payload.hire_reason);
-    if (payload.hire_reason != null && String(payload.hire_reason).trim() !== '' && !hireNorm) {
+    if (
+      payload.hire_reason != null &&
+      String(payload.hire_reason).trim() !== '' &&
+      !hireNorm
+    ) {
       throw new ApiException(
         HRM_YCTD_VAL_400,
         'hire_reason không hợp lệ (new | replace)',
@@ -1538,7 +1597,10 @@ export class RecruitmentService {
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes('uq_job_requisitions_spawn_cell') || msg.includes('duplicate key')) {
+      if (
+        msg.includes('uq_job_requisitions_spawn_cell') ||
+        msg.includes('duplicate key')
+      ) {
         throw new ApiException(
           HRM_YCTD_SPAWN_DUP,
           'Ô này đã có YCTD trong ĐB — không tạo trùng (spawn UQ)',
@@ -1570,9 +1632,16 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const page = this.resolvePage(query.page, 1);
-    const pageSize = this.resolvePageSize(query.page_size ?? query.pageSize, 20);
+    const pageSize = this.resolvePageSize(
+      query.page_size ?? query.pageSize,
+      20,
+    );
     const offset = (page - 1) * pageSize;
     const filters: string[] = [];
     const values: unknown[] = [];
@@ -1610,7 +1679,11 @@ export class RecruitmentService {
       page,
       page_size: pageSize,
       data,
-      items: receivableMode ? data.map((row) => toReceivableListItem(row as Record<string, unknown>)) : data,
+      items: receivableMode
+        ? data.map((row) =>
+            toReceivableListItem(row as Record<string, unknown>),
+          )
+        : data,
     };
   }
 
@@ -1621,7 +1694,11 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const filters: string[] = ['r.id = $1::uuid'];
     const values: unknown[] = [requisitionId];
     this.pushRequisitionCompanyFilter(filters, values, scope.companyIds, 'r');
@@ -1639,7 +1716,11 @@ export class RecruitmentService {
           HttpStatus.NOT_FOUND,
         );
       }
-      throw new ApiException('HRM-REC-404', 'Job requisition not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Job requisition not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const mapped = this.mapRequisitionDisplay(res.rows[0]);
     // F-REC-UV-YCTD-02 — bind-target STATUS gate.
@@ -1663,7 +1744,11 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const peek = await this.db.query<{
       company_id: string;
       status: string;
@@ -1711,7 +1796,10 @@ export class RecruitmentService {
       payload.headcount === undefined || payload.headcount === null
         ? null
         : Math.trunc(Number(payload.headcount));
-    if (nextHeadcount !== null && (!Number.isFinite(nextHeadcount) || nextHeadcount < 1)) {
+    if (
+      nextHeadcount !== null &&
+      (!Number.isFinite(nextHeadcount) || nextHeadcount < 1)
+    ) {
       throw new ApiException(
         'HRM-REC-400',
         'Requisition headcount must be an integer greater than 0',
@@ -1719,7 +1807,7 @@ export class RecruitmentService {
       );
     }
     const headcountForValidate =
-      nextHeadcount ?? Math.trunc(Number(peek.rows[0]!.headcount ?? 1));
+      nextHeadcount ?? Math.trunc(Number(peek.rows[0].headcount ?? 1));
     if (!Number.isFinite(headcountForValidate) || headcountForValidate < 1) {
       // Peek missing headcount (legacy mock) — treat as 1 for gate only.
     }
@@ -1731,13 +1819,10 @@ export class RecruitmentService {
     // FORBIDDEN: client patch status to receivable to skip WF/BOD (API-01 §5.5.2).
     if (payload.status !== undefined) {
       const want = String(payload.status).trim().toLowerCase();
-      const prior = String(peek.rows[0]!.status ?? '')
+      const prior = String(peek.rows[0].status ?? '')
         .trim()
         .toLowerCase();
-      if (
-        (want === 'open_for_hire' || want === 'open') &&
-        want !== prior
-      ) {
+      if ((want === 'open_for_hire' || want === 'open') && want !== prior) {
         throw new ApiException(
           HRM_YCTD_NOT_RECEIVABLE,
           'Không được PATCH status sang open_for_hire/open — dùng POST …/transitions sau duyệt',
@@ -1751,8 +1836,8 @@ export class RecruitmentService {
     const modeIncoming =
       payload.headcount_mode !== undefined
         ? normalizeHeadcountMode(payload.headcount_mode)
-        : normalizeHeadcountMode(peek.rows[0]!.headcount_mode);
-    if (isLegacyUnclassifiedMode(peek.rows[0]!.headcount_mode)) {
+        : normalizeHeadcountMode(peek.rows[0].headcount_mode);
+    if (isLegacyUnclassifiedMode(peek.rows[0].headcount_mode)) {
       const classifyTouch =
         payload.headcount_mode !== undefined ||
         payload.headcount_cell_id !== undefined ||
@@ -1771,22 +1856,25 @@ export class RecruitmentService {
     const cellIdIncoming =
       payload.headcount_cell_id !== undefined
         ? payload.headcount_cell_id
-        : peek.rows[0]!.headcount_cell_id;
+        : peek.rows[0].headcount_cell_id;
     const hireIncoming =
-      payload.hire_reason !== undefined ? payload.hire_reason : peek.rows[0]!.hire_reason;
+      payload.hire_reason !== undefined
+        ? payload.hire_reason
+        : peek.rows[0].hire_reason;
     const replaceIncoming =
       payload.replace_employee_id !== undefined
         ? payload.replace_employee_id
-        : peek.rows[0]!.replace_employee_id;
+        : peek.rows[0].replace_employee_id;
     const outIncoming =
       payload.out_of_plan_reason !== undefined
         ? payload.out_of_plan_reason
-        : peek.rows[0]!.out_of_plan_reason;
+        : peek.rows[0].out_of_plan_reason;
 
     let validatedMode = modeIncoming;
     let validatedCell: string | null = cellIdIncoming ?? null;
     let validatedHire: string | null = normalizeHireReason(hireIncoming);
-    let validatedReplace: string | null = (replaceIncoming ?? '').trim() || null;
+    let validatedReplace: string | null =
+      (replaceIncoming ?? '').trim() || null;
     let validatedOut: string | null =
       typeof outIncoming === 'string' ? outIncoming.trim() || null : null;
 
@@ -1799,7 +1887,7 @@ export class RecruitmentService {
         out_of_plan_reason: outIncoming,
         headcount_cell_id: cellIdIncoming,
         companyIds: scope.companyIds,
-        companyIdPersist: peek.rows[0]!.company_id,
+        companyIdPersist: peek.rows[0].company_id,
         requireComplete: false,
         excludeRequisitionId: requisitionId,
       });
@@ -1808,7 +1896,10 @@ export class RecruitmentService {
       validatedHire = v.hire_reason ?? validatedHire;
       validatedReplace = v.replace_employee_id;
       validatedOut = v.out_of_plan_reason ?? validatedOut;
-      if (modeIncoming === 'out_of_plan' && payload.out_of_plan_reason !== undefined) {
+      if (
+        modeIncoming === 'out_of_plan' &&
+        payload.out_of_plan_reason !== undefined
+      ) {
         validatedOut =
           typeof payload.out_of_plan_reason === 'string'
             ? payload.out_of_plan_reason.trim() || null
@@ -1822,7 +1913,8 @@ export class RecruitmentService {
     let nextReq: string | null | undefined;
     let jdMeta: YctdJdTemplateBindRow | null = null;
     const aliasPresent =
-      payload.job_template_id !== undefined || payload.job_description_id !== undefined;
+      payload.job_template_id !== undefined ||
+      payload.job_description_id !== undefined;
     if (aliasPresent) {
       assertYctdJdRebindAllowed(peek.rows[0]?.status);
       const resolved = resolveYctdJdTemplateId(payload);
@@ -1832,7 +1924,7 @@ export class RecruitmentService {
       }
       jdMeta = await this.resolveYctdBindTemplate(
         resolved as string,
-        query.company_id ?? peek.rows[0]!.company_id,
+        query.company_id ?? peek.rows[0].company_id,
         authorization,
       );
       nextTemplateId = jdMeta.id;
@@ -1855,7 +1947,7 @@ export class RecruitmentService {
       }
     }
 
-    const nextStatus = payload.status ?? peek.rows[0]!.status;
+    const nextStatus = payload.status ?? peek.rows[0].status;
     const targetMonthTouched = payload.target_month !== undefined;
     const targetMonthNorm = targetMonthTouched
       ? normalizeTargetMonthOrThrow(payload.target_month)
@@ -1867,7 +1959,7 @@ export class RecruitmentService {
       jobGradeTouch = 1;
       jobGradeVal = await this.resolveJobGradeKeyForWrite(
         authorization,
-        peek.rows[0]!.company_id,
+        peek.rows[0].company_id,
         payload.job_grade_key,
       );
     }
@@ -1934,7 +2026,11 @@ export class RecruitmentService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-404', 'Job requisition not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Job requisition not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (jdMeta) {
       return this.mapRequisitionDisplay({
@@ -1956,18 +2052,36 @@ export class RecruitmentService {
     query: GetJobRequisitionQueryDto,
     authorization?: string,
     scopeContext?: HrmListScopeContext,
-    options?: { submitterUserId?: string; tenantId?: string; companySlug?: string },
+    options?: {
+      submitterUserId?: string;
+      tenantId?: string;
+      companySlug?: string;
+    },
   ) {
     await this.ensureSchema();
-    const existing = await this.getJobRequisitionById(requisitionId, query, authorization, scopeContext);
+    const existing = await this.getJobRequisitionById(
+      requisitionId,
+      query,
+      authorization,
+      scopeContext,
+    );
     if (existing.workflow_instance_id) {
       return {
         ...existing,
-        spawn: { workflowInstanceId: existing.workflow_instance_id, idempotent: true },
+        spawn: {
+          workflowInstanceId: existing.workflow_instance_id,
+          idempotent: true,
+        },
       };
     }
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
-    const companyIdPersist = String(existing.company_id ?? query.company_id ?? '');
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
+    const companyIdPersist = String(
+      existing.company_id ?? query.company_id ?? '',
+    );
     const headcount = Math.trunc(Number(existing.headcount));
     const validated = await this.validateYctdFieldsOrThrow({
       mode: normalizeHeadcountMode(existing.headcount_mode),
@@ -2007,20 +2121,28 @@ export class RecruitmentService {
     );
 
     const requisitionCompanyId = companyIdPersist;
-    const spawn = await this.recruitmentWorkflowBridge.startRecruitmentWorkflowIfConfigured({
-      businessType: WF_BUSINESS_TYPE_HRM_REQUISITION,
-      businessId: requisitionId,
-      companyId: requisitionCompanyId,
-      submitterUserId: options?.submitterUserId,
-      tenantId: options?.tenantId,
-      companySlug: options?.companySlug ?? requisitionCompanyId,
-      conditions: {
-        headcount_mode: mode,
-        hire_reason: String(validated.hire_reason ?? ''),
-      },
-      approvalMatrixKey: matrixKey,
-    });
-    const refreshed = await this.getJobRequisitionById(requisitionId, query, authorization, scopeContext);
+    const spawn =
+      await this.recruitmentWorkflowBridge.startRecruitmentWorkflowIfConfigured(
+        {
+          businessType: WF_BUSINESS_TYPE_HRM_REQUISITION,
+          businessId: requisitionId,
+          companyId: requisitionCompanyId,
+          submitterUserId: options?.submitterUserId,
+          tenantId: options?.tenantId,
+          companySlug: options?.companySlug ?? requisitionCompanyId,
+          conditions: {
+            headcount_mode: mode,
+            hire_reason: String(validated.hire_reason ?? ''),
+          },
+          approvalMatrixKey: matrixKey,
+        },
+      );
+    const refreshed = await this.getJobRequisitionById(
+      requisitionId,
+      query,
+      authorization,
+      scopeContext,
+    );
     return {
       ...refreshed,
       approval_matrix_key: matrixKey,
@@ -2043,7 +2165,11 @@ export class RecruitmentService {
     options?: { actorId?: string },
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const peek = await this.db.query<JobRequisitionRow>(
       `SELECT id, company_id::text AS company_id, status, headcount_mode,
               hire_reason, out_of_plan_reason, pipeline_flags_json,
@@ -2055,7 +2181,7 @@ export class RecruitmentService {
       notFoundCode: 'HRM-REC-404',
       mismatchCode: 'HRM-REC-409',
     });
-    const row = peek.rows[0]!;
+    const row = peek.rows[0];
     if (isLegacyUnclassifiedMode(row.headcount_mode)) {
       throw new ApiException(
         HRM_YCTD_MODE_REQUIRED,
@@ -2071,7 +2197,9 @@ export class RecruitmentService {
     if (payload.action === 'reject') {
       // No rejected_by column (DATA-01) — do NOT bind unused actorId as $2 (PG type error).
       // Approve path still binds actorId → approved_by via $2; reject only persists rejected_reason.
-      const reason = requireRejectedReasonOrThrow(payload.rejected_reason ?? payload.comment);
+      const reason = requireRejectedReasonOrThrow(
+        payload.rejected_reason ?? payload.comment,
+      );
       const filters: string[] = ['id = $2::uuid'];
       const values: unknown[] = [reason, requisitionId];
       pushCompanyIdFilter(filters, values, scope.companyIds);
@@ -2090,7 +2218,11 @@ export class RecruitmentService {
         values,
       );
       if (!res.rows[0]) {
-        throw new ApiException('HRM-REC-404', 'Job requisition not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          'HRM-REC-404',
+          'Job requisition not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       return this.mapRequisitionDisplay(res.rows[0]);
     }
@@ -2165,7 +2297,11 @@ export class RecruitmentService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-404', 'Job requisition not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Job requisition not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapRequisitionDisplay(res.rows[0]);
   }
@@ -2182,7 +2318,11 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const peek = await this.db.query<JobRequisitionRow>(
       `SELECT id, company_id::text AS company_id, status, headcount_mode, pipeline_flags_json
        FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1`,
@@ -2192,7 +2332,7 @@ export class RecruitmentService {
       notFoundCode: 'HRM-REC-404',
       mismatchCode: 'HRM-REC-409',
     });
-    const row = peek.rows[0]!;
+    const row = peek.rows[0];
     const status = String(row.status ?? '')
       .trim()
       .toLowerCase();
@@ -2242,7 +2382,11 @@ export class RecruitmentService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-404', 'Job requisition not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Job requisition not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapRequisitionDisplay(res.rows[0]);
   }
@@ -2259,7 +2403,11 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const peek = await this.db.query<JobRequisitionRow>(
       `SELECT id, company_id::text AS company_id, status, headcount_mode, pipeline_flags_json
        FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1`,
@@ -2269,7 +2417,7 @@ export class RecruitmentService {
       notFoundCode: 'HRM-REC-404',
       mismatchCode: 'HRM-REC-409',
     });
-    const row = peek.rows[0]!;
+    const row = peek.rows[0];
     assertYctdOpenForInternalScanOrThrow(row);
     const action = (payload.action ?? 'complete').trim().toLowerCase();
     const nowIso = new Date().toISOString();
@@ -2293,7 +2441,10 @@ export class RecruitmentService {
     if (payload.hit_count !== undefined) {
       jsonPayload.internal_scan_hit_count = payload.hit_count;
     }
-    if (payload.criteria_snapshot && typeof payload.criteria_snapshot === 'object') {
+    if (
+      payload.criteria_snapshot &&
+      typeof payload.criteria_snapshot === 'object'
+    ) {
       jsonPayload.internal_scan_criteria_snapshot = payload.criteria_snapshot;
     }
     const filters: string[] = ['id = $2::uuid'];
@@ -2312,7 +2463,11 @@ export class RecruitmentService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-404', 'Job requisition not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Job requisition not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapRequisitionDisplay(res.rows[0]);
   }
@@ -2331,7 +2486,12 @@ export class RecruitmentService {
     const requisitionId = requireUvYctdRequisitionId(payload);
     const reqFilters: string[] = ['r.id = $1::uuid'];
     const reqValues: unknown[] = [requisitionId];
-    this.pushRequisitionCompanyFilter(reqFilters, reqValues, scope.companyIds, 'r');
+    this.pushRequisitionCompanyFilter(
+      reqFilters,
+      reqValues,
+      scope.companyIds,
+      'r',
+    );
     const reqRes = await this.db.query<JobRequisitionRow>(
       `${this.requisitionSelectSql()}
        WHERE ${reqFilters.join(' AND ')}
@@ -2342,7 +2502,10 @@ export class RecruitmentService {
       reqRes.rows[0] ? this.toReceivableRow(reqRes.rows[0]) : null,
     );
     // Free-text position is never SoT — ignore persist; optional position_key must match.
-    const position = assertUvPositionKeyMatchesOrThrow(yctd, payload.position_key);
+    const position = assertUvPositionKeyMatchesOrThrow(
+      yctd,
+      payload.position_key,
+    );
     const res = await this.db.query<CandidateRow>(
       `INSERT INTO public.recruitment_candidates
         (id, company_id, requisition_id, full_name, email, source, status)
@@ -2365,7 +2528,7 @@ export class RecruitmentService {
         application_id: row.id,
         stage: row.status,
         yctd_title: yctd.title,
-      } as Record<string, unknown>,
+      },
       position,
     );
   }
@@ -2376,7 +2539,11 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     await materializeMissingSpineCandidatesFromPool(this.db, scope.companyIds);
     const page = this.resolvePage(query.page, 1);
     const pageSize = this.resolvePageSize(query.page_size, 20);
@@ -2453,7 +2620,7 @@ export class RecruitmentService {
             created_at: row.created_at,
             updated_at: row.updated_at,
             yctd_title: row.yctd_title,
-          } as Record<string, unknown>,
+          },
           position,
         ),
         /** Flat id for FE getActiveInterviewId fallback (nested remains SoT). */
@@ -2461,7 +2628,12 @@ export class RecruitmentService {
         active_interview: activeInterview,
       };
     });
-    return { total: Number(countRes.rows[0]?.total ?? 0), page, page_size: pageSize, data };
+    return {
+      total: Number(countRes.rows[0]?.total ?? 0),
+      page,
+      page_size: pageSize,
+      data,
+    };
   }
 
   /**
@@ -2524,7 +2696,11 @@ export class RecruitmentService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const row = res.rows[0];
     const position = toUvPositionDisplay({
@@ -2551,7 +2727,7 @@ export class RecruitmentService {
           created_at: row.created_at,
           updated_at: row.updated_at,
           yctd_title: row.yctd_title,
-        } as Record<string, unknown>,
+        },
         position,
       ),
       active_interview_id: activeInterview.active_interview_id,
@@ -2590,7 +2766,11 @@ export class RecruitmentService {
     );
     const existing = existingRes.rows[0];
     if (!existing) {
-      throw new ApiException('HRM-REC-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-REC-404',
@@ -2682,7 +2862,8 @@ export class RecruitmentService {
     const historyId = randomUUID();
     const noteValue = (body.note ?? '').trim() || null;
     const desiredSalary =
-      typeof body.desired_salary === 'number' && Number.isFinite(body.desired_salary)
+      typeof body.desired_salary === 'number' &&
+      Number.isFinite(body.desired_salary)
         ? body.desired_salary
         : null;
     const changedBy = this.parseSoftUuid(opts?.actorId);
@@ -2698,7 +2879,11 @@ export class RecruitmentService {
         );
         const updated = upd.rows[0];
         if (!updated) {
-          throw new ApiException('HRM-REC-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+          throw new ApiException(
+            'HRM-REC-404',
+            'Candidate not found',
+            HttpStatus.NOT_FOUND,
+          );
         }
         const hist = await query<{
           id: string;
@@ -2777,10 +2962,19 @@ export class RecruitmentService {
   ) {
     await this.ensureSchema();
     // BE-02: optional query.company_id → string for resolveHrmListScope (TS2345); controller may fill from X-Company-Id
-    const scope = resolveHrmListScope(authorization, query.company_id ?? '', scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id ?? '',
+      scopeContext,
+    );
     const candFilters: string[] = ['c.id = $1::uuid'];
     const candValues: unknown[] = [candidateId];
-    this.pushRequisitionCompanyFilter(candFilters, candValues, scope.companyIds, 'c');
+    this.pushRequisitionCompanyFilter(
+      candFilters,
+      candValues,
+      scope.companyIds,
+      'c',
+    );
     const candRes = await this.db.query<CandidateRow>(
       `SELECT c.id, c.company_id, c.requisition_id, c.full_name, c.email, c.source, c.status,
               c.created_at, c.updated_at
@@ -2791,7 +2985,11 @@ export class RecruitmentService {
     );
     const candidate = candRes.rows[0];
     if (!candidate) {
-      throw new ApiException('HRM-REC-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(candidate, scope, {
       notFoundCode: 'HRM-REC-404',
@@ -2866,10 +3064,19 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, companyId ?? '', scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      companyId ?? '',
+      scopeContext,
+    );
     const candFilters: string[] = ['c.id = $1::uuid'];
     const candValues: unknown[] = [candidateId];
-    this.pushRequisitionCompanyFilter(candFilters, candValues, scope.companyIds, 'c');
+    this.pushRequisitionCompanyFilter(
+      candFilters,
+      candValues,
+      scope.companyIds,
+      'c',
+    );
     const candRes = await this.db.query<CandidateRow>(
       `SELECT c.id, c.company_id, c.requisition_id, c.full_name, c.email, c.source, c.status,
               c.created_at, c.updated_at
@@ -2880,7 +3087,11 @@ export class RecruitmentService {
     );
     const candidate = candRes.rows[0];
     if (!candidate) {
-      throw new ApiException('HRM-REC-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(candidate, scope, {
       notFoundCode: 'HRM-REC-404',
@@ -2895,7 +3106,10 @@ export class RecruitmentService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    await this.assertMailTemplateActiveOrThrow(candidate.company_id, templateCode);
+    await this.assertMailTemplateActiveOrThrow(
+      candidate.company_id,
+      templateCode,
+    );
 
     const toEmails = this.normalizeEmailList(body.to);
     if (toEmails.length === 0) {
@@ -2906,7 +3120,10 @@ export class RecruitmentService {
       );
     }
     const ccEmails = this.normalizeEmailList(body.cc_interviewers);
-    if (templateCode === MAIL_TEMPLATE_INTERVIEW_INVITE && ccEmails.length === 0) {
+    if (
+      templateCode === MAIL_TEMPLATE_INTERVIEW_INVITE &&
+      ccEmails.length === 0
+    ) {
       throw new ApiException(
         HRM_REC_MAIL_CC_REQUIRED,
         'Bắt buộc CC người phỏng vấn khi gửi thư mời PV',
@@ -2928,7 +3145,9 @@ export class RecruitmentService {
     const simulateFail = body.simulate_provider_fail === true;
     const attemptResult: 'sent' | 'failed' = simulateFail ? 'failed' : 'sent';
     const outboxStatus: 'sent' | 'failed' = attemptResult;
-    const errorMessage = simulateFail ? 'Simulated provider failure (GĐ1)' : null;
+    const errorMessage = simulateFail
+      ? 'Simulated provider failure (GĐ1)'
+      : null;
     const providerRef = simulateFail ? null : `local-${outboxId.slice(0, 8)}`;
     const stageBefore = candidate.status;
 
@@ -2979,7 +3198,14 @@ export class RecruitmentService {
         `INSERT INTO public.rec_mail_log (
            id, outbox_id, company_id, attempt_no, provider_ref, result, error_message, logged_at
          ) VALUES ($1::uuid, $2::uuid, $3::text, 1, $4, $5, $6, NOW());`,
-        [logId, outboxId, candidate.company_id, providerRef, attemptResult, errorMessage],
+        [
+          logId,
+          outboxId,
+          candidate.company_id,
+          providerRef,
+          attemptResult,
+          errorMessage,
+        ],
       );
       return inserted.rows[0];
     });
@@ -3022,10 +3248,19 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id ?? '', scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id ?? '',
+      scopeContext,
+    );
     const candFilters: string[] = ['c.id = $1::uuid'];
     const candValues: unknown[] = [candidateId];
-    this.pushRequisitionCompanyFilter(candFilters, candValues, scope.companyIds, 'c');
+    this.pushRequisitionCompanyFilter(
+      candFilters,
+      candValues,
+      scope.companyIds,
+      'c',
+    );
     const candRes = await this.db.query<CandidateRow>(
       `SELECT c.id, c.company_id, c.requisition_id, c.full_name, c.email, c.source, c.status,
               c.created_at, c.updated_at
@@ -3036,7 +3271,11 @@ export class RecruitmentService {
     );
     const candidate = candRes.rows[0];
     if (!candidate) {
-      throw new ApiException('HRM-REC-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(candidate, scope, {
       notFoundCode: 'HRM-REC-404',
@@ -3072,7 +3311,9 @@ export class RecruitmentService {
     // REC-PERF-BE-01: Batch-load all mail logs in 1 query (fix N+1 per outbox row).
     const outboxIds = res.rows.map((r) => String(r.id));
     const logsMap = await this.batchLoadMailLogs(outboxIds);
-    const data = res.rows.map((row) => this.mapMailOutboxDto(row, logsMap.get(String(row.id)) ?? []));
+    const data = res.rows.map((row) =>
+      this.mapMailOutboxDto(row, logsMap.get(String(row.id)) ?? []),
+    );
     return { total: data.length, data };
   }
 
@@ -3087,7 +3328,11 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, companyId ?? '', scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      companyId ?? '',
+      scopeContext,
+    );
     const res = await this.db.query<Record<string, unknown>>(
       `SELECT o.id, o.company_id, o.recruitment_candidate_id, o.application_id, o.requisition_id,
               o.template_code, o.to_emails_json, o.cc_emails_json, o.payload_json,
@@ -3099,13 +3344,16 @@ export class RecruitmentService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_REC_MAIL_404, 'Mail outbox not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_REC_MAIL_404,
+        'Mail outbox not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    assertResourceInHrmScope(
-      { company_id: String(row.company_id) },
-      scope,
-      { notFoundCode: HRM_REC_MAIL_404, mismatchCode: 'HRM-REC-409' },
-    );
+    assertResourceInHrmScope({ company_id: String(row.company_id) }, scope, {
+      notFoundCode: HRM_REC_MAIL_404,
+      mismatchCode: 'HRM-REC-409',
+    });
     const logs = await this.loadMailLogs(outboxId);
     return this.mapMailOutboxDto(row, logs);
   }
@@ -3189,9 +3437,7 @@ export class RecruitmentService {
   }
 
   /** REC-PERF-BE-01: Batch variant of loadMailLogs — one query for N outbox ids. */
-  private async batchLoadMailLogs(
-    outboxIds: string[],
-  ): Promise<
+  private async batchLoadMailLogs(outboxIds: string[]): Promise<
     Map<
       string,
       Array<{
@@ -3218,7 +3464,16 @@ export class RecruitmentService {
        ORDER BY outbox_id, attempt_no ASC;`,
       [outboxIds],
     );
-    const map = new Map<string, Array<{ attempt_no: number; result: string; error_message: string | null; provider_ref: string | null; logged_at: string; }>>();
+    const map = new Map<
+      string,
+      Array<{
+        attempt_no: number;
+        result: string;
+        error_message: string | null;
+        provider_ref: string | null;
+        logged_at: string;
+      }>
+    >();
     for (const row of res.rows) {
       const id = row.outbox_id;
       if (!map.has(id)) map.set(id, []);
@@ -3286,7 +3541,9 @@ export class RecruitmentService {
     catalogHit: RecPipelineStageDisplay | null,
   ): boolean {
     if (catalogHit) return Boolean(catalogHit.isRejectOutcome);
-    return (REC_STAGE_REJECT_KEY_FALLBACK as readonly string[]).includes(stageKey);
+    return (REC_STAGE_REJECT_KEY_FALLBACK as readonly string[]).includes(
+      stageKey,
+    );
   }
 
   private parseSoftUuid(value: string | undefined): string | null {
@@ -3326,7 +3583,7 @@ export class RecruitmentService {
       from_stage: row.from_stage,
       to_stage: row.to_stage,
       note: row.note,
-      desired_salary: Number.isFinite(salary as number) ? (salary as number) : null,
+      desired_salary: Number.isFinite(salary) ? (salary as number) : null,
       changed_by: row.changed_by,
       changed_at: row.changed_at,
     };
@@ -3350,7 +3607,11 @@ export class RecruitmentService {
   ) {
     this.assertNoPayPayloadOrThrow(body as unknown as Record<string, unknown>);
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, companyId ?? '', scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      companyId ?? '',
+      scopeContext,
+    );
 
     const filters: string[] = [
       'c.id = $1::uuid',
@@ -3399,7 +3660,11 @@ export class RecruitmentService {
     );
     const app = appRes.rows[0];
     if (!app) {
-      throw new ApiException('HRM-REC-404', 'Application not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Application not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(app, scope, {
       notFoundCode: 'HRM-REC-404',
@@ -3434,7 +3699,8 @@ export class RecruitmentService {
 
     // R-REC-07-IDEMPOTENT-OFFER-GATE: soft/reverse BEFORE offer-ready.
     // After APP-02 hired-outcome, stage ≠ offer — re-accept must still HIRE-200.
-    const reverseEmp = await this.findActiveEmployeeByCandidateId(applicationId);
+    const reverseEmp =
+      await this.findActiveEmployeeByCandidateId(applicationId);
     const softEmpId = app.employee_id?.trim() || null;
     const reverseId = reverseEmp?.id?.trim() || null;
 
@@ -3600,7 +3866,9 @@ export class RecruitmentService {
       }
       throw new ApiException(
         HRM_REC_HIRE_PREFILL_FAIL,
-        err instanceof Error ? err.message : 'Cannot create employee from offer',
+        err instanceof Error
+          ? err.message
+          : 'Cannot create employee from offer',
         HttpStatus.BAD_REQUEST,
         { cause: err instanceof Error ? err.message : String(err) },
       );
@@ -3621,11 +3889,18 @@ export class RecruitmentService {
     opts?: { actorId?: string },
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, companyId ?? '', scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      companyId ?? '',
+      scopeContext,
+    );
     const filters: string[] = ['c.id = $1::uuid'];
     const values: unknown[] = [candidateId];
     this.pushRequisitionCompanyFilter(filters, values, scope.companyIds, 'c');
-    const res = await this.db.query<{ id: string; requisition_id: string | null }>(
+    const res = await this.db.query<{
+      id: string;
+      requisition_id: string | null;
+    }>(
       `SELECT c.id, c.requisition_id::text AS requisition_id
        FROM public.recruitment_candidates c
        WHERE ${filters.join(' AND ')}
@@ -3634,7 +3909,11 @@ export class RecruitmentService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-REC-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-404',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (!row.requisition_id) {
       throw new ApiException(
@@ -3653,7 +3932,9 @@ export class RecruitmentService {
     );
   }
 
-  private assertNoPayPayloadOrThrow(body: Record<string, unknown> | null | undefined): void {
+  private assertNoPayPayloadOrThrow(
+    body: Record<string, unknown> | null | undefined,
+  ): void {
     if (!body || typeof body !== 'object') return;
     for (const key of Object.keys(body)) {
       const lk = key.trim().toLowerCase();
@@ -3693,7 +3974,9 @@ export class RecruitmentService {
         authorization,
       );
       if (effective.total > 0) {
-        const hit = effective.data.find((r) => r.stageKey.trim().toLowerCase() === key);
+        const hit = effective.data.find(
+          (r) => r.stageKey.trim().toLowerCase() === key,
+        );
         if (!hit) {
           throw new ApiException(
             HRM_REC_HIRE_OFFER_INVALID,
@@ -3802,7 +4085,9 @@ export class RecruitmentService {
     existingAcceptedAppId: string | null;
     existingOfferId: string | null;
   }) {
-    return this.db.withTransaction(async (query) => this.stampHireLinksWithQuery(query, args));
+    return this.db.withTransaction(async (query) =>
+      this.stampHireLinksWithQuery(query, args),
+    );
   }
 
   private async stampHireLinksWithQuery(
@@ -3825,7 +4110,7 @@ export class RecruitmentService {
     const keepAt = Boolean(args.preserveAcceptedAt);
     const acceptedBy = keepAt ? args.existingAcceptedBy : actor;
     const acceptedAppId = keepAt
-      ? args.existingAcceptedAppId ?? args.applicationId
+      ? (args.existingAcceptedAppId ?? args.applicationId)
       : args.applicationId;
 
     const upd = await query<{
@@ -3910,8 +4195,7 @@ export class RecruitmentService {
       !Array.isArray(args.employee.custom_fields)
         ? (args.employee.custom_fields as Record<string, unknown>)
         : {};
-    const phone =
-      typeof cf.phone_number === 'string' ? cf.phone_number : null;
+    const phone = typeof cf.phone_number === 'string' ? cf.phone_number : null;
     const departmentKey =
       typeof cf.department_key === 'string' ? cf.department_key : null;
     return {
@@ -3951,7 +4235,11 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const requisitionId = requireUvYctdRequisitionId(query);
     const page = this.resolvePage(query.page, 1);
     const pageSize = this.resolvePageSize(query.page_size, 50);
@@ -4052,9 +4340,15 @@ export class RecruitmentService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const requisitionId = requireUvYctdRequisitionId(query);
-    const candidateIds = parseCandidateIdList(query.candidate_ids ?? query.application_ids);
+    const candidateIds = parseCandidateIdList(
+      query.candidate_ids ?? query.application_ids,
+    );
     assertCompareMaxNOrThrow(candidateIds);
     if (candidateIds.length === 0) {
       return {
@@ -4065,7 +4359,10 @@ export class RecruitmentService {
         items: [],
       };
     }
-    const filters: string[] = ['c.id = ANY($1::uuid[])', 'c.requisition_id = $2::uuid'];
+    const filters: string[] = [
+      'c.id = ANY($1::uuid[])',
+      'c.requisition_id = $2::uuid',
+    ];
     const values: unknown[] = [candidateIds, requisitionId];
     this.pushRequisitionCompanyFilter(filters, values, scope.companyIds, 'c');
     const res = await this.db.query<{
@@ -4084,8 +4381,16 @@ export class RecruitmentService {
       // Distinguish mix vs not-found: load without YCTD filter for mix detection.
       const anyFilters: string[] = ['c.id = ANY($1::uuid[])'];
       const anyValues: unknown[] = [candidateIds];
-      this.pushRequisitionCompanyFilter(anyFilters, anyValues, scope.companyIds, 'c');
-      const anyRes = await this.db.query<{ id: string; requisition_id: string }>(
+      this.pushRequisitionCompanyFilter(
+        anyFilters,
+        anyValues,
+        scope.companyIds,
+        'c',
+      );
+      const anyRes = await this.db.query<{
+        id: string;
+        requisition_id: string;
+      }>(
         `SELECT c.id, c.requisition_id::text AS requisition_id
          FROM public.recruitment_candidates c
          WHERE ${anyFilters.join(' AND ')};`,
@@ -4130,7 +4435,7 @@ export class RecruitmentService {
     const rows = candidateIds.map((id) => {
       const cand = byId.get(id)!;
       const ev = evalMap.get(id);
-      const scoresArr = Array.isArray(ev?.scores) ? ev!.scores : [];
+      const scoresArr = Array.isArray(ev?.scores) ? ev.scores : [];
       const scoresObj: Record<string, number | null> = {};
       for (const c of criteria) {
         scoresObj[c.name] = null;
@@ -4149,7 +4454,7 @@ export class RecruitmentService {
               : 'value' in (s as object)
                 ? Number((s as { value: number }).value)
                 : null;
-          if (name) scoresObj[name] = Number.isFinite(val as number) ? (val as number) : null;
+          if (name) scoresObj[name] = Number.isFinite(val) ? val : null;
         }
       }
       return {
@@ -4181,19 +4486,30 @@ export class RecruitmentService {
    * @CODE-MEMORY-CHANGE 2026-08-09 PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01
    * ADD past-datetime CFG (O7 default BLOCK) · RETAIN 409 ACTIVE + soft-gate ≠ 409
    */
-  async scheduleInterview(payload: ScheduleInterviewDto, authorization?: string) {
+  async scheduleInterview(
+    payload: ScheduleInterviewDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, payload.company_id);
     const candFilters: string[] = ['id = $1::uuid'];
     const candValues: unknown[] = [payload.candidate_id];
     pushCompanyIdFilter(candFilters, candValues, scope.companyIds);
-    const candRes = await this.db.query<{ id: string; company_id: string; status: string | null }>(
+    const candRes = await this.db.query<{
+      id: string;
+      company_id: string;
+      status: string | null;
+    }>(
       `SELECT id, company_id, status::text AS status
        FROM public.recruitment_candidates WHERE ${candFilters.join(' AND ')} LIMIT 1;`,
       candValues,
     );
     if (!candRes.rows[0]) {
-      throw new ApiException('HRM-REC-405', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-405',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const companyId = candRes.rows[0].company_id;
     // VAL-REC-CNS-05 — soft-gate by current status ∈ EFF allows_interview_schedule (≠ one-active).
@@ -4232,7 +4548,13 @@ export class RecruitmentService {
           (id, company_id, candidate_id, scheduled_at, interviewer, status)
          VALUES ($1, $2::text, $3::uuid, $4::timestamptz, $5, 'scheduled')
          RETURNING ${INTERVIEW_RETURNING};`,
-        [randomUUID(), companyId, payload.candidate_id, payload.scheduled_at, payload.interviewer.trim()],
+        [
+          randomUUID(),
+          companyId,
+          payload.candidate_id,
+          payload.scheduled_at,
+          payload.interviewer.trim(),
+        ],
       );
       return res.rows[0];
     } catch (error) {
@@ -4272,12 +4594,21 @@ export class RecruitmentService {
     });
     const targetRow = peek.rows[0];
     if (!targetRow) {
-      throw new ApiException('HRM-REC-406', 'Interview not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-406',
+        'Interview not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    this.assertInterviewStatusTransitionOrThrow(targetRow.status, payload.status);
+    this.assertInterviewStatusTransitionOrThrow(
+      targetRow.status,
+      payload.status,
+    );
 
     const cancelReason =
-      typeof payload.cancel_reason === 'string' ? payload.cancel_reason.trim() : '';
+      typeof payload.cancel_reason === 'string'
+        ? payload.cancel_reason.trim()
+        : '';
     if (payload.status === 'cancelled') {
       const reasonRequired = await this.readInterviewCfgBoolean(
         targetRow.company_id,
@@ -4313,8 +4644,13 @@ export class RecruitmentService {
       }
     }
 
-    const persistCancelReason = payload.status === 'cancelled' ? cancelReason || null : null;
-    const values: unknown[] = [payload.status, persistCancelReason, interviewId];
+    const persistCancelReason =
+      payload.status === 'cancelled' ? cancelReason || null : null;
+    const values: unknown[] = [
+      payload.status,
+      persistCancelReason,
+      interviewId,
+    ];
     const filters: string[] = ['id = $3::uuid'];
     pushCompanyIdFilter(filters, values, scope.companyIds);
     let res;
@@ -4339,7 +4675,11 @@ export class RecruitmentService {
       throw error;
     }
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-406', 'Interview not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-406',
+        'Interview not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return res.rows[0];
   }
@@ -4374,7 +4714,11 @@ export class RecruitmentService {
     });
     const row = peek.rows[0];
     if (!row) {
-      throw new ApiException('HRM-REC-406', 'Interview not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-406',
+        'Interview not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (!this.isActiveInterviewStatus(row.status)) {
       throw new ApiException(

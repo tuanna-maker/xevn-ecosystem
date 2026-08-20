@@ -61,7 +61,11 @@ export class FleetController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized fleet access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized fleet access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -79,11 +83,22 @@ export class FleetController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
-    const requestedCompany = (queryCompanyId ?? companyId ?? scope.companyId).trim();
-    const listScope = resolveHrmListScope(authorization, requestedCompany, { tenantId: scope.tenantId });
+    const requestedCompany = (
+      queryCompanyId ??
+      companyId ??
+      scope.companyId
+    ).trim();
+    const listScope = resolveHrmListScope(authorization, requestedCompany, {
+      tenantId: scope.tenantId,
+    });
     const limit = limitRaw ? Number(limitRaw) : undefined;
     return this.fleet
-      .listVehicles(scope.tenantId, listScope.companyIds, { status, limit, keyword, q })
+      .listVehicles(scope.tenantId, listScope.companyIds, {
+        status,
+        limit,
+        keyword,
+        q,
+      })
       .then((data) => ok(data, 'HRM-FLEET-200', 'Fleet vehicles listed'));
   }
 }

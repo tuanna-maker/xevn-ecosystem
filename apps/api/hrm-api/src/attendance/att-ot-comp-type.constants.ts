@@ -47,4 +47,7 @@ export const HRM_PLT_CAT_CODE_CONFLICT = 'HRM-PLT-CAT-CODE-CONFLICT';
  * AS-IS FE codes = salary | compensatory_leave (i18n overtime.compensationTimeOff) - NOT time_off.
  * U65: ensureSchema does NOT seed these.
  */
-export const ATT_OT_COMP_TYPE_STARTER_KEYS = ['salary', 'compensatory_leave'] as const;
+export const ATT_OT_COMP_TYPE_STARTER_KEYS = [
+  'salary',
+  'compensatory_leave',
+] as const;

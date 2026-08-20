@@ -1,4 +1,12 @@
-import { IsBoolean, IsInt, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 /**
  * E1-A MD-BIND — position_key catalog SoT; position = optional label snapshot.

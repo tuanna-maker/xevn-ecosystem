@@ -15,7 +15,10 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { getVerifiedInternalJwtPayload, isAuthorizedInternalRequest } from '../../common/internal-auth';
+import {
+  getVerifiedInternalJwtPayload,
+  isAuthorizedInternalRequest,
+} from '../../common/internal-auth';
 import { ApiException } from '../../common/api.exception';
 import { ok } from '../../common/api-response';
 import { resolveScopeContext } from '../../common/scope-context';
@@ -30,14 +33,23 @@ export class InsuranceRateController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized settings access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized settings access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
   /** Resolve tenant_id: prefer JWT claim, fall back to x-tenant-id header, then default 'xevn'. */
-  private resolveTenantId(authorization: string | undefined, headerTenantId: string | undefined): string {
+  private resolveTenantId(
+    authorization: string | undefined,
+    headerTenantId: string | undefined,
+  ): string {
     const payload = getVerifiedInternalJwtPayload(authorization);
-    const fromJwt = (payload?.['tenant_id'] as string | undefined) ?? (payload?.['tenantId'] as string | undefined);
+    const fromJwt =
+      (payload?.['tenant_id'] as string | undefined) ??
+      (payload?.['tenantId'] as string | undefined);
     return fromJwt ?? headerTenantId ?? 'xevn';
   }
 
@@ -50,7 +62,11 @@ export class InsuranceRateController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const tid = this.resolveTenantId(authorization, tenantId);
     resolveScopeContext(authorization, { tenantId: tid, companyId });
@@ -58,7 +74,11 @@ export class InsuranceRateController {
       this.service.findAllRates(tid, companyId),
       this.service.findAllRegions(tid, companyId),
     ]);
-    return ok({ rates, regions }, 'HRM-INS-RATE-200', 'Insurance rates and regions');
+    return ok(
+      { rates, regions },
+      'HRM-INS-RATE-200',
+      'Insurance rates and regions',
+    );
   }
 
   @Get('rates/:id')
@@ -71,7 +91,11 @@ export class InsuranceRateController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const tid = this.resolveTenantId(authorization, tenantId);
     resolveScopeContext(authorization, { tenantId: tid, companyId });
@@ -90,7 +114,11 @@ export class InsuranceRateController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const tid = this.resolveTenantId(authorization, tenantId);
     resolveScopeContext(authorization, { tenantId: tid, companyId });
@@ -110,7 +138,11 @@ export class InsuranceRateController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const tid = this.resolveTenantId(authorization, tenantId);
     resolveScopeContext(authorization, { tenantId: tid, companyId });
@@ -128,7 +160,11 @@ export class InsuranceRateController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const tid = this.resolveTenantId(authorization, tenantId);
     resolveScopeContext(authorization, { tenantId: tid, companyId });
@@ -148,12 +184,18 @@ export class InsuranceRateController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const tid = this.resolveTenantId(authorization, tenantId);
     resolveScopeContext(authorization, { tenantId: tid, companyId });
     return this.service
       .updateRegion(tid, companyId, id, dto)
-      .then((data) => ok(data, 'HRM-INS-RATE-200', 'Minimum wage region updated'));
+      .then((data) =>
+        ok(data, 'HRM-INS-RATE-200', 'Minimum wage region updated'),
+      );
   }
 }

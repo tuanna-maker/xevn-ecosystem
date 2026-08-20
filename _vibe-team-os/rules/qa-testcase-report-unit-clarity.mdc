@@ -1,0 +1,23 @@
+# QA — Test Case vs Test Report vs Unit clarity
+
+**SoT:** `_vibe-team-os/33-TESTCASE-VS-REPORT-VS-UNIT.md` · Test Log khi chạy: `31`
+
+## Ba lớp (không gộp)
+
+| Layer | Artifact | PASS nghĩa |
+|-------|----------|------------|
+| Design | Test Case catalog/pack | Kịch bản đủ coverage thiết kế |
+| Auto | Unit tests (+ Unit Plan) | BR đơn vị đúng trong CI |
+| Execution | Browser/device + `*-test-log` | Thao tác user quan sát được |
+| Rollup | Test Report | Trạng thái chương trình honest |
+
+## Reject
+
+- Gọi pack PLANNED là UAT DONE
+- Unit/vitest → invent UF 🟢
+- Report tăng EVIDENCED khi chỉ synth catalog
+- Evidence không có Test Log khi đã claim browser PASS (`31`)
+
+## PM
+
+Dispatch phải chỉ rõ layer artifact (§ Vision of Done trong `PM_DETAILED_DISPATCH.md`).

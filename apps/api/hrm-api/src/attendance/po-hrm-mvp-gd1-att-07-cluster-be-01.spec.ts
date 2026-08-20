@@ -26,7 +26,9 @@ describe('PO-HRM-MVP-GD1-ATT-07-CLUSTER-BE-01', () => {
   });
 
   it('normalizeFundSequence rejects duplicate token', () => {
-    expect(() => normalizeFundSequence(['insurance', 'insurance'])).toThrow(ApiException);
+    expect(() => normalizeFundSequence(['insurance', 'insurance'])).toThrow(
+      ApiException,
+    );
     try {
       normalizeFundSequence(['insurance', 'insurance']);
     } catch (e) {

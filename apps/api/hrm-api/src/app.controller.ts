@@ -8,13 +8,21 @@ import { HRM_SERVICE_NAME } from './platform/platform-runtime';
 export class AppController {
   @Get()
   getHello() {
-    return ok({ service: 'hrm-api', status: 'ok' }, 'HRM-HEALTH-200', 'HRM service is healthy');
+    return ok(
+      { service: 'hrm-api', status: 'ok' },
+      'HRM-HEALTH-200',
+      'HRM service is healthy',
+    );
   }
 
   @Get('metrics')
-  async getMetrics(@Res({ passthrough: true }) res: Response, @Query('format') format?: string) {
+  async getMetrics(
+    @Res({ passthrough: true }) res: Response,
+    @Query('format') format?: string,
+  ) {
     const wantsPrometheus =
-      format === 'prometheus' || String(res.req?.headers?.accept ?? '').includes('text/plain');
+      format === 'prometheus' ||
+      String(res.req?.headers?.accept ?? '').includes('text/plain');
     if (wantsPrometheus) {
       const body = await renderPrometheusMetrics(HRM_SERVICE_NAME);
       res.setHeader('Content-Type', 'text/plain; version=0.0.4; charset=utf-8');

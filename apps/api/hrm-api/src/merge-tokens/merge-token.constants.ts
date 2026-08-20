@@ -60,8 +60,7 @@ export const MERGE_TOKEN_DOMAINS = [
 export type MergeTokenDomain = (typeof MERGE_TOKEN_DOMAINS)[number];
 
 /** Format-only — FORBIDDEN closed token_key enum (BR-PLT-05). */
-export const MERGE_TOKEN_KEY_FORMAT =
-  /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$/;
+export const MERGE_TOKEN_KEY_FORMAT = /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$/;
 
 /** Dual legacy `#token#` — reject GĐ1 (Q-PLT-01 / VAL-PLT-TOK-04). */
 export const MERGE_TOKEN_HASH_SYNTAX = /#[a-z][a-z0-9_.]*#/i;
@@ -153,7 +152,8 @@ export const MERGE_TOKEN_SOURCE_TO_BAG: Readonly<Record<string, string>> = {
   'employee_contracts.driver_license_number': 'driver_license_number',
   'employee_contracts.license_class': 'license_class',
   'employee_contracts.driver_license_issued_on': 'driver_license_issued_on',
-  'employee_contracts.driver_license_issued_place': 'driver_license_issued_place',
+  'employee_contracts.driver_license_issued_place':
+    'driver_license_issued_place',
   'employee_contracts.vehicle_plate': 'vehicle_plate',
   'employee_contracts.start_date': 'effective_from',
   'employee_contracts.end_date': 'effective_to',

@@ -267,19 +267,34 @@ export class PositionCompensationPolicyService {
     tenantId: string | undefined,
     companyId: string,
   ) {
-    const tenant = (tenantId ?? this.resolveTenant()).trim().toLowerCase() || this.resolveTenant();
-    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(authorization, tenant, companyId);
-    const scope = resolveHrmListScope(authorization, companyId, { tenantId: tenant });
+    const tenant =
+      (tenantId ?? this.resolveTenant()).trim().toLowerCase() ||
+      this.resolveTenant();
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      tenant,
+      companyId,
+    );
+    const scope = resolveHrmListScope(authorization, companyId, {
+      tenantId: tenant,
+    });
     return { tenant, catalogCompanyId, scope };
   }
 
   /** D-SETDEF-QA-SI-DATE-01 class — pg date as Date object. */
-  private toDateOnly(raw: string | Date | undefined | null, field: string): string | null {
+  private toDateOnly(
+    raw: string | Date | undefined | null,
+    field: string,
+  ): string | null {
     if (raw == null) return null;
     if (typeof raw === 'string' && raw.trim() === '') return null;
     const s = toLeaveDayKey(raw);
     if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-      throw new ApiException('HRM-VAL-001', `${field} must be YYYY-MM-DD`, HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        `${field} must be YYYY-MM-DD`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return s;
   }
@@ -315,7 +330,10 @@ export class PositionCompensationPolicyService {
     };
   }
 
-  private displayPolicy(row: PolicyRow, lines: LineRow[]): PositionPolicyDisplay {
+  private displayPolicy(
+    row: PolicyRow,
+    lines: LineRow[],
+  ): PositionPolicyDisplay {
     return {
       id: row.id,
       companyId: row.company_id,
@@ -335,7 +353,10 @@ export class PositionCompensationPolicyService {
     };
   }
 
-  private async loadLines(policyId: string, query: HrmDbQueryFn = this.db.query.bind(this.db)): Promise<LineRow[]> {
+  private async loadLines(
+    policyId: string,
+    query: HrmDbQueryFn = this.db.query.bind(this.db),
+  ): Promise<LineRow[]> {
     const res = await query<LineRow>(
       `SELECT l.*,
               COALESCE(pc.name_vi, sc.name) AS component_name_vi
@@ -358,7 +379,11 @@ export class PositionCompensationPolicyService {
   ): Promise<{ code: string; label: string }> {
     const key = positionKey.trim();
     if (!key) {
-      throw new ApiException(HRM_SET_POS_400_KEY, 'positionKey is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_SET_POS_400_KEY,
+        'positionKey is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (!this.settingsCatalogs) {
       throw new ApiException(
@@ -465,24 +490,38 @@ export class PositionCompensationPolicyService {
       [companyId],
     );
     const scCount = await this.countActiveSalaryComponents(query, companyId);
-    const catalogNonEmpty =
-      Number(pcCount.rows[0]?.c ?? 0) + scCount > 0;
+    const catalogNonEmpty = Number(pcCount.rows[0]?.c ?? 0) + scCount > 0;
 
     const out: Array<
-      PositionPolicyLineDto & { salaryComponentId: string | null; allowanceTypeId: string | null }
+      PositionPolicyLineDto & {
+        salaryComponentId: string | null;
+        allowanceTypeId: string | null;
+      }
     > = [];
 
     for (const line of lines) {
       const code = line.componentCode.trim();
       if (!code) {
-        throw new ApiException('HRM-VAL-001', 'componentCode required', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-VAL-001',
+          'componentCode required',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       if (!Number.isFinite(line.amount) || line.amount < 0) {
-        throw new ApiException('HRM-VAL-001', 'amount must be ≥ 0', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-VAL-001',
+          'amount must be ≥ 0',
+          HttpStatus.BAD_REQUEST,
+        );
       }
-      const calcMode = (line.calcMode ?? 'fixed') as PosCalcMode;
+      const calcMode = line.calcMode ?? 'fixed';
       if (!(POS_CALC_MODES as readonly string[]).includes(calcMode)) {
-        throw new ApiException('HRM-VAL-001', 'calcMode invalid', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-VAL-001',
+          'calcMode invalid',
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       let allowanceTypeId: string | null = line.allowanceTypeId ?? null;
@@ -495,7 +534,11 @@ export class PositionCompensationPolicyService {
          LIMIT 1;`,
         [companyId, code],
       );
-      const scId = await this.findActiveSalaryComponentId(query, companyId, code);
+      const scId = await this.findActiveSalaryComponentId(
+        query,
+        companyId,
+        code,
+      );
 
       if (catalogNonEmpty && !pc.rows[0] && !scId) {
         throw new ApiException(
@@ -534,7 +577,9 @@ export class PositionCompensationPolicyService {
          AND status = 'active'
          ${excludeId ? 'AND id <> $4::uuid' : ''}
        LIMIT 1;`,
-      excludeId ? [companyId, ouId, positionKey, excludeId] : [companyId, ouId, positionKey],
+      excludeId
+        ? [companyId, ouId, positionKey, excludeId]
+        : [companyId, ouId, positionKey],
     );
     if (res.rows[0]) {
       throw new ApiException(
@@ -613,7 +658,11 @@ export class PositionCompensationPolicyService {
     tenantId?: string,
   ): Promise<PositionPolicyDisplay> {
     await this.ensureSchema();
-    const { catalogCompanyId, scope } = this.resolvePartition(authorization, tenantId, companyId);
+    const { catalogCompanyId, scope } = this.resolvePartition(
+      authorization,
+      tenantId,
+      companyId,
+    );
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [id];
     pushCompanyIdFilter(filters, values, [catalogCompanyId]);
@@ -624,7 +673,11 @@ export class PositionCompensationPolicyService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_SET_POS_404, 'Position compensation policy not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_SET_POS_404,
+        'Position compensation policy not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope({ company_id: row.company_id }, scope, {
       notFoundCode: HRM_SET_POS_404,
@@ -651,25 +704,47 @@ export class PositionCompensationPolicyService {
       mismatchCode: 'HRM-SCOPE-409',
     });
 
-    const pos = await this.assertPositionKey(tenant, catalogCompanyId, body.positionKey);
+    const pos = await this.assertPositionKey(
+      tenant,
+      catalogCompanyId,
+      body.positionKey,
+    );
     const from = this.toDateOnly(body.effectiveFrom, 'effectiveFrom');
     if (!from) {
-      throw new ApiException('HRM-VAL-001', 'effectiveFrom is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'effectiveFrom is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const to = this.toDateOnly(body.effectiveTo ?? null, 'effectiveTo');
     this.assertDateWindow(from, to);
-    const status = (body.status ?? 'active') as PosStatus;
+    const status = body.status ?? 'active';
     if (!(POS_STATUSES as readonly string[]).includes(status)) {
-      throw new ApiException('HRM-VAL-001', 'status invalid', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'status invalid',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const ouId = body.ouId?.trim() ? body.ouId.trim() : null;
     const linesIn = body.lines ?? [];
 
     return this.db.withTransaction(async (query) => {
       if (status === 'active') {
-        await this.assertNoActiveDup(catalogCompanyId, ouId, pos.code, undefined, query);
+        await this.assertNoActiveDup(
+          catalogCompanyId,
+          ouId,
+          pos.code,
+          undefined,
+          query,
+        );
       }
-      const resolvedLines = await this.assertComponentCodes(catalogCompanyId, linesIn, query);
+      const resolvedLines = await this.assertComponentCodes(
+        catalogCompanyId,
+        linesIn,
+        query,
+      );
       const id = randomUUID();
       await query(
         `INSERT INTO public.hrm_position_compensation_policy
@@ -718,7 +793,7 @@ export class PositionCompensationPolicyService {
         [id],
       );
       const lines = await this.loadLines(id, query);
-      return this.displayPolicy(header.rows[0]!, lines);
+      return this.displayPolicy(header.rows[0], lines);
     });
   }
 
@@ -732,21 +807,35 @@ export class PositionCompensationPolicyService {
   ): Promise<PositionPolicyDisplay> {
     await this.ensureSchema();
     if (!body || Object.keys(body).length === 0) {
-      throw new ApiException('HRM-VAL-001', 'Empty PATCH body', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'Empty PATCH body',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const current = await this.getById(id, companyId, authorization, tenantId);
-    const { tenant, catalogCompanyId } = this.resolvePartition(authorization, tenantId, companyId);
+    const { tenant, catalogCompanyId } = this.resolvePartition(
+      authorization,
+      tenantId,
+      companyId,
+    );
 
     let positionKey = current.positionKey;
     let positionLabel = current.positionLabelSnapshot;
     if (body.positionKey && body.positionKey.trim() !== current.positionKey) {
-      const pos = await this.assertPositionKey(tenant, catalogCompanyId, body.positionKey);
+      const pos = await this.assertPositionKey(
+        tenant,
+        catalogCompanyId,
+        body.positionKey,
+      );
       positionKey = pos.code;
       positionLabel = pos.label;
     }
     const from =
-      this.toDateOnly(body.effectiveFrom ?? current.effectiveFrom, 'effectiveFrom') ??
-      current.effectiveFrom;
+      this.toDateOnly(
+        body.effectiveFrom ?? current.effectiveFrom,
+        'effectiveFrom',
+      ) ?? current.effectiveFrom;
     const to =
       body.effectiveTo !== undefined
         ? this.toDateOnly(body.effectiveTo, 'effectiveTo')
@@ -754,11 +843,21 @@ export class PositionCompensationPolicyService {
     this.assertDateWindow(from, to);
     const status = (body.status ?? current.status) as PosStatus;
     const ouId =
-      body.ouId !== undefined ? (body.ouId?.trim() ? body.ouId.trim() : null) : current.ouId;
+      body.ouId !== undefined
+        ? body.ouId?.trim()
+          ? body.ouId.trim()
+          : null
+        : current.ouId;
 
     return this.db.withTransaction(async (query) => {
       if (status === 'active') {
-        await this.assertNoActiveDup(catalogCompanyId, ouId, positionKey, id, query);
+        await this.assertNoActiveDup(
+          catalogCompanyId,
+          ouId,
+          positionKey,
+          id,
+          query,
+        );
       }
       await query(
         `UPDATE public.hrm_position_compensation_policy SET
@@ -787,7 +886,11 @@ export class PositionCompensationPolicyService {
       );
 
       if (body.lines !== undefined) {
-        const resolved = await this.assertComponentCodes(catalogCompanyId, body.lines, query);
+        const resolved = await this.assertComponentCodes(
+          catalogCompanyId,
+          body.lines,
+          query,
+        );
         await query(
           `UPDATE public.hrm_position_compensation_policy_lines
            SET archived_at = NOW(), updated_at = NOW()
@@ -823,7 +926,7 @@ export class PositionCompensationPolicyService {
         [id],
       );
       const lines = await this.loadLines(id, query);
-      return this.displayPolicy(header.rows[0]!, lines);
+      return this.displayPolicy(header.rows[0], lines);
     });
   }
 
@@ -872,10 +975,16 @@ export class PositionCompensationPolicyService {
       mismatchCode: 'HRM-SCOPE-409',
     });
 
-    const pos = await this.assertPositionKey(tenant, catalogCompanyId, query.positionKey);
+    const pos = await this.assertPositionKey(
+      tenant,
+      catalogCompanyId,
+      query.positionKey,
+    );
     const asOf =
-      this.toDateOnly(query.asOf ?? new Date().toISOString().slice(0, 10), 'asOf') ??
-      new Date().toISOString().slice(0, 10);
+      this.toDateOnly(
+        query.asOf ?? new Date().toISOString().slice(0, 10),
+        'asOf',
+      ) ?? new Date().toISOString().slice(0, 10);
     const ouId = query.ouId?.trim() ? query.ouId.trim() : null;
 
     const pick = async (ouFilter: string | null) => {

@@ -86,7 +86,10 @@ describe('PO-HRM-MVP-GD1-CORE-02-CLUSTER-BE-01', () => {
         ) {
           return { rows: [] } as never;
         }
-        if (s.includes('FROM public.employees e') && s.includes('e.id = $1::uuid')) {
+        if (
+          s.includes('FROM public.employees e') &&
+          s.includes('e.id = $1::uuid')
+        ) {
           return {
             rows: [
               {
@@ -198,7 +201,9 @@ describe('PO-HRM-MVP-GD1-CORE-02-CLUSTER-BE-01', () => {
         tax_id: '0312345678',
       });
       expect(historySnapshots[0].lines).toEqual(
-        expect.arrayContaining([expect.objectContaining({ line_type: 'base', amount: 15_000_000 })]),
+        expect.arrayContaining([
+          expect.objectContaining({ line_type: 'base', amount: 15_000_000 }),
+        ]),
       );
     });
 
@@ -216,23 +221,33 @@ describe('PO-HRM-MVP-GD1-CORE-02-CLUSTER-BE-01', () => {
       ).rejects.toMatchObject({ code: HRM_CORE_CB_AUTHZ_403 });
 
       expect(
-        db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.hrm_cb_access_audit')),
+        db.query.mock.calls.some(([sql]) =>
+          String(sql).includes('INSERT INTO public.hrm_cb_access_audit'),
+        ),
       ).toBe(true);
     });
 
     it('AuthZ: subsidiary_ceo without claim → 403', async () => {
       await expect(
-        service.listPackages({ company_id: 'main', employee_id: employeeId }, subsidiaryCeoAuth()),
+        service.listPackages(
+          { company_id: 'main', employee_id: employeeId },
+          subsidiaryCeoAuth(),
+        ),
       ).rejects.toMatchObject({ code: HRM_CORE_CB_AUTHZ_403 });
     });
 
     it('RETAIN HRM-COMP-409-OVERLAP with alias HRM-CORE-CB-OVERLAP-409', async () => {
       db.query.mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('CREATE INDEX') || s.includes('ALTER TABLE')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('ALTER TABLE')
+        ) {
           return { rows: [] } as never;
         }
-        if (s.includes('INSERT INTO public.hrm_cb_access_audit')) return { rows: [] } as never;
+        if (s.includes('INSERT INTO public.hrm_cb_access_audit'))
+          return { rows: [] } as never;
         if (s.includes('FROM public.employees e')) {
           return {
             rows: [
@@ -268,7 +283,9 @@ describe('PO-HRM-MVP-GD1-CORE-02-CLUSTER-BE-01', () => {
       } catch (err) {
         const ex = err as ApiException;
         expect(ex.code).toBe('HRM-COMP-409-OVERLAP');
-        expect(ex.details).toEqual(expect.objectContaining({ alias: HRM_CORE_CB_OVERLAP_409 }));
+        expect(ex.details).toEqual(
+          expect.objectContaining({ alias: HRM_CORE_CB_OVERLAP_409 }),
+        );
       }
     });
 
@@ -286,7 +303,10 @@ describe('PO-HRM-MVP-GD1-CORE-02-CLUSTER-BE-01', () => {
         ) {
           return { rows: [] } as never;
         }
-        if (s.includes('FROM public.employee_compensation_packages p') && s.includes('p.id = $1::uuid')) {
+        if (
+          s.includes('FROM public.employee_compensation_packages p') &&
+          s.includes('p.id = $1::uuid')
+        ) {
           return {
             rows: [
               {
@@ -409,10 +429,17 @@ describe('PO-HRM-MVP-GD1-CORE-02-CLUSTER-BE-01', () => {
       const db = {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
-          if (s.includes('CREATE TABLE') || s.includes('CREATE INDEX') || s.includes('ALTER TABLE')) {
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('CREATE INDEX') ||
+            s.includes('ALTER TABLE')
+          ) {
             return { rows: [] } as never;
           }
-          if (s.includes('FROM public.employee_insurances') && s.includes('LIMIT 1')) {
+          if (
+            s.includes('FROM public.employee_insurances') &&
+            s.includes('LIMIT 1')
+          ) {
             return {
               rows: [
                 {

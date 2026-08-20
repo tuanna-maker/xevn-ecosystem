@@ -92,15 +92,21 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
     const svc = new AllowanceCatalogSyncService(db);
     await svc.ensureSchemaPublic();
     const joined = sqls.join('\n');
-    expect(joined).toMatch(/CREATE TABLE IF NOT EXISTS public\.hrm_allowance_deduction_types/i);
+    expect(joined).toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.hrm_allowance_deduction_types/i,
+    );
     expect(joined).toMatch(/chk_allow_entry_kind/i);
     expect(joined).toMatch(/chk_allow_code_format/i);
     expect(joined).not.toMatch(/CHECK\s*\(\s*code\s+IN\s*\(/i);
   });
 
   it('CATALOG_FAMILIES resolves allowance_deduction aliases', () => {
-    expect(resolveCatalogFamily('phu_cap_khau_tru').storageKey).toBe('allowance_deduction_types');
-    expect(resolveCatalogFamily('allowance_types').familyId).toBe('allowance_deduction');
+    expect(resolveCatalogFamily('phu_cap_khau_tru').storageKey).toBe(
+      'allowance_deduction_types',
+    );
+    expect(resolveCatalogFamily('allowance_types').familyId).toBe(
+      'allowance_deduction',
+    );
   });
 
   it('VAL-ALLOW-02: invalid slug → HRM-ALLOW-CAT-CODE-INVALID', async () => {
@@ -149,7 +155,10 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
       query: jest.fn().mockResolvedValue({ rows: [] }),
       withTransaction: jest.fn().mockImplementation(async (fn) => {
         const query = jest.fn().mockImplementation(async (sql: string) => {
-          if (String(sql).includes('FROM public.hrm_allowance_deduction_types') && String(sql).includes('lower(code)')) {
+          if (
+            String(sql).includes('FROM public.hrm_allowance_deduction_types') &&
+            String(sql).includes('lower(code)')
+          ) {
             return { rows: [{ id: PC_ID }] };
           }
           return { rows: [] };
@@ -178,7 +187,10 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
       withTransaction: jest.fn().mockImplementation(async (fn) => {
         const query = jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
-          if (s.includes('FROM public.hrm_allowance_deduction_types') && s.includes('lower(code)')) {
+          if (
+            s.includes('FROM public.hrm_allowance_deduction_types') &&
+            s.includes('lower(code)')
+          ) {
             return { rows: [] };
           }
           if (s.includes('FROM public.pay_formula_definitions')) {
@@ -208,20 +220,33 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
   it('VAL-ALLOW-06 scope_parity: list id under main → getById 200 (holding)', async () => {
     const row = basePc();
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX') || s.includes('DO $$')) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('ALTER TABLE') ||
+            s.includes('CREATE INDEX') ||
+            s.includes('DO $$')
+          ) {
+            return { rows: [] };
+          }
+          if (
+            s.includes('FROM public.hrm_allowance_deduction_types pc') &&
+            s.includes('ORDER BY')
+          ) {
+            expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
+            return { rows: [row] };
+          }
+          if (
+            s.includes('FROM public.hrm_allowance_deduction_types pc') &&
+            s.includes('LIMIT 1')
+          ) {
+            return { rows: [row] };
+          }
           return { rows: [] };
-        }
-        if (s.includes('FROM public.hrm_allowance_deduction_types pc') && s.includes('ORDER BY')) {
-          expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
-          return { rows: [row] };
-        }
-        if (s.includes('FROM public.hrm_allowance_deduction_types pc') && s.includes('LIMIT 1')) {
-          return { rows: [row] };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new AllowanceCatalogSyncService(db);
     const auth = groupCeoToken();
@@ -237,7 +262,12 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER') || s.includes('DO $$') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER') ||
+          s.includes('DO $$') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('LIMIT 1')) return { rows: [] };
@@ -245,7 +275,9 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
       }),
     } as unknown as HrmDbService;
     const svc = new AllowanceCatalogSyncService(db);
-    await expect(svc.getById(PC_ID, 'main', memberCeoToken(), 'xe-du-lich')).rejects.toMatchObject({
+    await expect(
+      svc.getById(PC_ID, 'main', memberCeoToken(), 'xe-du-lich'),
+    ).rejects.toMatchObject({
       code: HRM_ALLOW_CAT_404,
     });
   });
@@ -256,7 +288,10 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
       withTransaction: jest.fn().mockImplementation(async (fn) => {
         const query = jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
-          if (s.includes('FROM public.hrm_allowance_deduction_types') && s.includes('lower(code)')) {
+          if (
+            s.includes('FROM public.hrm_allowance_deduction_types') &&
+            s.includes('lower(code)')
+          ) {
             return { rows: [] };
           }
           if (s.includes('INSERT INTO public.hrm_allowance_deduction_types')) {
@@ -300,28 +335,43 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
       withTransaction: jest.fn().mockImplementation(async (fn) => {
         const query = jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
-          if (s.includes('FROM public.hrm_allowance_deduction_types') && s.includes('lower(code)')) {
+          if (
+            s.includes('FROM public.hrm_allowance_deduction_types') &&
+            s.includes('lower(code)')
+          ) {
             return { rows: [] };
           }
           if (s.includes('INSERT INTO public.hrm_allowance_deduction_types')) {
             return { rows: [basePc({ salary_component_id: null })] };
           }
-          if (s.includes('FROM public.salary_components') && s.includes('lower(code)')) {
+          if (
+            s.includes('FROM public.salary_components') &&
+            s.includes('lower(code)')
+          ) {
             return { rows: [] };
           }
           if (s.includes('INSERT INTO public.salary_components')) {
             return { rows: [{ id: SC_ID }] };
           }
-          if (s.includes('UPDATE public.salary_components') && s.includes('RETURNING id')) {
+          if (
+            s.includes('UPDATE public.salary_components') &&
+            s.includes('RETURNING id')
+          ) {
             return { rows: [{ id: SC_ID }] };
           }
-          if (s.includes('FROM public.hrm_merge_tokens') && s.includes('lower(token_key)')) {
+          if (
+            s.includes('FROM public.hrm_merge_tokens') &&
+            s.includes('lower(token_key)')
+          ) {
             return { rows: [] };
           }
           if (s.includes('INSERT INTO public.hrm_merge_tokens')) {
             return { rows: [] };
           }
-          if (s.includes('UPDATE public.hrm_allowance_deduction_types') && s.includes('salary_component_id')) {
+          if (
+            s.includes('UPDATE public.hrm_allowance_deduction_types') &&
+            s.includes('salary_component_id')
+          ) {
             return { rows: [] };
           }
           return { rows: [] };
@@ -341,7 +391,9 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
       'xevn',
     );
     expect(out.salaryComponentId).toBe(SC_ID);
-    expect(out.sync.mergeTokenKey).toBe(mergeTokenKeyForEntry('allowance', 'PC_DIEU_XE'));
+    expect(out.sync.mergeTokenKey).toBe(
+      mergeTokenKeyForEntry('allowance', 'PC_DIEU_XE'),
+    );
     expect(out.payroll_e2e_ready).toBe(false);
   });
 
@@ -351,14 +403,26 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
       withTransaction: jest.fn().mockImplementation(async (fn) => {
         const query = jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
-          if (s.includes('SELECT * FROM public.hrm_allowance_deduction_types')) {
+          if (
+            s.includes('SELECT * FROM public.hrm_allowance_deduction_types')
+          ) {
             return { rows: [basePc()] };
           }
           if (s.includes('hrm_position_compensation_policy_lines')) {
             return { rows: [{ c: '2' }] };
           }
-          if (s.includes('UPDATE public.hrm_allowance_deduction_types') && s.includes("status = 'retired'")) {
-            return { rows: [basePc({ status: 'retired', archived_at: '2026-08-07T01:00:00Z' })] };
+          if (
+            s.includes('UPDATE public.hrm_allowance_deduction_types') &&
+            s.includes("status = 'retired'")
+          ) {
+            return {
+              rows: [
+                basePc({
+                  status: 'retired',
+                  archived_at: '2026-08-07T01:00:00Z',
+                }),
+              ],
+            };
           }
           return { rows: [] };
         });
@@ -395,20 +459,37 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
               'current transaction is aborted, commands ignored until end of transaction block',
             );
           }
-          if (s.includes('SELECT * FROM public.hrm_allowance_deduction_types')) {
+          if (
+            s.includes('SELECT * FROM public.hrm_allowance_deduction_types')
+          ) {
             return { rows: [basePc()] };
           }
           if (s.includes('hrm_position_compensation_policy_lines')) {
             txAborted = true;
             throw Object.assign(
-              new Error('relation "public.hrm_position_compensation_policy_lines" does not exist'),
+              new Error(
+                'relation "public.hrm_position_compensation_policy_lines" does not exist',
+              ),
               { code: '42P01' },
             );
           }
-          if (s.includes('UPDATE public.hrm_allowance_deduction_types') && s.includes("status = 'retired'")) {
-            return { rows: [basePc({ status: 'retired', archived_at: '2026-08-07T01:00:00Z' })] };
+          if (
+            s.includes('UPDATE public.hrm_allowance_deduction_types') &&
+            s.includes("status = 'retired'")
+          ) {
+            return {
+              rows: [
+                basePc({
+                  status: 'retired',
+                  archived_at: '2026-08-07T01:00:00Z',
+                }),
+              ],
+            };
           }
-          if (s.includes('UPDATE public.salary_components') && s.includes('is_active = FALSE')) {
+          if (
+            s.includes('UPDATE public.salary_components') &&
+            s.includes('is_active = FALSE')
+          ) {
             return { rows: [] };
           }
           return { rows: [] };
@@ -420,10 +501,14 @@ describe('AllowanceCatalogSyncService (PO-HRM-ALLOWANCE-CATALOG-SYNC-BE-01)', ()
     const out = await svc.retireType(PC_ID, 'main', groupCeoToken(), 'xevn');
     expect(out.status).toBe('retired');
     expect(out.policyOrphanWarn).toBeUndefined();
-    expect(sqlLog.some((s) => /SAVEPOINT\s+allow_cat_policy_line_count/i.test(s))).toBe(true);
-    expect(sqlLog.some((s) => /ROLLBACK\s+TO\s+SAVEPOINT\s+allow_cat_policy_line_count/i.test(s))).toBe(
-      true,
-    );
+    expect(
+      sqlLog.some((s) => /SAVEPOINT\s+allow_cat_policy_line_count/i.test(s)),
+    ).toBe(true);
+    expect(
+      sqlLog.some((s) =>
+        /ROLLBACK\s+TO\s+SAVEPOINT\s+allow_cat_policy_line_count/i.test(s),
+      ),
+    ).toBe(true);
     expect(sqlLog.some((s) => s.includes("status = 'retired'"))).toBe(true);
     expect(sqlLog.some((s) => s.includes('is_active = FALSE'))).toBe(true);
     expect(txAborted).toBe(false);
@@ -442,7 +527,9 @@ describe('PayrollCatalogService dual-write guard (VAL-ALLOW-11/13)', () => {
       query: jest.fn().mockResolvedValue({ rows: [] }),
     } as unknown as HrmDbService;
     const settings = {
-      assertCodeInEffectiveCatalog: jest.fn().mockResolvedValue({ code: 'phu_cap' }),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockResolvedValue({ code: 'phu_cap' }),
     };
     const svc = new PayrollCatalogService(db, settings as never);
     await expect(
@@ -462,17 +549,26 @@ describe('PayrollCatalogService dual-write guard (VAL-ALLOW-11/13)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.hrm_allowance_deduction_types') && s.includes('salary_component_id')) {
+        if (
+          s.includes('FROM public.hrm_allowance_deduction_types') &&
+          s.includes('salary_component_id')
+        ) {
           return { rows: [{ id: PC_ID }] };
         }
         return { rows: [] };
       }),
     } as unknown as HrmDbService;
     const svc = new PayrollCatalogService(db);
-    await expect(svc.deleteSalaryComponent(SC_ID, 'holding', groupCeoToken())).rejects.toMatchObject({
+    await expect(
+      svc.deleteSalaryComponent(SC_ID, 'holding', groupCeoToken()),
+    ).rejects.toMatchObject({
       code: HRM_ALLOW_CAT_409_LINKED,
     });
   });
@@ -481,10 +577,17 @@ describe('PayrollCatalogService dual-write guard (VAL-ALLOW-11/13)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.salary_components') && s.includes('lower(code)')) {
+        if (
+          s.includes('FROM public.salary_components') &&
+          s.includes('lower(code)')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.salary_components')) {
@@ -512,7 +615,9 @@ describe('PayrollCatalogService dual-write guard (VAL-ALLOW-11/13)', () => {
       }),
     } as unknown as HrmDbService;
     const settings = {
-      assertCodeInEffectiveCatalog: jest.fn().mockResolvedValue({ code: 'luong' }),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockResolvedValue({ code: 'luong' }),
     };
     const svc = new PayrollCatalogService(db, settings as never);
     const out = await svc.createSalaryComponent(

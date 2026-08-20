@@ -11,9 +11,13 @@ import {
 } from './pay-gtgc-resolver';
 import { pickPayGtgcStatutoryCfgAtAsOf } from './pay-gtgc-statutory-cfg';
 
-function mockDb(handler: (sql: string, params?: unknown[]) => { rows: unknown[] }): HrmDbService {
+function mockDb(
+  handler: (sql: string, params?: unknown[]) => { rows: unknown[] },
+): HrmDbService {
   return {
-    query: jest.fn(async (sql: string, params?: unknown[]) => handler(sql, params)),
+    query: jest.fn(async (sql: string, params?: unknown[]) =>
+      handler(sql, params),
+    ),
   } as unknown as HrmDbService;
 }
 

@@ -92,7 +92,10 @@ import {
 import type { Response } from 'express';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
-import { isAuthorizedInternalRequest, resolveAuthorizationHeader } from '../common/internal-auth';
+import {
+  isAuthorizedInternalRequest,
+  resolveAuthorizationHeader,
+} from '../common/internal-auth';
 import { toHrmListScopeContext } from '../common/hrm-list-scope-context';
 import { resolveScopeContext } from '../common/scope-context';
 import { ContractLegalPrintService } from './contract-legal-print.service';
@@ -164,7 +167,11 @@ export class ContractsInsuranceController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized contracts/insurance access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized contracts/insurance access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -179,7 +186,10 @@ export class ContractsInsuranceController {
     @Body() body: CreateCompensationPackageDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.compensation
       .createPackage(body, authorization)
       .then((data) => ok(data, 'HRM-COMP-201', 'Compensation package created'));
@@ -196,7 +206,10 @@ export class ContractsInsuranceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.compensation
       .getActivePackage(query, authHeader, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-COMP-200', 'Active compensation package'));
@@ -213,7 +226,10 @@ export class ContractsInsuranceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.compensation
       .listPackages(query, authHeader, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-COMP-200', 'Compensation packages listed'));
@@ -229,7 +245,10 @@ export class ContractsInsuranceController {
     @Query() query: ListCompensationQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.compensation
       .getPackageById(
         packageId,
@@ -277,7 +296,10 @@ export class ContractsInsuranceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.compensation
       .listHistory(query, authHeader, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-COMP-200', 'Compensation history listed'));
@@ -298,11 +320,16 @@ export class ContractsInsuranceController {
   ) {
     // Xử lý: Diễn biến #1 — auth/scope trước khi ghi HĐ.
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.service
-      .createContract(body, authorization)
-      // Thành công: Diễn biến #7 — dòng HĐ mới (F5 = #8).
-      .then((data) => ok(data, 'HRM-CON-201', 'Contract created'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
+    return (
+      this.service
+        .createContract(body, authorization)
+        // Thành công: Diễn biến #7 — dòng HĐ mới (F5 = #8).
+        .then((data) => ok(data, 'HRM-CON-201', 'Contract created'))
+    );
   }
 
   /**
@@ -320,11 +347,16 @@ export class ContractsInsuranceController {
   ) {
     // Xử lý: Diễn biến #1 — auth trước ghi BH (FR-HRM-CI-02).
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.service
-      .createInsuranceRecord(body, authorization)
-      // Thành công: Diễn biến #6 — dòng BH mới (F5 = #8).
-      .then((data) => ok(data, 'HRM-CON-202', 'Insurance record created'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
+    return (
+      this.service
+        .createInsuranceRecord(body, authorization)
+        // Thành công: Diễn biến #6 — dòng BH mới (F5 = #8).
+        .then((data) => ok(data, 'HRM-CON-202', 'Insurance record created'))
+    );
   }
 
   // --- Legal print spine (static paths before :contractId) ---
@@ -343,7 +375,9 @@ export class ContractsInsuranceController {
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.libraryPublish
       .publishLibrary(body, authorization, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-CTR-PUB-201', 'Contract library published'));
+      .then((data) =>
+        ok(data, 'HRM-CTR-PUB-201', 'Contract library published'),
+      );
   }
 
   @Get('contract-library/publishes')
@@ -359,7 +393,9 @@ export class ContractsInsuranceController {
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.libraryPublish
       .listPublishes(authorization, toHrmListScopeContext(tenantId), cid)
-      .then((data) => ok(data, 'HRM-CTR-PUB-200', 'Contract library publishes listed'));
+      .then((data) =>
+        ok(data, 'HRM-CTR-PUB-200', 'Contract library publishes listed'),
+      );
   }
 
   @Get('contract-library/publishes/:publishVersion')
@@ -376,11 +412,23 @@ export class ContractsInsuranceController {
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     const publishVersion = Number(publishVersionRaw);
     if (!Number.isFinite(publishVersion) || publishVersion < 1) {
-      throw new ApiException('HRM-CTR-PUB-NOT-FOUND', 'Invalid publish_version', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-CTR-PUB-NOT-FOUND',
+        'Invalid publish_version',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.libraryPublish
-      .getPublishByVersion(publishVersion, authorization, toHrmListScopeContext(tenantId), cid, true)
-      .then((data) => ok(data, 'HRM-CTR-PUB-200', 'Contract library publish detail'));
+      .getPublishByVersion(
+        publishVersion,
+        authorization,
+        toHrmListScopeContext(tenantId),
+        cid,
+        true,
+      )
+      .then((data) =>
+        ok(data, 'HRM-CTR-PUB-200', 'Contract library publish detail'),
+      );
   }
 
   @Post('contract-library/pull')
@@ -414,7 +462,9 @@ export class ContractsInsuranceController {
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.libraryPublish
       .applyLibrary(body, cid, authorization, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-CTR-APPLY-200', 'Contract library applied'));
+      .then((data) =>
+        ok(data, 'HRM-CTR-APPLY-200', 'Contract library applied'),
+      );
   }
 
   @Get('contract-templates')
@@ -426,7 +476,10 @@ export class ContractsInsuranceController {
     @Query() query: ListContractTemplatesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.legalPrint
       .listTemplates(query, authorization, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-CTR-TPL-200', 'Contract templates listed'));
@@ -440,7 +493,10 @@ export class ContractsInsuranceController {
     @Query() query: GetContractCompanySettingQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.legalPrint
       .getCompanySetting(query, authorization, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-CTR-CFG-200', 'Contract company setting'));
@@ -454,10 +510,15 @@ export class ContractsInsuranceController {
     @Body() body: PutContractCompanySettingDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.legalPrint
       .putCompanySetting(body, authorization, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-CTR-CFG-200', 'Contract company setting saved'));
+      .then((data) =>
+        ok(data, 'HRM-CTR-CFG-200', 'Contract company setting saved'),
+      );
   }
 
   @Post('contract-templates')
@@ -468,7 +529,10 @@ export class ContractsInsuranceController {
     @Body() body: UpsertContractTemplateDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.legalPrint
       .createTemplate(body, authorization)
       .then((data) => ok(data, 'HRM-CTR-TPL-201', 'Contract template created'));
@@ -484,7 +548,10 @@ export class ContractsInsuranceController {
     @Query() query: ListContractTemplatesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.legalPrint
       .getTemplateById(
         templateId,
@@ -527,7 +594,9 @@ export class ContractsInsuranceController {
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.legalPrint
       .activateTemplate(templateId, cid, authorization)
-      .then((data) => ok(data, 'HRM-CTR-TPL-200', 'Contract template activated'));
+      .then((data) =>
+        ok(data, 'HRM-CTR-TPL-200', 'Contract template activated'),
+      );
   }
 
   @Put('contract-templates/:templateId/clauses')
@@ -557,7 +626,10 @@ export class ContractsInsuranceController {
     @Query() query: ListContractClausesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.legalPrint
       .listClauses(query, authorization, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-CTR-CL-200', 'Contract clauses listed'));
@@ -571,7 +643,10 @@ export class ContractsInsuranceController {
     @Body() body: UpsertContractClauseDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.legalPrint
       .createClause(body, authorization)
       .then((data) => ok(data, 'HRM-CTR-CL-201', 'Contract clause created'));
@@ -587,7 +662,10 @@ export class ContractsInsuranceController {
     @Query() query: ListContractClausesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.legalPrint
       .getClauseById(
         clauseId,
@@ -659,10 +737,15 @@ export class ContractsInsuranceController {
     @Query() query: ListContractPackRulesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.legalPrint
       .listPackRules(query, authorization, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-CTR-PACK-200', 'Contract pack rules listed'));
+      .then((data) =>
+        ok(data, 'HRM-CTR-PACK-200', 'Contract pack rules listed'),
+      );
   }
 
   @Put('contract-pack-rules')
@@ -673,10 +756,15 @@ export class ContractsInsuranceController {
     @Body() body: PutContractPackRulesDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.legalPrint
       .putPackRules(body, authorization)
-      .then((data) => ok(data, 'HRM-CTR-PACK-200', 'Contract pack rules replaced'));
+      .then((data) =>
+        ok(data, 'HRM-CTR-PACK-200', 'Contract pack rules replaced'),
+      );
   }
 
   @Get('contracts/pack-resolve')
@@ -692,7 +780,12 @@ export class ContractsInsuranceController {
     const cid = companyId ?? headerCompanyId ?? 'main';
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.legalPrint
-      .resolvePackForEmployee(cid, employeeId, authorization, toHrmListScopeContext(tenantId))
+      .resolvePackForEmployee(
+        cid,
+        employeeId,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-CTR-PACK-200', 'Contract pack resolved'));
   }
 
@@ -724,7 +817,10 @@ export class ContractsInsuranceController {
       res.setHeader('X-HRM-PDF-Stub', 'true');
     } else {
       res.setHeader('X-HRM-PDF-Stub', 'false');
-      res.setHeader('X-HRM-PDF-Engine', format === 'pdf' ? 'pdfkit' : 'html-debug');
+      res.setHeader(
+        'X-HRM-PDF-Engine',
+        format === 'pdf' ? 'pdfkit' : 'html-debug',
+      );
     }
     res.status(200).send(pdf.body);
   }
@@ -738,7 +834,10 @@ export class ContractsInsuranceController {
     @Query() query: ListExpiringQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .listExpiringContracts(query, authorization)
       .then((data) => ok(data, 'HRM-CON-200', 'Expiring contracts listed'));
@@ -760,7 +859,10 @@ export class ContractsInsuranceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .listInsurance(query, authHeader, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-CON-200', 'Insurance listed'));
@@ -777,10 +879,15 @@ export class ContractsInsuranceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .listInsurance(query, authHeader, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-INS-200', 'Insurance policy participants listed'));
+      .then((data) =>
+        ok(data, 'HRM-INS-200', 'Insurance policy participants listed'),
+      );
   }
 
   @Get('insurance/expiring')
@@ -792,7 +899,10 @@ export class ContractsInsuranceController {
     @Query() query: ListExpiringQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .listExpiringInsurance(query, authorization)
       .then((data) => ok(data, 'HRM-CON-200', 'Expiring insurance listed'));
@@ -808,10 +918,15 @@ export class ContractsInsuranceController {
     @Query() query: ListEffectiveSiInsuranceTypesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.siInsuranceTypeService
       .listEffective(query, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-SI-INS-TYPE-200', 'Effective insurance types listed'));
+      .then((data) =>
+        ok(data, 'HRM-SI-INS-TYPE-200', 'Effective insurance types listed'),
+      );
   }
 
   @Get('insurance-types')
@@ -822,10 +937,15 @@ export class ContractsInsuranceController {
     @Query() query: ListSiInsuranceTypesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.siInsuranceTypeService
       .listInsuranceTypes(query, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-SI-INS-TYPE-200', 'Insurance types listed'));
+      .then((data) =>
+        ok(data, 'HRM-SI-INS-TYPE-200', 'Insurance types listed'),
+      );
   }
 
   @Post('insurance-types')
@@ -839,7 +959,9 @@ export class ContractsInsuranceController {
     resolveScopeContext(authorization, { tenantId, companyId: body.companyId });
     return this.siInsuranceTypeService
       .upsertInsuranceType(body, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-SI-INS-TYPE-201', 'Insurance type created'));
+      .then((data) =>
+        ok(data, 'HRM-SI-INS-TYPE-201', 'Insurance type created'),
+      );
   }
 
   @Put('insurance-types')
@@ -853,7 +975,9 @@ export class ContractsInsuranceController {
     resolveScopeContext(authorization, { tenantId, companyId: body.companyId });
     return this.siInsuranceTypeService
       .upsertInsuranceType(body, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-SI-INS-TYPE-200', 'Insurance type upserted'));
+      .then((data) =>
+        ok(data, 'HRM-SI-INS-TYPE-200', 'Insurance type upserted'),
+      );
   }
 
   @Get('insurance-types/:insuranceTypeId')
@@ -865,9 +989,17 @@ export class ContractsInsuranceController {
     @Query() query: GetSiInsuranceTypeQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.siInsuranceTypeService
-      .getInsuranceTypeById(insuranceTypeId, query.company_id, authorization, tenantId)
+      .getInsuranceTypeById(
+        insuranceTypeId,
+        query.company_id,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-SI-INS-TYPE-200', 'Insurance type loaded'));
   }
 
@@ -883,8 +1015,16 @@ export class ContractsInsuranceController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.siInsuranceTypeService
-      .patchInsuranceType(insuranceTypeId, companyId, body, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-SI-INS-TYPE-200', 'Insurance type updated'));
+      .patchInsuranceType(
+        insuranceTypeId,
+        companyId,
+        body,
+        authorization,
+        tenantId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-SI-INS-TYPE-200', 'Insurance type updated'),
+      );
   }
 
   @Post('insurance-types/:insuranceTypeId/retire')
@@ -899,7 +1039,9 @@ export class ContractsInsuranceController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.siInsuranceTypeService
       .retireInsuranceType(insuranceTypeId, companyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-SI-INS-TYPE-200', 'Insurance type retired'));
+      .then((data) =>
+        ok(data, 'HRM-SI-INS-TYPE-200', 'Insurance type retired'),
+      );
   }
 
   // --- F-SI-CAT-INS/EFF insurers Nest SoT (static before :id) — SEPARATE from insurance-types ---
@@ -912,10 +1054,15 @@ export class ContractsInsuranceController {
     @Query() query: ListEffectiveSiInsurersQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.siInsurerService
       .listEffective(query, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-SI-INSURER-200', 'Effective insurers listed'));
+      .then((data) =>
+        ok(data, 'HRM-SI-INSURER-200', 'Effective insurers listed'),
+      );
   }
 
   @Get('insurers')
@@ -926,7 +1073,10 @@ export class ContractsInsuranceController {
     @Query() query: ListSiInsurersQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.siInsurerService
       .listInsurers(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-SI-INSURER-200', 'Insurers listed'));
@@ -969,7 +1119,10 @@ export class ContractsInsuranceController {
     @Query() query: GetSiInsurerQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.siInsurerService
       .getInsurerById(insurerId, query.company_id, authorization, tenantId)
       .then((data) => ok(data, 'HRM-SI-INSURER-200', 'Insurer loaded'));
@@ -1018,7 +1171,10 @@ export class ContractsInsuranceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .listInsurancePolicies(query, authHeader, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-INS-POL-200', 'Insurance policies listed'));
@@ -1033,7 +1189,10 @@ export class ContractsInsuranceController {
     @Body() body: CreateInsurancePolicyDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.service
       .createInsurancePolicy(body, authorization)
       .then((data) => ok(data, 'HRM-INS-POL-201', 'Insurance policy created'));
@@ -1049,7 +1208,10 @@ export class ContractsInsuranceController {
     @Query() query: ListInsurancePoliciesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .getInsurancePolicyById(
         policyId,
@@ -1105,7 +1267,10 @@ export class ContractsInsuranceController {
     @Query() query: ListContractsQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .getInsuranceRecordById(
         recordId,
@@ -1152,8 +1317,15 @@ export class ContractsInsuranceController {
     const cid = query.company_id ?? headerCompanyId ?? 'main';
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.service
-      .getContractCreateContext(employeeId, { company_id: cid }, authorization, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-CTR-CREATE-CTX-200', 'Contract create context bundle'));
+      .getContractCreateContext(
+        employeeId,
+        { company_id: cid },
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) =>
+        ok(data, 'HRM-CTR-CREATE-CTX-200', 'Contract create context bundle'),
+      );
   }
 
   @Get('contracts')
@@ -1167,7 +1339,10 @@ export class ContractsInsuranceController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .listContracts(query, authHeader, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-CON-200', 'Contracts listed'));
@@ -1183,7 +1358,10 @@ export class ContractsInsuranceController {
     @Query() query: ListContractsQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .getContractById(
         contractId,
@@ -1208,7 +1386,13 @@ export class ContractsInsuranceController {
     const cid = companyId ?? headerCompanyId ?? 'main';
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.legalPrint
-      .previewContract(contractId, body, cid, authorization, toHrmListScopeContext(tenantId))
+      .previewContract(
+        contractId,
+        body,
+        cid,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-CTR-PREV-200', 'Contract merge preview'));
   }
 
@@ -1226,8 +1410,16 @@ export class ContractsInsuranceController {
     const cid = companyId ?? headerCompanyId ?? 'main';
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.legalPrint
-      .putContractPrintOverlay(contractId, body, cid, authorization, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-CTR-OVERLAY-200', 'Contract print overlay saved'));
+      .putContractPrintOverlay(
+        contractId,
+        body,
+        cid,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) =>
+        ok(data, 'HRM-CTR-OVERLAY-200', 'Contract print overlay saved'),
+      );
   }
 
   @Post('contracts/:contractId/print-versions')
@@ -1244,7 +1436,13 @@ export class ContractsInsuranceController {
     const cid = companyId ?? headerCompanyId ?? 'main';
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.legalPrint
-      .createPrintVersion(contractId, body, cid, authorization, toHrmListScopeContext(tenantId))
+      .createPrintVersion(
+        contractId,
+        body,
+        cid,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-CTR-VER-201', 'Print version issued'));
   }
 
@@ -1261,7 +1459,12 @@ export class ContractsInsuranceController {
     const cid = companyId ?? headerCompanyId ?? 'main';
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.legalPrint
-      .listPrintVersions(contractId, cid, authorization, toHrmListScopeContext(tenantId))
+      .listPrintVersions(
+        contractId,
+        cid,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-CTR-VER-200', 'Print versions listed'));
   }
 
@@ -1279,7 +1482,12 @@ export class ContractsInsuranceController {
     const cid = companyId ?? headerCompanyId ?? 'main';
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.legalPrint
-      .getPrintVersionById(versionId, cid, authorization, toHrmListScopeContext(tenantId))
+      .getPrintVersionById(
+        versionId,
+        cid,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-CTR-VER-200', 'Print version detail'));
   }
 
@@ -1293,9 +1501,17 @@ export class ContractsInsuranceController {
     @Body() body: UpdateContractDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: headerCompanyId,
+    });
     return this.service
-      .updateContract(contractId, body, headerCompanyId ?? 'main', authorization)
+      .updateContract(
+        contractId,
+        body,
+        headerCompanyId ?? 'main',
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-CON-200', 'Contract updated'));
   }
 
@@ -1308,10 +1524,12 @@ export class ContractsInsuranceController {
     @Param('contractId') contractId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: headerCompanyId,
+    });
     return this.service
       .deleteContract(contractId, headerCompanyId ?? 'main', authorization)
       .then((data) => ok(data, 'HRM-CON-200', 'Contract deleted'));
   }
-
 }

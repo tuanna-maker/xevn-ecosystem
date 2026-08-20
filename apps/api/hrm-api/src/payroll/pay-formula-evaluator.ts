@@ -97,11 +97,16 @@ export function classifyPayFormulaExpression(expressionJson: unknown): {
   warnings: string[];
 } {
   const warnings: string[] = [];
-  if (!expressionJson || typeof expressionJson !== 'object' || Array.isArray(expressionJson)) {
+  if (
+    !expressionJson ||
+    typeof expressionJson !== 'object' ||
+    Array.isArray(expressionJson)
+  ) {
     return { kind: 'unknown', lines: [], warnings: ['EXPRESSION_NOT_OBJECT'] };
   }
   const obj = expressionJson as Record<string, unknown>;
-  const form = typeof obj.form === 'string' ? obj.form.trim().toLowerCase() : '';
+  const form =
+    typeof obj.form === 'string' ? obj.form.trim().toLowerCase() : '';
 
   if (form === PAY_FORMULA_EVAL_FORM) {
     const rawLines = Array.isArray(obj.lines) ? obj.lines : [];
@@ -112,10 +117,17 @@ export function classifyPayFormulaExpression(expressionJson: unknown): {
         continue;
       }
       const row = raw as Record<string, unknown>;
-      const component_code = String(row.component_code ?? row.componentCode ?? '').trim();
-      const signRaw = String(row.sign ?? 'earning').trim().toLowerCase();
-      const sign: PayFormulaEvalSign = signRaw === 'deduction' ? 'deduction' : 'earning';
-      const sourceRaw = String(row.source ?? '').trim().toLowerCase();
+      const component_code = String(
+        row.component_code ?? row.componentCode ?? '',
+      ).trim();
+      const signRaw = String(row.sign ?? 'earning')
+        .trim()
+        .toLowerCase();
+      const sign: PayFormulaEvalSign =
+        signRaw === 'deduction' ? 'deduction' : 'earning';
+      const sourceRaw = String(row.source ?? '')
+        .trim()
+        .toLowerCase();
       if (!component_code || !['var', 'const', 'expr'].includes(sourceRaw)) {
         warnings.push('SKIP_INVALID_LINE_FIELDS');
         continue;
@@ -126,7 +138,8 @@ export function classifyPayFormulaExpression(expressionJson: unknown): {
         sign,
         source,
         var: typeof row.var === 'string' ? row.var.trim() : undefined,
-        amount: typeof row.amount === 'number' ? row.amount : Number(row.amount),
+        amount:
+          typeof row.amount === 'number' ? row.amount : Number(row.amount),
         expr:
           row.expr && typeof row.expr === 'object' && !Array.isArray(row.expr)
             ? (row.expr as PayFormulaEvalLineInput['expr'])
@@ -152,7 +165,11 @@ export function classifyPayFormulaExpression(expressionJson: unknown): {
     };
   }
 
-  return { kind: 'unknown', lines: [], warnings: ['UNSUPPORTED_EXPRESSION_FORM'] };
+  return {
+    kind: 'unknown',
+    lines: [],
+    warnings: ['UNSUPPORTED_EXPRESSION_FORM'],
+  };
 }
 
 function resolveOperand(
@@ -195,7 +212,8 @@ export function evaluatePayFormulaExpression(
     return {
       ok: false,
       reason: 'UNSUPPORTED_FORM',
-      message: 'expression_json form not in staged evaluator subset (gd1_eval_v1)',
+      message:
+        'expression_json form not in staged evaluator subset (gd1_eval_v1)',
       warnings: classified.warnings,
     };
   }
@@ -335,7 +353,8 @@ export function collectExpressionVarKeys(
       if (line.source === 'var' && line.var) keys.add(line.var);
       if (line.source === 'expr' && line.expr) {
         if (typeof line.expr.left === 'string') keys.add(line.expr.left.trim());
-        if (typeof line.expr.right === 'string') keys.add(line.expr.right.trim());
+        if (typeof line.expr.right === 'string')
+          keys.add(line.expr.right.trim());
       }
     }
   }

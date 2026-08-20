@@ -77,7 +77,14 @@ const ALLOWED: Record<StatusTransitionDomain, Record<string, string[]>> = {
     cancelled: ['cancelled'],
   },
   recruitment: {
-    applied: ['applied', 'screening', 'interview', 'offer', 'rejected', 'withdrawn'],
+    applied: [
+      'applied',
+      'screening',
+      'interview',
+      'offer',
+      'rejected',
+      'withdrawn',
+    ],
     screening: ['screening', 'interview', 'offer', 'rejected', 'withdrawn'],
     interview: ['interview', 'offer', 'hired', 'rejected', 'withdrawn'],
     offer: ['offer', 'hired', 'rejected', 'withdrawn'],
@@ -87,7 +94,9 @@ const ALLOWED: Record<StatusTransitionDomain, Record<string, string[]>> = {
   },
 };
 
-export function assertStatusTransition(input: AssertStatusTransitionInput): void {
+export function assertStatusTransition(
+  input: AssertStatusTransitionInput,
+): void {
   const from = String(input.from ?? '')
     .trim()
     .toLowerCase();

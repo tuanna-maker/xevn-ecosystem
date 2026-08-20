@@ -55,7 +55,11 @@ describe('AttendanceCatalogService work_shifts deepen (ATT-SHIFT-CATALOG-BE-01)'
 
   it('VAL-ATT-SHIFT-CNS-03b: listWorkShifts default hides inactive; include_inactive shows all', async () => {
     const rows = [
-      baseShift({ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', code: 'morning', status: 'active' }),
+      baseShift({
+        id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+        code: 'morning',
+        status: 'active',
+      }),
       baseShift({
         id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
         code: 'night',
@@ -67,7 +71,10 @@ describe('AttendanceCatalogService work_shifts deepen (ATT-SHIFT-CATALOG-BE-01)'
       if (sql.includes('CREATE TABLE')) {
         return Promise.resolve({ rows: [] } as never);
       }
-      if (sql.includes('FROM public.work_shifts') && sql.includes('SELECT id')) {
+      if (
+        sql.includes('FROM public.work_shifts') &&
+        sql.includes('SELECT id')
+      ) {
         const activeOnly = sql.includes(`status = 'active'`);
         return Promise.resolve({
           rows: activeOnly ? rows.filter((r) => r.status === 'active') : rows,
@@ -92,7 +99,10 @@ describe('AttendanceCatalogService work_shifts deepen (ATT-SHIFT-CATALOG-BE-01)'
   });
 
   it('VAL-ATT-SHIFT-CNS-04: deleteWorkShift soft-retires status=inactive; hard=true deletes when no refs', async () => {
-    const active = baseShift({ id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', code: 'office' });
+    const active = baseShift({
+      id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+      code: 'office',
+    });
     db.query.mockImplementation((sql: string) => {
       if (sql.includes('CREATE TABLE')) {
         return Promise.resolve({ rows: [] } as never);
@@ -100,7 +110,10 @@ describe('AttendanceCatalogService work_shifts deepen (ATT-SHIFT-CATALOG-BE-01)'
       if (sql.includes('FROM public.work_shifts WHERE id')) {
         return Promise.resolve({ rows: [active] } as never);
       }
-      if (sql.includes('UPDATE public.work_shifts') && sql.includes(`status = 'inactive'`)) {
+      if (
+        sql.includes('UPDATE public.work_shifts') &&
+        sql.includes(`status = 'inactive'`)
+      ) {
         return Promise.resolve({
           rows: [{ ...active, status: 'inactive' }],
         } as never);
@@ -129,15 +142,29 @@ describe('AttendanceCatalogService work_shifts deepen (ATT-SHIFT-CATALOG-BE-01)'
       ),
     ).toBe(true);
 
-    const hard = await service.deleteWorkShift(active.id, 'main', groupCeoAuth, { hard: true });
-    expect(hard).toMatchObject({ id: active.id, hard_deleted: true, retired: false });
+    const hard = await service.deleteWorkShift(
+      active.id,
+      'main',
+      groupCeoAuth,
+      { hard: true },
+    );
+    expect(hard).toMatchObject({
+      id: active.id,
+      hard_deleted: true,
+      retired: false,
+    });
     expect(
-      db.query.mock.calls.some(([sql]) => String(sql).includes('DELETE FROM public.work_shifts')),
+      db.query.mock.calls.some(([sql]) =>
+        String(sql).includes('DELETE FROM public.work_shifts'),
+      ),
     ).toBe(true);
   });
 
   it('VAL-ATT-SHIFT-CNS-04: hard DELETE blocked when shift_change_requests refs exist', async () => {
-    const active = baseShift({ id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd', code: 'flexible' });
+    const active = baseShift({
+      id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+      code: 'flexible',
+    });
     db.query.mockImplementation((sql: string) => {
       if (sql.includes('CREATE TABLE')) {
         return Promise.resolve({ rows: [] } as never);
@@ -153,7 +180,10 @@ describe('AttendanceCatalogService work_shifts deepen (ATT-SHIFT-CATALOG-BE-01)'
 
     await expect(
       service.deleteWorkShift(active.id, 'main', groupCeoAuth, { hard: true }),
-    ).rejects.toMatchObject({ code: 'HRM-WS-VAL', status: HttpStatus.CONFLICT });
+    ).rejects.toMatchObject({
+      code: 'HRM-WS-VAL',
+      status: HttpStatus.CONFLICT,
+    });
   });
 
   it('VAL-ATT-SHIFT-CNS-01: invent shift key when active>0 → HRM-ATT-SHIFT-KEY', async () => {
@@ -161,7 +191,10 @@ describe('AttendanceCatalogService work_shifts deepen (ATT-SHIFT-CATALOG-BE-01)'
       if (sql.includes('CREATE TABLE')) {
         return Promise.resolve({ rows: [] } as never);
       }
-      if (sql.includes('FROM public.work_shifts') && sql.includes(`status = 'active'`)) {
+      if (
+        sql.includes('FROM public.work_shifts') &&
+        sql.includes(`status = 'active'`)
+      ) {
         return Promise.resolve({
           rows: [baseShift()],
         } as never);

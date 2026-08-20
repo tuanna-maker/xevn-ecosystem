@@ -185,7 +185,10 @@ export class EmpDocumentTypeService {
     return null;
   }
 
-  private display(row: EmpDocumentTypeRow, source: EmpDocumentTypeSource): EmpDocumentTypeDisplay {
+  private display(
+    row: EmpDocumentTypeRow,
+    source: EmpDocumentTypeSource,
+  ): EmpDocumentTypeDisplay {
     return {
       id: row.id,
       companyId: row.company_id,
@@ -231,10 +234,23 @@ export class EmpDocumentTypeService {
     return s;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -281,7 +297,11 @@ export class EmpDocumentTypeService {
     options?: { tenantId?: string },
   ): Promise<{ total: number; data: EmpDocumentTypeDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, options?.tenantId);
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      options?.tenantId,
+    );
     const rows = await this.loadNativeRows(companyKeys, {
       includeArchived: false,
       status: 'active',
@@ -335,7 +355,8 @@ export class EmpDocumentTypeService {
     tenantId?: string,
   ): Promise<{ total: number; data: EmpDocumentTypeDisplay[] }> {
     await this.ensureSchema();
-    const includeGroupRef = String(query.include_group_ref ?? '').toLowerCase() === 'true';
+    const includeGroupRef =
+      String(query.include_group_ref ?? '').toLowerCase() === 'true';
     if (includeGroupRef) {
       return this.listEffective(
         { company_id: query.company_id, q: query.q },
@@ -343,8 +364,13 @@ export class EmpDocumentTypeService {
         { tenantId },
       );
     }
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     const rows = await this.loadNativeRows(companyKeys, {
       includeArchived,
       status: query.status,
@@ -372,7 +398,11 @@ export class EmpDocumentTypeService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_EMP_DOC_404, 'Document type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_EMP_DOC_404,
+        'Document type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_EMP_DOC_404,
@@ -388,7 +418,11 @@ export class EmpDocumentTypeService {
     tenantId?: string,
   ): Promise<EmpDocumentTypeDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const documentTypeKey = this.assertKeyFormat(body.documentTypeKey);
     const nameVi = body.nameVi.trim();
     if (!nameVi) {
@@ -399,7 +433,8 @@ export class EmpDocumentTypeService {
       );
     }
     const status = body.status ? this.assertStatus(body.status) : 'active';
-    const metadataJson = body.metadata != null ? JSON.stringify(body.metadata) : null;
+    const metadataJson =
+      body.metadata != null ? JSON.stringify(body.metadata) : null;
     const allowedMimeJson =
       body.allowedMime != null ? JSON.stringify(body.allowedMime) : null;
     const sortOrder = body.sortOrder ?? 100;
@@ -472,7 +507,9 @@ export class EmpDocumentTypeService {
           row = inserted.rows[0];
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message : String(err);
-          if (/uq_emp_document_type_company_key_active|duplicate key/i.test(msg)) {
+          if (
+            /uq_emp_document_type_company_key_active|duplicate key/i.test(msg)
+          ) {
             throw new ApiException(
               HRM_PLT_CAT_CODE_CONFLICT,
               `Active document_type_key '${documentTypeKey}' already exists for company`,
@@ -509,7 +546,11 @@ export class EmpDocumentTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_EMP_DOC_404, 'Document type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_EMP_DOC_404,
+        'Document type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_EMP_DOC_404,
@@ -531,19 +572,26 @@ export class EmpDocumentTypeService {
     };
     if (body.nameVi !== undefined) assign('name_vi', body.nameVi.trim());
     if (body.sortOrder !== undefined) assign('sort_order', body.sortOrder);
-    if (body.requiredByDefault !== undefined) assign('required_by_default', body.requiredByDefault);
-    if (body.requiresExpiry !== undefined) assign('requires_expiry', body.requiresExpiry);
-    if (body.blocksActivation !== undefined) assign('blocks_activation', body.blocksActivation);
-    if (body.isIdentityDoc !== undefined) assign('is_identity_doc', body.isIdentityDoc);
+    if (body.requiredByDefault !== undefined)
+      assign('required_by_default', body.requiredByDefault);
+    if (body.requiresExpiry !== undefined)
+      assign('requires_expiry', body.requiresExpiry);
+    if (body.blocksActivation !== undefined)
+      assign('blocks_activation', body.blocksActivation);
+    if (body.isIdentityDoc !== undefined)
+      assign('is_identity_doc', body.isIdentityDoc);
     if (body.allowedMime !== undefined) {
-      values.push(body.allowedMime == null ? null : JSON.stringify(body.allowedMime));
+      values.push(
+        body.allowedMime == null ? null : JSON.stringify(body.allowedMime),
+      );
       sets.push(`allowed_mime_json = $${values.length}::jsonb`);
     }
     if (body.metadata !== undefined) {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertStatus(body.status));
 
     if (!sets.length) {
       return this.display(row, 'emp_native');
@@ -585,7 +633,11 @@ export class EmpDocumentTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_EMP_DOC_404, 'Document type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_EMP_DOC_404,
+        'Document type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_EMP_DOC_404,

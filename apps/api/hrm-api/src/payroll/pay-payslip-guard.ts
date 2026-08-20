@@ -5,7 +5,9 @@ import {
   PAY_PAYSLIP_FORBIDDEN_BODY_KEYS,
 } from './pay-payslip.constants';
 
-function collectForbiddenPayslipAmountKeys(body: Record<string, unknown> | null | undefined): string[] {
+function collectForbiddenPayslipAmountKeys(
+  body: Record<string, unknown> | null | undefined,
+): string[] {
   if (!body || typeof body !== 'object') return [];
   const hits: string[] = [];
   for (const key of Object.keys(body)) {
@@ -14,7 +16,11 @@ function collectForbiddenPayslipAmountKeys(body: Record<string, unknown> | null 
       hits.push(key);
       continue;
     }
-    if (PAY_PAYSLIP_FORBIDDEN_BODY_KEYS.includes(key as (typeof PAY_PAYSLIP_FORBIDDEN_BODY_KEYS)[number])) {
+    if (
+      PAY_PAYSLIP_FORBIDDEN_BODY_KEYS.includes(
+        key as (typeof PAY_PAYSLIP_FORBIDDEN_BODY_KEYS)[number],
+      )
+    ) {
       hits.push(key);
     }
   }
@@ -22,7 +28,9 @@ function collectForbiddenPayslipAmountKeys(body: Record<string, unknown> | null 
 }
 
 /** AC-PAY-SLIP-DENY-MANUAL — cấm PATCH số tiền / thành phần trên phiếu lương. */
-export function assertNoPayPayslipAmountOverrideInBody(body: Record<string, unknown> | null | undefined): void {
+export function assertNoPayPayslipAmountOverrideInBody(
+  body: Record<string, unknown> | null | undefined,
+): void {
   const hits = collectForbiddenPayslipAmountKeys(body);
   if (hits.length === 0) return;
   throw new ApiException(

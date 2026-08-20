@@ -148,7 +148,8 @@ function builtinMap(): Map<
 export function resolveBagKey(sourcePath: string, tokenKey: string): string {
   const sp = sourcePath.trim();
   if (MERGE_TOKEN_SOURCE_TO_BAG[sp]) return MERGE_TOKEN_SOURCE_TO_BAG[sp];
-  if (MERGE_TOKEN_SOURCE_TO_BAG[tokenKey]) return MERGE_TOKEN_SOURCE_TO_BAG[tokenKey];
+  if (MERGE_TOKEN_SOURCE_TO_BAG[tokenKey])
+    return MERGE_TOKEN_SOURCE_TO_BAG[tokenKey];
   const last = sp.includes('.') ? sp.slice(sp.lastIndexOf('.') + 1) : sp;
   if (MERGE_TOKEN_SOURCE_TO_BAG[last]) return MERGE_TOKEN_SOURCE_TO_BAG[last];
   // dotted token → underscore bag (employee.full_name → employee_full_name)
@@ -164,7 +165,8 @@ function readBagValue(
   const bagKey = resolveBagKey(sourcePath, tokenKey);
   if (Object.prototype.hasOwnProperty.call(bag, bagKey)) return bag[bagKey];
   if (Object.prototype.hasOwnProperty.call(bag, tokenKey)) return bag[tokenKey];
-  if (Object.prototype.hasOwnProperty.call(bag, sourcePath)) return bag[sourcePath];
+  if (Object.prototype.hasOwnProperty.call(bag, sourcePath))
+    return bag[sourcePath];
   const last = sourcePath.includes('.')
     ? sourcePath.slice(sourcePath.lastIndexOf('.') + 1)
     : sourcePath;
@@ -184,7 +186,10 @@ export function resolveMergeTokens(
   const overrides = input.fieldOverrides ?? {};
 
   // 1) Issued snapshot — immutable stop
-  if (input.issuedMergedFields && Object.keys(input.issuedMergedFields).length > 0) {
+  if (
+    input.issuedMergedFields &&
+    Object.keys(input.issuedMergedFields).length > 0
+  ) {
     const tokens: MergeTokenResolvedItem[] = [];
     const keys =
       input.tokenKeys?.map(normalizeTokenKey).filter(Boolean) ??
@@ -295,7 +300,10 @@ export function resolveMergeTokens(
       sourcePath !== undefined
         ? readBagValue(bag, sourcePath, tokenKey)
         : undefined;
-    if (value === undefined && Object.prototype.hasOwnProperty.call(bag, tokenKey)) {
+    if (
+      value === undefined &&
+      Object.prototype.hasOwnProperty.call(bag, tokenKey)
+    ) {
       value = bag[tokenKey];
     }
 

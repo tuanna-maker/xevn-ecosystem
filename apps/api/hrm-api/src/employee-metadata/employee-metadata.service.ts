@@ -100,7 +100,9 @@ export class EmployeeMetadataService {
       employee_id: payload.employee_id,
       legal_entity_id: payload.legal_entity_id,
       field_key: payload.field_key.trim(),
-      current_value: payload.current_value ? JSON.parse(payload.current_value) : null,
+      current_value: payload.current_value
+        ? JSON.parse(payload.current_value)
+        : null,
       requested_value: JSON.parse(payload.requested_value),
       reason: payload.reason,
       actor_user_id: payload.actor_user_id,
@@ -110,7 +112,10 @@ export class EmployeeMetadataService {
     });
   }
 
-  async listChangeRequests(query: ListEmployeeMetadataChangeRequestsQueryDto, authorization?: string) {
+  async listChangeRequests(
+    query: ListEmployeeMetadataChangeRequestsQueryDto,
+    authorization?: string,
+  ) {
     // Xử lý: LE wire → 409 trước list SQL — không silent empty queue.
     this.assertMetadataCompanyWire(query.company_id);
     return this.repository.listChangeRequests(
@@ -140,12 +145,23 @@ export class EmployeeMetadataService {
       notFoundCode: 'HRM-META-404',
       mismatchCode: 'HRM-META-409',
     });
-    const request = await this.repository.approveChangeRequest(changeRequestId, decision);
+    const request = await this.repository.approveChangeRequest(
+      changeRequestId,
+      decision,
+    );
     if (!request) {
-      throw new ApiException('HRM-META-404', 'Metadata change request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-META-404',
+        'Metadata change request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (request.status !== 'approved') {
-      throw new ApiException('HRM-META-409', 'Metadata change request is not pending', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-META-409',
+        'Metadata change request is not pending',
+        HttpStatus.CONFLICT,
+      );
     }
     return request;
   }
@@ -163,16 +179,31 @@ export class EmployeeMetadataService {
       notFoundCode: 'HRM-META-404',
       mismatchCode: 'HRM-META-409',
     });
-    const request = await this.repository.rejectChangeRequest(changeRequestId, decision);
+    const request = await this.repository.rejectChangeRequest(
+      changeRequestId,
+      decision,
+    );
     if (!request) {
-      throw new ApiException('HRM-META-404', 'Metadata change request not found or not pending', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-META-404',
+        'Metadata change request not found or not pending',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return request;
   }
 
-  async listAuditLogs(companyId: string, employeeId: string | undefined, authorization?: string) {
+  async listAuditLogs(
+    companyId: string,
+    employeeId: string | undefined,
+    authorization?: string,
+  ) {
     this.assertMetadataCompanyWire(companyId);
-    const data = await this.repository.listAuditLogs(companyId, employeeId, authorization);
+    const data = await this.repository.listAuditLogs(
+      companyId,
+      employeeId,
+      authorization,
+    );
     return {
       total: data.length,
       data,

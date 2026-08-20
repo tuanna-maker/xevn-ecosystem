@@ -14,11 +14,17 @@
  */
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
-import { normalizeMasterCatalogKey, resolveCatalogFamily } from './hrm-settings-master-keys';
+import {
+  normalizeMasterCatalogKey,
+  resolveCatalogFamily,
+} from './hrm-settings-master-keys';
 
-export const HRM_SC_LEAVE_REF_EXTENSION_FORBIDDEN = 'HRM-SC-LEAVE-REF-ONLY' as const;
-export const HRM_SC_LEAVE_TENANT_WRITER_API = '/api/hrm/attendance/leave-types' as const;
-export const HRM_SC_LEAVE_EFFECTIVE_API = '/api/hrm/attendance/leave-types/effective' as const;
+export const HRM_SC_LEAVE_REF_EXTENSION_FORBIDDEN =
+  'HRM-SC-LEAVE-REF-ONLY' as const;
+export const HRM_SC_LEAVE_TENANT_WRITER_API =
+  '/api/hrm/attendance/leave-types' as const;
+export const HRM_SC_LEAVE_EFFECTIVE_API =
+  '/api/hrm/attendance/leave-types/effective' as const;
 
 export type LeaveTypesTenantWriterMeta = {
   kind: 'att_leave_type';
@@ -40,7 +46,9 @@ export function isLeaveTypesGroupRefCatalogKey(catalogKey: string): boolean {
 }
 
 /** Settings extension_items / MD upsert on leave_types — REF partition only (tenant writer = Nest). */
-export function assertLeaveTypesExtensionMutateForbidden(catalogKey: string): void {
+export function assertLeaveTypesExtensionMutateForbidden(
+  catalogKey: string,
+): void {
   if (!isLeaveTypesGroupRefCatalogKey(catalogKey)) {
     return;
   }

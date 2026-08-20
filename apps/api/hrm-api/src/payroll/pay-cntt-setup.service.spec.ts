@@ -13,7 +13,10 @@ import {
   assertSourceKindAllowedByProfile,
   parseSetupContextFromSnapshot,
 } from './pay-cntt-setup.helpers';
-import { ensurePayCnttSetupSchema, PayCnttSetupService } from './pay-cntt-setup.service';
+import {
+  ensurePayCnttSetupSchema,
+  PayCnttSetupService,
+} from './pay-cntt-setup.service';
 
 const POLICY_ID = '11111111-1111-4111-8111-111111111111';
 const PROFILE_ID = '22222222-2222-4222-8222-222222222222';
@@ -84,7 +87,11 @@ function createMockDb() {
   policies.set(POLICY_ID, basePolicy());
   policies.set(
     OTHER_POLICY_ID,
-    basePolicy({ id: OTHER_POLICY_ID, company_id: 'xe-du-lich', code: 'pol_member' }),
+    basePolicy({
+      id: OTHER_POLICY_ID,
+      company_id: 'xe-du-lich',
+      code: 'pol_member',
+    }),
   );
 
   const db = {
@@ -95,7 +102,9 @@ function createMockDb() {
       if (s.includes('CREATE TABLE IF NOT EXISTS public.pay_policy_pack')) {
         return { rows: [] };
       }
-      if (s.includes('CREATE TABLE IF NOT EXISTS public.pay_input_pack_profile')) {
+      if (
+        s.includes('CREATE TABLE IF NOT EXISTS public.pay_input_pack_profile')
+      ) {
         return { rows: [] };
       }
       if (s.includes('ALTER TABLE public.pay_sheet_templates')) {
@@ -116,7 +125,8 @@ function createMockDb() {
       if (s.includes('INSERT INTO public.pay_policy_pack')) {
         const code = String(params?.[2]);
         const dup = [...policies.values()].some(
-          (p) => p.company_id === params?.[1] && p.code === code && !p.archived_at,
+          (p) =>
+            p.company_id === params?.[1] && p.code === code && !p.archived_at,
         );
         if (dup) throw new Error('uq_pay_policy_pack_company_code_active');
         const row = basePolicy({
@@ -157,14 +167,18 @@ describe('pay-cntt-setup.helpers', () => {
       }),
     ).toThrow(ApiException);
     try {
-      assertSourceKindAllowedByProfile('revenue', { allowedSourceKinds: ['manual', 'kpi'] });
+      assertSourceKindAllowedByProfile('revenue', {
+        allowedSourceKinds: ['manual', 'kpi'],
+      });
     } catch (e) {
       expect((e as ApiException).code).toBe(HRM_PAY_INP_PROFILE_422);
     }
   });
 
   it('assertSourceKindAllowedByProfile passes when no profile snapshot', () => {
-    expect(() => assertSourceKindAllowedByProfile('revenue', null)).not.toThrow();
+    expect(() =>
+      assertSourceKindAllowedByProfile('revenue', null),
+    ).not.toThrow();
   });
 });
 
@@ -172,21 +186,30 @@ describe('PayCnttSetupService (PO-HRM-PAY-CNTT-BE-01)', () => {
   it('ensureSchema ADD pay_policy_pack + pay_input_pack_profile + template FK cols', async () => {
     const { db, sqls } = createMockDb();
     await ensurePayCnttSetupSchema(db);
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.pay_policy_pack'))).toBe(
-      true,
-    );
     expect(
-      sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.pay_input_pack_profile')),
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.pay_policy_pack'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.pay_input_pack_profile'),
+      ),
     ).toBe(true);
     expect(sqls.some((q) => q.includes('policy_pack_id'))).toBe(true);
-    expect(sqls.some((q) => /CHECK\s*\(\s*scope\s+IN\s*\(\s*'CHUNG'/i.test(q))).toBe(true);
+    expect(
+      sqls.some((q) => /CHECK\s*\(\s*scope\s+IN\s*\(\s*'CHUNG'/i.test(q)),
+    ).toBe(true);
     expect(sqls.some((q) => /CHECK\s*\(\s*code\s+IN/i.test(q))).toBe(false);
   });
 
   it('scope_parity: group CEO list holding policy; member CEO get-by-id → 404', async () => {
     const { db } = createMockDb();
     const svc = new PayCnttSetupService(db);
-    const listed = await svc.listPolicyPacks({ company_id: 'main' }, groupCeoToken());
+    const listed = await svc.listPolicyPacks(
+      { company_id: 'main' },
+      groupCeoToken(),
+    );
     expect(listed.items.length).toBeGreaterThan(0);
 
     await expect(

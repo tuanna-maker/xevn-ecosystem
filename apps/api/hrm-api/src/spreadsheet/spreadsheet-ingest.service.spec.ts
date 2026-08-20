@@ -2,7 +2,10 @@ import ExcelJS from 'exceljs';
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { getSpreadsheetLimits } from './spreadsheet-limits';
-import { SpreadsheetIngestService, splitCsvLine } from './spreadsheet-ingest.service';
+import {
+  SpreadsheetIngestService,
+  splitCsvLine,
+} from './spreadsheet-ingest.service';
 
 describe('splitCsvLine', () => {
   it('splits simple cells', () => {
@@ -45,7 +48,8 @@ describe('SpreadsheetIngestService', () => {
     ws.addRow(['E1', 'e1@x.test', 'One']);
     const buf = Buffer.from(await wb.xlsx.writeBuffer());
     const r = await svc.parseEmployeeImportFile(buf, {
-      mimetype: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      mimetype:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       originalname: 't.xlsx',
       startedAt: Date.now(),
     });
@@ -65,7 +69,9 @@ describe('SpreadsheetIngestService', () => {
   });
 
   it('throws SHEET-400 on empty file', async () => {
-    await expect(svc.parseEmployeeImportFile(Buffer.alloc(0), { startedAt: Date.now() })).rejects.toMatchObject({
+    await expect(
+      svc.parseEmployeeImportFile(Buffer.alloc(0), { startedAt: Date.now() }),
+    ).rejects.toMatchObject({
       code: 'SHEET-400',
     });
   });
@@ -74,7 +80,9 @@ describe('SpreadsheetIngestService', () => {
     process.env.SPREADSHEET_MAX_CSV_ROWS = '3';
     const lines = ['a', '1', '2', '3', '4'];
     const buf = Buffer.from(lines.join('\n'), 'utf8');
-    await expect(svc.parseEmployeeImportFile(buf, { startedAt: Date.now() })).rejects.toMatchObject({
+    await expect(
+      svc.parseEmployeeImportFile(buf, { startedAt: Date.now() }),
+    ).rejects.toMatchObject({
       code: 'SHEET-413',
     });
   });
@@ -82,7 +90,9 @@ describe('SpreadsheetIngestService', () => {
   it('throws SHEET-413 when UTF-8 byte cap exceeded', async () => {
     const max = getSpreadsheetLimits().maxUploadBytes;
     const big = Buffer.alloc(max + 1, 0x41);
-    await expect(svc.parseEmployeeImportFile(big, { startedAt: Date.now() })).rejects.toMatchObject({
+    await expect(
+      svc.parseEmployeeImportFile(big, { startedAt: Date.now() }),
+    ).rejects.toMatchObject({
       code: 'SHEET-413',
     });
   });
@@ -90,7 +100,11 @@ describe('SpreadsheetIngestService', () => {
   it('maps bad xlsx to SHEET-400', async () => {
     const buf = Buffer.from('not a real xlsx', 'utf8');
     await expect(
-      svc.parseEmployeeImportFile(buf, { mimetype: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', startedAt: Date.now() }),
+      svc.parseEmployeeImportFile(buf, {
+        mimetype:
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        startedAt: Date.now(),
+      }),
     ).rejects.toMatchObject({ code: 'SHEET-400' });
   });
 
@@ -103,7 +117,9 @@ describe('SpreadsheetIngestService', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(ApiException);
       expect((e as ApiException).code).toBe('SHEET-413');
-      expect((e as ApiException).getStatus()).toBe(HttpStatus.PAYLOAD_TOO_LARGE);
+      expect((e as ApiException).getStatus()).toBe(
+        HttpStatus.PAYLOAD_TOO_LARGE,
+      );
     } finally {
       delete process.env.SPREADSHEET_MAX_CELL_CHARS;
     }

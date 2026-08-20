@@ -118,7 +118,11 @@ describe('PO-HRM-MVP-GD1-CORE-03-CLUSTER-BE-01', () => {
 
     db.query.mockImplementation(async (sql: string, values?: unknown[]) => {
       const s = String(sql);
-      if (s.includes('CREATE TABLE') || s.includes('CREATE UNIQUE INDEX') || s.includes('CREATE INDEX')) {
+      if (
+        s.includes('CREATE TABLE') ||
+        s.includes('CREATE UNIQUE INDEX') ||
+        s.includes('CREATE INDEX')
+      ) {
         return { rows: [] };
       }
       if (s.includes('FROM public.employees')) {
@@ -159,18 +163,35 @@ describe('PO-HRM-MVP-GD1-CORE-03-CLUSTER-BE-01', () => {
   it('ensureSchema ADD hrm_document_checklist_item + partial UQ; DENY closed key CHECK / Nest /core table', async () => {
     await service.ensureSchema();
     const sqls = db.query.mock.calls.map((c) => String(c[0]));
-    expect(sqls.some((s) => s.includes('CREATE TABLE IF NOT EXISTS public.hrm_document_checklist_item'))).toBe(
+    expect(
+      sqls.some((s) =>
+        s.includes(
+          'CREATE TABLE IF NOT EXISTS public.hrm_document_checklist_item',
+        ),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((s) =>
+        s.includes("CHECK (status IN ('missing', 'submitted', 'approved'))"),
+      ),
+    ).toBe(true);
+    expect(sqls.some((s) => s.includes(UQ_HRM_DOC_CHK_EMP_KEY_ACTIVE))).toBe(
       true,
     );
-    expect(sqls.some((s) => s.includes("CHECK (status IN ('missing', 'submitted', 'approved'))"))).toBe(
-      true,
-    );
-    expect(sqls.some((s) => s.includes(UQ_HRM_DOC_CHK_EMP_KEY_ACTIVE))).toBe(true);
-    expect(sqls.some((s) => s.includes('REFERENCES') && s.includes('employees'))).toBe(false);
-    expect(sqls.some((s) => /document_type_key\s+IN\s*\(/i.test(s))).toBe(false);
-    expect(sqls.some((s) => s.includes('CREATE TABLE') && s.includes('core') && s.includes('checklist'))).toBe(
+    expect(
+      sqls.some((s) => s.includes('REFERENCES') && s.includes('employees')),
+    ).toBe(false);
+    expect(sqls.some((s) => /document_type_key\s+IN\s*\(/i.test(s))).toBe(
       false,
     );
+    expect(
+      sqls.some(
+        (s) =>
+          s.includes('CREATE TABLE') &&
+          s.includes('core') &&
+          s.includes('checklist'),
+      ),
+    ).toBe(false);
   });
 
   it('POST create wires assert; required defaults from catalog requiredByDefault', async () => {
@@ -232,9 +253,14 @@ describe('PO-HRM-MVP-GD1-CORE-03-CLUSTER-BE-01', () => {
   });
 
   it('U19 list → get → patch status submitted (Diễn biến #1) under group CEO main→holding', async () => {
-    const listed = await service.listChecklist(employeeId, query, groupCeoAuth(), {
-      tenantId: 'xevn',
-    });
+    const listed = await service.listChecklist(
+      employeeId,
+      query,
+      groupCeoAuth(),
+      {
+        tenantId: 'xevn',
+      },
+    );
     expect(listed.data.some((r) => r.id === itemId)).toBe(true);
     expect(listed.companyId).toBe('holding');
 
@@ -266,13 +292,20 @@ describe('PO-HRM-MVP-GD1-CORE-03-CLUSTER-BE-01', () => {
     caseRow.status = 'submitted';
     db.query.mockImplementation(async (sql: string, values?: unknown[]) => {
       const s = String(sql);
-      if (s.includes('CREATE TABLE') || s.includes('CREATE UNIQUE INDEX') || s.includes('CREATE INDEX')) {
+      if (
+        s.includes('CREATE TABLE') ||
+        s.includes('CREATE UNIQUE INDEX') ||
+        s.includes('CREATE INDEX')
+      ) {
         return { rows: [] };
       }
       if (s.includes('FROM public.employees')) {
         return { rows: [empRow] };
       }
-      if (s.includes('SELECT') && s.includes('FROM public.hrm_document_checklist_item')) {
+      if (
+        s.includes('SELECT') &&
+        s.includes('FROM public.hrm_document_checklist_item')
+      ) {
         return { rows: [{ ...caseRow }] };
       }
       if (s.includes('UPDATE public.hrm_document_checklist_item')) {
@@ -319,7 +352,10 @@ describe('PO-HRM-MVP-GD1-CORE-03-CLUSTER-BE-01', () => {
     );
     expect(keyed.documentTypeKey).toBe('degree');
     expect(docType.assertDocumentTypeInEffectiveCatalog).toHaveBeenCalledWith(
-      expect.objectContaining({ documentTypeKey: 'degree', companyId: 'holding' }),
+      expect.objectContaining({
+        documentTypeKey: 'degree',
+        companyId: 'holding',
+      }),
     );
   });
 
@@ -339,7 +375,11 @@ describe('PO-HRM-MVP-GD1-CORE-03-CLUSTER-BE-01', () => {
   it('duplicate active emp+key → HRM-CORE-CHK-CONFLICT-409', async () => {
     db.query.mockImplementation(async (sql: string) => {
       const s = String(sql);
-      if (s.includes('CREATE TABLE') || s.includes('CREATE UNIQUE INDEX') || s.includes('CREATE INDEX')) {
+      if (
+        s.includes('CREATE TABLE') ||
+        s.includes('CREATE UNIQUE INDEX') ||
+        s.includes('CREATE INDEX')
+      ) {
         return { rows: [] };
       }
       if (s.includes('FROM public.employees')) {
@@ -378,7 +418,11 @@ describe('PO-HRM-MVP-GD1-CORE-03-CLUSTER-BE-01', () => {
 
     db.query.mockImplementation(async (sql: string) => {
       const s = String(sql);
-      if (s.includes('CREATE TABLE') || s.includes('CREATE INDEX') || s.includes('CREATE UNIQUE')) {
+      if (
+        s.includes('CREATE TABLE') ||
+        s.includes('CREATE INDEX') ||
+        s.includes('CREATE UNIQUE')
+      ) {
         return { rows: [] };
       }
       if (s.includes('FROM public.employees')) {
@@ -401,7 +445,11 @@ describe('PO-HRM-MVP-GD1-CORE-03-CLUSTER-BE-01', () => {
     docType.listEffective.mockResolvedValue({ total: 1, data: [] });
     db.query.mockImplementation(async (sql: string) => {
       const s = String(sql);
-      if (s.includes('CREATE TABLE') || s.includes('CREATE INDEX') || s.includes('CREATE UNIQUE')) {
+      if (
+        s.includes('CREATE TABLE') ||
+        s.includes('CREATE INDEX') ||
+        s.includes('CREATE UNIQUE')
+      ) {
         return { rows: [] };
       }
       if (s.includes('FROM public.employees')) {

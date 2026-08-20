@@ -16,10 +16,14 @@ import { EmployeesController } from './employees.controller';
 import { EmployeesService } from './employees.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
@@ -44,21 +48,39 @@ function createInMemoryHrmDb() {
   return {
     query: jest.fn(async (sql: string, params?: unknown[]) => {
       const text = sql.replace(/\s+/g, ' ').trim();
-      if (text.startsWith('CREATE TABLE') || text.startsWith('CREATE UNIQUE') || text.startsWith('CREATE INDEX') || text.startsWith('ALTER TABLE') || text.startsWith('INSERT INTO public.employees (id, company_id, employee_code, email, full_name, job_title_key, status')) {
+      if (
+        text.startsWith('CREATE TABLE') ||
+        text.startsWith('CREATE UNIQUE') ||
+        text.startsWith('CREATE INDEX') ||
+        text.startsWith('ALTER TABLE') ||
+        text.startsWith(
+          'INSERT INTO public.employees (id, company_id, employee_code, email, full_name, job_title_key, status',
+        )
+      ) {
         return { rows: [] };
       }
-      if (text.includes('SELECT COUNT(*)') && text.includes('FROM public.employees WHERE')) {
+      if (
+        text.includes('SELECT COUNT(*)') &&
+        text.includes('FROM public.employees WHERE')
+      ) {
         const matched = filterRows(rows, params ?? []);
         return { rows: [{ total: String(matched.length) }] };
       }
-      if (text.includes('INSERT INTO public.employees') && text.includes('RETURNING')) {
+      if (
+        text.includes('INSERT INTO public.employees') &&
+        text.includes('RETURNING')
+      ) {
         // Params: id, company_id, code, email, name, job_title, manager_id, status, hired_at, avatar, custom_fields
         const rawCf = params?.[10];
         let customFields: Record<string, string> = {};
         if (typeof rawCf === 'string' && rawCf.trim()) {
           try {
             const parsed = JSON.parse(rawCf) as unknown;
-            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            if (
+              parsed &&
+              typeof parsed === 'object' &&
+              !Array.isArray(parsed)
+            ) {
               customFields = parsed as Record<string, string>;
             }
           } catch {
@@ -83,7 +105,10 @@ function createInMemoryHrmDb() {
         rows.push(row);
         return { rows: [row] };
       }
-      if (text.includes('FROM public.employees') && text.includes('WHERE id =')) {
+      if (
+        text.includes('FROM public.employees') &&
+        text.includes('WHERE id =')
+      ) {
         const matched = filterRows(rows, params ?? []);
         return { rows: matched.slice(0, 1) };
       }
@@ -106,10 +131,17 @@ function createInMemoryHrmDb() {
         const id = String(params?.[params.length - 1]);
         const row = rows.find((r) => r.id === id);
         if (!row) return { rows: [] };
-        if (params?.[0] && typeof params[0] === 'string' && String(params[0]).includes('@')) {
+        if (
+          params?.[0] &&
+          typeof params[0] === 'string' &&
+          String(params[0]).includes('@')
+        ) {
           row.email = String(params[0]);
         }
-        if (typeof params?.[0] === 'string' && !String(params[0]).includes('@')) {
+        if (
+          typeof params?.[0] === 'string' &&
+          !String(params[0]).includes('@')
+        ) {
           row.full_name = String(params[0]);
         }
         row.updated_at = new Date().toISOString();
@@ -127,7 +159,16 @@ function createInMemoryHrmDb() {
       list = list.filter((r) => r.id === id);
     }
     const companyFilter = params.find(
-      (p) => typeof p === 'string' && ['main', 'holding', 'trsport', 'logistics', 'finance', 'services'].includes(p),
+      (p) =>
+        typeof p === 'string' &&
+        [
+          'main',
+          'holding',
+          'trsport',
+          'logistics',
+          'finance',
+          'services',
+        ].includes(p),
     );
     const companyAny = params.find((p) => Array.isArray(p));
     if (companyAny) {
@@ -142,7 +183,9 @@ function createInMemoryHrmDb() {
     }
     if (tenantId === 'xevn') {
       list = list.filter(
-        (r) => !r.custom_fields?.tenant_id?.trim() || r.custom_fields.tenant_id === 'xevn',
+        (r) =>
+          !r.custom_fields?.tenant_id?.trim() ||
+          r.custom_fields.tenant_id === 'xevn',
       );
     }
     return list;
@@ -184,7 +227,9 @@ describe('P1-PHASE1-BE-EMP-CREATE-PARITY-01 (HTTP)', () => {
           provide: EmpDocumentTypeService,
           useValue: {
             ensureSchema: jest.fn().mockResolvedValue(undefined),
-            listDocumentTypes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listDocumentTypes: jest
+              .fn()
+              .mockResolvedValue({ total: 0, data: [] }),
             listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
           },
         },
@@ -192,7 +237,9 @@ describe('P1-PHASE1-BE-EMP-CREATE-PARITY-01 (HTTP)', () => {
           provide: EmpEmploymentTypeService,
           useValue: {
             ensureSchema: jest.fn().mockResolvedValue(undefined),
-            listEmploymentTypes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEmploymentTypes: jest
+              .fn()
+              .mockResolvedValue({ total: 0, data: [] }),
             listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
           },
         },
@@ -200,7 +247,9 @@ describe('P1-PHASE1-BE-EMP-CREATE-PARITY-01 (HTTP)', () => {
           provide: EmpEmploymentStatusService,
           useValue: {
             ensureSchema: jest.fn().mockResolvedValue(undefined),
-            listEmploymentStatuses: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEmploymentStatuses: jest
+              .fn()
+              .mockResolvedValue({ total: 0, data: [] }),
             listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
             buildStatusLabelLookup: jest.fn().mockResolvedValue(new Map()),
             assertStatusInEffectiveCatalog: jest.fn().mockResolvedValue(null),
@@ -210,9 +259,13 @@ describe('P1-PHASE1-BE-EMP-CREATE-PARITY-01 (HTTP)', () => {
           provide: EmpStatusReasonService,
           useValue: {
             ensureSchema: jest.fn().mockResolvedValue(undefined),
-            listStatusReasons: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listStatusReasons: jest
+              .fn()
+              .mockResolvedValue({ total: 0, data: [] }),
             listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
-            assertStatusReasonInEffectiveCatalog: jest.fn().mockResolvedValue(null),
+            assertStatusReasonInEffectiveCatalog: jest
+              .fn()
+              .mockResolvedValue(null),
           },
         },
       ],
@@ -220,7 +273,11 @@ describe('P1-PHASE1-BE-EMP-CREATE-PARITY-01 (HTTP)', () => {
     app = moduleRef.createNestApplication();
     app.setGlobalPrefix('api/hrm');
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
     );
     app.useGlobalFilters(new GlobalHttpExceptionFilter());
     await app.init();
@@ -280,7 +337,9 @@ describe('P1-PHASE1-BE-EMP-CREATE-PARITY-01 (HTTP)', () => {
       .set('x-tenant-id', 'xe-du-lich')
       .set('x-company-id', 'main')
       .expect(200);
-    const found = (list.body.data?.data ?? []).some((r: { id: string }) => r.id === id);
+    const found = (list.body.data?.data ?? []).some(
+      (r: { id: string }) => r.id === id,
+    );
     expect(found).toBe(true);
   });
 

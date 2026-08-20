@@ -171,7 +171,10 @@ import { HrmDbService } from '../db/hrm-db.service';
 import { ensureAttendanceSheetSchema } from '../attendance/attendance-sheet-schema.bootstrap';
 import { assertPayrollAttHourBoundaryLocked } from './pay-att-hour-boundary';
 import { CreatePayrollPeriodDto } from './dto/create-payroll-period.dto';
-import { CreatePayrollEnrollDto, PayrollEnrollMode } from './dto/create-payroll-enroll.dto';
+import {
+  CreatePayrollEnrollDto,
+  PayrollEnrollMode,
+} from './dto/create-payroll-enroll.dto';
 import { ListPayrollPeriodsQueryDto } from './dto/list-payroll-periods.query.dto';
 import { CreateAdvanceRequestDto } from './dto/create-advance-request.dto';
 import { DecideAdvanceRequestDto } from './dto/decide-advance-request.dto';
@@ -326,6 +329,8 @@ type PayrollEmployeeEligibilityItem = {
   reasons: string[];
 };
 
+import { SettingsPayrollParamsService } from '../settings/settings-payroll-params.service';
+
 @Injectable()
 export class PayrollService {
   constructor(
@@ -334,6 +339,7 @@ export class PayrollService {
     private readonly payInputPack: PayPeriodInputPackService,
     private readonly settingsTaxParams: SettingsTaxParamsService,
     private readonly payPayrollGroups: PayPayrollGroupService,
+    private readonly payrollParams: SettingsPayrollParamsService,
   ) {}
 
   private payPayslipSplit(): PayPayslipSplitService {
@@ -345,7 +351,9 @@ export class PayrollService {
   }
 
   private isRequireClosedTimesheet(): boolean {
-    const raw = (process.env.HRM_PAY_REQUIRE_CLOSED_TIMESHEET ?? '').trim().toLowerCase();
+    const raw = (process.env.HRM_PAY_REQUIRE_CLOSED_TIMESHEET ?? '')
+      .trim()
+      .toLowerCase();
     if (!raw) {
       return true;
     }
@@ -353,7 +361,10 @@ export class PayrollService {
   }
 
   private async hasClosedAttendanceSheet(
-    period: Pick<PayrollPeriodRow, 'id' | 'company_id' | 'start_date' | 'end_date'>,
+    period: Pick<
+      PayrollPeriodRow,
+      'id' | 'company_id' | 'start_date' | 'end_date'
+    >,
   ): Promise<boolean> {
     await ensureAttendanceSheetSchema(this.db);
     await this.payInputPack.ensureSchema();
@@ -361,7 +372,9 @@ export class PayrollService {
     if (bound) {
       return true;
     }
-    const companyIds = expandPayrollAttendanceSheetCompanyIds(period.company_id);
+    const companyIds = expandPayrollAttendanceSheetCompanyIds(
+      period.company_id,
+    );
     const res = await this.db.query<{ has_closed: boolean }>(
       `
         SELECT EXISTS(
@@ -398,7 +411,9 @@ export class PayrollService {
     // RBAC scope (group rollup / member) ∩ period OU (main↔holding) — legacy period.company_id=main
     // must not force exact `company_id = 'main'` (employees live under holding) → silent items[].
     pushEmployeeListScopeFilters(filters, values, scope);
-    const periodOuCompanyIds = expandPayrollAttendanceSheetCompanyIds(period.company_id);
+    const periodOuCompanyIds = expandPayrollAttendanceSheetCompanyIds(
+      period.company_id,
+    );
     pushCompanyIdFilter(filters, values, periodOuCompanyIds);
     const employeesRes = await this.db.query<{
       id: string;
@@ -415,39 +430,43 @@ export class PayrollService {
       `,
       values,
     );
-    const items = employeesRes.rows.map<PayrollEmployeeEligibilityItem>((row) => {
-      const reasons: string[] = [];
-      const isActive = row.status === 'active';
-      if (!isActive) {
-        reasons.push('NOT_ACTIVE');
-      }
-      if (!hasClosedSheet) {
-        reasons.push('NO_CLOSED_SHEET');
-      }
-      const hiredAt = row.hired_at ? new Date(row.hired_at) : null;
-      const periodStart = new Date(period.start_date);
-      const periodEnd = new Date(period.end_date);
-      if (hiredAt && hiredAt >= periodStart && hiredAt <= periodEnd) {
-        reasons.push('HIRE_MID_MONTH');
-      }
-      return {
-        employee_id: row.id,
-        employee_code: row.employee_code,
-        employee_name: row.full_name,
-        hire_date: row.hired_at,
-        eligible: isActive && hasClosedSheet,
-        reasons,
-      };
-    });
-    const targetGroupId = filterPayrollGroupId ?? period.payroll_group_id ?? null;
+    const items = employeesRes.rows.map<PayrollEmployeeEligibilityItem>(
+      (row) => {
+        const reasons: string[] = [];
+        const isActive = row.status === 'active';
+        if (!isActive) {
+          reasons.push('NOT_ACTIVE');
+        }
+        if (!hasClosedSheet) {
+          reasons.push('NO_CLOSED_SHEET');
+        }
+        const hiredAt = row.hired_at ? new Date(row.hired_at) : null;
+        const periodStart = new Date(period.start_date);
+        const periodEnd = new Date(period.end_date);
+        if (hiredAt && hiredAt >= periodStart && hiredAt <= periodEnd) {
+          reasons.push('HIRE_MID_MONTH');
+        }
+        return {
+          employee_id: row.id,
+          employee_code: row.employee_code,
+          employee_name: row.full_name,
+          hire_date: row.hired_at,
+          eligible: isActive && hasClosedSheet,
+          reasons,
+        };
+      },
+    );
+    const targetGroupId =
+      filterPayrollGroupId ?? period.payroll_group_id ?? null;
     let filteredItems = items;
     if (targetGroupId) {
-      const memberIds = await this.payPayrollGroups.resolveMemberEmployeeIdsForGroup(
-        targetGroupId,
-        period.company_id,
-        authorization,
-        scope,
-      );
+      const memberIds =
+        await this.payPayrollGroups.resolveMemberEmployeeIdsForGroup(
+          targetGroupId,
+          period.company_id,
+          authorization,
+          scope,
+        );
       const memberSet = new Set(memberIds);
       filteredItems = items.filter((item) => memberSet.has(item.employee_id));
     }
@@ -635,11 +654,18 @@ export class PayrollService {
     requestedCompanyId: string,
     authorization?: string,
   ): Promise<PayrollPeriodRow | undefined> {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['payroll_periods.id = $1::uuid'];
     const values: unknown[] = [periodId];
-    this.pushPayrollPeriodCompanyIdFilter(filters, values, expandPayrollPeriodCompanyIds(scope));
+    this.pushPayrollPeriodCompanyIdFilter(
+      filters,
+      values,
+      expandPayrollPeriodCompanyIds(scope),
+    );
     const res = await this.db.query<PayrollPeriodRow>(
       `
         SELECT
@@ -667,13 +693,28 @@ export class PayrollService {
     return res.rows[0];
   }
 
-  async getPeriodById(periodId: string, requestedCompanyId: string, authorization?: string) {
+  async getPeriodById(
+    periodId: string,
+    requestedCompanyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const row = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
+    const row = await this.queryPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -688,11 +729,22 @@ export class PayrollService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    if (new Date(payload.start_date).getTime() > new Date(payload.end_date).getTime()) {
-      throw new ApiException('HRM-PAY-001', 'start_date must be <= end_date', HttpStatus.BAD_REQUEST);
+    if (
+      new Date(payload.start_date).getTime() >
+      new Date(payload.end_date).getTime()
+    ) {
+      throw new ApiException(
+        'HRM-PAY-001',
+        'start_date must be <= end_date',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+      { tenantId },
+    );
 
     let payrollGroupId: string | null = null;
     if (payload.payroll_group_id) {
@@ -715,7 +767,11 @@ export class PayrollService {
       [companyId, payload.start_date, payload.end_date],
     );
     if (overlapRes.rows[0]) {
-      throw new ApiException('HRM-PAY-002', 'Payroll period overlaps with existing period', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-PAY-002',
+        'Payroll period overlaps with existing period',
+        HttpStatus.CONFLICT,
+      );
     }
 
     const res = await this.db.query<PayrollPeriodRow>(
@@ -738,7 +794,11 @@ export class PayrollService {
       ],
     );
     const created = res.rows[0];
-    const fullPeriod = await this.queryPeriodInScope(created.id, payload.company_id, authorization);
+    const fullPeriod = await this.queryPeriodInScope(
+      created.id,
+      payload.company_id,
+      authorization,
+    );
     const binds = payload.timesheetBinds ?? [];
     const boundTimesheetHeaderIds: string[] = [];
     for (const bind of binds) {
@@ -768,18 +828,33 @@ export class PayrollService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const current = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
+    const current = await this.queryPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     if (!current) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     assertResourceInHrmScope(current, scope, {
       notFoundCode: 'HRM-PAY-404',
       mismatchCode: 'HRM-PAY-409',
     });
     if (current.status !== 'draft') {
-      throw new ApiException('HRM-PAY-003', 'Only draft payroll periods can be updated', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-PAY-003',
+        'Only draft payroll periods can be updated',
+        HttpStatus.CONFLICT,
+      );
     }
     let payrollGroupId: string | null = current.payroll_group_id ?? null;
     if (payload.payroll_group_id !== undefined) {
@@ -802,24 +877,40 @@ export class PayrollService {
       `,
       [periodId, payrollGroupId],
     );
-    const row = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
+    const row = await this.queryPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     return this.mapPeriod(row!);
   }
 
-  async listPayrollPeriods(query: ListPayrollPeriodsQueryDto, authorization?: string) {
+  async listPayrollPeriods(
+    query: ListPayrollPeriodsQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = [];
     const values: unknown[] = [];
-    this.pushPayrollPeriodCompanyIdFilter(filters, values, expandPayrollPeriodCompanyIds(scope));
+    this.pushPayrollPeriodCompanyIdFilter(
+      filters,
+      values,
+      expandPayrollPeriodCompanyIds(scope),
+    );
     if (query.status) {
       values.push(query.status);
       filters.push(`payroll_periods.status = $${values.length}`);
     }
     if (query.payroll_group_id) {
       values.push(query.payroll_group_id);
-      filters.push(`payroll_periods.payroll_group_id = $${values.length}::uuid`);
+      filters.push(
+        `payroll_periods.payroll_group_id = $${values.length}::uuid`,
+      );
     }
     const res = await this.db.query<PayrollPeriodRow>(
       `
@@ -845,7 +936,10 @@ export class PayrollService {
       `,
       values,
     );
-    return { total: res.rows.length, data: res.rows.map((row) => this.mapPeriod(row)) };
+    return {
+      total: res.rows.length,
+      data: res.rows.map((row) => this.mapPeriod(row)),
+    };
   }
 
   async processPayrollPeriod(
@@ -860,14 +954,28 @@ export class PayrollService {
     assertNoPaySiOverrideInBody(mutateBody);
     assertNoPayTaxOverrideInBody(mutateBody);
     assertNoPayTermPayoutOverrideInBody(mutateBody ?? null);
-    assertNoIncludeTerminationsSettleSoT(mutateBody ?? null, mutateQuery ?? null);
+    assertNoIncludeTerminationsSettleSoT(
+      mutateBody ?? null,
+      mutateQuery ?? null,
+    );
     await this.ensureSchema();
     await this.payFormulas.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const current = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
+    const current = await this.queryPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     if (!current) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(current, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -875,9 +983,17 @@ export class PayrollService {
     });
     this.assertPeriodUnlockedForEnrollProcess(current);
     if (current.status !== 'draft') {
-      throw new ApiException('HRM-PAY-003', 'Only draft payroll periods can move to processed', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-PAY-003',
+        'Only draft payroll periods can move to processed',
+        HttpStatus.CONFLICT,
+      );
     }
-    const eligibility = await this.loadPayrollEligibility(current, scope, authorization);
+    const eligibility = await this.loadPayrollEligibility(
+      current,
+      scope,
+      authorization,
+    );
     if (eligibility.require_closed_timesheet && !eligibility.has_closed_sheet) {
       throw new ApiException(
         'HRM-PAY-ATT-412',
@@ -888,17 +1004,21 @@ export class PayrollService {
 
     const termSvc = this.payTermination();
 
-    const employeeAttrsList = await this.payPayrollGroups.loadEmployeeAttrsForCompany(
-      current.company_id,
-      scope,
+    const employeeAttrsList =
+      await this.payPayrollGroups.loadEmployeeAttrsForCompany(
+        current.company_id,
+        scope,
+      );
+    const employeeAttrsMap = new Map(
+      employeeAttrsList.map((a) => [a.employee_id, a]),
     );
-    const employeeAttrsMap = new Map(employeeAttrsList.map((a) => [a.employee_id, a]));
 
-    const boundFormula = await this.payFormulas.resolvePublishedFormulaForProcess({
-      companyId: current.company_id,
-      periodFormulaDefinitionId: current.formula_definition_id,
-      authorization,
-    });
+    const boundFormula =
+      await this.payFormulas.resolvePublishedFormulaForProcess({
+        companyId: current.company_id,
+        periodFormulaDefinitionId: current.formula_definition_id,
+        authorization,
+      });
 
     const existingPayslipsRes = await this.db.query<{ total: string }>(
       `
@@ -952,7 +1072,11 @@ export class PayrollService {
       [periodId],
     );
     if (payslipRows.rows.length === 0) {
-      throw new ApiException('HRM-PAY-ENROLL-REQUIRED', 'Payroll period has no enrolled employee', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-PAY-ENROLL-REQUIRED',
+        'Payroll period has no enrolled employee',
+        HttpStatus.CONFLICT,
+      );
     }
 
     let processPayslipRows = payslipRows.rows;
@@ -965,7 +1089,9 @@ export class PayrollService {
           scope,
         ),
       );
-      processPayslipRows = payslipRows.rows.filter((r) => scopedMemberIds.has(r.employee_id));
+      processPayslipRows = payslipRows.rows.filter((r) =>
+        scopedMemberIds.has(r.employee_id),
+      );
       if (processPayslipRows.length === 0) {
         throw new ApiException(
           HRM_PAY_GROUP_409,
@@ -978,7 +1104,11 @@ export class PayrollService {
 
     await termSvc.assertTerminationSettlementsPostedForProcess(
       current.company_id,
-      { id: current.id, start_date: current.start_date, end_date: current.end_date },
+      {
+        id: current.id,
+        start_date: current.start_date,
+        end_date: current.end_date,
+      },
       processPayslipRows.map((r) => r.employee_id),
     );
 
@@ -1004,6 +1134,8 @@ export class PayrollService {
     }> = [];
     let taxContext: PayTaxProcessContext | undefined;
     const splitSvc = this.payPayslipSplit();
+    const systemParams = await this.payrollParams.getPayrollParams(current.company_id);
+
     for (const row of processPayslipRows) {
       const evaluated = await splitSvc.processEmployeeInPeriod({
         companyId: current.company_id,
@@ -1015,6 +1147,7 @@ export class PayrollService {
         sheetTemplateSnapshotJson: current.sheet_template_snapshot_json,
         boundFormula,
         authorization,
+        systemParams,
       });
       if (evaluated.mode === 'blocked') {
         if (evaluated.code === HRM_PAY_SPLIT_409) {
@@ -1065,12 +1198,16 @@ export class PayrollService {
       });
       const empAttrs = employeeAttrsMap.get(row.employee_id);
       if (empAttrs) {
-        const groupResolved = await this.payPayrollGroups.resolveEffectiveGroupForEmployee(
-          current.company_id,
-          empAttrs,
-          scope,
-        );
-        if (current.payroll_group_id && groupResolved.winner_id !== current.payroll_group_id) {
+        const groupResolved =
+          await this.payPayrollGroups.resolveEffectiveGroupForEmployee(
+            current.company_id,
+            empAttrs,
+            scope,
+          );
+        if (
+          current.payroll_group_id &&
+          groupResolved.winner_id !== current.payroll_group_id
+        ) {
           throw new ApiException(
             HRM_PAY_GROUP_409,
             'Nhân viên không thuộc nhóm bảng lương của kỳ',
@@ -1081,7 +1218,10 @@ export class PayrollService {
             },
           );
         }
-        await this.payPayrollGroups.persistPayslipGroupSnapshot(payslip.id, groupResolved.winner_id);
+        await this.payPayrollGroups.persistPayslipGroupSnapshot(
+          payslip.id,
+          groupResolved.winner_id,
+        );
       }
       await this.payFormulas.replacePayslipLines({
         payslipId: payslip.id,
@@ -1129,7 +1269,7 @@ export class PayrollService {
         periodStart: current.start_date,
         periodEnd: current.end_date,
         employeeId: row.employee_id,
-        lines: evaluated.lines as PaySrcResolvedLine[],
+        lines: evaluated.lines,
         failOnMissingCfg: true,
       });
       if (!siCeiling.ok) {
@@ -1180,8 +1320,12 @@ export class PayrollService {
           segment_count: evaluated.segmentCount,
           payslip_id: payslip.id,
           net_amount_vnd: evaluated.net,
-          dependents_count: gtgcPersist.ok ? gtgcPersist.dependents_count : undefined,
-          gtgc_amount_vnd: gtgcPersist.ok ? gtgcPersist.gtgc_amount_vnd : undefined,
+          dependents_count: gtgcPersist.ok
+            ? gtgcPersist.dependents_count
+            : undefined,
+          gtgc_amount_vnd: gtgcPersist.ok
+            ? gtgcPersist.gtgc_amount_vnd
+            : undefined,
           merged_insurance_base_vnd: siCeiling.merged_insurance_base_vnd,
           ceiling_amount_vnd: siCeiling.ceiling_amount_vnd,
           si_employee_amount_vnd: siCeiling.si_employee_amount_vnd,
@@ -1210,8 +1354,12 @@ export class PayrollService {
           segment_count: evaluated.segmentCount,
           payslip_id: payslip.id,
           net_amount_vnd: evaluated.net,
-          dependents_count: gtgcPersist.ok ? gtgcPersist.dependents_count : undefined,
-          gtgc_amount_vnd: gtgcPersist.ok ? gtgcPersist.gtgc_amount_vnd : undefined,
+          dependents_count: gtgcPersist.ok
+            ? gtgcPersist.dependents_count
+            : undefined,
+          gtgc_amount_vnd: gtgcPersist.ok
+            ? gtgcPersist.gtgc_amount_vnd
+            : undefined,
           merged_insurance_base_vnd: siCeiling.merged_insurance_base_vnd,
           ceiling_amount_vnd: siCeiling.ceiling_amount_vnd,
           si_employee_amount_vnd: siCeiling.si_employee_amount_vnd,
@@ -1291,13 +1439,26 @@ export class PayrollService {
     body: TerminationSettleDto,
     authorization?: string,
   ) {
-    assertNoPayTermPayoutOverrideInBody(body as unknown as Record<string, unknown>);
+    assertNoPayTermPayoutOverrideInBody(
+      body as unknown as Record<string, unknown>,
+    );
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const current = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
+    const current = await this.queryPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     if (!current) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(current, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -1353,11 +1514,22 @@ export class PayrollService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const current = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
+    const current = await this.queryPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     if (!current) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(current, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -1371,13 +1543,23 @@ export class PayrollService {
       periodFrom: current.start_date,
       periodTo: current.end_date,
     });
-    const checklist = await termSvc.readTerminationChecklistSnapshot(employeeId, current.company_id);
-    const settlement = await termSvc.loadOpenSettlement(current.company_id, employeeId, current.id);
+    const checklist = await termSvc.readTerminationChecklistSnapshot(
+      employeeId,
+      current.company_id,
+    );
+    const settlement = await termSvc.loadOpenSettlement(
+      current.company_id,
+      employeeId,
+      current.id,
+    );
 
     let isFinalPay = false;
     let finalNetVnd: number | undefined;
     if (settlement?.final_payslip_id) {
-      const ps = await this.db.query<{ is_final_pay: boolean; net_amount: string }>(
+      const ps = await this.db.query<{
+        is_final_pay: boolean;
+        net_amount: string;
+      }>(
         `SELECT is_final_pay, net_amount::text FROM public.payroll_payslips WHERE id = $1::uuid LIMIT 1;`,
         [settlement.final_payslip_id],
       );
@@ -1404,12 +1586,19 @@ export class PayrollService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const termSvc = this.payTermination();
     const row = await termSvc.loadSettlementById(settlementId, scopeCompanyId);
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Termination settlement not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Termination settlement not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope({ company_id: row.company_id }, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -1440,11 +1629,22 @@ export class PayrollService {
     filterPayrollGroupId?: string,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const current = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
+    const current = await this.queryPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     if (!current) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(current, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -1471,16 +1671,31 @@ export class PayrollService {
     payload: CreatePayrollEnrollDto,
     authorization?: string,
   ) {
-    assertNoPayGtgcOverrideInBody(payload as unknown as Record<string, unknown>);
+    assertNoPayGtgcOverrideInBody(
+      payload as unknown as Record<string, unknown>,
+    );
     assertNoPaySiOverrideInBody(payload as unknown as Record<string, unknown>);
     assertNoPayTaxOverrideInBody(payload as unknown as Record<string, unknown>);
-    assertNoPayTermPayoutOverrideInBody(payload as unknown as Record<string, unknown>);
+    assertNoPayTermPayoutOverrideInBody(
+      payload as unknown as Record<string, unknown>,
+    );
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const current = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
+    const current = await this.queryPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     if (!current) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(current, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -1488,24 +1703,35 @@ export class PayrollService {
     });
     this.assertPeriodUnlockedForEnrollProcess(current);
     if (current.status !== 'draft') {
-      throw new ApiException('HRM-PAY-003', 'Only draft payroll periods allow enrollment', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-PAY-003',
+        'Only draft payroll periods allow enrollment',
+        HttpStatus.CONFLICT,
+      );
     }
-    const eligibility = await this.loadPayrollEligibility(current, scope, authorization);
-    const scopedMemberSet =
-      current.payroll_group_id
-        ? new Set(
-            await this.payPayrollGroups.resolveMemberEmployeeIdsForGroup(
-              current.payroll_group_id,
-              current.company_id,
-              authorization,
-              scope,
-            ),
-          )
-        : null;
-    const eligibleMap = new Map(eligibility.items.map((item) => [item.employee_id, item]));
+    const eligibility = await this.loadPayrollEligibility(
+      current,
+      scope,
+      authorization,
+    );
+    const scopedMemberSet = current.payroll_group_id
+      ? new Set(
+          await this.payPayrollGroups.resolveMemberEmployeeIdsForGroup(
+            current.payroll_group_id,
+            current.company_id,
+            authorization,
+            scope,
+          ),
+        )
+      : null;
+    const eligibleMap = new Map(
+      eligibility.items.map((item) => [item.employee_id, item]),
+    );
     const targetIds =
       payload.mode === PayrollEnrollMode.AUTO_ELIGIBLE
-        ? eligibility.items.filter((item) => item.eligible).map((item) => item.employee_id)
+        ? eligibility.items
+            .filter((item) => item.eligible)
+            .map((item) => item.employee_id)
         : [...new Set(payload.employee_ids ?? [])];
 
     const enrolled: Array<{
@@ -1518,7 +1744,10 @@ export class PayrollService {
     const rejected: Array<{ employee_id: string; reasons: string[] }> = [];
     for (const employeeId of targetIds) {
       if (scopedMemberSet && !scopedMemberSet.has(employeeId)) {
-        rejected.push({ employee_id: employeeId, reasons: ['OUT_OF_PAYROLL_GROUP_SCOPE'] });
+        rejected.push({
+          employee_id: employeeId,
+          reasons: ['OUT_OF_PAYROLL_GROUP_SCOPE'],
+        });
         continue;
       }
       const item = eligibleMap.get(employeeId);
@@ -1527,7 +1756,10 @@ export class PayrollService {
         continue;
       }
       if (!item.eligible) {
-        rejected.push({ employee_id: employeeId, reasons: item.reasons.filter((reason) => reason !== 'HIRE_MID_MONTH') });
+        rejected.push({
+          employee_id: employeeId,
+          reasons: item.reasons.filter((reason) => reason !== 'HIRE_MID_MONTH'),
+        });
         continue;
       }
       const payslip = await this.upsertPayslip({
@@ -1567,13 +1799,28 @@ export class PayrollService {
     };
   }
 
-  async closePayrollPeriod(periodId: string, requestedCompanyId: string, authorization?: string) {
+  async closePayrollPeriod(
+    periodId: string,
+    requestedCompanyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const current = await this.queryPeriodInScope(periodId, requestedCompanyId, authorization);
+    const current = await this.queryPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     if (!current) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(current, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -1624,14 +1871,20 @@ export class PayrollService {
     return this.mapPeriod(res.rows[0]);
   }
 
-  async getPayrollReconciliationSummary(companyId: string, authorization?: string) {
+  async getPayrollReconciliationSummary(
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, expandPayrollPeriodCompanyIds(scope));
     const where = filters.join(' AND ');
-    const res = await this.db.query<{ status: 'draft' | 'processed' | 'closed'; total: string }>(
+    const res = await this.db.query<{
+      status: 'draft' | 'processed' | 'closed';
+      total: string;
+    }>(
       `
         SELECT status, COUNT(*)::text AS total
         FROM public.payroll_periods
@@ -1661,7 +1914,9 @@ export class PayrollService {
         ? Number(row.si_employer_amount)
         : null;
     const taxStored =
-      row.tax_amount != null && row.tax_amount !== '' ? Number(row.tax_amount) : null;
+      row.tax_amount != null && row.tax_amount !== ''
+        ? Number(row.tax_amount)
+        : null;
     return {
       id: row.id,
       company_id: row.company_id,
@@ -1674,7 +1929,8 @@ export class PayrollService {
       net_amount: Number(row.net_amount),
       currency: row.currency,
       status: mapPayslipStatusForApi(row.status),
-      payment_status: (row.payment_status as PayPayslipPaymentStatus | null) ?? null,
+      payment_status:
+        (row.payment_status as PayPayslipPaymentStatus | null) ?? null,
       payment_status_label_vi: paymentStatusLabelVi(row.payment_status),
       published_to_ess: Boolean(row.published_to_ess),
       published_at: row.published_at ?? null,
@@ -1708,7 +1964,9 @@ export class PayrollService {
     periodCompanyId: string,
   ): Promise<{ dependentsCount: number; gtgcAmountVnd: number }> {
     const stored =
-      row.gtgc_amount != null && row.gtgc_amount !== '' ? Number(row.gtgc_amount) : null;
+      row.gtgc_amount != null && row.gtgc_amount !== ''
+        ? Number(row.gtgc_amount)
+        : null;
     const asOf = (periodEndDate ?? '').slice(0, 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(asOf)) {
       return {
@@ -1783,9 +2041,13 @@ export class PayrollService {
       consolidatedInsuranceBaseVnd: resolved.merged_insurance_base_vnd,
       ceilingAmountVnd: resolved.ceiling_amount_vnd,
       siEmployeeAmountVnd:
-        storedSiEe != null && Number.isFinite(storedSiEe) ? storedSiEe : resolved.si_employee_amount_vnd,
+        storedSiEe != null && Number.isFinite(storedSiEe)
+          ? storedSiEe
+          : resolved.si_employee_amount_vnd,
       siEmployerAmountVnd:
-        storedSiEr != null && Number.isFinite(storedSiEr) ? storedSiEr : resolved.si_employer_amount_vnd,
+        storedSiEr != null && Number.isFinite(storedSiEr)
+          ? storedSiEr
+          : resolved.si_employer_amount_vnd,
     };
   }
 
@@ -1804,10 +2066,14 @@ export class PayrollService {
     bracketSnapshotVersion: string | null;
   }> {
     const storedTax =
-      row.tax_amount != null && row.tax_amount !== '' ? Number(row.tax_amount) : null;
+      row.tax_amount != null && row.tax_amount !== ''
+        ? Number(row.tax_amount)
+        : null;
     const gross = Number(row.gross_amount ?? 0);
     const gtgc =
-      row.gtgc_amount != null && row.gtgc_amount !== '' ? Number(row.gtgc_amount) : 0;
+      row.gtgc_amount != null && row.gtgc_amount !== ''
+        ? Number(row.gtgc_amount)
+        : 0;
     const siEe =
       row.si_employee_amount != null && row.si_employee_amount !== ''
         ? Number(row.si_employee_amount)
@@ -1818,7 +2084,8 @@ export class PayrollService {
         taxableIncomeVnd: 0,
         personalDeductionVnd: 0,
         dependentDeductionVnd: 0,
-        taxAmountVnd: storedTax != null && Number.isFinite(storedTax) ? storedTax : 0,
+        taxAmountVnd:
+          storedTax != null && Number.isFinite(storedTax) ? storedTax : 0,
         payTaxRegimeCode: null,
         bracketSnapshotVersion: null,
       };
@@ -1837,7 +2104,11 @@ export class PayrollService {
       });
       const breakdown = computePayTncnBreakdown({
         mergedTaxableGrossVnd: gross,
-        gtgcAmountVnd: Number.isFinite(gtgc) ? gtgc : gtgcResolved.ok ? gtgcResolved.gtgc_amount_vnd : 0,
+        gtgcAmountVnd: Number.isFinite(gtgc)
+          ? gtgc
+          : gtgcResolved.ok
+            ? gtgcResolved.gtgc_amount_vnd
+            : 0,
         siEmployeeAmountVnd: siEe,
         dependentsCount: gtgcResolved.ok ? gtgcResolved.dependents_count : 0,
         taxContext,
@@ -1847,7 +2118,9 @@ export class PayrollService {
         personalDeductionVnd: breakdown.personalDeductionVnd,
         dependentDeductionVnd: breakdown.dependentDeductionVnd,
         taxAmountVnd:
-          storedTax != null && Number.isFinite(storedTax) ? storedTax : breakdown.taxAmountVnd,
+          storedTax != null && Number.isFinite(storedTax)
+            ? storedTax
+            : breakdown.taxAmountVnd,
         payTaxRegimeCode: breakdown.payTaxRegimeCode,
         bracketSnapshotVersion: breakdown.bracketSnapshotVersion,
       };
@@ -1856,7 +2129,8 @@ export class PayrollService {
         taxableIncomeVnd: Math.max(0, gross - gtgc - siEe),
         personalDeductionVnd: 0,
         dependentDeductionVnd: 0,
-        taxAmountVnd: storedTax != null && Number.isFinite(storedTax) ? storedTax : 0,
+        taxAmountVnd:
+          storedTax != null && Number.isFinite(storedTax) ? storedTax : 0,
         payTaxRegimeCode: null,
         bracketSnapshotVersion: null,
       };
@@ -1864,7 +2138,9 @@ export class PayrollService {
   }
   resolveEssEmployeeId(authorization?: string): string {
     const payload = getVerifiedInternalJwtPayload(authorization);
-    const employeeId = String(payload?.employee_id ?? payload?.employeeId ?? '').trim();
+    const employeeId = String(
+      payload?.employee_id ?? payload?.employeeId ?? '',
+    ).trim();
     if (!employeeId || !ESS_EMPLOYEE_ID_RE.test(employeeId)) {
       throw new ApiException(
         'HRM-PAY-403-ESS',
@@ -1875,9 +2151,14 @@ export class PayrollService {
     return employeeId;
   }
 
-  private resolveEssCompanyId(authorization: string | undefined, requestedCompanyId?: string): string {
+  private resolveEssCompanyId(
+    authorization: string | undefined,
+    requestedCompanyId?: string,
+  ): string {
     const payload = getVerifiedInternalJwtPayload(authorization);
-    const fromJwt = String(payload?.companyId ?? payload?.company_id ?? '').trim();
+    const fromJwt = String(
+      payload?.companyId ?? payload?.company_id ?? '',
+    ).trim();
     const requested = (requestedCompanyId ?? fromJwt ?? 'main').trim();
     return normalizePayrollListCompanyId(authorization, requested);
   }
@@ -1912,11 +2193,29 @@ export class PayrollService {
     companyId: string,
     authorization?: string,
     scopeContext?: HrmListScopeContext,
-  ): Promise<(PayrollPayslipRow & { period_label: string; period_start_date: string; period_end_date: string }) | undefined> {
-    const { filters, values } = this.buildPayslipScopeFilters(authorization, companyId, scopeContext, {
-      payslipId,
-    });
-    const res = await this.db.query<PayrollPayslipRow & { period_label: string; period_start_date: string; period_end_date: string }>(
+  ): Promise<
+    | (PayrollPayslipRow & {
+        period_label: string;
+        period_start_date: string;
+        period_end_date: string;
+      })
+    | undefined
+  > {
+    const { filters, values } = this.buildPayslipScopeFilters(
+      authorization,
+      companyId,
+      scopeContext,
+      {
+        payslipId,
+      },
+    );
+    const res = await this.db.query<
+      PayrollPayslipRow & {
+        period_label: string;
+        period_start_date: string;
+        period_end_date: string;
+      }
+    >(
       `
         SELECT
           ${this.payslipSelectColumns()},
@@ -2016,25 +2315,45 @@ export class PayrollService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const row = await this.loadPayslipHeaderInScope(payslipId, companyId, authorization, scopeContext);
+    const row = await this.loadPayslipHeaderInScope(
+      payslipId,
+      companyId,
+      authorization,
+      scopeContext,
+    );
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Payroll payslip not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll payslip not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (row.status === 'void') {
       this.throwPayslipPublish409('Không thể phát hành phiếu đã void', row);
     }
     if (row.status === 'published' && row.published_to_ess) {
-      return this.getPayslipById(payslipId, companyId, authorization, scopeContext);
+      return this.getPayslipById(
+        payslipId,
+        companyId,
+        authorization,
+        scopeContext,
+      );
     }
     if (!isPayslipCalculatedReady(row.status)) {
-      this.throwPayslipPublish409('Chỉ phát hành phiếu đã tính lương (calculated)', row);
+      this.throwPayslipPublish409(
+        'Chỉ phát hành phiếu đã tính lương (calculated)',
+        row,
+      );
     }
     const lineCountRes = await this.db.query<{ total: string }>(
       `SELECT COUNT(*)::text AS total FROM public.payroll_payslip_lines WHERE payslip_id = $1::uuid;`,
       [payslipId],
     );
     if (Number(lineCountRes.rows[0]?.total ?? 0) === 0) {
-      this.throwPayslipPublish409('Phiếu lương không có dòng thành phần từ xử lý kỳ', row);
+      this.throwPayslipPublish409(
+        'Phiếu lương không có dòng thành phần từ xử lý kỳ',
+        row,
+      );
     }
     const actorId = this.resolveCbActorUserId(authorization);
     const priorPayment = row.payment_status ?? null;
@@ -2061,7 +2380,12 @@ export class PayrollService {
       actorUserId: actorId,
       note: null,
     });
-    return this.getPayslipById(payslipId, companyId, authorization, scopeContext);
+    return this.getPayslipById(
+      payslipId,
+      companyId,
+      authorization,
+      scopeContext,
+    );
   }
 
   /** F-PAY-PAYSLIP-01 — PATCH payment-status on published payslip. */
@@ -2072,21 +2396,39 @@ export class PayrollService {
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    assertNoPayPayslipAmountOverrideInBody(body as unknown as Record<string, unknown>);
+    assertNoPayPayslipAmountOverrideInBody(
+      body as unknown as Record<string, unknown>,
+    );
     await this.ensureSchema();
-    const row = await this.loadPayslipHeaderInScope(payslipId, companyId, authorization, scopeContext);
+    const row = await this.loadPayslipHeaderInScope(
+      payslipId,
+      companyId,
+      authorization,
+      scopeContext,
+    );
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Payroll payslip not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll payslip not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (row.status === 'void') {
       this.throwPayslipPublish409('Không cập nhật TT trên phiếu void', row);
     }
     if (row.status !== 'published') {
-      this.throwPayslipPublish409('Chỉ cập nhật TT trên phiếu đã phát hành', row);
+      this.throwPayslipPublish409(
+        'Chỉ cập nhật TT trên phiếu đã phát hành',
+        row,
+      );
     }
     const nextStatus = body.payment_status;
     if (!PAY_PAYSLIP_PAYMENT_STATUSES.includes(nextStatus)) {
-      throw new ApiException('HRM-VAL-001', 'payment_status không hợp lệ', HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'payment_status không hợp lệ',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
     const actorId = this.resolveCbActorUserId(authorization);
     const fromStatus = row.payment_status ?? 'unpaid';
@@ -2107,7 +2449,12 @@ export class PayrollService {
       actorUserId: actorId,
       note: body.note ?? null,
     });
-    return this.getPayslipById(payslipId, companyId, authorization, scopeContext);
+    return this.getPayslipById(
+      payslipId,
+      companyId,
+      authorization,
+      scopeContext,
+    );
   }
 
   /** F-PAY-PAYSLIP-VOID-01 — void O22 (no silent DELETE). */
@@ -2118,11 +2465,22 @@ export class PayrollService {
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    assertNoPayPayslipAmountOverrideInBody(body as unknown as Record<string, unknown>);
+    assertNoPayPayslipAmountOverrideInBody(
+      body as unknown as Record<string, unknown>,
+    );
     await this.ensureSchema();
-    const row = await this.loadPayslipHeaderInScope(payslipId, companyId, authorization, scopeContext);
+    const row = await this.loadPayslipHeaderInScope(
+      payslipId,
+      companyId,
+      authorization,
+      scopeContext,
+    );
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Payroll payslip not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll payslip not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (row.status === 'void') {
       return {
@@ -2155,7 +2513,9 @@ export class PayrollService {
     );
     if (row.termination_settlement_id) {
       const settlementStatus =
-        body.adjustment_mode === 'mark_adjustment_required' ? 'ready' : 'cancelled';
+        body.adjustment_mode === 'mark_adjustment_required'
+          ? 'ready'
+          : 'cancelled';
       await this.db.query(
         `
           UPDATE public.pay_termination_settlement
@@ -2175,12 +2535,12 @@ export class PayrollService {
       note: body.reason,
     });
     const settlementAfter = row.termination_settlement_id
-      ? (
+      ? ((
           await this.db.query<{ status: string }>(
             `SELECT status FROM public.pay_termination_settlement WHERE id = $1::uuid LIMIT 1;`,
             [row.termination_settlement_id],
           )
-        ).rows[0]?.status ?? null
+        ).rows[0]?.status ?? null)
       : null;
     return {
       payslip_id: payslipId,
@@ -2205,7 +2565,11 @@ export class PayrollService {
     employeeId: string,
   ): asserts row is PayrollPayslipRow {
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Payroll payslip not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll payslip not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (row.employee_id !== employeeId) {
       throw new ApiException(
@@ -2250,7 +2614,12 @@ export class PayrollService {
     await this.ensureSchema();
     const employeeId = this.resolveEssEmployeeId(authorization);
     const scopeCompanyId = this.resolveEssCompanyId(authorization, companyId);
-    const row = await this.loadPayslipHeaderInScope(payslipId, scopeCompanyId, authorization, scopeContext);
+    const row = await this.loadPayslipHeaderInScope(
+      payslipId,
+      scopeCompanyId,
+      authorization,
+      scopeContext,
+    );
     this.assertEssPayslipOwnership(row, employeeId);
     this.assertPayslipPublishedForEss(row);
     const lines = await this.loadPayslipLinesForPayslip(row.id);
@@ -2295,7 +2664,12 @@ export class PayrollService {
     await this.ensureSchema();
     const employeeId = this.resolveEssEmployeeId(authorization);
     const scopeCompanyId = this.resolveEssCompanyId(authorization, companyId);
-    const row = await this.loadPayslipHeaderInScope(payslipId, scopeCompanyId, authorization, scopeContext);
+    const row = await this.loadPayslipHeaderInScope(
+      payslipId,
+      scopeCompanyId,
+      authorization,
+      scopeContext,
+    );
     this.assertEssPayslipOwnership(row, employeeId);
     this.assertPayslipPublishedForEss(row);
 
@@ -2315,7 +2689,12 @@ export class PayrollService {
       );
     }
 
-    return this.getMyPayslipById(payslipId, scopeCompanyId, authorization, scopeContext);
+    return this.getMyPayslipById(
+      payslipId,
+      scopeCompanyId,
+      authorization,
+      scopeContext,
+    );
   }
 
   private mapPayslipLine(row: {
@@ -2332,7 +2711,10 @@ export class PayrollService {
     source_tier?: string | null;
   }) {
     // AC-PAY-SRC-GET-TIER: always emit source_tier key (null only when unknown).
-    const source_tier = resolvePayslipLineSourceTier(row.source_tier, row.source_ref);
+    const source_tier = resolvePayslipLineSourceTier(
+      row.source_tier,
+      row.source_ref,
+    );
     return {
       id: row.id,
       payslip_id: row.payslip_id,
@@ -2363,8 +2745,15 @@ export class PayrollService {
       essPublishedOnly?: boolean;
     },
   ): { filters: string[]; values: unknown[] } {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
     const filters: string[] = [];
     const values: unknown[] = [];
     if (scope.masterTenantPartition || scope.memberTenantId) {
@@ -2461,7 +2850,11 @@ export class PayrollService {
       },
     );
     const res = await this.db.query<
-      PayrollPayslipRow & { period_label: string; period_start_date: string; period_end_date: string }
+      PayrollPayslipRow & {
+        period_label: string;
+        period_start_date: string;
+        period_end_date: string;
+      }
     >(
       `
         SELECT
@@ -2525,10 +2918,21 @@ export class PayrollService {
     includeSegments = true,
   ) {
     await this.ensureSchema();
-    const { filters, values } = this.buildPayslipScopeFilters(authorization, companyId, scopeContext, {
-      payslipId,
-    });
-    const res = await this.db.query<PayrollPayslipRow & { period_label: string; period_start_date: string; period_end_date: string }>(
+    const { filters, values } = this.buildPayslipScopeFilters(
+      authorization,
+      companyId,
+      scopeContext,
+      {
+        payslipId,
+      },
+    );
+    const res = await this.db.query<
+      PayrollPayslipRow & {
+        period_label: string;
+        period_start_date: string;
+        period_end_date: string;
+      }
+    >(
       `
         SELECT
           ${this.payslipSelectColumns()},
@@ -2547,7 +2951,11 @@ export class PayrollService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Payroll payslip not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll payslip not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const lines = await this.loadPayslipLinesForPayslip(row.id);
     const segments =
@@ -2598,7 +3006,12 @@ export class PayrollService {
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    const payslip = await this.getPayslipById(payslipId, companyId, authorization, scopeContext);
+    const payslip = await this.getPayslipById(
+      payslipId,
+      companyId,
+      authorization,
+      scopeContext,
+    );
     return {
       payslip_id: payslip.id,
       company_id: payslip.company_id,
@@ -2683,7 +3096,10 @@ export class PayrollService {
     authorization?: string,
   ) {
     await this.ensureSalaryTemplateSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     if (payload.is_default) {
       await this.db.query(
         `UPDATE public.salary_templates SET is_default = FALSE, updated_at = NOW() WHERE company_id = $1;`,
@@ -2728,7 +3144,11 @@ export class PayrollService {
     );
     const existing = existingRes.rows[0];
     if (!existing) {
-      throw new ApiException('HRM-PAY-404', 'Salary template not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Salary template not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -2748,7 +3168,8 @@ export class PayrollService {
     };
     if (payload.code != null) set('code', payload.code.trim());
     if (payload.name != null) set('name', payload.name.trim());
-    if (payload.description !== undefined) set('description', payload.description ?? null);
+    if (payload.description !== undefined)
+      set('description', payload.description ?? null);
     if (payload.is_default != null) set('is_default', payload.is_default);
     if (payload.status != null) set('status', payload.status);
     if (fields.length === 0) {
@@ -2770,7 +3191,11 @@ export class PayrollService {
     return res.rows[0];
   }
 
-  async deleteSalaryTemplate(templateId: string, companyId: string, authorization?: string) {
+  async deleteSalaryTemplate(
+    templateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSalaryTemplateSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const existingRes = await this.db.query<{ company_id: string }>(
@@ -2779,17 +3204,28 @@ export class PayrollService {
     );
     const existing = existingRes.rows[0];
     if (!existing) {
-      throw new ApiException('HRM-PAY-404', 'Salary template not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Salary template not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-PAY-404',
       mismatchCode: 'HRM-PAY-409',
     });
-    await this.db.query(`DELETE FROM public.salary_templates WHERE id = $1::uuid;`, [templateId]);
+    await this.db.query(
+      `DELETE FROM public.salary_templates WHERE id = $1::uuid;`,
+      [templateId],
+    );
     return { id: templateId };
   }
 
-  async listSalaryTemplateComponents(templateId: string, companyId: string, authorization?: string) {
+  async listSalaryTemplateComponents(
+    templateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSalaryTemplateSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['stc.template_id = $1::uuid'];
@@ -2835,17 +3271,34 @@ export class PayrollService {
 
   async addSalaryTemplateComponent(
     templateId: string,
-    payload: { company_id: string; component_id: string; default_value?: number; is_required?: boolean; sort_order?: number },
+    payload: {
+      company_id: string;
+      component_id: string;
+      default_value?: number;
+      is_required?: boolean;
+      sort_order?: number;
+    },
     authorization?: string,
   ) {
     await this.ensureSalaryTemplateSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const id = randomUUID();
     const res = await this.db.query(
       `INSERT INTO public.hrm_salary_template_components
         (id, template_id, company_id, component_id, default_value, is_required, sort_order)
        VALUES ($1, $2::uuid, $3, $4::uuid, $5, $6, $7) RETURNING *;`,
-      [id, templateId, companyId, payload.component_id, payload.default_value ?? 0, payload.is_required ?? false, payload.sort_order ?? 0],
+      [
+        id,
+        templateId,
+        companyId,
+        payload.component_id,
+        payload.default_value ?? 0,
+        payload.is_required ?? false,
+        payload.sort_order ?? 0,
+      ],
     );
     return res.rows[0];
   }
@@ -2862,7 +3315,10 @@ export class PayrollService {
       `SELECT company_id FROM public.hrm_salary_template_components WHERE id = $1::uuid LIMIT 1;`,
       [componentRowId],
     );
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-STC-404', mismatchCode: 'HRM-STC-409' });
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-STC-404',
+      mismatchCode: 'HRM-STC-409',
+    });
     const fields: string[] = [];
     const values: unknown[] = [];
     for (const key of ['default_value', 'is_required', 'sort_order']) {
@@ -2880,26 +3336,44 @@ export class PayrollService {
     return res.rows[0];
   }
 
-  async removeSalaryTemplateComponent(componentRowId: string, companyId: string, authorization?: string) {
+  async removeSalaryTemplateComponent(
+    componentRowId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSalaryTemplateSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const peek = await this.db.query(
       `SELECT company_id FROM public.hrm_salary_template_components WHERE id = $1::uuid LIMIT 1;`,
       [componentRowId],
     );
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-STC-404', mismatchCode: 'HRM-STC-409' });
-    await this.db.query(`DELETE FROM public.hrm_salary_template_components WHERE id = $1::uuid;`, [componentRowId]);
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-STC-404',
+      mismatchCode: 'HRM-STC-409',
+    });
+    await this.db.query(
+      `DELETE FROM public.hrm_salary_template_components WHERE id = $1::uuid;`,
+      [componentRowId],
+    );
     return { id: componentRowId };
   }
 
-  async duplicateSalaryTemplate(templateId: string, companyId: string, authorization?: string) {
+  async duplicateSalaryTemplate(
+    templateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     const existing = await this.db.query(
       `SELECT * FROM public.salary_templates WHERE id = $1::uuid LIMIT 1;`,
       [templateId],
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Salary template not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Salary template not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const copy = await this.createSalaryTemplate(
       {
@@ -2911,7 +3385,11 @@ export class PayrollService {
       },
       authorization,
     );
-    const components = await this.listSalaryTemplateComponents(templateId, companyId, authorization);
+    const components = await this.listSalaryTemplateComponents(
+      templateId,
+      companyId,
+      authorization,
+    );
     for (const comp of components.data) {
       await this.addSalaryTemplateComponent(
         copy.id,
@@ -2980,9 +3458,15 @@ export class PayrollService {
     return this.mapPayslip(res.rows[0]);
   }
 
-  async listAdvanceRequests(query: ListAdvanceRequestsQueryDto, authorization?: string, tenantId?: string) {
+  async listAdvanceRequests(
+    query: ListAdvanceRequestsQueryDto,
+    authorization?: string,
+    tenantId?: string,
+  ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    const scope = resolveHrmListScope(authorization, query.company_id, {
+      tenantId,
+    });
     const params: unknown[] = [];
     const filters: string[] = [];
     pushCompanyIdFilter(filters, params, scope.companyIds);
@@ -2996,9 +3480,15 @@ export class PayrollService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createAdvanceRequest(body: CreateAdvanceRequestDto, authorization?: string) {
+  async createAdvanceRequest(
+    body: CreateAdvanceRequestDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.company_id,
+    );
     const id = randomUUID();
     const res = await this.db.query(
       `
@@ -3021,12 +3511,21 @@ export class PayrollService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-ADV-500', 'Failed to create advance request', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiException(
+        'HRM-ADV-500',
+        'Failed to create advance request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     return row;
   }
 
-  async listAdvanceRequestEmployees(requestId: string, companyId: string, authorization?: string, tenantId?: string) {
+  async listAdvanceRequestEmployees(
+    requestId: string,
+    companyId: string,
+    authorization?: string,
+    tenantId?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, companyId, { tenantId });
     const header = await this.loadAdvanceRequestScopeRow(requestId);
@@ -3061,7 +3560,9 @@ export class PayrollService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, {
+      tenantId,
+    });
     const header = await this.loadAdvanceRequestScopeRow(requestId);
     assertResourceInHrmScope(header, scope, {
       notFoundCode: 'HRM-ADV-404',
@@ -3085,7 +3586,11 @@ export class PayrollService {
     }
     const amount = Number(body.advance_amount);
     if (!Number.isFinite(amount) || amount < 0) {
-      throw new ApiException('HRM-VAL-400', 'advance_amount must be a finite number ≥ 0', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'advance_amount must be a finite number ≥ 0',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const id = randomUUID();
     const res = await this.db.query(
@@ -3113,7 +3618,11 @@ export class PayrollService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-ADV-500', 'Failed to create advance request employee', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiException(
+        'HRM-ADV-500',
+        'Failed to create advance request employee',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     await this.db.query(
       `
@@ -3150,7 +3659,9 @@ export class PayrollService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, {
+      tenantId,
+    });
     const existing = await this.loadAdvanceRequestScopeRow(requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-ADV-404',
@@ -3168,7 +3679,11 @@ export class PayrollService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-ADV-404', 'Advance request not found or not pending', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ADV-404',
+        'Advance request not found or not pending',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return row;
   }
@@ -3181,7 +3696,9 @@ export class PayrollService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, {
+      tenantId,
+    });
     const existing = await this.loadAdvanceRequestScopeRow(requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-ADV-404',
@@ -3199,7 +3716,11 @@ export class PayrollService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-ADV-404', 'Advance request not found or not pending', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ADV-404',
+        'Advance request not found or not pending',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.payInputPack.archiveAdvanceBridgedLines(requestId);
     return row;
@@ -3219,7 +3740,9 @@ export class PayrollService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, {
+      tenantId,
+    });
     const existing = await this.loadAdvanceRequestScopeRow(requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-ADV-404',
@@ -3258,7 +3781,11 @@ export class PayrollService {
       authorization,
       tenantId,
     });
-    return { ...row, bridgedInputLineIds: bridge.bridgedInputLineIds, failedEmployees: bridge.failedEmployees };
+    return {
+      ...row,
+      bridgedInputLineIds: bridge.bridgedInputLineIds,
+      failedEmployees: bridge.failedEmployees,
+    };
   }
 
   async bridgeAdvanceRequestToPeriod(
@@ -3269,7 +3796,9 @@ export class PayrollService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, {
+      tenantId,
+    });
     const existing = await this.loadAdvanceRequestScopeRow(requestId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-ADV-404',

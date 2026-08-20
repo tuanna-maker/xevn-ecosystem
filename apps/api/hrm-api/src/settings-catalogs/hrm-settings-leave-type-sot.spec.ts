@@ -21,10 +21,14 @@ describe('hrm-settings-leave-type-sot (PO-HRM-SETTINGS-ATT-LVT-SOT-BE-01)', () =
   });
 
   it('assertLeaveTypesExtensionMutateForbidden rejects tenant extension on leave_types', () => {
-    expect(() => assertLeaveTypesExtensionMutateForbidden('leave_types')).toThrow(
+    expect(() =>
+      assertLeaveTypesExtensionMutateForbidden('leave_types'),
+    ).toThrow(
       expect.objectContaining({ code: HRM_SC_LEAVE_REF_EXTENSION_FORBIDDEN }),
     );
-    expect(() => assertLeaveTypesExtensionMutateForbidden('departments')).not.toThrow();
+    expect(() =>
+      assertLeaveTypesExtensionMutateForbidden('departments'),
+    ).not.toThrow();
   });
 
   describe('SettingsCatalogsService integration', () => {
@@ -64,7 +68,9 @@ describe('hrm-settings-leave-type-sot (PO-HRM-SETTINGS-ATT-LVT-SOT-BE-01)', () =
             key: 'leave_types',
             version: 1,
             syncedAt: '2026-08-10T00:00:00.000Z',
-            payload: { items: [{ code: 'annual', label: 'Phép năm', status: 'active' }] },
+            payload: {
+              items: [{ code: 'annual', label: 'Phép năm', status: 'active' }],
+            },
           },
         ],
       });

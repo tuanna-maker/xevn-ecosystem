@@ -168,19 +168,28 @@ export class AttendanceService {
     private readonly attendanceConfig: AttendanceConfigService,
     @Optional() private readonly attAttendanceCode?: AttAttendanceCodeService,
   ) {}
-  private resolvePage(value: number | string | undefined, fallback: number): number {
+  private resolvePage(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.trunc(parsed);
   }
 
-  private resolvePageSize(value: number | string | undefined, fallback: number): number {
+  private resolvePageSize(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.min(100, Math.trunc(parsed));
   }
 
-  private assertCheckInOutOrder(checkIn: string | null | undefined, checkOut: string | null | undefined) {
+  private assertCheckInOutOrder(
+    checkIn: string | null | undefined,
+    checkOut: string | null | undefined,
+  ) {
     if (!checkIn?.trim() || !checkOut?.trim()) return;
     const a = new Date(checkIn).getTime();
     const b = new Date(checkOut).getTime();
@@ -198,10 +207,18 @@ export class AttendanceService {
   private assertValidAttendanceDate(dateStr: string | undefined) {
     const trimmed = dateStr?.trim();
     if (!trimmed) {
-      throw new ApiException('HRM-ATT-DATE-001', 'attendance_date is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-ATT-DATE-001',
+        'attendance_date is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const iso = trimmed.length >= 10 ? trimmed.slice(0, 10) : trimmed;
-    if (iso === '1970-01-01' || iso.startsWith('0000') || iso === '0001-01-01') {
+    if (
+      iso === '1970-01-01' ||
+      iso.startsWith('0000') ||
+      iso === '0001-01-01'
+    ) {
       throw new ApiException(
         'HRM-ATT-DATE-001',
         'attendance_date is invalid (epoch or unset)',
@@ -210,18 +227,26 @@ export class AttendanceService {
     }
     const parsed = new Date(iso);
     if (!Number.isFinite(parsed.getTime()) || parsed.getUTCFullYear() < 2000) {
-      throw new ApiException('HRM-ATT-DATE-001', 'attendance_date must be a valid calendar date', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-ATT-DATE-001',
+        'attendance_date must be a valid calendar date',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   /** BR-ATT-DATE-01 — omit invalid stored dates from API (FE shows em dash). */
-  private normalizeAttendanceDateForApi(date: string | Date | null | undefined): string | null {
+  private normalizeAttendanceDateForApi(
+    date: string | Date | null | undefined,
+  ): string | null {
     if (date == null || date === '') return null;
     const iso = toLeaveDayKey(date);
     if (!iso) return null;
-    if (iso === '1970-01-01' || iso.startsWith('0000') || iso === '0001-01-01') return null;
+    if (iso === '1970-01-01' || iso.startsWith('0000') || iso === '0001-01-01')
+      return null;
     const parsed = new Date(`${iso}T00:00:00.000Z`);
-    if (!Number.isFinite(parsed.getTime()) || parsed.getUTCFullYear() < 2000) return null;
+    if (!Number.isFinite(parsed.getTime()) || parsed.getUTCFullYear() < 2000)
+      return null;
     return iso;
   }
 
@@ -233,15 +258,22 @@ export class AttendanceService {
     codes: { notFound: string; mismatch: string },
   ) {
     // Parity leave AT-12/13 — UUID/slug query → same ladder as list before assert.
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
     assertResourceInHrmScope(resource, scope, {
       notFoundCode: codes.notFound,
       mismatchCode: codes.mismatch,
     });
   }
 
-  private async loadAttendanceRecordCompany(recordId: string): Promise<{ company_id: string } | null> {
+  private async loadAttendanceRecordCompany(
+    recordId: string,
+  ): Promise<{ company_id: string } | null> {
     const res = await this.db.query<{ company_id: string }>(
       `SELECT company_id::text AS company_id FROM public.attendance_records WHERE id = $1::uuid LIMIT 1;`,
       [recordId],
@@ -249,7 +281,9 @@ export class AttendanceService {
     return res.rows[0] ?? null;
   }
 
-  private async loadUpdateRequestCompany(requestId: string): Promise<{ company_id: string } | null> {
+  private async loadUpdateRequestCompany(
+    requestId: string,
+  ): Promise<{ company_id: string } | null> {
     const res = await this.db.query<{ company_id: string }>(
       `SELECT company_id::text AS company_id FROM public.attendance_update_requests WHERE id = $1::uuid LIMIT 1;`,
       [requestId],
@@ -353,7 +387,12 @@ export class AttendanceService {
     await this.attendanceConfig.ensureWorkSitesSchema();
   }
 
-  private haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  private haversineMeters(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number {
     const R = 6371000;
     const toRad = (d: number) => (d * Math.PI) / 180;
     const dLat = toRad(lat2 - lat1);
@@ -371,8 +410,14 @@ export class AttendanceService {
     longitude: number,
     tenantId?: string,
   ) {
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     const filters: string[] = ['active = TRUE'];
     const values: unknown[] = [];
     pushCompanyIdTextColumnFilter(filters, values, companyKeys);
@@ -391,7 +436,9 @@ export class AttendanceService {
     );
     if (!sites.rows.length) return;
     const ok = sites.rows.some(
-      (s) => this.haversineMeters(latitude, longitude, s.latitude, s.longitude) <= s.radius_meters,
+      (s) =>
+        this.haversineMeters(latitude, longitude, s.latitude, s.longitude) <=
+        s.radius_meters,
     );
     if (!ok) {
       throw new ApiException(
@@ -409,7 +456,8 @@ export class AttendanceService {
   ) {
     const leaveTypeKey = row.leave_type_key?.trim() || null;
     const leaveTypeLabel = leaveTypeKey
-      ? ATTENDANCE_LEAVE_TYPE_LABELS_VI[leaveTypeKey.toLowerCase()] ?? leaveTypeKey
+      ? (ATTENDANCE_LEAVE_TYPE_LABELS_VI[leaveTypeKey.toLowerCase()] ??
+        leaveTypeKey)
       : null;
     const statusKey = String(row.status ?? '')
       .trim()
@@ -418,7 +466,9 @@ export class AttendanceService {
     const catalogHints = codeHints?.get(statusKey);
     // OS 28 — catalog symbol/status_label when EFF known; hardcode bootstrap only when EFF=0 map empty.
     const statusLabel =
-      catalogHints?.statusLabel ?? ATTENDANCE_STATUS_LABELS_VI[statusKey] ?? row.status;
+      catalogHints?.statusLabel ??
+      ATTENDANCE_STATUS_LABELS_VI[statusKey] ??
+      row.status;
     const symbol = catalogHints?.symbol ?? null;
     return {
       id: row.id,
@@ -434,7 +484,10 @@ export class AttendanceService {
       leave_request_id: row.leave_request_id ?? null,
       leave_type_key: leaveTypeKey,
       leave_type: leaveTypeKey,
-      leave_type_label: row.status === 'leave' ? leaveTypeLabel ?? 'Nghỉ phép' : leaveTypeLabel,
+      leave_type_label:
+        row.status === 'leave'
+          ? (leaveTypeLabel ?? 'Nghỉ phép')
+          : leaveTypeLabel,
       created_by: row.created_by,
       created_at: row.created_at,
       updated_at: row.updated_at,
@@ -483,7 +536,9 @@ export class AttendanceService {
     return hit?.code ?? raw.replace(/-/g, '_').toLowerCase();
   }
 
-  private toAttendanceUpdateRequestRealtimePayload(row: AttendanceUpdateRequestRow) {
+  private toAttendanceUpdateRequestRealtimePayload(
+    row: AttendanceUpdateRequestRow,
+  ) {
     const m = this.mapUpdateRequest(row);
     return {
       id: m.id,
@@ -537,7 +592,11 @@ export class AttendanceService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const companyId = resolveHrmOperationsPersistCompanyId(authorization, payload.company_id, { tenantId });
+    const companyId = resolveHrmOperationsPersistCompanyId(
+      authorization,
+      payload.company_id,
+      { tenantId },
+    );
     this.assertValidAttendanceDate(payload.attendance_date);
     const hasFiniteCoords =
       payload.latitude != null &&
@@ -613,16 +672,28 @@ export class AttendanceService {
           INSERT INTO public.attendance_events (id, attendance_record_id, event_type, source, payload)
           VALUES ($1, $2::uuid, 'status_change', $3, $4::jsonb)
         `,
-        [randomUUID(), created.id, 'hrm-api', JSON.stringify({ status: created.status })],
+        [
+          randomUUID(),
+          created.id,
+          'hrm-api',
+          JSON.stringify({ status: created.status }),
+        ],
       );
       // Thành công: Diễn biến #7 — khóa bản ghi ngày công.
-      const hints = await this.resolveCodeDisplayLookup(payload.company_id, authorization, tenantId);
+      const hints = await this.resolveCodeDisplayLookup(
+        payload.company_id,
+        authorization,
+        tenantId,
+      );
       return this.mapRecord(created, hints);
     } catch (error) {
       if (error instanceof ApiException) {
         throw error;
       }
-      const message = error instanceof Error ? error.message : 'Cannot create attendance record';
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Cannot create attendance record';
       throw new ApiException('HRM-ATT-001', message, HttpStatus.BAD_REQUEST);
     }
   }
@@ -634,10 +705,20 @@ export class AttendanceService {
   ) {
     await this.ensureSchema();
     const page = this.resolvePage(query.page, 1);
-    const pageSize = this.resolvePageSize(query.page_size ?? query.pageSize, 20);
+    const pageSize = this.resolvePageSize(
+      query.page_size ?? query.pageSize,
+      20,
+    );
     const offset = (page - 1) * pageSize;
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
     const filters: string[] = [];
     const values: unknown[] = [];
     pushWorkforceEmployeeScopeFilter(filters, values, scope);
@@ -703,8 +784,15 @@ export class AttendanceService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [recordId];
     pushWorkforceEmployeeScopeFilter(filters, values, scope);
@@ -721,7 +809,11 @@ export class AttendanceService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-ATT-404', 'Attendance record not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-404',
+        'Attendance record not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const hints = await this.resolveCodeDisplayLookup(
       query.company_id,
@@ -740,10 +832,16 @@ export class AttendanceService {
   ) {
     await this.ensureSchema();
     const existing = await this.loadAttendanceRecordCompany(recordId);
-    this.guardAttendanceMutate(existing, authorization, requestedCompanyId, tenantId, {
-      notFound: 'HRM-ATT-404',
-      mismatch: 'HRM-ATT-409',
-    });
+    this.guardAttendanceMutate(
+      existing,
+      authorization,
+      requestedCompanyId,
+      tenantId,
+      {
+        notFound: 'HRM-ATT-404',
+        mismatch: 'HRM-ATT-409',
+      },
+    );
     const status = await this.assertAttendanceDayCode({
       companyId: requestedCompanyId,
       status: payload.status,
@@ -764,7 +862,11 @@ export class AttendanceService {
     );
     const updated = res.rows[0];
     if (!updated) {
-      throw new ApiException('HRM-ATT-404', 'Attendance record not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-404',
+        'Attendance record not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.db.query(
       `
@@ -778,7 +880,11 @@ export class AttendanceService {
         JSON.stringify({ status, note: payload.note ?? null }),
       ],
     );
-    const hints = await this.resolveCodeDisplayLookup(requestedCompanyId, authorization, tenantId);
+    const hints = await this.resolveCodeDisplayLookup(
+      requestedCompanyId,
+      authorization,
+      tenantId,
+    );
     return this.mapRecord(updated, hints);
   }
 
@@ -788,9 +894,19 @@ export class AttendanceService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const companyId = resolveHrmOperationsPersistCompanyId(authorization, payload.company_id, { tenantId });
-    this.assertCheckInOutOrder(payload.current_check_in, payload.current_check_out);
-    this.assertCheckInOutOrder(payload.requested_check_in, payload.requested_check_out);
+    const companyId = resolveHrmOperationsPersistCompanyId(
+      authorization,
+      payload.company_id,
+      { tenantId },
+    );
+    this.assertCheckInOutOrder(
+      payload.current_check_in,
+      payload.current_check_out,
+    );
+    this.assertCheckInOutOrder(
+      payload.requested_check_in,
+      payload.requested_check_out,
+    );
     const res = await this.db.query<AttendanceUpdateRequestRow>(
       `
         INSERT INTO public.attendance_update_requests (
@@ -825,7 +941,9 @@ export class AttendanceService {
     );
     const row = res.rows[0];
     const mapped = this.mapUpdateRequest(row);
-    await this.attendanceFanout.onUpdateRequestCreated(this.toAttendanceUpdateRequestRealtimePayload(row));
+    await this.attendanceFanout.onUpdateRequestCreated(
+      this.toAttendanceUpdateRequestRealtimePayload(row),
+    );
     return mapped;
   }
 
@@ -835,18 +953,35 @@ export class AttendanceService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
     const clauses: string[] = [];
     const values: unknown[] = [];
     if (scope.masterTenantPartition || scope.memberTenantId) {
-      pushWorkforceEmployeeScopeFilter(clauses, values, scope, 'aur.employee_id');
+      pushWorkforceEmployeeScopeFilter(
+        clauses,
+        values,
+        scope,
+        'aur.employee_id',
+      );
     } else {
       // UUID column — expand slug↔Plane B′ so CEO OU=trsport sees persist UUID rows.
-      const companyIds = expandHrmTextCompanyIds(scope, authorization, scopeCompanyId);
+      const companyIds = expandHrmTextCompanyIds(
+        scope,
+        authorization,
+        scopeCompanyId,
+      );
       pushCompanyIdTextColumnFilter(clauses, values, companyIds);
       const companyFilterIdx = clauses.length - 1;
-      clauses[companyFilterIdx] = clauses[companyFilterIdx].replace(/^company_id::text/, 'aur.company_id::text');
+      clauses[companyFilterIdx] = clauses[companyFilterIdx].replace(
+        /^company_id::text/,
+        'aur.company_id::text',
+      );
     }
     if (query.status) {
       values.push(query.status);
@@ -871,7 +1006,10 @@ export class AttendanceService {
       `,
       values,
     );
-    return { total: res.rows.length, data: res.rows.map((row) => this.mapUpdateRequest(row)) };
+    return {
+      total: res.rows.length,
+      data: res.rows.map((row) => this.mapUpdateRequest(row)),
+    };
   }
 
   async updateUpdateRequest(
@@ -883,10 +1021,16 @@ export class AttendanceService {
   ) {
     await this.ensureSchema();
     const existing = await this.loadUpdateRequestCompany(requestId);
-    this.guardAttendanceMutate(existing, authorization, requestedCompanyId, tenantId, {
-      notFound: 'HRM-ATT-REQ-404',
-      mismatch: 'HRM-ATT-REQ-409',
-    });
+    this.guardAttendanceMutate(
+      existing,
+      authorization,
+      requestedCompanyId,
+      tenantId,
+      {
+        notFound: 'HRM-ATT-REQ-404',
+        mismatch: 'HRM-ATT-REQ-409',
+      },
+    );
     const res = await this.db.query<AttendanceUpdateRequestRow>(
       `
         UPDATE public.attendance_update_requests
@@ -923,7 +1067,11 @@ export class AttendanceService {
     );
     const updated = res.rows[0];
     if (!updated) {
-      throw new ApiException('HRM-ATT-REQ-404', 'Attendance update request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-REQ-404',
+        'Attendance update request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapUpdateRequest(updated);
   }
@@ -937,10 +1085,16 @@ export class AttendanceService {
   ) {
     await this.ensureSchema();
     const existing = await this.loadUpdateRequestCompany(requestId);
-    this.guardAttendanceMutate(existing, authorization, requestedCompanyId, tenantId, {
-      notFound: 'HRM-ATT-REQ-404',
-      mismatch: 'HRM-ATT-REQ-409',
-    });
+    this.guardAttendanceMutate(
+      existing,
+      authorization,
+      requestedCompanyId,
+      tenantId,
+      {
+        notFound: 'HRM-ATT-REQ-404',
+        mismatch: 'HRM-ATT-REQ-409',
+      },
+    );
     const res = await this.db.query<AttendanceUpdateRequestRow>(
       `
         UPDATE public.attendance_update_requests
@@ -956,10 +1110,17 @@ export class AttendanceService {
     );
     const updated = res.rows[0];
     if (!updated) {
-      throw new ApiException('HRM-ATT-REQ-404', 'Attendance update request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-REQ-404',
+        'Attendance update request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const mapped = this.mapUpdateRequest(updated);
-    await this.attendanceFanout.onUpdateRequestDecided('approved', this.toAttendanceUpdateRequestRealtimePayload(updated));
+    await this.attendanceFanout.onUpdateRequestDecided(
+      'approved',
+      this.toAttendanceUpdateRequestRealtimePayload(updated),
+    );
     return mapped;
   }
 
@@ -972,10 +1133,16 @@ export class AttendanceService {
   ) {
     await this.ensureSchema();
     const existing = await this.loadUpdateRequestCompany(requestId);
-    this.guardAttendanceMutate(existing, authorization, requestedCompanyId, tenantId, {
-      notFound: 'HRM-ATT-REQ-404',
-      mismatch: 'HRM-ATT-REQ-409',
-    });
+    this.guardAttendanceMutate(
+      existing,
+      authorization,
+      requestedCompanyId,
+      tenantId,
+      {
+        notFound: 'HRM-ATT-REQ-404',
+        mismatch: 'HRM-ATT-REQ-409',
+      },
+    );
     const res = await this.db.query<AttendanceUpdateRequestRow>(
       `
         UPDATE public.attendance_update_requests
@@ -987,14 +1154,25 @@ export class AttendanceService {
         WHERE id = $3::uuid
         RETURNING *;
       `,
-      [payload.approver_name?.trim() ?? null, payload.rejected_reason?.trim() ?? null, requestId],
+      [
+        payload.approver_name?.trim() ?? null,
+        payload.rejected_reason?.trim() ?? null,
+        requestId,
+      ],
     );
     const updated = res.rows[0];
     if (!updated) {
-      throw new ApiException('HRM-ATT-REQ-404', 'Attendance update request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-REQ-404',
+        'Attendance update request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const mapped = this.mapUpdateRequest(updated);
-    await this.attendanceFanout.onUpdateRequestDecided('rejected', this.toAttendanceUpdateRequestRealtimePayload(updated));
+    await this.attendanceFanout.onUpdateRequestDecided(
+      'rejected',
+      this.toAttendanceUpdateRequestRealtimePayload(updated),
+    );
     return mapped;
   }
 
@@ -1006,16 +1184,26 @@ export class AttendanceService {
   ) {
     await this.ensureSchema();
     const existing = await this.loadUpdateRequestCompany(requestId);
-    this.guardAttendanceMutate(existing, authorization, requestedCompanyId, tenantId, {
-      notFound: 'HRM-ATT-REQ-404',
-      mismatch: 'HRM-ATT-REQ-409',
-    });
+    this.guardAttendanceMutate(
+      existing,
+      authorization,
+      requestedCompanyId,
+      tenantId,
+      {
+        notFound: 'HRM-ATT-REQ-404',
+        mismatch: 'HRM-ATT-REQ-409',
+      },
+    );
     const res = await this.db.query<{ id: string }>(
       `DELETE FROM public.attendance_update_requests WHERE id = $1::uuid RETURNING id;`,
       [requestId],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-ATT-REQ-404', 'Attendance update request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-REQ-404',
+        'Attendance update request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: requestId };
   }

@@ -18,13 +18,13 @@ export const PayFormulaSettingsPanel = () => {
   const [formulas, setFormulas] = useState([
     {
       id: 'F1',
-      name: 'CONG_THUC_LAI_XE',
+      name: 'CONG_THUC_LAI_XE_TAI',
       description: 'Lương Lái xe tải (Cứng + QLPT + Thưởng DT)',
       expression: 'LUONG_CUNG_LX_TAI + LUONG_QLPT + THUONG_DOANH_THU',
       tokens: [
-        { type: 'var', label: '[Lương cứng Lái xe]', value: 'LUONG_CUNG_LX_TAI' },
+        { type: 'var', label: '[Lương cứng (LX Tải)]', value: 'LUONG_CUNG_LX_TAI' },
         { type: 'op', label: '+', value: '+' },
-        { type: 'var', label: '[Lương trách nhiệm]', value: 'LUONG_QLPT' },
+        { type: 'var', label: '[Lương trách nhiệm QLPT]', value: 'LUONG_QLPT' },
         { type: 'op', label: '+', value: '+' },
         { type: 'var', label: '[Thưởng doanh thu]', value: 'THUONG_DOANH_THU' },
       ],

@@ -27,7 +27,9 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
     sql.includes('CREATE INDEX') ||
     sql.includes('ALTER TABLE') ||
     sql.includes('INSERT INTO public.hrm_cb_access_audit') ||
-    sql.includes('UPDATE public.employee_compensation_lines SET component_code');
+    sql.includes(
+      'UPDATE public.employee_compensation_lines SET component_code',
+    );
 
   beforeEach(() => {
     db = {
@@ -43,7 +45,10 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
       if (isSchemaOrAuditSql(sql)) {
         return { rows: [] } as never;
       }
-      if (sql.includes('FROM public.employees e') && sql.includes('e.id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.employees e') &&
+        sql.includes('e.id = $1::uuid')
+      ) {
         return {
           rows: [
             {
@@ -85,7 +90,10 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
               line_type: lineType,
               amount: params?.[3] ?? 1,
               currency: 'VND',
-              allowance_code: lineType === 'allowance' ? String(params?.[5] ?? 'PHU_CAP') : null,
+              allowance_code:
+                lineType === 'allowance'
+                  ? String(params?.[5] ?? 'PHU_CAP')
+                  : null,
               taxable: true,
               note: null,
               sort_order: 0,
@@ -100,17 +108,28 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.createPackage({
-      company_id: 'holding',
-      employee_id: employeeId,
-      effective_from: '2026-07-01',
-      lines: [
-        { line_type: 'base', amount: 15_000_000 },
-        { line_type: 'probation', amount: 12_000_000 },
-        { line_type: 'allowance', amount: 500_000, allowance_code: 'PHU_CAP_AN' },
-        { line_type: 'allowance', amount: 300_000, allowance_code: 'PHU_CAP_XANG' },
-      ],
-    }, cbAuth());
+    const result = await service.createPackage(
+      {
+        company_id: 'holding',
+        employee_id: employeeId,
+        effective_from: '2026-07-01',
+        lines: [
+          { line_type: 'base', amount: 15_000_000 },
+          { line_type: 'probation', amount: 12_000_000 },
+          {
+            line_type: 'allowance',
+            amount: 500_000,
+            allowance_code: 'PHU_CAP_AN',
+          },
+          {
+            line_type: 'allowance',
+            amount: 300_000,
+            allowance_code: 'PHU_CAP_XANG',
+          },
+        ],
+      },
+      cbAuth(),
+    );
 
     expect(result.id).toBe(packageId);
     expect(result.lines).toHaveLength(4);
@@ -190,7 +209,10 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
       if (isSchemaOrAuditSql(sql)) {
         return { rows: [] } as never;
       }
-      if (sql.includes('FROM public.employee_compensation_packages p') && sql.includes('p.id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.employee_compensation_packages p') &&
+        sql.includes('p.id = $1::uuid')
+      ) {
         return {
           rows: [
             {
@@ -222,7 +244,10 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
           ],
         } as never;
       }
-      if (sql.includes('UPDATE public.employee_compensation_packages') && sql.includes('effective_to')) {
+      if (
+        sql.includes('UPDATE public.employee_compensation_packages') &&
+        sql.includes('effective_to')
+      ) {
         return { rows: [] } as never;
       }
       if (sql.includes('INSERT INTO public.employee_compensation_packages')) {
@@ -286,9 +311,15 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
 
     expect(result.version).toBe(2);
     expect(result.supersedes_package_id).toBe(packageId);
-    expect(db.query.mock.calls.some(([sql]) => String(sql).includes('effective_to'))).toBe(true);
     expect(
-      db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.employee_compensation_history')),
+      db.query.mock.calls.some(([sql]) => String(sql).includes('effective_to')),
+    ).toBe(true);
+    expect(
+      db.query.mock.calls.some(([sql]) =>
+        String(sql).includes(
+          'INSERT INTO public.employee_compensation_history',
+        ),
+      ),
     ).toBe(true);
     expect(
       db.query.mock.calls.every(
@@ -310,7 +341,10 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
       if (isSchemaOrAuditSql(sql)) {
         return { rows: [] } as never;
       }
-      if (sql.includes('FROM public.employee_compensation_packages p') && sql.includes('effective_from')) {
+      if (
+        sql.includes('FROM public.employee_compensation_packages p') &&
+        sql.includes('effective_from')
+      ) {
         expect(sql).toContain('p.effective_from <=');
         expect(sql).toContain('p.effective_to IS NULL OR p.effective_to >=');
         return {
@@ -387,7 +421,9 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
 
     expect(
       db.query.mock.calls.some(([sql]) =>
-        String(sql).includes('CREATE TABLE IF NOT EXISTS public.employee_compensation_packages'),
+        String(sql).includes(
+          'CREATE TABLE IF NOT EXISTS public.employee_compensation_packages',
+        ),
       ),
     ).toBe(true);
   });
@@ -400,11 +436,17 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
       roleCode: 'group_ceo',
     });
     const pgTypeRace = Object.assign(
-      new Error('duplicate key value violates unique constraint "pg_type_typname_nsp_index"'),
+      new Error(
+        'duplicate key value violates unique constraint "pg_type_typname_nsp_index"',
+      ),
       { code: '23505' },
     );
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('CREATE TABLE IF NOT EXISTS public.employee_compensation_packages')) {
+      if (
+        sql.includes(
+          'CREATE TABLE IF NOT EXISTS public.employee_compensation_packages',
+        )
+      ) {
         throw pgTypeRace;
       }
       if (isSchemaOrAuditSql(sql)) {
@@ -435,7 +477,11 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
     let packagesCreateMax = 0;
     let packagesCreateCount = 0;
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('CREATE TABLE IF NOT EXISTS public.employee_compensation_packages')) {
+      if (
+        sql.includes(
+          'CREATE TABLE IF NOT EXISTS public.employee_compensation_packages',
+        )
+      ) {
         packagesCreateCount += 1;
         packagesCreateInFlight += 1;
         packagesCreateMax = Math.max(packagesCreateMax, packagesCreateInFlight);
@@ -454,8 +500,14 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
 
     const auth = `Bearer ${token}`;
     await Promise.all([
-      service.getActivePackage({ company_id: 'main', employee_id: employeeId }, auth),
-      service.listPackages({ company_id: 'main', employee_id: employeeId }, auth),
+      service.getActivePackage(
+        { company_id: 'main', employee_id: employeeId },
+        auth,
+      ),
+      service.listPackages(
+        { company_id: 'main', employee_id: employeeId },
+        auth,
+      ),
     ]);
 
     expect(packagesCreateCount).toBe(1);
@@ -479,7 +531,10 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
       return { rows: [] } as never;
     });
 
-    await service.listPackages({ company_id: 'main', employee_id: employeeId }, `Bearer ${token}`);
+    await service.listPackages(
+      { company_id: 'main', employee_id: employeeId },
+      `Bearer ${token}`,
+    );
     const listCall = db.query.mock.calls.find(
       ([sql]) =>
         typeof sql === 'string' &&
@@ -487,7 +542,9 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
         sql.includes('FROM public.employee_compensation_packages p'),
     );
     expect(listCall?.[0]).toEqual(expect.stringContaining('p.employee_id IN'));
-    expect(listCall?.[0]).toEqual(expect.stringContaining("custom_fields->>'tenant_id'"));
+    expect(listCall?.[0]).toEqual(
+      expect.stringContaining("custom_fields->>'tenant_id'"),
+    );
   });
 
   it('VAL-EMP-SH-06 rejects overlapping effective segments (HRM-COMP-409-OVERLAP)', async () => {
@@ -560,8 +617,16 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
           effective_from: '2026-07-01',
           lines: [
             { line_type: 'base', amount: 15_000_000 },
-            { line_type: 'allowance', amount: 500_000, allowance_code: 'PHU_CAP_AN' },
-            { line_type: 'allowance', amount: 300_000, allowance_code: 'PHU_CAP_AN' },
+            {
+              line_type: 'allowance',
+              amount: 500_000,
+              allowance_code: 'PHU_CAP_AN',
+            },
+            {
+              line_type: 'allowance',
+              amount: 300_000,
+              allowance_code: 'PHU_CAP_AN',
+            },
           ],
         },
         cbAuth(),
@@ -586,7 +651,10 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
           ],
         } as never;
       }
-      if (sql.includes('FROM public.salary_components') && sql.includes('COUNT(*)')) {
+      if (
+        sql.includes('FROM public.salary_components') &&
+        sql.includes('COUNT(*)')
+      ) {
         return { rows: [{ c: '1' }] } as never;
       }
       if (sql.includes('FROM public.salary_components')) {

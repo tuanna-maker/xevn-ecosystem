@@ -16,7 +16,8 @@
  */
 
 export const EMP_STATUS_REASON_STATUSES = ['active', 'retired'] as const;
-export type EmpStatusReasonRowStatus = (typeof EMP_STATUS_REASON_STATUSES)[number];
+export type EmpStatusReasonRowStatus =
+  (typeof EMP_STATUS_REASON_STATUSES)[number];
 
 export const EMP_STATUS_REASON_KEY_FORMAT = /^[a-z][a-z0-9_]*$/;
 

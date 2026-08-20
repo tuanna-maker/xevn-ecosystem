@@ -208,11 +208,16 @@ export class AttendanceCatalogService {
 
   /** Picker contract — active-only alias of list (optional F-ATT-CAT-SHIFT EFF). */
   async listEffectiveWorkShifts(companyId: string, authorization?: string) {
-    return this.listWorkShifts(companyId, authorization, { includeInactive: false });
+    return this.listWorkShifts(companyId, authorization, {
+      includeInactive: false,
+    });
   }
 
   /** Active shift count in same list scope (U19) — invent skip when 0 (L-ATT-SHIFT-06). */
-  async countActiveWorkShifts(companyId: string, authorization?: string): Promise<number> {
+  async countActiveWorkShifts(
+    companyId: string,
+    authorization?: string,
+  ): Promise<number> {
     await this.ensureWorkShiftSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = [`status = 'active'`];
@@ -226,7 +231,11 @@ export class AttendanceCatalogService {
   }
 
   /** F-ATT-CAT-SHIFT-01 get-by-id — same resolveHrmListScope as list (U19 · HRM-WS-404/409). */
-  async getWorkShiftById(id: string, companyId: string, authorization?: string) {
+  async getWorkShiftById(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWorkShiftSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const peek = await this.db.query<WorkShiftRow>(
@@ -253,7 +262,10 @@ export class AttendanceCatalogService {
     requestedShift: string;
     authorization?: string;
   }): Promise<void> {
-    const active = await this.listEffectiveWorkShifts(input.companyId, input.authorization);
+    const active = await this.listEffectiveWorkShifts(
+      input.companyId,
+      input.authorization,
+    );
     if (active.total === 0) {
       return;
     }
@@ -281,9 +293,15 @@ export class AttendanceCatalogService {
     check(input.requestedShift, 'requested_shift');
   }
 
-  async createWorkShift(payload: Record<string, unknown>, authorization?: string) {
+  async createWorkShift(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureWorkShiftSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const code = String(payload.code ?? '').trim();
     const name = String(payload.name ?? '').trim();
     if (!code || !name) {
@@ -323,14 +341,26 @@ export class AttendanceCatalogService {
     return this.mapWorkShift(res.rows[0]);
   }
 
-  async assertAttendanceSheetHeaderInScope(sheetId: string, companyId: string, authorization?: string) {
+  async assertAttendanceSheetHeaderInScope(
+    sheetId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureAttendanceSheetSchemaLocal();
-    const peek = await this.db.query(`SELECT * FROM public.attendance_sheets WHERE id = $1::uuid LIMIT 1;`, [sheetId]);
+    const peek = await this.db.query(
+      `SELECT * FROM public.attendance_sheets WHERE id = $1::uuid LIMIT 1;`,
+      [sheetId],
+    );
     assertSheetHeaderRowInScope(peek.rows[0], companyId, authorization);
     return peek.rows[0];
   }
 
-  async updateWorkShift(id: string, payload: Record<string, unknown>, companyId: string, authorization?: string) {
+  async updateWorkShift(
+    id: string,
+    payload: Record<string, unknown>,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWorkShiftSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const peek = await this.db.query<WorkShiftRow>(
@@ -340,7 +370,10 @@ export class AttendanceCatalogService {
        FROM public.work_shifts WHERE id = $1::uuid LIMIT 1;`,
       [id],
     );
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-WS-404', mismatchCode: 'HRM-WS-409' });
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-WS-404',
+      mismatchCode: 'HRM-WS-409',
+    });
     const res = await this.db.query<WorkShiftRow>(
       `UPDATE public.work_shifts SET
         code = COALESCE($2, code), name = COALESCE($3, name), department = COALESCE($4, department),
@@ -372,7 +405,12 @@ export class AttendanceCatalogService {
         payload.notes ?? null,
       ],
     );
-    if (!res.rows[0]) throw new ApiException('HRM-WS-404', 'Work shift not found', HttpStatus.NOT_FOUND);
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-WS-404',
+        'Work shift not found',
+        HttpStatus.NOT_FOUND,
+      );
     return this.mapWorkShift(res.rows[0]);
   }
 
@@ -397,9 +435,16 @@ export class AttendanceCatalogService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException('HRM-WS-404', 'Work shift not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-WS-404',
+        'Work shift not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    assertResourceInHrmScope(row, scope, { notFoundCode: 'HRM-WS-404', mismatchCode: 'HRM-WS-409' });
+    assertResourceInHrmScope(row, scope, {
+      notFoundCode: 'HRM-WS-404',
+      mismatchCode: 'HRM-WS-409',
+    });
 
     if (opts?.hard) {
       let refCount = 0;
@@ -423,7 +468,10 @@ export class AttendanceCatalogService {
           { shift_id: id, code: row.code },
         );
       }
-      await this.db.query(`DELETE FROM public.work_shifts WHERE id = $1::uuid;`, [id]);
+      await this.db.query(
+        `DELETE FROM public.work_shifts WHERE id = $1::uuid;`,
+        [id],
+      );
       return { id, retired: false, hard_deleted: true };
     }
 
@@ -440,7 +488,11 @@ export class AttendanceCatalogService {
                  created_at, updated_at;`,
       [id],
     );
-    return { ...this.mapWorkShift(res.rows[0]), retired: true, hard_deleted: false };
+    return {
+      ...this.mapWorkShift(res.rows[0]),
+      retired: true,
+      hard_deleted: false,
+    };
   }
 
   /**
@@ -467,9 +519,15 @@ export class AttendanceCatalogService {
    * SRS bước: Diễn biến #8 Lưu thành công — chỉ header bảng, không bịa điểm danh
    * TechSpec: §14.4 ref_srs FR-HRM-AT-14 · AC-ATT-SHEET-01
    */
-  async createAttendanceSheet(payload: CreateAttendanceSheetDto, authorization?: string) {
+  async createAttendanceSheet(
+    payload: CreateAttendanceSheetDto,
+    authorization?: string,
+  ) {
     await this.ensureAttendanceSheetSchemaLocal();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const res = await this.db.query(
       `INSERT INTO public.attendance_sheets (
         id, company_id, name, start_date, end_date, attendance_type, standard_type,
@@ -519,11 +577,20 @@ export class AttendanceCatalogService {
         payload.notes ?? null,
       ],
     );
-    if (!res.rows[0]) throw new ApiException('HRM-AS-404', 'Attendance sheet not found', HttpStatus.NOT_FOUND);
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-AS-404',
+        'Attendance sheet not found',
+        HttpStatus.NOT_FOUND,
+      );
     return res.rows[0];
   }
 
-  async deleteAttendanceSheet(id: string, companyId: string, authorization?: string) {
+  async deleteAttendanceSheet(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.assertAttendanceSheetHeaderInScope(id, companyId, authorization);
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
@@ -533,7 +600,12 @@ export class AttendanceCatalogService {
       `DELETE FROM public.attendance_sheets WHERE ${filters.join(' AND ')} RETURNING id;`,
       values,
     );
-    if (!res.rows[0]) throw new ApiException('HRM-AS-404', 'Attendance sheet not found', HttpStatus.NOT_FOUND);
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-AS-404',
+        'Attendance sheet not found',
+        HttpStatus.NOT_FOUND,
+      );
     return { id };
   }
 }

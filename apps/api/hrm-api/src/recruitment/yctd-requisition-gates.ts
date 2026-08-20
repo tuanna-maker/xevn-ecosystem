@@ -32,7 +32,8 @@ import { getVerifiedInternalJwtPayload } from '../common/internal-auth';
 export const HRM_YCTD_MODE_REQUIRED = 'HRM-YCTD-MODE-REQUIRED';
 export const HRM_YCTD_CELL_MISSING = 'HRM-YCTD-CELL-MISSING';
 export const HRM_YCTD_CELL_NOT_APPROVED = 'HRM-YCTD-CELL-NOT-APPROVED';
-export const HRM_YCTD_CELL_PLAN_NOT_APPROVED = 'HRM-YCTD-CELL-PLAN-NOT-APPROVED';
+export const HRM_YCTD_CELL_PLAN_NOT_APPROVED =
+  'HRM-YCTD-CELL-PLAN-NOT-APPROVED';
 export const HRM_YCTD_CELL_QTY = 'HRM-YCTD-CELL-QTY';
 export const HRM_YCTD_OUT_REASON = 'HRM-YCTD-OUT-REASON';
 export const HRM_YCTD_HIRE_REASON = 'HRM-YCTD-HIRE-REASON';
@@ -165,7 +166,9 @@ export function parsePipelineFlags(raw: unknown): PipelineFlags {
     posted_at: typeof o.posted_at === 'string' ? o.posted_at : null,
     has_cv_at: typeof o.has_cv_at === 'string' ? o.has_cv_at : null,
     interview_started_at:
-      typeof o.interview_started_at === 'string' ? o.interview_started_at : null,
+      typeof o.interview_started_at === 'string'
+        ? o.interview_started_at
+        : null,
     internal_scan_done: o.internal_scan_done === true,
     internal_scan_skipped: o.internal_scan_skipped === true,
     internal_scan_at:
@@ -178,7 +181,9 @@ export function parsePipelineFlags(raw: unknown): PipelineFlags {
 }
 
 /** BR-BP-CV-01 / O5 — posted only after done ∨ (skipped ∧ reason). */
-export function isInternalScanSatisfiedForPosted(flags: PipelineFlags): boolean {
+export function isInternalScanSatisfiedForPosted(
+  flags: PipelineFlags,
+): boolean {
   if (flags.internal_scan_done === true) return true;
   if (
     flags.internal_scan_skipped === true &&
@@ -216,11 +221,10 @@ export function requireInternalScanSkipReasonOrThrow(reason: unknown): string {
  * O7 — Skip chỉ HR tuyển dụng | Trưởng bộ phận (và CEO/manager ladder có quyền mutate YCTD).
  * employee-only → 403 HRM-REC-CV-SCAN-FORBIDDEN.
  */
-export function assertInternalScanSkipActorOrThrow(authorization?: string): void {
-  const payload = getVerifiedInternalJwtPayload(authorization) as Record<
-    string,
-    unknown
-  > | null;
+export function assertInternalScanSkipActorOrThrow(
+  authorization?: string,
+): void {
+  const payload = getVerifiedInternalJwtPayload(authorization);
   const roleRaw =
     (typeof payload?.roleCode === 'string' && payload.roleCode) ||
     (typeof payload?.role_code === 'string' && payload.role_code) ||
@@ -322,7 +326,10 @@ export function mergePipelineFlags(
       patch.internal_scan_skip_reason ?? next.internal_scan_skip_reason,
     );
     next = applyInternalScanSkip(next, reason, nowIso);
-  } else if (patch.internal_scan_skip_reason !== undefined && patch.internal_scan_skipped !== false) {
+  } else if (
+    patch.internal_scan_skip_reason !== undefined &&
+    patch.internal_scan_skipped !== false
+  ) {
     // Reason-only patch without skip flag — ignore unless skipped already.
     if (next.internal_scan_skipped) {
       next.internal_scan_skip_reason = requireInternalScanSkipReasonOrThrow(
@@ -349,14 +356,18 @@ export function mergePipelineFlags(
 }
 
 /** Normative receivable for new writes (O3) — open/approved = legacy synonym when classified. */
-export function isYctdReceivableStatus(status: string | null | undefined): boolean {
+export function isYctdReceivableStatus(
+  status: string | null | undefined,
+): boolean {
   const s = String(status ?? '')
     .trim()
     .toLowerCase();
   return s === 'open_for_hire' || s === 'open' || s === 'approved';
 }
 
-export function isYctdNormativeReceivable(status: string | null | undefined): boolean {
+export function isYctdNormativeReceivable(
+  status: string | null | undefined,
+): boolean {
   return (
     String(status ?? '')
       .trim()
@@ -364,11 +375,15 @@ export function isYctdNormativeReceivable(status: string | null | undefined): bo
   );
 }
 
-export function isLegacyUnclassifiedMode(mode: string | null | undefined): boolean {
+export function isLegacyUnclassifiedMode(
+  mode: string | null | undefined,
+): boolean {
   return mode == null || String(mode).trim() === '';
 }
 
-export function assertYctdModeClassifiedOrThrow(mode: string | null | undefined): void {
+export function assertYctdModeClassifiedOrThrow(
+  mode: string | null | undefined,
+): void {
   if (isLegacyUnclassifiedMode(mode)) {
     throw new ApiException(
       HRM_YCTD_MODE_UNCLASSIFIED,
@@ -436,17 +451,29 @@ export function assertMatrixMatchesModeOrThrow(
       HttpStatus.CONFLICT,
     );
   }
-  if (key !== expected && key !== YCTD_MATRIX_SHORT && key !== YCTD_MATRIX_LONG_BOD) {
+  if (
+    key !== expected &&
+    key !== YCTD_MATRIX_SHORT &&
+    key !== YCTD_MATRIX_LONG_BOD
+  ) {
     // Unknown tenant key — allow if mode family matches via contains
     const lower = key.toLowerCase();
-    if (mode === 'in_plan' && lower.includes('long') && !lower.includes('short')) {
+    if (
+      mode === 'in_plan' &&
+      lower.includes('long') &&
+      !lower.includes('short')
+    ) {
       throw new ApiException(
         HRM_YCTD_MATRIX_MISMATCH,
         'YCTD trong ĐB không được dùng ma trận LONG-only',
         HttpStatus.CONFLICT,
       );
     }
-    if (mode === 'out_of_plan' && lower.includes('short') && !lower.includes('long')) {
+    if (
+      mode === 'out_of_plan' &&
+      lower.includes('short') &&
+      !lower.includes('long')
+    ) {
       throw new ApiException(
         HRM_YCTD_MATRIX_MISMATCH,
         'YCTD ngoài ĐB không được dùng ma trận SHORT-only',
@@ -518,7 +545,9 @@ export function requireRejectedReasonOrThrow(reason: unknown): string {
   return text;
 }
 
-export function pipelineRequiresReceivableGate(patch: PipelineFlagsPatch): boolean {
+export function pipelineRequiresReceivableGate(
+  patch: PipelineFlagsPatch,
+): boolean {
   return (
     patch.posted === true ||
     patch.has_cv === true ||
@@ -538,7 +567,10 @@ export type CellCapacitySnapshot = {
 };
 
 /** O2 — qty must not exceed cell need_hire capacity. */
-export function assertCellQtyOrThrow(requested: number, cellNeedHire: number): void {
+export function assertCellQtyOrThrow(
+  requested: number,
+  cellNeedHire: number,
+): void {
   if (requested > cellNeedHire) {
     throw new ApiException(
       HRM_YCTD_CELL_QTY,

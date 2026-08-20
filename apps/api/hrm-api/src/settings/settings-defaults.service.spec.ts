@@ -61,10 +61,12 @@ function schemaOkDb() {
       }
       return { rows: [] };
     }),
-    withTransaction: jest.fn(async (fn: (q: typeof jest.fn) => Promise<unknown>) => {
-      const q = jest.fn().mockResolvedValue({ rows: [] });
-      return fn(q);
-    }),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof jest.fn) => Promise<unknown>) => {
+        const q = jest.fn().mockResolvedValue({ rows: [] });
+        return fn(q);
+      },
+    ),
   } as unknown as HrmDbService;
 }
 
@@ -94,17 +96,24 @@ describe('SettingsTaxParamsService (VAL-SET-TAX)', () => {
     const svc = new SettingsTaxParamsService(db);
     await svc.ensureSchemaPublic();
     const joined = sqls.join('\n');
-    expect(joined).toMatch(/CREATE TABLE IF NOT EXISTS public\.hrm_company_settings/i);
+    expect(joined).toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.hrm_company_settings/i,
+    );
     expect(joined).not.toMatch(/CHECK\s*\(\s*setting_key\s+IN\s*\(/i);
   });
 
   it('VAL-SET-TAX-01/02 invalid shape / negative → HRM-SET-TAX-400-SHAPE', () => {
     const svc = new SettingsTaxParamsService(schemaOkDb());
     expect(() =>
-      svc.validatePayTaxValue('pay_tax_personal_deduction_vnd', { amount: -1, currency: 'VND' }),
+      svc.validatePayTaxValue('pay_tax_personal_deduction_vnd', {
+        amount: -1,
+        currency: 'VND',
+      }),
     ).toThrow(ApiException);
     try {
-      svc.validatePayTaxValue('pay_tax_flags', { applyPersonalDeduction: true });
+      svc.validatePayTaxValue('pay_tax_flags', {
+        applyPersonalDeduction: true,
+      });
     } catch (e) {
       expect((e as ApiException).code).toBe(HRM_SET_TAX_400_SHAPE);
     }
@@ -114,7 +123,8 @@ describe('SettingsTaxParamsService (VAL-SET-TAX)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (String(sql).includes('CREATE')) return { rows: [] };
-        if (String(sql).includes('FROM public.hrm_company_settings')) return { rows: [] };
+        if (String(sql).includes('FROM public.hrm_company_settings'))
+          return { rows: [] };
         return { rows: [] };
       }),
     } as unknown as HrmDbService;
@@ -141,34 +151,52 @@ describe('SettingsTaxParamsService (VAL-SET-TAX)', () => {
     } as unknown as HrmDbService;
     const svc = new SettingsTaxParamsService(db);
     await expect(
-      svc.readRequiredTaxValue('main', 'pay_tax_personal_deduction_vnd', groupCeoToken(), 'xevn'),
-    ).rejects.toMatchObject({ code: HRM_SET_TAX_412_MISSING, status: HttpStatus.PRECONDITION_FAILED });
+      svc.readRequiredTaxValue(
+        'main',
+        'pay_tax_personal_deduction_vnd',
+        groupCeoToken(),
+        'xevn',
+      ),
+    ).rejects.toMatchObject({
+      code: HRM_SET_TAX_412_MISSING,
+      status: HttpStatus.PRECONDITION_FAILED,
+    });
   });
 
   it('PUT upsert pay_tax_* uses settings catalog company (main→holding)', async () => {
     const calls: Array<{ sql: string; params?: unknown[] }> = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        calls.push({ sql: String(sql), params });
-        if (String(sql).includes('CREATE') || String(sql).includes('INDEX')) return { rows: [] };
-        if (String(sql).includes('SELECT id FROM public.hrm_company_settings')) return { rows: [] };
-        if (String(sql).includes('INSERT INTO public.hrm_company_settings')) return { rows: [] };
-        if (String(sql).includes('FROM public.hrm_company_settings') && String(sql).includes('setting_key')) {
-          return {
-            rows: [
-              {
-                id: SI_ID,
-                company_id: 'holding',
-                setting_key: 'pay_tax_personal_deduction_vnd',
-                value_json: { amount: 11000000, currency: 'VND' },
-                archived_at: null,
-                updated_at: '2026-08-07T00:00:00Z',
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          calls.push({ sql: String(sql), params });
+          if (String(sql).includes('CREATE') || String(sql).includes('INDEX'))
+            return { rows: [] };
+          if (
+            String(sql).includes('SELECT id FROM public.hrm_company_settings')
+          )
+            return { rows: [] };
+          if (String(sql).includes('INSERT INTO public.hrm_company_settings'))
+            return { rows: [] };
+          if (
+            String(sql).includes('FROM public.hrm_company_settings') &&
+            String(sql).includes('setting_key')
+          ) {
+            return {
+              rows: [
+                {
+                  id: SI_ID,
+                  company_id: 'holding',
+                  setting_key: 'pay_tax_personal_deduction_vnd',
+                  value_json: { amount: 11000000, currency: 'VND' },
+                  archived_at: null,
+                  updated_at: '2026-08-07T00:00:00Z',
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const svc = new SettingsTaxParamsService(db);
     const row = await svc.put(
@@ -181,7 +209,9 @@ describe('SettingsTaxParamsService (VAL-SET-TAX)', () => {
       'xevn',
     );
     expect(row.value).toEqual({ amount: 11000000, currency: 'VND' });
-    const insert = calls.find((c) => c.sql.includes('INSERT INTO public.hrm_company_settings'));
+    const insert = calls.find((c) =>
+      c.sql.includes('INSERT INTO public.hrm_company_settings'),
+    );
     expect(insert?.params?.[2]).toBe('holding');
   });
 });
@@ -198,7 +228,9 @@ describe('InsuranceRateCfgService (VAL-SET-SI)', () => {
     const svc = new InsuranceRateCfgService(db);
     await svc.ensureSchemaPublic();
     const joined = sqls.join('\n');
-    expect(joined).toMatch(/CREATE TABLE IF NOT EXISTS public\.pay_insurance_rate_cfg/i);
+    expect(joined).toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.pay_insurance_rate_cfg/i,
+    );
     expect(joined).not.toMatch(/insurance_type_key\s+IN\s*\(/i);
   });
 
@@ -206,8 +238,12 @@ describe('InsuranceRateCfgService (VAL-SET-SI)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE') || s.includes('INDEX') || s.includes('DO $$')) return { rows: [] };
-        if (s.includes('FROM public.pay_insurance_rate_cfg') && s.includes("status = 'active'")) {
+        if (s.includes('CREATE') || s.includes('INDEX') || s.includes('DO $$'))
+          return { rows: [] };
+        if (
+          s.includes('FROM public.pay_insurance_rate_cfg') &&
+          s.includes("status = 'active'")
+        ) {
           return {
             rows: [
               {
@@ -246,8 +282,12 @@ describe('InsuranceRateCfgService (VAL-SET-SI)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE') || s.includes('INDEX') || s.includes('DO $$')) return { rows: [] };
-        if (s.includes('FROM public.pay_insurance_rate_cfg') && s.includes("status = 'active'")) {
+        if (s.includes('CREATE') || s.includes('INDEX') || s.includes('DO $$'))
+          return { rows: [] };
+        if (
+          s.includes('FROM public.pay_insurance_rate_cfg') &&
+          s.includes("status = 'active'")
+        ) {
           return {
             rows: [
               {
@@ -309,14 +349,22 @@ describe('InsuranceRateCfgService (VAL-SET-SI)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE') || s.includes('INDEX') || s.includes('DO $$')) return { rows: [] };
-        if (s.includes('FROM public.pay_insurance_rate_cfg') && s.includes("status = 'active'")) {
+        if (s.includes('CREATE') || s.includes('INDEX') || s.includes('DO $$'))
+          return { rows: [] };
+        if (
+          s.includes('FROM public.pay_insurance_rate_cfg') &&
+          s.includes("status = 'active'")
+        ) {
           return { rows: [] }; // no overlap on patch
         }
-        if (s.includes('FROM public.pay_insurance_rate_cfg') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.pay_insurance_rate_cfg') &&
+          s.includes('id = $1')
+        ) {
           return { rows: [row] };
         }
-        if (s.includes('UPDATE public.pay_insurance_rate_cfg')) return { rows: [] };
+        if (s.includes('UPDATE public.pay_insurance_rate_cfg'))
+          return { rows: [] };
         return { rows: [] };
       }),
     } as unknown as HrmDbService;
@@ -336,7 +384,11 @@ describe('InsuranceRateCfgService (VAL-SET-SI)', () => {
   it('VAL-SET-SI-03 pickActiveRateForPeriod missing → 412 HRM-SET-SI-412-MISSING', async () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
-        if (String(sql).includes('CREATE') || String(sql).includes('INDEX') || String(sql).includes('DO $$')) {
+        if (
+          String(sql).includes('CREATE') ||
+          String(sql).includes('INDEX') ||
+          String(sql).includes('DO $$')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -390,25 +442,42 @@ describe('InsuranceRateCfgService (VAL-SET-SI)', () => {
       updated_by: null,
     };
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        sqls.push(s);
-        if (s.includes('CREATE') || s.includes('INDEX') || s.includes('DO $$')) return { rows: [] };
-        if (s.includes('COUNT(*)')) return { rows: [{ c: '1' }] };
-        if (s.includes('FROM public.pay_insurance_rate_cfg') && s.includes('ORDER BY')) {
-          expect(JSON.stringify(params ?? [])).toMatch(/holding/);
-          return { rows: [row] };
-        }
-        if (s.includes('FROM public.pay_insurance_rate_cfg') && s.includes('id = $1')) {
-          expect(s).toMatch(/company_id/);
-          expect(JSON.stringify(params ?? [])).toMatch(/holding/);
-          return { rows: [row] };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          sqls.push(s);
+          if (
+            s.includes('CREATE') ||
+            s.includes('INDEX') ||
+            s.includes('DO $$')
+          )
+            return { rows: [] };
+          if (s.includes('COUNT(*)')) return { rows: [{ c: '1' }] };
+          if (
+            s.includes('FROM public.pay_insurance_rate_cfg') &&
+            s.includes('ORDER BY')
+          ) {
+            expect(JSON.stringify(params ?? [])).toMatch(/holding/);
+            return { rows: [row] };
+          }
+          if (
+            s.includes('FROM public.pay_insurance_rate_cfg') &&
+            s.includes('id = $1')
+          ) {
+            expect(s).toMatch(/company_id/);
+            expect(JSON.stringify(params ?? [])).toMatch(/holding/);
+            return { rows: [row] };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const svc = new InsuranceRateCfgService(db);
-    const list = await svc.list({ company_id: 'main' }, groupCeoToken(), 'xevn');
+    const list = await svc.list(
+      { company_id: 'main' },
+      groupCeoToken(),
+      'xevn',
+    );
     expect(list.items).toHaveLength(1);
     const one = await svc.getById(SI_ID, 'main', groupCeoToken(), 'xevn');
     expect(one.id).toBe(SI_ID);
@@ -418,7 +487,11 @@ describe('InsuranceRateCfgService (VAL-SET-SI)', () => {
   it('member CEO cannot read holding-only row (scope 404/409)', async () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
-        if (String(sql).includes('CREATE') || String(sql).includes('INDEX') || String(sql).includes('DO $$')) {
+        if (
+          String(sql).includes('CREATE') ||
+          String(sql).includes('INDEX') ||
+          String(sql).includes('DO $$')
+        ) {
           return { rows: [] };
         }
         if (String(sql).includes('id = $1')) {
@@ -453,9 +526,9 @@ describe('InsuranceRateCfgService (VAL-SET-SI)', () => {
       }),
     } as unknown as HrmDbService;
     const svc = new InsuranceRateCfgService(db);
-    await expect(svc.getById(SI_ID, 'main', memberCeoToken(), 'xe-du-lich')).rejects.toBeInstanceOf(
-      ApiException,
-    );
+    await expect(
+      svc.getById(SI_ID, 'main', memberCeoToken(), 'xe-du-lich'),
+    ).rejects.toBeInstanceOf(ApiException);
   });
 });
 
@@ -486,9 +559,15 @@ describe('PositionCompensationPolicyService (VAL-SET-POS)', () => {
 
   it('VAL-SET-POS-01 bad position_key → HRM-SET-POS-400-KEY', async () => {
     const badCatalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
-        new ApiException(HRM_SET_POS_400_KEY, 'not in catalog', HttpStatus.BAD_REQUEST),
-      ),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockRejectedValue(
+          new ApiException(
+            HRM_SET_POS_400_KEY,
+            'not in catalog',
+            HttpStatus.BAD_REQUEST,
+          ),
+        ),
     };
     const db = schemaOkDb();
     (db as unknown as { withTransaction: jest.Mock }).withTransaction = jest.fn(
@@ -516,40 +595,62 @@ describe('PositionCompensationPolicyService (VAL-SET-POS)', () => {
     const sqlLog: string[] = [];
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
-        if (String(sql).includes('CREATE') || String(sql).includes('INDEX') || String(sql).includes('DO $$')) {
+        if (
+          String(sql).includes('CREATE') ||
+          String(sql).includes('INDEX') ||
+          String(sql).includes('DO $$')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
       }),
-      withTransaction: jest.fn(async (fn: (q: jest.Mock) => Promise<unknown>) => {
-        const q = jest.fn().mockImplementation(async (sql: string) => {
-          const s = String(sql);
-          sqlLog.push(s);
-          if (/^SAVEPOINT\s+/i.test(s.trim()) || /^RELEASE\s+SAVEPOINT/i.test(s.trim()) || /^ROLLBACK\s+TO\s+SAVEPOINT/i.test(s.trim())) {
+      withTransaction: jest.fn(
+        async (fn: (q: jest.Mock) => Promise<unknown>) => {
+          const q = jest.fn().mockImplementation(async (sql: string) => {
+            const s = String(sql);
+            sqlLog.push(s);
+            if (
+              /^SAVEPOINT\s+/i.test(s.trim()) ||
+              /^RELEASE\s+SAVEPOINT/i.test(s.trim()) ||
+              /^ROLLBACK\s+TO\s+SAVEPOINT/i.test(s.trim())
+            ) {
+              return { rows: [] };
+            }
+            if (
+              s.includes('hrm_position_compensation_policy') &&
+              s.includes("status = 'active'")
+            ) {
+              return { rows: [] };
+            }
+            if (
+              s.includes('COUNT(*)') &&
+              s.includes('hrm_allowance_deduction_types')
+            ) {
+              return { rows: [{ c: '2' }] };
+            }
+            if (s.includes('COUNT(*)') && s.includes('salary_components')) {
+              expect(s).toMatch(/is_active/);
+              expect(s).not.toMatch(/COALESCE\(status/);
+              return { rows: [{ c: '0' }] };
+            }
+            if (
+              s.includes('FROM public.hrm_allowance_deduction_types') &&
+              s.includes('lower(code)')
+            ) {
+              return { rows: [] };
+            }
+            if (
+              s.includes('FROM public.salary_components') &&
+              s.includes('lower(code)')
+            ) {
+              expect(s).toMatch(/is_active/);
+              return { rows: [] };
+            }
             return { rows: [] };
-          }
-          if (s.includes('hrm_position_compensation_policy') && s.includes("status = 'active'")) {
-            return { rows: [] };
-          }
-          if (s.includes('COUNT(*)') && s.includes('hrm_allowance_deduction_types')) {
-            return { rows: [{ c: '2' }] };
-          }
-          if (s.includes('COUNT(*)') && s.includes('salary_components')) {
-            expect(s).toMatch(/is_active/);
-            expect(s).not.toMatch(/COALESCE\(status/);
-            return { rows: [{ c: '0' }] };
-          }
-          if (s.includes('FROM public.hrm_allowance_deduction_types') && s.includes('lower(code)')) {
-            return { rows: [] };
-          }
-          if (s.includes('FROM public.salary_components') && s.includes('lower(code)')) {
-            expect(s).toMatch(/is_active/);
-            return { rows: [] };
-          }
-          return { rows: [] };
-        });
-        return fn(q);
-      }),
+          });
+          return fn(q);
+        },
+      ),
     } as unknown as HrmDbService;
     const svc = new PositionCompensationPolicyService(db, catalogs as never);
     await expect(
@@ -571,34 +672,50 @@ describe('PositionCompensationPolicyService (VAL-SET-POS)', () => {
     const sqlLog: string[] = [];
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
-        if (String(sql).includes('CREATE') || String(sql).includes('INDEX') || String(sql).includes('DO $$')) {
+        if (
+          String(sql).includes('CREATE') ||
+          String(sql).includes('INDEX') ||
+          String(sql).includes('DO $$')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
       }),
-      withTransaction: jest.fn(async (fn: (q: jest.Mock) => Promise<unknown>) => {
-        const q = jest.fn().mockImplementation(async (sql: string) => {
-          const s = String(sql);
-          sqlLog.push(s);
-          if (/^SAVEPOINT\s+/i.test(s.trim())) return { rows: [] };
-          if (/^ROLLBACK\s+TO\s+SAVEPOINT/i.test(s.trim())) return { rows: [] };
-          if (/^RELEASE\s+SAVEPOINT/i.test(s.trim())) return { rows: [] };
-          if (s.includes('hrm_position_compensation_policy') && s.includes("status = 'active'")) {
+      withTransaction: jest.fn(
+        async (fn: (q: jest.Mock) => Promise<unknown>) => {
+          const q = jest.fn().mockImplementation(async (sql: string) => {
+            const s = String(sql);
+            sqlLog.push(s);
+            if (/^SAVEPOINT\s+/i.test(s.trim())) return { rows: [] };
+            if (/^ROLLBACK\s+TO\s+SAVEPOINT/i.test(s.trim()))
+              return { rows: [] };
+            if (/^RELEASE\s+SAVEPOINT/i.test(s.trim())) return { rows: [] };
+            if (
+              s.includes('hrm_position_compensation_policy') &&
+              s.includes("status = 'active'")
+            ) {
+              return { rows: [] };
+            }
+            if (
+              s.includes('COUNT(*)') &&
+              s.includes('hrm_allowance_deduction_types')
+            ) {
+              return { rows: [{ c: '1' }] };
+            }
+            if (s.includes('FROM public.salary_components')) {
+              throw new Error('column "status" does not exist');
+            }
+            if (
+              s.includes('FROM public.hrm_allowance_deduction_types') &&
+              s.includes('lower(code)')
+            ) {
+              return { rows: [] };
+            }
             return { rows: [] };
-          }
-          if (s.includes('COUNT(*)') && s.includes('hrm_allowance_deduction_types')) {
-            return { rows: [{ c: '1' }] };
-          }
-          if (s.includes('FROM public.salary_components')) {
-            throw new Error('column "status" does not exist');
-          }
-          if (s.includes('FROM public.hrm_allowance_deduction_types') && s.includes('lower(code)')) {
-            return { rows: [] };
-          }
-          return { rows: [] };
-        });
-        return fn(q);
-      }),
+          });
+          return fn(q);
+        },
+      ),
     } as unknown as HrmDbService;
     const svc = new PositionCompensationPolicyService(db, catalogs as never);
     await expect(
@@ -614,7 +731,9 @@ describe('PositionCompensationPolicyService (VAL-SET-POS)', () => {
       ),
     ).rejects.toMatchObject({ code: HRM_ALLOW_CAT_ORPHAN_CODE });
     expect(sqlLog.some((s) => /SAVEPOINT\s+pos_sc_count/i.test(s))).toBe(true);
-    expect(sqlLog.some((s) => /ROLLBACK\s+TO\s+SAVEPOINT\s+pos_sc_count/i.test(s))).toBe(true);
+    expect(
+      sqlLog.some((s) => /ROLLBACK\s+TO\s+SAVEPOINT\s+pos_sc_count/i.test(s)),
+    ).toBe(true);
   });
 
   it('VAL-SET-POS-04/SRC-02 resolve never INSERT/UPDATE employee_compensation_*', async () => {
@@ -623,8 +742,12 @@ describe('PositionCompensationPolicyService (VAL-SET-POS)', () => {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
         sqls.push(s);
-        if (s.includes('CREATE') || s.includes('INDEX') || s.includes('DO $$')) return { rows: [] };
-        if (s.includes('FROM public.hrm_position_compensation_policy') && s.includes('position_key')) {
+        if (s.includes('CREATE') || s.includes('INDEX') || s.includes('DO $$'))
+          return { rows: [] };
+        if (
+          s.includes('FROM public.hrm_position_compensation_policy') &&
+          s.includes('position_key')
+        ) {
           return {
             rows: [
               {
@@ -691,7 +814,11 @@ describe('PositionCompensationPolicyService (VAL-SET-POS)', () => {
   it('resolve no policy → 200 empty + NO_POLICY warning (not 412)', async () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
-        if (String(sql).includes('CREATE') || String(sql).includes('INDEX') || String(sql).includes('DO $$')) {
+        if (
+          String(sql).includes('CREATE') ||
+          String(sql).includes('INDEX') ||
+          String(sql).includes('DO $$')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -711,20 +838,31 @@ describe('PositionCompensationPolicyService (VAL-SET-POS)', () => {
   it('VAL-SET-POS-03 duplicate active header → HRM-SET-POS-409-ACTIVE', async () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
-        if (String(sql).includes('CREATE') || String(sql).includes('INDEX') || String(sql).includes('DO $$')) {
+        if (
+          String(sql).includes('CREATE') ||
+          String(sql).includes('INDEX') ||
+          String(sql).includes('DO $$')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
       }),
-      withTransaction: jest.fn(async (fn: (q: jest.Mock) => Promise<unknown>) => {
-        const q = jest.fn().mockImplementation(async (sql: string) => {
-          if (String(sql).includes('FROM public.hrm_position_compensation_policy') && String(sql).includes('active')) {
-            return { rows: [{ id: POS_ID }] };
-          }
-          return { rows: [{ c: '0' }] };
-        });
-        return fn(q);
-      }),
+      withTransaction: jest.fn(
+        async (fn: (q: jest.Mock) => Promise<unknown>) => {
+          const q = jest.fn().mockImplementation(async (sql: string) => {
+            if (
+              String(sql).includes(
+                'FROM public.hrm_position_compensation_policy',
+              ) &&
+              String(sql).includes('active')
+            ) {
+              return { rows: [{ id: POS_ID }] };
+            }
+            return { rows: [{ c: '0' }] };
+          });
+          return fn(q);
+        },
+      ),
     } as unknown as HrmDbService;
     const svc = new PositionCompensationPolicyService(db, catalogs as never);
     await expect(

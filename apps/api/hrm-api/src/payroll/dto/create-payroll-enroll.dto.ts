@@ -1,5 +1,12 @@
 import { Type } from 'class-transformer';
-import { ArrayUnique, IsArray, IsEnum, IsOptional, IsUUID, ValidateIf } from 'class-validator';
+import {
+  ArrayUnique,
+  IsArray,
+  IsEnum,
+  IsOptional,
+  IsUUID,
+  ValidateIf,
+} from 'class-validator';
 
 export enum PayrollEnrollMode {
   EXPLICIT = 'explicit',
@@ -10,7 +17,10 @@ export class CreatePayrollEnrollDto {
   @IsEnum(PayrollEnrollMode)
   mode!: PayrollEnrollMode;
 
-  @ValidateIf((value: CreatePayrollEnrollDto) => value.mode === PayrollEnrollMode.EXPLICIT)
+  @ValidateIf(
+    (value: CreatePayrollEnrollDto) =>
+      value.mode === PayrollEnrollMode.EXPLICIT,
+  )
   @IsArray()
   @ArrayUnique()
   @IsUUID('4', { each: true })

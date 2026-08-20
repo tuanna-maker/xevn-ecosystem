@@ -35,7 +35,11 @@ export class MobileAuthController {
     const payload = getVerifiedInternalJwtPayload(authorization);
     const email = typeof payload?.sub === 'string' ? payload.sub : '';
     if (!email) {
-      throw new ApiException('HRM-AUTH-401', 'Cần access token hợp lệ', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-401',
+        'Cần access token hợp lệ',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     return this.mobileAuth
       .selectMembership(email, body.employee_id)

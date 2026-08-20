@@ -39,7 +39,12 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
         queries.push(s);
-        if (s.includes('CREATE TABLE') || s.includes('CREATE INDEX') || s.includes('CREATE UNIQUE') || s.includes('ALTER TABLE')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('ALTER TABLE')
+        ) {
           return { rows: [] };
         }
         if (s.includes('COUNT(*)') && s.includes('rec_jd_field_def')) {
@@ -48,7 +53,10 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
         if (s.includes('COUNT(*)') && s.includes('rec_jd_group_def')) {
           return { rows: [{ c: '1' }] };
         }
-        if (s.includes('FROM public.rec_jd_field_def') && s.includes('ORDER BY sort_order')) {
+        if (
+          s.includes('FROM public.rec_jd_field_def') &&
+          s.includes('ORDER BY sort_order')
+        ) {
           return {
             rows: [
               {
@@ -68,7 +76,10 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
             ],
           };
         }
-        if (s.includes('FROM public.rec_jd_field_def') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.rec_jd_field_def') &&
+          s.includes('id = $1')
+        ) {
           expect(s).toMatch(/company_id/);
           return {
             rows: [
@@ -113,7 +124,9 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
       }),
     } as unknown as HrmDbService;
     const svc = new JdDynamicService(db);
-    await expect(svc.getFieldDefById(FIELD_ID, 'main', memberCeoToken())).rejects.toMatchObject({
+    await expect(
+      svc.getFieldDefById(FIELD_ID, 'main', memberCeoToken()),
+    ).rejects.toMatchObject({
       code: 'HRM-JD-FIELD-404',
     });
   });
@@ -122,10 +135,18 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX') || s.includes('CREATE UNIQUE')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.rec_jd_form_layout') && s.includes('ORDER BY is_default')) {
+        if (
+          s.includes('FROM public.rec_jd_form_layout') &&
+          s.includes('ORDER BY is_default')
+        ) {
           expect(s).toMatch(/company_id/);
           return {
             rows: [
@@ -139,7 +160,10 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
             ],
           };
         }
-        if (s.includes('FROM public.rec_jd_form_layout l') && s.includes('l.id = $1')) {
+        if (
+          s.includes('FROM public.rec_jd_form_layout l') &&
+          s.includes('l.id = $1')
+        ) {
           expect(s).toMatch(/l\.company_id/);
           return {
             rows: [
@@ -171,11 +195,19 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX') || s.includes('CREATE UNIQUE')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE')
+        ) {
           return { rows: [] };
         }
         if (s.includes('COUNT(*)')) return { rows: [{ c: '1' }] };
-        if (s.includes('FROM public.rec_jd_group_def g') && s.includes('ORDER BY g.sort_order')) {
+        if (
+          s.includes('FROM public.rec_jd_group_def g') &&
+          s.includes('ORDER BY g.sort_order')
+        ) {
           return {
             rows: [
               {
@@ -192,7 +224,10 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
             ],
           };
         }
-        if (s.includes('FROM public.rec_jd_group_def g') && s.includes('g.id = $1')) {
+        if (
+          s.includes('FROM public.rec_jd_group_def g') &&
+          s.includes('g.id = $1')
+        ) {
           expect(s).toMatch(/g\.company_id/);
           return {
             rows: [
@@ -227,7 +262,10 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
         if (s.includes('CREATE ') || s.includes('ALTER ')) return { rows: [] };
-        if (s.includes('FROM public.job_description_templates') && s.includes('ORDER BY updated_at')) {
+        if (
+          s.includes('FROM public.job_description_templates') &&
+          s.includes('ORDER BY updated_at')
+        ) {
           expect(s).toMatch(/company_id/);
           return {
             rows: [
@@ -270,7 +308,10 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
             ],
           };
         }
-        if (s.includes('FROM public.job_description_templates') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.job_description_templates') &&
+          s.includes('id = $1')
+        ) {
           expect(s).toMatch(/company_id/);
           return {
             rows: [
@@ -317,11 +358,20 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
     } as unknown as HrmDbService;
 
     const jd = new JdDynamicService(db);
-    const catalog = new RecruitmentCatalogService(db, { ensureSchema: jest.fn() } as never, undefined, jd);
+    const catalog = new RecruitmentCatalogService(
+      db,
+      { ensureSchema: jest.fn() } as never,
+      undefined,
+      jd,
+    );
     const auth = groupCeoToken();
     const list = await catalog.listJobDescriptionTemplates('main', auth);
     expect(list.data[0].id).toBe(TEMPLATE_ID);
-    const detail = await catalog.getJobDescriptionTemplateById(TEMPLATE_ID, 'main', auth);
+    const detail = await catalog.getJobDescriptionTemplateById(
+      TEMPLATE_ID,
+      'main',
+      auth,
+    );
     expect(detail.id).toBe(TEMPLATE_ID);
     expect(detail.sections?.[0]?.group_code).toBe('SEC_META');
     expect(detail.sections?.[0]?.fields?.[0]?.value).toBe('Dev');
@@ -330,53 +380,71 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
   it('pack resolve fail-closed → PACK_CORP_DEFAULT when no family match', async () => {
     const packId = '55555555-5555-4555-8555-555555555555';
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX') || s.includes('CREATE UNIQUE')) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (
+            s.includes('CREATE ') ||
+            s.includes('ALTER ') ||
+            s.includes('CREATE INDEX') ||
+            s.includes('CREATE UNIQUE')
+          ) {
+            return { rows: [] };
+          }
+          if (s.includes('COUNT(*)')) return { rows: [{ c: '1' }] };
+          if (s.includes('FROM public.rec_jd_pack_rule r')) {
+            return {
+              rows: [
+                {
+                  id: 'rule-fb',
+                  priority: 100,
+                  match_type: 'fallback',
+                  match_value: null,
+                  pack_id: packId,
+                  pack_code: 'PACK_CORP_DEFAULT',
+                  pack_label: 'Mặc định pháp nhân',
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.rec_jd_pack_group')) {
+            return {
+              rows: [
+                {
+                  group_id: GROUP_ID,
+                  sort_order: 0,
+                  always_on: true,
+                  group_code: 'SEC_META',
+                  label: 'Meta',
+                  view_style: 'chips',
+                  usage: 'default_eligible',
+                  kind: 'system_skeleton',
+                },
+              ],
+            };
+          }
+          if (s.includes('rec_jd_group_field')) return { rows: [] };
+          if (s.includes('is_company_fallback')) {
+            return {
+              rows: [
+                {
+                  id: packId,
+                  code: 'PACK_CORP_DEFAULT',
+                  label: 'Mặc định pháp nhân',
+                },
+              ],
+            };
+          }
           return { rows: [] };
-        }
-        if (s.includes('COUNT(*)')) return { rows: [{ c: '1' }] };
-        if (s.includes('FROM public.rec_jd_pack_rule r')) {
-          return {
-            rows: [
-              {
-                id: 'rule-fb',
-                priority: 100,
-                match_type: 'fallback',
-                match_value: null,
-                pack_id: packId,
-                pack_code: 'PACK_CORP_DEFAULT',
-                pack_label: 'Mặc định pháp nhân',
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.rec_jd_pack_group')) {
-          return {
-            rows: [
-              {
-                group_id: GROUP_ID,
-                sort_order: 0,
-                always_on: true,
-                group_code: 'SEC_META',
-                label: 'Meta',
-                view_style: 'chips',
-                usage: 'default_eligible',
-                kind: 'system_skeleton',
-              },
-            ],
-          };
-        }
-        if (s.includes('rec_jd_group_field')) return { rows: [] };
-        if (s.includes('is_company_fallback')) {
-          return { rows: [{ id: packId, code: 'PACK_CORP_DEFAULT', label: 'Mặc định pháp nhân' }] };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
 
     const svc = new JdDynamicService(db);
-    const resolved = await svc.resolvePack({ company_id: 'holding', job_family: 'UNKNOWN_X' }, groupCeoToken());
+    const resolved = await svc.resolvePack(
+      { company_id: 'holding', job_family: 'UNKNOWN_X' },
+      groupCeoToken(),
+    );
     expect(resolved.pack_code).toBe('PACK_CORP_DEFAULT');
     expect(resolved.resolved_by).toBe('fallback');
   });
@@ -385,7 +453,12 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX') || s.includes('CREATE UNIQUE')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE')
+        ) {
           return { rows: [] };
         }
         if (s.includes('COUNT(*)')) return { rows: [{ c: '1' }] };
@@ -395,8 +468,12 @@ describe('JD dynamic scope_parity (PO-HRM-JD-DYNAMIC-BE-01)', () => {
       }),
     } as unknown as HrmDbService;
     const svc = new JdDynamicService(db);
-    await expect(svc.resolvePack({ company_id: 'holding' }, groupCeoToken())).rejects.toBeInstanceOf(ApiException);
-    await expect(svc.resolvePack({ company_id: 'holding' }, groupCeoToken())).rejects.toMatchObject({
+    await expect(
+      svc.resolvePack({ company_id: 'holding' }, groupCeoToken()),
+    ).rejects.toBeInstanceOf(ApiException);
+    await expect(
+      svc.resolvePack({ company_id: 'holding' }, groupCeoToken()),
+    ).rejects.toMatchObject({
       code: 'HRM-JD-PACK-FALLBACK',
     });
   });

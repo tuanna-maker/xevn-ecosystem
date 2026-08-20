@@ -21,8 +21,10 @@ function toOptionalBool(value: unknown): boolean | undefined {
   if (value === undefined || value === null || value === '') {
     return undefined;
   }
-  if (value === true || value === 'true' || value === 1 || value === '1') return true;
-  if (value === false || value === 'false' || value === 0 || value === '0') return false;
+  if (value === true || value === 'true' || value === 1 || value === '1')
+    return true;
+  if (value === false || value === 'false' || value === 0 || value === '0')
+    return false;
   return undefined;
 }
 
@@ -48,7 +50,8 @@ export class CreateEmpDocumentChecklistDto {
   @IsString()
   @MaxLength(128)
   @Matches(/^[a-z][a-z0-9_]*$/i, {
-    message: 'documentTypeKey must be open key format (a-z, digits, underscore)',
+    message:
+      'documentTypeKey must be open key format (a-z, digits, underscore)',
   })
   documentTypeKey!: string;
 
@@ -72,7 +75,8 @@ export class UpdateEmpDocumentChecklistDto {
   @IsString()
   @MaxLength(128)
   @Matches(/^[a-z][a-z0-9_]*$/i, {
-    message: 'documentTypeKey must be open key format (a-z, digits, underscore)',
+    message:
+      'documentTypeKey must be open key format (a-z, digits, underscore)',
   })
   documentTypeKey?: string;
 

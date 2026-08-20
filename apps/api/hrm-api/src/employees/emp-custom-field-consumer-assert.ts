@@ -105,10 +105,15 @@ function resolveEmpExtensionCatalogCompanyIds(
   authorization?: string,
   tenantId?: string,
 ): string[] {
-  const tid = (tenantId ?? MASTER_TENANT_ID).trim().toLowerCase() || MASTER_TENANT_ID;
-  const scope = resolveHrmListScope(authorization, companyId, { tenantId: tid });
+  const tid =
+    (tenantId ?? MASTER_TENANT_ID).trim().toLowerCase() || MASTER_TENANT_ID;
+  const scope = resolveHrmListScope(authorization, companyId, {
+    tenantId: tid,
+  });
   const out = new Set(
-    expandHrmTextCompanyIds(scope, authorization, companyId).map((id) => id.trim().toLowerCase()),
+    expandHrmTextCompanyIds(scope, authorization, companyId).map((id) =>
+      id.trim().toLowerCase(),
+    ),
   );
   out.add(resolveHrmSettingsCatalogCompanyId(authorization, tid, companyId));
   // Group rollup catalogs may live under main and/or holding (GAP probe · Settings SoT).
@@ -129,8 +134,13 @@ export async function countEffectiveActiveEmpExtensionDefs(
   authorization?: string,
   tenantId?: string,
 ): Promise<number> {
-  const tid = (tenantId ?? MASTER_TENANT_ID).trim().toLowerCase() || MASTER_TENANT_ID;
-  const companyIds = resolveEmpExtensionCatalogCompanyIds(companyId, authorization, tid);
+  const tid =
+    (tenantId ?? MASTER_TENANT_ID).trim().toLowerCase() || MASTER_TENANT_ID;
+  const companyIds = resolveEmpExtensionCatalogCompanyIds(
+    companyId,
+    authorization,
+    tid,
+  );
   try {
     const res = await query<{ c: string }>(
       `
@@ -156,8 +166,13 @@ async function loadActiveEmpExtensionCodes(
   authorization?: string,
   tenantId?: string,
 ): Promise<Set<string>> {
-  const tid = (tenantId ?? MASTER_TENANT_ID).trim().toLowerCase() || MASTER_TENANT_ID;
-  const companyIds = resolveEmpExtensionCatalogCompanyIds(companyId, authorization, tid);
+  const tid =
+    (tenantId ?? MASTER_TENANT_ID).trim().toLowerCase() || MASTER_TENANT_ID;
+  const companyIds = resolveEmpExtensionCatalogCompanyIds(
+    companyId,
+    authorization,
+    tid,
+  );
   try {
     const res = await query<{ code: string }>(
       `
@@ -170,7 +185,11 @@ async function loadActiveEmpExtensionCodes(
       `,
       [tid, companyIds, EMP_EXTENSION_CATALOG_KEY_LIST],
     );
-    return new Set(res.rows.map((r) => normalizeEmpExtensionFieldCode(r.code)).filter(Boolean));
+    return new Set(
+      res.rows
+        .map((r) => normalizeEmpExtensionFieldCode(r.code))
+        .filter(Boolean),
+    );
   } catch (error) {
     if (error instanceof ApiException) throw error;
     return new Set();

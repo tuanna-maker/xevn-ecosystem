@@ -178,7 +178,12 @@ export class EmpStatusReasonService {
     }
     if (!Array.isArray(arr) || arr.length === 0) return null;
     return arr
-      .map((x) => String(x ?? '').trim().replace(/-/g, '_').toLowerCase())
+      .map((x) =>
+        String(x ?? '')
+          .trim()
+          .replace(/-/g, '_')
+          .toLowerCase(),
+      )
       .filter((k) => !!k && EMP_STATUS_REASON_KEY_FORMAT.test(k));
   }
 
@@ -223,10 +228,23 @@ export class EmpStatusReasonService {
     return s;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -236,7 +254,9 @@ export class EmpStatusReasonService {
   ): boolean {
     if (!statusKey?.trim()) return true;
     if (!appliesTo || appliesTo.length === 0) return true;
-    return appliesTo.includes(statusKey.trim().replace(/-/g, '_').toLowerCase());
+    return appliesTo.includes(
+      statusKey.trim().replace(/-/g, '_').toLowerCase(),
+    );
   }
 
   private async loadNativeRows(
@@ -275,8 +295,16 @@ export class EmpStatusReasonService {
     );
     let rows = res.rows;
     if (opts?.appliesToStatusKey?.trim()) {
-      const sk = opts.appliesToStatusKey.trim().replace(/-/g, '_').toLowerCase();
-      rows = rows.filter((r) => this.reasonAppliesToStatus(this.parseAppliesTo(r.applies_to_status_keys_json), sk));
+      const sk = opts.appliesToStatusKey
+        .trim()
+        .replace(/-/g, '_')
+        .toLowerCase();
+      rows = rows.filter((r) =>
+        this.reasonAppliesToStatus(
+          this.parseAppliesTo(r.applies_to_status_keys_json),
+          sk,
+        ),
+      );
     }
     return rows;
   }
@@ -288,7 +316,11 @@ export class EmpStatusReasonService {
     options?: { tenantId?: string },
   ): Promise<{ total: number; data: EmpStatusReasonDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, options?.tenantId);
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      options?.tenantId,
+    );
     const rows = await this.loadNativeRows(companyKeys, {
       includeArchived: false,
       status: 'active',
@@ -365,8 +397,13 @@ export class EmpStatusReasonService {
     tenantId?: string,
   ): Promise<{ total: number; data: EmpStatusReasonDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     const rows = await this.loadNativeRows(companyKeys, {
       includeArchived,
       status: query.status,
@@ -394,7 +431,11 @@ export class EmpStatusReasonService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_EMP_STR_404, 'Status reason not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_EMP_STR_404,
+        'Status reason not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_EMP_STR_404,
@@ -409,17 +450,28 @@ export class EmpStatusReasonService {
     tenantId?: string,
   ): Promise<EmpStatusReasonDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const reasonKey = this.assertKeyFormat(body.reasonKey);
     const nameVi = body.nameVi.trim();
     if (!nameVi) {
-      throw new ApiException(HRM_PLT_CAT_CODE_INVALID, 'nameVi is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_PLT_CAT_CODE_INVALID,
+        'nameVi is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const status = body.status ? this.assertRowStatus(body.status) : 'active';
-    const metadataJson = body.metadata != null ? JSON.stringify(body.metadata) : null;
+    const metadataJson =
+      body.metadata != null ? JSON.stringify(body.metadata) : null;
     const appliesJson =
       body.appliesToStatusKeys != null
-        ? JSON.stringify(body.appliesToStatusKeys.map((k) => this.assertKeyFormat(k)))
+        ? JSON.stringify(
+            body.appliesToStatusKeys.map((k) => this.assertKeyFormat(k)),
+          )
         : null;
     const sortOrder = body.sortOrder ?? 100;
 
@@ -496,7 +548,11 @@ export class EmpStatusReasonService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_EMP_STR_404, 'Status reason not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_EMP_STR_404,
+        'Status reason not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_EMP_STR_404,
@@ -522,7 +578,9 @@ export class EmpStatusReasonService {
       values.push(
         body.appliesToStatusKeys == null
           ? null
-          : JSON.stringify(body.appliesToStatusKeys.map((k) => this.assertKeyFormat(k))),
+          : JSON.stringify(
+              body.appliesToStatusKeys.map((k) => this.assertKeyFormat(k)),
+            ),
       );
       sets.push(`applies_to_status_keys_json = $${values.length}::jsonb`);
     }
@@ -530,7 +588,8 @@ export class EmpStatusReasonService {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertRowStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertRowStatus(body.status));
 
     if (!sets.length) {
       return this.display(row);
@@ -560,7 +619,11 @@ export class EmpStatusReasonService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_EMP_STR_404, 'Status reason not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_EMP_STR_404,
+        'Status reason not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_EMP_STR_404,

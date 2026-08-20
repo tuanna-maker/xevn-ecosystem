@@ -9,7 +9,10 @@ export type HomeSummaryTaskItem = {
   title: string;
   subtitle: string | null;
   priority: number;
-  entity_type: 'leave_request' | 'attendance_update_request' | 'inbox_notification';
+  entity_type:
+    | 'leave_request'
+    | 'attendance_update_request'
+    | 'inbox_notification';
   entity_id: string;
   created_at: string;
   deep_link: string;

@@ -23,7 +23,10 @@ import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
-import { HRM_SET_POS_200, HRM_SET_POS_201 } from './settings-defaults.constants';
+import {
+  HRM_SET_POS_200,
+  HRM_SET_POS_201,
+} from './settings-defaults.constants';
 import { PositionCompensationPolicyService } from './position-compensation-policy.service';
 import {
   CreatePositionCompensationPolicyDto,
@@ -38,7 +41,11 @@ export class PositionCompensationPolicyController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized settings access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized settings access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -50,10 +57,15 @@ export class PositionCompensationPolicyController {
     @Query() query: ListPositionCompensationPoliciesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.service
       .list(query, authorization, tenantId)
-      .then((data) => ok(data, HRM_SET_POS_200, 'Position compensation policies'));
+      .then((data) =>
+        ok(data, HRM_SET_POS_200, 'Position compensation policies'),
+      );
   }
 
   /** F-SET-POS-05 — must register before :id */
@@ -65,10 +77,15 @@ export class PositionCompensationPolicyController {
     @Query() query: ResolvePositionCompensationQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.service
       .resolve(query, authorization, tenantId)
-      .then((data) => ok(data, HRM_SET_POS_200, 'Position compensation prefill draft'));
+      .then((data) =>
+        ok(data, HRM_SET_POS_200, 'Position compensation prefill draft'),
+      );
   }
 
   @Get(':id')
@@ -81,12 +98,18 @@ export class PositionCompensationPolicyController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
       .getById(id, companyId, authorization, tenantId)
-      .then((data) => ok(data, HRM_SET_POS_200, 'Position compensation policy'));
+      .then((data) =>
+        ok(data, HRM_SET_POS_200, 'Position compensation policy'),
+      );
   }
 
   @Post()
@@ -100,7 +123,9 @@ export class PositionCompensationPolicyController {
     resolveScopeContext(authorization, { tenantId, companyId: body.companyId });
     return this.service
       .create(body, authorization, tenantId)
-      .then((data) => ok(data, HRM_SET_POS_201, 'Position compensation policy created'));
+      .then((data) =>
+        ok(data, HRM_SET_POS_201, 'Position compensation policy created'),
+      );
   }
 
   @Patch(':id')
@@ -114,12 +139,18 @@ export class PositionCompensationPolicyController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
       .patch(id, companyId, body, authorization, tenantId)
-      .then((data) => ok(data, HRM_SET_POS_200, 'Position compensation policy updated'));
+      .then((data) =>
+        ok(data, HRM_SET_POS_200, 'Position compensation policy updated'),
+      );
   }
 
   @Post(':id/retire')
@@ -132,11 +163,17 @@ export class PositionCompensationPolicyController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
       .retire(id, companyId, authorization, tenantId)
-      .then((data) => ok(data, HRM_SET_POS_200, 'Position compensation policy retired'));
+      .then((data) =>
+        ok(data, HRM_SET_POS_200, 'Position compensation policy retired'),
+      );
   }
 }

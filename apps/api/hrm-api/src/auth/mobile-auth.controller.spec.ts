@@ -24,8 +24,14 @@ describe('MobileAuthController', () => {
   });
 
   it('login returns HRM-AUTH-200 and passes tenant/company hint', async () => {
-    mobileAuthMock.login.mockResolvedValue({ access_token: 'at', memberships: [] });
-    const res = await controller.login('xevn', 'main', { email: 'ceo@xe.vn', password: 'secret' });
+    mobileAuthMock.login.mockResolvedValue({
+      access_token: 'at',
+      memberships: [],
+    });
+    const res = await controller.login('xevn', 'main', {
+      email: 'ceo@xe.vn',
+      password: 'secret',
+    });
     expect(res.code).toBe('HRM-AUTH-200');
     expect(mobileAuthMock.login).toHaveBeenCalledWith(
       { email: 'ceo@xe.vn', password: 'secret' },
@@ -35,7 +41,10 @@ describe('MobileAuthController', () => {
 
   it('login omits scope hint when headers are blank', async () => {
     mobileAuthMock.login.mockResolvedValue({ access_token: 'at' });
-    await controller.login(undefined, undefined, { email: 'ceo@xe.vn', password: 'secret' });
+    await controller.login(undefined, undefined, {
+      email: 'ceo@xe.vn',
+      password: 'secret',
+    });
     expect(mobileAuthMock.login).toHaveBeenCalledWith(
       { email: 'ceo@xe.vn', password: 'secret' },
       undefined,
@@ -58,7 +67,10 @@ describe('MobileAuthController', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    mobileAuthMock.selectMembership.mockResolvedValue({ access_token: 'at2', memberships: [] });
+    mobileAuthMock.selectMembership.mockResolvedValue({
+      access_token: 'at2',
+      memberships: [],
+    });
     const res = await controller.selectMembership(`Bearer ${token}`, {
       employee_id: '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
     });
@@ -70,9 +82,14 @@ describe('MobileAuthController', () => {
   });
 
   it('refresh returns HRM-AUTH-201', async () => {
-    mobileAuthMock.refresh.mockResolvedValue({ access_token: 'new-at', expires_in_sec: 43200 });
+    mobileAuthMock.refresh.mockResolvedValue({
+      access_token: 'new-at',
+      expires_in_sec: 43200,
+    });
     const res = await controller.refresh({ refresh_token: 'rt.example' });
     expect(res.code).toBe('HRM-AUTH-201');
-    expect(mobileAuthMock.refresh).toHaveBeenCalledWith({ refresh_token: 'rt.example' });
+    expect(mobileAuthMock.refresh).toHaveBeenCalledWith({
+      refresh_token: 'rt.example',
+    });
   });
 });

@@ -305,11 +305,11 @@ export class AttendanceConfigService {
     const departmentId =
       overlay?.departmentId !== undefined
         ? overlay.departmentId
-        : row.late_penalty_department_id ?? null;
+        : (row.late_penalty_department_id ?? null);
     const shiftId =
       overlay?.shiftId !== undefined
         ? overlay.shiftId
-        : row.late_penalty_shift_id ?? null;
+        : (row.late_penalty_shift_id ?? null);
 
     const notifyLate = row.notify_late !== false;
     const gpsEnabled = row.gps_enabled !== false;
@@ -327,8 +327,11 @@ export class AttendanceConfigService {
       round_out_minutes: row.round_out_minutes,
       standard_type: row.standard_type,
       standard_days_per_month:
-        row.standard_days_per_month != null ? Number(row.standard_days_per_month) : null,
-      hours_per_day: row.hours_per_day != null ? Number(row.hours_per_day) : null,
+        row.standard_days_per_month != null
+          ? Number(row.standard_days_per_month)
+          : null,
+      hours_per_day:
+        row.hours_per_day != null ? Number(row.hours_per_day) : null,
       allow_multiple_checkin: row.allow_multiple_checkin,
       auto_checkout: row.auto_checkout,
       notify_late: notifyLate,
@@ -382,10 +385,14 @@ export class AttendanceConfigService {
     requestedCompanyId: string,
     tenantId?: string,
   ): string {
-    return resolveHrmPersistCompanyIdText(authorization, requestedCompanyId, { tenantId });
+    return resolveHrmPersistCompanyIdText(authorization, requestedCompanyId, {
+      tenantId,
+    });
   }
 
-  private async listSpecificityRows(companySlug: string): Promise<AttAttendanceRuleRow[]> {
+  private async listSpecificityRows(
+    companySlug: string,
+  ): Promise<AttAttendanceRuleRow[]> {
     await this.ensureLatePenaltySpecificitySchema();
     const res = await this.db.query<AttAttendanceRuleRow>(
       `
@@ -406,11 +413,15 @@ export class AttendanceConfigService {
     opts?: { departmentId?: string | null; shiftId?: string | null },
   ) {
     const wantDept =
-      opts?.departmentId !== undefined && opts.departmentId !== null && opts.departmentId !== ''
+      opts?.departmentId !== undefined &&
+      opts.departmentId !== null &&
+      opts.departmentId !== ''
         ? String(opts.departmentId)
         : null;
     const wantShift =
-      opts?.shiftId !== undefined && opts.shiftId !== null && opts.shiftId !== ''
+      opts?.shiftId !== undefined &&
+      opts.shiftId !== null &&
+      opts.shiftId !== ''
         ? String(opts.shiftId)
         : null;
 
@@ -455,7 +466,12 @@ export class AttendanceConfigService {
     bands: LatePenaltyBand[];
     notifyLate: boolean;
   }> {
-    const mapped = await this.getRules(companyId, authorization, tenantId, opts);
+    const mapped = await this.getRules(
+      companyId,
+      authorization,
+      tenantId,
+      opts,
+    );
     return {
       latePenaltyEnabled: mapped.latePenaltyEnabled !== false,
       mode: mapped.mode,
@@ -474,7 +490,11 @@ export class AttendanceConfigService {
     opts?: { departmentId?: string | null; shiftId?: string | null },
   ) {
     await this.ensureRulesSchema();
-    const slug = this.resolveScopedCompanySlug(authorization, companyId, tenantId);
+    const slug = this.resolveScopedCompanySlug(
+      authorization,
+      companyId,
+      tenantId,
+    );
     const existing = await this.db.query<AttendanceRulesRow>(
       `SELECT * FROM public.attendance_rules WHERE company_id = $1 LIMIT 1;`,
       [slug],
@@ -545,21 +565,27 @@ export class AttendanceConfigService {
   } {
     const hasDept =
       payload.departmentId !== undefined || payload.department_id !== undefined;
-    const hasShift = payload.shiftId !== undefined || payload.shift_id !== undefined;
+    const hasShift =
+      payload.shiftId !== undefined || payload.shift_id !== undefined;
     const departmentId = hasDept
       ? (payload.departmentId ?? payload.department_id ?? null)
       : null;
-    const shiftId = hasShift ? (payload.shiftId ?? payload.shift_id ?? null) : null;
+    const shiftId = hasShift
+      ? (payload.shiftId ?? payload.shift_id ?? null)
+      : null;
     const deptVal =
       departmentId != null && String(departmentId).trim() !== ''
         ? String(departmentId).trim()
         : null;
     const shiftVal =
-      shiftId != null && String(shiftId).trim() !== '' ? String(shiftId).trim() : null;
+      shiftId != null && String(shiftId).trim() !== ''
+        ? String(shiftId).trim()
+        : null;
     return {
       departmentId: deptVal,
       shiftId: shiftVal,
-      hasScopeKeys: hasDept || hasShift || Boolean(deptVal) || Boolean(shiftVal),
+      hasScopeKeys:
+        hasDept || hasShift || Boolean(deptVal) || Boolean(shiftVal),
     };
   }
 
@@ -610,11 +636,14 @@ export class AttendanceConfigService {
     const scopeKeys = this.resolveScopeKeysFromPayload(payload);
 
     // Specificity upsert when dept/shift keys present (R-ATT-02-SCOPE)
-    if (scopeKeys.hasScopeKeys && (residual.mode !== undefined || residual.bands !== undefined || residual.latePenaltyEnabled !== undefined)) {
+    if (
+      scopeKeys.hasScopeKeys &&
+      (residual.mode !== undefined ||
+        residual.bands !== undefined ||
+        residual.latePenaltyEnabled !== undefined)
+    ) {
       const modeToPersist =
-        residual.mode ??
-        normalizeLatePenaltyMode(current.mode) ??
-        ('minute' as LatePenaltyMode);
+        residual.mode ?? normalizeLatePenaltyMode(current.mode) ?? 'minute';
       if (!modeToPersist) {
         throw new ApiException(
           'HRM-VAL-400',
@@ -687,20 +716,27 @@ export class AttendanceConfigService {
       sets.push(`${column} = $${values.length}`);
     };
 
-    if (payload.work_start_day !== undefined) assign('work_start_day', payload.work_start_day);
-    if (payload.work_end_day !== undefined) assign('work_end_day', payload.work_end_day);
+    if (payload.work_start_day !== undefined)
+      assign('work_start_day', payload.work_start_day);
+    if (payload.work_end_day !== undefined)
+      assign('work_end_day', payload.work_end_day);
     if (payload.work_days !== undefined) assign('work_days', payload.work_days);
-    if (payload.round_in_minutes !== undefined) assign('round_in_minutes', payload.round_in_minutes);
-    if (payload.round_out_minutes !== undefined) assign('round_out_minutes', payload.round_out_minutes);
-    if (payload.standard_type !== undefined) assign('standard_type', payload.standard_type);
+    if (payload.round_in_minutes !== undefined)
+      assign('round_in_minutes', payload.round_in_minutes);
+    if (payload.round_out_minutes !== undefined)
+      assign('round_out_minutes', payload.round_out_minutes);
+    if (payload.standard_type !== undefined)
+      assign('standard_type', payload.standard_type);
     if (payload.standard_days_per_month !== undefined) {
       assign('standard_days_per_month', payload.standard_days_per_month);
     }
-    if (payload.hours_per_day !== undefined) assign('hours_per_day', payload.hours_per_day);
+    if (payload.hours_per_day !== undefined)
+      assign('hours_per_day', payload.hours_per_day);
     if (payload.allow_multiple_checkin !== undefined) {
       assign('allow_multiple_checkin', payload.allow_multiple_checkin);
     }
-    if (payload.auto_checkout !== undefined) assign('auto_checkout', payload.auto_checkout);
+    if (payload.auto_checkout !== undefined)
+      assign('auto_checkout', payload.auto_checkout);
 
     const notifyLate =
       payload.notifyLate !== undefined
@@ -734,7 +770,8 @@ export class AttendanceConfigService {
 
     // Company-level soft cols when no specificity keys (or explicit company default write)
     if (!scopeKeys.hasScopeKeys) {
-      if (residual.mode !== undefined) assign('late_penalty_mode', residual.mode);
+      if (residual.mode !== undefined)
+        assign('late_penalty_mode', residual.mode);
       if (residual.bands !== undefined) {
         assign('late_penalty_bands', JSON.stringify(residual.bands));
       }
@@ -749,7 +786,8 @@ export class AttendanceConfigService {
         residual.latePenaltyEnabled !== undefined)
     ) {
       // Explicit null scope keys = company default soft cols + specificity company row
-      if (residual.mode !== undefined) assign('late_penalty_mode', residual.mode);
+      if (residual.mode !== undefined)
+        assign('late_penalty_mode', residual.mode);
       if (residual.bands !== undefined) {
         assign('late_penalty_bands', JSON.stringify(residual.bands));
       }
@@ -780,7 +818,11 @@ export class AttendanceConfigService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-ATT-RULES-404', 'Attendance rules not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-RULES-404',
+        'Attendance rules not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const overlay = await this.resolveLatePenaltyOverlay(slug, res.rows[0], {
       departmentId: scopeKeys.departmentId,
@@ -807,7 +849,11 @@ export class AttendanceConfigService {
   ): Promise<boolean> {
     await this.ensureRulesSchema();
     try {
-      const slug = this.resolveScopedCompanySlug(authorization, requestedCompanyId, tenantId);
+      const slug = this.resolveScopedCompanySlug(
+        authorization,
+        requestedCompanyId,
+        tenantId,
+      );
       const res = await this.db.query<{ gps_enabled: boolean | null }>(
         `SELECT gps_enabled FROM public.attendance_rules WHERE company_id = $1 LIMIT 1;`,
         [slug],
@@ -833,7 +879,11 @@ export class AttendanceConfigService {
   ) {
     await this.ensureWorkSitesSchema();
     const scope = resolveHrmListScope(authorization, companyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, companyId);
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      companyId,
+    );
     const filters: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdTextColumnFilter(filters, values, companyKeys);
@@ -847,7 +897,10 @@ export class AttendanceConfigService {
        ORDER BY created_at ASC;`,
       values,
     );
-    return { total: res.rows.length, data: res.rows.map((r) => this.mapWorkSite(r)) };
+    return {
+      total: res.rows.length,
+      data: res.rows.map((r) => this.mapWorkSite(r)),
+    };
   }
 
   /** Active site count in same list/geofence scope (U19) — CNS-05 / ADR D3 empty skip. */
@@ -858,7 +911,11 @@ export class AttendanceConfigService {
   ): Promise<number> {
     await this.ensureWorkSitesSchema();
     const scope = resolveHrmListScope(authorization, companyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, companyId);
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      companyId,
+    );
     const filters: string[] = ['active = TRUE'];
     const values: unknown[] = [];
     pushCompanyIdTextColumnFilter(filters, values, companyKeys);
@@ -869,7 +926,10 @@ export class AttendanceConfigService {
     return Number(res.rows[0]?.c ?? 0);
   }
 
-  private resolveRadiusMeters(payload: { radius?: number; radius_meters?: number }): number {
+  private resolveRadiusMeters(payload: {
+    radius?: number;
+    radius_meters?: number;
+  }): number {
     const raw = payload.radius_meters ?? payload.radius ?? 200;
     const n = Number(raw);
     if (!Number.isFinite(n) || n < 1) {
@@ -882,9 +942,17 @@ export class AttendanceConfigService {
     return Math.floor(n);
   }
 
-  async createWorkSite(payload: CreateWorkSiteDto, authorization?: string, tenantId?: string) {
+  async createWorkSite(
+    payload: CreateWorkSiteDto,
+    authorization?: string,
+    tenantId?: string,
+  ) {
     await this.ensureWorkSitesSchema();
-    const companyId = this.resolveScopedCompanySlug(authorization, payload.company_id, tenantId);
+    const companyId = this.resolveScopedCompanySlug(
+      authorization,
+      payload.company_id,
+      tenantId,
+    );
     const radius = this.resolveRadiusMeters(payload);
     const res = await this.db.query<WorkSiteRow>(
       `
@@ -923,7 +991,11 @@ export class AttendanceConfigService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException('HRM-ATT-SITE-404', 'Work site not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-SITE-404',
+        'Work site not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: 'HRM-ATT-SITE-404',
@@ -937,7 +1009,8 @@ export class AttendanceConfigService {
       sets.push(`${column} = $${values.length}`);
     };
     if (payload.name !== undefined) assign('name', payload.name.trim());
-    if (payload.address !== undefined) assign('address', payload.address.trim() || null);
+    if (payload.address !== undefined)
+      assign('address', payload.address.trim() || null);
     if (payload.latitude !== undefined) assign('latitude', payload.latitude);
     if (payload.longitude !== undefined) assign('longitude', payload.longitude);
     if (payload.radius_meters !== undefined || payload.radius !== undefined) {
@@ -981,7 +1054,11 @@ export class AttendanceConfigService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException('HRM-ATT-SITE-404', 'Work site not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-SITE-404',
+        'Work site not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: 'HRM-ATT-SITE-404',
@@ -989,7 +1066,10 @@ export class AttendanceConfigService {
     });
 
     if (opts?.hard) {
-      await this.db.query(`DELETE FROM public.attendance_work_sites WHERE id = $1::uuid;`, [siteId]);
+      await this.db.query(
+        `DELETE FROM public.attendance_work_sites WHERE id = $1::uuid;`,
+        [siteId],
+      );
       return { id: siteId, retired: false, hard_deleted: true };
     }
 
@@ -1006,6 +1086,10 @@ export class AttendanceConfigService {
       `,
       [siteId],
     );
-    return { ...this.mapWorkSite(res.rows[0]), retired: true, hard_deleted: false };
+    return {
+      ...this.mapWorkSite(res.rows[0]),
+      retired: true,
+      hard_deleted: false,
+    };
   }
 }

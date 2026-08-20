@@ -1,0 +1,422 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AssetsService = void 0;
+const common_1 = require("@nestjs/common");
+const api_exception_1 = require("../common/api.exception");
+const xbos_db_service_1 = require("../db/xbos-db.service");
+const fieldOwnershipMatrix = {
+    assetCode: ['hrm-admin', 'operations'],
+    assetName: ['hrm-admin', 'operations'],
+    assetType: ['hrm-admin', 'operations'],
+    vin: ['operations'],
+    chassisNo: ['operations'],
+    status: ['operations'],
+    ownerModule: ['hrm-admin'],
+    metadata: ['hrm-admin', 'operations', 'finance-tax'],
+    financialProfile: ['finance-tax'],
+};
+let AssetsService = class AssetsService {
+    db;
+    constructor(db) {
+        this.db = db;
+    }
+    uniqueConstraintFieldMap = {
+        asset_registry_tenant_id_company_id_asset_code_key: ['assetCode'],
+        uq_asset_registry_tenant_company_vin: ['vin'],
+        uq_asset_registry_tenant_company_chassis: ['chassisNo'],
+    };
+    async ensureSchema() {
+        await this.db.query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
+        await this.db.query(`
+      CREATE TABLE IF NOT EXISTS public.asset_registry (
+        id BIGSERIAL PRIMARY KEY,
+        asset_id UUID NOT NULL DEFAULT gen_random_uuid(),
+        tenant_id TEXT NOT NULL,
+        company_id TEXT NOT NULL,
+        asset_code TEXT NOT NULL,
+        asset_name TEXT NOT NULL,
+        asset_type TEXT NOT NULL,
+        vin TEXT NULL,
+        chassis_no TEXT NULL,
+        status TEXT NOT NULL DEFAULT 'active',
+        owner_module TEXT NOT NULL,
+        metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+        version INT NOT NULL DEFAULT 1,
+        created_by TEXT NOT NULL DEFAULT 'system',
+        updated_by TEXT NOT NULL DEFAULT 'system',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (asset_id),
+        UNIQUE (tenant_id, company_id, asset_code)
+      );
+    `);
+        await this.db.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_asset_registry_tenant_company_vin
+      ON public.asset_registry (tenant_id, company_id, vin)
+      WHERE vin IS NOT NULL;
+    `);
+        await this.db.query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS uq_asset_registry_tenant_company_chassis
+      ON public.asset_registry (tenant_id, company_id, chassis_no)
+      WHERE chassis_no IS NOT NULL;
+    `);
+        await this.db.query(`
+      CREATE TABLE IF NOT EXISTS public.asset_ownership_map (
+        id BIGSERIAL PRIMARY KEY,
+        asset_id UUID NOT NULL REFERENCES public.asset_registry(asset_id) ON DELETE CASCADE,
+        field_key TEXT NOT NULL,
+        owner_module TEXT NOT NULL,
+        mutable BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (asset_id, field_key)
+      );
+    `);
+        await this.db.query(`
+      CREATE TABLE IF NOT EXISTS public.asset_financial_profile (
+        id BIGSERIAL PRIMARY KEY,
+        asset_id UUID NOT NULL REFERENCES public.asset_registry(asset_id) ON DELETE CASCADE,
+        depreciation_method TEXT NOT NULL DEFAULT 'straight_line',
+        useful_life_months INT NULL,
+        acquisition_cost NUMERIC(18, 2) NULL,
+        residual_value NUMERIC(18, 2) NULL,
+        monthly_loan_interest NUMERIC(18, 2) NULL,
+        monthly_principal_payment NUMERIC(18, 2) NULL,
+        currency_code CHAR(3) NOT NULL DEFAULT 'VND',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (asset_id)
+      );
+    `);
+        await this.db.query(`
+      CREATE TABLE IF NOT EXISTS public.asset_lifecycle_audit (
+        id BIGSERIAL PRIMARY KEY,
+        asset_id UUID NOT NULL REFERENCES public.asset_registry(asset_id) ON DELETE CASCADE,
+        tenant_id TEXT NOT NULL,
+        company_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        actor_module TEXT NOT NULL,
+        actor_id TEXT NOT NULL DEFAULT 'system',
+        request_id TEXT NULL,
+        before_payload JSONB NULL,
+        after_payload JSONB NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+    }
+    validateOwnership(moduleCode, fields) {
+        for (const field of fields) {
+            if (!fieldOwnershipMatrix[field].includes(moduleCode)) {
+                throw new api_exception_1.ApiException('ASSET-OWN-001', `Module '${moduleCode}' cannot update field '${field}'`, common_1.HttpStatus.FORBIDDEN, { field, moduleCode });
+            }
+        }
+    }
+    normalizeRow(row) {
+        return {
+            assetId: row.asset_id,
+            tenantId: row.tenant_id,
+            companyId: row.company_id,
+            assetCode: row.asset_code,
+            assetName: row.asset_name,
+            assetType: row.asset_type,
+            vin: row.vin,
+            chassisNo: row.chassis_no,
+            status: row.status,
+            ownerModule: row.owner_module,
+            metadata: row.metadata,
+            version: row.version,
+            createdBy: row.created_by,
+            updatedBy: row.updated_by,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
+        };
+    }
+    async writeAudit(assetId, tenantId, companyId, action, actorModule, actorId, requestId, beforePayload, afterPayload) {
+        await this.db.query(`
+      INSERT INTO public.asset_lifecycle_audit (
+        asset_id, tenant_id, company_id, action, actor_module, actor_id, request_id, before_payload, after_payload
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9::jsonb)
+    `, [
+            assetId,
+            tenantId,
+            companyId,
+            action,
+            actorModule,
+            actorId,
+            requestId ?? null,
+            beforePayload ? JSON.stringify(beforePayload) : null,
+            afterPayload ? JSON.stringify(afterPayload) : null,
+        ]);
+    }
+    async upsertOwnershipMap(assetId) {
+        for (const [fieldKey, owners] of Object.entries(fieldOwnershipMatrix)) {
+            await this.db.query(`
+        INSERT INTO public.asset_ownership_map (asset_id, field_key, owner_module, mutable, updated_at)
+        VALUES ($1, $2, $3, TRUE, NOW())
+        ON CONFLICT (asset_id, field_key) DO UPDATE SET owner_module = EXCLUDED.owner_module, updated_at = NOW()
+      `, [assetId, fieldKey, owners[0]]);
+        }
+    }
+    resolveConflictFields(constraint, detail) {
+        if (constraint && this.uniqueConstraintFieldMap[constraint]) {
+            return this.uniqueConstraintFieldMap[constraint];
+        }
+        if (!detail)
+            return [];
+        const keyMatch = detail.match(/Key \(([^)]+)\)=\(([^)]+)\)/i);
+        if (!keyMatch?.[1])
+            return [];
+        const columns = keyMatch[1]
+            .split(',')
+            .map((column) => column.trim().toLowerCase())
+            .filter(Boolean);
+        const fields = [];
+        if (columns.includes('asset_code'))
+            fields.push('assetCode');
+        if (columns.includes('vin'))
+            fields.push('vin');
+        if (columns.includes('chassis_no'))
+            fields.push('chassisNo');
+        return fields;
+    }
+    async createAsset(dto, moduleCode) {
+        await this.ensureSchema();
+        this.validateOwnership(moduleCode, ['assetCode', 'assetName', 'assetType', 'metadata']);
+        if (dto.ownerModule !== moduleCode && moduleCode !== 'hrm-admin') {
+            throw new api_exception_1.ApiException('ASSET-OWN-003', `Module '${moduleCode}' cannot assign owner module '${dto.ownerModule}'`, common_1.HttpStatus.FORBIDDEN);
+        }
+        if (dto.vin)
+            this.validateOwnership(moduleCode, ['vin']);
+        if (dto.chassisNo)
+            this.validateOwnership(moduleCode, ['chassisNo']);
+        if (dto.financialProfile)
+            this.validateOwnership(moduleCode, ['financialProfile']);
+        const actorId = dto.actorId?.trim() || 'system';
+        let insertResult;
+        try {
+            insertResult = await this.db.query(`
+        INSERT INTO public.asset_registry (
+          tenant_id, company_id, asset_code, asset_name, asset_type, vin, chassis_no, status, owner_module, metadata, created_by, updated_by
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11, $11)
+        RETURNING *
+      `, [
+                dto.tenantId,
+                dto.companyId,
+                dto.assetCode.trim(),
+                dto.assetName.trim(),
+                dto.assetType.trim(),
+                dto.vin?.trim() ?? null,
+                dto.chassisNo?.trim() ?? null,
+                dto.status?.trim() ?? 'active',
+                dto.ownerModule,
+                JSON.stringify(dto.metadata ?? {}),
+                actorId,
+            ]);
+        }
+        catch (error) {
+            const pgError = error;
+            if (pgError?.code === '23505') {
+                const conflictFields = this.resolveConflictFields(pgError.constraint, pgError.detail);
+                throw new api_exception_1.ApiException('ASSET-REG-409', 'Asset identity already exists in tenant/company scope', common_1.HttpStatus.CONFLICT, {
+                    conflictFields,
+                    scope: { tenantId: dto.tenantId, companyId: dto.companyId },
+                    constraint: pgError.constraint ?? null,
+                });
+            }
+            throw error;
+        }
+        const created = insertResult.rows[0];
+        if (!created) {
+            throw new api_exception_1.ApiException('ASSET-REG-500', 'Asset create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        await this.upsertOwnershipMap(created.asset_id);
+        if (dto.financialProfile) {
+            await this.db.query(`
+        INSERT INTO public.asset_financial_profile (
+          asset_id, depreciation_method, useful_life_months, acquisition_cost, residual_value,
+          monthly_loan_interest, monthly_principal_payment, currency_code
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        ON CONFLICT (asset_id) DO UPDATE SET
+          depreciation_method = EXCLUDED.depreciation_method,
+          useful_life_months = EXCLUDED.useful_life_months,
+          acquisition_cost = EXCLUDED.acquisition_cost,
+          residual_value = EXCLUDED.residual_value,
+          monthly_loan_interest = EXCLUDED.monthly_loan_interest,
+          monthly_principal_payment = EXCLUDED.monthly_principal_payment,
+          currency_code = EXCLUDED.currency_code,
+          updated_at = NOW()
+      `, [
+                created.asset_id,
+                dto.financialProfile.depreciationMethod ?? 'straight_line',
+                dto.financialProfile.usefulLifeMonths ?? null,
+                dto.financialProfile.acquisitionCost ?? null,
+                dto.financialProfile.residualValue ?? null,
+                dto.financialProfile.monthlyLoanInterest ?? null,
+                dto.financialProfile.monthlyPrincipalPayment ?? null,
+                dto.financialProfile.currencyCode ?? 'VND',
+            ]);
+        }
+        const normalizedCreated = this.normalizeRow(created);
+        await this.writeAudit(created.asset_id, created.tenant_id, created.company_id, 'create', moduleCode, actorId, dto.requestId, null, normalizedCreated);
+        return normalizedCreated;
+    }
+    async listAssets(query) {
+        await this.ensureSchema();
+        const page = query.page ?? 1;
+        const limit = query.limit ?? 20;
+        const offset = (page - 1) * limit;
+        const searchValue = query.q?.trim() ?? '';
+        const listResult = await this.db.query(`
+      SELECT *
+      FROM public.asset_registry
+      WHERE tenant_id = $1
+        AND company_id = $2
+        AND ($3::text IS NULL OR owner_module = $3)
+        AND ($4::text IS NULL OR status = $4)
+        AND (
+          $5::text = ''
+          OR asset_code ILIKE '%' || $5 || '%'
+          OR asset_name ILIKE '%' || $5 || '%'
+          OR COALESCE(vin, '') ILIKE '%' || $5 || '%'
+          OR COALESCE(chassis_no, '') ILIKE '%' || $5 || '%'
+        )
+      ORDER BY updated_at DESC
+      LIMIT $6 OFFSET $7
+    `, [query.tenantId, query.companyId, query.ownerModule ?? null, query.status ?? null, searchValue, limit, offset]);
+        const countResult = await this.db.query(`
+      SELECT COUNT(*)::text AS total
+      FROM public.asset_registry
+      WHERE tenant_id = $1
+        AND company_id = $2
+        AND ($3::text IS NULL OR owner_module = $3)
+        AND ($4::text IS NULL OR status = $4)
+        AND (
+          $5::text = ''
+          OR asset_code ILIKE '%' || $5 || '%'
+          OR asset_name ILIKE '%' || $5 || '%'
+          OR COALESCE(vin, '') ILIKE '%' || $5 || '%'
+          OR COALESCE(chassis_no, '') ILIKE '%' || $5 || '%'
+        )
+    `, [query.tenantId, query.companyId, query.ownerModule ?? null, query.status ?? null, searchValue]);
+        return {
+            page,
+            limit,
+            total: Number(countResult.rows[0]?.total ?? '0'),
+            data: listResult.rows.map((row) => this.normalizeRow(row)),
+        };
+    }
+    async getAssetById(assetId, tenantId, companyId) {
+        await this.ensureSchema();
+        const result = await this.db.query(`
+      SELECT *
+      FROM public.asset_registry
+      WHERE asset_id = $1 AND tenant_id = $2 AND company_id = $3
+    `, [assetId, tenantId, companyId]);
+        const found = result.rows[0];
+        if (!found) {
+            throw new api_exception_1.ApiException('ASSET-REG-404', `Asset '${assetId}' not found`, common_1.HttpStatus.NOT_FOUND);
+        }
+        return this.normalizeRow(found);
+    }
+    async updateAsset(assetId, tenantId, companyId, dto, moduleCode) {
+        await this.ensureSchema();
+        const foundResult = await this.db.query(`
+      SELECT *
+      FROM public.asset_registry
+      WHERE asset_id = $1 AND tenant_id = $2 AND company_id = $3
+    `, [assetId, tenantId, companyId]);
+        const found = foundResult.rows[0];
+        if (!found) {
+            throw new api_exception_1.ApiException('ASSET-REG-404', `Asset '${assetId}' not found`, common_1.HttpStatus.NOT_FOUND);
+        }
+        const changedFields = Object.keys(dto).filter((key) => dto[key] !== undefined);
+        if (changedFields.length === 0) {
+            throw new api_exception_1.ApiException('ASSET-REG-400', 'No update field provided', common_1.HttpStatus.BAD_REQUEST);
+        }
+        const ownershipFields = changedFields.filter((field) => ['assetCode', 'assetName', 'assetType', 'vin', 'chassisNo', 'status', 'ownerModule', 'metadata', 'financialProfile'].includes(field));
+        this.validateOwnership(moduleCode, ownershipFields);
+        const actorId = dto.actorId?.trim() || 'system';
+        const sqlFields = [];
+        const values = [];
+        const pushField = (column, value) => {
+            values.push(value);
+            sqlFields.push(`${column} = $${values.length}`);
+        };
+        if (dto.assetCode !== undefined)
+            pushField('asset_code', dto.assetCode.trim());
+        if (dto.assetName !== undefined)
+            pushField('asset_name', dto.assetName.trim());
+        if (dto.assetType !== undefined)
+            pushField('asset_type', dto.assetType.trim());
+        if (dto.vin !== undefined)
+            pushField('vin', dto.vin.trim());
+        if (dto.chassisNo !== undefined)
+            pushField('chassis_no', dto.chassisNo.trim());
+        if (dto.status !== undefined)
+            pushField('status', dto.status.trim());
+        if (dto.ownerModule !== undefined)
+            pushField('owner_module', dto.ownerModule);
+        if (dto.metadata !== undefined)
+            pushField('metadata', JSON.stringify(dto.metadata));
+        pushField('version', found.version + 1);
+        pushField('updated_by', actorId);
+        sqlFields.push('updated_at = NOW()');
+        values.push(assetId, tenantId, companyId);
+        const updatedResult = await this.db.query(`
+      UPDATE public.asset_registry
+      SET ${sqlFields.join(', ')}
+      WHERE asset_id = $${values.length - 2} AND tenant_id = $${values.length - 1} AND company_id = $${values.length}
+      RETURNING *
+    `, values);
+        const updated = updatedResult.rows[0];
+        if (!updated) {
+            throw new api_exception_1.ApiException('ASSET-REG-409', 'Asset update conflict', common_1.HttpStatus.CONFLICT);
+        }
+        if (dto.financialProfile) {
+            await this.db.query(`
+        INSERT INTO public.asset_financial_profile (
+          asset_id, depreciation_method, useful_life_months, acquisition_cost, residual_value,
+          monthly_loan_interest, monthly_principal_payment, currency_code
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        ON CONFLICT (asset_id) DO UPDATE SET
+          depreciation_method = COALESCE(EXCLUDED.depreciation_method, public.asset_financial_profile.depreciation_method),
+          useful_life_months = COALESCE(EXCLUDED.useful_life_months, public.asset_financial_profile.useful_life_months),
+          acquisition_cost = COALESCE(EXCLUDED.acquisition_cost, public.asset_financial_profile.acquisition_cost),
+          residual_value = COALESCE(EXCLUDED.residual_value, public.asset_financial_profile.residual_value),
+          monthly_loan_interest = COALESCE(EXCLUDED.monthly_loan_interest, public.asset_financial_profile.monthly_loan_interest),
+          monthly_principal_payment = COALESCE(EXCLUDED.monthly_principal_payment, public.asset_financial_profile.monthly_principal_payment),
+          currency_code = COALESCE(EXCLUDED.currency_code, public.asset_financial_profile.currency_code),
+          updated_at = NOW()
+      `, [
+                assetId,
+                dto.financialProfile.depreciationMethod ?? null,
+                dto.financialProfile.usefulLifeMonths ?? null,
+                dto.financialProfile.acquisitionCost ?? null,
+                dto.financialProfile.residualValue ?? null,
+                dto.financialProfile.monthlyLoanInterest ?? null,
+                dto.financialProfile.monthlyPrincipalPayment ?? null,
+                dto.financialProfile.currencyCode ?? null,
+            ]);
+        }
+        const beforePayload = this.normalizeRow(found);
+        const afterPayload = this.normalizeRow(updated);
+        await this.writeAudit(assetId, tenantId, companyId, 'update', moduleCode, actorId, dto.requestId, beforePayload, afterPayload);
+        return afterPayload;
+    }
+};
+exports.AssetsService = AssetsService;
+exports.AssetsService = AssetsService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [xbos_db_service_1.XbosDbService])
+], AssetsService);

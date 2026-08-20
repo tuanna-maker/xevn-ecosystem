@@ -35,7 +35,12 @@
  * must_keep: open catalog; TPL-404 get-by-id; TPL-NONE empty; printable=false; no schema invent
  */
 
-export const CONTRACT_PACK_CODES = ['GENERAL', 'IT_OFFICE', 'DRIVER', 'LOGISTICS'] as const;
+export const CONTRACT_PACK_CODES = [
+  'GENERAL',
+  'IT_OFFICE',
+  'DRIVER',
+  'LOGISTICS',
+] as const;
 export type ContractPackCode = (typeof CONTRACT_PACK_CODES)[number];
 
 export const CONTRACT_PACK_DEFAULT: ContractPackCode = 'GENERAL';
@@ -97,7 +102,8 @@ export const XEVN_STARTER_TEMPLATE_CODES = [
 /** @deprecated Use XEVN_STARTER_TEMPLATE_CODES — alias for bootstrap callers. */
 export const XEVN_TEMPLATE_CODES = XEVN_STARTER_TEMPLATE_CODES;
 
-export type XevnStarterTemplateCode = (typeof XEVN_STARTER_TEMPLATE_CODES)[number];
+export type XevnStarterTemplateCode =
+  (typeof XEVN_STARTER_TEMPLATE_CODES)[number];
 /** @deprecated alias */
 export type XevnTemplateCode = XevnStarterTemplateCode;
 
@@ -193,21 +199,29 @@ export const XEVN_MATRIX_CATALOG: readonly XevnMatrixRow[] = [
 
 export const CONTRACT_SETTING_ORG_SUFFIX = 'contract_number_org_suffix';
 export const CONTRACT_SETTING_NUMBER_PATTERN = 'contract_number_pattern';
-export const CONTRACT_SETTING_KEYS = [CONTRACT_SETTING_ORG_SUFFIX, CONTRACT_SETTING_NUMBER_PATTERN] as const;
+export const CONTRACT_SETTING_KEYS = [
+  CONTRACT_SETTING_ORG_SUFFIX,
+  CONTRACT_SETTING_NUMBER_PATTERN,
+] as const;
 export type ContractSettingKey = (typeof CONTRACT_SETTING_KEYS)[number];
 
-export const CONTRACT_NUMBER_PATTERN_DEFAULT = '{seq}/{yyyy}/{docKind}-{orgSuffix}';
+export const CONTRACT_NUMBER_PATTERN_DEFAULT =
+  '{seq}/{yyyy}/{docKind}-{orgSuffix}';
 
 /** True iff code is one of the 8 Excel starter rows (bootstrap helper — not a create gate). */
 export function isXevnStarterTemplateCode(
   code: string | undefined | null,
 ): code is XevnStarterTemplateCode {
   if (!code?.trim()) return false;
-  return (XEVN_STARTER_TEMPLATE_CODES as readonly string[]).includes(code.trim().toUpperCase());
+  return (XEVN_STARTER_TEMPLATE_CODES as readonly string[]).includes(
+    code.trim().toUpperCase(),
+  );
 }
 
 /** @deprecated Prefer isXevnStarterTemplateCode — does NOT mean «only these codes allowed». */
-export function isXevnTemplateCode(code: string | undefined | null): code is XevnTemplateCode {
+export function isXevnTemplateCode(
+  code: string | undefined | null,
+): code is XevnTemplateCode {
   return isXevnStarterTemplateCode(code);
 }
 
@@ -228,13 +242,17 @@ export function normalizeTemplateCode(raw: string | undefined | null): string {
   return (raw ?? '').trim().toUpperCase();
 }
 
-export function isValidTemplateCodeFormat(code: string | undefined | null): boolean {
+export function isValidTemplateCodeFormat(
+  code: string | undefined | null,
+): boolean {
   const u = normalizeTemplateCode(code);
   // 2–64 chars: A-Z / 0-9 / _ / - ; must start with letter
   return /^[A-Z][A-Z0-9_-]{1,63}$/.test(u);
 }
 
-export function assertValidTemplateCodeFormat(code: string | undefined | null): string {
+export function assertValidTemplateCodeFormat(
+  code: string | undefined | null,
+): string {
   const u = normalizeTemplateCode(code);
   if (!isValidTemplateCodeFormat(u)) {
     throw Object.assign(new Error(HRM_CTR_TPL_CODE_INVALID), {
@@ -246,17 +264,40 @@ export function assertValidTemplateCodeFormat(code: string | undefined | null): 
 }
 
 /** Default keyword_map tokens for XEVN matrix (DATA §3.3). */
-export function defaultXevnKeywordMap(pack: 'IT_OFFICE' | 'DRIVER'): Record<string, unknown> {
+export function defaultXevnKeywordMap(
+  pack: 'IT_OFFICE' | 'DRIVER',
+): Record<string, unknown> {
   const base: Record<string, unknown> = {
-    '{{employer_legal_name}}': { source: 'company.legal_name', ring: 'company' },
-    '{{employer_unit_label}}': { source: 'company.display_name', ring: 'company' },
+    '{{employer_legal_name}}': {
+      source: 'company.legal_name',
+      ring: 'company',
+    },
+    '{{employer_unit_label}}': {
+      source: 'company.display_name',
+      ring: 'company',
+    },
     '{{employer_address}}': { source: 'company.address', ring: 'company' },
-    '{{contract_number}}': { source: 'employee_contracts.contract_code', ring: 'contract' },
-    '{{contract_number_suggested}}': { source: 'settings.contract_number_pattern', ring: 'contract' },
-    '{{contract_title_print}}': { source: 'hrm_contract_templates.title_print_vi', ring: 'contract' },
+    '{{contract_number}}': {
+      source: 'employee_contracts.contract_code',
+      ring: 'contract',
+    },
+    '{{contract_number_suggested}}': {
+      source: 'settings.contract_number_pattern',
+      ring: 'contract',
+    },
+    '{{contract_title_print}}': {
+      source: 'hrm_contract_templates.title_print_vi',
+      ring: 'contract',
+    },
     '{{term_type_label_vi}}': { source: 'derived.term_type', ring: 'contract' },
-    '{{effective_from}}': { source: 'employee_contracts.start_date', ring: 'contract' },
-    '{{effective_to}}': { source: 'employee_contracts.end_date', ring: 'contract' },
+    '{{effective_from}}': {
+      source: 'employee_contracts.start_date',
+      ring: 'contract',
+    },
+    '{{effective_to}}': {
+      source: 'employee_contracts.end_date',
+      ring: 'contract',
+    },
   };
   if (pack === 'DRIVER') {
     return {
@@ -265,7 +306,10 @@ export function defaultXevnKeywordMap(pack: 'IT_OFFICE' | 'DRIVER'): Record<stri
         source: 'employee_contracts.driver_license_number',
         ring: 'public',
       },
-      '{{driver_license_class}}': { source: 'employee_contracts.license_class', ring: 'public' },
+      '{{driver_license_class}}': {
+        source: 'employee_contracts.license_class',
+        ring: 'public',
+      },
       '{{driver_license_issued_on}}': {
         source: 'employee_contracts.driver_license_issued_on',
         ring: 'public',
@@ -274,14 +318,22 @@ export function defaultXevnKeywordMap(pack: 'IT_OFFICE' | 'DRIVER'): Record<stri
         source: 'employee_contracts.driver_license_issued_place',
         ring: 'public',
       },
-      '{{license_class}}': { source: 'employee_contracts.license_class', ring: 'public' },
-      '{{vehicle_plate}}': { source: 'employee_contracts.vehicle_plate', ring: 'public' },
+      '{{license_class}}': {
+        source: 'employee_contracts.license_class',
+        ring: 'public',
+      },
+      '{{vehicle_plate}}': {
+        source: 'employee_contracts.vehicle_plate',
+        ring: 'public',
+      },
     };
   }
   return base;
 }
 
-export function docKindFromTemplateCode(templateCode: string | null | undefined): 'HDTV' | 'HDLD' {
+export function docKindFromTemplateCode(
+  templateCode: string | null | undefined,
+): 'HDTV' | 'HDLD' {
   const u = (templateCode ?? '').toUpperCase();
   return u.includes('PROBATION') ? 'HDTV' : 'HDLD';
 }
@@ -301,16 +353,24 @@ export function termTypeLabelVi(term: string | null | undefined): string {
   }
 }
 
-export function normalizeContractPackCode(raw: string | undefined | null): ContractPackCode | null {
+export function normalizeContractPackCode(
+  raw: string | undefined | null,
+): ContractPackCode | null {
   if (!raw?.trim()) return null;
   const u = raw.trim().toUpperCase();
-  return (CONTRACT_PACK_CODES as readonly string[]).includes(u) ? (u as ContractPackCode) : null;
+  return (CONTRACT_PACK_CODES as readonly string[]).includes(u)
+    ? (u as ContractPackCode)
+    : null;
 }
 
-export function assertContractPackCode(raw: string | undefined | null): ContractPackCode {
+export function assertContractPackCode(
+  raw: string | undefined | null,
+): ContractPackCode {
   const n = normalizeContractPackCode(raw);
   if (!n) {
-    throw Object.assign(new Error(HRM_CTR_PACK_INVALID), { code: HRM_CTR_PACK_INVALID });
+    throw Object.assign(new Error(HRM_CTR_PACK_INVALID), {
+      code: HRM_CTR_PACK_INVALID,
+    });
   }
   return n;
 }

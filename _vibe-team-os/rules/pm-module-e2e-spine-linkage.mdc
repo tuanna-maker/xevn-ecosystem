@@ -1,0 +1,18 @@
+# PM/PO — Module E2E spine linkage (sponsor 2026-08-06)
+
+**SoT:** `_vibe-team-os/36-MODULE-E2E-SPINE-LINKAGE.md`  
+**Incident:** `incidents/INC-MODULE-SPINE-ORPHAN-UI.md`
+
+## Rule
+
+1. Trước Dev lớn trên một module: bắt buộc **scorecard** nút/tab → FR → khóa mang → màn kế (ba-process).
+2. **Cấm** free-text SoT khi SRS/team BR đã khóa SELECT catalog / FK.
+3. Empty modal **cứng** (`[]` không gọi API / sai entity) = **FAIL**, không phải empty hợp lệ.
+4. Slice QC GWC / density matrix / HTTP 200 **≠** module UAT-ready — ghi rõ `*_uat_ready=false`.
+5. Sponsor bắt 1 orphan field/screen → **mở rộng** audit sibling menus cùng class trong cùng chương trình.
+6. Phân lớp gap: `C-ORPHAN-FIELD` · `C-ORPHAN-SCREEN` · `C-SPINE-BREAK` · `C-WRONG-SOT` · `C-SPEC-SHALLOW` · `C-CONSOLE-CRASH` · `C-SLICE-≠-MODULE`.
+
+## Reject
+
+- QA/QC: PASS form có FK bắt buộc mà UI điền tay.
+- PM: claim module sẵn từ wave feature hẹp.

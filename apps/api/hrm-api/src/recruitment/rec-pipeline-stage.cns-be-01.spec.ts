@@ -9,7 +9,10 @@ import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
 import { RecruitmentCatalogService } from './recruitment-catalog.service';
 import { RecruitmentService } from './recruitment.service';
-import { HRM_REC_IV_STAGE_DISALLOW, HRM_REC_STAGE_UNKNOWN } from './rec-pipeline-stage.constants';
+import {
+  HRM_REC_IV_STAGE_DISALLOW,
+  HRM_REC_STAGE_UNKNOWN,
+} from './rec-pipeline-stage.constants';
 import { RecPipelineStageService } from './rec-pipeline-stage.service';
 
 const CAND_ID = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
@@ -29,13 +32,21 @@ describe('VAL-REC-CNS-02 createCandidatePool invent (CNS-BE-01)', () => {
     const assertStageInEffectiveCatalog = jest
       .fn()
       .mockRejectedValue(
-        new ApiException(HRM_REC_STAGE_UNKNOWN, 'not in catalog', HttpStatus.BAD_REQUEST),
+        new ApiException(
+          HRM_REC_STAGE_UNKNOWN,
+          'not in catalog',
+          HttpStatus.BAD_REQUEST,
+        ),
       );
 
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -77,7 +88,11 @@ describe('VAL-REC-CNS-02 createCandidatePool invent (CNS-BE-01)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.candidates')) {
@@ -112,13 +127,21 @@ describe('VAL-REC-CNS-02 createCandidatePool invent (CNS-BE-01)', () => {
     const assertStageInEffectiveCatalog = jest
       .fn()
       .mockRejectedValue(
-        new ApiException(HRM_REC_STAGE_UNKNOWN, 'not in catalog', HttpStatus.BAD_REQUEST),
+        new ApiException(
+          HRM_REC_STAGE_UNKNOWN,
+          'not in catalog',
+          HttpStatus.BAD_REQUEST,
+        ),
       );
 
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.candidates WHERE id')) {
@@ -165,10 +188,17 @@ describe('VAL-REC-CNS-05 IV soft-gate (CNS-BE-01)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.rec_pipeline_stage') && s.includes('archived_at IS NULL')) {
+        if (
+          s.includes('FROM public.rec_pipeline_stage') &&
+          s.includes('archived_at IS NULL')
+        ) {
           return {
             rows: [
               {
@@ -220,12 +250,18 @@ describe('VAL-REC-CNS-05 IV soft-gate (CNS-BE-01)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.recruitment_candidates WHERE')) {
           return {
-            rows: [{ id: SPINE_CAND_ID, company_id: 'holding', status: 'screening' }],
+            rows: [
+              { id: SPINE_CAND_ID, company_id: 'holding', status: 'screening' },
+            ],
           };
         }
         return { rows: [] };
@@ -267,7 +303,11 @@ describe('VAL-REC-CNS-05 IV soft-gate (CNS-BE-01)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.candidates WHERE id')) {
@@ -307,12 +347,18 @@ describe('VAL-REC-CNS-05 IV soft-gate (CNS-BE-01)', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.recruitment_candidates WHERE')) {
           return {
-            rows: [{ id: SPINE_CAND_ID, company_id: 'holding', status: 'interview' }],
+            rows: [
+              { id: SPINE_CAND_ID, company_id: 'holding', status: 'interview' },
+            ],
           };
         }
         if (
@@ -348,14 +394,22 @@ describe('VAL-REC-CNS-01 RETAIN APP-02 (pointer)', () => {
     const assertStageInEffectiveCatalog = jest
       .fn()
       .mockRejectedValue(
-        new ApiException(HRM_REC_STAGE_UNKNOWN, 'not in catalog', HttpStatus.BAD_REQUEST),
+        new ApiException(
+          HRM_REC_STAGE_UNKNOWN,
+          'not in catalog',
+          HttpStatus.BAD_REQUEST,
+        ),
       );
     const APP_ID = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
 
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.candidate_applications ca')) {
@@ -385,7 +439,12 @@ describe('VAL-REC-CNS-01 RETAIN APP-02 (pointer)', () => {
     );
 
     await expect(
-      catalog.updateCandidateApplicationStage(APP_ID, 'holding', 'ghost', groupCeoToken()),
+      catalog.updateCandidateApplicationStage(
+        APP_ID,
+        'holding',
+        'ghost',
+        groupCeoToken(),
+      ),
     ).rejects.toMatchObject({ code: HRM_REC_STAGE_UNKNOWN });
   });
 });

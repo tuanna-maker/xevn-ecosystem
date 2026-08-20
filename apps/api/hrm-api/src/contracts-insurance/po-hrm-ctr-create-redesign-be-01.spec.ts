@@ -26,7 +26,11 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-01', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.employee_contracts ec')) {
@@ -57,7 +61,10 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-01', () => {
       }),
     } as unknown as HrmDbService;
     const service = new ContractsInsuranceService(db);
-    const result = await service.listContracts({ company_id: 'main' }, groupCeoToken());
+    const result = await service.listContracts(
+      { company_id: 'main' },
+      groupCeoToken(),
+    );
     expect(result.data[0].template_code).toBe('XEVN_FT_12M_OFFICE');
     expect(result.data[0].signed_at).toBe('2026-01-02');
     const listSql = (db.query as jest.Mock).mock.calls.find((c) =>
@@ -142,7 +149,10 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-01', () => {
             ],
           };
         }
-        if (s.includes('FROM public.hrm_contract_clauses c') && s.includes('ANY($1::uuid[])')) {
+        if (
+          s.includes('FROM public.hrm_contract_clauses c') &&
+          s.includes('ANY($1::uuid[])')
+        ) {
           return {
             rows: [
               {
@@ -241,7 +251,10 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-01', () => {
             ],
           };
         }
-        if (s.includes('FROM public.hrm_contract_clauses c') && s.includes('ANY($1::uuid[])')) {
+        if (
+          s.includes('FROM public.hrm_contract_clauses c') &&
+          s.includes('ANY($1::uuid[])')
+        ) {
           return {
             rows: [
               {

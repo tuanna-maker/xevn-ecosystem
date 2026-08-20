@@ -22,7 +22,9 @@ import { EmployeesService, HRM_EMP_POSITION_KEY } from './employees.service';
 
 describe('EmployeesModule SettingsCatalogs wiring (EMP-POSITION-CATALOG-BE-01)', () => {
   it('EmployeesModule imports SettingsCatalogsModule (DI fail-closed)', () => {
-    const imports = Reflect.getMetadata('imports', EmployeesModule) as unknown[] | undefined;
+    const imports = Reflect.getMetadata('imports', EmployeesModule) as
+      | unknown[]
+      | undefined;
     expect(imports).toBeDefined();
     expect(imports).toContain(SettingsCatalogsModule);
   });
@@ -42,8 +44,10 @@ describe('EmployeesModule SettingsCatalogs wiring (EMP-POSITION-CATALOG-BE-01)',
     expect(catalogs).toBeDefined();
     const employees = moduleRef.get(EmployeesService);
     expect(employees).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- DI probe private optional field
-    const injected = (employees as any).settingsCatalogs as SettingsCatalogsService | undefined;
+
+    const injected = (employees as any).settingsCatalogs as
+      | SettingsCatalogsService
+      | undefined;
     expect(injected).toBe(catalogs);
   });
 });
@@ -67,16 +71,30 @@ describe('EmployeesService invent job_title_key → HRM-EMP-POSITION-KEY (EFF>0)
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
 
-    assertCode = jest.fn().mockRejectedValue(
-      new ApiException(
-        HRM_EMP_POSITION_KEY,
-        "job_title_key 'INVENT_FREE_TEXT_POS' is not in job_titles catalog (free-text SoT forbidden)",
-        400,
-      ),
-    );
+    assertCode = jest
+      .fn()
+      .mockRejectedValue(
+        new ApiException(
+          HRM_EMP_POSITION_KEY,
+          "job_title_key 'INVENT_FREE_TEXT_POS' is not in job_titles catalog (free-text SoT forbidden)",
+          400,
+        ),
+      );
     getEffectiveItemsForKey = jest.fn().mockResolvedValue([
-      { code: 'CEO', label: 'Giám đốc', unit: null, status: 'active', origin: 'xbos' },
-      { code: 'STAFF', label: 'Nhân viên', unit: null, status: 'active', origin: 'xbos' },
+      {
+        code: 'CEO',
+        label: 'Giám đốc',
+        unit: null,
+        status: 'active',
+        origin: 'xbos',
+      },
+      {
+        code: 'STAFF',
+        label: 'Nhân viên',
+        unit: null,
+        status: 'active',
+        origin: 'xbos',
+      },
     ]);
 
     const catalogs = {
@@ -116,7 +134,11 @@ describe('EmployeesService invent job_title_key → HRM-EMP-POSITION-KEY (EFF>0)
       ),
     ).rejects.toMatchObject<ApiException>({ code: HRM_EMP_POSITION_KEY });
 
-    expect(getEffectiveItemsForKey).toHaveBeenCalledWith('xevn', 'holding', 'job_titles');
+    expect(getEffectiveItemsForKey).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      'job_titles',
+    );
     expect(assertCode).toHaveBeenCalledWith(
       expect.objectContaining({
         catalogKey: 'job_titles',
@@ -168,7 +190,13 @@ describe('EmployeesService invent job_title_key → HRM-EMP-POSITION-KEY (EFF>0)
     db.query
       .mockResolvedValueOnce({ rows: [existing] } as never)
       .mockResolvedValueOnce({
-        rows: [{ ...existing, job_title_key: 'ANY_WHEN_EMPTY', updated_at: '2026-08-08T00:00:00.000Z' }],
+        rows: [
+          {
+            ...existing,
+            job_title_key: 'ANY_WHEN_EMPTY',
+            updated_at: '2026-08-08T00:00:00.000Z',
+          },
+        ],
       } as never);
 
     const result = await service.updateEmployee(
@@ -204,7 +232,13 @@ describe('EmployeesService invent job_title_key → HRM-EMP-POSITION-KEY (EFF>0)
     db.query
       .mockResolvedValueOnce({ rows: [existing] } as never)
       .mockResolvedValueOnce({
-        rows: [{ ...existing, job_title_key: 'INVENT_NO_DI', updated_at: '2026-08-08T00:00:00.000Z' }],
+        rows: [
+          {
+            ...existing,
+            job_title_key: 'INVENT_NO_DI',
+            updated_at: '2026-08-08T00:00:00.000Z',
+          },
+        ],
       } as never);
 
     const result = await soft.updateEmployee(

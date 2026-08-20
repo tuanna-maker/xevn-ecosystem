@@ -192,7 +192,10 @@ import {
   HRM_REC_HIRE_400,
   isHiredStage,
 } from './hire-employee-link';
-import { JdDynamicService, type JdLayoutSnapshotV2 } from './jd-dynamic.service';
+import {
+  JdDynamicService,
+  type JdLayoutSnapshotV2,
+} from './jd-dynamic.service';
 import { RecPipelineStageService } from './rec-pipeline-stage.service';
 import {
   assertCellUnlockedForMutate,
@@ -812,7 +815,8 @@ export class RecruitmentCatalogService {
     errorCode: string;
     tenantId?: string;
   }): Promise<{ code: string; label: string }> {
-    const code = typeof opts.positionKey === 'string' ? opts.positionKey.trim() : '';
+    const code =
+      typeof opts.positionKey === 'string' ? opts.positionKey.trim() : '';
     if (!code) {
       throw new ApiException(
         opts.errorCode,
@@ -838,7 +842,10 @@ export class RecruitmentCatalogService {
    * @CODE-MEMORY method · Lane B job_postings — KHÔNG FR-HRM-RC-01 SoT (F1/F6)
    * TechSpec: §17.6.1 · must_keep §17.6.4 · cấm bind headcount YCTD vào đây
    */
-  async listJobPostings(query: ListJobPostingsQueryDto, authorization?: string) {
+  async listJobPostings(
+    query: ListJobPostingsQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, query.company_id);
     const filters: string[] = [];
@@ -872,7 +879,11 @@ export class RecruitmentCatalogService {
    * @CODE-MEMORY method · Lane B GET job-postings/:id — scope_parity with listJobPostings
    * REC-JP-JD-LINK-BE-01: JOIN with JD template to return jd_code / jd_title / jd_content.
    */
-  async getJobPosting(jobPostingId: string, companyId: string, authorization?: string) {
+  async getJobPosting(
+    jobPostingId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['jp.id = $1::uuid'];
@@ -905,9 +916,15 @@ export class RecruitmentCatalogService {
    * @CODE-MEMORY method · Lane B create job_postings — menu JD leftover (F1/F6/F9)
    * must_keep §17.6.4 — FR-RC-01 chỉ job_requisitions
    */
-  async createJobPosting(payload: CreateJobPostingDto & { jd_template_id?: string }, authorization?: string) {
+  async createJobPosting(
+    payload: CreateJobPostingDto & { jd_template_id?: string },
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const pos = await this.assertConsumerPositionKey({
       companyId,
       positionKey: payload.position_key,
@@ -929,16 +946,30 @@ export class RecruitmentCatalogService {
     const jdTemplateId: string | null = payload.jd_template_id?.trim() || null;
     let jdSnapshot: Record<string, unknown> | null = null;
     if (jdTemplateId) {
-      const jdRow = await this.db.queryOne<{ id: string; code: string; title: string; values_json: unknown }>(
+      const jdRow = await this.db.queryOne<{
+        id: string;
+        code: string;
+        title: string;
+        values_json: unknown;
+      }>(
         `SELECT id::text AS id, code, title, values_json
          FROM public.job_description_templates
          WHERE id = $1::uuid AND status <> 'retired'`,
         [jdTemplateId],
       );
       if (!jdRow) {
-        throw new ApiException('HRM-REC-JP-JD-404', `JD template not found: ${jdTemplateId}`, 404);
+        throw new ApiException(
+          'HRM-REC-JP-JD-404',
+          `JD template not found: ${jdTemplateId}`,
+          404,
+        );
       }
-      jdSnapshot = { id: jdTemplateId, code: jdRow.code, title: jdRow.title, values_json: jdRow.values_json };
+      jdSnapshot = {
+        id: jdTemplateId,
+        code: jdRow.code,
+        title: jdRow.title,
+        values_json: jdRow.values_json,
+      };
     }
     const id = randomUUID();
     const res = await this.db.query(
@@ -976,7 +1007,11 @@ export class RecruitmentCatalogService {
     return res.rows[0];
   }
 
-  async deleteJobPosting(id: string, companyId: string, authorization?: string) {
+  async deleteJobPosting(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['id = $1::uuid'];
@@ -987,7 +1022,11 @@ export class RecruitmentCatalogService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-JP-404', 'Job posting not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-JP-404',
+        'Job posting not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id };
   }
@@ -1003,7 +1042,10 @@ export class RecruitmentCatalogService {
    * title (position*) + skill/exp filters on LIVE position|notes; exact-title-only FAIL when scan search;
    * empty 200 hợp lệ; U19 same resolveHrmListScope as get-by-id.
    */
-  async listCandidatesTable(query: ListCandidatesTableQueryDto, authorization?: string) {
+  async listCandidatesTable(
+    query: ListCandidatesTableQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, query.company_id);
     const filters: string[] = [];
@@ -1015,9 +1057,7 @@ export class RecruitmentCatalogService {
       (query.position_code ?? '').trim() ||
       (query.position ?? '').trim() ||
       (query.q_position ?? '').trim();
-    const skillRaw =
-      (query.skill ?? '').trim() ||
-      (query.q_skill ?? '').trim();
+    const skillRaw = (query.skill ?? '').trim() || (query.q_skill ?? '').trim();
     const experienceRaw = (query.experience ?? '').trim();
     const hasTitle = titleRaw.length > 0;
     const hasSkillExp =
@@ -1047,7 +1087,7 @@ export class RecruitmentCatalogService {
           notFoundCode: 'HRM-REC-404',
           mismatchCode: 'HRM-REC-409',
         });
-        assertYctdOpenForInternalScanOrThrow(yctd.rows[0]!);
+        assertYctdOpenForInternalScanOrThrow(yctd.rows[0]);
       }
     }
 
@@ -1097,7 +1137,11 @@ export class RecruitmentCatalogService {
    * ADR: ADR-GROUP-CEO-MAIN-HOLDING-SCOPE — group CEO main → company_id = ANY(GROUP_MEMBER_SLUGS)
    * must_keep: G-DB-01 hire employee_id · dual catalog F1–F10 · không đọc recruitment_candidates
    */
-  async getCandidatePoolById(candidateId: string, companyId: string, authorization?: string) {
+  async getCandidatePoolById(
+    candidateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['id = $1::uuid'];
@@ -1108,12 +1152,20 @@ export class RecruitmentCatalogService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-CP-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-CP-404',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return res.rows[0];
   }
 
-  async listCandidateApplications(companyId: string, authorization?: string, jobPostingId?: string) {
+  async listCandidateApplications(
+    companyId: string,
+    authorization?: string,
+    jobPostingId?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = [];
@@ -1176,19 +1228,37 @@ export class RecruitmentCatalogService {
        VALUES ($1, $2::uuid, $3::uuid, $4, $5)
        ON CONFLICT (candidate_id, job_posting_id) DO UPDATE SET stage = EXCLUDED.stage, updated_at = NOW()
        RETURNING *;`,
-      [randomUUID(), payload.candidate_id, payload.job_posting_id, company, stage],
+      [
+        randomUUID(),
+        payload.candidate_id,
+        payload.job_posting_id,
+        company,
+        stage,
+      ],
     );
     return res.rows[0];
   }
 
-  async deleteCandidateApplication(applicationId: string, companyId: string, authorization?: string) {
+  async deleteCandidateApplication(
+    applicationId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [applicationId];
     pushCompanyIdFilter(filters, values, scope.companyIds);
-    const res = await this.db.query(`DELETE FROM public.candidate_applications WHERE ${filters.join(' AND ')} RETURNING id;`, values);
-    if (!res.rows[0]) throw new ApiException('HRM-REC-CA-404', 'Application not found', HttpStatus.NOT_FOUND);
+    const res = await this.db.query(
+      `DELETE FROM public.candidate_applications WHERE ${filters.join(' AND ')} RETURNING id;`,
+      values,
+    );
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-REC-CA-404',
+        'Application not found',
+        HttpStatus.NOT_FOUND,
+      );
     return { id: applicationId };
   }
 
@@ -1228,7 +1298,12 @@ export class RecruitmentCatalogService {
       peekValues,
     );
     const app = peek.rows[0];
-    if (!app) throw new ApiException('HRM-REC-CA-404', 'Application not found', HttpStatus.NOT_FOUND);
+    if (!app)
+      throw new ApiException(
+        'HRM-REC-CA-404',
+        'Application not found',
+        HttpStatus.NOT_FOUND,
+      );
 
     // F-REC-APP-02 / BR-PLT-02 — catalog >0 ⇒ to_stage ∈ effective else HRM-REC-STAGE-UNKNOWN.
     const stageCatalog = this.resolveRecPipelineStages();
@@ -1250,10 +1325,15 @@ export class RecruitmentCatalogService {
 
     // FR-HRM-INT-01 #5 — application hired inherits candidate→employee soft link.
     if (treatAsHired) {
-      const linkedEmployeeId = await assertHireEmployeeLinkOrThrow(this.db, app.candidate_id, app.cand_company_id, {
-        existingEmployeeId: app.cand_employee_id,
-        explicitEmployeeId: employeeId,
-      });
+      const linkedEmployeeId = await assertHireEmployeeLinkOrThrow(
+        this.db,
+        app.candidate_id,
+        app.cand_company_id,
+        {
+          existingEmployeeId: app.cand_employee_id,
+          explicitEmployeeId: employeeId,
+        },
+      );
       const hiredKey = catalogHit?.stageKey ?? 'hired';
       await this.db.query(
         `UPDATE public.candidates
@@ -1270,7 +1350,12 @@ export class RecruitmentCatalogService {
       `UPDATE public.candidate_applications SET stage = $2, updated_at = NOW() WHERE ${filters.join(' AND ')} RETURNING *;`,
       values,
     );
-    if (!res.rows[0]) throw new ApiException('HRM-REC-CA-404', 'Application not found', HttpStatus.NOT_FOUND);
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-REC-CA-404',
+        'Application not found',
+        HttpStatus.NOT_FOUND,
+      );
     return res.rows[0];
   }
 
@@ -1285,9 +1370,10 @@ export class RecruitmentCatalogService {
     const filters: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, scope.companyIds);
-    const yearRaw = query?.year !== undefined && query?.year !== null && query?.year !== ''
-      ? Number(query.year)
-      : NaN;
+    const yearRaw =
+      query?.year !== undefined && query?.year !== null && query?.year !== ''
+        ? Number(query.year)
+        : NaN;
     if (Number.isFinite(yearRaw) && yearRaw > 0) {
       values.push(Math.trunc(yearRaw));
       filters.push(`year = $${values.length}`);
@@ -1296,7 +1382,9 @@ export class RecruitmentCatalogService {
       `SELECT * FROM public.recruitment_plans WHERE ${filters.join(' AND ')} ORDER BY created_at DESC;`,
       values,
     );
-    const plans = plansRes.rows as Array<Record<string, unknown> & { id: string }>;
+    const plans = plansRes.rows as Array<
+      Record<string, unknown> & { id: string }
+    >;
     if (plans.length === 0) {
       return { total: 0, data: [] };
     }
@@ -1307,16 +1395,26 @@ export class RecruitmentCatalogService {
   /**
    * F-REC-HC-01 GET by id — same resolveHrmListScope as list (U19 scope_parity).
    */
-  async getRecruitmentPlanById(planId: string, companyId: string, authorization?: string) {
+  async getRecruitmentPlanById(
+    planId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     await this.recruitmentWorkflowBridge.ensureSchema();
     const existingRes = await this.db.query(
       `SELECT * FROM public.recruitment_plans WHERE id = $1::uuid LIMIT 1;`,
       [planId],
     );
-    const existing = existingRes.rows[0] as (Record<string, unknown> & { id: string; company_id: string }) | undefined;
+    const existing = existingRes.rows[0] as
+      | (Record<string, unknown> & { id: string; company_id: string })
+      | undefined;
     if (!existing) {
-      throw new ApiException('HRM-REC-PLAN-404', 'Recruitment plan not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-PLAN-404',
+        'Recruitment plan not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const scope = resolveHrmListScope(authorization, companyId);
     assertResourceInHrmScope(existing, scope, {
@@ -1340,8 +1438,9 @@ export class RecruitmentCatalogService {
       Record<string, unknown> & { id: string; plan_id: string }
     >;
     const deptIds = depts.map((d) => d.id);
-    let positions: Array<Record<string, unknown> & { department_id: string; months_data?: unknown }> =
-      [];
+    let positions: Array<
+      Record<string, unknown> & { department_id: string; months_data?: unknown }
+    > = [];
     if (deptIds.length > 0) {
       const posRes = await this.db.query(
         `SELECT * FROM public.recruitment_plan_positions
@@ -1349,7 +1448,10 @@ export class RecruitmentCatalogService {
         [deptIds],
       );
       positions = posRes.rows as Array<
-        Record<string, unknown> & { department_id: string; months_data?: unknown }
+        Record<string, unknown> & {
+          department_id: string;
+          months_data?: unknown;
+        }
       >;
     }
     return plans.map((plan) => {
@@ -1396,7 +1498,9 @@ export class RecruitmentCatalogService {
       );
       const activeDept = deptItems.filter((i) => i.status === 'active');
       if (activeDept.length > 0) {
-        const hit = activeDept.find((i) => i.code.toLowerCase() === deptKey.toLowerCase());
+        const hit = activeDept.find(
+          (i) => i.code.toLowerCase() === deptKey.toLowerCase(),
+        );
         if (!hit) {
           throw new ApiException(
             HRM_HC_KEY_UNKNOWN,
@@ -1414,7 +1518,9 @@ export class RecruitmentCatalogService {
       );
       const activePos = posItems.filter((i) => i.status === 'active');
       if (activePos.length > 0) {
-        const hit = activePos.find((i) => i.code.toLowerCase() === posKey.toLowerCase());
+        const hit = activePos.find(
+          (i) => i.code.toLowerCase() === posKey.toLowerCase(),
+        );
         if (!hit) {
           throw new ApiException(
             HRM_HC_KEY_UNKNOWN,
@@ -1447,22 +1553,31 @@ export class RecruitmentCatalogService {
     for (let i = 0; i < departments.length; i++) {
       const dept = departments[i];
       const departmentKey =
-        typeof dept.department_key === 'string' ? dept.department_key.trim() || null : null;
+        typeof dept.department_key === 'string'
+          ? dept.department_key.trim() || null
+          : null;
       const deptName =
-        (typeof dept.name === 'string' && dept.name.trim()) || departmentKey || `Phòng ${i + 1}`;
+        (typeof dept.name === 'string' && dept.name.trim()) ||
+        departmentKey ||
+        `Phòng ${i + 1}`;
       await this.assertPlanCatalogKeys({
         companyId,
         departmentKey,
         authorization: opts.authorization,
       });
-      const positions = (dept.positions as Array<Record<string, unknown>>) ?? [];
+      const positions =
+        (dept.positions as Array<Record<string, unknown>>) ?? [];
       const positionWrites: PlanPositionWrite[] = [];
       for (let j = 0; j < positions.length; j++) {
         const pos = positions[j];
         const positionKey =
-          typeof pos.position_key === 'string' ? pos.position_key.trim() || null : null;
+          typeof pos.position_key === 'string'
+            ? pos.position_key.trim() || null
+            : null;
         const posName =
-          (typeof pos.name === 'string' && pos.name.trim()) || positionKey || `Vị trí ${j + 1}`;
+          (typeof pos.name === 'string' && pos.name.trim()) ||
+          positionKey ||
+          `Vị trí ${j + 1}`;
         await this.assertPlanCatalogKeys({
           companyId,
           positionKey,
@@ -1527,15 +1642,23 @@ export class RecruitmentCatalogService {
     companyId: string,
     writePlan: PlanDepartmentWrite[],
   ): Promise<void> {
-    await query(`DELETE FROM public.recruitment_plan_departments WHERE plan_id = $1::uuid;`, [
-      planId,
-    ]);
+    await query(
+      `DELETE FROM public.recruitment_plan_departments WHERE plan_id = $1::uuid;`,
+      [planId],
+    );
     for (const dept of writePlan) {
       await query(
         `INSERT INTO public.recruitment_plan_departments
           (id, plan_id, company_id, name, department_key, sort_order)
          VALUES ($1, $2, $3, $4, $5, $6);`,
-        [dept.id, planId, companyId, dept.name, dept.departmentKey, dept.sortOrder],
+        [
+          dept.id,
+          planId,
+          companyId,
+          dept.name,
+          dept.departmentKey,
+          dept.sortOrder,
+        ],
       );
       for (const pos of dept.positions) {
         await query(
@@ -1556,7 +1679,9 @@ export class RecruitmentCatalogService {
     }
   }
 
-  private async collectExistingCellMap(planId: string): Promise<Map<string, HeadcountCell>> {
+  private async collectExistingCellMap(
+    planId: string,
+  ): Promise<Map<string, HeadcountCell>> {
     const map = new Map<string, HeadcountCell>();
     const depts = await this.db.query(
       `SELECT id, name, department_key FROM public.recruitment_plan_departments WHERE plan_id = $1::uuid`,
@@ -1601,9 +1726,16 @@ export class RecruitmentCatalogService {
         `SELECT id, months_data FROM public.recruitment_plan_positions WHERE department_id = $1::uuid`,
         [dept.id],
       );
-      for (const pos of posRes.rows as Array<{ id: string; months_data: unknown }>) {
-        const cells = lockNeedHireCells(projectMonthsForApi(pos.months_data, true));
-        locked += cells.filter((c) => c.lifecycle_status === 'need_hire_approved').length;
+      for (const pos of posRes.rows as Array<{
+        id: string;
+        months_data: unknown;
+      }>) {
+        const cells = lockNeedHireCells(
+          projectMonthsForApi(pos.months_data, true),
+        );
+        locked += cells.filter(
+          (c) => c.lifecycle_status === 'need_hire_approved',
+        ).length;
         await this.db.query(
           `UPDATE public.recruitment_plan_positions
            SET months_data = $2::jsonb, updated_at = NOW()
@@ -1615,20 +1747,32 @@ export class RecruitmentCatalogService {
     return locked;
   }
 
-  async createRecruitmentPlan(payload: Record<string, unknown>, authorization?: string) {
+  async createRecruitmentPlan(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     await this.recruitmentWorkflowBridge.ensureSchema();
     assertNoLegacyDualSotWriters(payload);
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
-    const planId = randomUUID();
-    const departments = (payload.departments as Array<Record<string, unknown>>) ?? [];
-    const statusRaw = typeof payload.status === 'string' ? payload.status : 'pending';
-    // Validate grid before any INSERT so a reject never leaves an orphan plan header.
-    const writePlan = await this.buildPlanDepartmentWritePlan(companyId, departments, {
-      planApproved: false,
+    const companyId = resolveHrmPersistCompanyIdText(
       authorization,
-      requireTwelve: false,
-    });
+      String(payload.company_id ?? ''),
+    );
+    const planId = randomUUID();
+    const departments =
+      (payload.departments as Array<Record<string, unknown>>) ?? [];
+    const statusRaw =
+      typeof payload.status === 'string' ? payload.status : 'pending';
+    // Validate grid before any INSERT so a reject never leaves an orphan plan header.
+    const writePlan = await this.buildPlanDepartmentWritePlan(
+      companyId,
+      departments,
+      {
+        planApproved: false,
+        authorization,
+        requireTwelve: false,
+      },
+    );
     await this.db.withTransaction(async (query) => {
       await query(
         `INSERT INTO public.recruitment_plans (
@@ -1674,7 +1818,11 @@ export class RecruitmentCatalogService {
       | { id: string; company_id: string; status?: string }
       | undefined;
     if (!existing) {
-      throw new ApiException('HRM-REC-PLAN-404', 'Recruitment plan not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-PLAN-404',
+        'Recruitment plan not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const companyId = resolveHrmPersistCompanyIdText(
       authorization,
@@ -1685,22 +1833,30 @@ export class RecruitmentCatalogService {
       notFoundCode: 'HRM-REC-PLAN-404',
       mismatchCode: 'HRM-REC-PLAN-409',
     });
-    const allowOverride = Boolean(payload.allow_override === true || payload.override === true);
+    const allowOverride = Boolean(
+      payload.allow_override === true || payload.override === true,
+    );
     const planApproved = isPlanApprovedStatus(existing.status);
     const existingMap = await this.collectExistingCellMap(planId);
-    const departments = (payload.departments as Array<Record<string, unknown>>) ?? [];
+    const departments =
+      (payload.departments as Array<Record<string, unknown>>) ?? [];
     // R-REC-HC-PUT-LOCKED-WIPE: assert cell lock / catalog keys BEFORE any destructive write.
     const writePlan =
       departments.length > 0
-        ? await this.buildPlanDepartmentWritePlan(existing.company_id, departments, {
-            planApproved,
-            allowOverride,
-            existingByNaturalKey: existingMap,
-            authorization,
-            requireTwelve: Boolean(
-              payload.require_twelve === true || payload.submit_ready === true,
-            ),
-          })
+        ? await this.buildPlanDepartmentWritePlan(
+            existing.company_id,
+            departments,
+            {
+              planApproved,
+              allowOverride,
+              existingByNaturalKey: existingMap,
+              authorization,
+              requireTwelve: Boolean(
+                payload.require_twelve === true ||
+                payload.submit_ready === true,
+              ),
+            },
+          )
         : null;
     await this.db.withTransaction(async (query) => {
       await query(
@@ -1726,13 +1882,22 @@ export class RecruitmentCatalogService {
         ],
       );
       if (writePlan) {
-        await this.writePlanDepartments(query, planId, existing.company_id, writePlan);
+        await this.writePlanDepartments(
+          query,
+          planId,
+          existing.company_id,
+          writePlan,
+        );
       }
     });
     return this.getRecruitmentPlanById(planId, companyId, authorization);
   }
 
-  async deleteRecruitmentPlan(planId: string, companyId: string, authorization?: string) {
+  async deleteRecruitmentPlan(
+    planId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const existingRes = await this.db.query(
       `SELECT company_id FROM public.recruitment_plans WHERE id = $1::uuid LIMIT 1;`,
@@ -1740,17 +1905,23 @@ export class RecruitmentCatalogService {
     );
     const existing = existingRes.rows[0] as { company_id: string } | undefined;
     if (!existing) {
-      throw new ApiException('HRM-REC-PLAN-404', 'Recruitment plan not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-PLAN-404',
+        'Recruitment plan not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const scope = resolveHrmListScope(authorization, companyId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-REC-PLAN-404',
       mismatchCode: 'HRM-REC-PLAN-409',
     });
-    await this.db.query(`DELETE FROM public.recruitment_plans WHERE id = $1::uuid;`, [planId]);
+    await this.db.query(
+      `DELETE FROM public.recruitment_plans WHERE id = $1::uuid;`,
+      [planId],
+    );
     return { id: planId };
   }
-
 
   async updateJobPosting(
     jobPostingId: string,
@@ -1765,15 +1936,25 @@ export class RecruitmentCatalogService {
     );
     const existing = existingRes.rows[0] as { company_id: string } | undefined;
     if (!existing) {
-      throw new ApiException('HRM-REC-JP-404', 'Job posting not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-JP-404',
+        'Job posting not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const scope = resolveHrmListScope(authorization, companyId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-REC-JP-404',
       mismatchCode: 'HRM-REC-JP-409',
     });
-    const hasPositionKey = Object.prototype.hasOwnProperty.call(payload, 'position_key');
-    const hasPositionText = Object.prototype.hasOwnProperty.call(payload, 'position');
+    const hasPositionKey = Object.prototype.hasOwnProperty.call(
+      payload,
+      'position_key',
+    );
+    const hasPositionText = Object.prototype.hasOwnProperty.call(
+      payload,
+      'position',
+    );
     if (hasPositionText && !hasPositionKey) {
       throw new ApiException(
         HRM_JP_POS_KEY,
@@ -1880,15 +2061,21 @@ export class RecruitmentCatalogService {
        FROM public.candidates WHERE id = $1::uuid LIMIT 1;`,
       [candidateId],
     );
-    const existing = existingRes.rows[0] as {
-      id: string;
-      company_id: string;
-      stage?: string;
-      workflow_instance_id?: string | null;
-      employee_id?: string | null;
-    } | undefined;
+    const existing = existingRes.rows[0] as
+      | {
+          id: string;
+          company_id: string;
+          stage?: string;
+          workflow_instance_id?: string | null;
+          employee_id?: string | null;
+        }
+      | undefined;
     if (!existing) {
-      throw new ApiException('HRM-REC-CP-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-CP-404',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const scope = resolveHrmListScope(authorization, companyId);
     assertResourceInHrmScope(existing, scope, {
@@ -1927,10 +2114,15 @@ export class RecruitmentCatalogService {
       : isHiredStage(stage);
 
     if (treatAsHired) {
-      const linkedEmployeeId = await assertHireEmployeeLinkOrThrow(this.db, candidateId, existing.company_id, {
-        existingEmployeeId: existing.employee_id,
-        explicitEmployeeId: employeeId,
-      });
+      const linkedEmployeeId = await assertHireEmployeeLinkOrThrow(
+        this.db,
+        candidateId,
+        existing.company_id,
+        {
+          existingEmployeeId: existing.employee_id,
+          explicitEmployeeId: employeeId,
+        },
+      );
       const res = await this.db.query(
         `UPDATE public.candidates
          SET stage = $2, employee_id = $3::uuid, updated_at = NOW()
@@ -1975,7 +2167,10 @@ export class RecruitmentCatalogService {
   ) {
     await this.ensureWave2Schema();
     await this.recruitmentWorkflowBridge.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const stage = payload.stage ?? 'applied';
     // VAL-REC-CNS-02 / BR-PLT-REC-STAGE-06 — when EFF >0, initial stage must ∈ effective.
     const stageCatalog = this.resolveRecPipelineStages();
@@ -1999,7 +2194,11 @@ export class RecruitmentCatalogService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      employeeId = await assertEmployeeInCandidateCompany(this.db, employeeId, companyId);
+      employeeId = await assertEmployeeInCandidateCompany(
+        this.db,
+        employeeId,
+        companyId,
+      );
     }
     const rating =
       typeof payload.rating === 'number' && Number.isFinite(payload.rating)
@@ -2071,16 +2270,22 @@ export class RecruitmentCatalogService {
        FROM public.candidates WHERE id = $1::uuid LIMIT 1;`,
       [candidateId],
     );
-    const existing = existingRes.rows[0] as {
-      company_id: string;
-      stage?: string;
-      workflow_instance_id?: string | null;
-      employee_id?: string | null;
-    } | undefined;
-    assertResourceInHrmScope(existing, resolveHrmListScope(authorization, companyId), {
-      notFoundCode: 'HRM-REC-CP-404',
-      mismatchCode: 'HRM-REC-CP-409',
-    });
+    const existing = existingRes.rows[0] as
+      | {
+          company_id: string;
+          stage?: string;
+          workflow_instance_id?: string | null;
+          employee_id?: string | null;
+        }
+      | undefined;
+    assertResourceInHrmScope(
+      existing,
+      resolveHrmListScope(authorization, companyId),
+      {
+        notFoundCode: 'HRM-REC-CP-404',
+        mismatchCode: 'HRM-REC-CP-409',
+      },
+    );
     if (payload.stage !== undefined) {
       try {
         this.recruitmentWorkflowBridge.assertNotLockedOrThrow(
@@ -2119,10 +2324,15 @@ export class RecruitmentCatalogService {
         : isHiredStage(nextStage)
       : false;
     if (treatAsHired) {
-      nextEmployeeId = await assertHireEmployeeLinkOrThrow(this.db, candidateId, existing!.company_id, {
-        existingEmployeeId: existing?.employee_id,
-        explicitEmployeeId: payload.employee_id,
-      });
+      nextEmployeeId = await assertHireEmployeeLinkOrThrow(
+        this.db,
+        candidateId,
+        existing!.company_id,
+        {
+          existingEmployeeId: existing?.employee_id,
+          explicitEmployeeId: payload.employee_id,
+        },
+      );
     } else if (payload.employee_id?.trim()) {
       nextEmployeeId = await assertEmployeeInCandidateCompany(
         this.db,
@@ -2131,7 +2341,8 @@ export class RecruitmentCatalogService {
       );
     }
 
-    const hasRating = typeof payload.rating === 'number' && Number.isFinite(payload.rating);
+    const hasRating =
+      typeof payload.rating === 'number' && Number.isFinite(payload.rating);
     const nextRating = hasRating
       ? Math.max(0, Math.min(5, Math.trunc(payload.rating as number)))
       : null;
@@ -2159,16 +2370,24 @@ export class RecruitmentCatalogService {
         payload.full_name?.trim() ?? null,
         payload.email?.toLowerCase().trim() ?? null,
         payload.phone?.trim() || null,
-        payload.position !== undefined ? payload.position?.trim() || null : null,
+        payload.position !== undefined
+          ? payload.position?.trim() || null
+          : null,
         payload.source?.trim() ?? null,
         nextStage,
         hasRating,
         nextRating,
         payload.applied_date || null,
         payload.expected_start_date || null,
-        payload.nationality !== undefined ? payload.nationality?.trim() || null : null,
-        payload.hometown !== undefined ? payload.hometown?.trim() || null : null,
-        payload.marital_status !== undefined ? payload.marital_status?.trim() || null : null,
+        payload.nationality !== undefined
+          ? payload.nationality?.trim() || null
+          : null,
+        payload.hometown !== undefined
+          ? payload.hometown?.trim() || null
+          : null,
+        payload.marital_status !== undefined
+          ? payload.marital_status?.trim() || null
+          : null,
         payload.notes ?? null,
         nextEmployeeId,
       ],
@@ -2176,15 +2395,26 @@ export class RecruitmentCatalogService {
     return res.rows[0];
   }
 
-  async deleteCandidatePool(candidateId: string, companyId: string, authorization?: string) {
+  async deleteCandidatePool(
+    candidateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [candidateId];
     pushCompanyIdFilter(filters, values, scope.companyIds);
-    const res = await this.db.query(`DELETE FROM public.candidates WHERE ${filters.join(' AND ')} RETURNING id;`, values);
+    const res = await this.db.query(
+      `DELETE FROM public.candidates WHERE ${filters.join(' AND ')} RETURNING id;`,
+      values,
+    );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-CP-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-CP-404',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: candidateId };
   }
@@ -2248,15 +2478,24 @@ export class RecruitmentCatalogService {
    *
    * VAL-REC-CNS-05 — soft-gate allows_interview_schedule on pool candidate.stage (≠ one-active).
    */
-  async createInterview(payload: Record<string, unknown>, authorization?: string) {
+  async createInterview(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureInterviewsSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const candidateId =
       typeof payload.candidate_id === 'string' && payload.candidate_id.trim()
         ? payload.candidate_id.trim()
         : null;
     if (candidateId) {
-      const candRes = await this.db.query<{ stage: string | null; company_id: string }>(
+      const candRes = await this.db.query<{
+        stage: string | null;
+        company_id: string;
+      }>(
         `SELECT stage::text AS stage, company_id::text AS company_id
          FROM public.candidates WHERE id = $1::uuid LIMIT 1;`,
         [candidateId],
@@ -2309,11 +2548,22 @@ export class RecruitmentCatalogService {
     return res.rows[0];
   }
 
-  async updateInterview(id: string, payload: Record<string, unknown>, companyId: string, authorization?: string) {
+  async updateInterview(
+    id: string,
+    payload: Record<string, unknown>,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureInterviewsSchema();
     const scope = resolveHrmListScope(authorization, companyId);
-    const peek = await this.db.query(`SELECT company_id FROM public.interviews WHERE id = $1::uuid LIMIT 1;`, [id]);
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-REC-INT-404', mismatchCode: 'HRM-REC-INT-409' });
+    const peek = await this.db.query(
+      `SELECT company_id FROM public.interviews WHERE id = $1::uuid LIMIT 1;`,
+      [id],
+    );
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-REC-INT-404',
+      mismatchCode: 'HRM-REC-INT-409',
+    });
     const res = await this.db.query(
       `UPDATE public.interviews SET
         status = COALESCE($2, status),
@@ -2334,7 +2584,12 @@ export class RecruitmentCatalogService {
         payload.interview_round ?? null,
       ],
     );
-    if (!res.rows[0]) throw new ApiException('HRM-REC-INT-404', 'Interview not found', HttpStatus.NOT_FOUND);
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-REC-INT-404',
+        'Interview not found',
+        HttpStatus.NOT_FOUND,
+      );
     return res.rows[0];
   }
 
@@ -2344,8 +2599,16 @@ export class RecruitmentCatalogService {
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [id];
     pushCompanyIdFilter(filters, values, scope.companyIds);
-    const res = await this.db.query(`DELETE FROM public.interviews WHERE ${filters.join(' AND ')} RETURNING id;`, values);
-    if (!res.rows[0]) throw new ApiException('HRM-REC-INT-404', 'Interview not found', HttpStatus.NOT_FOUND);
+    const res = await this.db.query(
+      `DELETE FROM public.interviews WHERE ${filters.join(' AND ')} RETURNING id;`,
+      values,
+    );
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-REC-INT-404',
+        'Interview not found',
+        HttpStatus.NOT_FOUND,
+      );
     return { id };
   }
 
@@ -2367,9 +2630,15 @@ export class RecruitmentCatalogService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createHeadcountProposal(payload: Record<string, unknown>, authorization?: string) {
+  async createHeadcountProposal(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const pos = await this.assertConsumerPositionKey({
       companyId,
       positionKey: payload.position_key,
@@ -2380,7 +2649,9 @@ export class RecruitmentCatalogService {
         ? payload.position_name.trim()
         : pos.label;
     const departmentKey =
-      typeof payload.department_key === 'string' ? payload.department_key.trim() || null : null;
+      typeof payload.department_key === 'string'
+        ? payload.department_key.trim() || null
+        : null;
     if (departmentKey && this.settingsCatalogs) {
       await this.settingsCatalogs.assertCodeInEffectiveCatalog({
         tenantId: this.resolveCatalogTenantId(),
@@ -2435,10 +2706,14 @@ export class RecruitmentCatalogService {
   ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
-    const peek = await this.db.query(`SELECT company_id FROM public.headcount_proposals WHERE id = $1::uuid LIMIT 1;`, [
-      proposalId,
-    ]);
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-REC-HC-404', mismatchCode: 'HRM-REC-HC-409' });
+    const peek = await this.db.query(
+      `SELECT company_id FROM public.headcount_proposals WHERE id = $1::uuid LIMIT 1;`,
+      [proposalId],
+    );
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-REC-HC-404',
+      mismatchCode: 'HRM-REC-HC-409',
+    });
     const res = await this.db.query(
       `UPDATE public.headcount_proposals SET
         status = $2,
@@ -2448,7 +2723,12 @@ export class RecruitmentCatalogService {
        WHERE id = $1::uuid RETURNING *;`,
       [proposalId, status, rejectedReason ?? null],
     );
-    if (!res.rows[0]) throw new ApiException('HRM-REC-HC-404', 'Headcount proposal not found', HttpStatus.NOT_FOUND);
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-REC-HC-404',
+        'Headcount proposal not found',
+        HttpStatus.NOT_FOUND,
+      );
     return res.rows[0];
   }
 
@@ -2510,13 +2790,21 @@ export class RecruitmentCatalogService {
        ORDER BY e.created_at DESC;`,
       values,
     );
-    const data = res.rows.map((row: Record<string, unknown>) => this.mapEvaluationDto(row));
+    const data = res.rows.map((row: Record<string, unknown>) =>
+      this.mapEvaluationDto(row),
+    );
     return { total: data.length, data };
   }
 
-  async createCandidateEvaluation(payload: Record<string, unknown>, authorization?: string) {
+  async createCandidateEvaluation(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const scope = resolveHrmListScope(authorization, companyId);
 
     const recruitmentCandidateId =
@@ -2524,9 +2812,13 @@ export class RecruitmentCatalogService {
         ? payload.recruitment_candidate_id.trim()
         : '';
     const applicationId =
-      typeof payload.application_id === 'string' ? payload.application_id.trim() : '';
+      typeof payload.application_id === 'string'
+        ? payload.application_id.trim()
+        : '';
     const poolCandidateId =
-      typeof payload.candidate_id === 'string' ? payload.candidate_id.trim() : '';
+      typeof payload.candidate_id === 'string'
+        ? payload.candidate_id.trim()
+        : '';
 
     if (!recruitmentCandidateId && !applicationId) {
       throw new ApiException(
@@ -2538,13 +2830,21 @@ export class RecruitmentCatalogService {
 
     let laneA: { id: string; company_id: string; status: string } | null = null;
     if (recruitmentCandidateId) {
-      const candRes = await this.db.query<{ id: string; company_id: string; status: string }>(
+      const candRes = await this.db.query<{
+        id: string;
+        company_id: string;
+        status: string;
+      }>(
         `SELECT id, company_id, status FROM public.recruitment_candidates WHERE id = $1::uuid LIMIT 1;`,
         [recruitmentCandidateId],
       );
       laneA = candRes.rows[0] ?? null;
       if (!laneA) {
-        throw new ApiException('HRM-REC-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          'HRM-REC-404',
+          'Candidate not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       assertResourceInHrmScope(laneA, scope, {
         notFoundCode: 'HRM-REC-404',
@@ -2563,8 +2863,13 @@ export class RecruitmentCatalogService {
     });
 
     const commit = payload.commit !== false;
-    const allowDraft = await this.readEvalAllowDraft(laneA?.company_id ?? companyId);
-    let result = typeof payload.result === 'string' ? payload.result.trim().toLowerCase() : '';
+    const allowDraft = await this.readEvalAllowDraft(
+      laneA?.company_id ?? companyId,
+    );
+    let result =
+      typeof payload.result === 'string'
+        ? payload.result.trim().toLowerCase()
+        : '';
     if (commit || !allowDraft) {
       if (result !== 'pass' && result !== 'fail') {
         throw new ApiException(
@@ -2637,10 +2942,14 @@ export class RecruitmentCatalogService {
         evaluatedAt,
       ],
     );
-    return this.mapEvaluationDto(res.rows[0] as Record<string, unknown>);
+    return this.mapEvaluationDto(res.rows[0]);
   }
 
-  async deleteCandidateEvaluation(evaluationId: string, companyId: string, authorization?: string) {
+  async deleteCandidateEvaluation(
+    evaluationId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
     const peek = await this.db.query<{
@@ -2657,14 +2966,20 @@ export class RecruitmentCatalogService {
     );
     const row = peek.rows[0];
     if (!row) {
-      throw new ApiException(HRM_REC_EVAL_404, 'Evaluation not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_REC_EVAL_404,
+        'Evaluation not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_REC_EVAL_404,
       mismatchCode: 'HRM-REC-409',
     });
     const isLegacy =
-      !row.recruitment_candidate_id && !row.application_id && Boolean(row.candidate_id);
+      !row.recruitment_candidate_id &&
+      !row.application_id &&
+      Boolean(row.candidate_id);
     // Soft-archive allowed for legacy; other mutates denied elsewhere.
     if (isLegacy && row.archived_at) {
       throw new ApiException(
@@ -2681,12 +2996,19 @@ export class RecruitmentCatalogService {
       [evaluationId],
     );
     if (!res.rows[0]) {
-      throw new ApiException(HRM_REC_EVAL_404, 'Evaluation not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_REC_EVAL_404,
+        'Evaluation not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: res.rows[0].id, archived_at: res.rows[0].archived_at };
   }
 
-  async listEvaluationCriteriaTemplates(companyId: string, authorization?: string) {
+  async listEvaluationCriteriaTemplates(
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['is_active = TRUE', 'archived_at IS NULL'];
@@ -2699,7 +3021,11 @@ export class RecruitmentCatalogService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async replaceEvaluationCriteriaTemplates(companyId: string, templates: Record<string, unknown>[], authorization?: string) {
+  async replaceEvaluationCriteriaTemplates(
+    companyId: string,
+    templates: Record<string, unknown>[],
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const resolved = resolveHrmPersistCompanyIdText(authorization, companyId);
     // Soft-retire existing active rows — DENY hard wipe as SoT (O11).
@@ -2729,12 +3055,14 @@ export class RecruitmentCatalogService {
   }
 
   private mapEvaluationDto(row: Record<string, unknown>) {
-    const neoRc = row.recruitment_candidate_id ? String(row.recruitment_candidate_id) : null;
+    const neoRc = row.recruitment_candidate_id
+      ? String(row.recruitment_candidate_id)
+      : null;
     const neoApp = row.application_id ? String(row.application_id) : null;
     const poolId = row.candidate_id ? String(row.candidate_id) : null;
     const rowClass =
       neoRc || neoApp ? 'FR06_YCTD' : poolId ? 'FR06_LEGACY_POOL' : 'FR06_YCTD';
-    const scores = Array.isArray(row.scores) ? row.scores : row.scores ?? [];
+    const scores = Array.isArray(row.scores) ? row.scores : (row.scores ?? []);
     return {
       id: String(row.id),
       company_id: String(row.company_id),
@@ -2747,14 +3075,21 @@ export class RecruitmentCatalogService {
       scores,
       scores_json: scores,
       salary_recommendation:
-        row.salary_recommendation != null ? Number(row.salary_recommendation) : null,
-      overall_feedback: row.overall_feedback != null ? String(row.overall_feedback) : null,
-      recommendation: row.recommendation != null ? String(row.recommendation) : null,
+        row.salary_recommendation != null
+          ? Number(row.salary_recommendation)
+          : null,
+      overall_feedback:
+        row.overall_feedback != null ? String(row.overall_feedback) : null,
+      recommendation:
+        row.recommendation != null ? String(row.recommendation) : null,
       evaluated_at: row.evaluated_at ? String(row.evaluated_at) : null,
-      evaluator_name: row.evaluator_name != null ? String(row.evaluator_name) : null,
-      evaluator_email: row.evaluator_email != null ? String(row.evaluator_email) : null,
+      evaluator_name:
+        row.evaluator_name != null ? String(row.evaluator_name) : null,
+      evaluator_email:
+        row.evaluator_email != null ? String(row.evaluator_email) : null,
       total_score: row.total_score != null ? Number(row.total_score) : null,
-      weighted_score: row.weighted_score != null ? Number(row.weighted_score) : null,
+      weighted_score:
+        row.weighted_score != null ? Number(row.weighted_score) : null,
       archived_at: row.archived_at ? String(row.archived_at) : null,
       row_class: rowClass,
       // display helpers (legacy JOIN retained when include_legacy)
@@ -2803,13 +3138,21 @@ export class RecruitmentCatalogService {
     interviewId: string | null;
   }): Promise<void> {
     if (opts.interviewId) {
-      const iv = await this.db.query<{ id: string; status: string; company_id: string }>(
+      const iv = await this.db.query<{
+        id: string;
+        status: string;
+        company_id: string;
+      }>(
         `SELECT id, status, company_id FROM public.recruitment_interviews WHERE id = $1::uuid LIMIT 1;`,
         [opts.interviewId],
       );
       const row = iv.rows[0];
       if (!row) {
-        throw new ApiException(HRM_REC_EVAL_404, 'Interview not found for evaluation', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          HRM_REC_EVAL_404,
+          'Interview not found for evaluation',
+          HttpStatus.NOT_FOUND,
+        );
       }
       if (!(TERMINAL_IV_FOR_EVAL as readonly string[]).includes(row.status)) {
         throw new ApiException(
@@ -2843,7 +3186,11 @@ export class RecruitmentCatalogService {
     companyId: string,
     status: string,
     authorization?: string,
-    options?: { rejected_reason?: string; approved_by?: string; activation_mode?: string },
+    options?: {
+      rejected_reason?: string;
+      approved_by?: string;
+      activation_mode?: string;
+    },
   ) {
     await this.ensureWave2Schema();
     await this.recruitmentWorkflowBridge.ensureSchema();
@@ -2851,13 +3198,19 @@ export class RecruitmentCatalogService {
       `SELECT * FROM public.recruitment_plans WHERE id = $1::uuid LIMIT 1;`,
       [planId],
     );
-    const existing = existingRes.rows[0] as {
-      company_id: string;
-      status?: string;
-      workflow_instance_id?: string | null;
-    } | undefined;
+    const existing = existingRes.rows[0] as
+      | {
+          company_id: string;
+          status?: string;
+          workflow_instance_id?: string | null;
+        }
+      | undefined;
     if (!existing) {
-      throw new ApiException('HRM-REC-PLAN-404', 'Recruitment plan not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-PLAN-404',
+        'Recruitment plan not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const scope = resolveHrmListScope(authorization, companyId);
     assertResourceInHrmScope(existing, scope, {
@@ -2868,7 +3221,11 @@ export class RecruitmentCatalogService {
       .trim()
       .toLowerCase();
     const mappedStatus =
-      nextStatus === 'submitted' ? 'pending_approval' : nextStatus === 'draft' ? 'pending' : nextStatus;
+      nextStatus === 'submitted'
+        ? 'pending_approval'
+        : nextStatus === 'draft'
+          ? 'pending'
+          : nextStatus;
     // F-REC-HC-03 — reject requires lý do (VAL-09).
     if (mappedStatus === 'rejected') {
       const reason = options?.rejected_reason?.trim();
@@ -2902,7 +3259,11 @@ export class RecruitmentCatalogService {
     }
     if (mappedStatus === 'approved') {
       const current = String(existing.status ?? '').toLowerCase();
-      if (current !== 'pending_approval' && current !== 'pending' && current !== 'submitted') {
+      if (
+        current !== 'pending_approval' &&
+        current !== 'pending' &&
+        current !== 'submitted'
+      ) {
         // Soft allow approve from pending_approval preferred; still permit pending for AS-IS.
       }
     }
@@ -2933,9 +3294,12 @@ export class RecruitmentCatalogService {
     return {
       ...res.rows[0],
       planId,
-      approved_cell_count: mappedStatus === 'approved' ? approved_cell_count : undefined,
+      approved_cell_count:
+        mappedStatus === 'approved' ? approved_cell_count : undefined,
       rejected_reason:
-        mappedStatus === 'rejected' ? options?.rejected_reason?.trim() ?? null : undefined,
+        mappedStatus === 'rejected'
+          ? (options?.rejected_reason?.trim() ?? null)
+          : undefined,
     };
   }
 
@@ -2966,7 +3330,11 @@ export class RecruitmentCatalogService {
         }
       | undefined;
     if (!existing) {
-      throw new ApiException('HRM-REC-PLAN-404', 'Recruitment plan not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-PLAN-404',
+        'Recruitment plan not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const scope = resolveHrmListScope(authorization, companyId);
     assertResourceInHrmScope(existing, scope, {
@@ -2982,7 +3350,9 @@ export class RecruitmentCatalogService {
       );
     }
     // HC-S6 / O2 — CFG unset ⇒ on_approve; calendar_month without schedule ⇒ block
-    const mode = (existing.activation_mode ?? 'on_approve').trim().toLowerCase() || 'on_approve';
+    const mode =
+      (existing.activation_mode ?? 'on_approve').trim().toLowerCase() ||
+      'on_approve';
     if (mode === 'calendar_month') {
       throw new ApiException(
         HRM_HC_ACTIVATION_CFG,
@@ -2991,9 +3361,13 @@ export class RecruitmentCatalogService {
       );
     }
 
-    const plan = await this.getRecruitmentPlanById(planId, companyId, authorization);
+    const plan = await this.getRecruitmentPlanById(
+      planId,
+      companyId,
+      authorization,
+    );
     const filterIds = Array.isArray(body?.cell_ids)
-      ? new Set(body!.cell_ids!.map((x) => String(x).trim()).filter(Boolean))
+      ? new Set(body.cell_ids.map((x) => String(x).trim()).filter(Boolean))
       : null;
     type Eligible = {
       cell: HeadcountCell;
@@ -3003,9 +3377,11 @@ export class RecruitmentCatalogService {
       position_name: string;
     };
     const eligible: Eligible[] = [];
-    const departments = (plan.departments as Array<Record<string, unknown>>) ?? [];
+    const departments =
+      (plan.departments as Array<Record<string, unknown>>) ?? [];
     for (const dept of departments) {
-      const positions = (dept.positions as Array<Record<string, unknown>>) ?? [];
+      const positions =
+        (dept.positions as Array<Record<string, unknown>>) ?? [];
       for (const pos of positions) {
         const months = (pos.months as HeadcountCell[]) ?? [];
         for (const cell of months) {
@@ -3021,9 +3397,12 @@ export class RecruitmentCatalogService {
           eligible.push({
             cell,
             department_key:
-              typeof dept.department_key === 'string' ? dept.department_key : null,
+              typeof dept.department_key === 'string'
+                ? dept.department_key
+                : null,
             department_name: String(dept.name ?? ''),
-            position_key: typeof pos.position_key === 'string' ? pos.position_key : null,
+            position_key:
+              typeof pos.position_key === 'string' ? pos.position_key : null,
             position_name: String(pos.name ?? ''),
           });
         }
@@ -3060,7 +3439,9 @@ export class RecruitmentCatalogService {
          LIMIT 1`,
         [existing.company_id, cellId],
       );
-      const row = existingYctd.rows[0] as { id: string; headcount: number } | undefined;
+      const row = existingYctd.rows[0] as
+        | { id: string; headcount: number }
+        | undefined;
       if (row) {
         skipped_duplicate.push({
           headcount_cell_id: cellId,
@@ -3090,8 +3471,10 @@ export class RecruitmentCatalogService {
       // Align with normalizeTargetMonthOrThrow — always first-of-month DATE (REC-01 spawn identity).
       const targetMonth = firstOfMonthIso(year, item.cell.month);
       const title =
-        `${item.position_name || 'YCTD'} · T${item.cell.month}/${year}`.slice(0, 200) ||
-        String(existing.title ?? 'YCTD định biên').slice(0, 200);
+        `${item.position_name || 'YCTD'} · T${item.cell.month}/${year}`.slice(
+          0,
+          200,
+        ) || String(existing.title ?? 'YCTD định biên').slice(0, 200);
       try {
         await this.db.query(
           `INSERT INTO public.job_requisitions
@@ -3122,7 +3505,10 @@ export class RecruitmentCatalogService {
       } catch (err: unknown) {
         // HC-S4 — partial UQ race → treat as skip
         const msg = err instanceof Error ? err.message : String(err);
-        if (msg.includes('uq_job_requisitions_spawn_cell') || msg.includes('duplicate key')) {
+        if (
+          msg.includes('uq_job_requisitions_spawn_cell') ||
+          msg.includes('duplicate key')
+        ) {
           const again = await this.db.query(
             `SELECT id::text AS id FROM public.job_requisitions
              WHERE company_id = $1::text AND headcount_cell_id = $2::uuid AND headcount_mode = 'in_plan'
@@ -3153,7 +3539,11 @@ export class RecruitmentCatalogService {
     planId: string,
     companyId: string,
     authorization?: string,
-    options?: { submitterUserId?: string; tenantId?: string; companySlug?: string },
+    options?: {
+      submitterUserId?: string;
+      tenantId?: string;
+      companySlug?: string;
+    },
   ) {
     await this.ensureWave2Schema();
     await this.recruitmentWorkflowBridge.ensureSchema();
@@ -3162,14 +3552,20 @@ export class RecruitmentCatalogService {
        FROM public.recruitment_plans WHERE id = $1::uuid LIMIT 1;`,
       [planId],
     );
-    const existing = existingRes.rows[0] as {
-      id: string;
-      company_id: string;
-      status: string;
-      workflow_instance_id?: string | null;
-    } | undefined;
+    const existing = existingRes.rows[0] as
+      | {
+          id: string;
+          company_id: string;
+          status: string;
+          workflow_instance_id?: string | null;
+        }
+      | undefined;
     if (!existing) {
-      throw new ApiException('HRM-REC-PLAN-404', 'Recruitment plan not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-PLAN-404',
+        'Recruitment plan not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const scope = resolveHrmListScope(authorization, companyId);
     assertResourceInHrmScope(existing, scope, {
@@ -3179,19 +3575,26 @@ export class RecruitmentCatalogService {
     if (existing.workflow_instance_id) {
       return {
         ...existing,
-        status: existing.status === 'pending' ? 'pending_approval' : existing.status,
+        status:
+          existing.status === 'pending' ? 'pending_approval' : existing.status,
         workflow_instance_id: existing.workflow_instance_id,
-        spawn: { workflowInstanceId: existing.workflow_instance_id, idempotent: true },
+        spawn: {
+          workflowInstanceId: existing.workflow_instance_id,
+          idempotent: true,
+        },
       };
     }
-    const spawn = await this.recruitmentWorkflowBridge.startRecruitmentWorkflowIfConfigured({
-      businessType: WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN,
-      businessId: planId,
-      companyId: existing.company_id,
-      submitterUserId: options?.submitterUserId,
-      tenantId: options?.tenantId,
-      companySlug: options?.companySlug ?? existing.company_id,
-    });
+    const spawn =
+      await this.recruitmentWorkflowBridge.startRecruitmentWorkflowIfConfigured(
+        {
+          businessType: WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN,
+          businessId: planId,
+          companyId: existing.company_id,
+          submitterUserId: options?.submitterUserId,
+          tenantId: options?.tenantId,
+          companySlug: options?.companySlug ?? existing.company_id,
+        },
+      );
     const refreshed = await this.db.query(
       `SELECT * FROM public.recruitment_plans WHERE id = $1::uuid LIMIT 1;`,
       [planId],
@@ -3203,7 +3606,6 @@ export class RecruitmentCatalogService {
     };
   }
 
-
   /**
    * UC-HRM-REC-WF-04 — start candidate pipeline instance.
    */
@@ -3211,7 +3613,11 @@ export class RecruitmentCatalogService {
     candidateId: string,
     companyId: string,
     authorization?: string,
-    options?: { submitterUserId?: string; tenantId?: string; companySlug?: string },
+    options?: {
+      submitterUserId?: string;
+      tenantId?: string;
+      companySlug?: string;
+    },
   ) {
     await this.ensureWave2Schema();
     await this.recruitmentWorkflowBridge.ensureSchema();
@@ -3220,40 +3626,56 @@ export class RecruitmentCatalogService {
        FROM public.candidates WHERE id = $1::uuid LIMIT 1;`,
       [candidateId],
     );
-    const existing = existingRes.rows[0] as {
-      id: string;
-      company_id: string;
-      full_name: string;
-      email: string | null;
-      source: string | null;
-      stage: string;
-      workflow_instance_id?: string | null;
-    } | undefined;
+    const existing = existingRes.rows[0] as
+      | {
+          id: string;
+          company_id: string;
+          full_name: string;
+          email: string | null;
+          source: string | null;
+          stage: string;
+          workflow_instance_id?: string | null;
+        }
+      | undefined;
     if (!existing) {
-      throw new ApiException('HRM-REC-CP-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-CP-404',
+        'Candidate not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const scope = resolveHrmListScope(authorization, companyId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-REC-CP-404',
       mismatchCode: 'HRM-REC-CP-409',
     });
-    const spineLink = await ensureSpineRecruitmentCandidateFromPool(this.db, existing, scope.companyIds);
+    const spineLink = await ensureSpineRecruitmentCandidateFromPool(
+      this.db,
+      existing,
+      scope.companyIds,
+    );
     if (existing.workflow_instance_id) {
       return {
         ...existing,
         recruitment_candidate_id: spineLink?.id ?? null,
         spine_created: spineLink?.created ?? false,
-        spawn: { workflowInstanceId: existing.workflow_instance_id, idempotent: true },
+        spawn: {
+          workflowInstanceId: existing.workflow_instance_id,
+          idempotent: true,
+        },
       };
     }
-    const spawn = await this.recruitmentWorkflowBridge.startRecruitmentWorkflowIfConfigured({
-      businessType: WF_BUSINESS_TYPE_HRM_CANDIDATE,
-      businessId: candidateId,
-      companyId: existing.company_id,
-      submitterUserId: options?.submitterUserId,
-      tenantId: options?.tenantId,
-      companySlug: options?.companySlug ?? existing.company_id,
-    });
+    const spawn =
+      await this.recruitmentWorkflowBridge.startRecruitmentWorkflowIfConfigured(
+        {
+          businessType: WF_BUSINESS_TYPE_HRM_CANDIDATE,
+          businessId: candidateId,
+          companyId: existing.company_id,
+          submitterUserId: options?.submitterUserId,
+          tenantId: options?.tenantId,
+          companySlug: options?.companySlug ?? existing.company_id,
+        },
+      );
     const refreshed = await this.db.query(
       `SELECT * FROM public.candidates WHERE id = $1::uuid LIMIT 1;`,
       [candidateId],
@@ -3276,7 +3698,13 @@ export class RecruitmentCatalogService {
   async listJobDescriptionTemplates(
     companyId: string,
     authorization?: string,
-    query?: { q?: string; active?: string; status?: string; bindable?: string; for?: string },
+    query?: {
+      q?: string;
+      active?: string;
+      status?: string;
+      bindable?: string;
+      for?: string;
+    },
   ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
@@ -3295,9 +3723,18 @@ export class RecruitmentCatalogService {
     if (bindable) {
       // Diễn biến 1a — picker YCTD: Hiệu lực only (BR-BP-JD-01 / BR-JD-BINDABLE-01).
       filters.push(`status = 'active' AND is_active = TRUE`);
-    } else if (statusRaw === 'draft' || statusRaw === 'active' || statusRaw === 'retired') {
+    } else if (
+      statusRaw === 'draft' ||
+      statusRaw === 'active' ||
+      statusRaw === 'retired'
+    ) {
       filters.push(`status = '${statusRaw}'`);
-    } else if (activeRaw === '1' || activeRaw === 'true' || activeRaw === 'active' || activeRaw === 'yes') {
+    } else if (
+      activeRaw === '1' ||
+      activeRaw === 'true' ||
+      activeRaw === 'active' ||
+      activeRaw === 'yes'
+    ) {
       filters.push(`status = 'active'`);
     } else if (
       activeRaw === '0' ||
@@ -3325,20 +3762,28 @@ export class RecruitmentCatalogService {
       values,
     );
     if (bindable) {
-      const items = res.rows.map((row) => toYctdBindableListItem(row as Record<string, unknown>));
+      const items = res.rows.map((row) =>
+        toYctdBindableListItem(row as Record<string, unknown>),
+      );
       // Empty library = 200 + [] (DV-YCTD-JD-14) — not 404.
       return { total: items.length, data: items, items };
     }
     return {
       total: res.rows.length,
-      data: res.rows.map((row) => this.mapJdTemplateRow(row as Record<string, unknown>)),
+      data: res.rows.map((row) =>
+        this.mapJdTemplateRow(row as Record<string, unknown>),
+      ),
     };
   }
 
   /**
    * F-YCTD-JD-02 — preview title + short; STATUS if not Hiệu lực; no values_json persist contract.
    */
-  async getYctdJdPreview(templateId: string, companyId: string, authorization?: string) {
+  async getYctdJdPreview(
+    templateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
@@ -3359,7 +3804,11 @@ export class RecruitmentCatalogService {
    * F-JD-03 — GET by id · same resolveHrmListScope + pushCompanyIdFilter as list (U19 scope_parity).
    * Display-ready sections from layout_snapshot × values (OS 28 — FE must not join).
    */
-  async getJobDescriptionTemplateById(templateId: string, companyId: string, authorization?: string) {
+  async getJobDescriptionTemplateById(
+    templateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     if (this.jdDynamic) await this.jdDynamic.ensureSchema();
     const scope = resolveHrmListScope(authorization, companyId);
@@ -3374,10 +3823,15 @@ export class RecruitmentCatalogService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-JD-404', 'JD template not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-JD-404',
+        'JD template not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const row = res.rows[0] as Record<string, unknown>;
-    const valuesJson = (row.values_json as Record<string, unknown> | null) ?? null;
+    const valuesJson =
+      (row.values_json as Record<string, unknown> | null) ?? null;
     const snapshot = row.layout_snapshot_json;
     const sections = this.jdDynamic
       ? this.jdDynamic.buildDisplaySections(snapshot, valuesJson, {
@@ -3421,11 +3875,18 @@ export class RecruitmentCatalogService {
   ) {
     await this.ensureWave2Schema();
     if (this.jdDynamic) await this.jdDynamic.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const code = payload.code.trim();
     let title = payload.title.trim();
     if (!code || !title) {
-      throw new ApiException('HRM-REC-JD-400', 'code and title are required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-REC-JD-400',
+        'code and title are required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     // AC-SET-FS-03 / FR-HRM-RC-JD-01 — position_code catalog SoT (not free title/position_name alone).
     const catalogPos = await this.assertJdPositionCodeInCatalog({
@@ -3434,13 +3895,18 @@ export class RecruitmentCatalogService {
       tenantId: options?.tenantId,
       authorization,
     });
-    const positionName = payload.position_name?.trim() || catalogPos.label || null;
+    const positionName =
+      payload.position_name?.trim() || catalogPos.label || null;
     const dup = await this.db.query(
       `SELECT id FROM public.job_description_templates WHERE company_id = $1 AND lower(code) = lower($2) LIMIT 1;`,
       [companyId, code],
     );
     if (dup.rows[0]) {
-      throw new ApiException('HRM-JD-CODE-DUP', 'JD template code already exists for company', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-JD-CODE-DUP',
+        'JD template code already exists for company',
+        HttpStatus.CONFLICT,
+      );
     }
 
     let valuesMap: Record<string, unknown> = {
@@ -3463,16 +3929,24 @@ export class RecruitmentCatalogService {
 
     if (this.jdDynamic) {
       if (!snapshot) {
-        snapshot = await this.jdDynamic.materializeSnapshotFromPack(companyId, authorization, {
-          position_code: catalogPos.code,
-          job_family: payload.job_family,
-          optional_group_codes: payload.optional_group_codes,
-        });
+        snapshot = await this.jdDynamic.materializeSnapshotFromPack(
+          companyId,
+          authorization,
+          {
+            position_code: catalogPos.code,
+            job_family: payload.job_family,
+            optional_group_codes: payload.optional_group_codes,
+          },
+        );
       }
       // F-JD-02 save-as-draft — allow incomplete required; publish enforces O3.
-      const validated = this.jdDynamic.validateSnapshotAndValues(snapshot, valuesMap, {
-        enforceRequired: false,
-      });
+      const validated = this.jdDynamic.validateSnapshotAndValues(
+        snapshot,
+        valuesMap,
+        {
+          enforceRequired: false,
+        },
+      );
       snapshot = validated.snapshot ?? snapshot;
       valuesMap = validated.values;
       layoutVersion = validated.layout_version;
@@ -3483,10 +3957,14 @@ export class RecruitmentCatalogService {
     const bridgedCode = String(valuesMap.code ?? code).trim();
     const bridgedDesc =
       payload.job_description?.trim() ||
-      (typeof valuesMap.responsibilities === 'string' ? valuesMap.responsibilities : null);
+      (typeof valuesMap.responsibilities === 'string'
+        ? valuesMap.responsibilities
+        : null);
     const bridgedReq =
       payload.requirements?.trim() ||
-      (typeof valuesMap.requirements === 'string' ? valuesMap.requirements : null);
+      (typeof valuesMap.requirements === 'string'
+        ? valuesMap.requirements
+        : null);
 
     // P04 / F-JD-02 — force draft + is_active=false; IGNORE client is_active=true / status=active.
     const status: JdTemplateStatus = 'draft';
@@ -3517,7 +3995,7 @@ export class RecruitmentCatalogService {
       ],
     );
     // FORBIDDEN: dual-write job_postings (Lane B ≠ FR-UC-BP-REC-00 SoT).
-    return this.mapJdTemplateRow(res.rows[0] as Record<string, unknown>);
+    return this.mapJdTemplateRow(res.rows[0]);
   }
 
   async updateJobDescriptionTemplate(
@@ -3551,7 +4029,11 @@ export class RecruitmentCatalogService {
     const statusWant = payload.status?.trim().toLowerCase();
     // Optional synonym — primary path = POST …/publish (API-01 §6.4.2).
     if (actionRaw === 'publish' || statusWant === 'active') {
-      return this.publishJobDescriptionTemplate(templateId, companyId, authorization);
+      return this.publishJobDescriptionTemplate(
+        templateId,
+        companyId,
+        authorization,
+      );
     }
 
     const scope = resolveHrmListScope(authorization, companyId);
@@ -3602,7 +4084,11 @@ export class RecruitmentCatalogService {
         [existing.company_id, nextCode, templateId],
       );
       if (dup.rows[0]) {
-        throw new ApiException('HRM-JD-CODE-DUP', 'JD template code already exists for company', HttpStatus.CONFLICT);
+        throw new ApiException(
+          'HRM-JD-CODE-DUP',
+          'JD template code already exists for company',
+          HttpStatus.CONFLICT,
+        );
       }
     }
 
@@ -3632,34 +4118,50 @@ export class RecruitmentCatalogService {
     }
 
     const incomingValues = payload.values_json ?? payload.values;
-    const incomingSnapshot = (payload.layout_snapshot_json ?? payload.layout_snapshot) as
-      | JdLayoutSnapshotV2
-      | undefined;
+    const incomingSnapshot = (payload.layout_snapshot_json ??
+      payload.layout_snapshot) as JdLayoutSnapshotV2 | undefined;
 
-    let patchTitle = payload.title !== undefined ? payload.title.trim() : undefined;
-    let patchCode = nextCode !== undefined && nextCode.length > 0 ? nextCode : undefined;
+    let patchTitle =
+      payload.title !== undefined ? payload.title.trim() : undefined;
+    let patchCode =
+      nextCode !== undefined && nextCode.length > 0 ? nextCode : undefined;
     let patchDesc =
-      payload.job_description !== undefined ? payload.job_description.trim() || null : undefined;
-    let patchReq = payload.requirements !== undefined ? payload.requirements.trim() || null : undefined;
+      payload.job_description !== undefined
+        ? payload.job_description.trim() || null
+        : undefined;
+    let patchReq =
+      payload.requirements !== undefined
+        ? payload.requirements.trim() || null
+        : undefined;
     let patchValuesJson: string | undefined;
     let patchSnapshotJson: string | undefined;
     let patchLayoutVersion: number | undefined;
 
-    if (this.jdDynamic && (incomingValues !== undefined || incomingSnapshot !== undefined)) {
+    if (
+      this.jdDynamic &&
+      (incomingValues !== undefined || incomingSnapshot !== undefined)
+    ) {
       const mergedValues = {
         ...(existing.values_json ?? {}),
         ...(incomingValues ?? {}),
       };
-      const snap = incomingSnapshot ?? existing.layout_snapshot_json ?? undefined;
+      const snap =
+        incomingSnapshot ?? existing.layout_snapshot_json ?? undefined;
       if (snap) {
-        const validated = this.jdDynamic.validateSnapshotAndValues(snap, mergedValues, {
-          enforceRequired: false,
-        });
+        const validated = this.jdDynamic.validateSnapshotAndValues(
+          snap,
+          mergedValues,
+          {
+            enforceRequired: false,
+          },
+        );
         patchValuesJson = JSON.stringify(validated.values);
         patchSnapshotJson = JSON.stringify(validated.snapshot);
         patchLayoutVersion = payload.layout_version ?? validated.layout_version;
-        if (typeof validated.values.title === 'string') patchTitle = validated.values.title;
-        if (typeof validated.values.code === 'string') patchCode = validated.values.code;
+        if (typeof validated.values.title === 'string')
+          patchTitle = validated.values.title;
+        if (typeof validated.values.code === 'string')
+          patchCode = validated.values.code;
         if (typeof validated.values.responsibilities === 'string') {
           patchDesc = validated.values.responsibilities;
         }
@@ -3670,10 +4172,12 @@ export class RecruitmentCatalogService {
         patchValuesJson = JSON.stringify(mergedValues);
       }
     } else {
-      if (incomingValues !== undefined) patchValuesJson = JSON.stringify(incomingValues);
+      if (incomingValues !== undefined)
+        patchValuesJson = JSON.stringify(incomingValues);
       if (incomingSnapshot !== undefined) {
         patchSnapshotJson = JSON.stringify(incomingSnapshot);
-        patchLayoutVersion = payload.layout_version ?? Math.max(existing.layout_version ?? 1, 2);
+        patchLayoutVersion =
+          payload.layout_version ?? Math.max(existing.layout_version ?? 1, 2);
       }
     }
 
@@ -3681,7 +4185,11 @@ export class RecruitmentCatalogService {
     const values: unknown[] = [];
     const pushSet = (col: string, value: unknown, cast?: string) => {
       values.push(value);
-      setParts.push(cast ? `${col} = $${values.length}${cast}` : `${col} = $${values.length}`);
+      setParts.push(
+        cast
+          ? `${col} = $${values.length}${cast}`
+          : `${col} = $${values.length}`,
+      );
     };
     if (patchCode !== undefined) pushSet('code', patchCode);
     if (patchTitle !== undefined) pushSet('title', patchTitle);
@@ -3690,18 +4198,23 @@ export class RecruitmentCatalogService {
     } else if (nextPositionName !== undefined) {
       pushSet('position_name', nextPositionName);
     }
-    if (nextPositionCode !== undefined) pushSet('position_code', nextPositionCode);
+    if (nextPositionCode !== undefined)
+      pushSet('position_code', nextPositionCode);
     if (patchDesc !== undefined) pushSet('job_description', patchDesc);
     if (patchReq !== undefined) pushSet('requirements', patchReq);
-    if (payload.notes !== undefined) pushSet('notes', payload.notes.trim() || null);
+    if (payload.notes !== undefined)
+      pushSet('notes', payload.notes.trim() || null);
     // Soft-retire via PATCH status=retired | is_active=false (bridge both).
     if (statusWant === 'retired' || payload.is_active === false) {
       pushSet('status', 'retired');
       pushSet('is_active', false);
     }
-    if (patchValuesJson !== undefined) pushSet('values_json', patchValuesJson, '::jsonb');
-    if (patchSnapshotJson !== undefined) pushSet('layout_snapshot_json', patchSnapshotJson, '::jsonb');
-    if (patchLayoutVersion !== undefined) pushSet('layout_version', patchLayoutVersion);
+    if (patchValuesJson !== undefined)
+      pushSet('values_json', patchValuesJson, '::jsonb');
+    if (patchSnapshotJson !== undefined)
+      pushSet('layout_snapshot_json', patchSnapshotJson, '::jsonb');
+    if (patchLayoutVersion !== undefined)
+      pushSet('layout_version', patchLayoutVersion);
 
     values.push(templateId);
     const idParam = `$${values.length}`;
@@ -3716,15 +4229,23 @@ export class RecruitmentCatalogService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-JD-404', 'JD template not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-JD-404',
+        'JD template not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    return this.mapJdTemplateRow(res.rows[0] as Record<string, unknown>);
+    return this.mapJdTemplateRow(res.rows[0]);
   }
 
   /**
    * F-JD-04 publish — Nháp → Hiệu lực · required-on-layout gate · mint HRM-REC-JD-PUB-*.
    */
-  async publishJobDescriptionTemplate(templateId: string, companyId: string, authorization?: string) {
+  async publishJobDescriptionTemplate(
+    templateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     if (this.jdDynamic) await this.jdDynamic.ensureSchema();
     const scope = resolveHrmListScope(authorization, companyId);
@@ -3761,7 +4282,11 @@ export class RecruitmentCatalogService {
     }
 
     const snapshot = row.layout_snapshot_json;
-    if (!snapshot || !Array.isArray(snapshot.groups) || snapshot.groups.length === 0) {
+    if (
+      !snapshot ||
+      !Array.isArray(snapshot.groups) ||
+      snapshot.groups.length === 0
+    ) {
       throw new ApiException(
         'HRM-REC-JD-PUB-LAYOUT-EMPTY',
         'Effective layout_snapshot.groups required to publish',
@@ -3785,7 +4310,9 @@ export class RecruitmentCatalogService {
 
     // Structure validate (unknown keys / title-first) with required already checked.
     if (this.jdDynamic) {
-      this.jdDynamic.validateSnapshotAndValues(snapshot, valuesMap, { enforceRequired: true });
+      this.jdDynamic.validateSnapshotAndValues(snapshot, valuesMap, {
+        enforceRequired: true,
+      });
     }
 
     const filters = ['id = $1::uuid'];
@@ -3800,12 +4327,20 @@ export class RecruitmentCatalogService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-JD-404', 'JD template not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-JD-404',
+        'JD template not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    return this.mapJdTemplateRow(res.rows[0] as Record<string, unknown>);
+    return this.mapJdTemplateRow(res.rows[0]);
   }
 
-  async deleteJobDescriptionTemplate(templateId: string, companyId: string, authorization?: string) {
+  async deleteJobDescriptionTemplate(
+    templateId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
@@ -3820,7 +4355,11 @@ export class RecruitmentCatalogService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-REC-JD-404', 'JD template not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-REC-JD-404',
+        'JD template not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: templateId, status: 'retired' as const, is_active: false };
   }
@@ -3845,7 +4384,8 @@ export class RecruitmentCatalogService {
       is_active: bridgeIsActiveForStatus(status),
       values_json: (row.values_json as Record<string, unknown> | null) ?? null,
       layout_snapshot_json: row.layout_snapshot_json ?? null,
-      layout_version: row.layout_version != null ? Number(row.layout_version) : null,
+      layout_version:
+        row.layout_version != null ? Number(row.layout_version) : null,
       created_at: row.created_at,
       updated_at: row.updated_at,
       has_dynamic_values:

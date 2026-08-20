@@ -17,7 +17,8 @@ export const EMPLOYEE_ASSET_LIST_STATUSES = [
   'lost',
 ] as const;
 
-export type EmployeeAssetListStatus = (typeof EMPLOYEE_ASSET_LIST_STATUSES)[number];
+export type EmployeeAssetListStatus =
+  (typeof EMPLOYEE_ASSET_LIST_STATUSES)[number];
 
 /**
  * Scope for employee profile tab lists (degrees, training, assets).

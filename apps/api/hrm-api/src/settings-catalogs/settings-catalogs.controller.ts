@@ -49,7 +49,18 @@
  *   still main→holding via resolveHrmSettingsCatalogCompanyId only (pull ≠ apply ≠ clone).
  * must_keep: Leave L2 untouched; no apply-to-members / clone wiring
  */
-import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ok } from '../common/api-response';
 import { ApiException } from '../common/api.exception';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -67,7 +78,11 @@ export class SettingsCatalogsController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized settings-catalog access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized settings-catalog access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -105,16 +120,21 @@ export class SettingsCatalogsController {
   ) {
     // Xử lý: Diễn biến #1 — auth; partition main→holding trước overview.
     this.assertAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? queryCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? queryCompanyId,
+    });
     const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
       authorization,
       scope.tenantId,
       scope.companyId,
     );
-    return this.settingsCatalogs
-      .getOverview(scope.tenantId, catalogCompanyId)
-      // Thành công: Diễn biến #2/#3/#4 — nhóm hoặc empty «chưa đồng bộ» trung thực.
-      .then((data) => ok(data, 'HRM-SET-200', 'Settings catalogs overview'));
+    return (
+      this.settingsCatalogs
+        .getOverview(scope.tenantId, catalogCompanyId)
+        // Thành công: Diễn biến #2/#3/#4 — nhóm hoặc empty «chưa đồng bộ» trung thực.
+        .then((data) => ok(data, 'HRM-SET-200', 'Settings catalogs overview'))
+    );
   }
 
   @Post('items')
@@ -126,14 +146,18 @@ export class SettingsCatalogsController {
     @Headers('x-company-id') companyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const { tenantId: resolvedTenantId, catalogCompanyId } = this.resolveCatalogMutationCompanyId(
-      authorization,
-      tenantId,
-      companyId,
-      body.company_id,
-    );
+    const { tenantId: resolvedTenantId, catalogCompanyId } =
+      this.resolveCatalogMutationCompanyId(
+        authorization,
+        tenantId,
+        companyId,
+        body.company_id,
+      );
     return this.settingsCatalogs
-      .upsertCatalogItem(resolvedTenantId, { ...body, company_id: catalogCompanyId })
+      .upsertCatalogItem(resolvedTenantId, {
+        ...body,
+        company_id: catalogCompanyId,
+      })
       .then((data) => ok(data, 'HRM-SET-201', 'Settings catalog item created'));
   }
 
@@ -146,34 +170,46 @@ export class SettingsCatalogsController {
     @Headers('x-company-id') companyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const { tenantId: resolvedTenantId, catalogCompanyId } = this.resolveCatalogMutationCompanyId(
-      authorization,
-      tenantId,
-      companyId,
-      body.company_id,
-    );
+    const { tenantId: resolvedTenantId, catalogCompanyId } =
+      this.resolveCatalogMutationCompanyId(
+        authorization,
+        tenantId,
+        companyId,
+        body.company_id,
+      );
     return this.settingsCatalogs
-      .upsertCatalogItem(resolvedTenantId, { ...body, company_id: catalogCompanyId })
+      .upsertCatalogItem(resolvedTenantId, {
+        ...body,
+        company_id: catalogCompanyId,
+      })
       .then((data) => ok(data, 'HRM-SET-202', 'Settings catalog item updated'));
   }
 
   @Delete('items')
   deleteCatalogItem(
-    @Body() body: Pick<SettingsCatalogItemMutationDto, 'company_id' | 'category_key' | 'item_key'>,
+    @Body()
+    body: Pick<
+      SettingsCatalogItemMutationDto,
+      'company_id' | 'category_key' | 'item_key'
+    >,
     @Headers('authorization') authorization?: string,
     @Headers('x-internal-api-key') internalApiKey?: string,
     @Headers('x-tenant-id') tenantId?: string,
     @Headers('x-company-id') companyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const { tenantId: resolvedTenantId, catalogCompanyId } = this.resolveCatalogMutationCompanyId(
-      authorization,
-      tenantId,
-      companyId,
-      body.company_id,
-    );
+    const { tenantId: resolvedTenantId, catalogCompanyId } =
+      this.resolveCatalogMutationCompanyId(
+        authorization,
+        tenantId,
+        companyId,
+        body.company_id,
+      );
     return this.settingsCatalogs
-      .deleteCatalogItem(resolvedTenantId, { ...body, company_id: catalogCompanyId })
+      .deleteCatalogItem(resolvedTenantId, {
+        ...body,
+        company_id: catalogCompanyId,
+      })
       .then((data) => ok(data, 'HRM-SET-200', 'Settings catalog item deleted'));
   }
 
@@ -204,7 +240,13 @@ export class SettingsCatalogsController {
     this.assertAccess(authorization, internalApiKey);
     return this.settingsCatalogs
       .seedGroupEmployeeImportCatalogAllTenants()
-      .then((data) => ok(data, 'HRM-SET-205', 'Group employee import catalogs seeded for all tenants'));
+      .then((data) =>
+        ok(
+          data,
+          'HRM-SET-205',
+          'Group employee import catalogs seeded for all tenants',
+        ),
+      );
   }
 
   @Post('seed/group-employee-import')
@@ -218,7 +260,13 @@ export class SettingsCatalogsController {
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.settingsCatalogs
       .seedGroupEmployeeImportCatalog(scope.tenantId, scope.companyId)
-      .then((data) => ok(data, 'HRM-SET-206', 'Group employee import catalogs seeded for tenant'));
+      .then((data) =>
+        ok(
+          data,
+          'HRM-SET-206',
+          'Group employee import catalogs seeded for tenant',
+        ),
+      );
   }
 
   @Post('seed/tourism-fleet')
@@ -229,7 +277,9 @@ export class SettingsCatalogsController {
     this.assertAccess(authorization, internalApiKey);
     return this.settingsCatalogs
       .seedTourismFleetCatalog()
-      .then((data) => ok(data, 'HRM-SET-207', 'Tourism fleet catalogs seeded for xe-du-lich'));
+      .then((data) =>
+        ok(data, 'HRM-SET-207', 'Tourism fleet catalogs seeded for xe-du-lich'),
+      );
   }
 
   @Post('seed/tenant-position-catalog-all')
@@ -240,7 +290,13 @@ export class SettingsCatalogsController {
     this.assertAccess(authorization, internalApiKey);
     return this.settingsCatalogs
       .seedTenantPositionCatalogAllTenants()
-      .then((data) => ok(data, 'HRM-SET-208', 'Tenant position catalogs seeded for all member tenants'));
+      .then((data) =>
+        ok(
+          data,
+          'HRM-SET-208',
+          'Tenant position catalogs seeded for all member tenants',
+        ),
+      );
   }
 
   @Post('seed/tenant-position-catalog')
@@ -254,7 +310,9 @@ export class SettingsCatalogsController {
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.settingsCatalogs
       .seedTenantPositionCatalog(scope.tenantId, scope.companyId)
-      .then((data) => ok(data, 'HRM-SET-209', 'Tenant position catalog seeded'));
+      .then((data) =>
+        ok(data, 'HRM-SET-209', 'Tenant position catalog seeded'),
+      );
   }
 
   @Get('batches/:batchId')
@@ -267,14 +325,22 @@ export class SettingsCatalogsController {
     @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? queryCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? queryCompanyId,
+    });
     const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
       authorization,
       scope.tenantId,
       scope.companyId,
     );
     return this.settingsCatalogs
-      .getExtensionBatchDetail(batchId, scope.tenantId, catalogCompanyId, authorization)
+      .getExtensionBatchDetail(
+        batchId,
+        scope.tenantId,
+        catalogCompanyId,
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-SET-220', 'Extension batch detail'));
   }
 
@@ -289,7 +355,10 @@ export class SettingsCatalogsController {
     @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? queryCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? queryCompanyId,
+    });
     const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
       authorization,
       scope.tenantId,
@@ -303,7 +372,13 @@ export class SettingsCatalogsController {
         catalogCompanyId,
         authorization,
       )
-      .then(() => ok({ batchId, workflowInstanceId: body.workflowInstanceId }, 'HRM-SET-221', 'Workflow linked'));
+      .then(() =>
+        ok(
+          { batchId, workflowInstanceId: body.workflowInstanceId },
+          'HRM-SET-221',
+          'Workflow linked',
+        ),
+      );
   }
 
   @Post('batches/:batchId/review')
@@ -318,7 +393,10 @@ export class SettingsCatalogsController {
     @Headers('x-user-id') reviewerUserId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? queryCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? queryCompanyId,
+    });
     const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
       authorization,
       scope.tenantId,
@@ -349,7 +427,9 @@ export class SettingsCatalogsController {
     this.assertAccess(authorization, internalApiKey);
     return this.settingsCatalogs
       .listExtensionRequests({ status, tenantId, companyId })
-      .then((data) => ok(data, 'HRM-SET-210', 'Catalog extension requests listed'));
+      .then((data) =>
+        ok(data, 'HRM-SET-210', 'Catalog extension requests listed'),
+      );
   }
 
   @Post('extension-requests/:requestId/approve')
@@ -363,8 +443,15 @@ export class SettingsCatalogsController {
     this.assertAccess(authorization, internalApiKey);
     const reviewer = reviewerUserId?.trim() || 'xbos-admin';
     return this.settingsCatalogs
-      .reviewExtensionRequest(requestId, 'approved', reviewer, body?.review_note)
-      .then((data) => ok(data, 'HRM-SET-211', 'Catalog extension request approved'));
+      .reviewExtensionRequest(
+        requestId,
+        'approved',
+        reviewer,
+        body?.review_note,
+      )
+      .then((data) =>
+        ok(data, 'HRM-SET-211', 'Catalog extension request approved'),
+      );
   }
 
   @Post('extension-requests/:requestId/reject')
@@ -378,8 +465,15 @@ export class SettingsCatalogsController {
     this.assertAccess(authorization, internalApiKey);
     const reviewer = reviewerUserId?.trim() || 'xbos-admin';
     return this.settingsCatalogs
-      .reviewExtensionRequest(requestId, 'rejected', reviewer, body?.review_note)
-      .then((data) => ok(data, 'HRM-SET-212', 'Catalog extension request rejected'));
+      .reviewExtensionRequest(
+        requestId,
+        'rejected',
+        reviewer,
+        body?.review_note,
+      )
+      .then((data) =>
+        ok(data, 'HRM-SET-212', 'Catalog extension request rejected'),
+      );
   }
 
   @Post('seed/employee-profile-template')
@@ -393,7 +487,9 @@ export class SettingsCatalogsController {
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.settingsCatalogs
       .seedEmployeeProfileTemplate(scope.tenantId, scope.companyId)
-      .then((data) => ok(data, 'HRM-SET-204', 'Employee profile catalog template seeded'));
+      .then((data) =>
+        ok(data, 'HRM-SET-204', 'Employee profile catalog template seeded'),
+      );
   }
 
   /**
@@ -448,18 +544,32 @@ export class SettingsCatalogsController {
       scope.companyId,
     );
     // U64/U65: portal browser UF-09/15 must use approval path; immediate only for explicit bulk sync.
-    const immediateRequested = catalogWriteMode?.trim().toLowerCase() === 'immediate';
+    const immediateRequested =
+      catalogWriteMode?.trim().toLowerCase() === 'immediate';
     const immediate = immediateRequested && body.bulkSync === true;
     if (immediate) {
       return this.settingsCatalogs
-        .appendExtensionItems(scope.tenantId, catalogCompanyId, catalogKey, body.items)
-        .then((data) => ok(data, 'HRM-SET-202', 'HRM catalog extensions saved'));
+        .appendExtensionItems(
+          scope.tenantId,
+          catalogCompanyId,
+          catalogKey,
+          body.items,
+        )
+        .then((data) =>
+          ok(data, 'HRM-SET-202', 'HRM catalog extensions saved'),
+        );
     }
     return this.settingsCatalogs
-      .submitExtensionItemsForApproval(scope.tenantId, catalogCompanyId, catalogKey, body.items, {
-        userId: userId ?? undefined,
-        email: userId?.includes('@') ? userId : undefined,
-      })
+      .submitExtensionItemsForApproval(
+        scope.tenantId,
+        catalogCompanyId,
+        catalogKey,
+        body.items,
+        {
+          userId: userId ?? undefined,
+          email: userId?.includes('@') ? userId : undefined,
+        },
+      )
       .then((data) => ok(data, 'HRM-SET-209', data.message));
   }
 
@@ -481,6 +591,8 @@ export class SettingsCatalogsController {
     );
     return this.settingsCatalogs
       .requestFieldRemoval(scope.tenantId, catalogCompanyId, catalogKey, body)
-      .then((data) => ok(data, 'HRM-SET-203', 'Catalog field removal request submitted'));
+      .then((data) =>
+        ok(data, 'HRM-SET-203', 'Catalog field removal request submitted'),
+      );
   }
 }

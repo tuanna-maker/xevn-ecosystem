@@ -18,57 +18,63 @@ function schemaNoop(sql: string): boolean {
     s.includes('CREATE INDEX') ||
     s.includes('CREATE UNIQUE') ||
     s.includes('ALTER TABLE') ||
-    s.includes('INSERT INTO public.employee_contracts') && s.includes('holding')
+    (s.includes('INSERT INTO public.employee_contracts') &&
+      s.includes('holding'))
   );
 }
 
 describe('PO-HRM-CTR-CREATE-REDESIGN-BE-SUBJ-01', () => {
   it('wizard candidate create persists candidate_id with null employee_id', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaNoop(s)) return { rows: [] };
-        if (s.includes('FROM public.recruitment_candidates') && s.includes('WHERE id =')) {
-          return {
-            rows: [
-              {
-                id: CAND_ID,
-                company_id: 'holding',
-                full_name: 'Tran UV',
-                requisition_id: null,
-              },
-            ],
-          };
-        }
-        if (s.includes('INSERT INTO public.employee_contracts')) {
-          expect(params?.[2]).toBeNull();
-          expect(params?.[3]).toBe(CAND_ID);
-          expect(params?.[5]).toBe('candidate');
-          return {
-            rows: [
-              {
-                id: 'ct-cand-1',
-                company_id: 'holding',
-                employee_id: null,
-                candidate_id: CAND_ID,
-                requisition_id: null,
-                subject_type: 'candidate',
-                contract_type: 'indefinite',
-                start_date: '2026-01-01',
-                end_date: null,
-                status: 'active',
-                signed_at: '2026-01-02',
-                work_arrangement: 'full_time',
-                salary_ratio_percent: 100,
-                contract_abstract: 'Trich yeu',
-                created_at: '2026-01-01T00:00:00.000Z',
-                updated_at: '2026-01-01T00:00:00.000Z',
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaNoop(s)) return { rows: [] };
+          if (
+            s.includes('FROM public.recruitment_candidates') &&
+            s.includes('WHERE id =')
+          ) {
+            return {
+              rows: [
+                {
+                  id: CAND_ID,
+                  company_id: 'holding',
+                  full_name: 'Tran UV',
+                  requisition_id: null,
+                },
+              ],
+            };
+          }
+          if (s.includes('INSERT INTO public.employee_contracts')) {
+            expect(params?.[2]).toBeNull();
+            expect(params?.[3]).toBe(CAND_ID);
+            expect(params?.[5]).toBe('candidate');
+            return {
+              rows: [
+                {
+                  id: 'ct-cand-1',
+                  company_id: 'holding',
+                  employee_id: null,
+                  candidate_id: CAND_ID,
+                  requisition_id: null,
+                  subject_type: 'candidate',
+                  contract_type: 'indefinite',
+                  start_date: '2026-01-01',
+                  end_date: null,
+                  status: 'active',
+                  signed_at: '2026-01-02',
+                  work_arrangement: 'full_time',
+                  salary_ratio_percent: 100,
+                  contract_abstract: 'Trich yeu',
+                  created_at: '2026-01-01T00:00:00.000Z',
+                  updated_at: '2026-01-01T00:00:00.000Z',
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const service = new ContractsInsuranceService(db);
     const row = await service.createContract({
@@ -133,34 +139,36 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-SUBJ-01', () => {
 
   it('employee subject_type without REC trace succeeds (NV-first BA-03)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaNoop(s)) return { rows: [] };
-        if (s.includes('INSERT INTO public.employee_contracts')) {
-          expect(params?.[2]).toBe(EMP_ID);
-          expect(params?.[5]).toBe('employee');
-          return {
-            rows: [
-              {
-                id: 'ct-emp-legacy-nv',
-                company_id: 'holding',
-                employee_id: EMP_ID,
-                candidate_id: null,
-                subject_type: 'employee',
-                contract_type: 'indefinite',
-                start_date: '2026-01-01',
-                end_date: null,
-                status: 'active',
-                signed_at: '2026-01-02',
-                salary_ratio_percent: 100,
-                created_at: '2026-01-01T00:00:00.000Z',
-                updated_at: '2026-01-01T00:00:00.000Z',
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaNoop(s)) return { rows: [] };
+          if (s.includes('INSERT INTO public.employee_contracts')) {
+            expect(params?.[2]).toBe(EMP_ID);
+            expect(params?.[5]).toBe('employee');
+            return {
+              rows: [
+                {
+                  id: 'ct-emp-legacy-nv',
+                  company_id: 'holding',
+                  employee_id: EMP_ID,
+                  candidate_id: null,
+                  subject_type: 'employee',
+                  contract_type: 'indefinite',
+                  start_date: '2026-01-01',
+                  end_date: null,
+                  status: 'active',
+                  signed_at: '2026-01-02',
+                  salary_ratio_percent: 100,
+                  created_at: '2026-01-01T00:00:00.000Z',
+                  updated_at: '2026-01-01T00:00:00.000Z',
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const service = new ContractsInsuranceService(db);
     const row = await service.createContract({
@@ -176,9 +184,10 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-SUBJ-01', () => {
     });
     expect(row.subject_type).toBe('employee');
     expect(row.employee_id).toBe(EMP_ID);
-    const recTraceCalls = (db.query as jest.Mock).mock.calls.filter((c) =>
-      String(c[0]).includes('FROM public.recruitment_candidates') &&
-      String(c[0]).includes('employee_id ='),
+    const recTraceCalls = (db.query as jest.Mock).mock.calls.filter(
+      (c) =>
+        String(c[0]).includes('FROM public.recruitment_candidates') &&
+        String(c[0]).includes('employee_id ='),
     );
     expect(recTraceCalls).toHaveLength(0);
   });
@@ -230,7 +239,8 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-SUBJ-01', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaNoop(String(sql))) return { rows: [] };
-        if (String(sql).includes('FROM public.recruitment_candidates')) return { rows: [] };
+        if (String(sql).includes('FROM public.recruitment_candidates'))
+          return { rows: [] };
         return { rows: [] };
       }),
     } as unknown as HrmDbService;
@@ -290,7 +300,10 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-SUBJ-01', () => {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
         if (schemaNoop(s)) return { rows: [] };
-        if (s.includes('FROM public.recruitment_candidates') && s.includes('employee_id =')) {
+        if (
+          s.includes('FROM public.recruitment_candidates') &&
+          s.includes('employee_id =')
+        ) {
           return { rows: [{ id: REC_LINK_ID }] };
         }
         if (s.includes('INSERT INTO public.employee_contracts')) {

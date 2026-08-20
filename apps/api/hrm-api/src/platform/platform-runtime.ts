@@ -8,11 +8,19 @@ import type { Logger } from 'pino';
 import type { NextFunction, Request, Response } from 'express';
 
 export const HRM_SERVICE_NAME = 'hrm-api';
-export const hrmRootLogger: Logger = createPlatformLogger({ service: HRM_SERVICE_NAME });
+export const hrmRootLogger: Logger = createPlatformLogger({
+  service: HRM_SERVICE_NAME,
+});
 
 const rateLimit = createRateLimitMiddleware({
-  max: Number(process.env.HRM_RATE_LIMIT_MAX ?? process.env.RATE_LIMIT_MAX ?? 300),
-  windowMs: Number(process.env.HRM_RATE_LIMIT_WINDOW_MS ?? process.env.RATE_LIMIT_WINDOW_MS ?? 60_000),
+  max: Number(
+    process.env.HRM_RATE_LIMIT_MAX ?? process.env.RATE_LIMIT_MAX ?? 300,
+  ),
+  windowMs: Number(
+    process.env.HRM_RATE_LIMIT_WINDOW_MS ??
+      process.env.RATE_LIMIT_WINDOW_MS ??
+      60_000,
+  ),
 });
 
 export function registerHrmPlatformMiddleware(
@@ -32,7 +40,9 @@ export function registerHrmPlatformMiddleware(
 }
 
 function isLoopbackClient(req: Request): boolean {
-  const forwarded = (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim();
+  const forwarded = (req.headers['x-forwarded-for'] as string | undefined)
+    ?.split(',')[0]
+    ?.trim();
   const ip = forwarded || req.socket.remoteAddress || '';
   return (
     ip === '127.0.0.1' ||
@@ -62,7 +72,8 @@ export function hrmMobileEssConnectionGuard(
   next: NextFunction,
 ): void {
   const requestId = req.headers['x-request-id'];
-  const isMobileClient = typeof requestId === 'string' && requestId.startsWith('mob-');
+  const isMobileClient =
+    typeof requestId === 'string' && requestId.startsWith('mob-');
   const path = req.url ?? req.path ?? '';
   const isEssTxn =
     path.includes('/attendance/') ||
@@ -77,7 +88,11 @@ export function hrmMobileEssConnectionGuard(
 export function hrmMetricsOnFinish(req: Request, res: Response): void {
   const startedAt = Date.now();
   res.on('finish', () => {
-    const route = (req.route?.path as string | undefined) ?? req.path ?? req.url ?? 'unknown';
+    const route =
+      (req.route?.path as string | undefined) ??
+      req.path ??
+      req.url ??
+      'unknown';
     const codeHeader = res.getHeader('x-api-code');
     recordHttpMetrics(HRM_SERVICE_NAME, {
       method: req.method ?? 'GET',

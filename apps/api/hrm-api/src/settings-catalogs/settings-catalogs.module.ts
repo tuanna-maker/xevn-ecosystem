@@ -25,7 +25,15 @@ import { XbosCatalogWorkflowBridge } from './xbos-catalog-workflow.bridge';
 @Global()
 @Module({
   imports: [CoreModule],
-  providers: [CatalogSyncService, XbosCatalogWorkflowBridge, SettingsCatalogsService],
-  exports: [CatalogSyncService, XbosCatalogWorkflowBridge, SettingsCatalogsService],
+  providers: [
+    CatalogSyncService,
+    XbosCatalogWorkflowBridge,
+    SettingsCatalogsService,
+  ],
+  exports: [
+    CatalogSyncService,
+    XbosCatalogWorkflowBridge,
+    SettingsCatalogsService,
+  ],
 })
 export class SettingsCatalogsModule {}

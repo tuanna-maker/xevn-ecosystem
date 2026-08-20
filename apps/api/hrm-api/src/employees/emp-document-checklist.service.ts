@@ -149,10 +149,7 @@ export class EmpDocumentChecklistService implements OnModuleInit {
     `);
   }
 
-  private mapDisplay(
-    row: HrmDocumentChecklistItemRow,
-    enrich: CatalogEnrich,
-  ) {
+  private mapDisplay(row: HrmDocumentChecklistItemRow, enrich: CatalogEnrich) {
     return {
       id: row.id,
       employeeId: row.employee_id,
@@ -289,7 +286,9 @@ export class EmpDocumentChecklistService implements OnModuleInit {
     to: HrmDocumentChecklistStatus,
   ): void {
     if (from === to) return;
-    if (!(HRM_DOCUMENT_CHECKLIST_STATUSES as readonly string[]).includes(from)) {
+    if (
+      !(HRM_DOCUMENT_CHECKLIST_STATUSES as readonly string[]).includes(from)
+    ) {
       throw new ApiException(
         HRM_CORE_CHK_VAL_400,
         `Illegal current status '${from}'`,
@@ -374,7 +373,9 @@ export class EmpDocumentChecklistService implements OnModuleInit {
     const pg = err as { code?: string; constraint?: string; message?: string };
     if (
       pg.code === '23505' ||
-      /uq_hrm_document_checklist_item_emp_key_active/i.test(pg.constraint ?? '') ||
+      /uq_hrm_document_checklist_item_emp_key_active/i.test(
+        pg.constraint ?? '',
+      ) ||
       /uq_hrm_document_checklist_item_emp_key_active/i.test(pg.message ?? '')
     ) {
       throw new ApiException(
@@ -399,7 +400,10 @@ export class EmpDocumentChecklistService implements OnModuleInit {
       authorization,
       scopeContext,
     );
-    const filters: string[] = ['employee_id = $1::uuid', 'company_id = $2::text'];
+    const filters: string[] = [
+      'employee_id = $1::uuid',
+      'company_id = $2::text',
+    ];
     const values: unknown[] = [employeeId, parent.company_id];
     if (!query.include_archived) {
       filters.push('archived_at IS NULL');
@@ -524,8 +528,7 @@ export class EmpDocumentChecklistService implements OnModuleInit {
         authorization,
         tenantId: scopeContext?.tenantId,
       });
-    const required =
-      payload.required ?? catalogHit?.requiredByDefault ?? false;
+    const required = payload.required ?? catalogHit?.requiredByDefault ?? false;
     const status = payload.status
       ? this.assertStatus(payload.status)
       : 'missing';

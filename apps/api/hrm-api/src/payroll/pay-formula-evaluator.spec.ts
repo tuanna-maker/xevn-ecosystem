@@ -50,7 +50,9 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
         },
       ],
     };
-    const r = evaluatePayFormulaExpression(expression, { base_salary: 10_000_000 });
+    const r = evaluatePayFormulaExpression(expression, {
+      base_salary: 10_000_000,
+    });
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.gross).toBe(10_500_000);
@@ -84,7 +86,12 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
     const exprOnly = collectExpressionVarKeys({
       form: 'gd1_eval_v1',
       lines: [
-        { component_code: 'A', sign: 'earning', source: 'var', var: 'payable_hours' },
+        {
+          component_code: 'A',
+          sign: 'earning',
+          source: 'var',
+          var: 'payable_hours',
+        },
         {
           component_code: 'B',
           sign: 'earning',
@@ -99,7 +106,12 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
       {
         form: 'gd1_eval_v1',
         lines: [
-          { component_code: 'A', sign: 'earning', source: 'var', var: 'payable_hours' },
+          {
+            component_code: 'A',
+            sign: 'earning',
+            source: 'var',
+            var: 'payable_hours',
+          },
           {
             component_code: 'B',
             sign: 'earning',
@@ -122,7 +134,12 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
       collectExpressionVarKeys({
         form: 'gd1_eval_v1',
         lines: [
-          { component_code: 'BASE', sign: 'earning', source: 'const', amount: 7_500_000 },
+          {
+            component_code: 'BASE',
+            sign: 'earning',
+            source: 'const',
+            amount: 7_500_000,
+          },
         ],
       }),
     ).toEqual([]);

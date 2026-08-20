@@ -8,7 +8,11 @@ import { SpreadsheetService } from './spreadsheet.service';
 @Module({
   imports: [EmployeesModule],
   controllers: [SpreadsheetController],
-  providers: [SpreadsheetService, SpreadsheetIngestService, SpreadsheetTemplateService],
+  providers: [
+    SpreadsheetService,
+    SpreadsheetIngestService,
+    SpreadsheetTemplateService,
+  ],
   exports: [SpreadsheetService, SpreadsheetIngestService],
 })
 export class SpreadsheetModule {}

@@ -18,17 +18,23 @@ import { OperationsService } from './operations.service';
 const XBOS_LE_UUID = '78b8a663-f5e5-4f4d-a020-b8f950ec2037';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `Bearer ${header}.${body}.${sig}`;
 }
 
 describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
   describe('shared map helpers', () => {
     it('isHrmMappedCompanyUuid true only for Plane B′ map', () => {
-      expect(isHrmMappedCompanyUuid(HRM_COMPANY_UUID_BY_SLUG.holding)).toBe(true);
+      expect(isHrmMappedCompanyUuid(HRM_COMPANY_UUID_BY_SLUG.holding)).toBe(
+        true,
+      );
       expect(isHrmMappedCompanyUuid(XBOS_LE_UUID)).toBe(false);
       expect(isHrmMappedCompanyUuid('holding')).toBe(false);
     });
@@ -37,9 +43,9 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
       expect(() => assertHrmMappedCompanyUuidOrThrow(XBOS_LE_UUID)).toThrow(
         expect.objectContaining<ApiException>({ code: 'HRM-PLANE-409' }),
       );
-      expect(assertHrmMappedCompanyUuidOrThrow(HRM_COMPANY_UUID_BY_SLUG.finance)).toBe(
-        HRM_COMPANY_UUID_BY_SLUG.finance,
-      );
+      expect(
+        assertHrmMappedCompanyUuidOrThrow(HRM_COMPANY_UUID_BY_SLUG.finance),
+      ).toBe(HRM_COMPANY_UUID_BY_SLUG.finance);
     });
   });
 
@@ -64,7 +70,9 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
     });
 
     it('LE UUID persist → HRM-PLANE-409', () => {
-      expect(() => resolveHrmOperationsPersistCompanyId(undefined, XBOS_LE_UUID)).toThrow(
+      expect(() =>
+        resolveHrmOperationsPersistCompanyId(undefined, XBOS_LE_UUID),
+      ).toThrow(
         expect.objectContaining<ApiException>({ code: 'HRM-PLANE-409' }),
       );
     });
@@ -94,9 +102,11 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
           priority: 'medium',
         }),
       ).rejects.toMatchObject<ApiException>({ code: 'HRM-PLANE-409' });
-      expect(db.query.mock.calls.some((c) => String(c[0]).includes('INSERT INTO public.hrm_tasks'))).toBe(
-        false,
-      );
+      expect(
+        db.query.mock.calls.some((c) =>
+          String(c[0]).includes('INSERT INTO public.hrm_tasks'),
+        ),
+      ).toBe(false);
     });
 
     it('createTask slug trsport maps to Plane B′ UUID', async () => {
@@ -129,7 +139,9 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
     });
 
     it('listTasks with LE company_id rejects (no silent empty list)', async () => {
-      await expect(service.listTasks({ company_id: XBOS_LE_UUID })).rejects.toMatchObject<ApiException>({
+      await expect(
+        service.listTasks({ company_id: XBOS_LE_UUID }),
+      ).rejects.toMatchObject<ApiException>({
         code: 'HRM-PLANE-409',
       });
     });
@@ -137,16 +149,22 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
     it('listTasks slug holding filters mapped UUID', async () => {
       db.query.mockResolvedValue({ rows: [{ total: '0' }] } as never);
       await service.listTasks({ company_id: 'holding' });
-      const listCall = db.query.mock.calls.find((c) => String(c[0]).includes('LIMIT'));
+      const listCall = db.query.mock.calls.find((c) =>
+        String(c[0]).includes('LIMIT'),
+      );
       expect(listCall?.[1]?.[0]).toBe(HRM_COMPANY_UUID_BY_SLUG.holding);
     });
 
     it('getSummary with LE company_id rejects (no silent fake 0)', async () => {
-      await expect(service.getSummary(XBOS_LE_UUID)).rejects.toMatchObject<ApiException>({
+      await expect(
+        service.getSummary(XBOS_LE_UUID),
+      ).rejects.toMatchObject<ApiException>({
         code: 'HRM-PLANE-409',
       });
       expect(
-        db.query.mock.calls.some((c) => String(c[0]).includes('FROM public.hrm_tasks')),
+        db.query.mock.calls.some((c) =>
+          String(c[0]).includes('FROM public.hrm_tasks'),
+        ),
       ).toBe(false);
     });
 
@@ -161,11 +179,14 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
         service_requests: 0,
       });
       const taskSql =
-        db.query.mock.calls.find((c) => String(c[0]).includes('FROM public.hrm_tasks'))?.[0] ?? '';
+        db.query.mock.calls.find((c) =>
+          String(c[0]).includes('FROM public.hrm_tasks'),
+        )?.[0] ?? '';
       expect(String(taskSql)).toContain('::uuid');
       const payrollSql =
-        db.query.mock.calls.find((c) => String(c[0]).includes('FROM public.payroll_periods'))?.[0] ??
-        '';
+        db.query.mock.calls.find((c) =>
+          String(c[0]).includes('FROM public.payroll_periods'),
+        )?.[0] ?? '';
       expect(String(payrollSql)).toContain('company_id =');
       expect(String(payrollSql)).not.toContain('::uuid');
     });

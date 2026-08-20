@@ -13,7 +13,9 @@ import {
 describe('PayPayslipSplitService (PAY-04 C-SLICE)', () => {
   describe('buildSplitSegmentWindows', () => {
     it('builds contiguous windows from CORE effective_from cuts (not hardcoded day 15)', () => {
-      const windows = buildSplitSegmentWindows('2026-04-01', '2026-04-30', ['2026-04-16']);
+      const windows = buildSplitSegmentWindows('2026-04-01', '2026-04-30', [
+        '2026-04-16',
+      ]);
       expect(windows).toHaveLength(2);
       expect(windows[0]).toMatchObject({
         segmentSeq: 1,
@@ -107,16 +109,20 @@ describe('PayPayslipSplitService (PAY-04 C-SLICE)', () => {
         }),
       } as unknown as HrmDbService;
 
-      (payFormulas.processEmployeePayslipViaSrc as jest.Mock).mockResolvedValue({
-        mode: 'computed',
-        lines: [{ component_code: 'BASE', sign: 'earning', amount: 5_000_000 }],
-        gross: 5_000_000,
-        deduction: 0,
-        net: 5_000_000,
-        primaryFormulaDefinitionId: 'f1',
-        sourceTiers: [],
-        warnings: [],
-      });
+      (payFormulas.processEmployeePayslipViaSrc as jest.Mock).mockResolvedValue(
+        {
+          mode: 'computed',
+          lines: [
+            { component_code: 'BASE', sign: 'earning', amount: 5_000_000 },
+          ],
+          gross: 5_000_000,
+          deduction: 0,
+          net: 5_000_000,
+          primaryFormulaDefinitionId: 'f1',
+          sourceTiers: [],
+          warnings: [],
+        },
+      );
 
       const svc = new PayPayslipSplitService(db, payFormulas);
       const result = await svc.processEmployeeInPeriod({

@@ -46,7 +46,9 @@ function makeExtQuery(rows: ExtRow[]): HrmDbQueryFn {
     const s = String(sql);
     const tenantId = String(params?.[0] ?? '');
     const companyIds = (params?.[1] as string[]) ?? [];
-    const catalogKeys = ((params?.[2] as string[]) ?? []).map((k) => k.toLowerCase());
+    const catalogKeys = ((params?.[2] as string[]) ?? []).map((k) =>
+      k.toLowerCase(),
+    );
     const active = rows.filter(
       (r) =>
         r.tenant_id === tenantId &&
@@ -149,9 +151,14 @@ describe('emp-custom-field-consumer-assert — VAL-EMP-CF-CNS-*', () => {
         tenantId: 'xevn',
       }),
     ).resolves.toBeUndefined();
-    expect(await countEffectiveActiveEmpExtensionDefs(query, 'holding', groupCeoToken(), 'xevn')).toBe(
-      0,
-    );
+    expect(
+      await countEffectiveActiveEmpExtensionDefs(
+        query,
+        'holding',
+        groupCeoToken(),
+        'xevn',
+      ),
+    ).toBe(0);
   });
 
   it('VAL-EMP-CF-CNS-03: retired (draft) code treated as invent KEY when EFF>0', async () => {
@@ -256,7 +263,10 @@ describe('EmployeesService wire — F-EMP-CF-CNS-01', () => {
         if (s.includes('hrm_catalog_extension_items') && s.includes('COUNT')) {
           return { rows: [{ c: '2' }] };
         }
-        if (s.includes('hrm_catalog_extension_items') && s.includes('SELECT DISTINCT')) {
+        if (
+          s.includes('hrm_catalog_extension_items') &&
+          s.includes('SELECT DISTINCT')
+        ) {
           return { rows: [{ code: 'basic_01' }, { code: 'national_id' }] };
         }
         return { rows: [] };
@@ -268,7 +278,12 @@ describe('EmployeesService wire — F-EMP-CF-CNS-01', () => {
     await expect(
       service.updateEmployee(
         employeeId,
-        { custom_fields: { tenant_id: 'xevn', zz_invent_emp_cf_msjcubjb: 'invent-gap' } },
+        {
+          custom_fields: {
+            tenant_id: 'xevn',
+            zz_invent_emp_cf_msjcubjb: 'invent-gap',
+          },
+        },
         'holding',
         groupCeoToken(),
         { tenantId: 'xevn' },

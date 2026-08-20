@@ -1,4 +1,10 @@
-import { IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class RequestCatalogFieldRemovalDto {
   @IsString()
@@ -27,4 +33,3 @@ export class RequestCatalogFieldRemovalDto {
   @MaxLength(320)
   requested_by_email?: string;
 }
-

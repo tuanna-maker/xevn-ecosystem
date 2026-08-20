@@ -67,7 +67,9 @@ function empRow(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function mockPersistedSoftReverse(db: jest.Mocked<Pick<HrmDbService, 'query' | 'withTransaction'>>) {
+function mockPersistedSoftReverse(
+  db: jest.Mocked<Pick<HrmDbService, 'query' | 'withTransaction'>>,
+) {
   db.query.mockImplementation(async (sql: string) => {
     if (
       sql.includes('FROM public.recruitment_candidates c') &&
@@ -96,10 +98,16 @@ function mockPersistedSoftReverse(db: jest.Mocked<Pick<HrmDbService, 'query' | '
     ) {
       return { rows: [{ employee_id: EMP_ID }] } as never;
     }
-    if (sql.includes('FROM public.employees') && sql.includes('id = $1::uuid')) {
+    if (
+      sql.includes('FROM public.employees') &&
+      sql.includes('id = $1::uuid')
+    ) {
       return { rows: [empRow()] } as never;
     }
-    if (sql.includes('UPDATE public.recruitment_candidates') && sql.includes('employee_id')) {
+    if (
+      sql.includes('UPDATE public.recruitment_candidates') &&
+      sql.includes('employee_id')
+    ) {
       return {
         rows: [
           {
@@ -124,7 +132,10 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
       query: jest.fn().mockResolvedValue({ rows: [] }),
       withTransaction: jest.fn(async (fn) => fn(db.query)),
     };
-    service = new RecruitmentService(db as unknown as HrmDbService, mockBridge() as never);
+    service = new RecruitmentService(
+      db as unknown as HrmDbService,
+      mockBridge() as never,
+    );
   });
 
   it('listCandidates SELECT projects employee_id (soft stamp)', async () => {
@@ -134,7 +145,10 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
       if (sql.includes('COUNT(*)')) {
         return { rows: [{ total: '1' }] } as never;
       }
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT')
+      ) {
         return {
           rows: [
             {
@@ -164,7 +178,8 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
     const res = await service.listCandidates({ company_id: HOLDING });
     expect(res.data[0]?.employee_id).toBe(EMP_ID);
     const listSql = sqlLog.find(
-      (s) => s.includes('FROM public.recruitment_candidates') && s.includes('LIMIT'),
+      (s) =>
+        s.includes('FROM public.recruitment_candidates') && s.includes('LIMIT'),
     );
     expect(listSql).toMatch(/c\.employee_id::text AS employee_id/);
   });
@@ -173,7 +188,10 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
     const sqlLog: string[] = [];
     db.query.mockImplementation(async (sql: string) => {
       sqlLog.push(sql);
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         return {
           rows: [
             {
@@ -203,7 +221,9 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
     const dto = await service.getCandidateById(APP_ID, HOLDING);
     expect(dto.employee_id).toBe(EMP_ID);
     const getSql = sqlLog.find(
-      (s) => s.includes('FROM public.recruitment_candidates') && s.includes('LIMIT 1'),
+      (s) =>
+        s.includes('FROM public.recruitment_candidates') &&
+        s.includes('LIMIT 1'),
     );
     expect(getSql).toMatch(/c\.employee_id::text AS employee_id/);
   });
@@ -216,7 +236,9 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
     expect(dto.status).toBe(EMP_STATUS_PENDING_DOCS);
     // Unlinked-only gate: assertOfferReady must not run (would throw for hired).
     expect(
-      db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.employees')),
+      db.query.mock.calls.some(([sql]) =>
+        String(sql).includes('INSERT INTO public.employees'),
+      ),
     ).toBe(false);
   });
 
@@ -226,14 +248,18 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
         sql.includes('FROM public.recruitment_candidates c') &&
         sql.includes('INNER JOIN public.job_requisitions')
       ) {
-        return { rows: [offerAppRow({ status: 'interview', employee_id: null })] } as never;
+        return {
+          rows: [offerAppRow({ status: 'interview', employee_id: null })],
+        } as never;
       }
       if (sql.includes('WHERE candidate_id = $1::uuid')) {
         return { rows: [] } as never;
       }
       return { rows: [] } as never;
     });
-    await expect(service.acceptOfferApplication(APP_ID, {}, HOLDING)).rejects.toMatchObject({
+    await expect(
+      service.acceptOfferApplication(APP_ID, {}, HOLDING),
+    ).rejects.toMatchObject({
       code: HRM_REC_HIRE_OFFER_INVALID,
     });
   });
@@ -243,13 +269,19 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
     const linkDb: HireLinkDb = {
       query: jest.fn(async (sql: string) => {
         queries.push(sql);
-        if (sql.includes('FROM public.recruitment_candidates') && sql.includes('employee_id')) {
+        if (
+          sql.includes('FROM public.recruitment_candidates') &&
+          sql.includes('employee_id')
+        ) {
           return { rows: [{ employee_id: EMP_ID }] } as never;
         }
         if (sql.includes('WHERE candidate_id = $1::uuid')) {
           return { rows: [{ id: EMP_ID }] } as never;
         }
-        if (sql.includes('FROM public.employees') && sql.includes('WHERE id =')) {
+        if (
+          sql.includes('FROM public.employees') &&
+          sql.includes('WHERE id =')
+        ) {
           return { rows: [{ id: EMP_ID, company_id: HOLDING }] } as never;
         }
         return { rows: [] } as never;
@@ -258,10 +290,15 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
     await expect(
       assertPersistedHireSoftLinkOrThrow(linkDb, APP_ID, HOLDING, EMP_ID),
     ).resolves.toBe(EMP_ID);
-    expect(queries.some((s) => s.includes('recruitment_candidates') && s.includes('employee_id'))).toBe(
+    expect(
+      queries.some(
+        (s) =>
+          s.includes('recruitment_candidates') && s.includes('employee_id'),
+      ),
+    ).toBe(true);
+    expect(queries.some((s) => s.includes('candidate_id = $1::uuid'))).toBe(
       true,
     );
-    expect(queries.some((s) => s.includes('candidate_id = $1::uuid'))).toBe(true);
   });
 
   it('assertPersistedHireSoftLinkOrThrow missing soft → HRM-REC-HIRE-400', async () => {
@@ -287,7 +324,9 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
       sqlLog.push(sql);
       return { rows: [] } as never;
     });
-    await expect(service.getCandidateById(APP_ID, HOLDING)).rejects.toBeInstanceOf(ApiException);
+    await expect(
+      service.getCandidateById(APP_ID, HOLDING),
+    ).rejects.toBeInstanceOf(ApiException);
     const joined = sqlLog.join('\n');
     expect(joined).not.toMatch(/CREATE TABLE IF NOT EXISTS public\.rec_hire/);
     expect(joined).not.toMatch(/\/rec\//);

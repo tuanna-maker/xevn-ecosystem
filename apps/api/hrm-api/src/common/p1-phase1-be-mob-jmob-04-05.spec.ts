@@ -69,7 +69,9 @@ describe('P1-PHASE1-BE-MOB-JMOB-04-05-01 (mobile HTTPS scope parity)', () => {
     }).compile();
     const app = moduleRef.createNestApplication();
     app.setGlobalPrefix('api/hrm');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, transform: true }),
+    );
     app.useGlobalFilters(new GlobalHttpExceptionFilter());
     await app.init();
 
@@ -90,7 +92,10 @@ describe('P1-PHASE1-BE-MOB-JMOB-04-05-01 (mobile HTTPS scope parity)', () => {
       });
 
     expect(payrollMock.listPayslips).toHaveBeenCalledWith(
-      expect.objectContaining({ company_id: holdingUuid, employee_id: employeeId }),
+      expect.objectContaining({
+        company_id: holdingUuid,
+        employee_id: employeeId,
+      }),
       expect.stringContaining('Bearer'),
       expect.objectContaining({ tenantId: 'xevn' }),
     );
@@ -128,7 +133,9 @@ describe('P1-PHASE1-BE-MOB-JMOB-04-05-01 (mobile HTTPS scope parity)', () => {
     }).compile();
     const app = moduleRef.createNestApplication();
     app.setGlobalPrefix('api/hrm');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, transform: true }),
+    );
     app.useGlobalFilters(new GlobalHttpExceptionFilter());
     await app.init();
 

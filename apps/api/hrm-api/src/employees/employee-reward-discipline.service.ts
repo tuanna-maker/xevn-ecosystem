@@ -47,8 +47,16 @@ export const HRM_CORE_RD_PERIOD_404 = 'HRM-CORE-RD-PERIOD-404';
 export const HRM_CORE_RD_404 = 'HRM-CORE-RD-404';
 
 export type RdKind = 'reward' | 'discipline';
-export type PayrollLinkStatus = 'none' | 'pending_period' | 'linked' | 'executed';
-export type RdCanonicalStatus = 'pending' | 'in_force' | 'executed' | 'cancelled';
+export type PayrollLinkStatus =
+  | 'none'
+  | 'pending_period'
+  | 'linked'
+  | 'executed';
+export type RdCanonicalStatus =
+  | 'pending'
+  | 'in_force'
+  | 'executed'
+  | 'cancelled';
 
 type RdRow = Record<string, unknown> & {
   id: string;
@@ -79,7 +87,12 @@ type SoftPeriod = {
   period_label: string | null;
 };
 
-const LINK_ENUM = new Set<PayrollLinkStatus>(['none', 'pending_period', 'linked', 'executed']);
+const LINK_ENUM = new Set<PayrollLinkStatus>([
+  'none',
+  'pending_period',
+  'linked',
+  'executed',
+]);
 /** LIVE draft + paper open/adjust = unlocked for enforce. */
 const PERIOD_UNLOCKED = new Set(['draft', 'open', 'adjust']);
 /** LIVE processed/closed + paper locked. */
@@ -103,7 +116,9 @@ const LINK_LABEL_VI: Record<PayrollLinkStatus, string> = {
 };
 
 function tableFor(kind: RdKind): string {
-  return kind === 'reward' ? 'public.employee_rewards' : 'public.employee_discipline';
+  return kind === 'reward'
+    ? 'public.employee_rewards'
+    : 'public.employee_discipline';
 }
 
 function amountField(kind: RdKind): 'amount' | 'penalty_amount' {
@@ -120,9 +135,14 @@ function typeField(kind: RdKind): 'reward_type' | 'discipline_type' {
 
 function parseAmount(raw: unknown): number {
   if (raw === undefined || raw === null || raw === '') return 0;
-  const n = typeof raw === 'number' ? raw : Number(String(raw).replace(/,/g, ''));
+  const n =
+    typeof raw === 'number' ? raw : Number(String(raw).replace(/,/g, ''));
   if (!Number.isFinite(n) || n < 0) {
-    throw new ApiException(HRM_CORE_RD_VAL_400, 'Số tiền không hợp lệ (phải ≥ 0)', HttpStatus.BAD_REQUEST);
+    throw new ApiException(
+      HRM_CORE_RD_VAL_400,
+      'Số tiền không hợp lệ (phải ≥ 0)',
+      HttpStatus.BAD_REQUEST,
+    );
   }
   return n;
 }
@@ -135,18 +155,28 @@ function formatAmountDisplay(amount: number): string {
   }
 }
 
-function canonicalizeStatus(raw: string | null | undefined): RdCanonicalStatus | string {
-  const s = String(raw ?? '').trim().toLowerCase();
+function canonicalizeStatus(
+  raw: string | null | undefined,
+): RdCanonicalStatus | string {
+  const s = String(raw ?? '')
+    .trim()
+    .toLowerCase();
   if (!s || s === 'pending') return 'pending';
-  if (s === 'in_force' || s === 'approved') return s === 'approved' ? 'in_force' : 'in_force';
+  if (s === 'in_force' || s === 'approved')
+    return s === 'approved' ? 'in_force' : 'in_force';
   if (s === 'executed' || s === 'completed') return 'executed';
   if (s === 'cancelled') return 'cancelled';
   if (s === 'active') return 'executed';
   return s;
 }
 
-function statusLabelVi(raw: string | null | undefined, link?: string | null): string {
-  const s = String(raw ?? '').trim().toLowerCase();
+function statusLabelVi(
+  raw: string | null | undefined,
+  link?: string | null,
+): string {
+  const s = String(raw ?? '')
+    .trim()
+    .toLowerCase();
   if (s === 'active' || s === 'approved') {
     if (link === 'executed') return 'Đã thi hành';
     if (link === 'linked' || link === 'pending_period') return 'Đang thi hành';
@@ -155,7 +185,9 @@ function statusLabelVi(raw: string | null | undefined, link?: string | null): st
 }
 
 function asLinkStatus(raw: unknown): PayrollLinkStatus {
-  const s = String(raw ?? 'none').trim().toLowerCase() as PayrollLinkStatus;
+  const s = String(raw ?? 'none')
+    .trim()
+    .toLowerCase() as PayrollLinkStatus;
   return LINK_ENUM.has(s) ? s : 'none';
 }
 
@@ -224,7 +256,10 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
       );
     `);
 
-    for (const table of ['public.employee_rewards', 'public.employee_discipline']) {
+    for (const table of [
+      'public.employee_rewards',
+      'public.employee_discipline',
+    ]) {
       await this.db.query(`
         ALTER TABLE ${table}
           ADD COLUMN IF NOT EXISTS payroll_link_status TEXT NOT NULL DEFAULT 'none',
@@ -275,16 +310,35 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     `);
   }
 
-  listRewards(employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
+  listRewards(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
     return this.list(kindFrom('reward'), employeeId, query, authorization);
   }
 
-  listDiscipline(employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
+  listDiscipline(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
     return this.list(kindFrom('discipline'), employeeId, query, authorization);
   }
 
-  getReward(rewardId: string, employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
-    return this.getById(kindFrom('reward'), rewardId, employeeId, query, authorization);
+  getReward(
+    rewardId: string,
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
+    return this.getById(
+      kindFrom('reward'),
+      rewardId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
   getDiscipline(
@@ -293,7 +347,13 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     query: EmployeeProfileListQueryDto,
     authorization?: string,
   ) {
-    return this.getById(kindFrom('discipline'), disciplineId, employeeId, query, authorization);
+    return this.getById(
+      kindFrom('discipline'),
+      disciplineId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
   createReward(
@@ -302,7 +362,13 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     payload: Record<string, unknown>,
     authorization?: string,
   ) {
-    return this.create(kindFrom('reward'), employeeId, query, payload, authorization);
+    return this.create(
+      kindFrom('reward'),
+      employeeId,
+      query,
+      payload,
+      authorization,
+    );
   }
 
   createDiscipline(
@@ -311,7 +377,13 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     payload: Record<string, unknown>,
     authorization?: string,
   ) {
-    return this.create(kindFrom('discipline'), employeeId, query, payload, authorization);
+    return this.create(
+      kindFrom('discipline'),
+      employeeId,
+      query,
+      payload,
+      authorization,
+    );
   }
 
   updateReward(
@@ -321,7 +393,14 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     payload: Record<string, unknown>,
     authorization?: string,
   ) {
-    return this.patch(kindFrom('reward'), rewardId, employeeId, query, payload, authorization);
+    return this.patch(
+      kindFrom('reward'),
+      rewardId,
+      employeeId,
+      query,
+      payload,
+      authorization,
+    );
   }
 
   updateDiscipline(
@@ -331,7 +410,14 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     payload: Record<string, unknown>,
     authorization?: string,
   ) {
-    return this.patch(kindFrom('discipline'), disciplineId, employeeId, query, payload, authorization);
+    return this.patch(
+      kindFrom('discipline'),
+      disciplineId,
+      employeeId,
+      query,
+      payload,
+      authorization,
+    );
   }
 
   deleteReward(
@@ -340,7 +426,13 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     query: EmployeeProfileListQueryDto,
     authorization?: string,
   ) {
-    return this.softDeleteOrHard(kindFrom('reward'), rewardId, employeeId, query, authorization);
+    return this.softDeleteOrHard(
+      kindFrom('reward'),
+      rewardId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
   deleteDiscipline(
@@ -349,7 +441,13 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     query: EmployeeProfileListQueryDto,
     authorization?: string,
   ) {
-    return this.softDeleteOrHard(kindFrom('discipline'), disciplineId, employeeId, query, authorization);
+    return this.softDeleteOrHard(
+      kindFrom('discipline'),
+      disciplineId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
   enforceReward(
@@ -359,7 +457,14 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     payload: Record<string, unknown> | undefined,
     authorization?: string,
   ) {
-    return this.enforce(kindFrom('reward'), rewardId, employeeId, query, payload ?? {}, authorization);
+    return this.enforce(
+      kindFrom('reward'),
+      rewardId,
+      employeeId,
+      query,
+      payload ?? {},
+      authorization,
+    );
   }
 
   enforceDiscipline(
@@ -369,7 +474,14 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     payload: Record<string, unknown> | undefined,
     authorization?: string,
   ) {
-    return this.enforce(kindFrom('discipline'), disciplineId, employeeId, query, payload ?? {}, authorization);
+    return this.enforce(
+      kindFrom('discipline'),
+      disciplineId,
+      employeeId,
+      query,
+      payload ?? {},
+      authorization,
+    );
   }
 
   cancelEnforceReward(
@@ -378,7 +490,13 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     query: EmployeeProfileListQueryDto,
     authorization?: string,
   ) {
-    return this.cancelEnforce(kindFrom('reward'), rewardId, employeeId, query, authorization);
+    return this.cancelEnforce(
+      kindFrom('reward'),
+      rewardId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
   cancelEnforceDiscipline(
@@ -387,7 +505,13 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     query: EmployeeProfileListQueryDto,
     authorization?: string,
   ) {
-    return this.cancelEnforce(kindFrom('discipline'), disciplineId, employeeId, query, authorization);
+    return this.cancelEnforce(
+      kindFrom('discipline'),
+      disciplineId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
   private async list(
@@ -397,7 +521,11 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const employee = await this.assertEmployeeInScope(employeeId, query, authorization);
+    const employee = await this.assertEmployeeInScope(
+      employeeId,
+      query,
+      authorization,
+    );
     const filters = ['employee_id = $1::uuid', 'archived_at IS NULL'];
     const values: unknown[] = [employeeId];
     pushCompanyIdFilter(filters, values, [employee.company_id]);
@@ -439,32 +567,53 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const employee = await this.assertEmployeeActive(employeeId, query, authorization);
+    const employee = await this.assertEmployeeActive(
+      employeeId,
+      query,
+      authorization,
+    );
 
     const title = String(payload.title ?? '').trim();
     if (!title) {
-      throw new ApiException(HRM_CORE_RD_VAL_400, 'Thiếu tiêu đề khen thưởng/kỷ luật', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_CORE_RD_VAL_400,
+        'Thiếu tiêu đề khen thưởng/kỷ luật',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const amtField = amountField(kind);
     const amount = parseAmount(payload[amtField] ?? payload.amount);
     const dField = dateField(kind);
     const tField = typeField(kind);
-    const caseDate = String(payload[dField] ?? payload.decision_date ?? '').trim();
+    const caseDate = String(
+      payload[dField] ?? payload.decision_date ?? '',
+    ).trim();
     if (!caseDate) {
-      throw new ApiException(HRM_CORE_RD_VAL_400, 'Thiếu ngày quyết định', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_CORE_RD_VAL_400,
+        'Thiếu ngày quyết định',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const caseType = String(payload[tField] ?? payload.type ?? '').trim();
     if (!caseType) {
-      throw new ApiException(HRM_CORE_RD_VAL_400, 'Thiếu loại khen thưởng/kỷ luật', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_CORE_RD_VAL_400,
+        'Thiếu loại khen thưởng/kỷ luật',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     let periodId =
-      payload.payroll_period_id === undefined || payload.payroll_period_id === null || payload.payroll_period_id === ''
+      payload.payroll_period_id === undefined ||
+      payload.payroll_period_id === null ||
+      payload.payroll_period_id === ''
         ? null
         : String(payload.payroll_period_id);
     let periodRef =
-      payload.payroll_period_ref === undefined || payload.payroll_period_ref === null
+      payload.payroll_period_ref === undefined ||
+      payload.payroll_period_ref === null
         ? null
         : String(payload.payroll_period_ref);
 
@@ -477,7 +626,12 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
           HttpStatus.BAD_REQUEST,
         );
       }
-      const period = await this.resolvePeriodSoft(periodId, employee.company_id, authorization, query.company_id);
+      const period = await this.resolvePeriodSoft(
+        periodId,
+        employee.company_id,
+        authorization,
+        query.company_id,
+      );
       if (!isPeriodUnlocked(period.status)) {
         throw new ApiException(
           HRM_CORE_RD_LOCKED_PERIOD_409,
@@ -539,7 +693,12 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
 
     const placeholders = values.map((_, i) => {
       const col = columns[i];
-      if (col?.includes('date') || col === 'effective_from' || col === 'effective_to') return `$${i + 1}::date`;
+      if (
+        col?.includes('date') ||
+        col === 'effective_from' ||
+        col === 'effective_to'
+      )
+        return `$${i + 1}::date`;
       if (col === 'payroll_period_id') return `$${i + 1}::uuid`;
       return `$${i + 1}`;
     });
@@ -564,7 +723,10 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     const existing = await this.loadCase(kind, caseId, employeeId);
     this.guardCaseScope(existing, authorization, query.company_id);
 
-    const targetStatusRaw = payload.status !== undefined ? String(payload.status).trim().toLowerCase() : undefined;
+    const targetStatusRaw =
+      payload.status !== undefined
+        ? String(payload.status).trim().toLowerCase()
+        : undefined;
     if (
       targetStatusRaw === 'in_force' ||
       targetStatusRaw === 'executed' ||
@@ -572,10 +734,20 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
       targetStatusRaw === 'completed'
     ) {
       // AC-CORE-08-ALT-04 — PATCH transition MUST run same enforce gates
-      return this.enforce(kind, caseId, employeeId, query, {
-        ...payload,
-        target_status: targetStatusRaw === 'executed' || targetStatusRaw === 'completed' ? 'executed' : 'in_force',
-      }, authorization);
+      return this.enforce(
+        kind,
+        caseId,
+        employeeId,
+        query,
+        {
+          ...payload,
+          target_status:
+            targetStatusRaw === 'executed' || targetStatusRaw === 'completed'
+              ? 'executed'
+              : 'in_force',
+        },
+        authorization,
+      );
     }
     if (targetStatusRaw === 'cancelled') {
       return this.cancelEnforce(kind, caseId, employeeId, query, authorization);
@@ -627,7 +799,9 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
         isPeriodUnlocked(currentPeriod.status) &&
         nextPeriodId &&
         nextPeriodId !== existing.payroll_period_id &&
-        (currentLink === 'pending_period' || currentLink === 'linked' || currentLink === 'executed')
+        (currentLink === 'pending_period' ||
+          currentLink === 'linked' ||
+          currentLink === 'executed')
       ) {
         const nextPeriod = await this.resolvePeriodSoft(
           nextPeriodId,
@@ -660,7 +834,10 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
         authorization,
         query.company_id,
       );
-      if (!isPeriodUnlocked(period.status) && nextPeriodId !== existing.payroll_period_id) {
+      if (
+        !isPeriodUnlocked(period.status) &&
+        nextPeriodId !== existing.payroll_period_id
+      ) {
         throw new ApiException(
           HRM_CORE_RD_LOCKED_PERIOD_409,
           'Kỳ lương đã khóa — không gắn kỳ này',
@@ -687,7 +864,11 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     if (payload.title !== undefined) {
       const title = String(payload.title).trim();
       if (!title) {
-        throw new ApiException(HRM_CORE_RD_VAL_400, 'Thiếu tiêu đề khen thưởng/kỷ luật', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          HRM_CORE_RD_VAL_400,
+          'Thiếu tiêu đề khen thưởng/kỷ luật',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       push('title', title);
     }
@@ -695,13 +876,17 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     const tField = typeField(kind);
     if (payload[dField] !== undefined) push(dField, payload[dField], '::date');
     if (payload[tField] !== undefined) push(tField, payload[tField]);
-    if (payload.description !== undefined) push('description', payload.description);
-    if (payload.decision_number !== undefined) push('decision_number', payload.decision_number);
+    if (payload.description !== undefined)
+      push('description', payload.description);
+    if (payload.decision_number !== undefined)
+      push('decision_number', payload.decision_number);
     if (payload.issued_by !== undefined) push('issued_by', payload.issued_by);
     if (payload.notes !== undefined) push('notes', payload.notes);
     if (kind === 'discipline') {
-      if (payload.effective_from !== undefined) push('effective_from', payload.effective_from, '::date');
-      if (payload.effective_to !== undefined) push('effective_to', payload.effective_to, '::date');
+      if (payload.effective_from !== undefined)
+        push('effective_from', payload.effective_from, '::date');
+      if (payload.effective_to !== undefined)
+        push('effective_to', payload.effective_to, '::date');
     }
     push(amtField, nextAmount);
     push('payroll_link_status', nextLink);
@@ -711,7 +896,11 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     sets.push('updated_at = NOW()');
 
     if (sets.length === 0) {
-      throw new ApiException(HRM_CORE_RD_VAL_400, 'Không có trường để cập nhật', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_CORE_RD_VAL_400,
+        'Không có trường để cập nhật',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const res = await this.db.query<RdRow>(
@@ -721,7 +910,11 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException(HRM_CORE_RD_404, 'Không tìm thấy bản ghi KT/KL', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CORE_RD_404,
+        'Không tìm thấy bản ghi KT/KL',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.toDisplayDto(kind, res.rows[0]);
   }
@@ -750,8 +943,10 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
 
     const amtField = amountField(kind);
     const amount = parseAmount(existing[amtField]);
-    let periodId =
-      payload.payroll_period_id !== undefined && payload.payroll_period_id !== null && payload.payroll_period_id !== ''
+    const periodId =
+      payload.payroll_period_id !== undefined &&
+      payload.payroll_period_id !== null &&
+      payload.payroll_period_id !== ''
         ? String(payload.payroll_period_id)
         : existing.payroll_period_id
           ? String(existing.payroll_period_id)
@@ -765,7 +960,9 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
       );
     }
 
-    let periodRef = existing.payroll_period_ref ? String(existing.payroll_period_ref) : null;
+    let periodRef = existing.payroll_period_ref
+      ? String(existing.payroll_period_ref)
+      : null;
     if (periodId) {
       if (
         existing.payroll_period_id &&
@@ -817,9 +1014,13 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
       periodRef = period.period_label || periodRef;
     }
 
-    const targetRaw = String(payload.target_status ?? 'in_force').trim().toLowerCase();
+    const targetRaw = String(payload.target_status ?? 'in_force')
+      .trim()
+      .toLowerCase();
     const targetStatus: RdCanonicalStatus =
-      targetRaw === 'executed' || targetRaw === 'completed' ? 'executed' : 'in_force';
+      targetRaw === 'executed' || targetRaw === 'completed'
+        ? 'executed'
+        : 'in_force';
     const link: PayrollLinkStatus = amount > 0 ? 'linked' : 'none';
     const actor = actorSub(authorization);
 
@@ -842,7 +1043,11 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
       [caseId, employeeId, targetStatus, link, periodId, periodRef, actor],
     );
     if (!res.rows[0]) {
-      throw new ApiException(HRM_CORE_RD_404, 'Không tìm thấy bản ghi KT/KL', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CORE_RD_404,
+        'Không tìm thấy bản ghi KT/KL',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.toDisplayDto(kind, res.rows[0]);
   }
@@ -891,7 +1096,11 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
       [caseId, employeeId, actor],
     );
     if (!res.rows[0]) {
-      throw new ApiException(HRM_CORE_RD_404, 'Không tìm thấy bản ghi KT/KL', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CORE_RD_404,
+        'Không tìm thấy bản ghi KT/KL',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.toDisplayDto(kind, res.rows[0]);
   }
@@ -909,7 +1118,10 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     this.guardCaseScope(existing, authorization, query.company_id);
 
     const link = asLinkStatus(existing.payroll_link_status);
-    if ((link === 'linked' || link === 'executed') && existing.payroll_period_id) {
+    if (
+      (link === 'linked' || link === 'executed') &&
+      existing.payroll_period_id
+    ) {
       const period = await this.tryResolvePeriod(
         String(existing.payroll_period_id),
         String(existing.company_id),
@@ -936,7 +1148,11 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
       [caseId, employeeId],
     );
     if (!soft.rows[0]) {
-      throw new ApiException(HRM_CORE_RD_404, 'Không tìm thấy bản ghi KT/KL', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CORE_RD_404,
+        'Không tìm thấy bản ghi KT/KL',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: caseId, archived: true };
   }
@@ -954,8 +1170,14 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     query: EmployeeProfileListQueryDto,
     authorization?: string,
   ) {
-    const employee = await this.assertEmployeeInScope(employeeId, query, authorization);
-    const status = String((employee as { status?: string }).status ?? '').toLowerCase();
+    const employee = await this.assertEmployeeInScope(
+      employeeId,
+      query,
+      authorization,
+    );
+    const status = String(
+      (employee as { status?: string }).status ?? '',
+    ).toLowerCase();
     if (status && status !== 'active') {
       throw new ApiException(
         HRM_CORE_RD_EMP_INACTIVE_409,
@@ -978,7 +1200,11 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     });
   }
 
-  private async loadCase(kind: RdKind, caseId: string, employeeId: string): Promise<RdRow> {
+  private async loadCase(
+    kind: RdKind,
+    caseId: string,
+    employeeId: string,
+  ): Promise<RdRow> {
     const res = await this.db.query<RdRow>(
       `
         SELECT *
@@ -989,7 +1215,11 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
       [caseId, employeeId],
     );
     if (!res.rows[0]) {
-      throw new ApiException(HRM_CORE_RD_404, 'Không tìm thấy bản ghi KT/KL', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CORE_RD_404,
+        'Không tìm thấy bản ghi KT/KL',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return res.rows[0];
   }
@@ -1000,9 +1230,18 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     authorization: string | undefined,
     queryCompanyId: string,
   ): Promise<SoftPeriod> {
-    const period = await this.tryResolvePeriod(periodId, employeeCompanyId, authorization, queryCompanyId);
+    const period = await this.tryResolvePeriod(
+      periodId,
+      employeeCompanyId,
+      authorization,
+      queryCompanyId,
+    );
     if (!period) {
-      throw new ApiException(HRM_CORE_RD_PERIOD_404, 'Không tìm thấy kỳ lương', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CORE_RD_PERIOD_404,
+        'Không tìm thấy kỳ lương',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return period;
   }
@@ -1013,10 +1252,17 @@ export class EmployeeRewardDisciplineService implements OnModuleInit {
     authorization: string | undefined,
     queryCompanyId: string,
   ): Promise<SoftPeriod | null> {
-    const scope = resolveHrmListScope(authorization, queryCompanyId || employeeCompanyId);
+    const scope = resolveHrmListScope(
+      authorization,
+      queryCompanyId || employeeCompanyId,
+    );
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [periodId];
-    pushCompanyIdFilter(filters, values, scope.companyIds.length ? scope.companyIds : [employeeCompanyId]);
+    pushCompanyIdFilter(
+      filters,
+      values,
+      scope.companyIds.length ? scope.companyIds : [employeeCompanyId],
+    );
     const res = await this.db.query<SoftPeriod>(
       `
         SELECT id, company_id, status, period_label

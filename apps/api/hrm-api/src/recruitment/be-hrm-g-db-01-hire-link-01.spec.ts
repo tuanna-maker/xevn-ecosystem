@@ -60,7 +60,9 @@ describe('BE-HRM-G-DB-01 hire-employee-link helpers', () => {
         existingEmployeeId: 'emp-existing',
       }),
     ).resolves.toBe('emp-existing');
-    await expect(resolveHireEmployeeId(db, 'cand-1', {})).resolves.toBe('emp-reverse');
+    await expect(resolveHireEmployeeId(db, 'cand-1', {})).resolves.toBe(
+      'emp-reverse',
+    );
     expect(db.query).toHaveBeenCalled();
   });
 
@@ -115,7 +117,12 @@ describe('BE-HRM-G-DB-01 RecruitmentCatalogService hire path', () => {
     } as unknown as jest.Mocked<HrmDbService>;
     const service = new RecruitmentCatalogService(db, mockBridge() as never);
     await expect(
-      service.updateCandidatePoolStage(candidateId, companyId, 'hired', `Bearer ${ceoToken()}`),
+      service.updateCandidatePoolStage(
+        candidateId,
+        companyId,
+        'hired',
+        `Bearer ${ceoToken()}`,
+      ),
     ).rejects.toMatchObject({ code: HRM_REC_HIRE_400 });
   });
 
@@ -139,7 +146,7 @@ describe('BE-HRM-G-DB-01 RecruitmentCatalogService hire path', () => {
         if (s.includes('FROM public.employees') && s.includes('WHERE id =')) {
           return { rows: [{ id: employeeId, company_id: companyId }] };
         }
-        if (s.includes("SET stage = $2, employee_id = $3::uuid")) {
+        if (s.includes('SET stage = $2, employee_id = $3::uuid')) {
           return {
             rows: [
               {

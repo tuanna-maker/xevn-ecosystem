@@ -48,7 +48,9 @@ export function normalizeLatePenaltyMode(raw: unknown): LatePenaltyMode | null {
   return MODE_ALIASES[key] ?? null;
 }
 
-export function modeLabelVi(mode: LatePenaltyMode | null | undefined): string | null {
+export function modeLabelVi(
+  mode: LatePenaltyMode | null | undefined,
+): string | null {
   if (!mode) return null;
   return LATE_PENALTY_MODE_LABELS_VI[mode] ?? null;
 }
@@ -64,18 +66,30 @@ export function parseLatePenaltyBands(raw: unknown): LatePenaltyBand[] {
     try {
       arr = JSON.parse(raw);
     } catch {
-      throw new ApiException('HRM-VAL-400', 'bands must be a JSON array', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'bands must be a JSON array',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
   if (!Array.isArray(arr)) {
-    throw new ApiException('HRM-VAL-400', 'bands must be an array', HttpStatus.BAD_REQUEST);
+    throw new ApiException(
+      'HRM-VAL-400',
+      'bands must be an array',
+      HttpStatus.BAD_REQUEST,
+    );
   }
   return arr.map((item, idx) => {
     const row = item as Record<string, unknown>;
     const fromMinutes = Number(row.fromMinutes ?? row.from_minutes);
     const toMinutes = Number(row.toMinutes ?? row.to_minutes);
     const penaltyHours = Number(row.penaltyHours ?? row.penalty_hours);
-    if (!isFiniteNumber(fromMinutes) || !isFiniteNumber(toMinutes) || !isFiniteNumber(penaltyHours)) {
+    if (
+      !isFiniteNumber(fromMinutes) ||
+      !isFiniteNumber(toMinutes) ||
+      !isFiniteNumber(penaltyHours)
+    ) {
       throw new ApiException(
         'HRM-VAL-400',
         `bands[${idx}] requires fromMinutes, toMinutes, penaltyHours`,
@@ -94,7 +108,11 @@ export function parseLatePenaltyBands(raw: unknown): LatePenaltyBand[] {
     if (blockRaw != null) {
       const blockMinutes = Number(blockRaw);
       if (!isFiniteNumber(blockMinutes) || blockMinutes <= 0) {
-        throw new ApiException('HRM-VAL-400', `bands[${idx}] blockMinutes invalid`, HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-VAL-400',
+          `bands[${idx}] blockMinutes invalid`,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       band.blockMinutes = blockMinutes;
     }
@@ -132,7 +150,8 @@ export function assertXorLatePenaltyMode(payload: {
   const flagModes: LatePenaltyMode[] = [];
   if (payload.modeMinute === true) flagModes.push('minute');
   if (payload.modeBlock === true) flagModes.push('block');
-  if (payload.modeTier === true || payload.modeBand === true) flagModes.push('tier');
+  if (payload.modeTier === true || payload.modeBand === true)
+    flagModes.push('tier');
 
   if (Array.isArray(payload.modes)) {
     const normalized = payload.modes
@@ -240,7 +259,9 @@ export function evaluateLatePenaltyHours(input: {
         total = band.penaltyHours;
       }
     }
-    const match = bands.find((b) => late >= b.fromMinutes && late <= b.toMinutes);
+    const match = bands.find(
+      (b) => late >= b.fromMinutes && late <= b.toMinutes,
+    );
     if (match) return roundHours(match.penaltyHours);
     const last = bands[bands.length - 1];
     if (last && late > last.toMinutes) return roundHours(last.penaltyHours);
@@ -254,7 +275,8 @@ export function evaluateLatePenaltyHours(input: {
       30;
     const blocks = Math.ceil(late / blockSize);
     const perBlock =
-      bands.find((b) => late >= b.fromMinutes && late <= b.toMinutes)?.penaltyHours ??
+      bands.find((b) => late >= b.fromMinutes && late <= b.toMinutes)
+        ?.penaltyHours ??
       bands[0]?.penaltyHours ??
       roundHours(blockSize / 60);
     return roundHours(blocks * perBlock);

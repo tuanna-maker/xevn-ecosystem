@@ -27,7 +27,9 @@ const POL_ID_2 = 'b2c3d4e5-f6a7-4890-b123-456789abcdef';
 
 describe('D-HDSD-BF-03-BH-400-01 createInsurancePolicyParticipant', () => {
   const query = jest.fn();
-  const service = new CatalogExtensionsService({ query } as unknown as HrmDbService);
+  const service = new CatalogExtensionsService({
+    query,
+  } as unknown as HrmDbService);
 
   beforeEach(() => {
     query.mockReset();
@@ -40,10 +42,16 @@ describe('D-HDSD-BF-03-BH-400-01 createInsurancePolicyParticipant', () => {
   }) {
     query.mockImplementation(async (sql: string) => {
       const s = String(sql);
-      if (s.includes('FROM public.hrm_insurance_policies') && s.includes(`status = 'active'`)) {
+      if (
+        s.includes('FROM public.hrm_insurance_policies') &&
+        s.includes(`status = 'active'`)
+      ) {
         return { rows: opts.policies };
       }
-      if (s.includes('FROM public.hrm_insurance_policies') && s.includes('id = $1::uuid')) {
+      if (
+        s.includes('FROM public.hrm_insurance_policies') &&
+        s.includes('id = $1::uuid')
+      ) {
         const pol = opts.policies[0];
         return pol
           ? {
@@ -59,7 +67,9 @@ describe('D-HDSD-BF-03-BH-400-01 createInsurancePolicyParticipant', () => {
           : { rows: [] };
       }
       if (s.includes('FROM public.employees')) {
-        return opts.employeeFound === false ? { rows: [] } : { rows: [{ id: EMP_ID }] };
+        return opts.employeeFound === false
+          ? { rows: [] }
+          : { rows: [{ id: EMP_ID }] };
       }
       if (s.includes('INSERT INTO public.hrm_insurance_policy_participants')) {
         return {
@@ -98,7 +108,9 @@ describe('D-HDSD-BF-03-BH-400-01 createInsurancePolicyParticipant', () => {
     );
     expect(row.policy_id).toBe(POL_ID);
     const insertCall = query.mock.calls.find(([sql]) =>
-      String(sql).includes('INSERT INTO public.hrm_insurance_policy_participants'),
+      String(sql).includes(
+        'INSERT INTO public.hrm_insurance_policy_participants',
+      ),
     );
     expect(insertCall?.[1]?.[2]).toBe(POL_ID);
     expect(insertCall?.[1]?.[3]).toBe('bao_viet');
@@ -125,7 +137,9 @@ describe('D-HDSD-BF-03-BH-400-01 createInsurancePolicyParticipant', () => {
       }),
     );
     const insertCall = query.mock.calls.find(([sql]) =>
-      String(sql).includes('INSERT INTO public.hrm_insurance_policy_participants'),
+      String(sql).includes(
+        'INSERT INTO public.hrm_insurance_policy_participants',
+      ),
     );
     expect(insertCall).toBeUndefined();
   });

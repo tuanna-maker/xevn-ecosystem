@@ -32,8 +32,12 @@ export class AttendanceEventFanoutService {
     this.push.dispatchAttendanceEvent(envelope);
   }
 
-  async onUpdateRequestCreated(request: AttendanceUpdateRequestRealtimePayload): Promise<void> {
-    await this.dispatch(this.envelopeAttendance('attendance_update_request.created', request));
+  async onUpdateRequestCreated(
+    request: AttendanceUpdateRequestRealtimePayload,
+  ): Promise<void> {
+    await this.dispatch(
+      this.envelopeAttendance('attendance_update_request.created', request),
+    );
   }
 
   async onUpdateRequestDecided(
@@ -41,7 +45,9 @@ export class AttendanceEventFanoutService {
     request: AttendanceUpdateRequestRealtimePayload,
   ): Promise<void> {
     const type =
-      kind === 'approved' ? 'attendance_update_request.approved' : 'attendance_update_request.rejected';
+      kind === 'approved'
+        ? 'attendance_update_request.approved'
+        : 'attendance_update_request.rejected';
     await this.dispatch(this.envelopeAttendance(type, request));
   }
 
@@ -55,24 +61,43 @@ export class AttendanceEventFanoutService {
     return { type, at: new Date().toISOString(), request };
   }
 
-  async onLeaveRequestCreated(request: LeaveRequestRealtimePayload): Promise<void> {
-    await this.dispatch({ type: 'leave_request.created', at: new Date().toISOString(), request });
+  async onLeaveRequestCreated(
+    request: LeaveRequestRealtimePayload,
+  ): Promise<void> {
+    await this.dispatch({
+      type: 'leave_request.created',
+      at: new Date().toISOString(),
+      request,
+    });
   }
 
-  async onLeaveRequestDecided(kind: 'approved' | 'rejected', request: LeaveRequestRealtimePayload): Promise<void> {
-    const type = kind === 'approved' ? 'leave_request.approved' : 'leave_request.rejected';
+  async onLeaveRequestDecided(
+    kind: 'approved' | 'rejected',
+    request: LeaveRequestRealtimePayload,
+  ): Promise<void> {
+    const type =
+      kind === 'approved' ? 'leave_request.approved' : 'leave_request.rejected';
     await this.dispatch({ type, at: new Date().toISOString(), request });
   }
 
-  async onServiceRequestCreated(request: ServiceRequestRealtimePayload): Promise<void> {
-    await this.dispatch({ type: 'service_request.created', at: new Date().toISOString(), request });
+  async onServiceRequestCreated(
+    request: ServiceRequestRealtimePayload,
+  ): Promise<void> {
+    await this.dispatch({
+      type: 'service_request.created',
+      at: new Date().toISOString(),
+      request,
+    });
   }
 
   async onServiceRequestDecided(
     kind: 'approved' | 'rejected',
     request: ServiceRequestRealtimePayload,
   ): Promise<void> {
-    const type = kind === 'approved' ? 'service_request.approved' : 'service_request.rejected';
+    const type =
+      kind === 'approved'
+        ? 'service_request.approved'
+        : 'service_request.rejected';
     await this.dispatch({ type, at: new Date().toISOString(), request });
   }
 }

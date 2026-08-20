@@ -16,10 +16,18 @@ describe('merge-token.resolver (DATA §5.2)', () => {
 
   it('parseKeywordMapBindings normalizes braced keys', () => {
     const m = parseKeywordMapBindings({
-      '{{contract_number}}': { source: 'employee_contracts.contract_code', ring: 'contract' },
-      effective_from: { source: 'employee_contracts.start_date', ring: 'contract' },
+      '{{contract_number}}': {
+        source: 'employee_contracts.contract_code',
+        ring: 'contract',
+      },
+      effective_from: {
+        source: 'employee_contracts.start_date',
+        ring: 'contract',
+      },
     });
-    expect(m.get('contract_number')?.sourcePath).toBe('employee_contracts.contract_code');
+    expect(m.get('contract_number')?.sourcePath).toBe(
+      'employee_contracts.contract_code',
+    );
     expect(m.get('effective_from')?.ring).toBe('contract');
   });
 
@@ -55,7 +63,10 @@ describe('merge-token.resolver (DATA §5.2)', () => {
     const result = resolveMergeTokens({
       registry: [],
       keywordMap: {
-        '{{employee_full_name}}': { source: 'employee.full_name', ring: 'public' },
+        '{{employee_full_name}}': {
+          source: 'employee.full_name',
+          ring: 'public',
+        },
         '{{contract_number}}': {
           source: 'employee_contracts.contract_code',
           ring: 'contract',

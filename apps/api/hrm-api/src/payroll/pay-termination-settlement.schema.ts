@@ -1,7 +1,9 @@
 import type { HrmDbService } from '../db/hrm-db.service';
 
 /** DATA-01 §6.1 — pay_termination_settlement (greenfield ensure). */
-export async function ensurePayTerminationSettlementSchema(db: HrmDbService): Promise<void> {
+export async function ensurePayTerminationSettlementSchema(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     CREATE TABLE IF NOT EXISTS public.pay_termination_settlement (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -35,7 +37,9 @@ export async function ensurePayTerminationSettlementSchema(db: HrmDbService): Pr
 }
 
 /** DATA-01 §6.2 — final payslip flags on payroll_payslips. */
-export async function ensurePayrollPayslipsFinalPayColumns(db: HrmDbService): Promise<void> {
+export async function ensurePayrollPayslipsFinalPayColumns(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     ALTER TABLE public.payroll_payslips
       ADD COLUMN IF NOT EXISTS is_final_pay BOOLEAN NOT NULL DEFAULT false;

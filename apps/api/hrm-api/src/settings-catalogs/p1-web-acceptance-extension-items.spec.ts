@@ -17,7 +17,10 @@ describe('P1-WEB-ACCEPTANCE-BE-FIX-01 UF-XBOS-15 extension items', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    (catalogSync.listSyncedCatalogs as jest.Mock).mockResolvedValue({ total: 0, data: [] });
+    (catalogSync.listSyncedCatalogs as jest.Mock).mockResolvedValue({
+      total: 0,
+      data: [],
+    });
     service = new SettingsCatalogsService(db, catalogSync, xbosWorkflow);
     (db.query as jest.Mock).mockImplementation(async (sql: string) => {
       if (sql.includes('CREATE TABLE')) {
@@ -49,23 +52,32 @@ describe('P1-WEB-ACCEPTANCE-BE-FIX-01 UF-XBOS-15 extension items', () => {
     expect(pos).toBeDefined();
     expect(pos?.catalog_key).toBe('positions');
     expect(pos?.extension_items).toEqual(
-      expect.arrayContaining([expect.objectContaining({ code: 'qa_uf15_test' })]),
+      expect.arrayContaining([
+        expect.objectContaining({ code: 'qa_uf15_test' }),
+      ]),
     );
   });
 
   it('submitExtensionItemsForApproval dual-writes draft extension_items', async () => {
-    const appendSpy = jest.spyOn(service, 'appendExtensionItems').mockResolvedValue({ upserted: 1 });
+    const appendSpy = jest
+      .spyOn(service, 'appendExtensionItems')
+      .mockResolvedValue({ upserted: 1 });
 
-    await service.submitExtensionItemsForApproval('xevn', 'holding', 'positions', [
-      { code: 'qa_uf15_new', label: 'QA UF15 New', status: 'active' },
-    ]);
+    await service.submitExtensionItemsForApproval(
+      'xevn',
+      'holding',
+      'positions',
+      [{ code: 'qa_uf15_new', label: 'QA UF15 New', status: 'active' }],
+    );
 
     // Product normalizes FE alias `positions` → storage SoT `job_titles` (E1-B family).
     expect(appendSpy).toHaveBeenCalledWith(
       'xevn',
       'holding',
       'job_titles',
-      expect.arrayContaining([expect.objectContaining({ code: 'qa_uf15_new', status: 'active' })]),
+      expect.arrayContaining([
+        expect.objectContaining({ code: 'qa_uf15_new', status: 'active' }),
+      ]),
     );
   });
 });

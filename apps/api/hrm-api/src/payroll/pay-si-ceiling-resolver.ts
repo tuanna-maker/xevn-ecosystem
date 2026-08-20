@@ -48,7 +48,9 @@ function toMoney(raw: string | number | null | undefined): number {
   return Number.isFinite(n) ? roundMoney(n) : 0;
 }
 
-export async function ensurePayrollPayslipsSiColumns(db: HrmDbService): Promise<void> {
+export async function ensurePayrollPayslipsSiColumns(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     ALTER TABLE public.payroll_payslips
       ADD COLUMN IF NOT EXISTS si_employee_amount NUMERIC(15,2) NULL;
@@ -64,7 +66,13 @@ export async function sumMergedInsuranceBaseFromLines(
   db: HrmDbService,
   input: { companyId: string; lines: PaySrcResolvedLine[] },
 ): Promise<number> {
-  const codes = [...new Set(input.lines.map((l) => String(l.component_code ?? '').trim()).filter(Boolean))];
+  const codes = [
+    ...new Set(
+      input.lines
+        .map((l) => String(l.component_code ?? '').trim())
+        .filter(Boolean),
+    ),
+  ];
   if (codes.length === 0) return 0;
 
   const companyIds = expandCbReadCompanyIds(input.companyId, null);
@@ -207,13 +215,18 @@ export async function applyPaySiCeilingForEmployee(
         period_end: periodEnd,
       };
       if (input.failOnMissingCfg) {
-        throw new ApiException(HRM_SET_SI_412_MISSING, blocked.message, HttpStatus.PRECONDITION_FAILED, {
-          code: HRM_SET_SI_412_MISSING,
-          insurance_type_key: typeKey,
-          company_id: input.periodCompanyId,
-          period_end: periodEnd,
-          payroll_e2e_ready: false,
-        });
+        throw new ApiException(
+          HRM_SET_SI_412_MISSING,
+          blocked.message,
+          HttpStatus.PRECONDITION_FAILED,
+          {
+            code: HRM_SET_SI_412_MISSING,
+            insurance_type_key: typeKey,
+            company_id: input.periodCompanyId,
+            period_end: periodEnd,
+            payroll_e2e_ready: false,
+          },
+        );
       }
       return blocked;
     }
@@ -222,8 +235,14 @@ export async function applyPaySiCeilingForEmployee(
     const ceiling =
       ceilingRaw == null || ceilingRaw === '' ? null : toMoney(ceilingRaw);
     const contributionBase =
-      ceiling != null && ceiling > 0 ? Math.min(mergedBase, ceiling) : mergedBase;
-    if (ceiling != null && (appliedCeilingDisplay == null || ceiling < (appliedCeilingDisplay ?? Infinity))) {
+      ceiling != null && ceiling > 0
+        ? Math.min(mergedBase, ceiling)
+        : mergedBase;
+    if (
+      ceiling != null &&
+      (appliedCeilingDisplay == null ||
+        ceiling < (appliedCeilingDisplay ?? Infinity))
+    ) {
       appliedCeilingDisplay = ceiling;
     }
     const empRate = toMoney(cfg.employee_rate_pct);
@@ -244,7 +263,11 @@ export async function applyPaySiCeilingForEmployee(
 
 export async function persistPaySiCeilingOnPayslip(
   db: HrmDbService,
-  input: { payslipId: string; siEmployeeAmountVnd: number; siEmployerAmountVnd: number },
+  input: {
+    payslipId: string;
+    siEmployeeAmountVnd: number;
+    siEmployerAmountVnd: number;
+  },
 ): Promise<void> {
   await db.query(
     `

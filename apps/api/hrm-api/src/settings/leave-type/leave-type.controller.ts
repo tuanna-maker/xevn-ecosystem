@@ -11,9 +11,25 @@
  * solid_convention_ack: true
  * be_boundary: true
  */
-import { Controller, Get, Post, Put, Delete, Param, Query, Body, Req, Headers, ParseUUIDPipe, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Query,
+  Body,
+  Req,
+  Headers,
+  ParseUUIDPipe,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { getVerifiedInternalJwtPayload, isAuthorizedInternalRequest } from '../../common/internal-auth';
+import {
+  getVerifiedInternalJwtPayload,
+  isAuthorizedInternalRequest,
+} from '../../common/internal-auth';
 import { ApiException } from '../../common/api.exception';
 import { ok } from '../../common/api-response';
 import { LeaveTypeService } from './leave-type.service';
@@ -36,17 +52,36 @@ export class LeaveTypeController {
     }
   }
 
-  private getScope(req: Request): { tenantId: string; companyId: string; userId: string } {
-    const authHeader = (req as any).headers?.['authorization'] ?? (req as any).headers?.['Authorization'];
+  private getScope(req: Request): {
+    tenantId: string;
+    companyId: string;
+    userId: string;
+  } {
+    const authHeader =
+      (req as any).headers?.['authorization'] ??
+      (req as any).headers?.['Authorization'];
     const payload = getVerifiedInternalJwtPayload(authHeader);
     if (!payload) {
-      throw new ApiException('HRM-AUTH-001', 'Invalid or missing JWT', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Invalid or missing JWT',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-    const tenantId = (payload['tenant_id'] as string) ?? (payload['tenantId'] as string);
-    const companyId = (payload['company_id'] as string) ?? (payload['companyId'] as string);
-    const userId = (payload['sub'] as string) ?? (payload['user_id'] as string) ?? (payload['userId'] as string);
+    const tenantId =
+      (payload['tenant_id'] as string) ?? (payload['tenantId'] as string);
+    const companyId =
+      (payload['company_id'] as string) ?? (payload['companyId'] as string);
+    const userId =
+      (payload['sub'] as string) ??
+      (payload['user_id'] as string) ??
+      (payload['userId'] as string);
     if (!tenantId || !companyId) {
-      throw new ApiException('HRM-AUTH-001', 'JWT missing tenantId/companyId', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'JWT missing tenantId/companyId',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     return { tenantId, companyId, userId };
   }
@@ -80,7 +115,11 @@ export class LeaveTypeController {
     const { tenantId, companyId } = this.getScope(req);
     const result = await this.service.findById(tenantId, companyId, id);
     if (!result) {
-      throw new ApiException('HRM-LEAVE-TYPE-404', 'Leave type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-LEAVE-TYPE-404',
+        'Leave type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return ok(result, 'HRM-LEAVE-TYPE-200', 'Leave type');
   }
@@ -89,7 +128,10 @@ export class LeaveTypeController {
   @ApiOperation({ summary: 'Create new leave type' })
   @ApiResponse({ status: 201, description: 'Leave type created' })
   @ApiResponse({ status: 409, description: 'Code already exists' })
-  @ApiResponse({ status: 400, description: 'Validation error (e.g., unpaid with payRate>0)' })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error (e.g., unpaid with payRate>0)',
+  })
   async create(
     @Req() req: Request,
     @Headers('authorization') authorization: string | undefined,
@@ -105,7 +147,10 @@ export class LeaveTypeController {
   @Put(':id')
   @ApiOperation({ summary: 'Update leave type' })
   @ApiResponse({ status: 200, description: 'Leave type updated' })
-  @ApiResponse({ status: 400, description: 'Validation error (LABOR_LAW immutable, unpaid payRate=0)' })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error (LABOR_LAW immutable, unpaid payRate=0)',
+  })
   @ApiResponse({ status: 404, description: 'Not found' })
   async update(
     @Req() req: Request,
@@ -121,7 +166,10 @@ export class LeaveTypeController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Soft delete leave type (deactivate LABOR_LAW, soft delete INTERNAL)' })
+  @ApiOperation({
+    summary:
+      'Soft delete leave type (deactivate LABOR_LAW, soft delete INTERNAL)',
+  })
   @ApiResponse({ status: 200, description: 'Leave type deactivated/deleted' })
   @ApiResponse({ status: 404, description: 'Not found' })
   async softDelete(

@@ -40,7 +40,9 @@ describe('RecruitmentService', () => {
         email: 'candidate@xe.vn',
         source: 'linkedin',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-UV-YCTD-NOT-FOUND' });
+    ).rejects.toMatchObject<ApiException>({
+      code: 'HRM-REC-UV-YCTD-NOT-FOUND',
+    });
   });
 
   it('throws deterministic error when interview does not exist for status update', async () => {
@@ -56,7 +58,11 @@ describe('RecruitmentService', () => {
       .mockResolvedValueOnce({ rows: [] } as never);
 
     await expect(
-      service.updateInterviewStatus('633e95b7-cf1b-469f-a0f8-4c91f3f35f80', { status: 'passed' }, 'main'),
+      service.updateInterviewStatus(
+        '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+        { status: 'passed' },
+        'main',
+      ),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-406' });
   });
 
@@ -93,9 +99,19 @@ describe('RecruitmentService', () => {
     });
     const requisitionId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
+      if (
+        sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')
+      ) {
         return {
-          rows: [{ company_id: 'holding', status: 'open', workflow_instance_id: null, headcount: 1, headcount_mode: null }],
+          rows: [
+            {
+              company_id: 'holding',
+              status: 'open',
+              workflow_instance_id: null,
+              headcount: 1,
+              headcount_mode: null,
+            },
+          ],
         } as never;
       }
       if (sql.includes('UPDATE public.job_requisitions')) {
@@ -134,7 +150,9 @@ describe('RecruitmentService', () => {
 
   it('throws deterministic error when requisition does not exist for status update', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
+      if (
+        sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')
+      ) {
         return { rows: [] } as never;
       }
       return { rows: [] } as never;
@@ -151,10 +169,16 @@ describe('RecruitmentService', () => {
 
   it('returns paginated candidates with optional requisition filter', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('SELECT COUNT(*)') && sql.includes('recruitment_candidates')) {
+      if (
+        sql.includes('SELECT COUNT(*)') &&
+        sql.includes('recruitment_candidates')
+      ) {
         return { rows: [{ total: '1' }] } as never;
       }
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT')
+      ) {
         return {
           rows: [
             {
@@ -185,7 +209,10 @@ describe('RecruitmentService', () => {
     expect(result.page).toBe(2);
     expect(result.page_size).toBe(10);
     expect(result.data[0]).toMatchObject({ id: 'c1', status: 'new' });
-    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('LIMIT $3 OFFSET $4'), expect.any(Array));
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('LIMIT $3 OFFSET $4'),
+      expect.any(Array),
+    );
   });
 
   it('finds holding requisition when group CEO creates candidate with company_id=main', async () => {
@@ -197,7 +224,10 @@ describe('RecruitmentService', () => {
     });
     const requisitionId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.job_requisitions') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.job_requisitions') &&
+        sql.includes('LIMIT 1')
+      ) {
         return {
           rows: [
             {
@@ -293,7 +323,10 @@ describe('RecruitmentService', () => {
     });
     const candidateId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates WHERE') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [{ id: candidateId, company_id: 'holding' }] } as never;
       }
       if (sql.includes('INSERT INTO public.recruitment_interviews')) {
@@ -336,12 +369,24 @@ describe('RecruitmentService', () => {
   it('returns deterministic 409 when scheduling while active interview exists', async () => {
     const candidateId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates WHERE') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [{ id: candidateId, company_id: 'holding' }] } as never;
       }
-      if (sql.includes('FROM public.recruitment_interviews') && sql.includes('AND status IN (\'scheduled\', \'confirmed\')')) {
+      if (
+        sql.includes('FROM public.recruitment_interviews') &&
+        sql.includes("AND status IN ('scheduled', 'confirmed')")
+      ) {
         return {
-          rows: [{ id: 'active-1', status: 'scheduled', scheduled_at: '2026-08-06T09:30:00.000Z' }],
+          rows: [
+            {
+              id: 'active-1',
+              status: 'scheduled',
+              scheduled_at: '2026-08-06T09:30:00.000Z',
+            },
+          ],
         } as never;
       }
       return { rows: [] } as never;
@@ -362,10 +407,16 @@ describe('RecruitmentService', () => {
   it('allows create after cancelled state and keeps one-active filter strict', async () => {
     const candidateId = '0e3f95b7-cf1b-469f-a0f8-4c91f3f35f80';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates WHERE') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [{ id: candidateId, company_id: 'holding' }] } as never;
       }
-      if (sql.includes('FROM public.recruitment_interviews') && sql.includes('AND status IN (\'scheduled\', \'confirmed\')')) {
+      if (
+        sql.includes('FROM public.recruitment_interviews') &&
+        sql.includes("AND status IN ('scheduled', 'confirmed')")
+      ) {
         return { rows: [] } as never;
       }
       if (sql.includes('INSERT INTO public.recruitment_interviews')) {
@@ -404,10 +455,16 @@ describe('RecruitmentService', () => {
 
   it('returns candidate list with active interview projection display-ready for FE badge', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('SELECT COUNT(*)') && sql.includes('recruitment_candidates')) {
+      if (
+        sql.includes('SELECT COUNT(*)') &&
+        sql.includes('recruitment_candidates')
+      ) {
         return { rows: [{ total: '1' }] } as never;
       }
-      if (sql.includes('LEFT JOIN LATERAL') && sql.includes('FROM public.recruitment_candidates')) {
+      if (
+        sql.includes('LEFT JOIN LATERAL') &&
+        sql.includes('FROM public.recruitment_candidates')
+      ) {
         return {
           rows: [
             {
@@ -442,6 +499,8 @@ describe('RecruitmentService', () => {
         active_interview_badge_label: 'Đã có lịch',
       },
     });
-    expect(result.data[0]?.active_interview.active_interview_display_time_vi_vn).toMatch(/\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/);
+    expect(
+      result.data[0]?.active_interview.active_interview_display_time_vi_vn,
+    ).toMatch(/\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/);
   });
 });

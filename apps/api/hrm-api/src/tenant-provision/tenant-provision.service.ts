@@ -11,7 +11,12 @@
  * Coded:      2026-08-15
  * must_keep:  no cross-DB query; tenant_id from payload only; BULLMQ_ENABLED gate
  */
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { Worker, type ConnectionOptions } from 'bullmq';
 import { HrmDbService, HrmDbQueryFn } from '../db/hrm-db.service';
 
@@ -32,14 +37,62 @@ const LABOR_LAW_LEAVE_TYPES: ReadonlyArray<{
   isPaid: boolean;
   payRate: number;
 }> = [
-  { code: 'ANNUAL', name: 'Nghỉ phép năm', defaultDays: 12, isPaid: true, payRate: 100 },
-  { code: 'SICK', name: 'Nghỉ ốm đau', defaultDays: 30, isPaid: true, payRate: 75 },
-  { code: 'MATERNITY', name: 'Nghỉ thai sản', defaultDays: 180, isPaid: true, payRate: 100 },
-  { code: 'PATERNITY', name: 'Nghỉ thai sản cha', defaultDays: 5, isPaid: true, payRate: 100 },
-  { code: 'BEREAVEMENT', name: 'Nghỉ tang', defaultDays: 3, isPaid: true, payRate: 100 },
-  { code: 'MARRIAGE', name: 'Nghỉ kết hôn', defaultDays: 3, isPaid: true, payRate: 100 },
-  { code: 'ELECTION', name: 'Nghỉ bầu cử', defaultDays: 1, isPaid: true, payRate: 100 },
-  { code: 'NATIONAL_DISASTER', name: 'Nghỉ thiên tai quốc gia', defaultDays: 1, isPaid: false, payRate: 0 },
+  {
+    code: 'ANNUAL',
+    name: 'Nghỉ phép năm',
+    defaultDays: 12,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'SICK',
+    name: 'Nghỉ ốm đau',
+    defaultDays: 30,
+    isPaid: true,
+    payRate: 75,
+  },
+  {
+    code: 'MATERNITY',
+    name: 'Nghỉ thai sản',
+    defaultDays: 180,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'PATERNITY',
+    name: 'Nghỉ thai sản cha',
+    defaultDays: 5,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'BEREAVEMENT',
+    name: 'Nghỉ tang',
+    defaultDays: 3,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'MARRIAGE',
+    name: 'Nghỉ kết hôn',
+    defaultDays: 3,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'ELECTION',
+    name: 'Nghỉ bầu cử',
+    defaultDays: 1,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'NATIONAL_DISASTER',
+    name: 'Nghỉ thiên tai quốc gia',
+    defaultDays: 1,
+    isPaid: false,
+    payRate: 0,
+  },
 ] as const;
 
 /** Mức đóng BH theo Nghị định 74/2024 (hiệu lực 01/07/2024) */
@@ -89,7 +142,9 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
       'xbos.tenant',
       async (job) => {
         if (job.name === 'TENANT_PROVISIONED') {
-          await this.handleTenantProvisioned(job.data as TenantProvisionedPayload);
+          await this.handleTenantProvisioned(
+            job.data as TenantProvisionedPayload,
+          );
         }
       },
       { connection },
@@ -99,7 +154,9 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
         `[HRM] xbos.tenant worker job failed: ${job?.name ?? 'unknown'} — ${err.message}`,
       );
     });
-    this.logger.log('[HRM] TenantProvisionWorker subscribed to BullMQ queue: xbos.tenant');
+    this.logger.log(
+      '[HRM] TenantProvisionWorker subscribed to BullMQ queue: xbos.tenant',
+    );
   }
 
   async onModuleDestroy(): Promise<void> {
@@ -110,7 +167,9 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
    * Public so REST controller can call this directly for integration tests
    * and manual XBOS→HRM HTTP fallback path.
    */
-  async handleTenantProvisioned(payload: TenantProvisionedPayload): Promise<void> {
+  async handleTenantProvisioned(
+    payload: TenantProvisionedPayload,
+  ): Promise<void> {
     const { tenantId, defaultCompanyId, modules } = payload;
 
     if (!modules.includes('hrm')) {
@@ -126,7 +185,9 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
       [tenantId],
     );
     if (existing.rows[0]?.exists) {
-      this.logger.log(`[HRM] Tenant ${tenantId} already provisioned — skipping seed.`);
+      this.logger.log(
+        `[HRM] Tenant ${tenantId} already provisioned — skipping seed.`,
+      );
       return;
     }
 
@@ -155,7 +216,15 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
             is_paid, pay_rate_percent, leave_category)
          VALUES ($1, $2, $3, $4, $5, $6, $7, 'LABOR_LAW')
          ON CONFLICT ON CONSTRAINT uq_leave_type_tenant_code DO NOTHING`,
-        [tenantId, companyId, lt.code, lt.name, lt.defaultDays, lt.isPaid, lt.payRate],
+        [
+          tenantId,
+          companyId,
+          lt.code,
+          lt.name,
+          lt.defaultDays,
+          lt.isPaid,
+          lt.payRate,
+        ],
       );
     }
   }
@@ -196,7 +265,13 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
            (tenant_id, company_id, region_code, effective_from, monthly_min_wage)
          VALUES ($1, $2, $3, $4, $5)
          ON CONFLICT ON CONSTRAINT uq_min_wage_tenant_region_eff DO NOTHING`,
-        [tenantId, companyId, region.code, INSURANCE_EFFECTIVE_FROM, region.wage],
+        [
+          tenantId,
+          companyId,
+          region.code,
+          INSURANCE_EFFECTIVE_FROM,
+          region.wage,
+        ],
       );
     }
   }

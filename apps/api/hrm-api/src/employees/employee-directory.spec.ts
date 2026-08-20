@@ -131,8 +131,14 @@ describe('employee-directory helpers', () => {
       true,
     );
     const notChecked = mapDirectoryListItem(baseRow, null, true);
-    expect(directoryItemPassesAttendanceFilter(checked, 'checked_in')).toBe(true);
-    expect(directoryItemPassesAttendanceFilter(notChecked, 'checked_in')).toBe(false);
-    expect(directoryItemPassesAttendanceFilter(notChecked, 'not_checked_in')).toBe(true);
+    expect(directoryItemPassesAttendanceFilter(checked, 'checked_in')).toBe(
+      true,
+    );
+    expect(directoryItemPassesAttendanceFilter(notChecked, 'checked_in')).toBe(
+      false,
+    );
+    expect(
+      directoryItemPassesAttendanceFilter(notChecked, 'not_checked_in'),
+    ).toBe(true);
   });
 });

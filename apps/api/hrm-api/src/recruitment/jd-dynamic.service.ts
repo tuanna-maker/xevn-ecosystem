@@ -95,7 +95,12 @@ export type JdSnapshotGroup = {
   label: string;
   view_style: string;
   sort_order: number;
-  source: 'pack_always_on' | 'optional_dnd' | 'optional_drag' | 'manual' | 'legacy';
+  source:
+    | 'pack_always_on'
+    | 'optional_dnd'
+    | 'optional_drag'
+    | 'manual'
+    | 'legacy';
   fields: JdSnapshotField[];
 };
 
@@ -370,9 +375,30 @@ export class JdDynamicService {
         sort: number;
         hint: string;
       }> = [
-        { key: 'title', label: 'Chức danh / Tiêu đề JD', type: 'short_text', required: true, sort: 0, hint: 'hero' },
-        { key: 'code', label: 'Mã JD', type: 'short_text', required: true, sort: 1, hint: 'meta' },
-        { key: 'position_code', label: 'Mã chức danh', type: 'select', required: true, sort: 2, hint: 'meta' },
+        {
+          key: 'title',
+          label: 'Chức danh / Tiêu đề JD',
+          type: 'short_text',
+          required: true,
+          sort: 0,
+          hint: 'hero',
+        },
+        {
+          key: 'code',
+          label: 'Mã JD',
+          type: 'short_text',
+          required: true,
+          sort: 1,
+          hint: 'meta',
+        },
+        {
+          key: 'position_code',
+          label: 'Mã chức danh',
+          type: 'select',
+          required: true,
+          sort: 2,
+          hint: 'meta',
+        },
         {
           key: 'responsibilities',
           label: 'Trách nhiệm',
@@ -400,7 +426,17 @@ export class JdDynamicService {
             (id, company_id, field_key, label, field_type, is_required, sort_order, section_hint, validation_json, is_system, is_active)
            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,TRUE,TRUE)
            ON CONFLICT DO NOTHING`,
-          [randomUUID(), cid, f.key, f.label, f.type, f.required, f.sort, f.hint, validation],
+          [
+            randomUUID(),
+            cid,
+            f.key,
+            f.label,
+            f.type,
+            f.required,
+            f.sort,
+            f.hint,
+            validation,
+          ],
         );
       }
     }
@@ -453,12 +489,22 @@ export class JdDynamicService {
             `INSERT INTO public.rec_jd_group_field (id, group_id, field_id, company_id, sort_order, is_required_in_group)
              VALUES ($1,$2::uuid,$3::uuid,$4,$5,FALSE)
              ON CONFLICT DO NOTHING`,
-            [randomUUID(), gid, fr.rows[0].id, cid, fieldKey === 'code' ? 1 : fieldKey === 'position_code' ? 2 : 0],
+            [
+              randomUUID(),
+              gid,
+              fr.rows[0].id,
+              cid,
+              fieldKey === 'code' ? 1 : fieldKey === 'position_code' ? 2 : 0,
+            ],
           );
         }
       }
 
-      for (const packCode of [PACK_IT_OFFICE, PACK_DRIVER_OPS, PACK_CORP_DEFAULT]) {
+      for (const packCode of [
+        PACK_IT_OFFICE,
+        PACK_DRIVER_OPS,
+        PACK_CORP_DEFAULT,
+      ]) {
         const packId = randomUUID();
         const label =
           packCode === PACK_IT_OFFICE
@@ -500,14 +546,54 @@ export class JdDynamicService {
         [cid],
       );
       const byCode = new Map(packs.rows.map((r) => [r.code, r.id]));
-      const rules: Array<{ priority: number; match_type: string; match_value: string | null; pack: string }> = [
-        { priority: 10, match_type: 'job_family', match_value: 'IT', pack: PACK_IT_OFFICE },
-        { priority: 10, match_type: 'job_family', match_value: 'TECH', pack: PACK_IT_OFFICE },
-        { priority: 10, match_type: 'job_family', match_value: 'SOFTWARE', pack: PACK_IT_OFFICE },
-        { priority: 10, match_type: 'job_family', match_value: 'DRIVER', pack: PACK_DRIVER_OPS },
-        { priority: 10, match_type: 'job_family', match_value: 'FLEET', pack: PACK_DRIVER_OPS },
-        { priority: 10, match_type: 'job_family', match_value: 'LOGISTICS_OPS', pack: PACK_DRIVER_OPS },
-        { priority: 100, match_type: 'fallback', match_value: null, pack: PACK_CORP_DEFAULT },
+      const rules: Array<{
+        priority: number;
+        match_type: string;
+        match_value: string | null;
+        pack: string;
+      }> = [
+        {
+          priority: 10,
+          match_type: 'job_family',
+          match_value: 'IT',
+          pack: PACK_IT_OFFICE,
+        },
+        {
+          priority: 10,
+          match_type: 'job_family',
+          match_value: 'TECH',
+          pack: PACK_IT_OFFICE,
+        },
+        {
+          priority: 10,
+          match_type: 'job_family',
+          match_value: 'SOFTWARE',
+          pack: PACK_IT_OFFICE,
+        },
+        {
+          priority: 10,
+          match_type: 'job_family',
+          match_value: 'DRIVER',
+          pack: PACK_DRIVER_OPS,
+        },
+        {
+          priority: 10,
+          match_type: 'job_family',
+          match_value: 'FLEET',
+          pack: PACK_DRIVER_OPS,
+        },
+        {
+          priority: 10,
+          match_type: 'job_family',
+          match_value: 'LOGISTICS_OPS',
+          pack: PACK_DRIVER_OPS,
+        },
+        {
+          priority: 100,
+          match_type: 'fallback',
+          match_value: null,
+          pack: PACK_CORP_DEFAULT,
+        },
       ];
       for (const r of rules) {
         const packId = byCode.get(r.pack);
@@ -524,7 +610,11 @@ export class JdDynamicService {
 
   // ─── Field defs (F-JD-DEF) ─────────────────────────────────────────────
 
-  async listFieldDefs(companyId: string, authorization?: string, active?: string) {
+  async listFieldDefs(
+    companyId: string,
+    authorization?: string,
+    active?: string,
+  ) {
     await this.ensureSchema();
     const persistCid = resolveHrmPersistCompanyIdText(authorization, companyId);
     await this.ensureCompanyBootstrap(persistCid);
@@ -533,8 +623,10 @@ export class JdDynamicService {
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, scope.companyIds);
     const a = active?.trim().toLowerCase();
-    if (a === 'true' || a === '1' || a === 'active') filters.push('is_active = TRUE');
-    else if (a === 'false' || a === '0' || a === 'inactive') filters.push('is_active = FALSE');
+    if (a === 'true' || a === '1' || a === 'active')
+      filters.push('is_active = TRUE');
+    else if (a === 'false' || a === '0' || a === 'inactive')
+      filters.push('is_active = FALSE');
     const res = await this.db.query(
       `SELECT id, company_id, field_key, label, field_type, is_required, sort_order, section_hint,
               validation_json, is_system, is_active, applies_to_company_ids, created_at, updated_at
@@ -559,7 +651,11 @@ export class JdDynamicService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-JD-FIELD-404', 'JD field definition not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-JD-FIELD-404',
+        'JD field definition not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return res.rows[0];
   }
@@ -579,19 +675,34 @@ export class JdDynamicService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     await this.ensureCompanyBootstrap(companyId);
     const fieldKey = payload.field_key?.trim().toLowerCase();
     const label = payload.label?.trim();
     const fieldType = payload.field_type?.trim().toLowerCase();
     if (!fieldKey || !label || !fieldType) {
-      throw new ApiException('HRM-JD-FIELD-VAL', 'field_key, label, field_type are required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-FIELD-VAL',
+        'field_key, label, field_type are required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (!/^[a-z][a-z0-9_]*$/.test(fieldKey)) {
-      throw new ApiException('HRM-JD-FIELD-VAL', 'field_key must be snake_case', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-FIELD-VAL',
+        'field_key must be snake_case',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (!(JD_FIELD_TYPES as readonly string[]).includes(fieldType)) {
-      throw new ApiException('HRM-JD-FIELD-TYPE', `Unknown field_type: ${fieldType}`, HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-FIELD-TYPE',
+        `Unknown field_type: ${fieldType}`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     this.assertSelectValidation(fieldType, payload.validation_json);
     const dup = await this.db.query(
@@ -600,7 +711,11 @@ export class JdDynamicService {
       [companyId, fieldKey],
     );
     if (dup.rows[0]) {
-      throw new ApiException('HRM-JD-FIELD-DUP', 'field_key already exists', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-JD-FIELD-DUP',
+        'field_key already exists',
+        HttpStatus.CONFLICT,
+      );
     }
     const res = await this.db.query(
       `INSERT INTO public.rec_jd_field_def
@@ -618,8 +733,12 @@ export class JdDynamicService {
         payload.is_required === true,
         payload.sort_order ?? 100,
         payload.section_hint?.trim() || null,
-        payload.validation_json ? JSON.stringify(payload.validation_json) : null,
-        payload.applies_to_company_ids ? JSON.stringify(payload.applies_to_company_ids) : null,
+        payload.validation_json
+          ? JSON.stringify(payload.validation_json)
+          : null,
+        payload.applies_to_company_ids
+          ? JSON.stringify(payload.applies_to_company_ids)
+          : null,
       ],
     );
     return res.rows[0];
@@ -642,8 +761,14 @@ export class JdDynamicService {
   ) {
     await this.ensureSchema();
     const existing = await this.getFieldDefById(id, companyId, authorization);
-    if (payload.field_type !== undefined && payload.field_type !== existing.field_type) {
-      const inUse = await this.fieldHasValues(existing.field_key as string, existing.company_id as string);
+    if (
+      payload.field_type !== undefined &&
+      payload.field_type !== existing.field_type
+    ) {
+      const inUse = await this.fieldHasValues(
+        existing.field_key as string,
+        existing.company_id as string,
+      );
       if (inUse) {
         throw new ApiException(
           'HRM-JD-FIELD-TYPE-LOCK',
@@ -652,7 +777,11 @@ export class JdDynamicService {
         );
       }
       if (!(JD_FIELD_TYPES as readonly string[]).includes(payload.field_type)) {
-        throw new ApiException('HRM-JD-FIELD-TYPE', 'Unknown field_type', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-JD-FIELD-TYPE',
+          'Unknown field_type',
+          HttpStatus.BAD_REQUEST,
+        );
       }
     }
     if (payload.validation_json !== undefined) {
@@ -668,22 +797,35 @@ export class JdDynamicService {
       setParts.push(`${col} = $${values.length}`);
     };
     if (payload.label !== undefined) push('label', payload.label.trim());
-    if (payload.is_required !== undefined) push('is_required', payload.is_required);
-    if (payload.sort_order !== undefined) push('sort_order', payload.sort_order);
-    if (payload.section_hint !== undefined) push('section_hint', payload.section_hint?.trim() || null);
+    if (payload.is_required !== undefined)
+      push('is_required', payload.is_required);
+    if (payload.sort_order !== undefined)
+      push('sort_order', payload.sort_order);
+    if (payload.section_hint !== undefined)
+      push('section_hint', payload.section_hint?.trim() || null);
     if (payload.validation_json !== undefined) {
-      push('validation_json', payload.validation_json ? JSON.stringify(payload.validation_json) : null);
-      setParts[setParts.length - 1] = `validation_json = $${values.length}::jsonb`;
+      push(
+        'validation_json',
+        payload.validation_json
+          ? JSON.stringify(payload.validation_json)
+          : null,
+      );
+      setParts[setParts.length - 1] =
+        `validation_json = $${values.length}::jsonb`;
     }
     if (payload.is_active !== undefined) push('is_active', payload.is_active);
     if (payload.applies_to_company_ids !== undefined) {
       push(
         'applies_to_company_ids',
-        payload.applies_to_company_ids ? JSON.stringify(payload.applies_to_company_ids) : null,
+        payload.applies_to_company_ids
+          ? JSON.stringify(payload.applies_to_company_ids)
+          : null,
       );
-      setParts[setParts.length - 1] = `applies_to_company_ids = $${values.length}::jsonb`;
+      setParts[setParts.length - 1] =
+        `applies_to_company_ids = $${values.length}::jsonb`;
     }
-    if (payload.field_type !== undefined) push('field_type', payload.field_type);
+    if (payload.field_type !== undefined)
+      push('field_type', payload.field_type);
 
     const scope = resolveHrmListScope(authorization, companyId);
     values.push(id);
@@ -697,7 +839,11 @@ export class JdDynamicService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-JD-FIELD-404', 'JD field definition not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-JD-FIELD-404',
+        'JD field definition not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return res.rows[0];
   }
@@ -705,12 +851,28 @@ export class JdDynamicService {
   async archiveFieldDef(id: string, companyId: string, authorization?: string) {
     await this.ensureSchema();
     const existing = await this.getFieldDefById(id, companyId, authorization);
-    if (existing.is_system || (JD_SYSTEM_FIELD_KEYS as readonly string[]).includes(existing.field_key as string)) {
-      throw new ApiException('HRM-JD-FIELD-SYSTEM', 'Cannot archive system field', HttpStatus.BAD_REQUEST);
+    if (
+      existing.is_system ||
+      (JD_SYSTEM_FIELD_KEYS as readonly string[]).includes(
+        existing.field_key as string,
+      )
+    ) {
+      throw new ApiException(
+        'HRM-JD-FIELD-SYSTEM',
+        'Cannot archive system field',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const inUse = await this.fieldHasValues(existing.field_key as string, existing.company_id as string);
+    const inUse = await this.fieldHasValues(
+      existing.field_key as string,
+      existing.company_id as string,
+    );
     if (inUse) {
-      throw new ApiException('HRM-JD-FIELD-INUSE', 'Field referenced by JD values/snapshot', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-JD-FIELD-INUSE',
+        'Field referenced by JD values/snapshot',
+        HttpStatus.CONFLICT,
+      );
     }
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
@@ -756,7 +918,11 @@ export class JdDynamicService {
       values,
     );
     if (!layout.rows[0]) {
-      throw new ApiException('HRM-JD-LAYOUT-404', 'JD form layout not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-JD-LAYOUT-404',
+        'JD form layout not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.enrichLayout(layout.rows[0]);
   }
@@ -777,7 +943,14 @@ export class JdDynamicService {
       values,
     );
     if (!layout.rows[0]) {
-      return { id: null, company_id: persistCid, name: null, is_default: true, status: null, items: [] };
+      return {
+        id: null,
+        company_id: persistCid,
+        name: null,
+        is_default: true,
+        status: null,
+        items: [],
+      };
     }
     return this.enrichLayout(layout.rows[0]);
   }
@@ -792,14 +965,26 @@ export class JdDynamicService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     await this.ensureCompanyBootstrap(companyId);
     const status = payload.status ?? 'published';
     const items = payload.items ?? [];
     if (status === 'published' && items.length === 0) {
-      throw new ApiException('HRM-JD-LAYOUT-EMPTY', 'Cannot publish empty layout', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-LAYOUT-EMPTY',
+        'Cannot publish empty layout',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    await this.validateLayoutItems(companyId, authorization, items, status === 'published');
+    await this.validateLayoutItems(
+      companyId,
+      authorization,
+      items,
+      status === 'published',
+    );
 
     const existing = await this.db.query<{ id: string }>(
       `SELECT id::text AS id FROM public.rec_jd_form_layout
@@ -812,7 +997,12 @@ export class JdDynamicService {
       await this.db.query(
         `INSERT INTO public.rec_jd_form_layout (id, company_id, name, is_default, status)
          VALUES ($1,$2,$3,TRUE,$4)`,
-        [layoutId, companyId, payload.name?.trim() || 'Layout mặc định JD', status],
+        [
+          layoutId,
+          companyId,
+          payload.name?.trim() || 'Layout mặc định JD',
+          status,
+        ],
       );
     } else {
       await this.db.query(
@@ -821,13 +1011,23 @@ export class JdDynamicService {
          WHERE id = $1::uuid`,
         [layoutId, payload.name?.trim() || null, status],
       );
-      await this.db.query(`DELETE FROM public.rec_jd_form_layout_item WHERE layout_id = $1::uuid`, [layoutId]);
+      await this.db.query(
+        `DELETE FROM public.rec_jd_form_layout_item WHERE layout_id = $1::uuid`,
+        [layoutId],
+      );
     }
     for (const it of items) {
       await this.db.query(
         `INSERT INTO public.rec_jd_form_layout_item (id, layout_id, field_id, section, sort_order, company_id)
          VALUES ($1,$2::uuid,$3::uuid,$4,$5,$6)`,
-        [randomUUID(), layoutId, it.field_id, it.section, it.sort_order, companyId],
+        [
+          randomUUID(),
+          layoutId,
+          it.field_id,
+          it.section,
+          it.sort_order,
+          companyId,
+        ],
       );
     }
     return this.getLayoutById(layoutId, companyId, authorization);
@@ -835,7 +1035,11 @@ export class JdDynamicService {
 
   // ─── Groups (F-JD-GRP) ─────────────────────────────────────────────────
 
-  async listGroupDefs(companyId: string, authorization?: string, active?: string) {
+  async listGroupDefs(
+    companyId: string,
+    authorization?: string,
+    active?: string,
+  ) {
     await this.ensureSchema();
     const persistCid = resolveHrmPersistCompanyIdText(authorization, companyId);
     await this.ensureCompanyBootstrap(persistCid);
@@ -875,7 +1079,11 @@ export class JdDynamicService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-JD-GRP-404', 'JD group not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-JD-GRP-404',
+        'JD group not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.enrichGroup(res.rows[0]);
   }
@@ -889,12 +1097,19 @@ export class JdDynamicService {
       usage: string;
       view_style: string;
       sort_order?: number;
-      fields?: Array<{ field_id: string; sort_order: number; is_required_in_group?: boolean }>;
+      fields?: Array<{
+        field_id: string;
+        sort_order: number;
+        is_required_in_group?: boolean;
+      }>;
     },
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     await this.ensureCompanyBootstrap(companyId);
     const code = payload.code?.trim().toUpperCase();
     const label = payload.label?.trim();
@@ -902,16 +1117,32 @@ export class JdDynamicService {
     const usage = payload.usage?.trim();
     const viewStyle = payload.view_style?.trim();
     if (!code || !label || !usage || !viewStyle) {
-      throw new ApiException('HRM-JD-GROUP-VAL', 'code, label, usage, view_style required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-GROUP-VAL',
+        'code, label, usage, view_style required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (!(JD_GROUP_KINDS as readonly string[]).includes(kind)) {
-      throw new ApiException('HRM-JD-GROUP-ENUM', 'Invalid kind', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-GROUP-ENUM',
+        'Invalid kind',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (!(JD_GROUP_USAGES as readonly string[]).includes(usage)) {
-      throw new ApiException('HRM-JD-GROUP-ENUM', 'Invalid usage', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-GROUP-ENUM',
+        'Invalid usage',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (!(JD_VIEW_STYLES as readonly string[]).includes(viewStyle)) {
-      throw new ApiException('HRM-JD-GROUP-ENUM', 'Invalid view_style', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-GROUP-ENUM',
+        'Invalid view_style',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const reserved = SYSTEM_GROUP_DEFS.some((g) => g.code === code);
     if (reserved && kind !== 'system_skeleton') {
@@ -927,16 +1158,34 @@ export class JdDynamicService {
       [companyId, code],
     );
     if (dup.rows[0]) {
-      throw new ApiException('HRM-JD-GROUP-DUP', 'group code already exists', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-JD-GROUP-DUP',
+        'group code already exists',
+        HttpStatus.CONFLICT,
+      );
     }
     const id = randomUUID();
     await this.db.query(
       `INSERT INTO public.rec_jd_group_def
         (id, company_id, code, label, kind, usage, view_style, sort_order, is_active)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,TRUE)`,
-      [id, companyId, code, label, kind, usage, viewStyle, payload.sort_order ?? 100],
+      [
+        id,
+        companyId,
+        code,
+        label,
+        kind,
+        usage,
+        viewStyle,
+        payload.sort_order ?? 100,
+      ],
     );
-    await this.replaceGroupFields(id, companyId, authorization, payload.fields ?? []);
+    await this.replaceGroupFields(
+      id,
+      companyId,
+      authorization,
+      payload.fields ?? [],
+    );
     return this.getGroupDefById(id, companyId, authorization);
   }
 
@@ -949,17 +1198,35 @@ export class JdDynamicService {
       view_style?: string;
       sort_order?: number;
       is_active?: boolean;
-      fields?: Array<{ field_id: string; sort_order: number; is_required_in_group?: boolean }>;
+      fields?: Array<{
+        field_id: string;
+        sort_order: number;
+        is_required_in_group?: boolean;
+      }>;
     },
     authorization?: string,
   ) {
     await this.ensureSchema();
     const existing = await this.getGroupDefById(id, companyId, authorization);
-    if (payload.usage && !(JD_GROUP_USAGES as readonly string[]).includes(payload.usage)) {
-      throw new ApiException('HRM-JD-GROUP-ENUM', 'Invalid usage', HttpStatus.BAD_REQUEST);
+    if (
+      payload.usage &&
+      !(JD_GROUP_USAGES as readonly string[]).includes(payload.usage)
+    ) {
+      throw new ApiException(
+        'HRM-JD-GROUP-ENUM',
+        'Invalid usage',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    if (payload.view_style && !(JD_VIEW_STYLES as readonly string[]).includes(payload.view_style)) {
-      throw new ApiException('HRM-JD-GROUP-ENUM', 'Invalid view_style', HttpStatus.BAD_REQUEST);
+    if (
+      payload.view_style &&
+      !(JD_VIEW_STYLES as readonly string[]).includes(payload.view_style)
+    ) {
+      throw new ApiException(
+        'HRM-JD-GROUP-ENUM',
+        'Invalid view_style',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const setParts: string[] = ['updated_at = NOW()'];
     const values: unknown[] = [];
@@ -969,8 +1236,10 @@ export class JdDynamicService {
     };
     if (payload.label !== undefined) push('label', payload.label.trim());
     if (payload.usage !== undefined) push('usage', payload.usage);
-    if (payload.view_style !== undefined) push('view_style', payload.view_style);
-    if (payload.sort_order !== undefined) push('sort_order', payload.sort_order);
+    if (payload.view_style !== undefined)
+      push('view_style', payload.view_style);
+    if (payload.sort_order !== undefined)
+      push('sort_order', payload.sort_order);
     if (payload.is_active !== undefined) push('is_active', payload.is_active);
 
     const scope = resolveHrmListScope(authorization, companyId);
@@ -982,7 +1251,12 @@ export class JdDynamicService {
       values,
     );
     if (payload.fields) {
-      await this.replaceGroupFields(id, existing.company_id as string, authorization, payload.fields);
+      await this.replaceGroupFields(
+        id,
+        existing.company_id,
+        authorization,
+        payload.fields,
+      );
     }
     return this.getGroupDefById(id, companyId, authorization);
   }
@@ -1008,7 +1282,11 @@ export class JdDynamicService {
     return { items: res.rows, total: res.rows.length };
   }
 
-  async getDefaultPackByCode(code: string, companyId: string, authorization?: string) {
+  async getDefaultPackByCode(
+    code: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const persistCid = resolveHrmPersistCompanyIdText(authorization, companyId);
     await this.ensureCompanyBootstrap(persistCid);
@@ -1025,7 +1303,11 @@ export class JdDynamicService {
       values,
     );
     if (!pack.rows[0]) {
-      throw new ApiException('HRM-JD-PCK-404', 'JD default pack not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-JD-PCK-404',
+        'JD default pack not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.enrichPack(pack.rows[0]);
   }
@@ -1038,20 +1320,32 @@ export class JdDynamicService {
       description?: string;
       is_company_fallback?: boolean;
       status?: string;
-      groups: Array<{ group_id?: string; group_code?: string; sort_order: number; always_on: boolean }>;
+      groups: Array<{
+        group_id?: string;
+        group_code?: string;
+        sort_order: number;
+        always_on: boolean;
+      }>;
     },
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     await this.ensureCompanyBootstrap(companyId);
     const packCode = normalizePackCode(code);
     const alwaysOn = (payload.groups ?? []).filter((g) => g.always_on);
     if (alwaysOn.length === 0) {
-      throw new ApiException('HRM-JD-PACK-EMPTY', 'Pack requires always_on groups', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-PACK-EMPTY',
+        'Pack requires always_on groups',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-    let pack = await this.db.query<{ id: string }>(
+    const pack = await this.db.query<{ id: string }>(
       `SELECT id::text AS id FROM public.rec_jd_default_pack
        WHERE company_id = $1 AND code = $2 AND archived_at IS NULL LIMIT 1`,
       [companyId, packCode],
@@ -1072,7 +1366,8 @@ export class JdDynamicService {
           packCode,
           payload.label?.trim() || packCode,
           payload.description?.trim() || null,
-          payload.is_company_fallback === true || packCode === PACK_CORP_DEFAULT,
+          payload.is_company_fallback === true ||
+            packCode === PACK_CORP_DEFAULT,
           payload.status ?? 'published',
         ],
       );
@@ -1091,17 +1386,31 @@ export class JdDynamicService {
         [
           packId,
           payload.label?.trim() || null,
-          payload.description !== undefined ? payload.description?.trim() || null : null,
+          payload.description !== undefined
+            ? payload.description?.trim() || null
+            : null,
           payload.is_company_fallback,
           payload.status ?? null,
         ],
       );
-      await this.db.query(`DELETE FROM public.rec_jd_pack_group WHERE pack_id = $1::uuid`, [packId]);
+      await this.db.query(
+        `DELETE FROM public.rec_jd_pack_group WHERE pack_id = $1::uuid`,
+        [packId],
+      );
     }
 
     for (const g of payload.groups) {
-      const groupId = await this.resolveGroupId(companyId, authorization, g.group_id, g.group_code);
-      const group = await this.getGroupDefById(groupId, companyId, authorization);
+      const groupId = await this.resolveGroupId(
+        companyId,
+        authorization,
+        g.group_id,
+        g.group_code,
+      );
+      const group = await this.getGroupDefById(
+        groupId,
+        companyId,
+        authorization,
+      );
       if (g.always_on && group.usage === 'optional_only') {
         throw new ApiException(
           'HRM-JD-PACK-GROUP-USAGE',
@@ -1112,7 +1421,14 @@ export class JdDynamicService {
       await this.db.query(
         `INSERT INTO public.rec_jd_pack_group (id, pack_id, group_id, company_id, sort_order, always_on)
          VALUES ($1,$2::uuid,$3::uuid,$4,$5,$6)`,
-        [randomUUID(), packId, groupId, companyId, g.sort_order, g.always_on !== false],
+        [
+          randomUUID(),
+          packId,
+          groupId,
+          companyId,
+          g.sort_order,
+          g.always_on !== false,
+        ],
       );
     }
     return this.getDefaultPackByCode(packCode, companyId, authorization);
@@ -1156,13 +1472,20 @@ export class JdDynamicService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     await this.ensureCompanyBootstrap(companyId);
     const rules = payload.rules ?? [];
     let fallbackCount = 0;
     for (const r of rules) {
       if (!(JD_PACK_MATCH_TYPES as readonly string[]).includes(r.match_type)) {
-        throw new ApiException('HRM-JD-PACK-RULE-VAL', 'Invalid match_type', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-JD-PACK-RULE-VAL',
+          'Invalid match_type',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       if (r.match_type === 'fallback') {
         fallbackCount += 1;
@@ -1174,10 +1497,19 @@ export class JdDynamicService {
           );
         }
       }
-      await this.resolvePackId(companyId, authorization, r.pack_id, r.pack_code);
+      await this.resolvePackId(
+        companyId,
+        authorization,
+        r.pack_id,
+        r.pack_code,
+      );
     }
     if (fallbackCount > 1) {
-      throw new ApiException('HRM-JD-PACK-FALLBACK-DUP', 'At most one fallback rule', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-JD-PACK-FALLBACK-DUP',
+        'At most one fallback rule',
+        HttpStatus.CONFLICT,
+      );
     }
 
     await this.db.query(
@@ -1187,7 +1519,12 @@ export class JdDynamicService {
     );
     const inserted = [];
     for (const r of rules) {
-      const packId = await this.resolvePackId(companyId, authorization, r.pack_id, r.pack_code);
+      const packId = await this.resolvePackId(
+        companyId,
+        authorization,
+        r.pack_id,
+        r.pack_code,
+      );
       const id = randomUUID();
       await this.db.query(
         `INSERT INTO public.rec_jd_pack_rule
@@ -1224,7 +1561,10 @@ export class JdDynamicService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     await this.ensureCompanyBootstrap(companyId);
     const scope = resolveHrmListScope(authorization, payload.company_id);
     assertResourceInHrmScope({ company_id: companyId }, scope, {
@@ -1290,7 +1630,11 @@ export class JdDynamicService {
     }
 
     if (!matched) {
-      const fb = await this.db.query<{ id: string; code: string; label: string }>(
+      const fb = await this.db.query<{
+        id: string;
+        code: string;
+        label: string;
+      }>(
         `SELECT id::text AS id, code, label FROM public.rec_jd_default_pack
          WHERE company_id = $1 AND is_company_fallback = TRUE AND archived_at IS NULL AND is_active = TRUE
          LIMIT 1`,
@@ -1327,7 +1671,9 @@ export class JdDynamicService {
       is_active: true,
     });
 
-    const alwaysOnGroups = packDetail.groups.filter((g) => g.always_on === true);
+    const alwaysOnGroups = packDetail.groups.filter(
+      (g) => g.always_on === true,
+    );
 
     return {
       pack_id: matched.pack_id,
@@ -1368,7 +1714,9 @@ export class JdDynamicService {
       authorization,
     );
     const pack = resolved.pack;
-    const optionalSet = new Set((resolveCtx.optional_group_codes ?? []).map((c) => c.toUpperCase()));
+    const optionalSet = new Set(
+      (resolveCtx.optional_group_codes ?? []).map((c) => c.toUpperCase()),
+    );
     const groups: JdSnapshotGroup[] = [];
     for (const g of pack.groups) {
       if (!g.always_on && !optionalSet.has(g.group_code)) continue;
@@ -1405,17 +1753,33 @@ export class JdDynamicService {
     snapshot: JdLayoutSnapshotV2 | null | undefined,
     values: Record<string, unknown> | null | undefined,
     opts?: { enforceRequired?: boolean },
-  ): { layout_version: number; snapshot: JdLayoutSnapshotV2 | null; values: Record<string, unknown> } {
+  ): {
+    layout_version: number;
+    snapshot: JdLayoutSnapshotV2 | null;
+    values: Record<string, unknown>;
+  } {
     const enforceRequired = opts?.enforceRequired !== false;
     if (!snapshot && (!values || Object.keys(values).length === 0)) {
       return { layout_version: 1, snapshot: null, values: values ?? {} };
     }
-    if (!snapshot || !Array.isArray(snapshot.groups) || snapshot.groups.length === 0) {
-      throw new ApiException('HRM-JD-LAYOUT-EMPTY', 'layout_snapshot.groups required', HttpStatus.BAD_REQUEST);
+    if (
+      !snapshot ||
+      !Array.isArray(snapshot.groups) ||
+      snapshot.groups.length === 0
+    ) {
+      throw new ApiException(
+        'HRM-JD-LAYOUT-EMPTY',
+        'layout_snapshot.groups required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const sortOrders = snapshot.groups.map((g) => g.sort_order);
     if (new Set(sortOrders).size !== sortOrders.length) {
-      throw new ApiException('HRM-JD-GROUP-ORDER', 'Duplicate group sort_order', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-GROUP-ORDER',
+        'Duplicate group sort_order',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     this.assertTitleFirstInSnapshot(snapshot.groups);
     const allowedKeys = new Set<string>();
@@ -1428,8 +1792,15 @@ export class JdDynamicService {
     }
     const vals = values ?? {};
     for (const key of Object.keys(vals)) {
-      if (!allowedKeys.has(key) && !['title', 'code', 'position_code', 'notes'].includes(key)) {
-        throw new ApiException('HRM-JD-VAL-UNKNOWN', `Unknown value key: ${key}`, HttpStatus.BAD_REQUEST);
+      if (
+        !allowedKeys.has(key) &&
+        !['title', 'code', 'position_code', 'notes'].includes(key)
+      ) {
+        throw new ApiException(
+          'HRM-JD-VAL-UNKNOWN',
+          `Unknown value key: ${key}`,
+          HttpStatus.BAD_REQUEST,
+        );
       }
     }
     // Save-as-draft (F-JD-02) may skip required; publish (F-JD-04) enforces via collectMissingRequiredKeys / enforceRequired.
@@ -1437,13 +1808,22 @@ export class JdDynamicService {
       for (const rk of requiredKeys) {
         const v = vals[rk];
         if (v === undefined || v === null || String(v).trim() === '') {
-          throw new ApiException('HRM-JD-VAL-REQUIRED', `Required field empty: ${rk}`, HttpStatus.BAD_REQUEST);
+          throw new ApiException(
+            'HRM-JD-VAL-REQUIRED',
+            `Required field empty: ${rk}`,
+            HttpStatus.BAD_REQUEST,
+          );
         }
       }
     }
     return {
-      layout_version: snapshot.layout_version >= 2 ? snapshot.layout_version : 2,
-      snapshot: { ...snapshot, layout_version: snapshot.layout_version >= 2 ? snapshot.layout_version : 2 },
+      layout_version:
+        snapshot.layout_version >= 2 ? snapshot.layout_version : 2,
+      snapshot: {
+        ...snapshot,
+        layout_version:
+          snapshot.layout_version >= 2 ? snapshot.layout_version : 2,
+      },
       values: vals,
     };
   }
@@ -1453,7 +1833,11 @@ export class JdDynamicService {
     snapshot: JdLayoutSnapshotV2 | null | undefined,
     values: Record<string, unknown> | null | undefined,
   ): string[] {
-    if (!snapshot || !Array.isArray(snapshot.groups) || snapshot.groups.length === 0) {
+    if (
+      !snapshot ||
+      !Array.isArray(snapshot.groups) ||
+      snapshot.groups.length === 0
+    ) {
       return [];
     }
     const vals = values ?? {};
@@ -1473,17 +1857,34 @@ export class JdDynamicService {
   buildDisplaySections(
     snapshot: unknown,
     values: Record<string, unknown> | null,
-    legacy: { title?: string; job_description?: string | null; requirements?: string | null },
-  ): Array<{ section: string; group_code?: string; label?: string; view_style?: string; fields: Array<Record<string, unknown>> }> {
+    legacy: {
+      title?: string;
+      job_description?: string | null;
+      requirements?: string | null;
+    },
+  ): Array<{
+    section: string;
+    group_code?: string;
+    label?: string;
+    view_style?: string;
+    fields: Array<Record<string, unknown>>;
+  }> {
     const snap = snapshot as JdLayoutSnapshotV2 | JdSnapshotField[] | null;
     const vals = { ...(values ?? {}) };
     if (!values || Object.keys(values).length === 0) {
       if (legacy.title) vals.title = legacy.title;
-      if (legacy.job_description) vals.responsibilities = legacy.job_description;
+      if (legacy.job_description)
+        vals.responsibilities = legacy.job_description;
       if (legacy.requirements) vals.requirements = legacy.requirements;
     }
-    if (snap && typeof snap === 'object' && Array.isArray((snap as JdLayoutSnapshotV2).groups)) {
-      const groups = [...(snap as JdLayoutSnapshotV2).groups].sort((a, b) => a.sort_order - b.sort_order);
+    if (
+      snap &&
+      typeof snap === 'object' &&
+      Array.isArray((snap as JdLayoutSnapshotV2).groups)
+    ) {
+      const groups = [...(snap as JdLayoutSnapshotV2).groups].sort(
+        (a, b) => a.sort_order - b.sort_order,
+      );
       return groups.map((g) => ({
         section: g.group_code,
         group_code: g.group_code,
@@ -1508,7 +1909,7 @@ export class JdDynamicService {
           group_code: 'SEC_LEGACY',
           label: 'Nội dung',
           view_style: 'plain',
-          fields: (snap as JdSnapshotField[]).map((f) => ({
+          fields: snap.map((f) => ({
             field_key: f.field_key,
             label: f.label,
             field_type: f.field_type,
@@ -1522,7 +1923,12 @@ export class JdDynamicService {
         section: 'SEC_LEGACY',
         label: 'Nội dung',
         fields: [
-          { field_key: 'title', label: 'Tiêu đề', field_type: 'short_text', value: legacy.title ?? null },
+          {
+            field_key: 'title',
+            label: 'Tiêu đề',
+            field_type: 'short_text',
+            value: legacy.title ?? null,
+          },
           {
             field_key: 'responsibilities',
             label: 'Mô tả',
@@ -1542,24 +1948,45 @@ export class JdDynamicService {
 
   // ─── private helpers ───────────────────────────────────────────────────
 
-  private assertSelectValidation(fieldType: string, validation: Record<string, unknown> | null | undefined) {
+  private assertSelectValidation(
+    fieldType: string,
+    validation: Record<string, unknown> | null | undefined,
+  ) {
     if (fieldType !== 'select') return;
     const src = validation?.source;
     if (src === 'catalog') {
       const key = String(validation?.catalog_key ?? '');
       if (!(SELECT_CATALOG_ALLOWLIST as readonly string[]).includes(key)) {
-        throw new ApiException('HRM-JD-SELECT-SRC', 'catalog_key not in allowlist', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-JD-SELECT-SRC',
+          'catalog_key not in allowlist',
+          HttpStatus.BAD_REQUEST,
+        );
       }
     } else if (src === 'static') {
-      if (!Array.isArray(validation?.options) || validation.options.length === 0) {
-        throw new ApiException('HRM-JD-SELECT-SRC', 'static select requires options', HttpStatus.BAD_REQUEST);
+      if (
+        !Array.isArray(validation?.options) ||
+        validation.options.length === 0
+      ) {
+        throw new ApiException(
+          'HRM-JD-SELECT-SRC',
+          'static select requires options',
+          HttpStatus.BAD_REQUEST,
+        );
       }
     } else if (validation != null) {
-      throw new ApiException('HRM-JD-SELECT-SRC', 'select validation.source required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-SELECT-SRC',
+        'select validation.source required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
-  private async fieldHasValues(fieldKey: string, companyId: string): Promise<boolean> {
+  private async fieldHasValues(
+    fieldKey: string,
+    companyId: string,
+  ): Promise<boolean> {
     const res = await this.db.query(
       `SELECT id FROM public.job_description_templates
        WHERE company_id = $1
@@ -1571,7 +1998,9 @@ export class JdDynamicService {
     return Boolean(res.rows[0]);
   }
 
-  private async enrichLayout(layout: Record<string, unknown>): Promise<JdFormLayoutDetail> {
+  private async enrichLayout(
+    layout: Record<string, unknown>,
+  ): Promise<JdFormLayoutDetail> {
     const items = await this.db.query(
       `SELECT i.id, i.field_id, i.section, i.sort_order, i.company_id,
               f.field_key, f.label, f.field_type, f.is_required, f.is_system
@@ -1589,7 +2018,7 @@ export class JdDynamicService {
       status: (layout.status as string | null) ?? null,
       created_at: layout.created_at,
       updated_at: layout.updated_at,
-      items: items.rows as Array<Record<string, unknown>>,
+      items: items.rows,
     };
   }
 
@@ -1602,7 +2031,11 @@ export class JdDynamicService {
     const scope = resolveHrmListScope(authorization, companyId);
     let titleOrder: number | null = null;
     for (const it of items) {
-      const filters = ['id = $1::uuid', 'archived_at IS NULL', 'is_active = TRUE'];
+      const filters = [
+        'id = $1::uuid',
+        'archived_at IS NULL',
+        'is_active = TRUE',
+      ];
       const values: unknown[] = [it.field_id];
       pushCompanyIdFilter(filters, values, scope.companyIds);
       const f = await this.db.query<{ field_key: string }>(
@@ -1610,11 +2043,19 @@ export class JdDynamicService {
         values,
       );
       if (!f.rows[0]) {
-        throw new ApiException('HRM-JD-LAYOUT-FIELD', `Invalid field_id ${it.field_id}`, HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-JD-LAYOUT-FIELD',
+          `Invalid field_id ${it.field_id}`,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       if (f.rows[0].field_key === 'title') {
         titleOrder = it.sort_order;
-        if (it.section !== 'hero' && it.section !== 'meta' && it.section !== 'SEC_META') {
+        if (
+          it.section !== 'hero' &&
+          it.section !== 'meta' &&
+          it.section !== 'SEC_META'
+        ) {
           // allow meta/hero
         }
       }
@@ -1631,7 +2072,9 @@ export class JdDynamicService {
     }
   }
 
-  private async enrichGroup(group: Record<string, unknown>): Promise<JdGroupDefDetail> {
+  private async enrichGroup(
+    group: Record<string, unknown>,
+  ): Promise<JdGroupDefDetail> {
     const fields = await this.db.query(
       `SELECT gf.id, gf.field_id, gf.sort_order, gf.is_required_in_group,
               f.field_key, f.label, f.field_type, f.is_required, f.is_system, f.is_active
@@ -1653,7 +2096,7 @@ export class JdDynamicService {
       is_active: group.is_active !== false,
       created_at: group.created_at,
       updated_at: group.updated_at,
-      fields: fields.rows as Array<Record<string, unknown>>,
+      fields: fields.rows,
     };
   }
 
@@ -1661,7 +2104,11 @@ export class JdDynamicService {
     groupId: string,
     companyId: string,
     authorization: string | undefined,
-    fields: Array<{ field_id: string; sort_order: number; is_required_in_group?: boolean }>,
+    fields: Array<{
+      field_id: string;
+      sort_order: number;
+      is_required_in_group?: boolean;
+    }>,
   ) {
     const scope = resolveHrmListScope(authorization, companyId);
     for (const f of fields) {
@@ -1673,7 +2120,11 @@ export class JdDynamicService {
         values,
       );
       if (!hit.rows[0]) {
-        throw new ApiException('HRM-JD-GROUP-FIELD', `Unknown field_id ${f.field_id}`, HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-JD-GROUP-FIELD',
+          `Unknown field_id ${f.field_id}`,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       const other = await this.db.query(
         `SELECT gf.group_id FROM public.rec_jd_group_field gf
@@ -1690,18 +2141,30 @@ export class JdDynamicService {
         );
       }
     }
-    await this.db.query(`DELETE FROM public.rec_jd_group_field WHERE group_id = $1::uuid`, [groupId]);
+    await this.db.query(
+      `DELETE FROM public.rec_jd_group_field WHERE group_id = $1::uuid`,
+      [groupId],
+    );
     for (const f of fields) {
       await this.db.query(
         `INSERT INTO public.rec_jd_group_field
           (id, group_id, field_id, company_id, sort_order, is_required_in_group)
          VALUES ($1,$2::uuid,$3::uuid,$4,$5,$6)`,
-        [randomUUID(), groupId, f.field_id, companyId, f.sort_order, f.is_required_in_group === true],
+        [
+          randomUUID(),
+          groupId,
+          f.field_id,
+          companyId,
+          f.sort_order,
+          f.is_required_in_group === true,
+        ],
       );
     }
   }
 
-  private async enrichPack(pack: Record<string, unknown>): Promise<JdDefaultPackDetail> {
+  private async enrichPack(
+    pack: Record<string, unknown>,
+  ): Promise<JdDefaultPackDetail> {
     const groups = await this.db.query<{
       group_id: string;
       sort_order: number;
@@ -1785,7 +2248,11 @@ export class JdDynamicService {
       return groupId;
     }
     if (!groupCode) {
-      throw new ApiException('HRM-JD-PACK-GROUP-USAGE', 'group_id or group_code required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-PACK-GROUP-USAGE',
+        'group_id or group_code required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['code = $1', 'archived_at IS NULL'];
@@ -1796,7 +2263,11 @@ export class JdDynamicService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-JD-GRP-404', `Group ${groupCode} not found`, HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-JD-GRP-404',
+        `Group ${groupCode} not found`,
+        HttpStatus.NOT_FOUND,
+      );
     }
     return res.rows[0].id;
   }
@@ -1817,18 +2288,33 @@ export class JdDynamicService {
         values,
       );
       if (!res.rows[0]) {
-        throw new ApiException('HRM-JD-PACK-RULE-REF', 'pack_id out of scope', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-JD-PACK-RULE-REF',
+          'pack_id out of scope',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       return packId;
     }
     if (!packCode) {
-      throw new ApiException('HRM-JD-PACK-RULE-REF', 'pack_id or pack_code required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-PACK-RULE-REF',
+        'pack_id or pack_code required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const detail = await this.getDefaultPackByCode(packCode, companyId, authorization);
+    const detail = await this.getDefaultPackByCode(
+      packCode,
+      companyId,
+      authorization,
+    );
     return detail.id;
   }
 
-  private async assertNoOtherFallback(companyId: string, exceptPackId: string | null) {
+  private async assertNoOtherFallback(
+    companyId: string,
+    exceptPackId: string | null,
+  ) {
     const res = await this.db.query<{ id: string }>(
       `SELECT id::text AS id FROM public.rec_jd_default_pack
        WHERE company_id = $1 AND is_company_fallback = TRUE AND archived_at IS NULL AND is_active = TRUE
@@ -1837,14 +2323,20 @@ export class JdDynamicService {
       [companyId, exceptPackId],
     );
     if (res.rows[0]) {
-      throw new ApiException('HRM-JD-PACK-FALLBACK-DUP', 'Only one company fallback pack', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-JD-PACK-FALLBACK-DUP',
+        'Only one company fallback pack',
+        HttpStatus.CONFLICT,
+      );
     }
   }
 
   private assertTitleFirstInSnapshot(groups: JdSnapshotGroup[]) {
     const ordered = [...groups].sort((a, b) => a.sort_order - b.sort_order);
     for (const g of ordered) {
-      const fields = [...(g.fields ?? [])].sort((a, b) => a.sort_order - b.sort_order);
+      const fields = [...(g.fields ?? [])].sort(
+        (a, b) => a.sort_order - b.sort_order,
+      );
       const title = fields.find((f) => f.field_key === 'title');
       if (title) {
         if (fields[0]?.field_key !== 'title') {
@@ -1860,7 +2352,11 @@ export class JdDynamicService {
     // Allow empty-field groups during pack materialize before fields attached — title path via SEC_META
     const hasMeta = ordered.some((g) => g.group_code === 'SEC_META');
     if (!hasMeta) {
-      throw new ApiException('HRM-JD-LAYOUT-TITLE', 'Snapshot missing SEC_META / title path', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-JD-LAYOUT-TITLE',
+        'Snapshot missing SEC_META / title path',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

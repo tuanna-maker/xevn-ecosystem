@@ -15,10 +15,15 @@ import {
 } from './hire-employee-link';
 
 function mockDb(
-  impl: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }>,
+  impl: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ rows: Record<string, unknown>[] }>,
 ): HireLinkDb {
   return {
-    query: jest.fn(async (sql: string, params?: unknown[]) => impl(sql, params)),
+    query: jest.fn(async (sql: string, params?: unknown[]) =>
+      impl(sql, params),
+    ),
   };
 }
 
@@ -82,7 +87,9 @@ describe('hire-employee-link G-DB-01 (PO-SPEC-UNIT-TEST-IMPL-01)', () => {
       const cold = mockDb(async () => {
         throw new Error('column candidate_id does not exist');
       });
-      await expect(resolveHireEmployeeId(cold, 'cand-1', {})).resolves.toBeNull();
+      await expect(
+        resolveHireEmployeeId(cold, 'cand-1', {}),
+      ).resolves.toBeNull();
     });
   });
 
@@ -123,7 +130,10 @@ describe('hire-employee-link G-DB-01 (PO-SPEC-UNIT-TEST-IMPL-01)', () => {
 
     it('resolved + same company → returns id', async () => {
       const db = mockDb(async (sql) => {
-        if (sql.includes('FROM public.employees') && sql.includes('WHERE id =')) {
+        if (
+          sql.includes('FROM public.employees') &&
+          sql.includes('WHERE id =')
+        ) {
           return { rows: [{ id: 'emp-ok', company_id: 'holding' }] };
         }
         return { rows: [] };
@@ -139,7 +149,10 @@ describe('hire-employee-link G-DB-01 (PO-SPEC-UNIT-TEST-IMPL-01)', () => {
   describe('assertPersistedHireSoftLinkOrThrow (REC-07 BE-02)', () => {
     it('soft+reverse match expected → returns id', async () => {
       const db = mockDb(async (sql) => {
-        if (sql.includes('recruitment_candidates') && sql.includes('employee_id')) {
+        if (
+          sql.includes('recruitment_candidates') &&
+          sql.includes('employee_id')
+        ) {
           return { rows: [{ employee_id: 'emp-ok' }] };
         }
         if (sql.includes('candidate_id = $1::uuid')) {

@@ -6,7 +6,10 @@ import { HRM_PAY_FORMULA_412 } from './pay-formula.constants';
 import { PayFormulaService } from './pay-formula.service';
 import { PayPeriodInputPackService } from './pay-period-input-pack.service';
 import { PayPayrollGroupService } from './pay-payroll-group.service';
-import { __setPayAttHourCrossreadViolationForTests, HRM_PAY_BOUNDARY_403 } from './pay-att-hour-boundary';
+import {
+  __setPayAttHourCrossreadViolationForTests,
+  HRM_PAY_BOUNDARY_403,
+} from './pay-att-hour-boundary';
 import { PayrollService } from './payroll.service';
 
 describe('PayrollService', () => {
@@ -37,9 +40,15 @@ describe('PayrollService', () => {
     } as unknown as jest.Mocked<HrmDbService>;
     payFormulas = {
       ensureSchema: jest.fn().mockResolvedValue(undefined),
-      resolvePublishedFormulaForProcess: jest.fn().mockRejectedValue(
-        new ApiException(HRM_PAY_FORMULA_412, 'No active formula', HttpStatus.PRECONDITION_FAILED),
-      ),
+      resolvePublishedFormulaForProcess: jest
+        .fn()
+        .mockRejectedValue(
+          new ApiException(
+            HRM_PAY_FORMULA_412,
+            'No active formula',
+            HttpStatus.PRECONDITION_FAILED,
+          ),
+        ),
       evaluateBoundFormula: jest.fn(),
       processEmployeePayslipViaSrc: jest.fn(),
       replacePayslipLines: jest.fn().mockResolvedValue(undefined),
@@ -48,17 +57,24 @@ describe('PayrollService', () => {
       ensureSchema: jest.fn().mockResolvedValue(undefined),
       createTimesheetBind: jest.fn(),
       archiveAdvanceBridgedLines: jest.fn().mockResolvedValue(0),
-      bridgeAdvanceRequestToPeriod: jest.fn().mockResolvedValue({ bridgedInputLineIds: [], failedEmployees: [] }),
+      bridgeAdvanceRequestToPeriod: jest
+        .fn()
+        .mockResolvedValue({ bridgedInputLineIds: [], failedEmployees: [] }),
     };
     settingsTaxParams = {
       ensureSchema: jest.fn().mockResolvedValue(undefined),
       readRequiredTaxValue: jest.fn(async (_co: string, key: string) => {
         if (key === 'pay_tax_regime') return { code: 'progressive_vn' };
         if (key === 'pay_tax_flags') {
-          return { applyPersonalDeduction: false, applyDependentDeduction: false };
+          return {
+            applyPersonalDeduction: false,
+            applyDependentDeduction: false,
+          };
         }
-        if (key === 'pay_tax_personal_deduction_vnd') return { amount: 11_000_000, currency: 'VND' };
-        if (key === 'pay_tax_dependent_deduction_vnd') return { amount: 4_400_000, currency: 'VND' };
+        if (key === 'pay_tax_personal_deduction_vnd')
+          return { amount: 11_000_000, currency: 'VND' };
+        if (key === 'pay_tax_dependent_deduction_vnd')
+          return { amount: 4_400_000, currency: 'VND' };
         return {};
       }),
     };
@@ -67,7 +83,9 @@ describe('PayrollService', () => {
       assertActiveGroupForPeriodBind: jest.fn(),
       resolveMemberEmployeeIdsForGroup: jest.fn().mockResolvedValue([]),
       loadEmployeeAttrsForCompany: jest.fn().mockResolvedValue([]),
-      resolveEffectiveGroupForEmployee: jest.fn().mockResolvedValue({ winner_id: null, ambiguous: false }),
+      resolveEffectiveGroupForEmployee: jest
+        .fn()
+        .mockResolvedValue({ winner_id: null, ambiguous: false }),
       persistPayslipGroupSnapshot: jest.fn().mockResolvedValue(undefined),
     };
     service = new PayrollService(
@@ -115,47 +133,64 @@ describe('PayrollService', () => {
     db.query.mockResolvedValue({ rows: [] } as never);
 
     await expect(
-      service.processPayrollPeriod('f76f23f7-3683-4120-81b7-5126ee997b8e', '78b8a663-f5e5-4f4d-a020-b8f950ec2037'),
-    ).rejects.toMatchObject<
-      ApiException
-    >({ code: 'HRM-PAY-404' });
+      service.processPayrollPeriod(
+        'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      ),
+    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-404' });
   });
 
   it('throws deterministic close transition error when period is not processing', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('payroll_periods.id = $1')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('payroll_periods.id = $1')
+      ) {
         return { rows: [draftPeriod] } as never;
       }
       return { rows: [] } as never;
     });
 
     await expect(
-      service.closePayrollPeriod('f76f23f7-3683-4120-81b7-5126ee997b8e', 'holding'),
-    ).rejects.toMatchObject<
-      ApiException
-    >({ code: 'HRM-PAY-004' });
+      service.closePayrollPeriod(
+        'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        'holding',
+      ),
+    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-004' });
   });
 
   it('closePayrollPeriod blocks when unpaid payslips remain (HRM-PAY-005)', async () => {
     const processedPeriod = { ...draftPeriod, status: 'processed' as const };
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('payroll_periods.id = $1')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('payroll_periods.id = $1')
+      ) {
         return { rows: [processedPeriod] } as never;
       }
-      if (sql.includes('FROM public.payroll_payslips') && sql.includes('payment_status')) {
+      if (
+        sql.includes('FROM public.payroll_payslips') &&
+        sql.includes('payment_status')
+      ) {
         return { rows: [{ total: '2' }] } as never;
       }
       return { rows: [] } as never;
     });
 
     await expect(
-      service.closePayrollPeriod('f76f23f7-3683-4120-81b7-5126ee997b8e', 'holding'),
+      service.closePayrollPeriod(
+        'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        'holding',
+      ),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-005' });
   });
 
   it('lists payroll periods with status filter', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('payroll_periods.status = $2')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('payroll_periods.status = $2')
+      ) {
         return {
           rows: [
             {
@@ -174,11 +209,15 @@ describe('PayrollService', () => {
     });
 
     expect(result.total).toBe(1);
-    expect(result.data[0]).toMatchObject({ id: draftPeriod.id, status: 'processed', employee_count: 2 });
-    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('payroll_periods.status = $2'), [
-      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      'processed',
-    ]);
+    expect(result.data[0]).toMatchObject({
+      id: draftPeriod.id,
+      status: 'processed',
+      employee_count: 2,
+    });
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('payroll_periods.status = $2'),
+      ['78b8a663-f5e5-4f4d-a020-b8f950ec2037', 'processed'],
+    );
   });
 
   it('listPayrollPeriods returns pay_sheet_template bind + snapshot (R-PAY-PERIOD-LIST-TPL)', async () => {
@@ -191,8 +230,13 @@ describe('PayrollService', () => {
       bound_at: '2026-08-07T00:00:00.000Z',
     };
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('ORDER BY payroll_periods.start_date DESC')) {
-        expect(sql).toContain('pay_sheet_template_id::text AS pay_sheet_template_id');
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('ORDER BY payroll_periods.start_date DESC')
+      ) {
+        expect(sql).toContain(
+          'pay_sheet_template_id::text AS pay_sheet_template_id',
+        );
         expect(sql).toContain('sheet_template_snapshot_json');
         return {
           rows: [
@@ -222,14 +266,20 @@ describe('PayrollService', () => {
       sheet_template_snapshot_json: snapshot,
     });
     expect(
-      (result.data[0] as { sheet_template_snapshot_json: { template_name?: string } })
-        .sheet_template_snapshot_json.template_name,
+      (
+        result.data[0] as {
+          sheet_template_snapshot_json: { template_name?: string };
+        }
+      ).sheet_template_snapshot_json.template_name,
     ).toBe('QA mẫu bind PAYTPLQA-MSIGIKB1');
   });
 
   it('listPayrollPeriods returns display-ready total_gross/total_net + payslip_summary (R-PAY-PERIOD-LIST-TOTALS)', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('ORDER BY payroll_periods.start_date DESC')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('ORDER BY payroll_periods.start_date DESC')
+      ) {
         expect(sql).toContain('LEFT JOIN LATERAL');
         expect(sql).toContain('SUM(ps.gross_amount)');
         expect(sql).toContain('SUM(ps.net_amount)');
@@ -287,7 +337,10 @@ describe('PayrollService', () => {
       total_net: '11845000',
     };
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid')
+      ) {
         expect(sql).toContain('LEFT JOIN LATERAL');
         expect(sql).toContain('SUM(ps.gross_amount)');
         return { rows: [periodRow] } as never;
@@ -295,7 +348,11 @@ describe('PayrollService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.getPeriodById(periodRow.id, 'main', `Bearer ${token}`);
+    const result = await service.getPeriodById(
+      periodRow.id,
+      'main',
+      `Bearer ${token}`,
+    );
     expect(result).toMatchObject({
       id: periodRow.id,
       total_gross: 12_345_000,
@@ -328,13 +385,20 @@ describe('PayrollService', () => {
       sheet_template_snapshot_json: snapshot,
     };
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid')
+      ) {
         return { rows: [periodRow] } as never;
       }
       return { rows: [] } as never;
     });
 
-    const result = await service.getPeriodById(periodRow.id, 'main', `Bearer ${token}`);
+    const result = await service.getPeriodById(
+      periodRow.id,
+      'main',
+      `Bearer ${token}`,
+    );
     expect(result).toMatchObject({
       id: periodRow.id,
       pay_sheet_template_id: tplId,
@@ -364,13 +428,20 @@ describe('PayrollService', () => {
       updated_at: '2026-04-01T00:00:00.000Z',
     };
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid')
+      ) {
         return { rows: [periodRow] } as never;
       }
       return { rows: [] } as never;
     });
 
-    const result = await service.getPeriodById(periodId, 'main', `Bearer ${token}`);
+    const result = await service.getPeriodById(
+      periodId,
+      'main',
+      `Bearer ${token}`,
+    );
 
     expect(result.id).toBe(periodId);
     expect(db.query).toHaveBeenCalledWith(
@@ -387,14 +458,21 @@ describe('PayrollService', () => {
       roleCode: 'subsidiary_ceo',
     });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid')
+      ) {
         return { rows: [] } as never;
       }
       return { rows: [] } as never;
     });
 
     await expect(
-      service.getPeriodById('f76f23f7-3683-4120-81b7-5126ee997b8e', 'main', `Bearer ${token}`),
+      service.getPeriodById(
+        'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        'main',
+        `Bearer ${token}`,
+      ),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-404' });
   });
 
@@ -406,7 +484,10 @@ describe('PayrollService', () => {
     });
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('p.employee_id = $2::uuid'),
-      expect.arrayContaining(['78b8a663-f5e5-4f4d-a020-b8f950ec2037', '11111111-1111-4111-8111-111111111111']),
+      expect.arrayContaining([
+        '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        '11111111-1111-4111-8111-111111111111',
+      ]),
     );
   });
 
@@ -429,7 +510,10 @@ describe('PayrollService', () => {
     );
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('p.company_id = $1'),
-      expect.arrayContaining(['holding', '11111111-1111-4111-8111-111111111111']),
+      expect.arrayContaining([
+        'holding',
+        '11111111-1111-4111-8111-111111111111',
+      ]),
     );
   });
 
@@ -457,7 +541,10 @@ describe('PayrollService', () => {
       roleCode: 'hrbp',
     });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_payslips p') && sql.includes('p.id = $')) {
+      if (
+        sql.includes('FROM public.payroll_payslips p') &&
+        sql.includes('p.id = $')
+      ) {
         return {
           rows: [
             {
@@ -516,7 +603,11 @@ describe('PayrollService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.getPayslipById(payslipId, 'holding', `Bearer ${token}`);
+    const result = await service.getPayslipById(
+      payslipId,
+      'holding',
+      `Bearer ${token}`,
+    );
     expect(result.id).toBe(payslipId);
     expect(result.net_amount).toBe(8_550_000);
     expect(result.components).toHaveLength(2);
@@ -533,13 +624,25 @@ describe('PayrollService', () => {
       source_tier: 'formula_default',
       source_ref: 'expr:mul',
     });
-    expect(Object.prototype.hasOwnProperty.call(result.lines[0], 'source_tier')).toBe(true);
-    expect(Object.prototype.hasOwnProperty.call(result.lines[1], 'source_tier')).toBe(true);
+    expect(
+      Object.prototype.hasOwnProperty.call(result.lines[0], 'source_tier'),
+    ).toBe(true);
+    expect(
+      Object.prototype.hasOwnProperty.call(result.lines[1], 'source_tier'),
+    ).toBe(true);
 
-    const linesOnly = await service.listPayslipLines(payslipId, 'holding', `Bearer ${token}`);
+    const linesOnly = await service.listPayslipLines(
+      payslipId,
+      'holding',
+      `Bearer ${token}`,
+    );
     expect(linesOnly).toMatchObject({ payslip_id: payslipId, total: 2 });
     expect(linesOnly.data[0]).toMatchObject({ source_tier: 'emp_cb' });
-    expect(linesOnly.data[1]).toMatchObject({ component_code: 'SI_EE', sign: 'deduction', source_tier: 'formula_default' });
+    expect(linesOnly.data[1]).toMatchObject({
+      component_code: 'SI_EE',
+      sign: 'deduction',
+      source_tier: 'formula_default',
+    });
   });
 
   it('getPayslipById returns 404 when payslip outside member CEO scope', async () => {
@@ -550,7 +653,10 @@ describe('PayrollService', () => {
       roleCode: 'subsidiary_ceo',
     });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_payslips p') && sql.includes('p.id = $')) {
+      if (
+        sql.includes('FROM public.payroll_payslips p') &&
+        sql.includes('p.id = $')
+      ) {
         return { rows: [] } as never;
       }
       return { rows: [] } as never;
@@ -574,13 +680,20 @@ describe('PayrollService', () => {
     });
     db.query.mockResolvedValue({ rows: [] } as never);
     await expect(
-      service.getPayslipById('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 'main', `Bearer ${token}`),
+      service.getPayslipById(
+        'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+        'main',
+        `Bearer ${token}`,
+      ),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-404' });
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('p.employee_id IN'),
       expect.any(Array),
     );
-    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('p.id = $'), expect.any(Array));
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('p.id = $'),
+      expect.any(Array),
+    );
   });
 
   describe('F-PAY-PAYSLIP-01 ESS (PO-HRM-AMIS-PARITY-PAY-ESS-BE-01)', () => {
@@ -609,7 +722,10 @@ describe('PayrollService', () => {
 
     it('listMyPayslips forces employee_id from token', async () => {
       db.query.mockResolvedValue({ rows: [] } as never);
-      await service.listMyPayslips({ company_id: 'holding' }, `Bearer ${essToken}`);
+      await service.listMyPayslips(
+        { company_id: 'holding' },
+        `Bearer ${essToken}`,
+      );
       expect(db.query).toHaveBeenCalledWith(
         expect.stringContaining('p.employee_id = $'),
         expect.arrayContaining(['holding', employeeId]),
@@ -618,7 +734,10 @@ describe('PayrollService', () => {
 
     it('getMyPayslipById returns header + lines for owner', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.payroll_payslips p') && sql.includes('p.id = $')) {
+        if (
+          sql.includes('FROM public.payroll_payslips p') &&
+          sql.includes('p.id = $')
+        ) {
           return {
             rows: [
               {
@@ -670,7 +789,11 @@ describe('PayrollService', () => {
         return { rows: [] } as never;
       });
 
-      const result = await service.getMyPayslipById(payslipId, 'holding', `Bearer ${essToken}`);
+      const result = await service.getMyPayslipById(
+        payslipId,
+        'holding',
+        `Bearer ${essToken}`,
+      );
       expect(result.id).toBe(payslipId);
       expect(result.employee_id).toBe(employeeId);
       expect(result.components).toHaveLength(1);
@@ -679,7 +802,10 @@ describe('PayrollService', () => {
 
     it('getMyPayslipById returns 403 when payslip belongs to another employee', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.payroll_payslips p') && sql.includes('p.id = $')) {
+        if (
+          sql.includes('FROM public.payroll_payslips p') &&
+          sql.includes('p.id = $')
+        ) {
           return {
             rows: [
               {
@@ -715,11 +841,17 @@ describe('PayrollService', () => {
     it('confirmMyPayslip stamps employee_confirmed_at and is idempotent', async () => {
       let confirmed = false;
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('UPDATE public.payroll_payslips') && sql.includes('employee_confirmed_at')) {
+        if (
+          sql.includes('UPDATE public.payroll_payslips') &&
+          sql.includes('employee_confirmed_at')
+        ) {
           confirmed = true;
           return { rows: [] } as never;
         }
-        if (sql.includes('FROM public.payroll_payslips p') && sql.includes('p.id = $')) {
+        if (
+          sql.includes('FROM public.payroll_payslips p') &&
+          sql.includes('p.id = $')
+        ) {
           return {
             rows: [
               {
@@ -739,7 +871,9 @@ describe('PayrollService', () => {
                 payment_status: 'unpaid',
                 version: 1,
                 formula_definition_id: null,
-                employee_confirmed_at: confirmed ? '2026-08-07T10:00:00.000Z' : null,
+                employee_confirmed_at: confirmed
+                  ? '2026-08-07T10:00:00.000Z'
+                  : null,
                 employee_confirmed_by: confirmed ? employeeId : null,
                 created_at: '2026-08-07T00:00:00.000Z',
                 updated_at: '2026-08-07T00:00:00.000Z',
@@ -756,17 +890,28 @@ describe('PayrollService', () => {
         return { rows: [] } as never;
       });
 
-      const first = await service.confirmMyPayslip(payslipId, 'holding', `Bearer ${essToken}`);
+      const first = await service.confirmMyPayslip(
+        payslipId,
+        'holding',
+        `Bearer ${essToken}`,
+      );
       expect(confirmed).toBe(true);
       expect(first.ess_confirmed).toBe(true);
 
-      const second = await service.confirmMyPayslip(payslipId, 'holding', `Bearer ${essToken}`);
+      const second = await service.confirmMyPayslip(
+        payslipId,
+        'holding',
+        `Bearer ${essToken}`,
+      );
       expect(second.ess_confirmed).toBe(true);
     });
 
     it('confirmMyPayslip rejects unpublished payslip', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.payroll_payslips p') && sql.includes('p.id = $')) {
+        if (
+          sql.includes('FROM public.payroll_payslips p') &&
+          sql.includes('p.id = $')
+        ) {
           return {
             rows: [
               {
@@ -821,10 +966,16 @@ describe('PayrollService', () => {
 
   it('returns eligibility rows with NO_CLOSED_SHEET when timesheet is not closed', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid')
+      ) {
         return { rows: [draftPeriod] } as never;
       }
-      if (sql.includes('SELECT EXISTS(') && sql.includes('FROM public.attendance_sheets')) {
+      if (
+        sql.includes('SELECT EXISTS(') &&
+        sql.includes('FROM public.attendance_sheets')
+      ) {
         return { rows: [{ has_closed: false }] } as never;
       }
       if (sql.includes('FROM public.employees')) {
@@ -843,13 +994,18 @@ describe('PayrollService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.getPayrollEligibility(draftPeriod.id, 'holding');
+    const result = await service.getPayrollEligibility(
+      draftPeriod.id,
+      'holding',
+    );
     expect(result.eligible_count).toBe(0);
     expect(result.items[0]).toMatchObject({
       employee_code: 'EMP001',
       eligible: false,
     });
-    expect(result.items[0].reasons).toEqual(expect.arrayContaining(['NO_CLOSED_SHEET', 'HIRE_MID_MONTH']));
+    expect(result.items[0].reasons).toEqual(
+      expect.arrayContaining(['NO_CLOSED_SHEET', 'HIRE_MID_MONTH']),
+    );
   });
 
   it('R-PAY-SRC-03 — eligibility for period.company_id=main uses holding OU (not silent items[])', async () => {
@@ -863,17 +1019,31 @@ describe('PayrollService', () => {
     let employeeSql = '';
     let employeeParams: unknown[] = [];
     db.query.mockImplementation(async (sql: string, params?: unknown[]) => {
-      if (sql.includes('CREATE TABLE') || sql.includes('ALTER TABLE') || sql.includes('CREATE UNIQUE')) {
+      if (
+        sql.includes('CREATE TABLE') ||
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE UNIQUE')
+      ) {
         return { rows: [] } as never;
       }
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid')
+      ) {
         return { rows: [mainPeriod] } as never;
       }
-      if (sql.includes('information_schema.tables') && sql.includes('pay_period_timesheet_bind')) {
+      if (
+        sql.includes('information_schema.tables') &&
+        sql.includes('pay_period_timesheet_bind')
+      ) {
         return { rows: [{ exists: true }] } as never;
       }
       if (sql.includes('FROM public.pay_period_timesheet_bind')) {
-        return { rows: [{ timesheet_header_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' }] } as never;
+        return {
+          rows: [
+            { timesheet_header_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' },
+          ],
+        } as never;
       }
       if (sql.includes('FROM public.employees')) {
         employeeSql = sql;
@@ -893,7 +1063,11 @@ describe('PayrollService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.getPayrollEligibility(mainPeriod.id, 'main', `Bearer ${token}`);
+    const result = await service.getPayrollEligibility(
+      mainPeriod.id,
+      'main',
+      `Bearer ${token}`,
+    );
     expect(result.items).toHaveLength(1);
     expect(result.eligible_count).toBe(1);
     expect(result.items[0]).toMatchObject({
@@ -910,11 +1084,20 @@ describe('PayrollService', () => {
     const requestId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
     const empId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('CREATE TABLE') || sql.includes('ALTER TABLE') || sql.includes('CREATE UNIQUE')) {
+      if (
+        sql.includes('CREATE TABLE') ||
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE UNIQUE')
+      ) {
         return { rows: [] } as never;
       }
-      if (sql.includes('FROM public.advance_requests') && sql.includes('LIMIT 1')) {
-        return { rows: [{ company_id: 'holding', status: 'pending' }] } as never;
+      if (
+        sql.includes('FROM public.advance_requests') &&
+        sql.includes('LIMIT 1')
+      ) {
+        return {
+          rows: [{ company_id: 'holding', status: 'pending' }],
+        } as never;
       }
       if (sql.includes('INSERT INTO public.advance_request_employees')) {
         return {
@@ -948,25 +1131,37 @@ describe('PayrollService', () => {
       'holding',
     );
     expect(row.employee_code).toBe('HLD-0001');
-    expect(db.query.mock.calls.some(([s]) => String(s).includes('INSERT INTO public.advance_request_employees'))).toBe(
-      true,
-    );
+    expect(
+      db.query.mock.calls.some(([s]) =>
+        String(s).includes('INSERT INTO public.advance_request_employees'),
+      ),
+    ).toBe(true);
   });
 
   it('F-PAY-ADV-EMP-01 — createAdvanceRequestEmployee rejects when not pending', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('CREATE TABLE') || sql.includes('ALTER TABLE') || sql.includes('CREATE UNIQUE')) {
+      if (
+        sql.includes('CREATE TABLE') ||
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE UNIQUE')
+      ) {
         return { rows: [] } as never;
       }
       if (sql.includes('FROM public.advance_requests')) {
-        return { rows: [{ company_id: 'holding', status: 'approved' }] } as never;
+        return {
+          rows: [{ company_id: 'holding', status: 'approved' }],
+        } as never;
       }
       return { rows: [] } as never;
     });
     await expect(
       service.createAdvanceRequestEmployee(
         'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-        { employee_code: 'HLD-0001', employee_name: 'An', advance_amount: 1000 },
+        {
+          employee_code: 'HLD-0001',
+          employee_name: 'An',
+          advance_amount: 1000,
+        },
         'holding',
       ),
     ).rejects.toMatchObject<ApiException>({ code: 'HRM-ADV-409' });
@@ -981,10 +1176,16 @@ describe('PayrollService', () => {
     };
     let attendanceSql = '';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid')
+      ) {
         return { rows: [janPeriod] } as never;
       }
-      if (sql.includes('SELECT EXISTS(') && sql.includes('FROM public.attendance_sheets')) {
+      if (
+        sql.includes('SELECT EXISTS(') &&
+        sql.includes('FROM public.attendance_sheets')
+      ) {
         attendanceSql = sql;
         return { rows: [{ has_closed: false }] } as never;
       }
@@ -1026,10 +1227,16 @@ describe('PayrollService', () => {
       end_date: '2026-01-28',
     };
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid')
+      ) {
         return { rows: [janPeriod] } as never;
       }
-      if (sql.includes('SELECT EXISTS(') && sql.includes('FROM public.attendance_sheets')) {
+      if (
+        sql.includes('SELECT EXISTS(') &&
+        sql.includes('FROM public.attendance_sheets')
+      ) {
         return { rows: [{ has_closed: true }] } as never;
       }
       if (sql.includes('FROM public.employees')) {
@@ -1056,10 +1263,16 @@ describe('PayrollService', () => {
 
   it('enrolls only eligible employees and reports rejected reasons', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid')
+      ) {
         return { rows: [draftPeriod] } as never;
       }
-      if (sql.includes('SELECT EXISTS(') && sql.includes('FROM public.attendance_sheets')) {
+      if (
+        sql.includes('SELECT EXISTS(') &&
+        sql.includes('FROM public.attendance_sheets')
+      ) {
         return { rows: [{ has_closed: true }] } as never;
       }
       if (sql.includes('FROM public.employees')) {
@@ -1119,7 +1332,10 @@ describe('PayrollService', () => {
       undefined,
     );
     expect(result.employee_count).toBe(1);
-    expect(result.enrolled[0]).toMatchObject({ employee_code: 'EMP001', status: 'draft' });
+    expect(result.enrolled[0]).toMatchObject({
+      employee_code: 'EMP001',
+      status: 'draft',
+    });
     expect(result.rejected[0]).toMatchObject({
       employee_id: '22222222-2222-4222-8222-222222222222',
       reasons: ['NOT_ACTIVE'],
@@ -1128,10 +1344,17 @@ describe('PayrollService', () => {
 
   it('process refuses silent zero when no published formula (FORMULA-412)', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [draftPeriod] } as never;
       }
-      if (sql.includes('SELECT EXISTS(') && sql.includes('FROM public.attendance_sheets')) {
+      if (
+        sql.includes('SELECT EXISTS(') &&
+        sql.includes('FROM public.attendance_sheets')
+      ) {
         return { rows: [{ has_closed: true }] } as never;
       }
       if (sql.includes('FROM public.employees')) {
@@ -1150,7 +1373,9 @@ describe('PayrollService', () => {
       return { rows: [] } as never;
     });
 
-    await expect(service.processPayrollPeriod(draftPeriod.id, 'holding')).rejects.toMatchObject({
+    await expect(
+      service.processPayrollPeriod(draftPeriod.id, 'holding'),
+    ).rejects.toMatchObject({
       code: HRM_PAY_FORMULA_412,
     });
   });
@@ -1189,10 +1414,17 @@ describe('PayrollService', () => {
     });
 
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.payroll_periods') &&
+        sql.includes('id = $1::uuid') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [draftPeriod] } as never;
       }
-      if (sql.includes('SELECT EXISTS(') && sql.includes('FROM public.attendance_sheets')) {
+      if (
+        sql.includes('SELECT EXISTS(') &&
+        sql.includes('FROM public.attendance_sheets')
+      ) {
         return { rows: [{ has_closed: true }] } as never;
       }
       if (sql.includes('FROM public.employees')) {
@@ -1208,7 +1440,10 @@ describe('PayrollService', () => {
           ],
         } as never;
       }
-      if (sql.includes('SELECT COUNT(*)::text AS total') && sql.includes('FROM public.payroll_payslips')) {
+      if (
+        sql.includes('SELECT COUNT(*)::text AS total') &&
+        sql.includes('FROM public.payroll_payslips')
+      ) {
         return { rows: [{ total: '0' }] } as never;
       }
       if (sql.includes('INSERT INTO public.payroll_payslips')) {
@@ -1233,7 +1468,10 @@ describe('PayrollService', () => {
           ],
         } as never;
       }
-      if (sql.includes('SELECT id::text AS id, employee_id') && sql.includes('FROM public.payroll_payslips')) {
+      if (
+        sql.includes('SELECT id::text AS id, employee_id') &&
+        sql.includes('FROM public.payroll_payslips')
+      ) {
         return {
           rows: [
             {
@@ -1248,7 +1486,10 @@ describe('PayrollService', () => {
           ],
         } as never;
       }
-      if (sql.includes('UPDATE public.payroll_periods') && sql.includes("SET status = 'processed'")) {
+      if (
+        sql.includes('UPDATE public.payroll_periods') &&
+        sql.includes("SET status = 'processed'")
+      ) {
         return {
           rows: [
             {
@@ -1276,7 +1517,10 @@ describe('PayrollService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.processPayrollPeriod(draftPeriod.id, 'holding');
+    const result = await service.processPayrollPeriod(
+      draftPeriod.id,
+      'holding',
+    );
     expect(result.status).toBe('processed');
     expect(result.employee_count).toBe(1);
     expect(result.payslip_summary).toMatchObject({
@@ -1289,7 +1533,10 @@ describe('PayrollService', () => {
       total_deduction: 0,
       total_net: 10_000_000,
     });
-    expect(result.formula_bind).toMatchObject({ formula_definition_id: formulaId, source: 'company_active' });
+    expect(result.formula_bind).toMatchObject({
+      formula_definition_id: formulaId,
+      source: 'company_active',
+    });
     expect(result.payroll_e2e_ready).toBe(false);
     expect(payFormulas.replacePayslipLines).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1366,7 +1613,10 @@ describe('PayrollService', () => {
         total_net: '0',
       };
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.payroll_periods') && sql.includes('ORDER BY payroll_periods.start_date DESC')) {
+        if (
+          sql.includes('FROM public.payroll_periods') &&
+          sql.includes('ORDER BY payroll_periods.start_date DESC')
+        ) {
           return { rows: [holdingDraft, mainOrphan] } as never;
         }
         return { rows: [] } as never;
@@ -1380,9 +1630,7 @@ describe('PayrollService', () => {
       expect(result.total).toBe(2);
       expect(db.query).toHaveBeenCalledWith(
         expect.stringContaining('company_id = ANY'),
-        expect.arrayContaining([
-          expect.arrayContaining(['holding', 'main']),
-        ]),
+        expect.arrayContaining([expect.arrayContaining(['holding', 'main'])]),
       );
     });
 
@@ -1393,10 +1641,16 @@ describe('PayrollService', () => {
         company_id: 'main',
       };
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+        if (
+          sql.includes('FROM public.payroll_periods') &&
+          sql.includes('id = $1::uuid')
+        ) {
           return { rows: [mainPeriod] } as never;
         }
-        if (sql.includes('SELECT EXISTS(') && sql.includes('FROM public.attendance_sheets')) {
+        if (
+          sql.includes('SELECT EXISTS(') &&
+          sql.includes('FROM public.attendance_sheets')
+        ) {
           return { rows: [{ has_closed: false }] } as never;
         }
         if (sql.includes('FROM public.employees')) {
@@ -1417,17 +1671,28 @@ describe('PayrollService', () => {
 
     it('processPayrollPeriod resolves holding-stored draft for company_id=main query', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.payroll_periods') &&
+          sql.includes('id = $1::uuid') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [draftPeriod] } as never;
         }
-        if (sql.includes('SELECT EXISTS(') && sql.includes('FROM public.attendance_sheets')) {
+        if (
+          sql.includes('SELECT EXISTS(') &&
+          sql.includes('FROM public.attendance_sheets')
+        ) {
           return { rows: [{ has_closed: false }] } as never;
         }
         return { rows: [] } as never;
       });
 
       await expect(
-        service.processPayrollPeriod(draftPeriod.id, 'main', `Bearer ${groupCeoToken}`),
+        service.processPayrollPeriod(
+          draftPeriod.id,
+          'main',
+          `Bearer ${groupCeoToken}`,
+        ),
       ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-ATT-412' });
     });
 
@@ -1444,10 +1709,17 @@ describe('PayrollService', () => {
         source: 'company_active',
       });
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.payroll_periods') &&
+          sql.includes('id = $1::uuid') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [draftPeriod] } as never;
         }
-        if (sql.includes('SELECT EXISTS(') && sql.includes('FROM public.attendance_sheets')) {
+        if (
+          sql.includes('SELECT EXISTS(') &&
+          sql.includes('FROM public.attendance_sheets')
+        ) {
           return { rows: [{ has_closed: false }] } as never;
         }
         return { rows: [] } as never;
@@ -1456,7 +1728,9 @@ describe('PayrollService', () => {
       await expect(
         service.processPayrollPeriod(draftPeriod.id, 'holding'),
       ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-ATT-412' });
-      expect(payFormulas.resolvePublishedFormulaForProcess).not.toHaveBeenCalled();
+      expect(
+        payFormulas.resolvePublishedFormulaForProcess,
+      ).not.toHaveBeenCalled();
     });
 
     it('R-PAY-01-BOUNDARY — processPayrollPeriod rejects HRM-PAY-BOUNDARY-403 before DB', async () => {
@@ -1469,13 +1743,20 @@ describe('PayrollService', () => {
 
     it('holding-scoped periods remain accessible without regression', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.payroll_periods') && sql.includes('id = $1::uuid')) {
+        if (
+          sql.includes('FROM public.payroll_periods') &&
+          sql.includes('id = $1::uuid')
+        ) {
           return { rows: [draftPeriod] } as never;
         }
         return { rows: [] } as never;
       });
 
-      const result = await service.getPeriodById(draftPeriod.id, 'holding', `Bearer ${groupCeoToken}`);
+      const result = await service.getPeriodById(
+        draftPeriod.id,
+        'holding',
+        `Bearer ${groupCeoToken}`,
+      );
       expect(result.company_id).toBe('holding');
     });
   });
@@ -1493,11 +1774,20 @@ describe('PayrollService', () => {
       });
       db.query.mockImplementation(async (sql: string) => {
         if (sql.includes('CREATE TABLE')) return { rows: [] } as never;
-        if (sql.includes('SELECT company_id') && sql.includes('advance_requests')) {
-          return { rows: [{ company_id: 'holding', status: 'pending' }] } as never;
+        if (
+          sql.includes('SELECT company_id') &&
+          sql.includes('advance_requests')
+        ) {
+          return {
+            rows: [{ company_id: 'holding', status: 'pending' }],
+          } as never;
         }
         if (sql.includes("SET status = 'approved'")) {
-          return { rows: [{ id: requestId, company_id: 'holding', status: 'approved' }] } as never;
+          return {
+            rows: [
+              { id: requestId, company_id: 'holding', status: 'approved' },
+            ],
+          } as never;
         }
         return { rows: [] } as never;
       });
@@ -1519,8 +1809,13 @@ describe('PayrollService', () => {
     it('rejectAdvanceRequest throws HRM-ADV-404 when request is not pending', async () => {
       db.query.mockImplementation(async (sql: string) => {
         if (sql.includes('CREATE TABLE')) return { rows: [] } as never;
-        if (sql.includes('SELECT company_id') && sql.includes('advance_requests')) {
-          return { rows: [{ company_id: 'holding', status: 'pending' }] } as never;
+        if (
+          sql.includes('SELECT company_id') &&
+          sql.includes('advance_requests')
+        ) {
+          return {
+            rows: [{ company_id: 'holding', status: 'pending' }],
+          } as never;
         }
         if (sql.includes("SET status = 'rejected'")) {
           return { rows: [] } as never;
@@ -1529,18 +1824,31 @@ describe('PayrollService', () => {
       });
 
       await expect(
-        service.rejectAdvanceRequest(requestId, { ...decideBody, rejected_reason: 'no budget' }, 'main', undefined, 'xevn'),
+        service.rejectAdvanceRequest(
+          requestId,
+          { ...decideBody, rejected_reason: 'no budget' },
+          'main',
+          undefined,
+          'xevn',
+        ),
       ).rejects.toMatchObject<ApiException>({ code: 'HRM-ADV-404' });
     });
 
     it('markAdvanceRequestPaid transitions approved to paid and bridges input lines', async () => {
       db.query.mockImplementation(async (sql: string) => {
         if (sql.includes('CREATE TABLE')) return { rows: [] } as never;
-        if (sql.includes('SELECT company_id') && sql.includes('advance_requests')) {
-          return { rows: [{ company_id: 'holding', status: 'approved' }] } as never;
+        if (
+          sql.includes('SELECT company_id') &&
+          sql.includes('advance_requests')
+        ) {
+          return {
+            rows: [{ company_id: 'holding', status: 'approved' }],
+          } as never;
         }
         if (sql.includes("SET status = 'paid'")) {
-          return { rows: [{ id: requestId, company_id: 'holding', status: 'paid' }] } as never;
+          return {
+            rows: [{ id: requestId, company_id: 'holding', status: 'paid' }],
+          } as never;
         }
         return { rows: [] } as never;
       });
@@ -1564,8 +1872,13 @@ describe('PayrollService', () => {
     it('markAdvanceRequestPaid throws HRM-ADV-404 when request is not approved', async () => {
       db.query.mockImplementation(async (sql: string) => {
         if (sql.includes('CREATE TABLE')) return { rows: [] } as never;
-        if (sql.includes('SELECT company_id') && sql.includes('advance_requests')) {
-          return { rows: [{ company_id: 'holding', status: 'pending' }] } as never;
+        if (
+          sql.includes('SELECT company_id') &&
+          sql.includes('advance_requests')
+        ) {
+          return {
+            rows: [{ company_id: 'holding', status: 'pending' }],
+          } as never;
         }
         if (sql.includes("SET status = 'paid'")) {
           return { rows: [] } as never;
@@ -1574,7 +1887,13 @@ describe('PayrollService', () => {
       });
 
       await expect(
-        service.markAdvanceRequestPaid(requestId, { ...decideBody, payrollPeriodId: draftPeriod.id }, 'main', undefined, 'xevn'),
+        service.markAdvanceRequestPaid(
+          requestId,
+          { ...decideBody, payrollPeriodId: draftPeriod.id },
+          'main',
+          undefined,
+          'xevn',
+        ),
       ).rejects.toMatchObject<ApiException>({ code: 'HRM-ADV-404' });
     });
   });

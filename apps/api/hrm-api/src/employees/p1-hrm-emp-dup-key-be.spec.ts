@@ -18,7 +18,10 @@ describe('P1-HRM-EMP-DUP-KEY-BE employees list stable pagination', () => {
   function buildRows(): EmployeeRow[] {
     return Array.from({ length: totalRows }, (_, i) => {
       const n = String(i + 1).padStart(4, '0');
-      const slug = HRM_GROUP_MEMBER_COMPANY_SLUGS[i % HRM_GROUP_MEMBER_COMPANY_SLUGS.length];
+      const slug =
+        HRM_GROUP_MEMBER_COMPANY_SLUGS[
+          i % HRM_GROUP_MEMBER_COMPANY_SLUGS.length
+        ];
       return {
         id: `10000000-0000-4000-8000-00000000${n}`,
         company_id: slug,
@@ -96,7 +99,9 @@ describe('P1-HRM-EMP-DUP-KEY-BE employees list stable pagination', () => {
         if (text.includes('SELECT COUNT(*)::text AS total')) {
           return { rows: [{ total: String(store.length) }] };
         }
-        throw new Error(`Unexpected SQL in dup-key regression: ${text.slice(0, 120)}`);
+        throw new Error(
+          `Unexpected SQL in dup-key regression: ${text.slice(0, 120)}`,
+        );
       }),
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
@@ -154,7 +159,9 @@ describe('P1-HRM-EMP-DUP-KEY-BE employees list stable pagination', () => {
     );
 
     const listSql = String(db.query.mock.calls[0]?.[0] ?? '');
-    expect(listSql).toContain('ORDER BY full_name ASC, employee_code ASC, id ASC');
+    expect(listSql).toContain(
+      'ORDER BY full_name ASC, employee_code ASC, id ASC',
+    );
     expect(listSql).toContain('COUNT(*) OVER()');
   });
 });

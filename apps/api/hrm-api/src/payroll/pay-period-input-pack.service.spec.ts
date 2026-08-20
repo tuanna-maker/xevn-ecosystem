@@ -23,7 +23,10 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
   const employeeId = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
 
   beforeEach(() => {
-    db = { query: jest.fn(), onModuleDestroy: jest.fn() } as unknown as jest.Mocked<HrmDbService>;
+    db = {
+      query: jest.fn(),
+      onModuleDestroy: jest.fn(),
+    } as unknown as jest.Mocked<HrmDbService>;
     svc = new PayPeriodInputPackService(db);
   });
 
@@ -56,7 +59,14 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
         }
         if (sql.includes('FROM public.attendance_sheets')) {
           return {
-            rows: [{ company_id: 'holding', status: 'open', start_date: '2026-04-01', end_date: '2026-04-30' }],
+            rows: [
+              {
+                company_id: 'holding',
+                status: 'open',
+                start_date: '2026-04-01',
+                end_date: '2026-04-30',
+              },
+            ],
           } as never;
         }
         return { rows: [] } as never;
@@ -96,7 +106,10 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
             ],
           } as never;
         }
-        if (sql.includes('FROM public.pay_period_timesheet_bind b') && sql.includes('ORDER BY')) {
+        if (
+          sql.includes('FROM public.pay_period_timesheet_bind b') &&
+          sql.includes('ORDER BY')
+        ) {
           return {
             rows: [
               {
@@ -118,7 +131,10 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
             ],
           } as never;
         }
-        if (sql.includes('FROM public.pay_period_timesheet_bind b') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.pay_period_timesheet_bind b') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -143,7 +159,11 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
         return { rows: [] } as never;
       });
 
-      const list = await svc.listTimesheetBinds(periodId, 'main', `Bearer ${token}`);
+      const list = await svc.listTimesheetBinds(
+        periodId,
+        'main',
+        `Bearer ${token}`,
+      );
       expect(list.items).toHaveLength(1);
       expect(list.items[0].id).toBe(bindId);
       expect(list.items[0].timesheetDisplayLabel).toBe('Công tháng 4');
@@ -151,12 +171,21 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
 
       const listSql = db.query.mock.calls
         .map(([s]) => String(s))
-        .find((s) => s.includes('FROM public.pay_period_timesheet_bind b') && s.includes('ORDER BY'));
+        .find(
+          (s) =>
+            s.includes('FROM public.pay_period_timesheet_bind b') &&
+            s.includes('ORDER BY'),
+        );
       expect(listSql).toBeDefined();
       expect(listSql).not.toMatch(/s\.code\b/);
       expect(listSql).toMatch(/s\.name\s+AS\s+timesheet_name/);
 
-      const got = await svc.getTimesheetBindById(periodId, bindId, 'main', `Bearer ${token}`);
+      const got = await svc.getTimesheetBindById(
+        periodId,
+        bindId,
+        'main',
+        `Bearer ${token}`,
+      );
       expect(got.id).toBe(bindId);
       expect(got.timesheetDisplayLabel).toContain('Công tháng 4');
       expect(got.timesheetStatus).toBe('closed');
@@ -166,7 +195,8 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
   describe('R-PAY-INP-BIND-SHEET-CODE-COL — bind list without attendance_sheets.code', () => {
     it('LIST SQL never selects s.code (column ABSENT on attendance_sheets)', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('CREATE TABLE') || sql.includes('ALTER TABLE')) return { rows: [] } as never;
+        if (sql.includes('CREATE TABLE') || sql.includes('ALTER TABLE'))
+          return { rows: [] } as never;
         if (sql.includes('FROM public.payroll_periods')) {
           return {
             rows: [
@@ -209,7 +239,11 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
       expect(list.items[0].timesheetDisplayLabel).toBe('QA-SHEET-NO-CODE');
       const bindSelectCalls = db.query.mock.calls
         .map(([s]) => String(s))
-        .filter((s) => s.includes('pay_period_timesheet_bind') && s.includes('attendance_sheets'));
+        .filter(
+          (s) =>
+            s.includes('pay_period_timesheet_bind') &&
+            s.includes('attendance_sheets'),
+        );
       expect(bindSelectCalls.length).toBeGreaterThan(0);
       for (const sql of bindSelectCalls) {
         expect(sql).not.toMatch(/s\.code\b/);
@@ -222,7 +256,9 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
       db.query.mockImplementation(async (sql: string, params?: unknown[]) => {
         if (sql.includes('CREATE TABLE')) return { rows: [] } as never;
         if (sql.includes('FROM public.advance_requests')) {
-          return { rows: [{ id: 'req-1', company_id: 'holding', status: 'paid' }] } as never;
+          return {
+            rows: [{ id: 'req-1', company_id: 'holding', status: 'paid' }],
+          } as never;
         }
         if (sql.includes('FROM public.payroll_periods')) {
           return {
@@ -252,7 +288,10 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
             ],
           } as never;
         }
-        if (sql.includes('FROM public.pay_period_input_lines') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.pay_period_input_lines') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [] } as never;
         }
         if (sql.includes('INSERT INTO public.pay_period_input_lines')) {
@@ -274,11 +313,19 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
       expect(insertCall).toBeDefined();
       expect(String(insertCall?.[0])).toContain('advance');
       expect(insertCall?.[1]).toEqual(
-        expect.arrayContaining([expect.anything(), expect.anything(), employeeId]),
+        expect.arrayContaining([
+          expect.anything(),
+          expect.anything(),
+          employeeId,
+        ]),
       );
       // source_ref grain — advance_request_employee:{id}
       const insertParams = insertCall?.[1] as unknown[];
-      expect(insertParams?.some((p) => String(p) === 'advance_request_employee:are-1')).toBe(true);
+      expect(
+        insertParams?.some(
+          (p) => String(p) === 'advance_request_employee:are-1',
+        ),
+      ).toBe(true);
     });
   });
 
@@ -302,7 +349,10 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
         if (sql.includes('COUNT(*)') && sql.includes('salary_components')) {
           return { rows: [{ c: '2' }] } as never;
         }
-        if (sql.includes('FROM public.salary_components') && sql.includes('lower(code)')) {
+        if (
+          sql.includes('FROM public.salary_components') &&
+          sql.includes('lower(code)')
+        ) {
           return { rows: [] } as never;
         }
         return { rows: [] } as never;
@@ -349,7 +399,10 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
         if (sql.includes('COUNT(*)') && sql.includes('salary_components')) {
           return { rows: [{ c: '1' }] } as never;
         }
-        if (sql.includes('FROM public.salary_components') && sql.includes('lower(code)')) {
+        if (
+          sql.includes('FROM public.salary_components') &&
+          sql.includes('lower(code)')
+        ) {
           return {
             rows: [{ id: 'sc-1', code: 'bonus', name: 'Thưởng' }],
           } as never;
@@ -395,17 +448,28 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
       await expect(
         svc.createInputLine(
           periodId,
-          { employeeId, componentCode: 'bonus', amount: 100_000, sourceKind: 'other_income' },
+          {
+            employeeId,
+            componentCode: 'bonus',
+            amount: 100_000,
+            sourceKind: 'other_income',
+          },
           'holding',
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_PAY_PERIOD_409_IMMUTABLE, status: HttpStatus.CONFLICT });
+      ).rejects.toMatchObject<ApiException>({
+        code: HRM_PAY_PERIOD_409_IMMUTABLE,
+        status: HttpStatus.CONFLICT,
+      });
     });
   });
 
   describe('hasActiveTimesheetBindForPeriod', () => {
     it('returns true when bind table has active closed bind', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('information_schema.tables') && sql.includes('pay_period_timesheet_bind')) {
+        if (
+          sql.includes('information_schema.tables') &&
+          sql.includes('pay_period_timesheet_bind')
+        ) {
           return { rows: [{ exists: true }] } as never;
         }
         if (sql.includes('FROM public.pay_period_timesheet_bind')) {

@@ -367,11 +367,14 @@ export class ContractsInsuranceService {
   constructor(
     private readonly db: HrmDbService,
     @Optional() private readonly settingsCatalogs?: SettingsCatalogsService,
-    @Optional() private readonly siInsuranceTypeCatalog?: SiInsuranceTypeService,
+    @Optional()
+    private readonly siInsuranceTypeCatalog?: SiInsuranceTypeService,
     @Optional() private readonly siInsurerCatalog?: SiInsurerService,
-    @Optional() private readonly empEmploymentTypeCatalog?: EmpEmploymentTypeService,
+    @Optional()
+    private readonly empEmploymentTypeCatalog?: EmpEmploymentTypeService,
     @Optional() private readonly moduleRef?: ModuleRef,
-    @Optional() private readonly employeeCompensation?: EmployeeCompensationService,
+    @Optional()
+    private readonly employeeCompensation?: EmployeeCompensationService,
     @Optional() private readonly contractLegalPrint?: ContractLegalPrintService,
   ) {}
 
@@ -403,7 +406,9 @@ export class ContractsInsuranceService {
     }
   }
 
-  private resolveEmpEmploymentTypeCatalog(): EmpEmploymentTypeService | undefined {
+  private resolveEmpEmploymentTypeCatalog():
+    | EmpEmploymentTypeService
+    | undefined {
     if (this.empEmploymentTypeCatalog) {
       return this.empEmploymentTypeCatalog;
     }
@@ -524,7 +529,10 @@ export class ContractsInsuranceService {
   ): Promise<string> {
     const trimmed = explicitKey?.trim() ?? '';
     if (trimmed) {
-      const fromExplicit = await this.lookupActiveJobTitleCode(companyId, trimmed);
+      const fromExplicit = await this.lookupActiveJobTitleCode(
+        companyId,
+        trimmed,
+      );
       if (fromExplicit) return fromExplicit;
     }
 
@@ -538,7 +546,10 @@ export class ContractsInsuranceService {
       );
       const fromEmployeeRaw = emp.rows[0]?.job_title_key?.trim() ?? '';
       if (fromEmployeeRaw) {
-        const fromEmployee = await this.lookupActiveJobTitleCode(companyId, fromEmployeeRaw);
+        const fromEmployee = await this.lookupActiveJobTitleCode(
+          companyId,
+          fromEmployeeRaw,
+        );
         if (fromEmployee) return fromEmployee;
         if (!this.settingsCatalogs) return fromEmployeeRaw;
       }
@@ -551,7 +562,8 @@ export class ContractsInsuranceService {
         'job_titles',
       );
       const firstActive = items.find(
-        (item) => item.status === 'active' && (item.code?.trim()?.length ?? 0) > 0,
+        (item) =>
+          item.status === 'active' && (item.code?.trim()?.length ?? 0) > 0,
       );
       if (firstActive?.code?.trim()) return firstActive.code.trim();
     }
@@ -588,7 +600,9 @@ export class ContractsInsuranceService {
     return hit.code;
   }
 
-  private normalizeGd1FieldAliases(payload: CreateContractDto | UpdateContractDto): {
+  private normalizeGd1FieldAliases(
+    payload: CreateContractDto | UpdateContractDto,
+  ): {
     signed_at?: string | null;
     work_arrangement?: string | null;
     contract_abstract?: string | null;
@@ -612,9 +626,9 @@ export class ContractsInsuranceService {
           ? payload.abstract
           : undefined;
     return {
-      signed_at: signedAt as string | null | undefined,
-      work_arrangement: workArrangement as string | null | undefined,
-      contract_abstract: contractAbstract as string | null | undefined,
+      signed_at: signedAt,
+      work_arrangement: workArrangement,
+      contract_abstract: contractAbstract,
     };
   }
 
@@ -690,7 +704,9 @@ export class ContractsInsuranceService {
           authorization,
           { tenantId: this.resolveCatalogTenantId() },
         );
-        const empHit = effective.data.find((r) => r.employmentTypeKey === normalized);
+        const empHit = effective.data.find(
+          (r) => r.employmentTypeKey === normalized,
+        );
         if (empHit?.nameVi?.trim()) {
           return empHit.nameVi.trim();
         }
@@ -705,7 +721,9 @@ export class ContractsInsuranceService {
       'work_arrangements',
     );
     const hit = items.find(
-      (item) => item.status === 'active' && item.code?.trim()?.toLowerCase() === trimmed.toLowerCase(),
+      (item) =>
+        item.status === 'active' &&
+        item.code?.trim()?.toLowerCase() === trimmed.toLowerCase(),
     );
     return hit?.label?.trim() || trimmed;
   }
@@ -715,7 +733,10 @@ export class ContractsInsuranceService {
     companyId: string,
     authorization?: string,
   ): Promise<{ id: string; full_name: string; requisition_id: string | null }> {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const expanded = expandHrmTextCompanyIds(scope, authorization, companyId);
     const res = await this.db.query<{
@@ -732,24 +753,36 @@ export class ContractsInsuranceService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_CTR_CANDIDATE_404, 'Candidate not found in scope', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CTR_CANDIDATE_404,
+        'Candidate not found in scope',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope({ company_id: row.company_id }, scope, {
       notFoundCode: HRM_CTR_CANDIDATE_404,
       mismatchCode: HRM_CTR_CANDIDATE_404,
     });
     if (!expanded.includes(row.company_id)) {
-      throw new ApiException(HRM_CTR_CANDIDATE_404, 'Candidate not found in scope', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CTR_CANDIDATE_404,
+        'Candidate not found in scope',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return row;
   }
 
-  private resolveCreateSubjectBindings(
-    payload: CreateContractDto,
-  ): { subjectType: 'candidate' | 'employee'; employeeId: string | null; candidateId: string | null } {
+  private resolveCreateSubjectBindings(payload: CreateContractDto): {
+    subjectType: 'candidate' | 'employee';
+    employeeId: string | null;
+    candidateId: string | null;
+  } {
     const explicitType = payload.subject_type;
     const hasCandidate = Boolean(payload.candidate_id?.trim());
-    const hasEmployee = Boolean(payload.employee_id?.trim() || payload.employee_name?.trim());
+    const hasEmployee = Boolean(
+      payload.employee_id?.trim() || payload.employee_name?.trim(),
+    );
     let subjectType: 'candidate' | 'employee';
     if (explicitType === 'candidate' || explicitType === 'employee') {
       subjectType = explicitType;
@@ -776,7 +809,7 @@ export class ContractsInsuranceService {
       return {
         subjectType,
         employeeId: null,
-        candidateId: payload.candidate_id!.trim(),
+        candidateId: payload.candidate_id.trim(),
       };
     }
     return {
@@ -789,14 +822,14 @@ export class ContractsInsuranceService {
   private isWizardGd1Persist(payload: CreateContractDto): boolean {
     return Boolean(
       payload.subject_type ||
-        payload.candidate_id?.trim() ||
-        payload.signing_date?.trim() ||
-        payload.signed_at?.trim() ||
-        payload.work_form?.trim() ||
-        payload.work_arrangement?.trim() ||
-        payload.salary_ratio_percent != null ||
-        payload.contract_abstract?.trim() ||
-        payload.abstract?.trim(),
+      payload.candidate_id?.trim() ||
+      payload.signing_date?.trim() ||
+      payload.signed_at?.trim() ||
+      payload.work_form?.trim() ||
+      payload.work_arrangement?.trim() ||
+      payload.salary_ratio_percent != null ||
+      payload.contract_abstract?.trim() ||
+      payload.abstract?.trim(),
     );
   }
 
@@ -806,7 +839,8 @@ export class ContractsInsuranceService {
     aliases: { signed_at?: string | null; work_arrangement?: string | null },
   ): void {
     if (registryOnly || !this.isWizardGd1Persist(payload)) return;
-    const signedAt = aliases.signed_at?.trim() ?? payload.signed_at?.trim() ?? '';
+    const signedAt =
+      aliases.signed_at?.trim() ?? payload.signed_at?.trim() ?? '';
     if (!signedAt) {
       throw new ApiException(
         HRM_CTR_SIGN_REQ_400,
@@ -846,7 +880,8 @@ export class ContractsInsuranceService {
         'contract_types',
       );
       const hit = items.find(
-        (item) => item.code?.trim()?.toLowerCase() === contractTypeCode.toLowerCase(),
+        (item) =>
+          item.code?.trim()?.toLowerCase() === contractTypeCode.toLowerCase(),
       );
       if (hit?.label?.trim()) typeLabel = hit.label.trim();
     }
@@ -854,7 +889,10 @@ export class ContractsInsuranceService {
     return code || typeLabel || null;
   }
 
-  private enrichContractRegistryRow(row: ContractRow, workFormLabel: string | null): ContractRow {
+  private enrichContractRegistryRow(
+    row: ContractRow,
+    workFormLabel: string | null,
+  ): ContractRow {
     const candidateLabel =
       row.candidate_label ??
       (row.candidate_name?.trim()
@@ -882,7 +920,10 @@ export class ContractsInsuranceService {
       let label: string | null = null;
       if (wa) {
         if (!labelCache.has(wa)) {
-          labelCache.set(wa, await this.resolveWorkFormLabelVi(companyId, wa, authorization));
+          labelCache.set(
+            wa,
+            await this.resolveWorkFormLabelVi(companyId, wa, authorization),
+          );
         }
         label = labelCache.get(wa) ?? null;
       }
@@ -976,13 +1017,19 @@ export class ContractsInsuranceService {
     return hit.code;
   }
 
-  private resolvePage(value: number | string | undefined, fallback: number): number {
+  private resolvePage(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.trunc(parsed);
   }
 
-  private resolvePageSize(value: number | string | undefined, fallback: number): number {
+  private resolvePageSize(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.min(100, Math.trunc(parsed));
@@ -994,9 +1041,20 @@ export class ContractsInsuranceService {
     requestedCompanyId: string,
     scopeContext?: HrmListScopeContext,
   ): { scope: HrmListScope; expandedCompanyIds: string[] } {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
-    const expandedCompanyIds = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
+    const expandedCompanyIds = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, expandedCompanyIds };
   }
 
@@ -1227,7 +1285,9 @@ export class ContractsInsuranceService {
       'print_overlay_clause_ids JSONB NULL',
     ];
     for (const col of expandCols) {
-      await this.db.query(`ALTER TABLE public.employee_contracts ADD COLUMN IF NOT EXISTS ${col};`);
+      await this.db.query(
+        `ALTER TABLE public.employee_contracts ADD COLUMN IF NOT EXISTS ${col};`,
+      );
     }
     const subjectCols = [
       'candidate_id UUID NULL',
@@ -1236,7 +1296,9 @@ export class ContractsInsuranceService {
       'contract_abstract TEXT NULL',
     ];
     for (const col of subjectCols) {
-      await this.db.query(`ALTER TABLE public.employee_contracts ADD COLUMN IF NOT EXISTS ${col};`);
+      await this.db.query(
+        `ALTER TABLE public.employee_contracts ADD COLUMN IF NOT EXISTS ${col};`,
+      );
     }
     await this.db.query(`
       ALTER TABLE public.employee_contracts
@@ -1293,11 +1355,17 @@ export class ContractsInsuranceService {
    */
   async createContract(payload: CreateContractDto, authorization?: string) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const registryOnly = Boolean(payload.registry_only);
     const aliases = this.normalizeGd1FieldAliases(payload);
     this.validateGd1WizardPersist(payload, registryOnly, aliases);
-    const contractTypeCode = await this.assertConContractType(companyId, payload.contract_type);
+    const contractTypeCode = await this.assertConContractType(
+      companyId,
+      payload.contract_type,
+    );
     const startDate = resolveContractStartDateForCreate({
       startDate: payload.start_date,
       effectiveFrom: payload.effective_from,
@@ -1314,12 +1382,21 @@ export class ContractsInsuranceService {
     let requisitionId: string | null = payload.requisition_id?.trim() ?? null;
     if (subjectBindings.subjectType === 'candidate') {
       candidateId = subjectBindings.candidateId;
-      const cand = await this.assertCandidateInScope(candidateId!, companyId, authorization);
-      if (!requisitionId && cand.requisition_id) requisitionId = cand.requisition_id;
+      const cand = await this.assertCandidateInScope(
+        candidateId!,
+        companyId,
+        authorization,
+      );
+      if (!requisitionId && cand.requisition_id)
+        requisitionId = cand.requisition_id;
     } else {
       employeeId =
         payload.employee_id?.trim() ??
-        (await this.resolveEmployeeId(payload.employee_name, authorization, companyId));
+        (await this.resolveEmployeeId(
+          payload.employee_name,
+          authorization,
+          companyId,
+        ));
       if (payload.candidate_id?.trim()) {
         throw new ApiException(
           HRM_CTR_SUBJECT_400,
@@ -1340,9 +1417,15 @@ export class ContractsInsuranceService {
       payload.position_key,
     );
     // E1-A — Vị trí catalog SoT (AC-E1A-CI-POS-01).
-    const pos = await this.assertConPositionKey(companyId, resolvedPositionKey, true);
+    const pos = await this.assertConPositionKey(
+      companyId,
+      resolvedPositionKey,
+      true,
+    );
     const signerPresent = Boolean(
-      payload.signer_name?.trim() || payload.signer_position?.trim() || payload.signer_position_key?.trim(),
+      payload.signer_name?.trim() ||
+      payload.signer_position?.trim() ||
+      payload.signer_position_key?.trim(),
     );
     const signerPos = await this.assertConSignerPositionKey(
       companyId,
@@ -1364,13 +1447,22 @@ export class ContractsInsuranceService {
       });
     }
     const licenseClass =
-      payload.license_class?.trim() || payload.driver_license_class?.trim() || null;
-    const signedAt = aliases.signed_at?.trim() ?? payload.signed_at?.trim() ?? null;
+      payload.license_class?.trim() ||
+      payload.driver_license_class?.trim() ||
+      null;
+    const signedAt =
+      aliases.signed_at?.trim() ?? payload.signed_at?.trim() ?? null;
     const contractAbstract =
-      aliases.contract_abstract?.trim() ?? payload.contract_abstract?.trim() ?? null;
-    let contractName =
+      aliases.contract_abstract?.trim() ??
+      payload.contract_abstract?.trim() ??
+      null;
+    const contractName =
       payload.contract_name?.trim() ||
-      (await this.deriveContractDisplayName(companyId, payload.contract_code, contractTypeCode)) ||
+      (await this.deriveContractDisplayName(
+        companyId,
+        payload.contract_code,
+        contractTypeCode,
+      )) ||
       payload.job_description_text?.trim() ||
       null;
     const res = await this.db.query<ContractRow>(
@@ -1438,8 +1530,12 @@ export class ContractsInsuranceService {
         payload.compensation_package_id ?? null,
       ],
     );
-    const workLabel = await this.resolveWorkFormLabelVi(companyId, workArrangementCode, authorization);
-    return this.enrichContractRegistryRow(res.rows[0]!, workLabel);
+    const workLabel = await this.resolveWorkFormLabelVi(
+      companyId,
+      workArrangementCode,
+      authorization,
+    );
+    return this.enrichContractRegistryRow(res.rows[0], workLabel);
   }
 
   private async resolveEmployeeId(
@@ -1473,9 +1569,16 @@ export class ContractsInsuranceService {
       ORDER BY e.created_at DESC
       LIMIT 1
     `;
-    const fallback = await this.db.query<{ id: string }>(fallbackSql, values.slice(0, filters.length));
+    const fallback = await this.db.query<{ id: string }>(
+      fallbackSql,
+      values.slice(0, filters.length),
+    );
     if (!fallback.rows[0]?.id) {
-      throw new ApiException('HRM-CON-001', 'No eligible employee found for contract', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-CON-001',
+        'No eligible employee found for contract',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return fallback.rows[0].id;
   }
@@ -1485,14 +1588,27 @@ export class ContractsInsuranceService {
    * SRS bước: Diễn biến #6 Lưu thành công — ghi nhận BH
    * TechSpec: §14.3 ref_srs FR-HRM-CI-02 · API_DESIGN E3 §17 · F-CORE-SI-02
    */
-  async createInsuranceRecord(payload: CreateInsuranceRecordDto, authorization?: string) {
+  async createInsuranceRecord(
+    payload: CreateInsuranceRecordDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     await ensureEmployeeInsuranceEnrollmentSchema(this.db);
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
-    const insurer = await this.assertInsurerKey(companyId, payload.insurer_key, true, authorization);
-    let policyId: string | null = payload.policy_id?.trim() || null;
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
+    const insurer = await this.assertInsurerKey(
+      companyId,
+      payload.insurer_key,
+      true,
+      authorization,
+    );
+    const policyId: string | null = payload.policy_id?.trim() || null;
     if (policyId) {
-      await this.assertPolicyInScope(policyId, companyId, authorization, { requireActive: false });
+      await this.assertPolicyInScope(policyId, companyId, authorization, {
+        requireActive: false,
+      });
     }
     const providerSnapshot = payload.provider?.trim() || insurer!.label;
     const id = randomUUID();
@@ -1514,7 +1630,7 @@ export class ContractsInsuranceService {
         policyId,
       ],
     );
-    const row = res.rows[0]!;
+    const row = res.rows[0];
     // Thành công: Diễn biến #6 — khóa BH gắn hồ sơ (enrollment id = actions target).
     return {
       ...row,
@@ -1542,7 +1658,11 @@ export class ContractsInsuranceService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_INS_POL_404, 'Insurance policy not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_INS_POL_404,
+        'Insurance policy not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_INS_POL_404,
@@ -1593,7 +1713,10 @@ export class ContractsInsuranceService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
     const { scope, expandedCompanyIds } = this.resolveContractsListScope(
       authorization,
       query.company_id,
@@ -1678,14 +1801,27 @@ export class ContractsInsuranceService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-CON-404', 'Contract not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-CON-404',
+        'Contract not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const workLabel = await this.resolveWorkFormLabelVi(scopeCompanyId, row.work_arrangement, authorization);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const workLabel = await this.resolveWorkFormLabelVi(
+      scopeCompanyId,
+      row.work_arrangement,
+      authorization,
+    );
     const enriched = this.enrichContractRegistryRow(row, workLabel);
     const printSvc = this.resolveContractLegalPrint();
     if (!printSvc) {
-      const overlayIds = this.parsePrintOverlayClauseIds(row.print_overlay_clause_ids);
+      const overlayIds = this.parsePrintOverlayClauseIds(
+        row.print_overlay_clause_ids,
+      );
       return {
         ...enriched,
         print_overlay_clause_ids: overlayIds.length ? overlayIds : null,
@@ -1702,7 +1838,9 @@ export class ContractsInsuranceService {
         template_id: row.template_id,
         template_code: row.template_code,
         pack_code: row.pack_code,
-        print_overlay_clause_ids: this.parsePrintOverlayClauseIds(row.print_overlay_clause_ids),
+        print_overlay_clause_ids: this.parsePrintOverlayClauseIds(
+          row.print_overlay_clause_ids,
+        ),
       },
       scopeCompanyId,
       authorization,
@@ -1730,7 +1868,9 @@ export class ContractsInsuranceService {
     return [];
   }
 
-  private async loadContractScopeRow(contractId: string): Promise<{ company_id: string } | null> {
+  private async loadContractScopeRow(
+    contractId: string,
+  ): Promise<{ company_id: string } | null> {
     const res = await this.db.query<{ company_id: string }>(
       `SELECT company_id::text AS company_id FROM public.employee_contracts
        WHERE id = $1::uuid AND archived_at IS NULL LIMIT 1;`,
@@ -1749,11 +1889,19 @@ export class ContractsInsuranceService {
     if (
       payload.start_date &&
       payload.end_date &&
-      new Date(payload.start_date).getTime() > new Date(payload.end_date).getTime()
+      new Date(payload.start_date).getTime() >
+        new Date(payload.end_date).getTime()
     ) {
-      throw new ApiException('HRM-CON-001', 'start_date must be <= end_date', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-CON-001',
+        'start_date must be <= end_date',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const existing = await this.loadContractScopeRow(contractId);
     assertResourceInHrmScope(existing, scope, {
@@ -1769,7 +1917,10 @@ export class ContractsInsuranceService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (payload.signer_position !== undefined && payload.signer_position_key === undefined) {
+    if (
+      payload.signer_position !== undefined &&
+      payload.signer_position_key === undefined
+    ) {
       throw new ApiException(
         HRM_CON_SIGNER_POS_KEY,
         'signer_position_key is required when updating signer_position',
@@ -1780,7 +1931,11 @@ export class ContractsInsuranceService {
     let nextPosition: string | null = null;
     const hasPositionKey = payload.position_key !== undefined;
     if (hasPositionKey) {
-      const pos = await this.assertConPositionKey(existing!.company_id, payload.position_key, true);
+      const pos = await this.assertConPositionKey(
+        existing!.company_id,
+        payload.position_key,
+        true,
+      );
       nextPositionKey = pos!.code;
       nextPosition = payload.position?.trim() || pos!.label;
     }
@@ -1797,7 +1952,9 @@ export class ContractsInsuranceService {
       nextSignerPos = payload.signer_position?.trim() || signerPos!.label;
     }
     const hasDeptKey = payload.department_key !== undefined;
-    const nextDeptKey = hasDeptKey ? payload.department_key?.trim() || null : null;
+    const nextDeptKey = hasDeptKey
+      ? payload.department_key?.trim() || null
+      : null;
     if (nextDeptKey && this.settingsCatalogs) {
       await this.settingsCatalogs.assertCodeInEffectiveCatalog({
         tenantId: this.resolveCatalogTenantId(),
@@ -1810,7 +1967,10 @@ export class ContractsInsuranceService {
     }
     let nextContractType: string | null = null;
     if (payload.contract_type !== undefined) {
-      nextContractType = await this.assertConContractType(existing!.company_id, payload.contract_type);
+      nextContractType = await this.assertConContractType(
+        existing!.company_id,
+        payload.contract_type,
+      );
     }
     const aliases = this.normalizeGd1FieldAliases(payload);
     const workArrangementRaw =
@@ -1884,7 +2044,11 @@ export class ContractsInsuranceService {
       updateValues,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-CON-404', 'Contract not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-CON-404',
+        'Contract not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     // Print overlay ADD fields (nullable) — BR-CD-F5-01 salary still ignored
     const overlaySets: string[] = [];
@@ -1893,41 +2057,75 @@ export class ContractsInsuranceService {
       overlayVals.push(value);
       overlaySets.push(`${col} = $${overlayVals.length}`);
     };
-    if (payload.pack_code !== undefined) pushOverlay('pack_code', payload.pack_code?.trim()?.toUpperCase() ?? null);
-    if (payload.template_id !== undefined) pushOverlay('template_id', payload.template_id);
+    if (payload.pack_code !== undefined)
+      pushOverlay(
+        'pack_code',
+        payload.pack_code?.trim()?.toUpperCase() ?? null,
+      );
+    if (payload.template_id !== undefined)
+      pushOverlay('template_id', payload.template_id);
     if (payload.template_code !== undefined) {
-      pushOverlay('template_code', payload.template_code?.trim()?.toUpperCase() ?? null);
+      pushOverlay(
+        'template_code',
+        payload.template_code?.trim()?.toUpperCase() ?? null,
+      );
     }
-    if (payload.term_type !== undefined) pushOverlay('term_type', payload.term_type?.trim() ?? null);
-    if (payload.work_location !== undefined) pushOverlay('work_location', payload.work_location?.trim() ?? null);
+    if (payload.term_type !== undefined)
+      pushOverlay('term_type', payload.term_type?.trim() ?? null);
+    if (payload.work_location !== undefined)
+      pushOverlay('work_location', payload.work_location?.trim() ?? null);
     if (payload.work_location_scope !== undefined) {
-      pushOverlay('work_location_scope', payload.work_location_scope?.trim() ?? null);
+      pushOverlay(
+        'work_location_scope',
+        payload.work_location_scope?.trim() ?? null,
+      );
     }
     if (payload.job_description_text !== undefined) {
-      pushOverlay('job_description_text', payload.job_description_text?.trim() ?? null);
+      pushOverlay(
+        'job_description_text',
+        payload.job_description_text?.trim() ?? null,
+      );
     }
-    if (payload.probation_days !== undefined) pushOverlay('probation_days', payload.probation_days);
-    if (payload.probation_end !== undefined) pushOverlay('probation_end', payload.probation_end);
-    if (payload.license_class !== undefined || payload.driver_license_class !== undefined) {
+    if (payload.probation_days !== undefined)
+      pushOverlay('probation_days', payload.probation_days);
+    if (payload.probation_end !== undefined)
+      pushOverlay('probation_end', payload.probation_end);
+    if (
+      payload.license_class !== undefined ||
+      payload.driver_license_class !== undefined
+    ) {
       pushOverlay(
         'license_class',
-        payload.license_class?.trim() || payload.driver_license_class?.trim() || null,
+        payload.license_class?.trim() ||
+          payload.driver_license_class?.trim() ||
+          null,
       );
     }
     if (payload.driver_license_number !== undefined) {
-      pushOverlay('driver_license_number', payload.driver_license_number?.trim() ?? null);
+      pushOverlay(
+        'driver_license_number',
+        payload.driver_license_number?.trim() ?? null,
+      );
     }
     if (payload.driver_license_issued_on !== undefined) {
-      pushOverlay('driver_license_issued_on', payload.driver_license_issued_on ?? null);
+      pushOverlay(
+        'driver_license_issued_on',
+        payload.driver_license_issued_on ?? null,
+      );
     }
     if (payload.driver_license_issued_place !== undefined) {
-      pushOverlay('driver_license_issued_place', payload.driver_license_issued_place?.trim() ?? null);
+      pushOverlay(
+        'driver_license_issued_place',
+        payload.driver_license_issued_place?.trim() ?? null,
+      );
     }
-    if (payload.vehicle_plate !== undefined) pushOverlay('vehicle_plate', payload.vehicle_plate?.trim() ?? null);
+    if (payload.vehicle_plate !== undefined)
+      pushOverlay('vehicle_plate', payload.vehicle_plate?.trim() ?? null);
     if (payload.route_or_region !== undefined) {
       pushOverlay('route_or_region', payload.route_or_region?.trim() ?? null);
     }
-    if (payload.signed_at !== undefined) pushOverlay('signed_at', payload.signed_at ?? null);
+    if (payload.signed_at !== undefined)
+      pushOverlay('signed_at', payload.signed_at ?? null);
     if (payload.contract_name !== undefined) {
       pushOverlay('contract_name', payload.contract_name?.trim() ?? null);
     }
@@ -1935,8 +2133,8 @@ export class ContractsInsuranceService {
       pushOverlay(
         'work_arrangement',
         validatedWorkArrangement !== undefined
-          ? validatedWorkArrangement?.trim() ?? null
-          : payload.work_arrangement?.trim() ?? null,
+          ? (validatedWorkArrangement?.trim() ?? null)
+          : (payload.work_arrangement?.trim() ?? null),
       );
     }
     if (payload.salary_ratio_percent !== undefined) {
@@ -1944,22 +2142,34 @@ export class ContractsInsuranceService {
     }
     const aliasesOverlay = this.normalizeGd1FieldAliases(payload);
     if (aliasesOverlay.contract_abstract !== undefined) {
-      pushOverlay('contract_abstract', aliasesOverlay.contract_abstract?.trim() ?? null);
+      pushOverlay(
+        'contract_abstract',
+        aliasesOverlay.contract_abstract?.trim() ?? null,
+      );
     }
-    if (aliasesOverlay.signed_at !== undefined && payload.signed_at === undefined) {
+    if (
+      aliasesOverlay.signed_at !== undefined &&
+      payload.signed_at === undefined
+    ) {
       pushOverlay('signed_at', aliasesOverlay.signed_at ?? null);
     }
-    if (aliasesOverlay.work_arrangement !== undefined && payload.work_arrangement === undefined) {
+    if (
+      aliasesOverlay.work_arrangement !== undefined &&
+      payload.work_arrangement === undefined
+    ) {
       pushOverlay(
         'work_arrangement',
         validatedWorkArrangement !== undefined
-          ? validatedWorkArrangement?.trim() ?? null
-          : aliasesOverlay.work_arrangement?.trim() ?? null,
+          ? (validatedWorkArrangement?.trim() ?? null)
+          : (aliasesOverlay.work_arrangement?.trim() ?? null),
       );
     }
-    if (payload.subject_type !== undefined) pushOverlay('subject_type', payload.subject_type);
-    if (payload.candidate_id !== undefined) pushOverlay('candidate_id', payload.candidate_id);
-    if (payload.requisition_id !== undefined) pushOverlay('requisition_id', payload.requisition_id);
+    if (payload.subject_type !== undefined)
+      pushOverlay('subject_type', payload.subject_type);
+    if (payload.candidate_id !== undefined)
+      pushOverlay('candidate_id', payload.candidate_id);
+    if (payload.requisition_id !== undefined)
+      pushOverlay('requisition_id', payload.requisition_id);
     if (overlaySets.length) {
       overlayVals.push(contractId);
       await this.db.query(
@@ -1967,7 +2177,11 @@ export class ContractsInsuranceService {
          WHERE id = $${overlayVals.length}::uuid;`,
         overlayVals,
       );
-      return this.getContractById(contractId, requestedCompanyId, authorization);
+      return this.getContractById(
+        contractId,
+        requestedCompanyId,
+        authorization,
+      );
     }
     return res.rows[0];
   }
@@ -2003,7 +2217,11 @@ export class ContractsInsuranceService {
     base_salary_vnd: number | null;
     insurance_salary_vnd: number | null;
     salary_ratio_percent: number | null;
-    allowances: Array<{ code: string; label_vi: string; amount_vnd: number | null }>;
+    allowances: Array<{
+      code: string;
+      label_vi: string;
+      amount_vnd: number | null;
+    }>;
     cb_masked: boolean;
   } {
     if (!pkg || cbMasked) {
@@ -2029,7 +2247,8 @@ export class ContractsInsuranceService {
       .filter((l) => l.line_type === 'allowance')
       .map((l) => ({
         code: l.allowance_code ?? l.component_code ?? 'allowance',
-        label_vi: l.note?.trim() || l.allowance_code || l.component_code || 'Phụ cấp',
+        label_vi:
+          l.note?.trim() || l.allowance_code || l.component_code || 'Phụ cấp',
         amount_vnd: toNum(l.amount),
       }));
     return {
@@ -2087,10 +2306,17 @@ export class ContractsInsuranceService {
     );
     const emp = empRes.rows[0];
     if (!emp) {
-      throw new ApiException('HRM-CON-404', 'Employee not found in scope', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-CON-404',
+        'Employee not found in scope',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(
-      { company_id: emp.company_id, custom_fields: this.parseEmployeeCustomFields(emp.custom_fields) },
+      {
+        company_id: emp.company_id,
+        custom_fields: this.parseEmployeeCustomFields(emp.custom_fields),
+      },
       scope,
       {
         notFoundCode: 'HRM-CON-404',
@@ -2109,14 +2335,20 @@ export class ContractsInsuranceService {
         );
       } catch (err: unknown) {
         const e = err as ApiException & { code?: string };
-        if (e?.code === 'HRM-CORE-CB-AUTHZ-403' || e?.code === 'HRM-CORE-CB-403') {
+        if (
+          e?.code === 'HRM-CORE-CB-AUTHZ-403' ||
+          e?.code === 'HRM-CORE-CB-403'
+        ) {
           cbMasked = true;
         } else {
           throw err;
         }
       }
     }
-    const compensation_snapshot = this.buildCompensationSnapshotFromPackage(activePkg, cbMasked);
+    const compensation_snapshot = this.buildCompensationSnapshotFromPackage(
+      activePkg,
+      cbMasked,
+    );
     const unitLabels: Record<string, string> = {
       holding: 'Công ty CP Tập đoàn Xe Việt Nam',
       main: 'Công ty CP Tập đoàn Xe Việt Nam',
@@ -2130,7 +2362,8 @@ export class ContractsInsuranceService {
         phone: (cf.phone as string) ?? (cf.mobile as string) ?? null,
         dob_display: this.formatDobDisplayVi(cf.date_of_birth ?? cf.dob),
         email: (cf.email as string) ?? null,
-        residence_address: (cf.address as string) ?? (cf.residence_address as string) ?? null,
+        residence_address:
+          (cf.address as string) ?? (cf.residence_address as string) ?? null,
       },
       compensation_snapshot,
       employer_party_a: {
@@ -2148,9 +2381,16 @@ export class ContractsInsuranceService {
     };
   }
 
-  async deleteContract(contractId: string, requestedCompanyId: string, authorization?: string) {
+  async deleteContract(
+    contractId: string,
+    requestedCompanyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const existing = await this.loadContractScopeRow(contractId);
     assertResourceInHrmScope(existing, scope, {
@@ -2159,7 +2399,11 @@ export class ContractsInsuranceService {
     });
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [contractId];
-    pushCompanyIdFilter(filters, values, expandHrmTextCompanyIds(scope, authorization, requestedCompanyId));
+    pushCompanyIdFilter(
+      filters,
+      values,
+      expandHrmTextCompanyIds(scope, authorization, requestedCompanyId),
+    );
     const res = await this.db.query<{ id: string }>(
       `UPDATE public.employee_contracts
        SET archived_at = NOW(), updated_at = NOW()
@@ -2168,15 +2412,28 @@ export class ContractsInsuranceService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-CON-404', 'Contract not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-CON-404',
+        'Contract not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: contractId };
   }
 
-  async listExpiringInsurance(query: ListExpiringQueryDto, authorization?: string) {
+  async listExpiringInsurance(
+    query: ListExpiringQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const { scope, expandedCompanyIds } = this.resolveContractsListScope(authorization, query.company_id);
-    await bridgeLegacyInsuranceRecordsToEnrollments(this.db, expandedCompanyIds);
+    const { scope, expandedCompanyIds } = this.resolveContractsListScope(
+      authorization,
+      query.company_id,
+    );
+    await bridgeLegacyInsuranceRecordsToEnrollments(
+      this.db,
+      expandedCompanyIds,
+    );
     const days = query.days ?? 30;
     const filters: string[] = ['archived_at IS NULL'];
     const values: unknown[] = [];
@@ -2252,7 +2509,10 @@ export class ContractsInsuranceService {
       query.company_id,
       scopeContext,
     );
-    await bridgeLegacyInsuranceRecordsToEnrollments(this.db, expandedCompanyIds);
+    await bridgeLegacyInsuranceRecordsToEnrollments(
+      this.db,
+      expandedCompanyIds,
+    );
     const page = this.resolvePage(query.page, 1);
     const pageSize = this.resolvePageSize(query.page_size, 20);
     const offset = (page - 1) * pageSize;
@@ -2344,10 +2604,21 @@ export class ContractsInsuranceService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createInsurancePolicy(payload: CreateInsurancePolicyDto, authorization?: string) {
+  async createInsurancePolicy(
+    payload: CreateInsurancePolicyDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
-    const insurer = await this.assertInsurerKey(companyId, payload.insurer_key, true, authorization);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
+    const insurer = await this.assertInsurerKey(
+      companyId,
+      payload.insurer_key,
+      true,
+      authorization,
+    );
     const insuranceType = await this.assertInsuranceTypeKey(
       companyId,
       payload.insurance_type,
@@ -2357,7 +2628,11 @@ export class ContractsInsuranceService {
     const effective = payload.effective_date;
     const expiry = payload.expiry_date?.trim() || null;
     if (expiry && new Date(effective).getTime() > new Date(expiry).getTime()) {
-      throw new ApiException(HRM_INS_POL_001, 'expiry_date must be >= effective_date', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_INS_POL_001,
+        'expiry_date must be >= effective_date',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     let status: InsurancePolicyRow['status'] = 'draft';
     if (payload.status) {
@@ -2393,7 +2668,11 @@ export class ContractsInsuranceService {
       return res.rows[0];
     } catch (err: unknown) {
       if ((err as { code?: string })?.code === '23505') {
-        throw new ApiException(HRM_INS_POL_002, 'Duplicate policy_code for company', HttpStatus.CONFLICT);
+        throw new ApiException(
+          HRM_INS_POL_002,
+          'Duplicate policy_code for company',
+          HttpStatus.CONFLICT,
+        );
       }
       throw err;
     }
@@ -2423,7 +2702,7 @@ export class ContractsInsuranceService {
       notFoundCode: HRM_INS_POL_404,
       mismatchCode: 'HRM-INS-POL-409',
     });
-    return row!;
+    return row;
   }
 
   async updateInsurancePolicy(
@@ -2433,7 +2712,11 @@ export class ContractsInsuranceService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const current = await this.getInsurancePolicyById(policyId, requestedCompanyId, authorization);
+    const current = await this.getInsurancePolicyById(
+      policyId,
+      requestedCompanyId,
+      authorization,
+    );
     if (payload.status) {
       assertStatusTransition({
         domain: 'insurance_policy',
@@ -2444,7 +2727,12 @@ export class ContractsInsuranceService {
     }
     const insurer =
       payload.insurer_key !== undefined
-        ? await this.assertInsurerKey(current.company_id, payload.insurer_key, true, authorization)
+        ? await this.assertInsurerKey(
+            current.company_id,
+            payload.insurer_key,
+            true,
+            authorization,
+          )
         : null;
     const insuranceType =
       payload.insurance_type !== undefined
@@ -2463,7 +2751,11 @@ export class ContractsInsuranceService {
           ? null
           : payload.expiry_date;
     if (expiry && new Date(effective).getTime() > new Date(expiry).getTime()) {
-      throw new ApiException(HRM_INS_POL_001, 'expiry_date must be >= effective_date', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_INS_POL_001,
+        'expiry_date must be >= effective_date',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     try {
       const res = await this.db.query<InsurancePolicyRow>(
@@ -2497,15 +2789,27 @@ export class ContractsInsuranceService {
       return res.rows[0];
     } catch (err: unknown) {
       if ((err as { code?: string })?.code === '23505') {
-        throw new ApiException(HRM_INS_POL_002, 'Duplicate policy_code for company', HttpStatus.CONFLICT);
+        throw new ApiException(
+          HRM_INS_POL_002,
+          'Duplicate policy_code for company',
+          HttpStatus.CONFLICT,
+        );
       }
       throw err;
     }
   }
 
-  async deleteInsurancePolicy(policyId: string, requestedCompanyId: string, authorization?: string) {
+  async deleteInsurancePolicy(
+    policyId: string,
+    requestedCompanyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const current = await this.getInsurancePolicyById(policyId, requestedCompanyId, authorization);
+    const current = await this.getInsurancePolicyById(
+      policyId,
+      requestedCompanyId,
+      authorization,
+    );
     if (current.status !== 'draft' && current.status !== 'cancelled') {
       throw new ApiException(
         HRM_INS_POL_DEL_BLOCK,
@@ -2513,11 +2817,13 @@ export class ContractsInsuranceService {
         HttpStatus.CONFLICT,
       );
     }
-    const participants = await this.db.query<{ total: string }>(
-      `SELECT COUNT(*)::text AS total FROM public.hrm_insurance_policy_participants
+    const participants = await this.db
+      .query<{ total: string }>(
+        `SELECT COUNT(*)::text AS total FROM public.hrm_insurance_policy_participants
        WHERE policy_id = $1::uuid;`,
-      [policyId],
-    ).catch(() => ({ rows: [{ total: '0' }] }));
+        [policyId],
+      )
+      .catch(() => ({ rows: [{ total: '0' }] }));
     if (Number(participants.rows[0]?.total ?? 0) > 0) {
       throw new ApiException(
         HRM_INS_POL_DEL_BLOCK,
@@ -2525,7 +2831,10 @@ export class ContractsInsuranceService {
         HttpStatus.CONFLICT,
       );
     }
-    await this.db.query(`DELETE FROM public.hrm_insurance_policies WHERE id = $1::uuid;`, [policyId]);
+    await this.db.query(
+      `DELETE FROM public.hrm_insurance_policies WHERE id = $1::uuid;`,
+      [policyId],
+    );
     return { id: policyId, deleted: true };
   }
 
@@ -2541,7 +2850,10 @@ export class ContractsInsuranceService {
       requestedCompanyId,
       scopeContext,
     );
-    await bridgeLegacyInsuranceRecordsToEnrollments(this.db, expandedCompanyIds);
+    await bridgeLegacyInsuranceRecordsToEnrollments(
+      this.db,
+      expandedCompanyIds,
+    );
     const filters: string[] = ['ei.id = $1::uuid', 'ei.archived_at IS NULL'];
     const values: unknown[] = [recordId];
     pushCompanyIdFilter(filters, values, expandedCompanyIds);
@@ -2559,7 +2871,7 @@ export class ContractsInsuranceService {
       notFoundCode: 'HRM-CON-404',
       mismatchCode: 'HRM-CON-409',
     });
-    return this.mapInsuranceListItem(row!);
+    return this.mapInsuranceListItem(row);
   }
 
   async updateInsuranceRecord(
@@ -2569,7 +2881,11 @@ export class ContractsInsuranceService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const current = await this.getInsuranceRecordById(recordId, requestedCompanyId, authorization);
+    const current = await this.getInsuranceRecordById(
+      recordId,
+      requestedCompanyId,
+      authorization,
+    );
     if (payload.status) {
       assertStatusTransition({
         domain: 'insurance_record',
@@ -2588,9 +2904,14 @@ export class ContractsInsuranceService {
           )
         : null;
     if (payload.policy_id) {
-      await this.assertPolicyInScope(payload.policy_id, requestedCompanyId, authorization, {
-        requireActive: false,
-      });
+      await this.assertPolicyInScope(
+        payload.policy_id,
+        requestedCompanyId,
+        authorization,
+        {
+          requireActive: false,
+        },
+      );
     }
     const providerSnapshot =
       payload.provider?.trim() || (insurer ? insurer.label : null);
@@ -2615,7 +2936,7 @@ export class ContractsInsuranceService {
       ],
     );
     return this.mapInsuranceListItem({
-      ...res.rows[0]!,
+      ...res.rows[0],
       insurer_key: insurer?.code ?? current.insurer_key ?? null,
     });
   }

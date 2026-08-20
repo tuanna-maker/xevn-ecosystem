@@ -45,7 +45,11 @@ describe('PO-HRM-REC-YCTD-BOD-OPEN-FOR-HIRE-01', () => {
       if (sql.includes('UPDATE public.job_requisitions')) {
         return { rows: [{ status: 'open_for_hire' }] };
       }
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
       return { rows: [] };

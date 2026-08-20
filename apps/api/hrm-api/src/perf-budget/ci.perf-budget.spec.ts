@@ -20,7 +20,9 @@ type BaselineFile = {
 
 function loadBaselines(): BaselineFile {
   const p = join(__dirname, '../../perf-budget/ci-baseline.json');
-  const raw = readFileSync(p, 'utf8').replace(/^\uFEFF/, '').trim();
+  const raw = readFileSync(p, 'utf8')
+    .replace(/^\uFEFF/, '')
+    .trim();
   return JSON.parse(raw) as BaselineFile;
 }
 
@@ -54,21 +56,31 @@ describe('CI perf budget (hrm-api)', () => {
 
   const catalogSyncServiceMock = {
     pullCatalogFromXbos: jest.fn().mockResolvedValue({ key: 'job_titles' }),
-    getSyncedCatalog: jest.fn().mockResolvedValue({ key: 'job_titles', items: [] }),
-    listSyncedCatalogs: jest.fn().mockResolvedValue({ total: 1, data: [{ key: 'job_titles' }] }),
+    getSyncedCatalog: jest
+      .fn()
+      .mockResolvedValue({ key: 'job_titles', items: [] }),
+    listSyncedCatalogs: jest
+      .fn()
+      .mockResolvedValue({ total: 1, data: [{ key: 'job_titles' }] }),
   };
 
   beforeAll(async () => {
     process.env.INTERNAL_API_KEY = 'test-key';
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [AppController, CatalogSyncController],
-      providers: [{ provide: CatalogSyncService, useValue: catalogSyncServiceMock }],
+      providers: [
+        { provide: CatalogSyncService, useValue: catalogSyncServiceMock },
+      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/hrm');
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
     );
     app.useGlobalFilters(new GlobalHttpExceptionFilter());
     await app.init();

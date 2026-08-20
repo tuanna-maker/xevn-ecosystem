@@ -73,7 +73,10 @@ function codeOf(err: unknown): string {
 
 describe('REC-04 PipelineFlags helpers (O2/O5)', () => {
   it('parse defaults scan keys false/null — RETAIN posted family', () => {
-    const flags = parsePipelineFlags({ posted: true, posted_at: '2026-08-01T00:00:00.000Z' });
+    const flags = parsePipelineFlags({
+      posted: true,
+      posted_at: '2026-08-01T00:00:00.000Z',
+    });
     expect(flags.posted).toBe(true);
     expect(flags.internal_scan_done).toBe(false);
     expect(flags.internal_scan_skipped).toBe(false);
@@ -100,13 +103,18 @@ describe('REC-04 PipelineFlags helpers (O2/O5)', () => {
     const now = '2026-08-09T10:00:00.000Z';
     const skipped = mergePipelineFlags(
       EMPTY_PIPELINE_FLAGS,
-      { internal_scan_skipped: true, internal_scan_skip_reason: 'Không có UV khớp nội bộ' },
+      {
+        internal_scan_skipped: true,
+        internal_scan_skip_reason: 'Không có UV khớp nội bộ',
+      },
       now,
     );
     expect(skipped.internal_scan_skipped).toBe(true);
     expect(skipped.internal_scan_done).toBe(false);
     expect(isInternalScanSatisfiedForPosted(skipped)).toBe(true);
-    expect(() => assertPostedAllowedOrThrow(EMPTY_PIPELINE_FLAGS)).toThrow(ApiException);
+    expect(() => assertPostedAllowedOrThrow(EMPTY_PIPELINE_FLAGS)).toThrow(
+      ApiException,
+    );
     try {
       assertPostedAllowedOrThrow(EMPTY_PIPELINE_FLAGS);
     } catch (e) {
@@ -123,12 +131,17 @@ describe('REC-04 PipelineFlags helpers (O2/O5)', () => {
       expect((e as ApiException).getStatus()).toBe(HttpStatus.FORBIDDEN);
     }
     expect(() => assertInternalScanSkipActorOrThrow(hrToken())).not.toThrow();
-    expect(() => assertInternalScanSkipActorOrThrow(groupCeoToken())).not.toThrow();
+    expect(() =>
+      assertInternalScanSkipActorOrThrow(groupCeoToken()),
+    ).not.toThrow();
   });
 
   it('YCTD scan gate: draft → SCAN-YCTD', () => {
     try {
-      assertYctdOpenForInternalScanOrThrow({ status: 'draft', headcount_mode: 'in_plan' });
+      assertYctdOpenForInternalScanOrThrow({
+        status: 'draft',
+        headcount_mode: 'in_plan',
+      });
       fail('expected throw');
     } catch (e) {
       expect(codeOf(e)).toBe(HRM_REC_CV_SCAN_YCTD);
@@ -159,27 +172,32 @@ describe('PO-HRM-MVP-GD1-REC-04-CLUSTER-BE-01 service', () => {
   it('POST internal-scan complete (0 hits) → done=true · display-ready', async () => {
     let stored: unknown = null;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_requisitions WHERE id')) {
-          return { rows: [openYctdRow()] };
-        }
-        if (s.includes('UPDATE public.job_requisitions')) {
-          stored = params?.[0];
-          return {
-            rows: [
-              openYctdRow(
-                typeof params?.[0] === 'string' ? JSON.parse(params[0] as string) : {},
-              ),
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (s.includes('FROM public.job_requisitions WHERE id')) {
+            return { rows: [openYctdRow()] };
+          }
+          if (s.includes('UPDATE public.job_requisitions')) {
+            stored = params?.[0];
+            return {
+              rows: [
+                openYctdRow(
+                  typeof params?.[0] === 'string' ? JSON.parse(params[0]) : {},
+                ),
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     const out = await svc.postRequisitionInternalScan(
       REQ_ID,
       { action: 'complete', hit_count: 0 },
@@ -206,7 +224,10 @@ describe('PO-HRM-MVP-GD1-REC-04-CLUSTER-BE-01 service', () => {
       }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     try {
       await svc.postRequisitionInternalScan(
         REQ_ID,
@@ -232,7 +253,10 @@ describe('PO-HRM-MVP-GD1-REC-04-CLUSTER-BE-01 service', () => {
       }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     try {
       await svc.postRequisitionInternalScan(
         REQ_ID,
@@ -249,22 +273,29 @@ describe('PO-HRM-MVP-GD1-REC-04-CLUSTER-BE-01 service', () => {
   it('PATCH posted without scan → SCAN-REQUIRED; after complete → posted ok', async () => {
     let flagsState: Record<string, unknown> = {};
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_requisitions WHERE id')) {
-          return { rows: [openYctdRow(flagsState)] };
-        }
-        if (s.includes('UPDATE public.job_requisitions')) {
-          flagsState =
-            typeof params?.[0] === 'string' ? JSON.parse(params[0] as string) : flagsState;
-          return { rows: [openYctdRow(flagsState)] };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (s.includes('FROM public.job_requisitions WHERE id')) {
+            return { rows: [openYctdRow(flagsState)] };
+          }
+          if (s.includes('UPDATE public.job_requisitions')) {
+            flagsState =
+              typeof params?.[0] === 'string'
+                ? JSON.parse(params[0])
+                : flagsState;
+            return { rows: [openYctdRow(flagsState)] };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     try {
       await svc.patchRequisitionPipelineFlags(
         REQ_ID,

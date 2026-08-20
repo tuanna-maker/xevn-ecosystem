@@ -16,9 +16,17 @@ describe('ensureAttendanceSheetSchema (close columns)', () => {
     await ensureAttendanceSheetSchema(db as never);
 
     expect(db.query).toHaveBeenCalledTimes(3);
-    expect(sql.some((s) => s.includes('CREATE TABLE IF NOT EXISTS public.attendance_sheets'))).toBe(true);
-    expect(sql.some((s) => s.includes('ADD COLUMN IF NOT EXISTS closed_at'))).toBe(true);
-    expect(sql.some((s) => s.includes('ADD COLUMN IF NOT EXISTS closed_by'))).toBe(true);
+    expect(
+      sql.some((s) =>
+        s.includes('CREATE TABLE IF NOT EXISTS public.attendance_sheets'),
+      ),
+    ).toBe(true);
+    expect(
+      sql.some((s) => s.includes('ADD COLUMN IF NOT EXISTS closed_at')),
+    ).toBe(true);
+    expect(
+      sql.some((s) => s.includes('ADD COLUMN IF NOT EXISTS closed_by')),
+    ).toBe(true);
   });
 });
 
@@ -32,9 +40,15 @@ describe('ensureAttTimesheetLineSchema (BE-ATT-LINE-01)', () => {
       }),
     };
     await ensureAttTimesheetLineSchema(db as never);
-    expect(sql.some((s) => s.includes('CREATE TABLE IF NOT EXISTS public.att_timesheet_line'))).toBe(
-      true,
-    );
-    expect(sql.some((s) => s.includes('att_timesheet_line_header_employee_active_uq'))).toBe(true);
+    expect(
+      sql.some((s) =>
+        s.includes('CREATE TABLE IF NOT EXISTS public.att_timesheet_line'),
+      ),
+    ).toBe(true);
+    expect(
+      sql.some((s) =>
+        s.includes('att_timesheet_line_header_employee_active_uq'),
+      ),
+    ).toBe(true);
   });
 });

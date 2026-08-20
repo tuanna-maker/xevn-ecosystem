@@ -8,11 +8,15 @@ describe('MobileAuthService', () => {
   const service = new MobileAuthService({} as never);
 
   it('deriveRoles adds manager for CHRO', () => {
-    expect(service.deriveRoles('CHRO')).toEqual(expect.arrayContaining(['employee', 'manager', 'hr_manager']));
+    expect(service.deriveRoles('CHRO')).toEqual(
+      expect.arrayContaining(['employee', 'manager', 'hr_manager']),
+    );
   });
 
   it('deriveRoles adds manager for COO (J-MOB-37 uat.nv0002)', () => {
-    expect(service.deriveRoles('COO')).toEqual(expect.arrayContaining(['employee', 'manager']));
+    expect(service.deriveRoles('COO')).toEqual(
+      expect.arrayContaining(['employee', 'manager']),
+    );
   });
 
   it('deriveRoles employee only for unknown title', () => {
@@ -106,7 +110,9 @@ describe('MobileAuthService', () => {
           full_name: 'A',
           employee_code: 'X',
           job_title_key: null,
-          custom_fields: { attendance_company_uuid: HRM_COMPANY_UUID_BY_SLUG.trsport },
+          custom_fields: {
+            attendance_company_uuid: HRM_COMPANY_UUID_BY_SLUG.trsport,
+          },
         },
         'xevn',
       ),
@@ -216,15 +222,20 @@ describe('MobileAuthService', () => {
 
   it('P1-G3-JMOB-05: applyMobilePersonaRoleOverride mgr promotes COO seed row', () => {
     expect(
-      service.applyMobilePersonaRoleOverride(['employee'], { mobile_persona: 'mgr' }),
+      service.applyMobilePersonaRoleOverride(['employee'], {
+        mobile_persona: 'mgr',
+      }),
     ).toEqual(expect.arrayContaining(['employee', 'manager']));
   });
 
   it('P1-G3-JMOB-05: applyMobilePersonaRoleOverride emp strips manager for nv0001 lane', () => {
     expect(
-      service.applyMobilePersonaRoleOverride(['employee', 'manager', 'hr_manager'], {
-        mobile_persona: 'emp',
-      }),
+      service.applyMobilePersonaRoleOverride(
+        ['employee', 'manager', 'hr_manager'],
+        {
+          mobile_persona: 'emp',
+        },
+      ),
     ).toEqual(['employee']);
   });
 
@@ -243,7 +254,10 @@ describe('MobileAuthService', () => {
       custom_fields: null,
     });
     expect(roles).toEqual(expect.arrayContaining(['employee', 'manager']));
-    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('manager_id'), ['mgr-uuid']);
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('manager_id'),
+      ['mgr-uuid'],
+    );
   });
 
   it('R-SPINE-MGR-HIER-01-PERSONA-LOCK: emp lock WITHOUT reports stays employee', async () => {
@@ -262,9 +276,10 @@ describe('MobileAuthService', () => {
     });
     expect(roles).toEqual(['employee']);
     expect(svc.isManagerRoles(roles)).toBe(false);
-    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('manager_id'), [
-      '3796d949-4513-45c0-88fa-33030a062b17',
-    ]);
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('manager_id'),
+      ['3796d949-4513-45c0-88fa-33030a062b17'],
+    );
   });
 
   it('R-SPINE-MGR-HIER-01-PERSONA-LOCK: emp lock WITH reports → is_manager / manager role', async () => {
@@ -283,9 +298,10 @@ describe('MobileAuthService', () => {
     });
     expect(roles).toEqual(expect.arrayContaining(['employee', 'manager']));
     expect(svc.isManagerRoles(roles)).toBe(true);
-    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('manager_id'), [
-      '3796d949-4513-45c0-88fa-33030a062b17',
-    ]);
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('manager_id'),
+      ['3796d949-4513-45c0-88fa-33030a062b17'],
+    );
   });
 
   it('P1-G3-JMOB-05: resolveRolesForEmployee COO title yields manager without DB fallback', async () => {
@@ -306,7 +322,9 @@ describe('MobileAuthService', () => {
 
   it('P1-G3-JMOB-05: applyMobilePersonaRoleOverride is_manager promotes seed row', () => {
     expect(
-      service.applyMobilePersonaRoleOverride(['employee'], { is_manager: 'true' }),
+      service.applyMobilePersonaRoleOverride(['employee'], {
+        is_manager: 'true',
+      }),
     ).toEqual(expect.arrayContaining(['employee', 'manager']));
   });
 
@@ -343,9 +361,13 @@ describe('MobileAuthService', () => {
     );
     const tokens = await svc.refresh({ refresh_token: refreshToken });
     const payload = JSON.parse(
-      Buffer.from(tokens.access_token.split('.')[1], 'base64url').toString('utf8'),
+      Buffer.from(tokens.access_token.split('.')[1], 'base64url').toString(
+        'utf8',
+      ),
     );
-    expect(payload.roles).toEqual(expect.arrayContaining(['employee', 'manager']));
+    expect(payload.roles).toEqual(
+      expect.arrayContaining(['employee', 'manager']),
+    );
     expect(payload.company_uuid).toBe(HRM_COMPANY_UUID_BY_SLUG.trsport);
   });
 
@@ -360,7 +382,10 @@ describe('MobileAuthService', () => {
       const insertCalls: unknown[][] = [];
       const db = {
         query: jest.fn(async (sql: string, params?: unknown[]) => {
-          if (sql.includes('SELECT id, company_id, email') && sql.includes('lower(email)')) {
+          if (
+            sql.includes('SELECT id, company_id, email') &&
+            sql.includes('lower(email)')
+          ) {
             if (insertCalls.length > 0) {
               return {
                 rows: [
@@ -382,7 +407,10 @@ describe('MobileAuthService', () => {
             }
             return { rows: [] };
           }
-          if (sql.includes('SELECT id::text AS id') && sql.includes('lower(email)')) {
+          if (
+            sql.includes('SELECT id::text AS id') &&
+            sql.includes('lower(email)')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('lower(employee_code)')) {
@@ -399,12 +427,17 @@ describe('MobileAuthService', () => {
         }),
       };
       const svc = new MobileAuthService(db as never);
-      const res = await svc.login({ email: ceoEmail, password: portalPassword });
+      const res = await svc.login({
+        email: ceoEmail,
+        password: portalPassword,
+      });
       expect(res.access_token).toBeTruthy();
       expect(res.employee.email).toBe(ceoEmail);
       expect(res.employee.employee_code).toBe('PORTAL-GCEO');
       expect(res.company_uuid).toBe(HRM_COMPANY_UUID_BY_SLUG.holding);
-      expect(res.roles).toEqual(expect.arrayContaining(['employee', 'manager', 'hr_manager']));
+      expect(res.roles).toEqual(
+        expect.arrayContaining(['employee', 'manager', 'hr_manager']),
+      );
       expect(insertCalls.length).toBe(1);
       expect(insertCalls[0]?.[2]).toBe('PORTAL-GCEO');
     });
@@ -414,7 +447,9 @@ describe('MobileAuthService', () => {
         query: jest.fn(async () => ({ rows: [] })),
       };
       const svc = new MobileAuthService(db as never);
-      await expect(svc.login({ email: ceoEmail, password: 'wrong-password' })).rejects.toMatchObject({
+      await expect(
+        svc.login({ email: ceoEmail, password: 'wrong-password' }),
+      ).rejects.toMatchObject({
         code: 'HRM-AUTH-401',
       });
     });
@@ -431,8 +466,11 @@ describe('MobileAuthService', () => {
         job_title_key: 'CEO',
         custom_fields: { mobile_password_hash: 'deadbeef'.repeat(8) },
       };
-      const verified = (svc as unknown as { verifyPassword: (e: string, p: string, r: typeof row) => boolean })
-        .verifyPassword(ceoEmail, portalPassword, row);
+      const verified = (
+        svc as unknown as {
+          verifyPassword: (e: string, p: string, r: typeof row) => boolean;
+        }
+      ).verifyPassword(ceoEmail, portalPassword, row);
       expect(verified).toBe(true);
     });
   });
@@ -448,7 +486,10 @@ describe('MobileAuthService', () => {
       const insertCalls: unknown[][] = [];
       const db = {
         query: jest.fn(async (sql: string, params?: unknown[]) => {
-          if (sql.includes('SELECT id, company_id, email') && sql.includes('lower(email)')) {
+          if (
+            sql.includes('SELECT id, company_id, email') &&
+            sql.includes('lower(email)')
+          ) {
             if (insertCalls.length > 0) {
               return {
                 rows: [
@@ -470,7 +511,10 @@ describe('MobileAuthService', () => {
             }
             return { rows: [] };
           }
-          if (sql.includes('SELECT id::text AS id') && sql.includes('lower(email)')) {
+          if (
+            sql.includes('SELECT id::text AS id') &&
+            sql.includes('lower(email)')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('INSERT INTO public.employees')) {
@@ -498,7 +542,9 @@ describe('MobileAuthService', () => {
         query: jest.fn(async () => ({ rows: [] })),
       };
       const svc = new MobileAuthService(db as never);
-      await expect(svc.login({ email: uatEmail, password: 'wrong-password' })).rejects.toMatchObject({
+      await expect(
+        svc.login({ email: uatEmail, password: 'wrong-password' }),
+      ).rejects.toMatchObject({
         code: 'HRM-AUTH-401',
       });
     });
@@ -512,10 +558,16 @@ describe('MobileAuthService', () => {
         full_name: 'NV',
         employee_code: 'HLD-0001',
         job_title_key: 'STAFF',
-        custom_fields: { mobile_password_hash: 'deadbeef'.repeat(8), mobile_persona: 'emp' },
+        custom_fields: {
+          mobile_password_hash: 'deadbeef'.repeat(8),
+          mobile_persona: 'emp',
+        },
       };
-      const verified = (svc as unknown as { verifyPassword: (e: string, p: string, r: typeof row) => boolean })
-        .verifyPassword(uatEmail, uatPassword, row);
+      const verified = (
+        svc as unknown as {
+          verifyPassword: (e: string, p: string, r: typeof row) => boolean;
+        }
+      ).verifyPassword(uatEmail, uatPassword, row);
       expect(verified).toBe(true);
     });
 
@@ -524,7 +576,10 @@ describe('MobileAuthService', () => {
       const insertCalls: unknown[][] = [];
       const db = {
         query: jest.fn(async (sql: string, params?: unknown[]) => {
-          if (sql.includes('SELECT id, company_id, email') && sql.includes('ANY')) {
+          if (
+            sql.includes('SELECT id, company_id, email') &&
+            sql.includes('ANY')
+          ) {
             if (insertCalls.length > 0) {
               return {
                 rows: [
@@ -546,7 +601,10 @@ describe('MobileAuthService', () => {
             }
             return { rows: [] };
           }
-          if (sql.includes('SELECT id::text AS id') && sql.includes('lower(email)')) {
+          if (
+            sql.includes('SELECT id::text AS id') &&
+            sql.includes('lower(email)')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('INSERT INTO public.employees')) {
@@ -560,7 +618,10 @@ describe('MobileAuthService', () => {
         }),
       };
       const svc = new MobileAuthService(db as never);
-      const res = await svc.login({ email: legacyEmail, password: uatPassword });
+      const res = await svc.login({
+        email: legacyEmail,
+        password: uatPassword,
+      });
       expect(res.access_token).toBeTruthy();
       expect(res.employee.email).toBe(uatEmail);
       expect(insertCalls.length).toBe(1);

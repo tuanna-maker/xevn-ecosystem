@@ -27,7 +27,14 @@
  * DTO remains optional string — invalid → HRM-YCTD-VAL-400 not PG 500.
  * change_mode: FIX · residual R-REC-02-TARGET-MONTH-DATE
  */
-import { IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class CreateJobRequisitionDto {
   @IsString()

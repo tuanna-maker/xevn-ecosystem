@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Headers, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -17,9 +27,16 @@ export class NotificationsController {
     private readonly push: PushOutboundService,
   ) {}
 
-  private assertBusinessAccess(authorization?: string, internalApiKey?: string) {
+  private assertBusinessAccess(
+    authorization?: string,
+    internalApiKey?: string,
+  ) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized notifications access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized notifications access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -32,10 +49,19 @@ export class NotificationsController {
     @Query() query: ListInboxQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     const limit = query.limit ?? 40;
     return this.inbox
-      .listInbox(query.company_id, query.employee_id, limit, authorization, tenantId)
+      .listInbox(
+        query.company_id,
+        query.employee_id,
+        limit,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-NOTIF-200', 'Inbox listed'));
   }
 

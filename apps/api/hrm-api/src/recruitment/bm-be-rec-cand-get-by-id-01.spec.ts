@@ -58,7 +58,11 @@ describe('BM-BE-REC-CAND-GET-BY-ID-01 scope_parity', () => {
         return { rows: [] } as never;
       });
 
-      const result = await service.getCandidatePoolById(candidateId, 'main', `Bearer ${ceoToken()}`);
+      const result = await service.getCandidatePoolById(
+        candidateId,
+        'main',
+        `Bearer ${ceoToken()}`,
+      );
 
       expect(result.id).toBe(candidateId);
       expect(result.company_id).toBe('holding');
@@ -111,10 +115,16 @@ describe('BM-BE-REC-CAND-GET-BY-ID-01 scope_parity', () => {
     it('finds holding spine candidate when group CEO requests company_id=main', async () => {
       const candidateId = 'a1b2c3d4-e5f6-4789-a012-3456789abcde';
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('CREATE TABLE IF NOT EXISTS') || sql.includes('ALTER TABLE')) {
+        if (
+          sql.includes('CREATE TABLE IF NOT EXISTS') ||
+          sql.includes('ALTER TABLE')
+        ) {
           return { rows: [] } as never;
         }
-        if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.recruitment_candidates') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -151,10 +161,16 @@ describe('BM-BE-REC-CAND-GET-BY-ID-01 scope_parity', () => {
 
     it('returns HRM-REC-404 when spine id is outside rollup scope', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('CREATE TABLE IF NOT EXISTS') || sql.includes('ALTER TABLE')) {
+        if (
+          sql.includes('CREATE TABLE IF NOT EXISTS') ||
+          sql.includes('ALTER TABLE')
+        ) {
           return { rows: [] } as never;
         }
-        if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.recruitment_candidates') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [] } as never;
         }
         return { rows: [] } as never;

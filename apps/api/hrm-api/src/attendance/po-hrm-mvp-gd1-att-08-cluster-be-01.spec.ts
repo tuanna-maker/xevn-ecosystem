@@ -26,7 +26,10 @@ describe('leave-deduction-engine (BR-BP-LV-05)', () => {
     expect(out.calendar_days).toBe(4);
     expect(out.working_days).toBe(2);
     expect(out.deductible_units).toBe(2);
-    expect(out.excluded_days.map((d) => d.date)).toEqual(['2026-08-08', '2026-08-09']);
+    expect(out.excluded_days.map((d) => d.date)).toEqual([
+      '2026-08-08',
+      '2026-08-09',
+    ]);
     expect(out.excluded_days.every((d) => d.reason === 'weekend')).toBe(true);
   });
 
@@ -51,9 +54,11 @@ describe('leave-deduction-engine (BR-BP-LV-05)', () => {
     });
     expect(out.working_days).toBe(1);
     expect(out.deductible_units).toBe(1);
-    expect(out.excluded_days.some((d) => d.date === '2026-08-10' && d.reason === 'holiday')).toBe(
-      true,
-    );
+    expect(
+      out.excluded_days.some(
+        (d) => d.date === '2026-08-10' && d.reason === 'holiday',
+      ),
+    ).toBe(true);
   });
 
   it('GC-ATT-08-03 Sat→Sun only → working_days=0 + warnings', () => {
@@ -103,13 +108,12 @@ describe('PO-HRM-MVP-GD1-ATT-08-CLUSTER-BE-01 preview + HOL-MISS + ALIGN', () =>
   const employeeId = '11111111-1111-4111-8111-111111111111';
 
   function noopBridge() {
-    return { startLeaveWorkflowIfConfigured: jest.fn().mockResolvedValue(null) };
+    return {
+      startLeaveWorkflowIfConfigured: jest.fn().mockResolvedValue(null),
+    };
   }
 
-  function holidayMock(opts?: {
-    missing?: boolean;
-    holidays?: string[];
-  }) {
+  function holidayMock(opts?: { missing?: boolean; holidays?: string[] }) {
     return {
       ensureSchema: jest.fn().mockResolvedValue(undefined),
       assertHolidayYearsPresent: jest.fn().mockImplementation(async () => {
@@ -150,7 +154,7 @@ describe('PO-HRM-MVP-GD1-ATT-08-CLUSTER-BE-01 preview + HOL-MISS + ALIGN', () =>
       undefined,
       undefined,
       leaveTypeMock('day') as never,
-      holidayMock() as never,
+      holidayMock(),
     );
     const out = await svc.previewDeduction(
       {
@@ -180,7 +184,7 @@ describe('PO-HRM-MVP-GD1-ATT-08-CLUSTER-BE-01 preview + HOL-MISS + ALIGN', () =>
       undefined,
       undefined,
       leaveTypeMock('day') as never,
-      holidayMock({ missing: true }) as never,
+      holidayMock({ missing: true }),
     );
     await expect(
       svc.previewDeduction(
@@ -207,7 +211,7 @@ describe('PO-HRM-MVP-GD1-ATT-08-CLUSTER-BE-01 preview + HOL-MISS + ALIGN', () =>
       undefined,
       undefined,
       leaveTypeMock('hour') as never,
-      holidayMock() as never,
+      holidayMock(),
     );
     const out = await svc.previewDeduction(
       {
@@ -251,7 +255,11 @@ describe('PO-HRM-MVP-GD1-ATT-08-CLUSTER-BE-01 preview + HOL-MISS + ALIGN', () =>
     };
     const queryMock = jest.fn().mockImplementation((sql: string) => {
       const s = String(sql);
-      if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+      if (
+        s.includes('CREATE TABLE') ||
+        s.includes('ALTER TABLE') ||
+        s.includes('CREATE INDEX')
+      ) {
         return Promise.resolve({ rows: [] });
       }
       if (s.includes('daterange')) {
@@ -268,7 +276,9 @@ describe('PO-HRM-MVP-GD1-ATT-08-CLUSTER-BE-01 preview + HOL-MISS + ALIGN', () =>
       }
       return Promise.resolve({ rows: [] });
     });
-    const fanout = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanout = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanout as never,
@@ -278,7 +288,7 @@ describe('PO-HRM-MVP-GD1-ATT-08-CLUSTER-BE-01 preview + HOL-MISS + ALIGN', () =>
       undefined,
       undefined,
       leaveTypeMock('day') as never,
-      holidayMock() as never,
+      holidayMock(),
     );
     await expect(
       svc.createLeaveRequest({

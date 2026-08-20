@@ -10,7 +10,18 @@
  * Purpose:    Update Leave Type DTO with optional fields.
  * SOLID:      DTO SRP -- validation only, no business logic
  */
-import { IsBoolean, IsIn, IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 export class UpdateLeaveTypeDto {

@@ -19,7 +19,10 @@
  */
 import { getVerifiedInternalJwtPayload } from '../common/internal-auth';
 
-function readStringClaim(payload: Record<string, unknown>, ...keys: string[]): string | undefined {
+function readStringClaim(
+  payload: Record<string, unknown>,
+  ...keys: string[]
+): string | undefined {
   for (const key of keys) {
     const value = payload[key];
     if (typeof value === 'string' && value.trim()) {
@@ -37,5 +40,12 @@ export function resolveSubmitterUserIdFromAuth(
   if (fromHeader) return fromHeader;
   const payload = getVerifiedInternalJwtPayload(authorization);
   if (!payload) return undefined;
-  return readStringClaim(payload, 'email', 'sub', 'userId', 'user_id', 'preferred_username');
+  return readStringClaim(
+    payload,
+    'email',
+    'sub',
+    'userId',
+    'user_id',
+    'preferred_username',
+  );
 }

@@ -16,8 +16,12 @@ import {
 describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
   describe('resolvePayslipLineSourceTier (R-PAY-SRC-TIER-FIELD)', () => {
     it('prefers stored column when valid', () => {
-      expect(resolvePayslipLineSourceTier('emp_cb', 'period_input:x')).toBe('emp_cb');
-      expect(resolvePayslipLineSourceTier('template_override', 'expr:mul')).toBe('template_override');
+      expect(resolvePayslipLineSourceTier('emp_cb', 'period_input:x')).toBe(
+        'emp_cb',
+      );
+      expect(
+        resolvePayslipLineSourceTier('template_override', 'expr:mul'),
+      ).toBe('template_override');
     });
 
     it('derives emp_cb from source_ref when stored null (GET-TIER)', () => {
@@ -30,10 +34,18 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
     });
 
     it('derives period_input / formula_default prefixes', () => {
-      expect(resolvePayslipLineSourceTier(undefined, 'period_input:line-1')).toBe('period_input');
-      expect(resolvePayslipLineSourceTier('', 'catalog:default_value')).toBe('formula_default');
-      expect(resolvePayslipLineSourceTier(null, 'expr:mul')).toBe('formula_default');
-      expect(resolvePayslipLineSourceTier(null, 'var:base_salary')).toBe('formula_default');
+      expect(
+        resolvePayslipLineSourceTier(undefined, 'period_input:line-1'),
+      ).toBe('period_input');
+      expect(resolvePayslipLineSourceTier('', 'catalog:default_value')).toBe(
+        'formula_default',
+      );
+      expect(resolvePayslipLineSourceTier(null, 'expr:mul')).toBe(
+        'formula_default',
+      );
+      expect(resolvePayslipLineSourceTier(null, 'var:base_salary')).toBe(
+        'formula_default',
+      );
     });
 
     it('returns null when neither stored nor ref is known', () => {
@@ -47,8 +59,18 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
       const cols = parsePeriodSnapshotColumns({
         template_id: 'tpl-1',
         columns: [
-          { component_code: 'OT', sort_order: 2, formula_definition_id: null, override_applied: false },
-          { component_code: 'BASE', sort_order: 1, formula_definition_id: 'f1', override_applied: true },
+          {
+            component_code: 'OT',
+            sort_order: 2,
+            formula_definition_id: null,
+            override_applied: false,
+          },
+          {
+            component_code: 'BASE',
+            sort_order: 1,
+            formula_definition_id: 'f1',
+            override_applied: true,
+          },
         ],
       });
       expect(cols.map((c) => c.component_code)).toEqual(['BASE', 'OT']);
@@ -146,7 +168,11 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
           sort_order: 1,
         },
       ]);
-      expect(totals).toEqual({ gross: 10_000_000, deduction: 1_000_000, net: 9_000_000 });
+      expect(totals).toEqual({
+        gross: 10_000_000,
+        deduction: 1_000_000,
+        net: 9_000_000,
+      });
     });
   });
 
@@ -162,13 +188,19 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
     it('VAL-PAY-SRC-02A: reads component_code line with package:line source_ref', async () => {
       const db = {
         query: jest.fn(async (sql: string) => {
-          if (sql.includes('ALTER TABLE') || sql.includes('UPDATE public.employee_compensation_lines')) {
+          if (
+            sql.includes('ALTER TABLE') ||
+            sql.includes('UPDATE public.employee_compensation_lines')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('FROM public.employees')) {
             return { rows: [{ company_id: 'holding' }] };
           }
-          if (sql.includes('FROM public.employee_compensation_packages') && sql.includes('ANY')) {
+          if (
+            sql.includes('FROM public.employee_compensation_packages') &&
+            sql.includes('ANY')
+          ) {
             return { rows: [{ id: 'pkg-1', company_id: 'holding' }] };
           }
           if (sql.includes('FROM public.employee_compensation_lines')) {
@@ -204,7 +236,10 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
     it('VAL-PAY-SRC-02A: BASE alias matches base line via component_code', async () => {
       const db = {
         query: jest.fn(async (sql: string) => {
-          if (sql.includes('ALTER TABLE') || sql.includes('UPDATE public.employee_compensation_lines')) {
+          if (
+            sql.includes('ALTER TABLE') ||
+            sql.includes('UPDATE public.employee_compensation_lines')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('FROM public.employees')) {
@@ -245,7 +280,10 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
     it('returns null with CB_COMPONENT_UNMAPPED warning path when lines unmapped', async () => {
       const db = {
         query: jest.fn(async (sql: string) => {
-          if (sql.includes('ALTER TABLE') || sql.includes('UPDATE public.employee_compensation_lines')) {
+          if (
+            sql.includes('ALTER TABLE') ||
+            sql.includes('UPDATE public.employee_compensation_lines')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('FROM public.employees')) {
@@ -319,7 +357,9 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
   describe('normalizePayrollAsOfDate', () => {
     it('keeps yyyy-MM-dd and slices ISO date prefix', () => {
       expect(normalizePayrollAsOfDate('2026-09-30')).toBe('2026-09-30');
-      expect(normalizePayrollAsOfDate('2026-09-29T17:00:00.000Z')).toBe('2026-09-29');
+      expect(normalizePayrollAsOfDate('2026-09-29T17:00:00.000Z')).toBe(
+        '2026-09-29',
+      );
     });
   });
 
@@ -327,13 +367,19 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
     it('reads base_salary from C&B bag for BASE component', async () => {
       const db = {
         query: jest.fn(async (sql: string) => {
-          if (sql.includes('ALTER TABLE') || sql.includes('UPDATE public.employee_compensation_lines')) {
+          if (
+            sql.includes('ALTER TABLE') ||
+            sql.includes('UPDATE public.employee_compensation_lines')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('FROM public.employees')) {
             return { rows: [{ company_id: 'holding' }] };
           }
-          if (sql.includes('FROM public.employee_compensation_packages') && sql.includes('ANY')) {
+          if (
+            sql.includes('FROM public.employee_compensation_packages') &&
+            sql.includes('ANY')
+          ) {
             return { rows: [{ id: 'pkg-1', company_id: 'holding' }] };
           }
           if (sql.includes('FROM public.employee_compensation_lines')) {
@@ -368,7 +414,10 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
     it('D-PAY-SRC-01: LUONG_CO_BAN template code wins emp_cb from base line', async () => {
       const db = {
         query: jest.fn(async (sql: string) => {
-          if (sql.includes('ALTER TABLE') || sql.includes('UPDATE public.employee_compensation_lines')) {
+          if (
+            sql.includes('ALTER TABLE') ||
+            sql.includes('UPDATE public.employee_compensation_lines')
+          ) {
             return { rows: [] };
           }
           if (sql.includes('FROM public.employees')) {
@@ -415,7 +464,11 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
             return { rows: [{ exists: true }] };
           }
           if (sql.includes('FROM public.pay_period_input_lines')) {
-            return { rows: [{ id: 'inp-1', amount: '750000', source_kind: 'other_income' }] };
+            return {
+              rows: [
+                { id: 'inp-1', amount: '750000', source_kind: 'other_income' },
+              ],
+            };
           }
           return { rows: [] };
         }),
@@ -426,7 +479,11 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
         employeeId: 'emp-1',
         componentCode: 'BONUS',
       });
-      expect(pack).toEqual({ id: 'inp-1', amount: 750_000, source_kind: 'other_income' });
+      expect(pack).toEqual({
+        id: 'inp-1',
+        amount: 750_000,
+        source_kind: 'other_income',
+      });
     });
 
     it('VAL-INP-SRC-03b throws when row has non-finite amount (no silent 0)', async () => {
@@ -436,7 +493,11 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
             return { rows: [{ exists: true }] };
           }
           if (sql.includes('FROM public.pay_period_input_lines')) {
-            return { rows: [{ id: 'bad-1', amount: 'not-a-number', source_kind: 'manual' }] };
+            return {
+              rows: [
+                { id: 'bad-1', amount: 'not-a-number', source_kind: 'manual' },
+              ],
+            };
           }
           return { rows: [] };
         }),
@@ -474,7 +535,10 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
     it('finds published formula by comp: code convention', async () => {
       const db = {
         query: jest.fn(async (sql: string, params?: unknown[]) => {
-          if (sql.includes('FROM public.pay_formula_definitions') && params?.[1] === 'comp:meal') {
+          if (
+            sql.includes('FROM public.pay_formula_definitions') &&
+            params?.[1] === 'comp:meal'
+          ) {
             return { rows: [{ id: 'formula-meal' }] };
           }
           return { rows: [] };

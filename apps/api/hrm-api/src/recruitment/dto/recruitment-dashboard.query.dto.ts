@@ -21,7 +21,12 @@ export class RecruitmentDashboardQueryDto {
   @IsOptional()
   @IsString()
   @MaxLength(64)
-  @Transform(({ value, obj }) => pickScalar(value) ?? pickScalar(obj?.companyId) ?? pickScalar(obj?.company_id))
+  @Transform(
+    ({ value, obj }) =>
+      pickScalar(value) ??
+      pickScalar(obj?.companyId) ??
+      pickScalar(obj?.company_id),
+  )
   company_id?: string;
 
   @IsOptional()

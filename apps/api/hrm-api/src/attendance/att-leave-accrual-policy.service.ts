@@ -284,9 +284,18 @@ export class AttLeaveAccrualPolicyService {
     requestedCompanyId: string,
     tenantId?: string,
   ) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -792,7 +801,10 @@ export class AttLeaveAccrualPolicyService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const effectiveFrom = this.assertIsoDate(body.effectiveFrom, 'effectiveFrom');
+    const effectiveFrom = this.assertIsoDate(
+      body.effectiveFrom,
+      'effectiveFrom',
+    );
     const effectiveTo =
       body.effectiveTo == null || body.effectiveTo === ''
         ? null

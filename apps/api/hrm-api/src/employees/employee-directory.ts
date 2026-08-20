@@ -43,18 +43,26 @@ export function isDirectoryView(view: string | undefined): boolean {
   return view?.trim().toLowerCase() === 'directory';
 }
 
-export function resolveDirectorySearchTerm(keyword?: string, q?: string): string | undefined {
+export function resolveDirectorySearchTerm(
+  keyword?: string,
+  q?: string,
+): string | undefined {
   const term = (q ?? keyword)?.trim();
   return term || undefined;
 }
 
-export function readDepartment(customFields: Record<string, string> | null | undefined): string | null {
+export function readDepartment(
+  customFields: Record<string, string> | null | undefined,
+): string | null {
   const value = customFields?.department?.trim();
   return value || null;
 }
 
-export function readPhoneNumber(customFields: Record<string, string> | null | undefined): string | null {
-  const phone = customFields?.phone_number?.trim() || customFields?.work_phone?.trim();
+export function readPhoneNumber(
+  customFields: Record<string, string> | null | undefined,
+): string | null {
+  const phone =
+    customFields?.phone_number?.trim() || customFields?.work_phone?.trim();
   return phone || null;
 }
 
@@ -139,5 +147,7 @@ export function directoryItemPassesAttendanceFilter(
 }
 
 export function todayIsoInHoChiMinh(): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+  }).format(new Date());
 }

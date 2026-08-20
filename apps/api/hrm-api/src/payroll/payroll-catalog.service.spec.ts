@@ -91,23 +91,38 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
   it('scope_parity: list id under main → getById 200 (holding row)', async () => {
     const row = baseComponent();
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('ALTER TABLE') ||
+            s.includes('CREATE INDEX')
+          ) {
+            return { rows: [] };
+          }
+          if (
+            s.includes('INSERT INTO public.salary_components') &&
+            s.includes('WHERE NOT EXISTS')
+          ) {
+            return { rows: [] };
+          }
+          if (
+            s.includes('FROM public.salary_components sc') &&
+            s.includes('ORDER BY')
+          ) {
+            expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
+            return { rows: [row] };
+          }
+          if (
+            s.includes('FROM public.salary_components sc') &&
+            s.includes('LIMIT 1')
+          ) {
+            return { rows: [row] };
+          }
           return { rows: [] };
-        }
-        if (s.includes('INSERT INTO public.salary_components') && s.includes('WHERE NOT EXISTS')) {
-          return { rows: [] };
-        }
-        if (s.includes('FROM public.salary_components sc') && s.includes('ORDER BY')) {
-          expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
-          return { rows: [row] };
-        }
-        if (s.includes('FROM public.salary_components sc') && s.includes('LIMIT 1')) {
-          return { rows: [row] };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new PayrollCatalogService(db);
     const auth = groupCeoToken();
@@ -124,7 +139,11 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('LIMIT 1')) {
@@ -134,7 +153,9 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
       }),
     } as unknown as HrmDbService;
     const svc = new PayrollCatalogService(db);
-    await expect(svc.getSalaryComponentById(COMP_ID, 'main', memberCeoToken())).rejects.toMatchObject({
+    await expect(
+      svc.getSalaryComponentById(COMP_ID, 'main', memberCeoToken()),
+    ).rejects.toMatchObject({
       code: HRM_PAY_COMP_404,
     });
   });
@@ -163,10 +184,17 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
         sqls.push(s);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('SELECT id FROM public.salary_components') && s.includes('lower(code)')) {
+        if (
+          s.includes('SELECT id FROM public.salary_components') &&
+          s.includes('lower(code)')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.salary_components')) {
@@ -197,17 +225,26 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
     );
     expect(created.code).toBe('CUSTOM_TP_09');
     expect(created.formula_sot).toBe('deprecated');
-    expect(sqls.some((q) => q.includes('INSERT INTO public.salary_components'))).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('INSERT INTO public.salary_components')),
+    ).toBe(true);
   });
 
   it('bind default_formula_definition_id requires published active formula', async () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.pay_formula_definitions') && s.includes("status = 'active'")) {
+        if (
+          s.includes('FROM public.pay_formula_definitions') &&
+          s.includes("status = 'active'")
+        ) {
           return { rows: [] };
         }
         if (s.includes('SELECT id FROM public.salary_components')) {
@@ -235,7 +272,11 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.salary_components WHERE id = $1::uuid')) {
@@ -250,7 +291,10 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
             ],
           };
         }
-        if (s.includes('FROM public.pay_formula_definitions') && s.includes("status = 'active'")) {
+        if (
+          s.includes('FROM public.pay_formula_definitions') &&
+          s.includes("status = 'active'")
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -273,19 +317,32 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
         sqls.push(s);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('UPDATE public.salary_components') && s.includes('archived_at = NOW()')) {
+        if (
+          s.includes('UPDATE public.salary_components') &&
+          s.includes('archived_at = NOW()')
+        ) {
           return { rows: [{ id: COMP_ID }] };
         }
         return { rows: [] };
       }),
     } as unknown as HrmDbService;
     const svc = new PayrollCatalogService(db);
-    const result = await svc.deleteSalaryComponent(COMP_ID, 'main', groupCeoToken());
+    const result = await svc.deleteSalaryComponent(
+      COMP_ID,
+      'main',
+      groupCeoToken(),
+    );
     expect(result.archived).toBe(true);
-    expect(sqls.some((q) => q.startsWith('DELETE FROM public.salary_components'))).toBe(false);
+    expect(
+      sqls.some((q) => q.startsWith('DELETE FROM public.salary_components')),
+    ).toBe(false);
   });
 
   it('starter ensure upserts bootstrap rows only when missing', async () => {
@@ -296,10 +353,17 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
         if (s.includes('WHERE NOT EXISTS')) {
           starterSqls.push(s);
         }
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.salary_components sc') && s.includes('ORDER BY')) {
+        if (
+          s.includes('FROM public.salary_components sc') &&
+          s.includes('ORDER BY')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -314,10 +378,17 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('SELECT id FROM public.salary_components') && s.includes('lower(code)')) {
+        if (
+          s.includes('SELECT id FROM public.salary_components') &&
+          s.includes('lower(code)')
+        ) {
           return { rows: [{ id: COMP_ID }] };
         }
         return { rows: [] };
@@ -346,9 +417,16 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
       total: 0,
       data: [],
     });
-    const appendExtensionItems = jest.fn().mockResolvedValue({ upserted: 3, storageKey: 'pay_types' });
-    const settingsCatalogs = { listPickerItems, appendExtensionItems } as unknown as SettingsCatalogsService;
-    const db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as HrmDbService;
+    const appendExtensionItems = jest
+      .fn()
+      .mockResolvedValue({ upserted: 3, storageKey: 'pay_types' });
+    const settingsCatalogs = {
+      listPickerItems,
+      appendExtensionItems,
+    } as unknown as SettingsCatalogsService;
+    const db = {
+      query: jest.fn().mockResolvedValue({ rows: [] }),
+    } as unknown as HrmDbService;
     const svc = new PayrollCatalogService(db, settingsCatalogs);
     await svc.ensureStarterPayTypes('main', groupCeoToken());
     expect(listPickerItems).toHaveBeenCalledWith(
@@ -362,7 +440,11 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
       'holding',
       'pay_types',
       expect.arrayContaining([
-        expect.objectContaining({ code: 'luong', label: 'Lương', status: 'active' }),
+        expect.objectContaining({
+          code: 'luong',
+          label: 'Lương',
+          status: 'active',
+        }),
         expect.objectContaining({ code: 'thue' }),
         expect.objectContaining({ code: 'cham_cong' }),
       ]),
@@ -379,8 +461,13 @@ describe('PayrollCatalogService platform PAY catalog (PO-HRM-DYNAMIC-CONFIG-PLAT
       data: [{ code: 'luong' }, { code: 'thue' }],
     });
     const appendExtensionItems = jest.fn();
-    const settingsCatalogs = { listPickerItems, appendExtensionItems } as unknown as SettingsCatalogsService;
-    const db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as HrmDbService;
+    const settingsCatalogs = {
+      listPickerItems,
+      appendExtensionItems,
+    } as unknown as SettingsCatalogsService;
+    const db = {
+      query: jest.fn().mockResolvedValue({ rows: [] }),
+    } as unknown as HrmDbService;
     const svc = new PayrollCatalogService(db, settingsCatalogs);
     await svc.ensureStarterPayTypes('holding', groupCeoToken());
     expect(appendExtensionItems).not.toHaveBeenCalled();
@@ -396,68 +483,93 @@ describe('PayrollCatalogService payment wire (PO-HRM-AMIS-PARITY-PAY-PAYMENT-WIR
     let payslipSelectSql = '';
     let paymentRecordInsertParams: unknown[] | undefined;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('CREATE UNIQUE INDEX')) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (s.includes('CREATE TABLE') || s.includes('CREATE UNIQUE INDEX')) {
+            return { rows: [] };
+          }
+          if (s.includes('FROM public.payroll_periods pp')) {
+            return {
+              rows: [
+                {
+                  id: PERIOD_ID,
+                  company_id: 'holding',
+                  period_label: '2026-04',
+                  start_date: '2026-04-01',
+                  end_date: '2026-04-30',
+                  status: 'processed',
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.payroll_payslips ps')) {
+            payslipSelectSql = s;
+            return {
+              rows: [
+                {
+                  id: PAYSLIP_ID,
+                  employee_id: '11111111-1111-4111-8111-111111111111',
+                  employee_code: 'NV001',
+                  employee_name: 'Nguyen Van A',
+                  net_amount: '9500000',
+                  department: 'Van hanh',
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('FROM public.payment_batches WHERE payroll_batch_id')
+          ) {
+            return { rows: [] };
+          }
+          if (s.includes('INSERT INTO public.payment_batches')) {
+            return {
+              rows: [
+                {
+                  id: BATCH_ID,
+                  company_id: 'holding',
+                  payroll_batch_id: PERIOD_ID,
+                  status: 'pending',
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('FROM public.payment_records') &&
+            s.includes('payroll_record_id')
+          ) {
+            return { rows: [] };
+          }
+          if (s.includes('INSERT INTO public.payment_records')) {
+            paymentRecordInsertParams = params;
+            return {
+              rows: [
+                {
+                  id: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
+                  payroll_record_id: PAYSLIP_ID,
+                  amount: 9500000,
+                  status: 'pending',
+                  department: params?.[7] ?? null,
+                },
+              ],
+            };
+          }
+          if (s.includes('UPDATE public.payment_batches pb SET')) {
+            return {
+              rows: [
+                {
+                  id: BATCH_ID,
+                  employee_count: 1,
+                  total_amount: 9500000,
+                  status: 'pending',
+                },
+              ],
+            };
+          }
           return { rows: [] };
-        }
-        if (s.includes('FROM public.payroll_periods pp')) {
-          return {
-            rows: [
-              {
-                id: PERIOD_ID,
-                company_id: 'holding',
-                period_label: '2026-04',
-                start_date: '2026-04-01',
-                end_date: '2026-04-30',
-                status: 'processed',
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.payroll_payslips ps')) {
-          payslipSelectSql = s;
-          return {
-            rows: [
-              {
-                id: PAYSLIP_ID,
-                employee_id: '11111111-1111-4111-8111-111111111111',
-                employee_code: 'NV001',
-                employee_name: 'Nguyen Van A',
-                net_amount: '9500000',
-                department: 'Van hanh',
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.payment_batches WHERE payroll_batch_id')) {
-          return { rows: [] };
-        }
-        if (s.includes('INSERT INTO public.payment_batches')) {
-          return { rows: [{ id: BATCH_ID, company_id: 'holding', payroll_batch_id: PERIOD_ID, status: 'pending' }] };
-        }
-        if (s.includes('FROM public.payment_records') && s.includes('payroll_record_id')) {
-          return { rows: [] };
-        }
-        if (s.includes('INSERT INTO public.payment_records')) {
-          paymentRecordInsertParams = params;
-          return {
-            rows: [
-              {
-                id: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
-                payroll_record_id: PAYSLIP_ID,
-                amount: 9500000,
-                status: 'pending',
-                department: params?.[7] ?? null,
-              },
-            ],
-          };
-        }
-        if (s.includes('UPDATE public.payment_batches pb SET')) {
-          return { rows: [{ id: BATCH_ID, employee_count: 1, total_amount: 9500000, status: 'pending' }] };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new PayrollCatalogService(db);
     const result = await svc.wirePaymentBatchFromPeriod(
@@ -477,69 +589,94 @@ describe('PayrollCatalogService payment wire (PO-HRM-AMIS-PARITY-PAY-PAYMENT-WIR
   it('wirePaymentBatchFromPeriod allows null department from custom_fields (schema reality)', async () => {
     let paymentRecordInsertParams: unknown[] | undefined;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('CREATE UNIQUE INDEX')) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (s.includes('CREATE TABLE') || s.includes('CREATE UNIQUE INDEX')) {
+            return { rows: [] };
+          }
+          if (s.includes('FROM public.payroll_periods pp')) {
+            return {
+              rows: [
+                {
+                  id: PERIOD_ID,
+                  company_id: 'holding',
+                  period_label: '2026-04',
+                  start_date: '2026-04-01',
+                  end_date: '2026-04-30',
+                  status: 'processed',
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.payroll_payslips ps')) {
+            expect(s).toContain("custom_fields->>'department'");
+            expect(s).not.toMatch(/\be\.department\b/);
+            return {
+              rows: [
+                {
+                  id: PAYSLIP_ID,
+                  employee_id: '11111111-1111-4111-8111-111111111111',
+                  employee_code: 'NV001',
+                  employee_name: 'Nguyen Van A',
+                  net_amount: '9500000',
+                  department: null,
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('FROM public.payment_batches WHERE payroll_batch_id')
+          ) {
+            return { rows: [] };
+          }
+          if (s.includes('INSERT INTO public.payment_batches')) {
+            return {
+              rows: [
+                {
+                  id: BATCH_ID,
+                  company_id: 'holding',
+                  payroll_batch_id: PERIOD_ID,
+                  status: 'pending',
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('FROM public.payment_records') &&
+            s.includes('payroll_record_id')
+          ) {
+            return { rows: [] };
+          }
+          if (s.includes('INSERT INTO public.payment_records')) {
+            paymentRecordInsertParams = params;
+            return {
+              rows: [
+                {
+                  id: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
+                  payroll_record_id: PAYSLIP_ID,
+                  amount: 9500000,
+                  status: 'pending',
+                  department: null,
+                },
+              ],
+            };
+          }
+          if (s.includes('UPDATE public.payment_batches pb SET')) {
+            return {
+              rows: [
+                {
+                  id: BATCH_ID,
+                  employee_count: 1,
+                  total_amount: 9500000,
+                  status: 'pending',
+                },
+              ],
+            };
+          }
           return { rows: [] };
-        }
-        if (s.includes('FROM public.payroll_periods pp')) {
-          return {
-            rows: [
-              {
-                id: PERIOD_ID,
-                company_id: 'holding',
-                period_label: '2026-04',
-                start_date: '2026-04-01',
-                end_date: '2026-04-30',
-                status: 'processed',
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.payroll_payslips ps')) {
-          expect(s).toContain("custom_fields->>'department'");
-          expect(s).not.toMatch(/\be\.department\b/);
-          return {
-            rows: [
-              {
-                id: PAYSLIP_ID,
-                employee_id: '11111111-1111-4111-8111-111111111111',
-                employee_code: 'NV001',
-                employee_name: 'Nguyen Van A',
-                net_amount: '9500000',
-                department: null,
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.payment_batches WHERE payroll_batch_id')) {
-          return { rows: [] };
-        }
-        if (s.includes('INSERT INTO public.payment_batches')) {
-          return { rows: [{ id: BATCH_ID, company_id: 'holding', payroll_batch_id: PERIOD_ID, status: 'pending' }] };
-        }
-        if (s.includes('FROM public.payment_records') && s.includes('payroll_record_id')) {
-          return { rows: [] };
-        }
-        if (s.includes('INSERT INTO public.payment_records')) {
-          paymentRecordInsertParams = params;
-          return {
-            rows: [
-              {
-                id: 'ffffffff-ffff-4fff-8fff-ffffffffffff',
-                payroll_record_id: PAYSLIP_ID,
-                amount: 9500000,
-                status: 'pending',
-                department: null,
-              },
-            ],
-          };
-        }
-        if (s.includes('UPDATE public.payment_batches pb SET')) {
-          return { rows: [{ id: BATCH_ID, employee_count: 1, total_amount: 9500000, status: 'pending' }] };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new PayrollCatalogService(db);
     const result = await svc.wirePaymentBatchFromPeriod(
@@ -595,7 +732,10 @@ describe('PayrollCatalogService payment wire (PO-HRM-AMIS-PARITY-PAY-PAYMENT-WIR
         if (s.includes('SELECT company_id FROM public.payment_batches')) {
           return { rows: [{ company_id: 'holding' }] };
         }
-        if (s.includes('UPDATE public.payment_records') && s.includes("status <> 'paid'")) {
+        if (
+          s.includes('UPDATE public.payment_records') &&
+          s.includes("status <> 'paid'")
+        ) {
           return { rows: [{ id: 'rec-1' }, { id: 'rec-2' }] };
         }
         if (s.includes('UPDATE public.payroll_payslips ps')) {
@@ -608,8 +748,15 @@ describe('PayrollCatalogService payment wire (PO-HRM-AMIS-PARITY-PAY-PAYMENT-WIR
       }),
     } as unknown as HrmDbService;
     const svc = new PayrollCatalogService(db);
-    const result = await svc.processAllPaymentsInBatch(BATCH_ID, 'holding', {}, groupCeoToken());
+    const result = await svc.processAllPaymentsInBatch(
+      BATCH_ID,
+      'holding',
+      {},
+      groupCeoToken(),
+    );
     expect(result.processed_records).toBe(2);
-    expect(syncCalls.some((s) => s.includes('UPDATE public.payroll_payslips ps'))).toBe(true);
+    expect(
+      syncCalls.some((s) => s.includes('UPDATE public.payroll_payslips ps')),
+    ).toBe(true);
   });
 });

@@ -54,9 +54,9 @@ describe('PO-HRM-MVP-GD1-CORE-01-CLUSTER-BE-01', () => {
 
     it('assertNoCorePublicCbDenyKeys throws HRM-CORE-CB-403 (no silent strip)', () => {
       expect(collectCorePublicCbDenyKeys({ salary: '1' })).toEqual(['salary']);
-      expect(collectCorePublicCbDenyKeys({ custom_fields: { bank_name: 'VCB' } })).toEqual([
-        'custom_fields.bank_name',
-      ]);
+      expect(
+        collectCorePublicCbDenyKeys({ custom_fields: { bank_name: 'VCB' } }),
+      ).toEqual(['custom_fields.bank_name']);
       try {
         assertNoCorePublicCbDenyKeys({ custom_fields: { salary: '9' } });
         fail('expected CB-403');
@@ -71,7 +71,9 @@ describe('PO-HRM-MVP-GD1-CORE-01-CLUSTER-BE-01', () => {
     it('relation_label display-ready + compensation include gate', () => {
       expect(resolveDependentRelationLabel('child')).toBe('Con');
       expect(resolveDependentRelationLabel('spouse')).toBe('Vợ/Chồng');
-      expect(resolveDependentRelationLabel('custom_uncle')).toBe('custom_uncle');
+      expect(resolveDependentRelationLabel('custom_uncle')).toBe(
+        'custom_uncle',
+      );
       expect(wantsCompensationSummary(undefined)).toBe(false);
       expect(wantsCompensationSummary('compensation_summary')).toBe(true);
       expect(wantsCompensationSummary('foo,compensation_summary')).toBe(true);
@@ -162,7 +164,10 @@ describe('PO-HRM-MVP-GD1-CORE-01-CLUSTER-BE-01', () => {
           `Bearer ${token}`,
           { tenantId: 'xevn' },
         ),
-      ).rejects.toMatchObject({ code: HRM_CORE_CB_403, status: HttpStatus.FORBIDDEN });
+      ).rejects.toMatchObject({
+        code: HRM_CORE_CB_403,
+        status: HttpStatus.FORBIDDEN,
+      });
       // Fail-closed before persist — no SELECT/UPDATE yet.
       expect(db.query).not.toHaveBeenCalled();
     });
@@ -212,7 +217,9 @@ describe('PO-HRM-MVP-GD1-CORE-01-CLUSTER-BE-01', () => {
               salary_range_15_20m: '1',
               salary_range_below_15m: '1',
             },
-            by_department: [{ department: 'Ops', count: '10', avg_salary: '100' }],
+            by_department: [
+              { department: 'Ops', count: '10', avg_salary: '100' },
+            ],
             by_company: [],
             recent: [],
           },
@@ -287,7 +294,7 @@ describe('PO-HRM-MVP-GD1-CORE-01-CLUSTER-BE-01', () => {
             full_name: 'Con A',
             relation_code: 'child',
             date_of_birth: '',
-          } as never,
+          },
           `Bearer ${token}`,
           { tenantId: 'xevn' },
         ),

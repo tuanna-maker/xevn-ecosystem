@@ -28,7 +28,11 @@ import { LeaveRequestsService } from './leave-requests.service';
 import { AttActivateEnrollService } from './att-activate-enroll.service';
 import { AttHolidayCalendarService } from './att-holiday-calendar.service';
 
-const PIPE = { whitelist: true, forbidNonWhitelisted: true, transform: true } as const;
+const PIPE = {
+  whitelist: true,
+  forbidNonWhitelisted: true,
+  transform: true,
+} as const;
 
 const validCreate = {
   company_id: 'holding',
@@ -44,7 +48,9 @@ const validCreate = {
 
 describe('BE-HRM-C-CONV-AS-01 CreateAttendanceSheetDto', () => {
   it('accepts TechSpec create body (FE Công chuẩn fixed)', () => {
-    const dto = Object.assign(new CreateAttendanceSheetDto(), { ...validCreate });
+    const dto = Object.assign(new CreateAttendanceSheetDto(), {
+      ...validCreate,
+    });
     expect(validateSync(dto, PIPE)).toHaveLength(0);
   });
 
@@ -54,7 +60,9 @@ describe('BE-HRM-C-CONV-AS-01 CreateAttendanceSheetDto', () => {
     });
     const errors = validateSync(dto, PIPE);
     const props = errors.map((e) => e.property);
-    expect(props).toEqual(expect.arrayContaining(['name', 'start_date', 'end_date']));
+    expect(props).toEqual(
+      expect.arrayContaining(['name', 'start_date', 'end_date']),
+    );
   });
 
   it('rejects non-ISO start_date', () => {
@@ -77,7 +85,9 @@ describe('BE-HRM-C-CONV-AS-01 CreateAttendanceSheetDto', () => {
   });
 
   it('UpdateAttendanceSheetDto accepts partial name only', () => {
-    const dto = Object.assign(new UpdateAttendanceSheetDto(), { name: 'Kỳ 7/2026' });
+    const dto = Object.assign(new UpdateAttendanceSheetDto(), {
+      name: 'Kỳ 7/2026',
+    });
     expect(validateSync(dto, PIPE)).toHaveLength(0);
   });
 });
@@ -173,7 +183,9 @@ describe('BE-HRM-C-CONV-AS-01 Nest ValidationPipe HTTP 400', () => {
       .expect(201);
     expect(res.body.code).toBe('HRM-AS-201');
     expect(createAttendanceSheet).toHaveBeenCalledTimes(1);
-    const [payload] = createAttendanceSheet.mock.calls[0] as [CreateAttendanceSheetDto];
+    const [payload] = createAttendanceSheet.mock.calls[0] as [
+      CreateAttendanceSheetDto,
+    ];
     expect(payload).toMatchObject({
       company_id: 'holding',
       name: validCreate.name,
@@ -186,7 +198,9 @@ describe('BE-HRM-C-CONV-AS-01 Nest ValidationPipe HTTP 400', () => {
 
   it('PATCH unknown property → 400', async () => {
     await request(app.getHttpServer())
-      .patch('/api/hrm/attendance/attendance-sheets/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee?company_id=holding')
+      .patch(
+        '/api/hrm/attendance/attendance-sheets/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee?company_id=holding',
+      )
       .set('x-internal-api-key', 'test-key-c-conv-as-01')
       .send({ name: 'ok', invent_records: true })
       .expect(400);
@@ -219,8 +233,12 @@ describe('BE-HRM-C-CONV-AS-01 must_keep no auto-seed on create SQL', () => {
       Object.assign(new CreateAttendanceSheetDto(), { ...validCreate }),
       undefined,
     );
-    const insertSql = queries.find((q) => q.includes('INSERT INTO public.attendance_sheets'));
+    const insertSql = queries.find((q) =>
+      q.includes('INSERT INTO public.attendance_sheets'),
+    );
     expect(insertSql).toBeDefined();
-    expect(queries.some((q) => /INSERT INTO public\.attendance_records/i.test(q))).toBe(false);
+    expect(
+      queries.some((q) => /INSERT INTO public\.attendance_records/i.test(q)),
+    ).toBe(false);
   });
 });

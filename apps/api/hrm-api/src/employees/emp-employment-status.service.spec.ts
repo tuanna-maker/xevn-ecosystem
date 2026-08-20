@@ -61,14 +61,21 @@ function schemaPassthrough(sql: string): boolean {
 }
 
 function mockDb(
-  queryImpl: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
+  queryImpl: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
 ): HrmDbService {
-  const query = jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-    return queryImpl(sql, params);
-  });
+  const query = jest
+    .fn()
+    .mockImplementation(async (sql: string, params?: unknown[]) => {
+      return queryImpl(sql, params);
+    });
   return {
     query,
-    withTransaction: jest.fn(async (fn: (q: typeof query) => Promise<unknown>) => fn(query)),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof query) => Promise<unknown>) => fn(query),
+    ),
   } as unknown as HrmDbService;
 }
 
@@ -84,20 +91,35 @@ describe('EmpEmploymentStatusService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-
     const svc = new EmpEmploymentStatusService(db);
     await svc.ensureSchema();
     expect(
-      sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.emp_employment_status')),
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.emp_employment_status'),
+      ),
     ).toBe(true);
-    expect(sqls.some((q) => q.includes('uq_emp_employment_status_company_key_active'))).toBe(true);
-    expect(sqls.some((q) => q.includes('ix_emp_employment_status_effective'))).toBe(true);
+    expect(
+      sqls.some((q) =>
+        q.includes('uq_emp_employment_status_company_key_active'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('ix_emp_employment_status_effective')),
+    ).toBe(true);
     expect(sqls.some((q) => q.includes('chk_emp_st_key_format'))).toBe(true);
-    expect(sqls.every((q) => !q.includes("status_key IN ("))).toBe(true);
-    expect(sqls.every((q) => !q.includes("CHECK (status IN ('active', 'inactive'))"))).toBe(true);
+    expect(sqls.every((q) => !q.includes('status_key IN ('))).toBe(true);
+    expect(
+      sqls.every(
+        (q) => !q.includes("CHECK (status IN ('active', 'inactive'))"),
+      ),
+    ).toBe(true);
   });
 
   it('VAL-EMP-ST-CAT-01: create open N+1 key hr_st_custom_09', async () => {
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_employment_status') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.emp_employment_status') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.emp_employment_status')) {
@@ -136,11 +158,16 @@ describe('EmpEmploymentStatusService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_employment_status') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.emp_employment_status') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.emp_employment_status')) {
-        throw new Error('duplicate key value violates unique constraint uq_emp_employment_status_company_key_active');
+        throw new Error(
+          'duplicate key value violates unique constraint uq_emp_employment_status_company_key_active',
+        );
       }
       return { rows: [] };
     });
@@ -157,39 +184,59 @@ describe('EmpEmploymentStatusService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('SELECT') && s.includes('FROM public.emp_employment_status') && s.includes('id = $1')) {
+      if (
+        s.includes('SELECT') &&
+        s.includes('FROM public.emp_employment_status') &&
+        s.includes('id = $1')
+      ) {
         return { rows: [baseRow()] };
       }
       if (s.includes('UPDATE') && s.includes('archived_at = NOW()')) {
         return {
-          rows: [baseRow({ status: 'retired', archived_at: '2026-08-08T01:00:00Z' })],
+          rows: [
+            baseRow({ status: 'retired', archived_at: '2026-08-08T01:00:00Z' }),
+          ],
         };
       }
       return { rows: [] };
     });
     const svc = new EmpEmploymentStatusService(db);
-    const row = await svc.retireEmploymentStatus(ST_ID, 'holding', groupCeoToken());
+    const row = await svc.retireEmploymentStatus(
+      ST_ID,
+      'holding',
+      groupCeoToken(),
+    );
     expect(row.status).toBe('retired');
     expect(row.archivedAt).toBeTruthy();
   });
 
   it('VAL-EMP-ST-ALS-01: EFF EMP wins group REF on same status_key', async () => {
     const settings = {
-      getEffectiveItemsForKey: jest.fn().mockResolvedValue([
-        { status: 'active', code: 'probation', label: 'REF Thử việc' },
-      ]),
+      getEffectiveItemsForKey: jest
+        .fn()
+        .mockResolvedValue([
+          { status: 'active', code: 'probation', label: 'REF Thử việc' },
+        ]),
     };
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       if (String(sql).includes('FROM public.emp_employment_status')) {
         return {
-          rows: [baseRow({ status_key: 'probation', name_vi: 'EMP Thử việc override' })],
+          rows: [
+            baseRow({
+              status_key: 'probation',
+              name_vi: 'EMP Thử việc override',
+            }),
+          ],
         };
       }
       return { rows: [] };
     });
     const svc = new EmpEmploymentStatusService(db, settings);
-    const eff = await svc.listEffective({ company_id: 'holding' }, groupCeoToken());
+    const eff = await svc.listEffective(
+      { company_id: 'holding' },
+      groupCeoToken(),
+    );
     expect(eff.total).toBe(1);
     expect(eff.data[0].nameVi).toBe('EMP Thử việc override');
     expect(eff.data[0].source).toBe('emp_override');
@@ -254,14 +301,22 @@ describe('EmpEmploymentStatusService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-
   it('VAL-EMP-ST-SCP-01 / CAT-06: get-by-id OOS member → scope reject', async () => {
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
-      if (String(sql).includes('FROM public.emp_employment_status') && String(sql).includes('id = $1')) {
+      if (
+        String(sql).includes('FROM public.emp_employment_status') &&
+        String(sql).includes('id = $1')
+      ) {
         return { rows: [baseRow({ company_id: 'holding' })] };
       }
       return { rows: [] };
     });
     const svc = new EmpEmploymentStatusService(db);
     await expect(
-      svc.getEmploymentStatusById(ST_ID, 'trsport', memberCeoToken(), 'xe-du-lich'),
+      svc.getEmploymentStatusById(
+        ST_ID,
+        'trsport',
+        memberCeoToken(),
+        'xe-du-lich',
+      ),
     ).rejects.toBeInstanceOf(ApiException);
   });
 });

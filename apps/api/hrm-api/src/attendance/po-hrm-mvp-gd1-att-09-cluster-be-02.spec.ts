@@ -37,7 +37,9 @@ describe('PO-HRM-MVP-GD1-ATT-09-CLUSTER-BE-02', () => {
     const queryMock = jest.fn().mockImplementation((sql: string) => {
       const s = String(sql);
       if (s.includes('SELECT company_id::text')) {
-        return Promise.resolve({ rows: [{ company_id: 'holding', status: 'pending' }] });
+        return Promise.resolve({
+          rows: [{ company_id: 'holding', status: 'pending' }],
+        });
       }
       if (s.includes("SET status = 'approved'")) {
         return Promise.resolve({ rows: [approvedRow] });
@@ -45,16 +47,27 @@ describe('PO-HRM-MVP-GD1-ATT-09-CLUSTER-BE-02', () => {
       if (s.includes('CREATE TABLE') || s.includes('CREATE INDEX')) {
         return Promise.resolve({ rows: [] });
       }
-      if (s.includes('UPDATE public.employee_leave_balances') && s.includes('used_days')) {
+      if (
+        s.includes('UPDATE public.employee_leave_balances') &&
+        s.includes('used_days')
+      ) {
         return Promise.resolve({ rowCount: 1, rows: [] });
       }
       return Promise.resolve({ rows: [] });
     });
-    const fanoutMock = { onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined),
+    };
     const funnelMock = {
-      materializeApprovedLeave: jest.fn().mockRejectedValue(
-        new ApiException(HRM_ATT_SHEET_LOCKED, 'sheet locked', HttpStatus.CONFLICT),
-      ),
+      materializeApprovedLeave: jest
+        .fn()
+        .mockRejectedValue(
+          new ApiException(
+            HRM_ATT_SHEET_LOCKED,
+            'sheet locked',
+            HttpStatus.CONFLICT,
+          ),
+        ),
     };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,

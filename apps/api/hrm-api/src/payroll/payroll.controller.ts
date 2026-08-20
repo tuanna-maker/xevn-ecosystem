@@ -75,7 +75,10 @@ import {
 } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
-import { isAuthorizedInternalRequest, resolveAuthorizationHeader } from '../common/internal-auth';
+import {
+  isAuthorizedInternalRequest,
+  resolveAuthorizationHeader,
+} from '../common/internal-auth';
 import { toHrmListScopeContext } from '../common/hrm-list-scope-context';
 import { resolveScopeContext } from '../common/scope-context';
 import { CreatePayrollPeriodDto } from './dto/create-payroll-period.dto';
@@ -164,9 +167,16 @@ export class PayrollController {
     private readonly payPayrollGroupService: PayPayrollGroupService,
   ) {}
 
-  private assertBusinessAccess(authorization?: string, internalApiKey?: string) {
+  private assertBusinessAccess(
+    authorization?: string,
+    internalApiKey?: string,
+  ) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized payroll access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized payroll access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -179,27 +189,32 @@ export class PayrollController {
     @Body() body: CreatePayrollPeriodDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    const templateId = body.paySheetTemplateId ?? body.pay_sheet_template_id;
-    return this.payrollService.createPayrollPeriod(body, authorization, tenantId).then(async (data) => {
-      if (templateId) {
-        const bound = await this.paySheetTemplateService.bindToPeriod(
-          data.id,
-          { company_id: body.company_id, paySheetTemplateId: templateId },
-          authorization,
-        );
-        return ok(
-          {
-            ...data,
-            pay_sheet_template_id: bound.pay_sheet_template_id,
-            sheet_template_snapshot_json: bound.sheet_template_snapshot_json,
-          },
-          'HRM-PAY-201',
-          'Payroll period created',
-        );
-      }
-      return ok(data, 'HRM-PAY-201', 'Payroll period created');
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
     });
+    const templateId = body.paySheetTemplateId ?? body.pay_sheet_template_id;
+    return this.payrollService
+      .createPayrollPeriod(body, authorization, tenantId)
+      .then(async (data) => {
+        if (templateId) {
+          const bound = await this.paySheetTemplateService.bindToPeriod(
+            data.id,
+            { company_id: body.company_id, paySheetTemplateId: templateId },
+            authorization,
+          );
+          return ok(
+            {
+              ...data,
+              pay_sheet_template_id: bound.pay_sheet_template_id,
+              sheet_template_snapshot_json: bound.sheet_template_snapshot_json,
+            },
+            'HRM-PAY-201',
+            'Payroll period created',
+          );
+        }
+        return ok(data, 'HRM-PAY-201', 'Payroll period created');
+      });
   }
 
   @Get('periods')
@@ -211,7 +226,10 @@ export class PayrollController {
     @Query() query: ListPayrollPeriodsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payrollService
       .listPayrollPeriods(query, authorization)
       .then((data) => ok(data, 'HRM-PAY-200', 'Payroll periods listed'));
@@ -242,7 +260,10 @@ export class PayrollController {
     @Query() query: ListPayrollGroupsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payPayrollGroupService
       .listGroups(query, authorization)
       .then((data) => ok(data, 'HRM-PAY-200', 'Payroll groups listed'));
@@ -271,7 +292,10 @@ export class PayrollController {
     @Body() body: CreatePayrollGroupDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.payPayrollGroupService
       .createGroup(body, authorization)
       .then((data) => ok(data, 'HRM-PAY-201', 'Payroll group created'));
@@ -305,7 +329,12 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.payPayrollGroupService
-      .listGroupMembers(groupId, scope.companyId, query.period_id, authorization)
+      .listGroupMembers(
+        groupId,
+        scope.companyId,
+        query.period_id,
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-PAY-200', 'Payroll group members preview'));
   }
 
@@ -322,9 +351,17 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     const queryPayload =
-      includeTerminations != null ? { include_terminations: includeTerminations } : undefined;
+      includeTerminations != null
+        ? { include_terminations: includeTerminations }
+        : undefined;
     return this.payrollService
-      .processPayrollPeriod(periodId, scope.companyId, authorization, body ?? null, queryPayload)
+      .processPayrollPeriod(
+        periodId,
+        scope.companyId,
+        authorization,
+        body ?? null,
+        queryPayload,
+      )
       .then((data) => ok(data, 'HRM-PAY-202', 'Payroll period processed'));
   }
 
@@ -340,8 +377,15 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.payrollService
-      .terminationSettlePayrollPeriod(periodId, scope.companyId, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-TERM-200', 'Termination settlement saved'));
+      .terminationSettlePayrollPeriod(
+        periodId,
+        scope.companyId,
+        body,
+        authorization,
+      )
+      .then((data) =>
+        ok(data, 'HRM-PAY-TERM-200', 'Termination settlement saved'),
+      );
   }
 
   @Get('periods/:periodId/termination-settle/preview')
@@ -356,7 +400,12 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.payrollService
-      .getTerminationSettlePreview(periodId, scope.companyId, employeeId, authorization)
+      .getTerminationSettlePreview(
+        periodId,
+        scope.companyId,
+        employeeId,
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-PAY-200', 'Termination settle preview'));
   }
 
@@ -371,7 +420,11 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.payrollService
-      .getTerminationSettlementById(settlementId, scope.companyId, authorization)
+      .getTerminationSettlementById(
+        settlementId,
+        scope.companyId,
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-PAY-200', 'Termination settlement loaded'));
   }
 
@@ -387,7 +440,12 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.payrollService
-      .getPayrollEligibility(periodId, scope.companyId, authorization, query?.payroll_group_id)
+      .getPayrollEligibility(
+        periodId,
+        scope.companyId,
+        authorization,
+        query?.payroll_group_id,
+      )
       .then((data) => ok(data, 'HRM-PAY-200', 'Payroll eligibility listed'));
   }
 
@@ -404,7 +462,9 @@ export class PayrollController {
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.payrollService
       .enrollPayrollPeriod(periodId, scope.companyId, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-ENROLL-200', 'Payroll period enrolled'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-ENROLL-200', 'Payroll period enrolled'),
+      );
   }
 
   @Post('periods/:periodId/close')
@@ -434,7 +494,10 @@ export class PayrollController {
     @Query() query: ListTimesheetBindsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payInputPackService
       .listTimesheetBinds(periodId, scope.companyId, authorization, {
         includeArchived: Boolean(query.include_archived),
@@ -454,7 +517,10 @@ export class PayrollController {
     @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: queryCompanyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: queryCompanyId ?? headerCompanyId,
+    });
     return this.payInputPackService
       .getTimesheetBindById(periodId, bindId, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-PAY-INP-200', 'Timesheet bind retrieved'));
@@ -470,7 +536,10 @@ export class PayrollController {
     @Body() body: CreateTimesheetBindDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: headerCompanyId,
+    });
     return this.payInputPackService
       .createTimesheetBind(periodId, body, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-PAY-INP-201', 'Timesheet bind created'));
@@ -487,7 +556,10 @@ export class PayrollController {
     @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: queryCompanyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: queryCompanyId ?? headerCompanyId,
+    });
     return this.payInputPackService
       .archiveTimesheetBind(periodId, bindId, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-PAY-INP-200', 'Timesheet bind archived'));
@@ -503,7 +575,10 @@ export class PayrollController {
     @Query() query: ListPeriodInputLinesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payInputPackService
       .listInputLines(periodId, scope.companyId, authorization, {
         employeeId: query.employee_id,
@@ -526,10 +601,15 @@ export class PayrollController {
     @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: queryCompanyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: queryCompanyId ?? headerCompanyId,
+    });
     return this.payInputPackService
       .getInputLineById(periodId, lineId, scope.companyId, authorization)
-      .then((data) => ok(data, 'HRM-PAY-INP-200', 'Period input line retrieved'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-INP-200', 'Period input line retrieved'),
+      );
   }
 
   @Post('periods/:periodId/input-lines')
@@ -542,7 +622,10 @@ export class PayrollController {
     @Body() body: CreatePeriodInputLineDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: headerCompanyId,
+    });
     return this.payInputPackService
       .createInputLine(periodId, body, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-PAY-INP-201', 'Period input line created'));
@@ -559,7 +642,10 @@ export class PayrollController {
     @Body() body: UpdatePeriodInputLineDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: headerCompanyId,
+    });
     return this.payInputPackService
       .patchInputLine(periodId, lineId, body, scope.companyId, authorization)
       .then((data) => ok(data, 'HRM-PAY-INP-200', 'Period input line updated'));
@@ -576,10 +662,15 @@ export class PayrollController {
     @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: queryCompanyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: queryCompanyId ?? headerCompanyId,
+    });
     return this.payInputPackService
       .archiveInputLine(periodId, lineId, scope.companyId, authorization)
-      .then((data) => ok(data, 'HRM-PAY-INP-200', 'Period input line archived'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-INP-200', 'Period input line archived'),
+      );
   }
 
   /**
@@ -594,10 +685,19 @@ export class PayrollController {
     @Body() body: WirePaymentBatchDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.payrollCatalog
       .wirePaymentBatchFromPeriod(periodId, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-WIRE-201', 'Payment batch wired from processed payslips'));
+      .then((data) =>
+        ok(
+          data,
+          'HRM-PAY-WIRE-201',
+          'Payment batch wired from processed payslips',
+        ),
+      );
   }
 
   /**
@@ -617,11 +717,16 @@ export class PayrollController {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     // Xử lý: Diễn biến #1 — auth; service lọc scope (#6).
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
-    return this.payrollService
-      .listPayslips(query, authHeader, toHrmListScopeContext(tenantId))
-      // Thành công: Diễn biến #4/#5 — list hoặc empty trung thực.
-      .then((data) => ok(data, 'HRM-PAY-200', 'Payroll payslips listed'));
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
+    return (
+      this.payrollService
+        .listPayslips(query, authHeader, toHrmListScopeContext(tenantId))
+        // Thành công: Diễn biến #4/#5 — list hoặc empty trung thực.
+        .then((data) => ok(data, 'HRM-PAY-200', 'Payroll payslips listed'))
+    );
   }
 
   /**
@@ -672,7 +777,12 @@ export class PayrollController {
       resolveScopeContext(authHeader, { tenantId, companyId });
     }
     return this.payrollService
-      .getMyPayslipById(payslipId, companyId, authHeader, toHrmListScopeContext(tenantId))
+      .getMyPayslipById(
+        payslipId,
+        companyId,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-PAY-200', 'ESS payroll payslip loaded'));
   }
 
@@ -696,8 +806,15 @@ export class PayrollController {
       resolveScopeContext(authHeader, { tenantId, companyId });
     }
     return this.payrollService
-      .confirmMyPayslip(payslipId, companyId, authHeader, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-PAY-204-ESS', 'ESS payroll payslip confirmed'));
+      .confirmMyPayslip(
+        payslipId,
+        companyId,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) =>
+        ok(data, 'HRM-PAY-204-ESS', 'ESS payroll payslip confirmed'),
+      );
   }
 
   /**
@@ -716,9 +833,17 @@ export class PayrollController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payrollService
-      .listPayslipLines(payslipId, query.company_id, authHeader, toHrmListScopeContext(tenantId))
+      .listPayslipLines(
+        payslipId,
+        query.company_id,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-PAY-200', 'Payroll payslip lines listed'));
   }
 
@@ -738,7 +863,10 @@ export class PayrollController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertBusinessAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     const includeSegments = query.include_segments !== false;
     return this.payrollService
       .getPayslipById(
@@ -766,7 +894,13 @@ export class PayrollController {
     const companyId = body.company_id ?? headerCompanyId ?? 'main';
     resolveScopeContext(authHeader, { tenantId, companyId });
     return this.payrollService
-      .publishPayslip(payslipId, companyId, body, authHeader, toHrmListScopeContext(tenantId))
+      .publishPayslip(
+        payslipId,
+        companyId,
+        body,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-PAY-200', 'Payroll payslip published'));
   }
 
@@ -785,8 +919,16 @@ export class PayrollController {
     const companyId = body.company_id ?? headerCompanyId ?? 'main';
     resolveScopeContext(authHeader, { tenantId, companyId });
     return this.payrollService
-      .patchPayslipPaymentStatus(payslipId, companyId, body, authHeader, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-PAY-200', 'Payroll payslip payment status updated'));
+      .patchPayslipPaymentStatus(
+        payslipId,
+        companyId,
+        body,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) =>
+        ok(data, 'HRM-PAY-200', 'Payroll payslip payment status updated'),
+      );
   }
 
   @Post('payslips/:payslipId/void')
@@ -804,7 +946,13 @@ export class PayrollController {
     const companyId = body.company_id ?? headerCompanyId ?? 'main';
     resolveScopeContext(authHeader, { tenantId, companyId });
     return this.payrollService
-      .voidPayslip(payslipId, companyId, body, authHeader, toHrmListScopeContext(tenantId))
+      .voidPayslip(
+        payslipId,
+        companyId,
+        body,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-PAY-200', 'Payroll payslip voided'));
   }
 
@@ -816,7 +964,11 @@ export class PayrollController {
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
     this.payrollService.denyGenericPayslipPatch(body);
-    throw new ApiException('HRM-PAY-PAYSLIP-405', 'Unreachable', HttpStatus.METHOD_NOT_ALLOWED);
+    throw new ApiException(
+      'HRM-PAY-PAYSLIP-405',
+      'Unreachable',
+      HttpStatus.METHOD_NOT_ALLOWED,
+    );
   }
 
   @Get('salary-templates')
@@ -828,7 +980,10 @@ export class PayrollController {
     @Query() query: ListSalaryTemplatesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payrollService
       .listSalaryTemplates(query, authorization)
       .then((data) => ok(data, 'HRM-PAY-200', 'Salary templates listed'));
@@ -843,7 +998,10 @@ export class PayrollController {
     @Body() body: CreateSalaryTemplateDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.payrollService
       .createSalaryTemplate(body, authorization)
       .then((data) => ok(data, 'HRM-PAY-201', 'Salary template created'));
@@ -859,7 +1017,10 @@ export class PayrollController {
     @Body() body: UpdateSalaryTemplateDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.payrollService
       .updateSalaryTemplate(templateId, body, authorization)
       .then((data) => ok(data, 'HRM-PAY-200', 'Salary template updated'));
@@ -875,7 +1036,9 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     return this.payrollService
       .listSalaryTemplateComponents(templateId, companyId, authorization)
-      .then((data) => ok(data, 'HRM-PAY-200', 'Salary template components listed'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-200', 'Salary template components listed'),
+      );
   }
 
   @Post('salary-templates/:templateId/components')
@@ -883,12 +1046,21 @@ export class PayrollController {
     @Param('templateId', new ParseUUIDPipe()) templateId: string,
     @Headers('authorization') authorization: string | undefined,
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
-    @Body() body: { company_id: string; component_id: string; default_value?: number; is_required?: boolean; sort_order?: number },
+    @Body()
+    body: {
+      company_id: string;
+      component_id: string;
+      default_value?: number;
+      is_required?: boolean;
+      sort_order?: number;
+    },
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
     return this.payrollService
       .addSalaryTemplateComponent(templateId, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-201', 'Salary template component added'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-201', 'Salary template component added'),
+      );
   }
 
   @Patch('salary-template-components/:componentRowId')
@@ -901,8 +1073,15 @@ export class PayrollController {
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
     return this.payrollService
-      .updateSalaryTemplateComponent(componentRowId, companyId, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-200', 'Salary template component updated'));
+      .updateSalaryTemplateComponent(
+        componentRowId,
+        companyId,
+        body,
+        authorization,
+      )
+      .then((data) =>
+        ok(data, 'HRM-PAY-200', 'Salary template component updated'),
+      );
   }
 
   @Delete('salary-template-components/:componentRowId')
@@ -915,7 +1094,9 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     return this.payrollService
       .removeSalaryTemplateComponent(componentRowId, companyId, authorization)
-      .then((data) => ok(data, 'HRM-PAY-200', 'Salary template component removed'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-200', 'Salary template component removed'),
+      );
   }
 
   @Post('salary-templates/:templateId/duplicate')
@@ -941,7 +1122,10 @@ export class PayrollController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.payrollService
       .deleteSalaryTemplate(templateId, companyId, authorization)
       .then((data) => ok(data, 'HRM-PAY-200', 'Salary template deleted'));
@@ -960,7 +1144,10 @@ export class PayrollController {
     @Query() query: ListPayPolicyPacksQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payCnttSetupService
       .listPolicyPacks(query, authorization)
       .then((data) => ok(data, 'HRM-PAY-POL-200', 'Policy packs listed'));
@@ -975,7 +1162,10 @@ export class PayrollController {
     @Body() body: CreatePayPolicyPackDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.payCnttSetupService
       .createPolicyPack(body, authorization)
       .then((data) => ok(data, 'HRM-PAY-POL-201', 'Policy pack created'));
@@ -991,9 +1181,16 @@ export class PayrollController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.payCnttSetupService
-      .getPolicyPackById(id, companyId ?? headerCompanyId ?? 'main', authorization)
+      .getPolicyPackById(
+        id,
+        companyId ?? headerCompanyId ?? 'main',
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-PAY-POL-200', 'Policy pack loaded'));
   }
 
@@ -1007,7 +1204,10 @@ export class PayrollController {
     @Body() body: UpdatePayPolicyPackDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.payCnttSetupService
       .updatePolicyPack(id, body, authorization)
       .then((data) => ok(data, 'HRM-PAY-POL-200', 'Policy pack updated'));
@@ -1023,9 +1223,16 @@ export class PayrollController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.payCnttSetupService
-      .archivePolicyPack(id, companyId ?? headerCompanyId ?? 'main', authorization)
+      .archivePolicyPack(
+        id,
+        companyId ?? headerCompanyId ?? 'main',
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-PAY-POL-200', 'Policy pack archived'));
   }
 
@@ -1038,10 +1245,15 @@ export class PayrollController {
     @Query() query: ListPayInputPackProfilesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payCnttSetupService
       .listInputProfiles(query, authorization)
-      .then((data) => ok(data, 'HRM-PAY-INP-PROF-200', 'Input pack profiles listed'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-INP-PROF-200', 'Input pack profiles listed'),
+      );
   }
 
   @Post('pay-input-pack-profiles')
@@ -1053,10 +1265,15 @@ export class PayrollController {
     @Body() body: CreatePayInputPackProfileDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.payCnttSetupService
       .createInputProfile(body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-INP-PROF-201', 'Input pack profile created'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-INP-PROF-201', 'Input pack profile created'),
+      );
   }
 
   @Get('pay-input-pack-profiles/:id')
@@ -1069,10 +1286,19 @@ export class PayrollController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.payCnttSetupService
-      .getInputProfileById(id, companyId ?? headerCompanyId ?? 'main', authorization)
-      .then((data) => ok(data, 'HRM-PAY-INP-PROF-200', 'Input pack profile loaded'));
+      .getInputProfileById(
+        id,
+        companyId ?? headerCompanyId ?? 'main',
+        authorization,
+      )
+      .then((data) =>
+        ok(data, 'HRM-PAY-INP-PROF-200', 'Input pack profile loaded'),
+      );
   }
 
   @Patch('pay-input-pack-profiles/:id')
@@ -1085,10 +1311,15 @@ export class PayrollController {
     @Body() body: UpdatePayInputPackProfileDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.payCnttSetupService
       .updateInputProfile(id, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-INP-PROF-200', 'Input pack profile updated'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-INP-PROF-200', 'Input pack profile updated'),
+      );
   }
 
   @Post('pay-input-pack-profiles/:id/archive')
@@ -1101,10 +1332,19 @@ export class PayrollController {
     @Query('company_id') companyId: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.payCnttSetupService
-      .archiveInputProfile(id, companyId ?? headerCompanyId ?? 'main', authorization)
-      .then((data) => ok(data, 'HRM-PAY-INP-PROF-200', 'Input pack profile archived'));
+      .archiveInputProfile(
+        id,
+        companyId ?? headerCompanyId ?? 'main',
+        authorization,
+      )
+      .then((data) =>
+        ok(data, 'HRM-PAY-INP-PROF-200', 'Input pack profile archived'),
+      );
   }
 
   @Get('pay-setup/resolve')
@@ -1116,7 +1356,10 @@ export class PayrollController {
     @Query() query: ResolvePaySetupQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payCnttSetupService
       .resolveSetup(query, authorization)
       .then((data) => ok(data, 'HRM-PAY-SETUP-200', 'Pay setup resolved'));
@@ -1131,10 +1374,15 @@ export class PayrollController {
     @Query() query: ListPaySheetTemplatesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.paySheetTemplateService
       .listTemplates(query, authorization)
-      .then((data) => ok(data, 'HRM-PAY-TPL-200', 'Pay sheet templates listed'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-TPL-200', 'Pay sheet templates listed'),
+      );
   }
 
   @Post('pay-sheet-templates')
@@ -1146,10 +1394,15 @@ export class PayrollController {
     @Body() body: CreatePaySheetTemplateDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.paySheetTemplateService
       .createTemplate(body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-TPL-201', 'Pay sheet template created'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-TPL-201', 'Pay sheet template created'),
+      );
   }
 
   @Get('pay-sheet-templates/:id')
@@ -1168,9 +1421,14 @@ export class PayrollController {
       companyId: companyId ?? headerCompanyId,
     });
     return this.paySheetTemplateService
-      .getTemplateById(id, companyId ?? headerCompanyId ?? 'main', authorization, {
-        includeLines: String(includeLines ?? '').toLowerCase() === 'true',
-      })
+      .getTemplateById(
+        id,
+        companyId ?? headerCompanyId ?? 'main',
+        authorization,
+        {
+          includeLines: String(includeLines ?? '').toLowerCase() === 'true',
+        },
+      )
       .then((data) => ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template loaded'));
   }
 
@@ -1190,7 +1448,9 @@ export class PayrollController {
     });
     return this.paySheetTemplateService
       .updateTemplate(id, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template updated'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template updated'),
+      );
   }
 
   @Get('pay-sheet-templates/:id/lines')
@@ -1209,7 +1469,9 @@ export class PayrollController {
     });
     return this.paySheetTemplateService
       .getLines(id, companyId ?? headerCompanyId ?? 'main', authorization)
-      .then((data) => ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template lines listed'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template lines listed'),
+      );
   }
 
   @Put('pay-sheet-templates/:id/lines')
@@ -1228,7 +1490,9 @@ export class PayrollController {
     });
     return this.paySheetTemplateService
       .replaceLines(id, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template lines replaced'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template lines replaced'),
+      );
   }
 
   @Post('pay-sheet-templates/:id/archive')
@@ -1246,8 +1510,14 @@ export class PayrollController {
       companyId: companyId ?? headerCompanyId,
     });
     return this.paySheetTemplateService
-      .archiveTemplate(id, companyId ?? headerCompanyId ?? 'main', authorization)
-      .then((data) => ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template archived'));
+      .archiveTemplate(
+        id,
+        companyId ?? headerCompanyId ?? 'main',
+        authorization,
+      )
+      .then((data) =>
+        ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template archived'),
+      );
   }
 
   @Post('pay-sheet-templates/:id/lines/:lineId/archive')
@@ -1266,8 +1536,15 @@ export class PayrollController {
       companyId: companyId ?? headerCompanyId,
     });
     return this.paySheetTemplateService
-      .archiveLine(id, lineId, companyId ?? headerCompanyId ?? 'main', authorization)
-      .then((data) => ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template line archived'));
+      .archiveLine(
+        id,
+        lineId,
+        companyId ?? headerCompanyId ?? 'main',
+        authorization,
+      )
+      .then((data) =>
+        ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template line archived'),
+      );
   }
 
   @Post('periods/:periodId/bind-sheet-template')
@@ -1286,7 +1563,9 @@ export class PayrollController {
     });
     return this.paySheetTemplateService
       .bindToPeriod(periodId, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template bound to period'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-TPL-200', 'Pay sheet template bound to period'),
+      );
   }
 
   @Get('reports/reconciliation')
@@ -1298,10 +1577,15 @@ export class PayrollController {
     @Query('company_id') companyId?: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.payrollService
       .getPayrollReconciliationSummary(scope.companyId, authorization)
-      .then((data) => ok(data, 'HRM-PAY-200', 'Payroll reconciliation summary'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-200', 'Payroll reconciliation summary'),
+      );
   }
 
   @Get('advance-requests')
@@ -1313,7 +1597,10 @@ export class PayrollController {
     @Query() query: ListAdvanceRequestsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payrollService
       .listAdvanceRequests(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-ADV-200', 'Advance requests listed'));
@@ -1341,10 +1628,20 @@ export class PayrollController {
     @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: queryCompanyId ?? companyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: queryCompanyId ?? companyId,
+    });
     return this.payrollService
-      .listAdvanceRequestEmployees(requestId, scope.companyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ADV-200', 'Advance request employees listed'));
+      .listAdvanceRequestEmployees(
+        requestId,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-ADV-200', 'Advance request employees listed'),
+      );
   }
 
   /** F-PAY-ADV-EMP-01 — product-path add NV (R-PAY-ADV-EMP-API-ABSENT). */
@@ -1359,10 +1656,21 @@ export class PayrollController {
     @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId: queryCompanyId ?? companyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: queryCompanyId ?? companyId,
+    });
     return this.payrollService
-      .createAdvanceRequestEmployee(requestId, body, scope.companyId, authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ADV-201', 'Advance request employee created'));
+      .createAdvanceRequestEmployee(
+        requestId,
+        body,
+        scope.companyId,
+        authorization,
+        tenantId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-ADV-201', 'Advance request employee created'),
+      );
   }
 
   @Post('advance-requests/:requestId/approve')
@@ -1377,7 +1685,13 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.payrollService
-      .approveAdvanceRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
+      .approveAdvanceRequest(
+        requestId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-ADV-203', 'Advance request approved'));
   }
 
@@ -1393,7 +1707,13 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.payrollService
-      .rejectAdvanceRequest(requestId, body, companyId ?? 'main', authorization, tenantId)
+      .rejectAdvanceRequest(
+        requestId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-ADV-204', 'Advance request rejected'));
   }
 
@@ -1405,7 +1725,10 @@ export class PayrollController {
     @Query() query: ListSalaryComponentsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.payrollCatalog
       .listSalaryComponents(query.company_id, authorization, query)
       .then((data) => ok(data, 'HRM-SC-200', 'Salary components listed'));
@@ -1437,7 +1760,9 @@ export class PayrollController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.payrollCatalog
       .listSalaryComponentCategories(companyId, authorization)
-      .then((data) => ok(data, 'HRM-SC-200', 'Salary component categories listed'));
+      .then((data) =>
+        ok(data, 'HRM-SC-200', 'Salary component categories listed'),
+      );
   }
 
   @Post('salary-components')
@@ -1488,7 +1813,9 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     return this.payrollCatalog
       .createSalaryComponentCategory(body, authorization)
-      .then((data) => ok(data, 'HRM-SC-201', 'Salary component category created'));
+      .then((data) =>
+        ok(data, 'HRM-SC-201', 'Salary component category created'),
+      );
   }
 
   @Delete('salary-component-categories/:categoryId')
@@ -1501,7 +1828,9 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     return this.payrollCatalog
       .deleteSalaryComponentCategory(categoryId, companyId, authorization)
-      .then((data) => ok(data, 'HRM-SC-200', 'Salary component category deleted'));
+      .then((data) =>
+        ok(data, 'HRM-SC-200', 'Salary component category deleted'),
+      );
   }
 
   @Get('payment-batches')
@@ -1624,7 +1953,13 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.payrollService
-      .markAdvanceRequestPaid(requestId, body, companyId ?? 'main', authorization, tenantId)
+      .markAdvanceRequestPaid(
+        requestId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-ADV-205', 'Advance request marked paid'));
   }
 
@@ -1640,8 +1975,16 @@ export class PayrollController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.payrollService
-      .bridgeAdvanceRequestToPeriod(requestId, body, companyId ?? 'main', authorization, tenantId)
-      .then((data) => ok(data, 'HRM-ADV-206', 'Advance request bridged to period input pack'));
+      .bridgeAdvanceRequestToPeriod(
+        requestId,
+        body,
+        companyId ?? 'main',
+        authorization,
+        tenantId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-ADV-206', 'Advance request bridged to period input pack'),
+      );
   }
 
   // ── F-PAY-FORMULA-* (PO-HRM-PAYROLL-FORMULA-RUN-GAP-BE-01) ──────────────
@@ -1655,7 +1998,10 @@ export class PayrollController {
     @Query() query: ListPayFormulasQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.payFormulaService
       .listFormulas(query, authorization)
       .then((data) => ok(data, 'HRM-PAY-FORMULA-200', 'Pay formulas listed'));
@@ -1670,10 +2016,15 @@ export class PayrollController {
     @Body() body: CreatePayFormulaDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.payFormulaService
       .createFormula(body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-FORMULA-201', 'Pay formula draft created'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-FORMULA-201', 'Pay formula draft created'),
+      );
   }
 
   @Post('formulas/:code/versions')
@@ -1686,10 +2037,15 @@ export class PayrollController {
     @Body() body: CreatePayFormulaVersionDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.payFormulaService
       .createNewVersion(code, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-FORMULA-201', 'Pay formula new version drafted'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-FORMULA-201', 'Pay formula new version drafted'),
+      );
   }
 
   @Get('formulas/:id')
@@ -1727,7 +2083,9 @@ export class PayrollController {
     });
     return this.payFormulaService
       .updateFormula(id, body, authorization)
-      .then((data) => ok(data, 'HRM-PAY-FORMULA-200', 'Pay formula draft updated'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-FORMULA-200', 'Pay formula draft updated'),
+      );
   }
 
   @Post('formulas/:id/submit-publish')
@@ -1747,7 +2105,9 @@ export class PayrollController {
     });
     return this.payFormulaService
       .submitPublish(id, companyId ?? headerCompanyId ?? 'main', authorization)
-      .then((data) => ok(data, 'HRM-PAY-FORMULA-200', 'Pay formula submitted for publish'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-FORMULA-200', 'Pay formula submitted for publish'),
+      );
   }
 
   @Post('formulas/:id/withdraw-publish')
@@ -1765,8 +2125,14 @@ export class PayrollController {
       companyId: companyId ?? headerCompanyId,
     });
     return this.payFormulaService
-      .withdrawPublish(id, companyId ?? headerCompanyId ?? 'main', authorization)
-      .then((data) => ok(data, 'HRM-PAY-FORMULA-200', 'Pay formula withdrawn to draft'));
+      .withdrawPublish(
+        id,
+        companyId ?? headerCompanyId ?? 'main',
+        authorization,
+      )
+      .then((data) =>
+        ok(data, 'HRM-PAY-FORMULA-200', 'Pay formula withdrawn to draft'),
+      );
   }
 
   @Post('formulas/:id/publish')

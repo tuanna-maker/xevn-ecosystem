@@ -1,5 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsNumber, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import {
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class CreateLateEarlyRequestDto {
   @IsString()

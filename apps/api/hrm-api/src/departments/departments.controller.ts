@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -14,7 +25,11 @@ export class DepartmentsController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized departments access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized departments access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -27,7 +42,10 @@ export class DepartmentsController {
     @Query() query: ListDepartmentsQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.service
       .listDepartments(query, authorization)
       .then((data) => ok(data, 'HRM-DEPT-200', 'Departments listed'));
@@ -43,7 +61,10 @@ export class DepartmentsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.service
       .getDepartmentById(departmentId, companyId, authorization)
       .then((data) => ok(data, 'HRM-DEPT-200', 'Department loaded'));
@@ -58,7 +79,10 @@ export class DepartmentsController {
     @Body() body: CreateDepartmentDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.service
       .createDepartment(body, authorization)
       .then((data) => ok(data, 'HRM-DEPT-201', 'Department created'));
@@ -74,7 +98,10 @@ export class DepartmentsController {
     @Body() body: UpdateDepartmentDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.service
       .updateDepartment(departmentId, body, authorization)
       .then((data) => ok(data, 'HRM-DEPT-200', 'Department updated'));
@@ -90,7 +117,10 @@ export class DepartmentsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.service
       .deleteDepartment(departmentId, companyId, authorization)
       .then((data) => ok(data, 'HRM-DEPT-200', 'Department deleted'));

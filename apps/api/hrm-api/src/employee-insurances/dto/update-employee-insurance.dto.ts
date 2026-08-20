@@ -20,7 +20,15 @@
  * Why: parity create — blank "" must 4xx HRM-VAL-001 not 500 SYS
  * must_keep: open type; invent HRM-INS-TYPE-KEY; omit/null optional
  */
-import { IsDateString, IsIn, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsDateString,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class UpdateEmployeeInsuranceDto {
   @IsString()

@@ -45,7 +45,10 @@ export async function ensureUatMobilePilotTransactionData(
   }
 }
 
-async function ensureMinimalPayslip(db: HrmDbService, employee: PilotEmployee): Promise<void> {
+async function ensureMinimalPayslip(
+  db: HrmDbService,
+  employee: PilotEmployee,
+): Promise<void> {
   const existing = await db.query<{ id: string }>(
     `
       SELECT id::text AS id
@@ -59,16 +62,18 @@ async function ensureMinimalPayslip(db: HrmDbService, employee: PilotEmployee): 
 
   const periodId = randomUUID();
   const periodLabel = `${new Date().getUTCFullYear()}-${String(new Date().getUTCMonth() + 1).padStart(2, '0')}`;
-  await db.query(
-    `
+  await db
+    .query(
+      `
       INSERT INTO public.payroll_periods (id, company_id, period_code, status, created_at, updated_at)
       VALUES ($1::uuid, $2, $3, 'closed', NOW(), NOW())
       ON CONFLICT DO NOTHING;
     `,
-    [periodId, employee.company_id, periodLabel],
-  ).catch(async () => {
-    /* period table shape may differ — continue payslip best-effort */
-  });
+      [periodId, employee.company_id, periodLabel],
+    )
+    .catch(async () => {
+      /* period table shape may differ — continue payslip best-effort */
+    });
 
   await db.query(
     `
@@ -80,7 +85,14 @@ async function ensureMinimalPayslip(db: HrmDbService, employee: PilotEmployee): 
         10000000, 'published', NOW(), NOW()
       );
     `,
-    [randomUUID(), employee.company_id, employee.id, periodId, employee.employee_code, employee.full_name],
+    [
+      randomUUID(),
+      employee.company_id,
+      employee.id,
+      periodId,
+      employee.employee_code,
+      employee.full_name,
+    ],
   );
 }
 
@@ -101,7 +113,11 @@ async function ensureMinimalPendingLeaveForManager(
   );
   if (pending.rows[0]?.id) return;
 
-  const subordinate = await db.query<{ id: string; employee_code: string; full_name: string }>(
+  const subordinate = await db.query<{
+    id: string;
+    employee_code: string;
+    full_name: string;
+  }>(
     `
       SELECT id::text AS id, employee_code, full_name
       FROM public.employees
@@ -129,6 +145,13 @@ async function ensureMinimalPendingLeaveForManager(
         $6::uuid, NOW(), NOW()
       );
     `,
-    [randomUUID(), manager.company_id, sub.id, sub.employee_code, sub.full_name, manager.id],
+    [
+      randomUUID(),
+      manager.company_id,
+      sub.id,
+      sub.employee_code,
+      sub.full_name,
+      manager.id,
+    ],
   );
 }

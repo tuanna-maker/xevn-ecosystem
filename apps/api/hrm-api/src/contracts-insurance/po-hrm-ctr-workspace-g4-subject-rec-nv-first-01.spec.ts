@@ -20,7 +20,8 @@ function schemaNoop(sql: string): boolean {
     s.includes('CREATE INDEX') ||
     s.includes('CREATE UNIQUE') ||
     s.includes('ALTER TABLE') ||
-    (s.includes('INSERT INTO public.employee_contracts') && s.includes('holding'))
+    (s.includes('INSERT INTO public.employee_contracts') &&
+      s.includes('holding'))
   );
 }
 
@@ -29,37 +30,39 @@ describe('PO-HRM-CTR-WORKSPACE-G4-SUBJECT-REC-NV-FIRST-01', () => {
     let insertEmployeeId: string | undefined;
     let insertSubjectType: string | undefined;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaNoop(s)) return { rows: [] };
-        if (s.includes('INSERT INTO public.employee_contracts')) {
-          insertEmployeeId = params?.[2] as string;
-          insertSubjectType = params?.[5] as string;
-          return {
-            rows: [
-              {
-                id: 'ct-nv101-wizard',
-                company_id: 'holding',
-                employee_id: NV101_ID,
-                candidate_id: null,
-                requisition_id: null,
-                subject_type: 'employee',
-                contract_type: 'HDHV',
-                start_date: '2026-08-11',
-                end_date: null,
-                status: 'active',
-                signed_at: '2026-08-11',
-                work_arrangement: 'full_time',
-                salary_ratio_percent: 100,
-                contract_abstract: 'QG4NVO3491G',
-                created_at: '2026-08-11T00:00:00.000Z',
-                updated_at: '2026-08-11T00:00:00.000Z',
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaNoop(s)) return { rows: [] };
+          if (s.includes('INSERT INTO public.employee_contracts')) {
+            insertEmployeeId = params?.[2] as string;
+            insertSubjectType = params?.[5] as string;
+            return {
+              rows: [
+                {
+                  id: 'ct-nv101-wizard',
+                  company_id: 'holding',
+                  employee_id: NV101_ID,
+                  candidate_id: null,
+                  requisition_id: null,
+                  subject_type: 'employee',
+                  contract_type: 'HDHV',
+                  start_date: '2026-08-11',
+                  end_date: null,
+                  status: 'active',
+                  signed_at: '2026-08-11',
+                  work_arrangement: 'full_time',
+                  salary_ratio_percent: 100,
+                  contract_abstract: 'QG4NVO3491G',
+                  created_at: '2026-08-11T00:00:00.000Z',
+                  updated_at: '2026-08-11T00:00:00.000Z',
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
 
     const service = new ContractsInsuranceService(db);
@@ -83,9 +86,10 @@ describe('PO-HRM-CTR-WORKSPACE-G4-SUBJECT-REC-NV-FIRST-01', () => {
     expect(row.candidate_id).toBeNull();
     expect(row.subject_type).toBe('employee');
 
-    const recTraceCalls = (db.query as jest.Mock).mock.calls.filter((c) =>
-      String(c[0]).includes('FROM public.recruitment_candidates') &&
-      String(c[0]).includes('employee_id ='),
+    const recTraceCalls = (db.query as jest.Mock).mock.calls.filter(
+      (c) =>
+        String(c[0]).includes('FROM public.recruitment_candidates') &&
+        String(c[0]).includes('employee_id ='),
     );
     expect(recTraceCalls).toHaveLength(0);
   });
@@ -94,7 +98,8 @@ describe('PO-HRM-CTR-WORKSPACE-G4-SUBJECT-REC-NV-FIRST-01', () => {
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaNoop(String(sql))) return { rows: [] };
-        if (String(sql).includes('FROM public.recruitment_candidates')) return { rows: [] };
+        if (String(sql).includes('FROM public.recruitment_candidates'))
+          return { rows: [] };
         return { rows: [] };
       }),
     } as unknown as HrmDbService;

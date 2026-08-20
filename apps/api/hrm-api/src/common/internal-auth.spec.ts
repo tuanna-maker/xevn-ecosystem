@@ -1,4 +1,8 @@
-import { getVerifiedInternalJwtPayload, normalizeAuthorizationHeaderInPlace, resolveAuthorizationHeader } from './internal-auth';
+import {
+  getVerifiedInternalJwtPayload,
+  normalizeAuthorizationHeaderInPlace,
+  resolveAuthorizationHeader,
+} from './internal-auth';
 import { signServiceJwt } from './jwt-sign';
 
 describe('internal-auth browser transport normalization', () => {

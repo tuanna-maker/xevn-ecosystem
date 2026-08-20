@@ -8,10 +8,14 @@ import { mapServiceRequestRow, OperationsService } from './operations.service';
 const HOLDING_UUID = HRM_COMPANY_UUID_BY_SLUG.holding;
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `Bearer ${header}.${body}.${sig}`;
 }
 
@@ -48,7 +52,9 @@ describe('OperationsService', () => {
 
   it('lists tasks with deterministic pagination envelope', async () => {
     db.query.mockImplementation((sql: string) => {
-      if (sql.includes('SELECT COUNT(*)::text AS total FROM public.hrm_tasks')) {
+      if (
+        sql.includes('SELECT COUNT(*)::text AS total FROM public.hrm_tasks')
+      ) {
         return Promise.resolve({ rows: [{ total: '1' }] } as never);
       }
       if (sql.includes('FROM public.hrm_tasks') && sql.includes('LIMIT')) {
@@ -81,7 +87,9 @@ describe('OperationsService', () => {
     expect(result.page).toBe(2);
     expect(result.page_size).toBe(5);
     expect(result.data[0]).toMatchObject({ id: 't1', priority: 'high' });
-    const listCall = db.query.mock.calls.find((c) => String(c[0]).includes('LIMIT'));
+    const listCall = db.query.mock.calls.find((c) =>
+      String(c[0]).includes('LIMIT'),
+    );
     expect(listCall?.[0]).toContain('company_id = $1::uuid');
     expect(listCall?.[1]).toEqual([HOLDING_UUID, 5, 5]);
   });
@@ -103,7 +111,10 @@ describe('OperationsService', () => {
 
     await service.listTasks({ company_id: 'main' }, token);
 
-    const listSql = captured.find((s) => s.includes('FROM public.hrm_tasks') && s.includes('LIMIT')) ?? '';
+    const listSql =
+      captured.find(
+        (s) => s.includes('FROM public.hrm_tasks') && s.includes('LIMIT'),
+      ) ?? '';
     expect(listSql).toContain('company_id = ANY');
     expect(listSql).toContain('::uuid[]');
   });
@@ -150,7 +161,11 @@ describe('OperationsService', () => {
     const rows = await service.listServiceRequests({
       company_id: 'holding',
     });
-    expect(rows[0]).toMatchObject({ service_type: 'meal', request_type: 'meal', status: 'pending' });
+    expect(rows[0]).toMatchObject({
+      service_type: 'meal',
+      request_type: 'meal',
+      status: 'pending',
+    });
   });
 
   it('MP-14: mapServiceRequestRow mirrors service_type into request_type', () => {
@@ -193,9 +208,14 @@ describe('OperationsService', () => {
       return Promise.resolve({ rows: [] } as never);
     });
 
-    await service.listServiceRequests({ company_id: 'main' }, undefined, 'xevn');
+    await service.listServiceRequests(
+      { company_id: 'main' },
+      undefined,
+      'xevn',
+    );
 
-    const sql = captured.find((s) => s.includes('FROM public.service_requests')) ?? '';
+    const sql =
+      captured.find((s) => s.includes('FROM public.service_requests')) ?? '';
     expect(sql).toContain('company_id = ANY');
     expect(sql).toContain('::uuid[]');
   });
@@ -313,10 +333,12 @@ describe('OperationsService', () => {
 
     await service.getSummary('main', token, 'xevn');
 
-    const payrollSql = captured.find((s) => s.includes('FROM public.payroll_periods')) ?? '';
+    const payrollSql =
+      captured.find((s) => s.includes('FROM public.payroll_periods')) ?? '';
     expect(payrollSql).toContain('company_id = ANY');
     expect(payrollSql).not.toContain('::uuid');
-    const taskSql = captured.find((s) => s.includes('FROM public.hrm_tasks')) ?? '';
+    const taskSql =
+      captured.find((s) => s.includes('FROM public.hrm_tasks')) ?? '';
     expect(taskSql).toContain('company_id = ANY');
     expect(taskSql).toContain('::uuid[]');
   });

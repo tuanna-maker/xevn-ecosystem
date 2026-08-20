@@ -1,5 +1,13 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, IsUUID, Max, MaxLength, Min } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 /**
  * UC-BP-ATT-05b — panel quỹ phép (một request / NV, tránh spinner storm 5× GET).

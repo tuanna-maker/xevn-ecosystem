@@ -68,12 +68,18 @@ export type HrmRealtimeEventEnvelope =
       request: AttendanceUpdateRequestRealtimePayload;
     }
   | {
-      type: 'leave_request.created' | 'leave_request.approved' | 'leave_request.rejected';
+      type:
+        | 'leave_request.created'
+        | 'leave_request.approved'
+        | 'leave_request.rejected';
       at: string;
       request: LeaveRequestRealtimePayload;
     }
   | {
-      type: 'service_request.created' | 'service_request.approved' | 'service_request.rejected';
+      type:
+        | 'service_request.created'
+        | 'service_request.approved'
+        | 'service_request.rejected';
       at: string;
       request: ServiceRequestRealtimePayload;
     }
@@ -114,15 +120,21 @@ export class HrmRealtimeService {
       type === 'service_request.created' ||
       type === 'employee.activated'
     ) {
-      this.server.to(`company:${request.company_id}`).emit('hrm:event', envelope);
+      this.server
+        .to(`company:${request.company_id}`)
+        .emit('hrm:event', envelope);
       if (type === 'employee.activated') {
-        this.server.to(`employee:${request.employee_id}`).emit('hrm:event', envelope);
+        this.server
+          .to(`employee:${request.employee_id}`)
+          .emit('hrm:event', envelope);
       }
       return;
     }
     this.server.to(`company:${request.company_id}`).emit('hrm:event', envelope);
     const emp =
-      'employee_id' in request && request.employee_id != null && request.employee_id !== ''
+      'employee_id' in request &&
+      request.employee_id != null &&
+      request.employee_id !== ''
         ? request.employee_id
         : null;
     if (emp) this.server.to(`employee:${emp}`).emit('hrm:event', envelope);

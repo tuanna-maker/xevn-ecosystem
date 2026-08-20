@@ -26,7 +26,9 @@ describe('expandLeaveDateRange', () => {
   });
 
   it('returns single day when start=end', () => {
-    expect(expandLeaveDateRange('2026-08-10', '2026-08-10')).toEqual(['2026-08-10']);
+    expect(expandLeaveDateRange('2026-08-10', '2026-08-10')).toEqual([
+      '2026-08-10',
+    ]);
   });
 
   it('BE-02: pg Date object → non-empty days (not String(Date).slice)', () => {
@@ -35,14 +37,19 @@ describe('expandLeaveDateRange', () => {
     const end = new Date(2026, 9, 9);
     expect(String(start).slice(0, 10)).not.toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(toLeaveDayKey(start)).toBe('2026-10-08');
-    expect(expandLeaveDateRange(start, end)).toEqual(['2026-10-08', '2026-10-09']);
+    expect(expandLeaveDateRange(start, end)).toEqual([
+      '2026-10-08',
+      '2026-10-09',
+    ]);
   });
 
   it('BE-02: ISO datetime → leading calendar day keys', () => {
-    expect(expandLeaveDateRange('2026-10-07T17:00:00.000Z', '2026-10-08T16:59:59.999Z')).toEqual([
-      '2026-10-07',
-      '2026-10-08',
-    ]);
+    expect(
+      expandLeaveDateRange(
+        '2026-10-07T17:00:00.000Z',
+        '2026-10-08T16:59:59.999Z',
+      ),
+    ).toEqual(['2026-10-07', '2026-10-08']);
   });
 });
 
@@ -62,31 +69,33 @@ describe('LeaveAttendanceFunnelService', () => {
 
   it('materialize: UPSERT leave markers for each day (VAL-FUNNEL-01)', async () => {
     const upsertDays: string[] = [];
-    const queryMock = jest.fn().mockImplementation((sql: string, params?: unknown[]) => {
-      const s = String(sql);
-      if (
-        s.includes('CREATE TABLE') ||
-        s.includes('ALTER TABLE') ||
-        s.includes('CREATE INDEX') ||
-        s.includes('CREATE UNIQUE')
-      ) {
+    const queryMock = jest
+      .fn()
+      .mockImplementation((sql: string, params?: unknown[]) => {
+        const s = String(sql);
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE')
+        ) {
+          return Promise.resolve({ rows: [] });
+        }
+        if (s.includes('FROM public.attendance_sheets')) {
+          return Promise.resolve({ rows: [] });
+        }
+        if (s.includes("status = 'present'")) {
+          return Promise.resolve({ rows: [] });
+        }
+        if (s.includes('INSERT INTO public.attendance_records')) {
+          const day = String(params?.[3] ?? '');
+          upsertDays.push(day);
+          return Promise.resolve({
+            rows: [{ id: `rec-${day}`, attendance_date: day }],
+          });
+        }
         return Promise.resolve({ rows: [] });
-      }
-      if (s.includes('FROM public.attendance_sheets')) {
-        return Promise.resolve({ rows: [] });
-      }
-      if (s.includes("status = 'present'")) {
-        return Promise.resolve({ rows: [] });
-      }
-      if (s.includes('INSERT INTO public.attendance_records')) {
-        const day = String(params?.[3] ?? '');
-        upsertDays.push(day);
-        return Promise.resolve({
-          rows: [{ id: `rec-${day}`, attendance_date: day }],
-        });
-      }
-      return Promise.resolve({ rows: [] });
-    });
+      });
 
     const funnel = createFunnel(queryMock);
     const result = await funnel.materializeApprovedLeave(leave);
@@ -94,7 +103,9 @@ describe('LeaveAttendanceFunnelService', () => {
     expect(result.materialized_record_ids).toHaveLength(2);
     expect(upsertDays).toEqual(['2026-08-10', '2026-08-11']);
     const insertSql = String(
-      queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO public.attendance_records'))?.[0],
+      queryMock.mock.calls.find((c) =>
+        String(c[0]).includes('INSERT INTO public.attendance_records'),
+      )?.[0],
     );
     expect(insertSql).toContain('leave_request_id');
     expect(insertSql).toContain('leave_type_key');
@@ -123,7 +134,9 @@ describe('LeaveAttendanceFunnelService', () => {
     });
 
     const funnel = createFunnel(queryMock);
-    await expect(funnel.materializeApprovedLeave(leave)).rejects.toMatchObject<ApiException>({
+    await expect(
+      funnel.materializeApprovedLeave(leave),
+    ).rejects.toMatchObject<ApiException>({
       code: HRM_ATT_LEAVE_FUNNEL_CONFLICT,
       status: 409,
     });
@@ -149,7 +162,9 @@ describe('LeaveAttendanceFunnelService', () => {
     });
 
     const funnel = createFunnel(queryMock);
-    await expect(funnel.materializeApprovedLeave(leave)).rejects.toMatchObject<ApiException>({
+    await expect(
+      funnel.materializeApprovedLeave(leave),
+    ).rejects.toMatchObject<ApiException>({
       code: HRM_ATT_SHEET_LOCKED,
       status: 409,
     });
@@ -157,24 +172,26 @@ describe('LeaveAttendanceFunnelService', () => {
 
   it('BE-02: materialize with pg Date leave row → LOCKED still fires (non-empty days)', async () => {
     const sheetDayParams: unknown[] = [];
-    const queryMock = jest.fn().mockImplementation((sql: string, params?: unknown[]) => {
-      const s = String(sql);
-      if (
-        s.includes('CREATE TABLE') ||
-        s.includes('ALTER TABLE') ||
-        s.includes('CREATE INDEX') ||
-        s.includes('CREATE UNIQUE')
-      ) {
+    const queryMock = jest
+      .fn()
+      .mockImplementation((sql: string, params?: unknown[]) => {
+        const s = String(sql);
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE')
+        ) {
+          return Promise.resolve({ rows: [] });
+        }
+        if (s.includes('FROM public.attendance_sheets')) {
+          sheetDayParams.push(params?.[1]);
+          return Promise.resolve({
+            rows: [{ id: 'sheet-sept', status: 'closed', day: '2026-09-15' }],
+          });
+        }
         return Promise.resolve({ rows: [] });
-      }
-      if (s.includes('FROM public.attendance_sheets')) {
-        sheetDayParams.push(params?.[1]);
-        return Promise.resolve({
-          rows: [{ id: 'sheet-sept', status: 'closed', day: '2026-09-15' }],
-        });
-      }
-      return Promise.resolve({ rows: [] });
-    });
+      });
 
     const funnel = createFunnel(queryMock);
     const leaveWithPgDates = {
@@ -182,9 +199,13 @@ describe('LeaveAttendanceFunnelService', () => {
       start_date: new Date(2026, 8, 15), // Sep 15 local — String(d).slice ≠ YYYY-MM-DD
       end_date: new Date(2026, 8, 16),
     };
-    expect(String(leaveWithPgDates.start_date).slice(0, 10)).not.toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(String(leaveWithPgDates.start_date).slice(0, 10)).not.toMatch(
+      /^\d{4}-\d{2}-\d{2}$/,
+    );
 
-    await expect(funnel.materializeApprovedLeave(leaveWithPgDates)).rejects.toMatchObject<ApiException>({
+    await expect(
+      funnel.materializeApprovedLeave(leaveWithPgDates),
+    ).rejects.toMatchObject<ApiException>({
       code: HRM_ATT_SHEET_LOCKED,
       status: 409,
     });
@@ -216,7 +237,10 @@ describe('LeaveAttendanceFunnelService', () => {
       if (s.includes('FROM public.attendance_sheets')) {
         return Promise.resolve({ rows: [] });
       }
-      if (s.includes('UPDATE public.attendance_records') && s.includes('leave_request_id = NULL')) {
+      if (
+        s.includes('UPDATE public.attendance_records') &&
+        s.includes('leave_request_id = NULL')
+      ) {
         return Promise.resolve({ rows: [{ id: 'r1' }] });
       }
       return Promise.resolve({ rows: [] });
@@ -258,7 +282,9 @@ describe('LeaveAttendanceFunnelService', () => {
     });
 
     const funnel = createFunnel(queryMock);
-    await expect(funnel.reverseLeaveMarkers(leave.id)).rejects.toMatchObject<ApiException>({
+    await expect(
+      funnel.reverseLeaveMarkers(leave.id),
+    ).rejects.toMatchObject<ApiException>({
       code: HRM_ATT_SHEET_LOCKED,
       status: 409,
     });
@@ -266,37 +292,41 @@ describe('LeaveAttendanceFunnelService', () => {
 
   it('scope: company expand includes holding UUID for TEXT ladder (F-ATT-LEAVE-FUNNEL-04)', async () => {
     const companyArrays: string[][] = [];
-    const queryMock = jest.fn().mockImplementation((sql: string, params?: unknown[]) => {
-      const s = String(sql);
-      if (
-        s.includes('CREATE TABLE') ||
-        s.includes('ALTER TABLE') ||
-        s.includes('CREATE INDEX') ||
-        s.includes('CREATE UNIQUE')
-      ) {
+    const queryMock = jest
+      .fn()
+      .mockImplementation((sql: string, params?: unknown[]) => {
+        const s = String(sql);
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE')
+        ) {
+          return Promise.resolve({ rows: [] });
+        }
+        if (s.includes('FROM public.attendance_sheets')) {
+          companyArrays.push((params?.[0] as string[]) ?? []);
+          return Promise.resolve({ rows: [] });
+        }
+        if (s.includes("status = 'present'")) {
+          companyArrays.push((params?.[0] as string[]) ?? []);
+          return Promise.resolve({ rows: [] });
+        }
+        if (s.includes('INSERT INTO public.attendance_records')) {
+          return Promise.resolve({
+            rows: [{ id: 'rec-1', attendance_date: String(params?.[3]) }],
+          });
+        }
         return Promise.resolve({ rows: [] });
-      }
-      if (s.includes('FROM public.attendance_sheets')) {
-        companyArrays.push((params?.[0] as string[]) ?? []);
-        return Promise.resolve({ rows: [] });
-      }
-      if (s.includes("status = 'present'")) {
-        companyArrays.push((params?.[0] as string[]) ?? []);
-        return Promise.resolve({ rows: [] });
-      }
-      if (s.includes('INSERT INTO public.attendance_records')) {
-        return Promise.resolve({
-          rows: [{ id: 'rec-1', attendance_date: String(params?.[3]) }],
-        });
-      }
-      return Promise.resolve({ rows: [] });
-    });
+      });
 
     const funnel = createFunnel(queryMock);
     await funnel.materializeApprovedLeave(leave);
     expect(companyArrays.length).toBeGreaterThan(0);
     const keys = companyArrays[0];
-    expect(keys).toEqual(expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]));
+    expect(keys).toEqual(
+      expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]),
+    );
   });
 });
 
@@ -327,16 +357,29 @@ describe('LeaveRequestsService approve → funnel hook', () => {
     };
     const queryMock = jest.fn().mockImplementation((sql: string) => {
       const s = String(sql);
-      if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+      if (
+        s.includes('CREATE TABLE') ||
+        s.includes('ALTER TABLE') ||
+        s.includes('CREATE INDEX')
+      ) {
         return Promise.resolve({ rows: [] });
       }
-      if (s.includes('SELECT company_id::text AS company_id, status FROM public.leave_requests')) {
-        return Promise.resolve({ rows: [{ company_id: 'holding', status: 'pending' }] });
+      if (
+        s.includes(
+          'SELECT company_id::text AS company_id, status FROM public.leave_requests',
+        )
+      ) {
+        return Promise.resolve({
+          rows: [{ company_id: 'holding', status: 'pending' }],
+        });
       }
       if (s.includes("SET status = 'approved'")) {
         return Promise.resolve({ rows: [leaveRow] });
       }
-      if (s.includes('FROM public.employee_leave_balances') || s.includes('UPDATE public.employee_leave_balances')) {
+      if (
+        s.includes('FROM public.employee_leave_balances') ||
+        s.includes('UPDATE public.employee_leave_balances')
+      ) {
         return Promise.resolve({ rows: [] });
       }
       return Promise.resolve({ rows: [] });
@@ -380,11 +423,21 @@ describe('LeaveRequestsService approve → funnel hook', () => {
   it('cancelLeaveRequest after approved calls reverseLeaveMarkers', async () => {
     const queryMock = jest.fn().mockImplementation((sql: string) => {
       const s = String(sql);
-      if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+      if (
+        s.includes('CREATE TABLE') ||
+        s.includes('ALTER TABLE') ||
+        s.includes('CREATE INDEX')
+      ) {
         return Promise.resolve({ rows: [] });
       }
-      if (s.includes('SELECT company_id::text AS company_id, status FROM public.leave_requests')) {
-        return Promise.resolve({ rows: [{ company_id: 'holding', status: 'approved' }] });
+      if (
+        s.includes(
+          'SELECT company_id::text AS company_id, status FROM public.leave_requests',
+        )
+      ) {
+        return Promise.resolve({
+          rows: [{ company_id: 'holding', status: 'approved' }],
+        });
       }
       if (s.includes("SET status = 'cancelled'")) {
         return Promise.resolve({
@@ -455,13 +508,20 @@ describe('AttendanceService GET records leave display-ready', () => {
     const db = {
       query: jest.fn().mockImplementation((sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return Promise.resolve({ rows: [] });
         }
         if (s.includes('SELECT COUNT(*)::text AS total')) {
           return Promise.resolve({ rows: [{ total: '1' }] });
         }
-        if (s.includes('FROM public.attendance_records') && s.includes('LIMIT')) {
+        if (
+          s.includes('FROM public.attendance_records') &&
+          s.includes('LIMIT')
+        ) {
           return Promise.resolve({
             rows: [
               {
@@ -489,7 +549,11 @@ describe('AttendanceService GET records leave display-ready', () => {
       ensureWorkSitesSchema: jest.fn().mockResolvedValue(undefined),
       isGpsGeofenceEnabled: jest.fn().mockResolvedValue(false),
     };
-    const svc = new AttendanceService(db as never, {} as never, config as never);
+    const svc = new AttendanceService(
+      db as never,
+      {} as never,
+      config as never,
+    );
     const result = await svc.listRecords({
       company_id: 'holding',
       from_date: '2026-08-01',
@@ -508,7 +572,9 @@ describe('AttendanceService GET records leave display-ready', () => {
     });
     const selectSql = String(
       db.query.mock.calls.find(
-        (c) => String(c[0]).includes('FROM public.attendance_records') && String(c[0]).includes('LIMIT'),
+        (c) =>
+          String(c[0]).includes('FROM public.attendance_records') &&
+          String(c[0]).includes('LIMIT'),
       )?.[0],
     );
     expect(selectSql).toContain('leave_request_id');

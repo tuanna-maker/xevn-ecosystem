@@ -66,7 +66,11 @@ export function looksLikeJobTitleCatalogCode(raw: string): boolean {
   const s = raw.trim();
   if (!s) return false;
   if (/\s/.test(s)) return false;
-  if (/[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(s)) {
+  if (
+    /[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(
+      s,
+    )
+  ) {
     return false;
   }
   return /[_-]/.test(s);
@@ -97,14 +101,23 @@ export function resolveEmployeeJobTitleLabel(
 }
 
 export function buildEmployeeDisplayReadyFields(
-  row: Pick<EmployeeRow, 'full_name' | 'status' | 'job_title_key' | 'custom_fields'>,
+  row: Pick<
+    EmployeeRow,
+    'full_name' | 'status' | 'job_title_key' | 'custom_fields'
+  >,
   options?: { statusCatalogLabel?: string | null },
 ): EmployeeDisplayReadyFields {
   const name = (row.full_name ?? '').trim();
   return {
-    status_label: employeeStatusLabelVi(row.status, options?.statusCatalogLabel),
+    status_label: employeeStatusLabelVi(
+      row.status,
+      options?.statusCatalogLabel,
+    ),
     department: readDepartment(row.custom_fields),
-    job_title_label: resolveEmployeeJobTitleLabel(row.job_title_key, row.custom_fields),
+    job_title_label: resolveEmployeeJobTitleLabel(
+      row.job_title_key,
+      row.custom_fields,
+    ),
     display_name: name || '—',
     phone_number: readPhoneNumber(row.custom_fields),
   };

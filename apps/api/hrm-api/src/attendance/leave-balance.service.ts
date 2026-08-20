@@ -167,7 +167,9 @@ export type LeaveBalancePanelPayload = {
 };
 
 function calendarYearInHoChiMinh(): number {
-  const iso = new Intl.DateTimeFormat('en-CA', { timeZone: HCM_TIMEZONE }).format(new Date());
+  const iso = new Intl.DateTimeFormat('en-CA', {
+    timeZone: HCM_TIMEZONE,
+  }).format(new Date());
   const match = /^(\d{4})-/.exec(iso);
   return match ? Number(match[1]) : new Date().getUTCFullYear();
 }
@@ -215,12 +217,16 @@ function pickPreferredBalanceRow(
     return undefined;
   }
   const empKey = employeeCompanyId.trim().toLowerCase();
-  const exact = matches.find((r) => r.company_id.trim().toLowerCase() === empKey);
+  const exact = matches.find(
+    (r) => r.company_id.trim().toLowerCase() === empKey,
+  );
   if (exact) {
     return exact;
   }
   return matches.reduce((best, row) =>
-    toDayNumber(row.entitled_days) > toDayNumber(best.entitled_days) ? row : best,
+    toDayNumber(row.entitled_days) > toDayNumber(best.entitled_days)
+      ? row
+      : best,
   );
 }
 
@@ -232,9 +238,16 @@ function mapBalancePayload(
   const used = toDayNumber(row.used_days);
   const pending = toDayNumber(row.pending_days);
   const advanced = toDayNumber(row.advanced_days);
-  const remaining = computeLeaveAvailableDays(entitled, used, pending, advanced);
+  const remaining = computeLeaveAvailableDays(
+    entitled,
+    used,
+    pending,
+    advanced,
+  );
   const asOf =
-    row.updated_at != null ? new Date(row.updated_at).toISOString() : new Date().toISOString();
+    row.updated_at != null
+      ? new Date(row.updated_at).toISOString()
+      : new Date().toISOString();
   return {
     company_id: row.company_id,
     employee_id: row.employee_id,
@@ -318,8 +331,13 @@ export class LeaveBalanceService {
     authorization?: string,
     tenantId?: string,
   ): Promise<EmployeeScopeRow> {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
     const filters: string[] = ['e.id = $1::uuid', 'e.archived_at IS NULL'];
     const values: unknown[] = [employeeId];
     pushWorkforceEmployeeScopeFilter(filters, values, scope, 'e.id');
@@ -396,7 +414,11 @@ export class LeaveBalanceService {
         'employee_leave_balances',
       );
     }
-    const fallback = this.readCustomFieldsFallback(employee, leaveType, balanceYear);
+    const fallback = this.readCustomFieldsFallback(
+      employee,
+      leaveType,
+      balanceYear,
+    );
     if (fallback) {
       return fallback;
     }
@@ -430,7 +452,9 @@ export class LeaveBalanceService {
 
     const leaveType = query.leave_type?.trim() || 'annual';
     const balanceYear = query.year ?? calendarYearInHoChiMinh();
-    const balanceCompanyKeys = expandLeaveBalanceCompanyKeys(employee.company_id);
+    const balanceCompanyKeys = expandLeaveBalanceCompanyKeys(
+      employee.company_id,
+    );
 
     const res = await this.db.query<LeaveBalanceRow>(
       `
@@ -446,7 +470,11 @@ export class LeaveBalanceService {
       [balanceCompanyKeys, employee.id, leaveType, balanceYear],
     );
 
-    const row = pickPreferredBalanceRow(res.rows, employee.company_id, leaveType);
+    const row = pickPreferredBalanceRow(
+      res.rows,
+      employee.company_id,
+      leaveType,
+    );
     if (row) {
       return mapBalancePayload(
         {
@@ -464,7 +492,11 @@ export class LeaveBalanceService {
       );
     }
 
-    const fallback = this.readCustomFieldsFallback(employee, leaveType, balanceYear);
+    const fallback = this.readCustomFieldsFallback(
+      employee,
+      leaveType,
+      balanceYear,
+    );
     if (fallback) {
       return fallback;
     }
@@ -503,7 +535,9 @@ export class LeaveBalanceService {
 
     const balanceYear = query.year ?? calendarYearInHoChiMinh();
     const types = [...MVP_LEAVE_BALANCE_TYPES];
-    const balanceCompanyKeys = expandLeaveBalanceCompanyKeys(employee.company_id);
+    const balanceCompanyKeys = expandLeaveBalanceCompanyKeys(
+      employee.company_id,
+    );
 
     const res = await this.db.query<LeaveBalanceRow>(
       `
@@ -521,7 +555,11 @@ export class LeaveBalanceService {
 
     const rowByType = new Map<string, LeaveBalanceRow>();
     for (const leaveType of types) {
-      const picked = pickPreferredBalanceRow(res.rows, employee.company_id, leaveType);
+      const picked = pickPreferredBalanceRow(
+        res.rows,
+        employee.company_id,
+        leaveType,
+      );
       if (picked) {
         rowByType.set(leaveType, picked);
       }
@@ -531,7 +569,8 @@ export class LeaveBalanceService {
       this.resolveOneType(employee, leaveType, balanceYear, rowByType),
     );
     const asOf =
-      items.find((i) => i.source === 'employee_leave_balances')?.as_of ?? new Date().toISOString();
+      items.find((i) => i.source === 'employee_leave_balances')?.as_of ??
+      new Date().toISOString();
 
     return {
       company_id: employee.company_id,
@@ -581,14 +620,23 @@ export class LeaveBalanceService {
     );
 
     const used = existing.rows[0] ? toDayNumber(existing.rows[0].used_days) : 0;
-    const pending = existing.rows[0] ? toDayNumber(existing.rows[0].pending_days) : 0;
-    const advanced = existing.rows[0] ? toDayNumber(existing.rows[0].advanced_days) : 0;
+    const pending = existing.rows[0]
+      ? toDayNumber(existing.rows[0].pending_days)
+      : 0;
+    const advanced = existing.rows[0]
+      ? toDayNumber(existing.rows[0].advanced_days)
+      : 0;
     if (entitled < used + pending + advanced) {
       throw new ApiException(
         'HRM-LEAVE-BAL-409',
         'entitled_days cannot be less than used_days + pending_days + advanced_days',
         HttpStatus.CONFLICT,
-        { entitled_days: entitled, used_days: used, pending_days: pending, advanced_days: advanced },
+        {
+          entitled_days: entitled,
+          used_days: used,
+          pending_days: pending,
+          advanced_days: advanced,
+        },
       );
     }
 
@@ -609,7 +657,15 @@ export class LeaveBalanceService {
                   entitled_days::text, used_days::text, pending_days::text,
                   advanced_days::text, updated_at;
       `,
-      [employee.company_id, employee.id, leaveType, balanceYear, entitled, used, pending],
+      [
+        employee.company_id,
+        employee.id,
+        leaveType,
+        balanceYear,
+        entitled,
+        used,
+        pending,
+      ],
     );
     const row = res.rows[0];
     if (!row) {
