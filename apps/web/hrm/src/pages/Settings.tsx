@@ -131,6 +131,13 @@ import { SiInsuranceTypeSettingsPanel } from '@/components/settings/SiInsuranceT
 import { SiInsurerSettingsPanel } from '@/components/settings/SiInsurerSettingsPanel';
 import { RecPipelineStageSettingsPanel } from '@/components/settings/RecPipelineStageSettingsPanel';
 import { SettingsDefaultsPanel } from '@/components/settings/SettingsDefaultsPanel';
+import { PaySalaryComponentList } from '@/components/settings/payroll/PaySalaryComponentList';
+import { PayFormulaSettingsPanel } from '@/components/settings/payroll/PayFormulaSettingsPanel';
+
+import { PaySalaryGroupSettingsPanel } from '@/components/settings/payroll/PaySalaryGroupSettingsPanel';
+import { PayTaxTableSettingsPanel } from '@/components/settings/payroll/PayTaxTableSettingsPanel';
+import { PayPaySlipTemplateSettingsPanel } from '@/components/settings/payroll/PayPayslipTemplateSettingsPanel';
+
 
 const currencies = [
   { code: 'VND', name: 'Việt Nam Đồng', symbol: '₫', flag: '🇻🇳' },
@@ -552,6 +559,90 @@ export default function Settings() {
         {settingsTab === 'settings-defaults' && (<div className="space-y-4">
           <SettingsDefaultsPanel />
         </div>)}
+
+        {/* --- Tab mới 2026-08-19 (PO-HRM-SETTINGS-IA-UX-REMasters-SPONSOR-01) --- */}
+        {/* Các tab dưới đây chưa có panel thật; render stub tiếng Việt, không jargon dev. */}
+        {settingsTab === 'catalog-job-titles' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'rec-sources' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'rec-interview-types' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'rec-rejection-reasons' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'rec-positions' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'rec-health-requirements' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'contract-types' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'contract-termination-reasons' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'att-shifts' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'att-work-rules' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'att-schedule-groups' && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
+            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          </div>
+        )}
+        {settingsTab === 'pay-salary-components' && (
+          <PaySalaryComponentList />
+        )}
+        {settingsTab === 'pay-salary-formulas' && (
+          <PayFormulaSettingsPanel />
+        )}
+        {settingsTab === 'pay-salary-groups' && (
+          <PaySalaryGroupSettingsPanel />
+        )}
+        {settingsTab === 'pay-payslip-tpl' && (
+          <PayPaySlipTemplateSettingsPanel />
+        )}
+        {settingsTab === 'pay-tax-tables' && (
+          <PayTaxTableSettingsPanel />
+        )}
       </SettingsNavLayout>
     </div>
   );

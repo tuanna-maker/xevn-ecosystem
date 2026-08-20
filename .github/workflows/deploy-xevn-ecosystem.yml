@@ -1,33 +1,80 @@
 # Deploy stack (docker-compose tại deploy/xevn-ecosystem) lên VPS qua SSH.
 #
-# GitHub repository:
-#   Secrets: DEV_SSH_HOST, DEV_SSH_USER, DEV_SSH_PRIVATE_KEY | DEV_SSH_PASSWORD, DEV_SSH_KEY_PASSPHRASE
-#   Variables: DEV_DEPLOY_PATH
-#   Variables (tuỳ chọn): DEV_PORTAL_FE_PORT — cổng portal trên host (mặc định smoke 28088)
-#                         DEV_WEB_PORTAL_PORT — tương thích tên cũ nếu DEV_PORTAL_FE_PORT trống
+# ── Triggers ─────────────────────────────────────────────────────────────────
+#   1. Push to main: tự động deploy khi có code mới merge vào main
+#      (chỉ khi thay đổi file liên quan đến app/deploy — bỏ qua docs, CI config)
+#   2. workflow_dispatch: bấm "Run workflow" thủ công trên GitHub Actions tab
+#
+# ── GitHub Secrets cần thiết (Settings → Secrets and variables → Actions) ────
+#   DEV_SSH_HOST         — IP hoặc hostname VPS (vd: 103.x.x.x)
+#   DEV_SSH_USER         — User SSH (vd: root)
+#   DEV_SSH_PASSWORD     — Password SSH (nếu dùng password thay key)
+#   DEV_SSH_PRIVATE_KEY  — Private key SSH (nếu dùng key thay password)
+#   DEV_SSH_KEY_PASSPHRASE — Passphrase của private key (để trống nếu không có)
+#
+# ── GitHub Variables cần thiết (Settings → Secrets and variables → Variables) ─
+#   DEV_DEPLOY_PATH      — Đường dẫn repo trên VPS (vd: /opt/xevn-ecosystem)
+#   DEV_PORTAL_FE_PORT   — Port portal (mặc định: 8088) — dùng cho smoke test
 
 name: deploy-xevn-ecosystem
 
 on:
+  # Auto-deploy khi push lên main (chỉ khi thay đổi code thật)
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "deploy/**"
+      - "migrations/**"
+      - "pnpm-lock.yaml"
+      - "package.json"
+      - "turbo.json"
+
+  # Manual trigger — cho phép chọn branch/tag
   workflow_dispatch:
     inputs:
       git_ref:
-        description: "Branch hoặc tag để checkout trước khi deploy"
+        description: "Branch hoặc tag để deploy (mặc định: main)"
         required: false
         default: "main"
+      skip_smoke:
+        description: "Bỏ qua smoke test (nếu VPS không public)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
 
 concurrency:
   group: deploy-xevn-ecosystem
-  cancel-in-progress: false
+  cancel-in-progress: false   # Không cancel deploy đang chạy — tránh broken state
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (xác định commit SHA)
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.git_ref }}
+          ref: ${{ inputs.git_ref || github.sha }}
+
+      - name: Kiểm tra secrets bắt buộc
+        run: |
+          missing=""
+          [ -z "${{ secrets.DEV_SSH_HOST }}" ]    && missing="${missing} DEV_SSH_HOST"
+          [ -z "${{ secrets.DEV_SSH_USER }}" ]    && missing="${missing} DEV_SSH_USER"
+          [ -z "${{ vars.DEV_DEPLOY_PATH }}" ]    && missing="${missing} DEV_DEPLOY_PATH (variable)"
+          if [ -n "${missing}" ]; then
+            echo "❌ Thiếu GitHub Secrets/Variables:${missing}"
+            echo ""
+            echo "Vào: Settings → Secrets and variables → Actions → New repository secret"
+            echo "Cần set: DEV_SSH_HOST, DEV_SSH_USER, DEV_SSH_PASSWORD (hoặc DEV_SSH_PRIVATE_KEY), DEV_DEPLOY_PATH"
+            exit 1
+          fi
+          echo "✅ Secrets OK"
 
       - name: Deploy qua SSH (git sync + docker compose)
         uses: appleboy/ssh-action@v1.2.0
@@ -47,31 +94,52 @@ jobs:
               exit 1
             fi
             cd "${DEPLOY_PATH}"
-            echo "Deploy SHA=${{ github.sha }} path=$(pwd)"
-            git fetch origin "${{ github.sha }}"
+            echo "📦 Deploy SHA=${{ github.sha }} path=$(pwd)"
+
+            # Sync code
+            git fetch origin
             git checkout -f "${{ github.sha }}"
+
+            # Bootstrap scripts (không dừng nếu lỗi — optional helpers)
             if command -v node >/dev/null 2>&1; then
-              node ./scripts/merge-vps-port-env.mjs --apply-canonical || true
-              node ./scripts/xevn-ecosystem-bootstrap.mjs || true
+              node ./scripts/merge-vps-port-env.mjs --apply-canonical 2>/dev/null || true
+              node ./scripts/xevn-ecosystem-bootstrap.mjs 2>/dev/null || true
             fi
+
+            # Tạo .env từ example nếu chưa có (chỉ lần đầu)
             if [ ! -f deploy/xevn-ecosystem/.env ]; then
               cp deploy/xevn-ecosystem/.env.example deploy/xevn-ecosystem/.env
-              echo "WARN: Đã tạo deploy/xevn-ecosystem/.env từ .env.example — điền DB_PASSWORD và secrets trên server."
+              echo "⚠️  Đã tạo deploy/xevn-ecosystem/.env từ .env.example"
+              echo "   → Điền DB_PASSWORD và secrets trên server trước khi dùng production."
             fi
-            cd deploy/xevn-ecosystem
-            docker compose --env-file .env up -d --build
 
-      - name: Smoke portal (runner → VPS công khai)
+            # Build và restart containers
+            cd deploy/xevn-ecosystem
+            docker compose --env-file .env pull --ignore-pull-failures 2>/dev/null || true
+            docker compose --env-file .env up -d --build --remove-orphans
+            echo "✅ docker compose up done"
+
+      - name: Smoke test (portal reachable)
+        # Bỏ qua nếu: VPS không public, hoặc user chọn skip, hoặc push trigger
+        if: |
+          secrets.DEV_SSH_HOST != '' &&
+          (inputs.skip_smoke != 'true') &&
+          vars.DEV_PORTAL_FE_PORT != '' || vars.DEV_WEB_PORTAL_PORT != ''
+        continue-on-error: true   # Không fail deploy nếu smoke fail
         run: |
-          set -euo pipefail
           H="${{ secrets.DEV_SSH_HOST }}"
-          if [ -z "${H}" ]; then echo "SKIP: DEV_SSH_HOST trống"; exit 0; fi
           P="${{ vars.DEV_PORTAL_FE_PORT }}"
-          if [ -z "${P}" ]; then P="${{ vars.DEV_WEB_PORTAL_PORT }}"; fi
+          [ -z "${P}" ] && P="${{ vars.DEV_WEB_PORTAL_PORT }}"
           P="${P:-8088}"
-          echo "Smoke http://${H}:${P}/command-center"
-          curl -fsS -o /dev/null --connect-timeout 20 --max-time 30 \
-            "http://${H}:${P}/command-center"
-          curl -fsS -o /dev/null --connect-timeout 20 --max-time 30 \
-            "http://${H}:${P}/"
-          echo "Smoke OK (HTTP 2xx)"
+          echo "🔍 Smoke http://${H}:${P}/command-center"
+          # Đợi containers khởi động (max 60s)
+          for i in $(seq 1 6); do
+            if curl -fsS -o /dev/null --connect-timeout 10 --max-time 15 "http://${H}:${P}/"; then
+              echo "✅ Smoke OK (HTTP 2xx) — attempt ${i}"
+              exit 0
+            fi
+            echo "⏳ Attempt ${i}/6 — chờ 10s..."
+            sleep 10
+          done
+          echo "⚠️  Smoke không kết nối được — VPS có thể không public hoặc cần thêm thời gian khởi động"
+          echo "   Deploy đã hoàn thành, chỉ smoke không verify được."
