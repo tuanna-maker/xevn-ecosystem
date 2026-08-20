@@ -196,6 +196,6 @@ describe('PerformanceService', () => {
         summary: 'Excellent',
         reviewer: 'mgr-1',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PERF-404' });
+    ).rejects.toMatchObject({ code: 'HRM-PERF-404' });
   });
 });

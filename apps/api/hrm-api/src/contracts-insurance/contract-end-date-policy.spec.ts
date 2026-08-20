@@ -50,7 +50,7 @@ describe('contract-end-date-policy (G-CI-01)', () => {
       });
       fail('expected HRM-CON-002');
     } catch (err) {
-      expect(err).toMatchObject<ApiException>({ code: 'HRM-CON-002' });
+      expect(err).toMatchObject({ code: 'HRM-CON-002' });
     }
   });
 
@@ -63,7 +63,7 @@ describe('contract-end-date-policy (G-CI-01)', () => {
       });
       fail('expected HRM-CON-001');
     } catch (err) {
-      expect(err).toMatchObject<ApiException>({ code: 'HRM-CON-001' });
+      expect(err).toMatchObject({ code: 'HRM-CON-001' });
     }
   });
 

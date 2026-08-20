@@ -136,7 +136,7 @@ describe('LeaveAttendanceFunnelService', () => {
     const funnel = createFunnel(queryMock);
     await expect(
       funnel.materializeApprovedLeave(leave),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_ATT_LEAVE_FUNNEL_CONFLICT,
       status: 409,
     });
@@ -164,7 +164,7 @@ describe('LeaveAttendanceFunnelService', () => {
     const funnel = createFunnel(queryMock);
     await expect(
       funnel.materializeApprovedLeave(leave),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_ATT_SHEET_LOCKED,
       status: 409,
     });
@@ -205,7 +205,7 @@ describe('LeaveAttendanceFunnelService', () => {
 
     await expect(
       funnel.materializeApprovedLeave(leaveWithPgDates),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_ATT_SHEET_LOCKED,
       status: 409,
     });
@@ -284,7 +284,7 @@ describe('LeaveAttendanceFunnelService', () => {
     const funnel = createFunnel(queryMock);
     await expect(
       funnel.reverseLeaveMarkers(leave.id),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_ATT_SHEET_LOCKED,
       status: 409,
     });

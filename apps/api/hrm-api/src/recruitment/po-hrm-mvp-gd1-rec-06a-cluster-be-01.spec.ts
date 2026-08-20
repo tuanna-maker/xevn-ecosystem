@@ -84,7 +84,7 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
         scheduled_at: FUTURE_AT_2,
         interviewer: 'HR Lead',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-IV-409-ACTIVE' });
+    ).rejects.toMatchObject({ code: 'HRM-REC-IV-409-ACTIVE' });
   });
 
   it('no_show TERMINAL unlocks create (ACTIVE filter empty)', async () => {
@@ -198,7 +198,7 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
 
     await expect(
       service.updateInterviewStatus(IV_ID, { status: 'completed' }, 'holding'),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: 'HRM-REC-IV-400-INVALID-TRANSITION',
     });
   });
@@ -224,7 +224,7 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
 
     await expect(
       service.updateInterviewStatus(IV_ID, { status: 'cancelled' }, 'holding'),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: 'HRM-REC-IV-400-CANCEL-REASON',
     });
   });
@@ -296,7 +296,7 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
         scheduled_at: PAST_AT,
         interviewer: 'HR Lead',
       }),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: 'HRM-REC-IV-400-PAST-DATETIME',
     });
   });
@@ -420,7 +420,7 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
         { scheduled_at: FUTURE_AT_2 },
         'holding',
       ),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: 'HRM-REC-IV-400-INVALID-TRANSITION',
     });
   });

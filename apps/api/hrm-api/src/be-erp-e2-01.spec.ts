@@ -73,7 +73,7 @@ describe('D-BE-ERP-E2-01 PayrollCatalogService pay_types + unique', () => {
         { company_id: 'holding', code: 'BASIC', name: 'Lương cơ bản' },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_PAY_TYPE_KEY });
+    ).rejects.toMatchObject({ code: HRM_PAY_TYPE_KEY });
     expect(catalogs.assertCodeInEffectiveCatalog).not.toHaveBeenCalled();
   });
 
@@ -95,7 +95,7 @@ describe('D-BE-ERP-E2-01 PayrollCatalogService pay_types + unique', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_PAY_TYPE_KEY });
+    ).rejects.toMatchObject({ code: HRM_PAY_TYPE_KEY });
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
       expect.objectContaining({
         catalogKey: 'pay_types',
@@ -178,7 +178,7 @@ describe('D-BE-ERP-E2-01 PayrollCatalogService pay_types + unique', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_SC_002 });
+    ).rejects.toMatchObject({ code: HRM_SC_002 });
   });
 
   it('update invents component_type → HRM-PAY-TYPE-KEY', async () => {
@@ -219,7 +219,7 @@ describe('D-BE-ERP-E2-01 PayrollCatalogService pay_types + unique', () => {
         'holding',
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_PAY_TYPE_KEY });
+    ).rejects.toMatchObject({ code: HRM_PAY_TYPE_KEY });
   });
 });
 
@@ -253,7 +253,7 @@ describe('D-BE-ERP-E2-01 ContractsInsuranceService contract_types', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_CON_TYPE_KEY });
+    ).rejects.toMatchObject({ code: HRM_CON_TYPE_KEY });
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
       expect.objectContaining({
         catalogKey: 'contract_types',
@@ -347,7 +347,7 @@ describe('D-BE-ERP-E2-01 ContractsInsuranceService contract_types', () => {
         'holding',
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_CON_TYPE_KEY });
+    ).rejects.toMatchObject({ code: HRM_CON_TYPE_KEY });
   });
 });
 

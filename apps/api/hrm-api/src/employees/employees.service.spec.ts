@@ -157,7 +157,7 @@ describe('EmployeesService', () => {
         {},
         'holding',
       ),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: 'HRM-EMP-002',
     });
   });
@@ -271,7 +271,7 @@ describe('EmployeesService', () => {
       service.getEmployeeById('633e95b7-cf1b-469f-a0f8-4c91f3f35f80', {
         company_id: 'holding',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-404' });
+    ).rejects.toMatchObject({ code: 'HRM-EMP-404' });
   });
 
   it('throws deterministic archive error when employee missing', async () => {
@@ -286,7 +286,7 @@ describe('EmployeesService', () => {
         '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
         'holding',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-404' });
+    ).rejects.toMatchObject({ code: 'HRM-EMP-404' });
   });
 
   it('P1-PHASE1-BE-SCOPE-P0-S5-01: restore holding archived employee under company_id=main', async () => {
@@ -341,7 +341,7 @@ describe('EmployeesService', () => {
         '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
         'holding',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-404' });
+    ).rejects.toMatchObject({ code: 'HRM-EMP-404' });
   });
 
   it('P1-PHASE1-BE-SCOPE-P0-S5-02: member CEO restore rejects holding/xevn archived employee', async () => {
@@ -358,7 +358,7 @@ describe('EmployeesService', () => {
       service.restoreEmployee(employeeId, 'main', `Bearer ${token}`, {
         tenantId: 'xe-du-lich',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-404' });
+    ).rejects.toMatchObject({ code: 'HRM-EMP-404' });
   });
 
   it('P1-PHASE1-BE-SCOPE-P0-S5-02: member CEO restore rejects cross-partition row if loaded', async () => {
@@ -390,7 +390,7 @@ describe('EmployeesService', () => {
       service.restoreEmployee(employeeId, 'main', `Bearer ${token}`, {
         tenantId: 'xe-du-lich',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-409' });
+    ).rejects.toMatchObject({ code: 'HRM-EMP-409' });
   });
 
   describe('MOB-W7-5-DIRECTORY-BE', () => {
@@ -568,7 +568,7 @@ describe('EmployeesService', () => {
           'holding',
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
+      ).rejects.toMatchObject({ code: 'HRM-EMP-403' });
     });
 
     it('AC-ESS-01: self PATCH phone merges; preserves HR keys in DB; public DTO strips salary', async () => {
@@ -675,7 +675,7 @@ describe('EmployeesService', () => {
           'holding',
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
+      ).rejects.toMatchObject({ code: 'HRM-EMP-403' });
     });
 
     it('Option A R1: manager|hr_manager self full_name + gender-only → 403; phone merges', async () => {
@@ -694,7 +694,7 @@ describe('EmployeesService', () => {
           'holding',
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
+      ).rejects.toMatchObject({ code: 'HRM-EMP-403' });
 
       await expect(
         service.updateEmployee(
@@ -703,7 +703,7 @@ describe('EmployeesService', () => {
           'holding',
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
+      ).rejects.toMatchObject({ code: 'HRM-EMP-403' });
 
       const existingRow = {
         ...baseRow,
@@ -1012,7 +1012,7 @@ describe('EmployeesService', () => {
           `Bearer ${hrToken()}`,
           { tenantId: 'xevn' },
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-MGR-SELF' });
+      ).rejects.toMatchObject({ code: 'HRM-EMP-MGR-SELF' });
     });
 
     it('PATCH rejects cross-company manager_id', async () => {
@@ -1030,7 +1030,7 @@ describe('EmployeesService', () => {
           `Bearer ${hrToken()}`,
           { tenantId: 'xevn' },
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-MGR-SCOPE' });
+      ).rejects.toMatchObject({ code: 'HRM-EMP-MGR-SCOPE' });
     });
 
     it('PATCH rejects cycle manager_id', async () => {
@@ -1049,7 +1049,7 @@ describe('EmployeesService', () => {
           `Bearer ${hrToken()}`,
           { tenantId: 'xevn' },
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-MGR-CYCLE' });
+      ).rejects.toMatchObject({ code: 'HRM-EMP-MGR-CYCLE' });
     });
 
     it('create persists manager_id when valid', async () => {
@@ -1099,7 +1099,7 @@ describe('EmployeesService', () => {
           'holding',
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-403' });
+      ).rejects.toMatchObject({ code: 'HRM-EMP-403' });
     });
   });
 });

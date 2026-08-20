@@ -126,7 +126,7 @@ describe('PayrollService', () => {
         start_date: '2026-04-01',
         end_date: '2026-04-30',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-002' });
+    ).rejects.toMatchObject({ code: 'HRM-PAY-002' });
   });
 
   it('throws deterministic process error when not found', async () => {
@@ -137,7 +137,7 @@ describe('PayrollService', () => {
         'f76f23f7-3683-4120-81b7-5126ee997b8e',
         '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-404' });
+    ).rejects.toMatchObject({ code: 'HRM-PAY-404' });
   });
 
   it('throws deterministic close transition error when period is not processing', async () => {
@@ -156,7 +156,7 @@ describe('PayrollService', () => {
         'f76f23f7-3683-4120-81b7-5126ee997b8e',
         'holding',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-004' });
+    ).rejects.toMatchObject({ code: 'HRM-PAY-004' });
   });
 
   it('closePayrollPeriod blocks when unpaid payslips remain (HRM-PAY-005)', async () => {
@@ -182,7 +182,7 @@ describe('PayrollService', () => {
         'f76f23f7-3683-4120-81b7-5126ee997b8e',
         'holding',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-005' });
+    ).rejects.toMatchObject({ code: 'HRM-PAY-005' });
   });
 
   it('lists payroll periods with status filter', async () => {
@@ -473,7 +473,7 @@ describe('PayrollService', () => {
         'main',
         `Bearer ${token}`,
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-404' });
+    ).rejects.toMatchObject({ code: 'HRM-PAY-404' });
   });
 
   it('lists payslips with employee_id filter (MOB-BE-05)', async () => {
@@ -668,7 +668,7 @@ describe('PayrollService', () => {
         'main',
         `Bearer ${token}`,
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-404' });
+    ).rejects.toMatchObject({ code: 'HRM-PAY-404' });
   });
 
   it('getPayslipById uses workforce scope when group CEO company_id=main (scope_parity)', async () => {
@@ -685,7 +685,7 @@ describe('PayrollService', () => {
         'main',
         `Bearer ${token}`,
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-404' });
+    ).rejects.toMatchObject({ code: 'HRM-PAY-404' });
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('p.employee_id IN'),
       expect.any(Array),
@@ -835,7 +835,7 @@ describe('PayrollService', () => {
 
       await expect(
         service.getMyPayslipById(payslipId, 'holding', `Bearer ${essToken}`),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-403-ESS' });
+      ).rejects.toMatchObject({ code: 'HRM-PAY-403-ESS' });
     });
 
     it('confirmMyPayslip stamps employee_confirmed_at and is idempotent', async () => {
@@ -945,7 +945,7 @@ describe('PayrollService', () => {
 
       await expect(
         service.confirmMyPayslip(payslipId, 'holding', `Bearer ${essToken}`),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-PUBLISH-409' });
+      ).rejects.toMatchObject({ code: 'HRM-PAY-PUBLISH-409' });
     });
   });
 
@@ -1164,7 +1164,7 @@ describe('PayrollService', () => {
         },
         'holding',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ADV-409' });
+    ).rejects.toMatchObject({ code: 'HRM-ADV-409' });
   });
 
   it('NO_CLOSED_SHEET uses same calendar month as payroll period (not any closed sheet)', async () => {
@@ -1693,7 +1693,7 @@ describe('PayrollService', () => {
           'main',
           `Bearer ${groupCeoToken}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-ATT-412' });
+      ).rejects.toMatchObject({ code: 'HRM-PAY-ATT-412' });
     });
 
     it('AC-PAY-02-PROCESS-ORDER — ATT-412 before resolvePublishedFormulaForProcess', async () => {
@@ -1727,7 +1727,7 @@ describe('PayrollService', () => {
 
       await expect(
         service.processPayrollPeriod(draftPeriod.id, 'holding'),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PAY-ATT-412' });
+      ).rejects.toMatchObject({ code: 'HRM-PAY-ATT-412' });
       expect(
         payFormulas.resolvePublishedFormulaForProcess,
       ).not.toHaveBeenCalled();
@@ -1737,7 +1737,7 @@ describe('PayrollService', () => {
       __setPayAttHourCrossreadViolationForTests(true);
       await expect(
         service.processPayrollPeriod(draftPeriod.id, 'holding'),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_PAY_BOUNDARY_403 });
+      ).rejects.toMatchObject({ code: HRM_PAY_BOUNDARY_403 });
       __setPayAttHourCrossreadViolationForTests(false);
     });
 
@@ -1831,7 +1831,7 @@ describe('PayrollService', () => {
           undefined,
           'xevn',
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-ADV-404' });
+      ).rejects.toMatchObject({ code: 'HRM-ADV-404' });
     });
 
     it('markAdvanceRequestPaid transitions approved to paid and bridges input lines', async () => {
@@ -1894,7 +1894,7 @@ describe('PayrollService', () => {
           undefined,
           'xevn',
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-ADV-404' });
+      ).rejects.toMatchObject({ code: 'HRM-ADV-404' });
     });
   });
 });

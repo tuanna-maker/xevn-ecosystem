@@ -203,7 +203,7 @@ describe('LeaveBalanceService', () => {
         `Bearer ${token}`,
         'xevn',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-LEAVE-403' });
+    ).rejects.toMatchObject({ code: 'HRM-LEAVE-403' });
   });
 
   it('uses workforce scope filter for employee lookup on company_id=main', async () => {
@@ -443,7 +443,7 @@ describe('LeaveBalanceService', () => {
         `Bearer ${token}`,
         'xevn',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-LEAVE-403' });
+    ).rejects.toMatchObject({ code: 'HRM-LEAVE-403' });
   });
 
   describe('PO-HRM-MVP-GD1-ATT-09-CLUSTER-BE-02 upsertTrackedEntitlement', () => {
@@ -577,7 +577,7 @@ describe('LeaveBalanceService', () => {
           `Bearer ${token}`,
           'xevn',
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-LEAVE-BAL-409' });
+      ).rejects.toMatchObject({ code: 'HRM-LEAVE-BAL-409' });
     });
   });
 

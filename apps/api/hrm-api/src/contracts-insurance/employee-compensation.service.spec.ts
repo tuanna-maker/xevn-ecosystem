@@ -175,7 +175,7 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
         },
         cbAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-COMP-002' });
+    ).rejects.toMatchObject({ code: 'HRM-COMP-002' });
   });
 
   it('BR-CD-F5-03 rejects allowance without allowance_code', async () => {
@@ -192,7 +192,7 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
         },
         cbAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-COMP-003' });
+    ).rejects.toMatchObject({ code: 'HRM-COMP-003' });
   });
 
   it('AC-CD-F5-04 revise creates new version and closes prior (no line overwrite)', async () => {
@@ -586,7 +586,7 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
         },
         cbAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-COMP-409-OVERLAP' });
+    ).rejects.toMatchObject({ code: 'HRM-COMP-409-OVERLAP' });
   });
 
   it('VAL-EMP-SH-05 rejects duplicate component_code on same package payload', async () => {
@@ -631,7 +631,7 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
         },
         cbAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-COMP-005' });
+    ).rejects.toMatchObject({ code: 'HRM-COMP-005' });
   });
 
   it('VAL-EMP-SH-04 / VAL-PAY-CNS-02 rejects unknown explicit component_code', async () => {
@@ -685,7 +685,7 @@ describe('EmployeeCompensationService (CD-FB-08 / F5)', () => {
         },
         cbAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-SC-COMP-KEY' });
+    ).rejects.toMatchObject({ code: 'HRM-SC-COMP-KEY' });
   });
 });
 

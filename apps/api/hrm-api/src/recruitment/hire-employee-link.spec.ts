@@ -98,7 +98,7 @@ describe('hire-employee-link G-DB-01 (PO-SPEC-UNIT-TEST-IMPL-01)', () => {
       const db = mockDb(async () => ({ rows: [] }));
       await expect(
         assertEmployeeInCandidateCompany(db, 'emp-missing', 'holding'),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_REC_HIRE_400 });
+      ).rejects.toMatchObject({ code: HRM_REC_HIRE_400 });
     });
 
     it('cross-company employee → HRM-REC-HIRE-409', async () => {
@@ -107,7 +107,7 @@ describe('hire-employee-link G-DB-01 (PO-SPEC-UNIT-TEST-IMPL-01)', () => {
       }));
       await expect(
         assertEmployeeInCandidateCompany(db, 'emp-1', 'holding'),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_REC_HIRE_409 });
+      ).rejects.toMatchObject({ code: HRM_REC_HIRE_409 });
     });
 
     it('same company → returns employee uuid', async () => {
@@ -125,7 +125,7 @@ describe('hire-employee-link G-DB-01 (PO-SPEC-UNIT-TEST-IMPL-01)', () => {
       const db = mockDb(async () => ({ rows: [] }));
       await expect(
         assertHireEmployeeLinkOrThrow(db, 'cand-1', 'holding', {}),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_REC_HIRE_400 });
+      ).rejects.toMatchObject({ code: HRM_REC_HIRE_400 });
     });
 
     it('resolved + same company → returns id', async () => {
@@ -180,7 +180,7 @@ describe('hire-employee-link G-DB-01 (PO-SPEC-UNIT-TEST-IMPL-01)', () => {
       });
       await expect(
         assertPersistedHireSoftLinkOrThrow(db, 'cand-1', 'holding', 'emp-ok'),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_REC_HIRE_400 });
+      ).rejects.toMatchObject({ code: HRM_REC_HIRE_400 });
     });
   });
 });

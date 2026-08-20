@@ -132,7 +132,7 @@ describe('EmployeesService invent job_title_key → HRM-EMP-POSITION-KEY (EFF>0)
         undefined,
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_EMP_POSITION_KEY });
+    ).rejects.toMatchObject({ code: HRM_EMP_POSITION_KEY });
 
     expect(getEffectiveItemsForKey).toHaveBeenCalledWith(
       'xevn',
@@ -165,7 +165,7 @@ describe('EmployeesService invent job_title_key → HRM-EMP-POSITION-KEY (EFF>0)
         undefined,
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_EMP_POSITION_KEY });
+    ).rejects.toMatchObject({ code: HRM_EMP_POSITION_KEY });
     expect(assertCode).toHaveBeenCalled();
   });
 

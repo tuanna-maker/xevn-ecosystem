@@ -47,7 +47,7 @@ describe('OperationsService', () => {
         { status: 'done' },
         'holding',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-OPS-404' });
+    ).rejects.toMatchObject({ code: 'HRM-OPS-404' });
   });
 
   it('lists tasks with deterministic pagination envelope', async () => {
@@ -313,7 +313,7 @@ describe('OperationsService', () => {
         token,
         'xevn',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-OPS-409' });
+    ).rejects.toMatchObject({ code: 'HRM-OPS-409' });
   });
 
   it('UC-HRM-20 rolls up company_id=main via slug-safe SQL (group CEO)', async () => {

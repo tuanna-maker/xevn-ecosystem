@@ -190,7 +190,7 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
         { to_stage: 'invent_stage' },
         HOLDING,
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_STAGE_UNKNOWN });
+    ).rejects.toMatchObject({ code: HRM_REC_STAGE_UNKNOWN });
     expect(db.withTransaction).not.toHaveBeenCalled();
   });
 
@@ -207,7 +207,7 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
         { to_stage: 'interview' },
         HOLDING,
       ),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_REC_STAGE_EMPTY_CATALOG,
     });
   });
@@ -220,7 +220,7 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
         { to_stage: 'rejected' },
         HOLDING,
       ),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_REC_STAGE_REJECT_REASON,
     });
     expect(db.withTransaction).not.toHaveBeenCalled();
@@ -289,7 +289,7 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
         { to_stage: 'screening' },
         HOLDING,
       ),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_REC_STAGE_REVERSE_FORBIDDEN,
     });
     expect(db.withTransaction).not.toHaveBeenCalled();
@@ -365,7 +365,7 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
         { to_stage: 'interview' },
         HOLDING,
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_STAGE_HISTORY_FAIL });
+    ).rejects.toMatchObject({ code: HRM_REC_STAGE_HISTORY_FAIL });
   });
 
   it('GET stage-history display-ready + empty [] OK', async () => {

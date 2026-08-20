@@ -17,7 +17,7 @@ describe('pay-term-guard', () => {
     try {
       assertNoPayTermPayoutOverrideInBody({ leave_cashout_vnd: 500_000 });
     } catch (e) {
-      expect(e).toMatchObject<ApiException>({
+      expect(e).toMatchObject({
         code: HRM_PAY_TERM_403,
         status: HttpStatus.FORBIDDEN,
       });
@@ -36,7 +36,7 @@ describe('pay-term-guard', () => {
         null,
       );
     } catch (e) {
-      expect(e).toMatchObject<ApiException>({
+      expect(e).toMatchObject({
         code: HRM_PAY_TERM_400_USE_DEDICATED_SETTLE,
         status: HttpStatus.BAD_REQUEST,
       });

@@ -32,7 +32,7 @@ describe('AttendanceService', () => {
         employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
         attendance_date: '1970-01-01',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-DATE-001' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-DATE-001' });
     const insertCalls = db.query.mock.calls.filter(
       ([sql]) =>
         typeof sql === 'string' &&
@@ -98,7 +98,7 @@ describe('AttendanceService', () => {
         employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
         attendance_date: '2026-04-22',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-001' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-001' });
   });
 
   it('persists createRecord with UUID company_id for group scope company_id=main', async () => {
@@ -162,7 +162,7 @@ describe('AttendanceService', () => {
         { status: 'present' },
         '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-404' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-404' });
   });
 
   it('HRM-AT-02: returns paginated records with deterministic filters', async () => {
@@ -598,7 +598,7 @@ describe('AttendanceService', () => {
         `Bearer ${token}`,
         'xevn',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-409' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-409' });
 
     const mutateCalls = db.query.mock.calls.filter(
       ([sql]) =>
@@ -630,7 +630,7 @@ describe('AttendanceService', () => {
         `Bearer ${token}`,
         'xevn',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-REQ-409' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-REQ-409' });
 
     const mutateCalls = db.query.mock.calls.filter(
       ([sql]) =>
@@ -742,7 +742,7 @@ describe('AttendanceService', () => {
         latitude: 10,
         longitude: 10,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-GEO-001' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-GEO-001' });
   });
 
   it('VAL-ATT-WS-CNS-04: soft-retired site excluded from geofence (empty active → skip)', async () => {
@@ -823,7 +823,7 @@ describe('AttendanceService', () => {
         attendance_date: '2026-04-22',
         check_in_method: 'gps',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-GEO-REQ' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-GEO-REQ' });
   });
 
   it('VAL-ATT-WS-CNS-05: manual omit lat/lon soft-skips (not GEO PASS invent)', async () => {

@@ -64,7 +64,7 @@ describe('assertManagerAssignment (R-SPINE-MGR-HIER-01-BE)', () => {
         companyId: 'holding',
         managerId: employeeId,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-MGR-SELF' });
+    ).rejects.toMatchObject({ code: 'HRM-EMP-MGR-SELF' });
   });
 
   it('rejects missing / archived manager', async () => {
@@ -75,7 +75,7 @@ describe('assertManagerAssignment (R-SPINE-MGR-HIER-01-BE)', () => {
         companyId: 'holding',
         managerId,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-MGR-404' });
+    ).rejects.toMatchObject({ code: 'HRM-EMP-MGR-404' });
   });
 
   it('rejects cross-company manager (not in list scope)', async () => {
@@ -97,7 +97,7 @@ describe('assertManagerAssignment (R-SPINE-MGR-HIER-01-BE)', () => {
         managerId: otherCompanyManagerId,
         authorization: 'Bearer invalid-token',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-MGR-SCOPE' });
+    ).rejects.toMatchObject({ code: 'HRM-EMP-MGR-SCOPE' });
   });
 
   it('rejects reporting cycle', async () => {
@@ -113,7 +113,7 @@ describe('assertManagerAssignment (R-SPINE-MGR-HIER-01-BE)', () => {
         companyId: 'holding',
         managerId: cycleMidId,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-EMP-MGR-CYCLE' });
+    ).rejects.toMatchObject({ code: 'HRM-EMP-MGR-CYCLE' });
   });
 
   it('happy path returns manager uuid (same company)', async () => {

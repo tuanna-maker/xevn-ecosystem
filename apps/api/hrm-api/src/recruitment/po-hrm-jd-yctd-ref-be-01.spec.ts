@@ -172,7 +172,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
       const catalog = new RecruitmentCatalogService(db, mockBridge() as never);
       await expect(
         catalog.getYctdJdPreview(RETIRED_ID, 'main', groupCeoToken()),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_STATUS });
+      ).rejects.toMatchObject({ code: HRM_JD_YCTD_STATUS });
 
       const service = new RecruitmentService(db, mockBridge() as never);
       await expect(
@@ -187,7 +187,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
           },
           groupCeoToken(),
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_STATUS });
+      ).rejects.toMatchObject({ code: HRM_JD_YCTD_STATUS });
     });
 
     it('UT-YCTD-JD-04: missing both alias fields → REQUIRED', async () => {
@@ -206,7 +206,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
           },
           groupCeoToken(),
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_REQUIRED });
+      ).rejects.toMatchObject({ code: HRM_JD_YCTD_REQUIRED });
     });
 
     it('UT-YCTD-JD-05: unknown template → NOT-FOUND', async () => {
@@ -232,7 +232,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
           },
           groupCeoToken(),
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_NOT_FOUND });
+      ).rejects.toMatchObject({ code: HRM_JD_YCTD_NOT_FOUND });
     });
 
     it('UT-YCTD-JD-06: active preview returns thin YctdJdPreview (no values_json)', async () => {
@@ -547,7 +547,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
           { company_id: 'main' },
           groupCeoToken(),
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_STATUS });
+      ).rejects.toMatchObject({ code: HRM_JD_YCTD_STATUS });
 
       requisitionStatus = 'approved';
       await expect(
@@ -557,7 +557,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
           { company_id: 'main' },
           groupCeoToken(),
         ),
-      ).rejects.toMatchObject<ApiException>({
+      ).rejects.toMatchObject({
         code: HRM_JD_YCTD_REBIND_LOCKED,
       });
     });

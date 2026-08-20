@@ -122,7 +122,7 @@ describe('emp-custom-field-consumer-assert — VAL-EMP-CF-CNS-*', () => {
         authorization: groupCeoToken(),
         tenantId: 'xevn',
       }),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_EMP_CUSTOM_FIELD_KEY,
     });
   });
@@ -171,7 +171,7 @@ describe('emp-custom-field-consumer-assert — VAL-EMP-CF-CNS-*', () => {
         authorization: groupCeoToken(),
         tenantId: 'xevn',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_EMP_CUSTOM_FIELD_KEY });
+    ).rejects.toMatchObject({ code: HRM_EMP_CUSTOM_FIELD_KEY });
   });
 
   it('VAL-EMP-CF-CNS-03b: history retain retired key on re-save (no KEY)', async () => {
@@ -288,7 +288,7 @@ describe('EmployeesService wire — F-EMP-CF-CNS-01', () => {
         groupCeoToken(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_EMP_CUSTOM_FIELD_KEY });
+    ).rejects.toMatchObject({ code: HRM_EMP_CUSTOM_FIELD_KEY });
 
     const writes = (db.query as jest.Mock).mock.calls.filter((c) =>
       String(c[0]).includes('UPDATE public.employees'),

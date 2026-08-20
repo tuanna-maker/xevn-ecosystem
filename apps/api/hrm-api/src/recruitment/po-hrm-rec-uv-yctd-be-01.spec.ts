@@ -194,6 +194,7 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
         catalogMock as never,
         {} as never,
         {} as never,
+        {} as never,
       );
       try {
         controller.createCandidate(undefined, 'test-key', 'xevn', undefined, {

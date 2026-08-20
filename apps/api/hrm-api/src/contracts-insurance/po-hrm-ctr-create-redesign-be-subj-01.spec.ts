@@ -113,7 +113,7 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-SUBJ-01', () => {
         position_key: 'NV_KD',
         salary_ratio_percent: 100,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_CTR_SIGN_REQ_400 });
+    ).rejects.toMatchObject({ code: HRM_CTR_SIGN_REQ_400 });
   });
 
   it('rejects candidate path without candidate_id (HRM-CTR-SUBJECT-400)', async () => {
@@ -134,7 +134,7 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-SUBJ-01', () => {
         signing_date: '2026-01-02',
         salary_ratio_percent: 100,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_CTR_SUBJECT_400 });
+    ).rejects.toMatchObject({ code: HRM_CTR_SUBJECT_400 });
   });
 
   it('employee subject_type without REC trace succeeds (NV-first BA-03)', async () => {
@@ -256,7 +256,7 @@ describe('PO-HRM-CTR-CREATE-REDESIGN-BE-SUBJ-01', () => {
         signing_date: '2026-01-02',
         salary_ratio_percent: 100,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_CTR_CANDIDATE_404 });
+    ).rejects.toMatchObject({ code: HRM_CTR_CANDIDATE_404 });
   });
 
   it('legacy employee create without wizard fields still allowed (UF-HRM-02)', async () => {

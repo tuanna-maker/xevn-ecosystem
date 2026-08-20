@@ -107,7 +107,7 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
           field_key: 'job_title',
           requested_value: JSON.stringify({ code: 'LE_REJECT' }),
         }),
-      ).rejects.toMatchObject<ApiException>({
+      ).rejects.toMatchObject({
         code: 'HRM-PLANE-409',
         status: HttpStatus.CONFLICT,
       });
@@ -134,7 +134,7 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
     it('listChangeRequests LE → HRM-PLANE-409 (no silent empty)', async () => {
       await expect(
         service.listChangeRequests({ company_id: XBOS_LE_UUID }),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PLANE-409' });
+      ).rejects.toMatchObject({ code: 'HRM-PLANE-409' });
       expect(repository.listChangeRequests).not.toHaveBeenCalled();
     });
 
@@ -153,7 +153,7 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
     it('listAuditLogs LE → HRM-PLANE-409', async () => {
       await expect(
         service.listAuditLogs(XBOS_LE_UUID, undefined),
-      ).rejects.toMatchObject<ApiException>({
+      ).rejects.toMatchObject({
         code: 'HRM-PLANE-409',
       });
       expect(repository.listAuditLogs).not.toHaveBeenCalled();
@@ -175,7 +175,7 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
           { actor_user_id: 'u-1' },
           XBOS_LE_UUID,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PLANE-409' });
+      ).rejects.toMatchObject({ code: 'HRM-PLANE-409' });
       expect(repository.getChangeRequestById).not.toHaveBeenCalled();
     });
 
@@ -186,7 +186,7 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
           { actor_user_id: 'u-1', note: 'x' },
           XBOS_LE_UUID,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PLANE-409' });
+      ).rejects.toMatchObject({ code: 'HRM-PLANE-409' });
       expect(repository.getChangeRequestById).not.toHaveBeenCalled();
     });
   });

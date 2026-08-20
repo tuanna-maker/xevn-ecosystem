@@ -150,7 +150,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Work timeline (WH)', () => {
         { event_date: '2026-01-01', title: 'Bổ nhiệm', position: 'Invented' },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_WH_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_WH_POS_KEY });
     expect(catalogs.assertCodeInEffectiveCatalog).not.toHaveBeenCalled();
   });
 
@@ -230,7 +230,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Work timeline (WH)', () => {
         { position: 'Free text only' },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_WH_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_WH_POS_KEY });
   });
 });
 
@@ -286,7 +286,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Decisions (DEC)', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_DEC_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_DEC_POS_KEY });
   });
 
   it('create asserts position_key + decision_type; signer key when signer present', async () => {
@@ -396,7 +396,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Job postings / Headcount (JP/HCP)', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_JP_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_JP_POS_KEY });
   });
 
   it('createJobPosting asserts catalog and persists position_key', async () => {
@@ -463,7 +463,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Job postings / Headcount (JP/HCP)', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_HCP_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_HCP_POS_KEY });
   });
 
   it('must_keep: JD position_code still uses HRM-REC-JD-POS (regression)', async () => {
@@ -485,7 +485,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Job postings / Headcount (JP/HCP)', () => {
         ceoAuth(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_JD_POS });
+    ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
   });
 });
 
@@ -555,7 +555,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Contracts (CI)', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_CON_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_CON_POS_KEY });
   });
 
   it('create asserts position_key + signer_position_key when signer present', async () => {

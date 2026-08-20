@@ -133,7 +133,7 @@ describe('D-HRM-SETTINGS-MD-JT-BE-01 RecruitmentCatalogService JD position', () 
         ceoAuth(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_JD_POS });
+    ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
     expect(catalogs.assertCodeInEffectiveCatalog).not.toHaveBeenCalled();
   });
 
@@ -166,7 +166,7 @@ describe('D-HRM-SETTINGS-MD-JT-BE-01 RecruitmentCatalogService JD position', () 
         ceoAuth(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_JD_POS });
+    ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
       expect.objectContaining({
         catalogKey: 'job_titles',
@@ -256,7 +256,7 @@ describe('D-HRM-SETTINGS-MD-JT-BE-01 RecruitmentCatalogService JD position', () 
         ceoAuth(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_JD_POS });
+    ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
   });
 
   it('update rejects invent-only position_name when existing has no position_code', async () => {
@@ -286,7 +286,7 @@ describe('D-HRM-SETTINGS-MD-JT-BE-01 RecruitmentCatalogService JD position', () 
         ceoAuth(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_JD_POS });
+    ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
     expect(catalogs.assertCodeInEffectiveCatalog).not.toHaveBeenCalled();
   });
 

@@ -573,7 +573,7 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         end_date: '2026-08-03',
         total_days: 3,
       }),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_LEAVE_VAL_OVERLAP,
     });
     try {
@@ -631,7 +631,7 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         end_date: '2026-09-02',
         total_days: 2,
       }),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_LEAVE_VAL_BALANCE,
     });
     try {
@@ -693,7 +693,7 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         end_date: '2026-09-04',
         total_days: 4,
       }),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_LEAVE_VAL_BALANCE,
     });
     try {
@@ -796,7 +796,7 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         total_days: 3,
         attachment_url: 'https://evil.example.com/doc.pdf',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-LEAVE-VAL-ATT' });
+    ).rejects.toMatchObject({ code: 'HRM-LEAVE-VAL-ATT' });
     const insertCalls = queryMock.mock.calls.filter((c) =>
       String(c[0]).includes('INSERT INTO'),
     );
@@ -1390,7 +1390,7 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
         end_date: '2026-06-12',
         total_days: 3,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_LEAVE_VAL_ATT });
+    ).rejects.toMatchObject({ code: HRM_LEAVE_VAL_ATT });
   });
 
   it('PO-E2E-SPINE-02 LV-03: LVT_02 ≥3 days without attachment_url → HRM-LEAVE-VAL-ATT', async () => {
@@ -1412,7 +1412,7 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
         total_days: 5,
         reason: 'QA LV-03 fail_deep',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_LEAVE_VAL_ATT });
+    ).rejects.toMatchObject({ code: HRM_LEAVE_VAL_ATT });
     const insertCalls = queryMock.mock.calls.filter((c) =>
       String(c[0]).includes('INSERT INTO'),
     );
@@ -1505,7 +1505,7 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
         undefined,
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_LEAVE_VAL_ATT });
+    ).rejects.toMatchObject({ code: HRM_LEAVE_VAL_ATT });
     expect(assertCode).toHaveBeenCalled();
     expect(getEffectiveItemsForKey).toHaveBeenCalled();
   });

@@ -101,7 +101,7 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
           title: 'Must not persist on LE plane',
           priority: 'medium',
         }),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PLANE-409' });
+      ).rejects.toMatchObject({ code: 'HRM-PLANE-409' });
       expect(
         db.query.mock.calls.some((c) =>
           String(c[0]).includes('INSERT INTO public.hrm_tasks'),
@@ -141,7 +141,7 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
     it('listTasks with LE company_id rejects (no silent empty list)', async () => {
       await expect(
         service.listTasks({ company_id: XBOS_LE_UUID }),
-      ).rejects.toMatchObject<ApiException>({
+      ).rejects.toMatchObject({
         code: 'HRM-PLANE-409',
       });
     });
@@ -158,7 +158,7 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
     it('getSummary with LE company_id rejects (no silent fake 0)', async () => {
       await expect(
         service.getSummary(XBOS_LE_UUID),
-      ).rejects.toMatchObject<ApiException>({
+      ).rejects.toMatchObject({
         code: 'HRM-PLANE-409',
       });
       expect(

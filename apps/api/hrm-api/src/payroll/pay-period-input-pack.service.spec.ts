@@ -78,7 +78,7 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
           { timesheetHeaderId: sheetId },
           'holding',
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_PAY_ATT_412 });
+      ).rejects.toMatchObject({ code: HRM_PAY_ATT_412 });
     });
   });
 
@@ -369,7 +369,7 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
           },
           'holding',
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-SC-COMP-KEY' });
+      ).rejects.toMatchObject({ code: 'HRM-SC-COMP-KEY' });
     });
   });
 
@@ -456,7 +456,7 @@ describe('PayPeriodInputPackService (PO-HRM-AMIS-PARITY-PAY-INPUT-PACK-BE-01/02)
           },
           'holding',
         ),
-      ).rejects.toMatchObject<ApiException>({
+      ).rejects.toMatchObject({
         code: HRM_PAY_PERIOD_409_IMMUTABLE,
         status: HttpStatus.CONFLICT,
       });

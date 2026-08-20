@@ -72,7 +72,7 @@ describe('D-BE-ERP-E3-01 assertStatusTransition', () => {
       });
       fail('expected throw');
     } catch (e) {
-      expect(e).toMatchObject<ApiException>({ code: HRM_SM_001 });
+      expect(e).toMatchObject({ code: HRM_SM_001 });
     }
   });
 
@@ -85,7 +85,7 @@ describe('D-BE-ERP-E3-01 assertStatusTransition', () => {
       });
       fail('expected throw');
     } catch (e) {
-      expect(e).toMatchObject<ApiException>({ code: HRM_SM_001 });
+      expect(e).toMatchObject({ code: HRM_SM_001 });
     }
   });
 
@@ -98,7 +98,7 @@ describe('D-BE-ERP-E3-01 assertStatusTransition', () => {
       });
       fail('expected throw');
     } catch (e) {
-      expect(e).toMatchObject<ApiException>({ code: HRM_SM_001 });
+      expect(e).toMatchObject({ code: HRM_SM_001 });
     }
   });
 
@@ -111,7 +111,7 @@ describe('D-BE-ERP-E3-01 assertStatusTransition', () => {
       });
       fail('expected throw');
     } catch (e) {
-      expect(e).toMatchObject<ApiException>({ code: HRM_SM_001 });
+      expect(e).toMatchObject({ code: HRM_SM_001 });
     }
   });
 
@@ -194,7 +194,7 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
         'holding',
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_PERF_LOCKED });
+    ).rejects.toMatchObject({ code: HRM_PERF_LOCKED });
   });
 
   it('deleteCycle with submitted eval → HRM-PERF-DEL-BLOCK', async () => {
@@ -219,7 +219,7 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
     const svc = new PerformanceService(db as never);
     await expect(
       svc.deleteCycle(cycleRow.id, 'holding', ceoAuth()),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_PERF_DEL_BLOCK,
     });
   });
@@ -269,7 +269,7 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
         'holding',
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_PERF_KPI_KEY });
+    ).rejects.toMatchObject({ code: HRM_PERF_KPI_KEY });
   });
 
   it('updateEvaluation draft→completed skip → HRM-SM-001', async () => {
@@ -312,7 +312,7 @@ describe('D-BE-ERP-E3-01 PerformanceService', () => {
         'holding',
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_SM_001 });
+    ).rejects.toMatchObject({ code: HRM_SM_001 });
   });
 });
 
@@ -342,7 +342,7 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_INS_INSURER_KEY });
+    ).rejects.toMatchObject({ code: HRM_INS_INSURER_KEY });
   });
 
   it('createInsurancePolicy invents type → HRM-INS-TYPE-KEY', async () => {
@@ -372,7 +372,7 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_INS_TYPE_KEY });
+    ).rejects.toMatchObject({ code: HRM_INS_TYPE_KEY });
   });
 
   it('createInsurancePolicy happy path persists insurer_key code', async () => {
@@ -480,7 +480,7 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
         'holding',
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_SM_001 });
+    ).rejects.toMatchObject({ code: HRM_SM_001 });
   });
 
   it('createInsurancePolicy duplicate → HRM-INS-POL-002', async () => {
@@ -522,7 +522,7 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_INS_POL_002 });
+    ).rejects.toMatchObject({ code: HRM_INS_POL_002 });
   });
 
   it('createInsuranceRecord requires insurer_key', async () => {
@@ -539,6 +539,6 @@ describe('D-BE-ERP-E3-01 ContractsInsuranceService policies', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_INS_INSURER_KEY });
+    ).rejects.toMatchObject({ code: HRM_INS_INSURER_KEY });
   });
 });

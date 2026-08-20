@@ -315,7 +315,7 @@ describe('PO-HRM-MVP-GD1-REC-07-CLUSTER-BE-02 soft-link + idempotent gate', () =
     };
     await expect(
       assertPersistedHireSoftLinkOrThrow(linkDb, APP_ID, HOLDING, EMP_ID),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_HIRE_400 });
+    ).rejects.toMatchObject({ code: HRM_REC_HIRE_400 });
   });
 
   it('DENY Nest /rec dual · no second hire SoT', async () => {

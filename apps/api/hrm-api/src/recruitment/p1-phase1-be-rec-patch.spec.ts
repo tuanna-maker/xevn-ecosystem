@@ -113,7 +113,7 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
           { company_id: 'main' },
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-404' });
+      ).rejects.toMatchObject({ code: 'HRM-REC-404' });
     });
 
     it('returns HRM-REC-409 when requisition company_id is outside rollup scope (P1-02)', async () => {
@@ -149,7 +149,7 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
           { company_id: 'main' },
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-409' });
+      ).rejects.toMatchObject({ code: 'HRM-REC-409' });
     });
   });
 });

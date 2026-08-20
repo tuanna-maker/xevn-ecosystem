@@ -40,7 +40,7 @@ describe('RecruitmentService', () => {
         email: 'candidate@xe.vn',
         source: 'linkedin',
       }),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: 'HRM-REC-UV-YCTD-NOT-FOUND',
     });
   });
@@ -63,7 +63,7 @@ describe('RecruitmentService', () => {
         { status: 'passed' },
         'main',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-406' });
+    ).rejects.toMatchObject({ code: 'HRM-REC-406' });
   });
 
   it('rejects interview status update when row company_id is outside rollup scope (P1-02)', async () => {
@@ -87,7 +87,7 @@ describe('RecruitmentService', () => {
         'main',
         `Bearer ${token}`,
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-409' });
+    ).rejects.toMatchObject({ code: 'HRM-REC-409' });
   });
 
   it('updates holding requisition status when group CEO uses company_id=main', async () => {
@@ -164,7 +164,7 @@ describe('RecruitmentService', () => {
         { status: 'closed' },
         { company_id: 'main' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-404' });
+    ).rejects.toMatchObject({ code: 'HRM-REC-404' });
   });
 
   it('returns paginated candidates with optional requisition filter', async () => {
@@ -399,7 +399,7 @@ describe('RecruitmentService', () => {
         scheduled_at: '2099-08-07T09:30:00.000Z',
         interviewer: 'HR Lead',
       }),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: 'HRM-REC-IV-409-ACTIVE',
     });
   });

@@ -27,7 +27,7 @@ describe('ContractsInsuranceService', () => {
         start_date: '2026-05-01',
         end_date: '2026-04-01',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-CON-001' });
+    ).rejects.toMatchObject({ code: 'HRM-CON-001' });
   });
 
   it('G-CI-01: rejects fixed_term create without end_date (HRM-CON-002)', async () => {
@@ -39,7 +39,7 @@ describe('ContractsInsuranceService', () => {
         contract_type: 'fixed_term',
         start_date: '2026-05-01',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-CON-002' });
+    ).rejects.toMatchObject({ code: 'HRM-CON-002' });
   });
 
   it('G-CI-01: creates open-ended contract without end_date (NULL persist)', async () => {
@@ -1092,7 +1092,7 @@ describe('ContractsInsuranceService', () => {
           contract_type: 'indefinite',
           start_date: '2026-03-01',
         }),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-CON-POS-KEY' });
+      ).rejects.toMatchObject({ code: 'HRM-CON-POS-KEY' });
     });
   });
 
@@ -1238,7 +1238,7 @@ describe('ContractsInsuranceService', () => {
           end_date: '2027-01-01',
           position_key: 'INVENT_FREE_TEXT',
         }),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-CON-POS-KEY' });
+      ).rejects.toMatchObject({ code: 'HRM-CON-POS-KEY' });
     });
   });
 

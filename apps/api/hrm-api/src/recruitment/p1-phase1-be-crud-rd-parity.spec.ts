@@ -95,7 +95,7 @@ describe('P1-PHASE1-BE-CRUD-RD-PARITY-01 scope_parity', () => {
           { company_id: 'main' },
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-404' });
+      ).rejects.toMatchObject({ code: 'HRM-REC-404' });
     });
   });
 
@@ -193,7 +193,7 @@ describe('P1-PHASE1-BE-CRUD-RD-PARITY-01 scope_parity', () => {
           { company_id: 'main' },
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-404' });
+      ).rejects.toMatchObject({ code: 'HRM-ATT-404' });
     });
   });
 });

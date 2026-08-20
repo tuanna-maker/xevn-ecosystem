@@ -132,7 +132,7 @@ describe('D-BE-CTR-CB-BOOT-01', () => {
 
     await expect(
       service.createPackage(payload, auth('hrbp')),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: 'HRM-CORE-CB-AUTHZ-403',
     });
 
@@ -141,7 +141,7 @@ describe('D-BE-CTR-CB-BOOT-01', () => {
     ]);
     await expect(
       service.createPackage(payload, permitted),
-    ).rejects.not.toMatchObject<ApiException>({
+    ).rejects.not.toMatchObject({
       code: 'HRM-CORE-CB-AUTHZ-403',
     });
   });
@@ -170,7 +170,7 @@ describe('D-BE-CTR-CB-BOOT-01', () => {
         },
         auth('group_ceo'),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_CORE_CB_VAL_400 });
+    ).rejects.toMatchObject({ code: HRM_CORE_CB_VAL_400 });
   });
 
   it('accepts base + si_base without catalog seed and persists distinct amounts', async () => {
@@ -288,7 +288,7 @@ describe('D-BE-CTR-CB-BOOT-01', () => {
         },
         auth('group_ceo'),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-COMP-409-OVERLAP' });
+    ).rejects.toMatchObject({ code: 'HRM-COMP-409-OVERLAP' });
   });
 
   it('create-context lấy insurance_salary_vnd từ si_base, không fallback base', async () => {

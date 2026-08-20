@@ -90,7 +90,7 @@ describe('BM-BE-REC-CAND-GET-BY-ID-01 scope_parity', () => {
           'main',
           `Bearer ${ceoToken()}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-CP-404' });
+      ).rejects.toMatchObject({ code: 'HRM-REC-CP-404' });
     });
   });
 
@@ -182,7 +182,7 @@ describe('BM-BE-REC-CAND-GET-BY-ID-01 scope_parity', () => {
           'main',
           `Bearer ${ceoToken()}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-404' });
+      ).rejects.toMatchObject({ code: 'HRM-REC-404' });
     });
   });
 });

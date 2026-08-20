@@ -115,7 +115,7 @@ describe('PO-HRM-CTR-WORKSPACE-G4-SUBJECT-REC-NV-FIRST-01', () => {
         signing_date: '2026-08-11',
         salary_ratio_percent: 100,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_CTR_CANDIDATE_404 });
+    ).rejects.toMatchObject({ code: HRM_CTR_CANDIDATE_404 });
   });
 
   it('candidate path rejects missing candidate_id (HRM-CTR-SUBJECT-400)', async () => {
@@ -136,6 +136,6 @@ describe('PO-HRM-CTR-WORKSPACE-G4-SUBJECT-REC-NV-FIRST-01', () => {
         signing_date: '2026-08-11',
         salary_ratio_percent: 100,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_CTR_SUBJECT_400 });
+    ).rejects.toMatchObject({ code: HRM_CTR_SUBJECT_400 });
   });
 });
