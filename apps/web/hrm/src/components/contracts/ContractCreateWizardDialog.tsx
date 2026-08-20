@@ -235,7 +235,7 @@ export function ContractCreateWizardDialog({
       setContextSnapshot(null);
       return;
     }
-    let cancelled = false;
+    const cancelled = false;
     setContextLoading(true);
     loadContractCreateContext(companyId, form.employee_id, companyIdsForScope)
       .then((snap) => {

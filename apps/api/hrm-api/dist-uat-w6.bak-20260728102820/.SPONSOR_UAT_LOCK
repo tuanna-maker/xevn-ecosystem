@@ -1,0 +1,8 @@
+﻿work_item=PCOMP-W6-DO-LOCAL-STACK-02
+pid=30316
+entry=dist-uat-w6/main.js
+cwd=apps/api/hrm-api
+port=28001
+started=2026-07-28T08:55:31.1236737+07:00
+LOCK=Do NOT run pnpm run dev:hrm-api / nest start --watch / nest build on hrm-api during sponsor W6.
+Serve ONLY from dist-uat-w6 (outside nest deleteOutDir).

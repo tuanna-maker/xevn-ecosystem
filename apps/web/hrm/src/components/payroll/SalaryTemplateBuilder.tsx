@@ -264,7 +264,7 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
     }
 
     try {
-      let templateId = template?.id;
+      const templateId = template?.id;
 
       // Create or update template
       if (template) {

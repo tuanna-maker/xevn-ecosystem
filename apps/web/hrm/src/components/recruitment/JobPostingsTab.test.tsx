@@ -328,7 +328,7 @@ describe('JobPostingsTab', () => {
     expect(src).toContain('jd_template_id: z.string().optional()');
     expect(src).toContain('jd_template_id is UI-local only');
     // API payload builder should not include jd_template_id
-    const buildFn = src.match(/const buildCreatePayload[\s\S]*?^  };/m);
+    const buildFn = src.match(/const buildCreatePayload[\s\S]*?^ {2}};/m);
     if (buildFn) {
       expect(buildFn[0]).not.toContain('jd_template_id:');
     }

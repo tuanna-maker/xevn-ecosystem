@@ -179,11 +179,7 @@ const companyFormSchema = z.object({
 
 type CompanyFormValues = z.infer<typeof companyFormSchema>;
 
-const industryKeys = [
-  'it', 'manufacturing', 'trading', 'services', 'finance',
-  'realestate', 'education', 'healthcare', 'tourism', 'logistics',
-  'construction', 'other',
-] as const;
+import { VSIC_LEVEL_1_INDUSTRIES } from '@/lib/vsic';
 
 export function CompanyManagement() {
   const { t } = useTranslation();
@@ -685,9 +681,9 @@ export function CompanyManagement() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {industryKeys.map((key) => (
-                            <SelectItem key={key} value={t(`industries.${key}`)}>
-                              {t(`industries.${key}`)}
+                          {VSIC_LEVEL_1_INDUSTRIES.map((item) => (
+                            <SelectItem key={item.key} value={item.label}>
+                              {item.label}
                             </SelectItem>
                           ))}
                         </SelectContent>

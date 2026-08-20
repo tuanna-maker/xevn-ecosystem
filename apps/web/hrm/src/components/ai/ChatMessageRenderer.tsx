@@ -37,7 +37,7 @@ function extractChartDataFromTable(rows: string[][]): ChartData[] | null {
 
   // Find a numeric column (not the first one which is usually the label)
   let numColIndex = -1;
-  let labelColIndex = 0;
+  const labelColIndex = 0;
 
   for (let c = 1; c < headers.length; c++) {
     const allNumeric = dataRows.every(row => {

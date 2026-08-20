@@ -36,7 +36,7 @@
  *            logic, validate rule, putJdPackRules DTO strip không đổi; chỉ đổi NƠI render + text
  * LastVerified: docs/qa/evidence/po-hrm-settings-ia-copy-wave2-fe-01.md
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FileText, GripVertical, Plus, RefreshCw, Save } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
@@ -169,6 +169,10 @@ export function JdDynamicSettingsPanel() {
     validation_catalog_key: '',
   });
   const [fieldSearch, setFieldSearch] = useState('');
+  // Uncontrolled ref for validation_options textarea: decouples keystrokes from parent re-render (prevents Radix FocusScope from stealing focus on each character)
+  const validationOptionsRef = useRef<HTMLTextAreaElement>(null);
+  const fieldKeyRef = useRef<HTMLInputElement>(null);
+  const labelRef = useRef<HTMLInputElement>(null);
   const [fieldDialogOpen, setFieldDialogOpen] = useState(false);
   const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
 
@@ -267,6 +271,7 @@ export function JdDynamicSettingsPanel() {
   const handleFieldDialogOpenChange = (next: boolean) => {
     setFieldDialogOpen(next);
     if (!next) {
+      setEditingFieldId(null);
       setFieldForm({
         field_key: '',
         label: '',
@@ -314,7 +319,7 @@ export function JdDynamicSettingsPanel() {
 
   const onCreateField = async () => {
     if (!companyId) return;
-    if (!fieldForm.field_key.trim() || !fieldForm.label.trim()) {
+    if (!(fieldKeyRef.current?.value ?? fieldForm.field_key).trim() || !(labelRef.current?.value ?? fieldForm.label).trim()) {
       toast({ title: 'Thiếu mã hoặc nhãn trường', variant: 'destructive' });
       return;
     }
@@ -323,7 +328,7 @@ export function JdDynamicSettingsPanel() {
     let validation_json: Record<string, unknown> | undefined;
     if (fieldForm.field_type === 'select') {
       if (fieldForm.validation_source === 'static') {
-        const options = fieldForm.validation_options
+        const options = (validationOptionsRef.current?.value ?? fieldForm.validation_options)
           .split(/[\n,]+/)
           .map((s) => s.trim())
           .filter(Boolean);
@@ -347,9 +352,8 @@ export function JdDynamicSettingsPanel() {
 
     try {
       await createJdFieldDef({
-        company_id: companyId,
-        field_key: fieldForm.field_key.trim(),
-        label: fieldForm.label.trim(),
+        company_id: companyId,        // field_key: immutable — not in UpdateJdFieldDefDto (forbidNonWhitelisted rejects it)
+        label: (labelRef.current?.value ?? fieldForm.label).trim(),
         field_type: fieldForm.field_type,
         is_required: fieldForm.is_required,
         sort_order: fields.length,
@@ -408,7 +412,7 @@ export function JdDynamicSettingsPanel() {
 
   const onUpdateField = async () => {
     if (!companyId || !editingFieldId) return;
-    if (!fieldForm.field_key.trim() || !fieldForm.label.trim()) {
+    if (!(fieldKeyRef.current?.value ?? fieldForm.field_key).trim() || !(labelRef.current?.value ?? fieldForm.label).trim()) {
       toast({ title: 'Thiếu mã hoặc nhãn trường', variant: 'destructive' });
       return;
     }
@@ -417,7 +421,7 @@ export function JdDynamicSettingsPanel() {
     let validation_json: Record<string, unknown> | undefined;
     if (fieldForm.field_type === 'select') {
       if (fieldForm.validation_source === 'static') {
-        const options = fieldForm.validation_options
+        const options = (validationOptionsRef.current?.value ?? fieldForm.validation_options)
           .split(/[\n,]+/)
           .map((s) => s.trim())
           .filter(Boolean);
@@ -440,9 +444,8 @@ export function JdDynamicSettingsPanel() {
     }
 
     try {
-      await updateJdFieldDef(editingFieldId, companyId, {
-        field_key: fieldForm.field_key.trim(),
-        label: fieldForm.label.trim(),
+      await updateJdFieldDef(editingFieldId, companyId, {        // field_key: immutable — not in UpdateJdFieldDefDto (forbidNonWhitelisted rejects it)
+        label: (labelRef.current?.value ?? fieldForm.label).trim(),
         field_type: fieldForm.field_type,
         is_required: fieldForm.is_required,
         validation_json,
@@ -550,7 +553,7 @@ export function JdDynamicSettingsPanel() {
       if (!Array.isArray(parsed)) throw new Error('Rules phải là mảng JSON');
       // Strip happens in putJdPackRules (FE-RULES-PUT-STRIP) — pass GET-shaped JSON safely.
       await putJdPackRules({ company_id: companyId, rules: parsed });
-      toast({ title: 'Đã lưu rule chọn gói' });
+      toast({ title: 'Đã lưu quy tắc chọn gói' });
       setRulesDialogOpen(false);
       await loadAll();
     } catch (err: unknown) {
@@ -659,8 +662,8 @@ export function JdDynamicSettingsPanel() {
           <TabsTrigger value="fields">Trường JD</TabsTrigger>
           <TabsTrigger value="groups">Nhóm thông tin</TabsTrigger>
           <TabsTrigger value="packs">Gói mặc định</TabsTrigger>
-          <TabsTrigger value="rules">Rule chọn gói</TabsTrigger>
-          <TabsTrigger value="layout">Bố cục L1</TabsTrigger>
+          <TabsTrigger value="rules">Quy tắc chọn gói</TabsTrigger>
+          <TabsTrigger value="layout">Bố cục mặc định</TabsTrigger>
         </TabsList>
 
         <TabsContent value="fields" className="space-y-3">
@@ -757,15 +760,19 @@ export function JdDynamicSettingsPanel() {
 
             <DialogContent data-testid="jd-settings-field-dialog">
               <DialogHeader>
-                <DialogTitle>Thêm trường JD</DialogTitle>
+                <DialogTitle>{editingFieldId ? 'Sửa trường JD' : 'Thêm trường JD'}</DialogTitle>
               </DialogHeader>
               <div className="grid grid-cols-12 gap-3">
                 <div className="col-span-12 space-y-1 sm:col-span-6">
                   <Label>Mã trường *</Label>
                   <Input
                     className="xevn-field-code"
-                    value={fieldForm.field_key}
-                    onChange={(e) => setFieldForm((s) => ({ ...s, field_key: e.target.value }))}
+                    key={`fkey-${editingFieldId ?? '__new__'}`}
+                    ref={fieldKeyRef}
+                    defaultValue={fieldForm.field_key}
+                    readOnly={!!editingFieldId}
+
+                    onBlur={(e) => setFieldForm((s) => ({ ...s, field_key: e.target.value }))}
                     placeholder="vd: benefits"
                     data-testid="jd-settings-field-key"
                   />
@@ -773,8 +780,10 @@ export function JdDynamicSettingsPanel() {
                 <div className="col-span-12 space-y-1 sm:col-span-6">
                   <Label>Nhãn *</Label>
                   <Input
-                    value={fieldForm.label}
-                    onChange={(e) => setFieldForm((s) => ({ ...s, label: e.target.value }))}
+                    key={`label-${editingFieldId ?? '__new__'}`}
+                    ref={labelRef}
+                    defaultValue={fieldForm.label}
+                    onBlur={(e) => setFieldForm((s) => ({ ...s, label: e.target.value }))}
                     placeholder="Chế độ đãi ngộ"
                     data-testid="jd-settings-field-label"
                   />
@@ -824,10 +833,13 @@ export function JdDynamicSettingsPanel() {
                     <div className="col-span-12 space-y-1">
                       <Label>Tùy chọn (cách nhau bằng Enter hoặc dấu phẩy) *</Label>
                       <Textarea
-                        value={fieldForm.validation_options}
-                        onChange={(e) => setFieldForm((s) => ({ ...s, validation_options: e.target.value }))}
-                        placeholder="Ví dụ: Lương cao, Môi trường tốt, Phúc lợi đầy đủ"
-                        rows={3}
+                        key={`vo-${editingFieldId ?? '__new__'}`}
+                        ref={validationOptionsRef}
+                        defaultValue={fieldForm.validation_options}
+                        onBlur={(e) => setFieldForm((s) => ({ ...s, validation_options: e.target.value }))}
+                        onKeyDown={(e) => e.stopPropagation()}
+                        placeholder="B2&#10;C&#10;D&#10;E"
+                        rows={4}
                         className="min-h-[80px]"
                         data-testid="jd-settings-field-options"
                       />
@@ -867,9 +879,9 @@ export function JdDynamicSettingsPanel() {
                 >
                   Hủy
                 </Button>
-                <Button type="button" onClick={() => void onCreateField()} data-testid="jd-settings-field-save">
-                  <Plus className="mr-1 h-4 w-4" />
-                  Thêm
+                <Button type="button" onClick={() => void (editingFieldId ? onUpdateField() : onCreateField())} data-testid="jd-settings-field-save">
+                  {editingFieldId ? null : <Plus className="mr-1 h-4 w-4" />}
+                  {editingFieldId ? 'Lưu' : 'Thêm'}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -1158,7 +1170,7 @@ export function JdDynamicSettingsPanel() {
             <Card>
               <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-2 pb-2">
                 <div>
-                  <CardTitle className="text-base">Rule chọn gói</CardTitle>
+                  <CardTitle className="text-base">Quy tắc chọn gói</CardTitle>
                   <CardDescription>
                     Rule áp dụng theo thứ tự ưu tiên tăng dần để chọn gói mặc định phù hợp cho từng vị trí.
                   </CardDescription>
@@ -1205,7 +1217,7 @@ export function JdDynamicSettingsPanel() {
 
             <DialogContent className="max-w-2xl" data-testid="jd-settings-rules-dialog">
               <DialogHeader>
-                <DialogTitle>Sửa rule chọn gói</DialogTitle>
+                <DialogTitle>Sửa quy tắc chọn gói</DialogTitle>
               </DialogHeader>
               <Textarea
                 className="min-h-[180px] font-mono text-xs"

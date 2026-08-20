@@ -43,6 +43,8 @@ import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { HrmApiSyncBanner } from '@/components/layout/HrmApiSyncBanner';
 import { toErrorMessage } from '@/lib/apiError';
+import { getPortalPublicOrigin } from '@/lib/portalLogin';
+import { isHrmPortalEmbedFrame } from '@/lib/hrmPortalMode';
 
 const loginSchema = z.object({
   email: z.string().email('Email không hợp lệ'),
@@ -82,7 +84,13 @@ export default function Login() {
         title: isEn ? 'Login successful' : 'Đăng nhập thành công',
         description: isEn ? 'Welcome back!' : 'Chào mừng bạn quay trở lại!',
       });
-      navigate('/');
+      const portalOrigin = getPortalPublicOrigin();
+      if (portalOrigin && !isHrmPortalEmbedFrame()) {
+        // Redirect to portal (XBOS command center) — portal will embed HRM with portal mode
+        window.location.replace(portalOrigin + '/command-center');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       console.error('Login error:', error);
       toast({

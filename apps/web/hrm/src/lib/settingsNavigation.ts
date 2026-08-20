@@ -1,6 +1,16 @@
 /**
  * SoT menu Cài đặt HRM — nhóm dọc (AMIS-style). Deep link: /settings?tab=<id>
  * WorkItem: PO-HRM-SETTINGS-IA-UX-REMasters-SPONSOR-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-19 PO-HRM-SETTINGS-IA-UX-REMasters-SPONSOR-01
+ * change_mode: UPGRADE
+ * What: Quy hoạch lại menu Settings từ 7 nhóm → 8 nhóm đúng nghiệp vụ.
+ *       Xóa nhóm "Danh mục & Cấu hình chung" (mơ hồ) và "Hồ sơ nhân sự".
+ *       master-data/catalog-leave-types/merge-tokens/dec-decision-types → phân tán về đúng nhóm.
+ *       Tách nhóm "Lương & Phúc lợi" thành insurance + payroll; mở rộng recruitment/contract/attendance.
+ *       Thêm 16 tab ID mới vào SettingsTabId union + ALL_SETTINGS_TAB_IDS.
+ * Why: Sponsor yêu cầu nhóm lại theo nghiệp vụ; chấm công web = view-only (không form nhập liệu).
+ * must_keep: SETTINGS_TAB_ALIASES · resolveSettingsTab · resolveEffectiveSettingsTab · tab ID cũ không bị xóa
  */
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -58,7 +68,24 @@ export type SettingsTabId =
   | 'rec-pipeline-stages'
   | 'settings-defaults'
   | 'catalog-leave-types'
-  | 'payroll-insurance-rates';
+  | 'payroll-insurance-rates'
+  // --- Mới thêm 2026-08-19 (PO-HRM-SETTINGS-IA-UX-REMasters-SPONSOR-01) ---
+  | 'catalog-job-titles'
+  | 'rec-sources'
+  | 'rec-interview-types'
+  | 'rec-rejection-reasons'
+  | 'rec-positions'
+  | 'rec-health-requirements'
+  | 'contract-types'
+  | 'contract-termination-reasons'
+  | 'att-shifts'
+  | 'att-work-rules'
+  | 'att-schedule-groups'
+  | 'pay-salary-components'
+  | 'pay-salary-formulas'
+  | 'pay-salary-groups'
+  | 'pay-payslip-tpl'
+  | 'pay-tax-tables';
 
 export type SettingsNavItem = {
   id: SettingsTabId;
@@ -132,187 +159,112 @@ const ALL_SETTINGS_TAB_IDS = new Set<SettingsTabId>([
   'settings-defaults',
   'catalog-leave-types',
   'payroll-insurance-rates',
+  // --- Mới thêm 2026-08-19 ---
+  'catalog-job-titles',
+  'rec-sources',
+  'rec-interview-types',
+  'rec-rejection-reasons',
+  'rec-positions',
+  'rec-health-requirements',
+  'contract-types',
+  'contract-termination-reasons',
+  'att-shifts',
+  'att-work-rules',
+  'att-schedule-groups',
+  'pay-salary-components',
+  'pay-salary-formulas',
+  'pay-salary-groups',
+  'pay-payslip-tpl',
+  'pay-tax-tables',
 ]);
 
 export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
   {
-    groupId: 'portal',
-    title: 'Tài khoản & portal',
+    groupId: 'system',
+    title: 'Hệ thống & Tài khoản',
     items: [
       { id: 'account', label: 'Tài khoản', icon: User },
       { id: 'branding', label: 'Thương hiệu', icon: Image },
       { id: 'notifications', label: 'Thông báo', icon: Bell },
       { id: 'security', label: 'Bảo mật', icon: Shield },
-      { id: 'roles', label: 'Vai trò & quyền', icon: Users },
+      { id: 'roles', label: 'Vai trò & Quyền', icon: Users },
       { id: 'system', label: 'Hệ thống', icon: SettingsIcon },
       { id: 'subscription', label: 'Gói dịch vụ', icon: DollarSign },
     ],
   },
   {
-    groupId: 'catalog',
-    title: 'Danh mục tổng hợp',
+    groupId: 'hr-catalog',
+    title: 'Danh mục Nhân sự',
     items: [
-      { id: 'catalogs', label: 'Danh mục (sync)', icon: Layers },
-      { id: 'master-data', label: 'Danh mục nghiệp vụ', icon: Layers },
-      { id: 'catalog-leave-types', label: 'Loại nghỉ phép', icon: FileText, testId: 'settings-tab-catalog-leave-types' },
-    ],
-  },
-  {
-    groupId: 'contract',
-    title: 'Hợp đồng lao động',
-    items: [
-      {
-        id: 'contract-clauses',
-        label: 'Điều khoản HĐ',
-        icon: ScrollText,
-        testId: 'settings-tab-contract-clauses',
-      },
-      {
-        id: 'contract-templates',
-        label: 'Mẫu hợp đồng',
-        icon: FileText,
-        testId: 'settings-tab-contract-templates',
-      },
-      {
-        id: 'contract-number-config',
-        label: 'Quy tắc số HĐ',
-        icon: FileSignature,
-        testId: 'settings-tab-contract-number-config',
-      },
-      {
-        id: 'contract-library-publish',
-        label: 'Phát hành thư viện',
-        icon: Globe,
-        testId: 'settings-tab-contract-library-publish',
-      },
-      {
-        id: 'merge-tokens',
-        label: 'Token merge in',
-        icon: Key,
-        testId: 'settings-tab-merge-tokens',
-      },
+      { id: 'master-data', label: 'Đơn vị & Phòng ban', icon: Layers, testId: 'settings-tab-master-data' },
+      { id: 'catalog-job-titles', label: 'Chức danh công việc', icon: Briefcase, testId: 'settings-tab-catalog-job-titles' },
+      { id: 'emp-document-types', label: 'Loại giấy tờ', icon: IdCard, testId: 'settings-tab-emp-document-types' },
+      { id: 'emp-employment-types', label: 'Loại hình thuê', icon: Briefcase, testId: 'settings-tab-emp-employment-types' },
+      { id: 'emp-employment-statuses', label: 'Trạng thái nhân viên', icon: UserCheck, testId: 'settings-tab-emp-employment-statuses' },
+      { id: 'dec-decision-types', label: 'Loại quyết định', icon: FileSignature, testId: 'settings-tab-dec-decision-types' },
     ],
   },
   {
     groupId: 'recruitment',
     title: 'Tuyển dụng',
     items: [
-      {
-        id: 'jd-master-library',
-        label: 'Thư viện JD',
-        icon: FileText,
-        testId: 'settings-tab-jd-master-library',
-      },
-      {
-        id: 'jd-dynamic',
-        label: 'Cấu hình trường JD',
-        icon: FileText,
-        testId: 'settings-tab-jd-dynamic',
-      },
-      {
-        id: 'rec-pipeline-stages',
-        label: 'Giai đoạn pipeline',
-        icon: GitBranch,
-        testId: 'settings-tab-rec-pipeline-stages',
-      },
+      { id: 'jd-master-library', label: 'Thư viện JD', icon: FileText, testId: 'settings-tab-jd-master-library' },
+      { id: 'jd-dynamic', label: 'Trường JD linh hoạt', icon: FileText, testId: 'settings-tab-jd-dynamic' },
+      { id: 'rec-pipeline-stages', label: 'Giai đoạn tuyển dụng', icon: GitBranch, testId: 'settings-tab-rec-pipeline-stages' },
+      { id: 'rec-sources', label: 'Nguồn tuyển dụng', icon: Globe, testId: 'settings-tab-rec-sources' },
+      { id: 'rec-interview-types', label: 'Loại phỏng vấn', icon: ClipboardCheck, testId: 'settings-tab-rec-interview-types' },
+      { id: 'rec-rejection-reasons', label: 'Lý do từ chối', icon: FileText, testId: 'settings-tab-rec-rejection-reasons' },
+      { id: 'rec-positions', label: 'Catalog vị trí', icon: Briefcase, testId: 'settings-tab-rec-positions' },
+      { id: 'rec-health-requirements', label: 'Yêu cầu sức khỏe', icon: Shield, testId: 'settings-tab-rec-health-requirements' },
+    ],
+  },
+  {
+    groupId: 'contract',
+    title: 'Hợp đồng lao động',
+    items: [
+      { id: 'contract-types', label: 'Loại hợp đồng', icon: FileText, testId: 'settings-tab-contract-types' },
+      { id: 'contract-clauses', label: 'Điều khoản HĐ', icon: ScrollText, testId: 'settings-tab-contract-clauses' },
+      { id: 'contract-templates', label: 'Mẫu hợp đồng', icon: FileText, testId: 'settings-tab-contract-templates' },
+      { id: 'contract-number-config', label: 'Đánh số HĐ', icon: FileSignature, testId: 'settings-tab-contract-number-config' },
+      { id: 'merge-tokens', label: 'Token merge', icon: Key, testId: 'settings-tab-merge-tokens' },
+      { id: 'contract-library-publish', label: 'Phát hành văn bản', icon: Globe, testId: 'settings-tab-contract-library-publish' },
+      { id: 'contract-termination-reasons', label: 'Lý do chấm dứt HĐ', icon: FileText, testId: 'settings-tab-contract-termination-reasons' },
     ],
   },
   {
     groupId: 'attendance',
-    title: 'Chấm công',
+    title: 'Chấm công & Nghỉ phép',
+    // Web chỉ dùng để khai báo danh mục. Dữ liệu chấm công thực tế nhập qua máy chấm công tích hợp hoặc mobile app.
     items: [
-      {
-        id: 'att-leave-types',
-        label: 'Loại phép',
-        icon: FileText,
-        testId: 'settings-tab-att-leave-types',
-      },
-      {
-        id: 'att-attendance-codes',
-        label: 'Mã chấm công',
-        icon: ClipboardCheck,
-        testId: 'settings-tab-att-attendance-codes',
-      },
-      { id: 'att-ot-types', label: 'Loại OT', icon: Clock, testId: 'settings-tab-att-ot-types' },
-      {
-        id: 'att-ot-comp-types',
-        label: 'Chi trả OT',
-        icon: Clock,
-        testId: 'settings-tab-att-ot-comp-types',
-      },
-    ],
-  },
-  {
-    groupId: 'employee',
-    title: 'Nhân sự (catalog)',
-    items: [
-      {
-        id: 'emp-document-types',
-        label: 'Loại giấy tờ',
-        icon: IdCard,
-        testId: 'settings-tab-emp-document-types',
-      },
-      {
-        id: 'emp-employment-types',
-        label: 'Loại hình thuê',
-        icon: Briefcase,
-        testId: 'settings-tab-emp-employment-types',
-      },
-      {
-        id: 'emp-employment-statuses',
-        label: 'Trạng thái NV',
-        icon: UserCheck,
-        testId: 'settings-tab-emp-employment-statuses',
-      },
+      { id: 'att-leave-types', label: 'Loại nghỉ phép', icon: FileText, testId: 'settings-tab-att-leave-types' },
+      { id: 'att-attendance-codes', label: 'Mã chấm công', icon: ClipboardCheck, testId: 'settings-tab-att-attendance-codes' },
+      { id: 'att-ot-types', label: 'Loại tăng ca', icon: Clock, testId: 'settings-tab-att-ot-types' },
+      { id: 'att-ot-comp-types', label: 'Chi trả tăng ca', icon: Clock, testId: 'settings-tab-att-ot-comp-types' },
+      { id: 'att-shifts', label: 'Ca làm việc', icon: Clock, testId: 'settings-tab-att-shifts' },
+      { id: 'att-work-rules', label: 'Quy tắc tính công', icon: Calculator, testId: 'settings-tab-att-work-rules' },
+      { id: 'att-schedule-groups', label: 'Nhóm lịch làm việc', icon: Layers, testId: 'settings-tab-att-schedule-groups' },
     ],
   },
   {
     groupId: 'insurance',
     title: 'Bảo hiểm',
     items: [
-      {
-        id: 'si-insurance-types',
-        label: 'Loại BH',
-        icon: Shield,
-        testId: 'settings-tab-si-insurance-types',
-      },
+      { id: 'si-insurance-types', label: 'Loại bảo hiểm', icon: Shield, testId: 'settings-tab-si-insurance-types' },
       { id: 'si-insurers', label: 'Nhà bảo hiểm', icon: Layers, testId: 'settings-tab-si-insurers' },
-    ],
-  },
-  {
-    groupId: 'decision',
-    title: 'Quyết định',
-    items: [
-      {
-        id: 'dec-decision-types',
-        label: 'Loại quyết định',
-        icon: FileSignature,
-        testId: 'settings-tab-dec-decision-types',
-      },
+      { id: 'payroll-insurance-rates', label: 'Mức đóng BH', icon: Shield, testId: 'settings-tab-payroll-insurance-rates' },
     ],
   },
   {
     groupId: 'payroll',
-    title: 'Lương',
+    title: 'Lương & Thu nhập',
     items: [
-      {
-        id: 'pay-sheet-tpl',
-        label: 'Mẫu bảng lương',
-        icon: DollarSign,
-        testId: 'settings-tab-pay-sheet-tpl',
-      },
-      {
-        id: 'settings-defaults',
-        label: 'Mặc định thuế/BH/PC',
-        icon: Calculator,
-        testId: 'settings-tab-settings-defaults',
-      },
-      {
-        id: 'payroll-insurance-rates',
-        label: 'Mức đóng BH',
-        icon: Shield,
-        testId: 'settings-tab-payroll-insurance-rates',
-      },
+      { id: 'pay-salary-components', label: 'Thành phần lương', icon: DollarSign, testId: 'settings-tab-pay-salary-components' },
+      { id: 'pay-salary-formulas', label: 'Công thức tính lương', icon: Calculator, testId: 'settings-tab-pay-salary-formulas' },
+      { id: 'pay-salary-groups', label: 'Nhóm lương', icon: Layers, testId: 'settings-tab-pay-salary-groups' },
+      { id: 'pay-sheet-tpl', label: 'Mẫu bảng lương', icon: DollarSign, testId: 'settings-tab-pay-sheet-tpl' },
+      { id: 'pay-payslip-tpl', label: 'Template phiếu lương', icon: FileText, testId: 'settings-tab-pay-payslip-tpl' },
+      { id: 'pay-tax-tables', label: 'Bảng thuế TNCN', icon: Calculator, testId: 'settings-tab-pay-tax-tables' },
+      { id: 'settings-defaults', label: 'Mặc định tính lương', icon: Calculator, testId: 'settings-tab-settings-defaults' },
     ],
   },
 ];

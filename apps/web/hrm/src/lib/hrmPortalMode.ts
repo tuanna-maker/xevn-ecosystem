@@ -23,7 +23,15 @@ export function getHrmPortalMode(search: string): boolean {
     if (typeof localStorage !== 'undefined') localStorage.setItem('hrm_portal_mode', '1');
   }
 
-  return qsPortal || storedSession || storedLocal;
+  const iframeEmbed = isHrmPortalEmbedFrame();
+  if (iframeEmbed && typeof sessionStorage !== 'undefined') {
+    sessionStorage.setItem('hrm_portal_mode', '1');
+  }
+  if (iframeEmbed && typeof localStorage !== 'undefined') {
+    localStorage.setItem('hrm_portal_mode', '1');
+  }
+
+  return qsPortal || storedSession || storedLocal || iframeEmbed;
 }
 
 /** True when HRM runs inside a parent portal iframe (Command Center embed). */

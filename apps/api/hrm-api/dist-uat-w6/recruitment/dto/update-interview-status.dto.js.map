@@ -1,0 +1,1 @@
+{"version":3,"file":"update-interview-status.dto.js","sourceRoot":"","sources":["../../../src/recruitment/dto/update-interview-status.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,qDAAuC;AAEvC,MAAM,kBAAkB,GAAG,CAAC,WAAW,EAAE,QAAQ,EAAE,QAAQ,EAAE,WAAW,CAAU,CAAC;AAEnF,MAAa,wBAAwB;IAEnC,MAAM,CAAuC;CAC9C;AAHD,4DAGC;AADC;IADC,IAAA,sBAAI,EAAC,kBAAkB,CAAC;;wDACoB"}
