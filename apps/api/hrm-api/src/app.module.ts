@@ -24,6 +24,10 @@ import { AttLeaveAccrualPolicyService } from './attendance/att-leave-accrual-pol
 import { AttAttendanceCodeService } from './attendance/att-attendance-code.service';
 import { AttOtTypeService } from './attendance/att-ot-type.service';
 import { AttOtCompTypeService } from './attendance/att-ot-comp-type.service';
+import { AttShiftScheduleSetupService } from './attendance/att-shift-schedule-setup.service';
+import { AttShiftService } from './attendance/att-shift.service';
+import { AttRuleService } from './attendance/att-rule.service';
+import { AttScheduleService } from './attendance/att-schedule.service';
 import { AttOtCompLeavePolicyService } from './attendance/att-ot-comp-leave-policy.service';
 import { AttSickLeaveFundOrderService } from './attendance/att-sick-leave-fund-order.service';
 import { AttActivateEnrollService } from './attendance/att-activate-enroll.service';
@@ -166,8 +170,12 @@ import { ContractTemplatesModule } from './contract-templates/contract-templates
     AttHolidayCalendarService,
     AttLeaveAccrualPolicyService,
     AttAttendanceCodeService,
-    AttOtTypeService,
     AttOtCompTypeService,
+    AttShiftScheduleSetupService,
+    AttShiftService,
+    AttRuleService,
+    AttScheduleService,
+    AttOtTypeService,
     AttOtCompLeavePolicyService,
     AttSickLeaveFundOrderService,
     AttActivateEnrollService,

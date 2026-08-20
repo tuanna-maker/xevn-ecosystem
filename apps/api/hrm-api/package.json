@@ -43,6 +43,7 @@
     "dotenv": "^16.4.5",
     "exceljs": "4.4.0",
     "firebase-admin": "^13.0.0",
+    "hyperformula": "^3.4.0",
     "ioredis": "^5.6.0",
     "pdfkit": "^0.19.1",
     "pg": "^8.20.0",

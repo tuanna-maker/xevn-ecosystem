@@ -274,6 +274,15 @@ import {
   GetSickLeaveFundOrderQueryDto,
   PutSickLeaveFundOrderDto,
 } from './dto/att-sick-leave-fund-order.dto';
+import { AttShiftService } from './att-shift.service';
+import { AttRuleService } from './att-rule.service';
+import { AttScheduleService } from './att-schedule.service';
+import {
+  ListAttShiftRuleScheduleQueryDto,
+  UpsertAttShiftDto,
+  UpsertAttRuleDto,
+  UpsertAttScheduleDto,
+} from './dto/att-shift-schedule.dto';
 
 @Controller('attendance')
 export class AttendanceController {
@@ -288,6 +297,9 @@ export class AttendanceController {
     private readonly attOtCompTypeService: AttOtCompTypeService,
     private readonly attOtCompLeavePolicyService: AttOtCompLeavePolicyService,
     private readonly attSickLeaveFundOrderService: AttSickLeaveFundOrderService,
+    private readonly attShiftService: AttShiftService,
+    private readonly attRuleService: AttRuleService,
+    private readonly attScheduleService: AttScheduleService,
     private readonly leaveRequestsService: LeaveRequestsService,
     private readonly leaveBalanceService: LeaveBalanceService,
     private readonly attActivateEnrollService: AttActivateEnrollService,

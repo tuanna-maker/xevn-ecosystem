@@ -137,6 +137,11 @@ import { PayFormulaSettingsPanel } from '@/components/settings/payroll/PayFormul
 import { PaySalaryGroupSettingsPanel } from '@/components/settings/payroll/PaySalaryGroupSettingsPanel';
 import { PayTaxTableSettingsPanel } from '@/components/settings/payroll/PayTaxTableSettingsPanel';
 import { PayPaySlipTemplateSettingsPanel } from '@/components/settings/payroll/PayPayslipTemplateSettingsPanel';
+import { ContractTypeSettingsPanel } from '@/components/settings/ContractTypeSettingsPanel';
+import { ContractTerminationReasonSettingsPanel } from '@/components/settings/ContractTerminationReasonSettingsPanel';
+import { AttShiftSettingsPanel } from '@/components/settings/AttShiftSettingsPanel';
+import { AttWorkRuleSettingsPanel } from '@/components/settings/AttWorkRuleSettingsPanel';
+import { AttScheduleGroupSettingsPanel } from '@/components/settings/AttScheduleGroupSettingsPanel';
 
 
 const currencies = [
@@ -599,34 +604,19 @@ export default function Settings() {
           </div>
         )}
         {settingsTab === 'contract-types' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
+          <ContractTypeSettingsPanel />
         )}
         {settingsTab === 'contract-termination-reasons' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
+          <ContractTerminationReasonSettingsPanel />
         )}
         {settingsTab === 'att-shifts' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
+          <AttShiftSettingsPanel />
         )}
         {settingsTab === 'att-work-rules' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
+          <AttWorkRuleSettingsPanel />
         )}
         {settingsTab === 'att-schedule-groups' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
+          <AttScheduleGroupSettingsPanel />
         )}
         {settingsTab === 'pay-salary-components' && (
           <PaySalaryComponentList />

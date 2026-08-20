@@ -23,6 +23,8 @@
  * must_keep: ATT hours fidelity blocked until att_timesheet_line
  */
 
+import { HyperFormula } from 'hyperformula';
+
 /** Documented staged subset — NOT a full AST taxonomy invent. */
 export const PAY_FORMULA_EVAL_FORM = 'gd1_eval_v1' as const;
 
@@ -55,6 +57,12 @@ export type PayFormulaEvalResultLine = {
   amount: number;
   source_ref: string;
   sort_order: number;
+};
+
+export type PayFormulaEvalLineHyperFormulaInput = {
+  component_code: string;
+  sign: PayFormulaEvalSign;
+  formula: string;
 };
 
 export type PayFormulaEvalOk = {
@@ -91,11 +99,13 @@ export function isAttHoursVarKey(key: string): boolean {
  * - gd1_eval_v1 + lines[] → evaluable subset
  * - FE GĐ1 opaque (`form: gd1` / ops opaque|noop) → not LIVE
  */
-export function classifyPayFormulaExpression(expressionJson: unknown): {
-  kind: 'gd1_eval_v1' | 'opaque_gd1' | 'unknown';
-  lines: PayFormulaEvalLineInput[];
-  warnings: string[];
-} {
+export type ClassifiedPayFormula = 
+  | { kind: 'gd1_eval_v1'; lines: PayFormulaEvalLineInput[]; warnings: string[]; gd1Lines?: PayFormulaEvalLineInput[] }
+  | { kind: 'hyperformula_v1'; lines: PayFormulaEvalLineHyperFormulaInput[]; warnings: string[]; gd1Lines?: PayFormulaEvalLineInput[] }
+  | { kind: 'opaque_gd1'; lines: never[]; warnings: string[]; gd1Lines?: PayFormulaEvalLineInput[] }
+  | { kind: 'unknown'; lines: never[]; warnings: string[]; gd1Lines?: PayFormulaEvalLineInput[] };
+
+export function classifyPayFormulaExpression(expressionJson: unknown): ClassifiedPayFormula {
   const warnings: string[] = [];
   if (
     !expressionJson ||
@@ -149,6 +159,28 @@ export function classifyPayFormulaExpression(expressionJson: unknown): {
     return { kind: 'gd1_eval_v1', lines, warnings };
   }
 
+  if (form === 'hyperformula_v1') {
+    const rawLines = Array.isArray(obj.lines) ? obj.lines : [];
+    const lines: PayFormulaEvalLineHyperFormulaInput[] = [];
+    for (const raw of rawLines) {
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+        warnings.push('SKIP_INVALID_LINE_SHAPE');
+        continue;
+      }
+      const row = raw as Record<string, unknown>;
+      const component_code = String(row.component_code ?? row.componentCode ?? '').trim();
+      const signRaw = String(row.sign ?? 'earning').trim().toLowerCase();
+      const sign: PayFormulaEvalSign = signRaw === 'deduction' ? 'deduction' : 'earning';
+      const formula = String(row.formula ?? '').trim();
+      if (!component_code || !formula.startsWith('=')) {
+        warnings.push('SKIP_INVALID_LINE_FIELDS');
+        continue;
+      }
+      lines.push({ component_code, sign, formula });
+    }
+    return { kind: 'hyperformula_v1', lines, gd1Lines: [], warnings };
+  }
+
   const ops = Array.isArray(obj.ops) ? obj.ops : [];
   const looksOpaque =
     form === 'gd1' ||
@@ -161,6 +193,7 @@ export function classifyPayFormulaExpression(expressionJson: unknown): {
     return {
       kind: 'opaque_gd1',
       lines: [],
+      gd1Lines: [],
       warnings: ['OPAQUE_GD1_FORM', 'EVALUATOR_SUBSET_REQUIRED'],
     };
   }
@@ -168,6 +201,7 @@ export function classifyPayFormulaExpression(expressionJson: unknown): {
   return {
     kind: 'unknown',
     lines: [],
+    gd1Lines: [],
     warnings: ['UNSUPPORTED_EXPRESSION_FORM'],
   };
 }
@@ -190,6 +224,81 @@ function roundMoney(n: number): number {
   return Math.round((n + Number.EPSILON) * 100) / 100;
 }
 
+function evaluateHyperFormulaExpression(
+  lines: PayFormulaEvalLineHyperFormulaInput[],
+  vars: Record<string, number>,
+  warnings: string[],
+): PayFormulaEvalResult {
+  try {
+    const hf = HyperFormula.buildEmpty({ licenseKey: 'gpl-v3' });
+    const sheetName = hf.addSheet('Sheet1');
+    const sheetId = hf.getSheetId(sheetName);
+    if (sheetId === undefined) throw new Error('Failed to get HyperFormula sheet');
+
+    for (const [k, v] of Object.entries(vars)) {
+      if (Number.isFinite(v)) {
+        hf.addNamedExpression(k, String(v));
+      }
+    }
+
+    let gross = 0;
+    let deduction = 0;
+    const out: PayFormulaEvalResultLine[] = [];
+    let sort = 0;
+
+    for (const line of lines) {
+      hf.setCellContents({ sheet: sheetId, col: 0, row: 0 }, [[line.formula]]);
+      const val = hf.getCellValue({ sheet: sheetId, col: 0, row: 0 });
+      let amount = 0;
+      if (typeof val === 'number' && Number.isFinite(val)) {
+        amount = val;
+      } else if (typeof val === 'string' && Number.isFinite(Number(val))) {
+        amount = Number(val);
+      } else if (val && typeof val === 'object' && 'value' in val && typeof val.value === 'number') {
+        amount = val.value; // For CellError or detailed responses
+      } else {
+        return {
+          ok: false,
+          reason: 'INVALID_LINE',
+          message: `HyperFormula evaluation failed for line ${line.component_code} (formula: ${line.formula}) — returned non-number`,
+          warnings,
+        };
+      }
+
+      amount = roundMoney(amount);
+      if (line.sign === 'deduction') {
+        deduction = roundMoney(deduction + amount);
+      } else {
+        gross = roundMoney(gross + amount);
+      }
+      out.push({
+        component_code: line.component_code,
+        sign: line.sign,
+        amount,
+        source_ref: 'hyperformula',
+        sort_order: sort++,
+      });
+    }
+
+    return {
+      ok: true,
+      form: PAY_FORMULA_EVAL_FORM, // Return as staged subset to satisfy caller
+      lines: out,
+      gross,
+      deduction,
+      net: roundMoney(gross - deduction),
+      warnings: [...warnings, 'HYPERFORMULA_V1_EVALUATED', 'PAYROLL_E2E_READY_FALSE'],
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      reason: 'INVALID_LINE',
+      message: `HyperFormula engine error: ${err instanceof Error ? err.message : String(err)}`,
+      warnings,
+    };
+  }
+}
+
 /**
  * Evaluate documented subset against a numeric variable bag.
  * Does NOT invent amounts for opaque FE text.
@@ -208,12 +317,25 @@ export function evaluatePayFormulaExpression(
       warnings: classified.warnings,
     };
   }
+  
+  if (classified.kind === 'hyperformula_v1') {
+    if (classified.lines.length === 0) {
+      return {
+        ok: false,
+        reason: 'EMPTY_LINES',
+        message: 'hyperformula_v1 requires non-empty lines[]',
+        warnings: classified.warnings,
+      };
+    }
+    return evaluateHyperFormulaExpression(classified.lines, vars, classified.warnings);
+  }
+
   if (classified.kind !== 'gd1_eval_v1') {
     return {
       ok: false,
       reason: 'UNSUPPORTED_FORM',
       message:
-        'expression_json form not in staged evaluator subset (gd1_eval_v1)',
+        'expression_json form not in staged evaluator subset (gd1_eval_v1 or hyperformula_v1)',
       warnings: classified.warnings,
     };
   }
@@ -349,12 +471,27 @@ export function collectExpressionVarKeys(
   const keys = new Set<string>();
   if (expressionJson != null) {
     const classified = classifyPayFormulaExpression(expressionJson);
-    for (const line of classified.lines) {
-      if (line.source === 'var' && line.var) keys.add(line.var);
-      if (line.source === 'expr' && line.expr) {
-        if (typeof line.expr.left === 'string') keys.add(line.expr.left.trim());
-        if (typeof line.expr.right === 'string')
-          keys.add(line.expr.right.trim());
+    if (classified.kind === 'gd1_eval_v1') {
+      for (const line of classified.gd1Lines ?? classified.lines) {
+        if (line.source === 'var' && line.var) keys.add(line.var);
+        if (line.source === 'expr' && line.expr) {
+          if (typeof line.expr.left === 'string') keys.add(line.expr.left.trim());
+          if (typeof line.expr.right === 'string')
+            keys.add(line.expr.right.trim());
+        }
+      }
+    } else if (classified.kind === 'hyperformula_v1') {
+      // For HyperFormula, extract potential variables from the formula string (words matching variable naming conventions)
+      for (const line of classified.lines) {
+        if ('formula' in line) {
+          const matches = String(line.formula).match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
+          for (const match of matches) {
+            // Ignore hyperformula built-in function names like IF, SUM, etc.
+            if (match.toUpperCase() !== match) {
+              keys.add(match);
+            }
+          }
+        }
       }
     }
   }

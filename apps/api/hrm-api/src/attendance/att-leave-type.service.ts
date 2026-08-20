@@ -152,6 +152,9 @@ export class AttLeaveTypeService {
         insurance_regime_flag BOOLEAN NOT NULL DEFAULT FALSE,
         company_topup_flag BOOLEAN NOT NULL DEFAULT FALSE,
         counts_toward_timesheet BOOLEAN NOT NULL DEFAULT TRUE,
+        max_days_per_year INT NULL,
+        allow_half_day BOOLEAN NOT NULL DEFAULT TRUE,
+        description TEXT NULL,
         metadata_json JSONB NULL,
         status TEXT NOT NULL DEFAULT 'active',
         archived_at TIMESTAMPTZ NULL,
@@ -217,6 +220,12 @@ export class AttLeaveTypeService {
           CHECK (unit IN ('day','hour'));
       EXCEPTION WHEN duplicate_object THEN NULL;
       END $$;
+    `);
+    await this.db.query(`
+      ALTER TABLE public.att_leave_type
+      ADD COLUMN IF NOT EXISTS max_days_per_year INT NULL,
+      ADD COLUMN IF NOT EXISTS allow_half_day BOOLEAN NOT NULL DEFAULT TRUE,
+      ADD COLUMN IF NOT EXISTS description TEXT NULL;
     `);
     this.schemaReady = true;
   }

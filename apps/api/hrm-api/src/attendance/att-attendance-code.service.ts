@@ -151,6 +151,7 @@ export class AttAttendanceCodeService {
         is_paid BOOLEAN NOT NULL DEFAULT TRUE,
         is_present BOOLEAN NOT NULL DEFAULT FALSE,
         color TEXT NULL,
+        description TEXT NULL,
         legacy_alias_keys_json JSONB NULL,
         metadata_json JSONB NULL,
         status TEXT NOT NULL DEFAULT 'active',
@@ -237,6 +238,10 @@ export class AttAttendanceCodeService {
     `);
     // FORBIDDEN: never ADD CHECK code IN ('pending','present','absent','leave',…)
     // U65: optional starter upsert omitted — empty catalog is valid.
+    await this.db.query(`
+      ALTER TABLE public.att_attendance_code
+      ADD COLUMN IF NOT EXISTS description TEXT NULL;
+    `);
     this.schemaReady = true;
   }
 

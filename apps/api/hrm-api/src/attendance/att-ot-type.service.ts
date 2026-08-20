@@ -110,6 +110,8 @@ export class AttOtTypeService {
         default_coeff NUMERIC(6,2) NOT NULL DEFAULT 1,
         sort_order INT NOT NULL DEFAULT 100,
         color TEXT NULL,
+        is_night_shift BOOLEAN NOT NULL DEFAULT FALSE,
+        description TEXT NULL,
         metadata_json JSONB NULL,
         status TEXT NOT NULL DEFAULT 'active',
         archived_at TIMESTAMPTZ NULL,
@@ -177,6 +179,11 @@ export class AttOtTypeService {
     `);
     // FORBIDDEN: never ADD CHECK code IN ('weekday','weekend','holiday')
     // U65: optional starter upsert omitted — empty catalog is valid.
+    await this.db.query(`
+      ALTER TABLE public.att_ot_type
+      ADD COLUMN IF NOT EXISTS is_night_shift BOOLEAN NOT NULL DEFAULT FALSE,
+      ADD COLUMN IF NOT EXISTS description TEXT NULL;
+    `);
     this.schemaReady = true;
   }
 

@@ -105,6 +105,8 @@ export class AttOtCompTypeService {
         name_en TEXT NULL,
         sort_order INT NOT NULL DEFAULT 100,
         color TEXT NULL,
+        method TEXT NULL,
+        description TEXT NULL,
         metadata_json JSONB NULL,
         status TEXT NOT NULL DEFAULT 'active',
         archived_at TIMESTAMPTZ NULL,
@@ -163,6 +165,11 @@ export class AttOtCompTypeService {
     // FORBIDDEN: never ADD CHECK code IN ('salary','compensatory_leave') - open catalog (BR-PLT-05).
     // FORBIDDEN: no payroll formula / amount columns this seat (L-ATT-OTC-10 formula HOLD).
     // U65: optional starter upsert omitted - empty catalog is valid.
+    await this.db.query(`
+      ALTER TABLE public.att_ot_comp_type
+      ADD COLUMN IF NOT EXISTS method TEXT NULL,
+      ADD COLUMN IF NOT EXISTS description TEXT NULL;
+    `);
     this.schemaReady = true;
   }
 

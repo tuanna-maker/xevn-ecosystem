@@ -1721,6 +1721,7 @@ export class PayFormulaService {
     sheetTemplateSnapshotJson?: unknown;
     boundFormula: PublishedFormulaBind;
     authorization?: string;
+    systemParams?: Record<string, number>;
   }): Promise<
     | {
         mode: 'computed';

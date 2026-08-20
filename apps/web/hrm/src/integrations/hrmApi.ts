@@ -10926,3 +10926,160 @@ export async function softDeleteContractClauseOverride(templateCode: string, cla
     { method: 'DELETE' },
   );
 }
+
+// --- SHIFTS, RULES, SCHEDULES (AttConfig) ---
+export type HrmAttShiftRecord = {
+  id: string;
+  company_id: string;
+  code: string;
+  name_vi: string;
+  start_time: string | null;
+  end_time: string | null;
+  break_minutes: number;
+  is_flexible: boolean;
+  is_night_shift: boolean;
+  apply_to: string | null;
+  description: string | null;
+  status: string;
+};
+
+export type UpsertAttShiftPayload = {
+  company_id: string;
+  code: string;
+  name_vi: string;
+  start_time?: string | null;
+  end_time?: string | null;
+  break_minutes?: number;
+  is_flexible?: boolean;
+  is_night_shift?: boolean;
+  apply_to?: string | null;
+  description?: string | null;
+  status?: string;
+};
+
+export async function listAttShifts(params: { company_id: string; q?: string }) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(params.company_id));
+  if (params.q?.trim()) search.set('q', params.q.trim());
+  const res = await requestHrm<{ total?: number; items?: HrmAttShiftRecord[] }>(
+    /api/hrm/attendance/shifts? + search.toString(),
+    { method: 'GET' },
+  );
+  return { items: res.items ?? [], total: res.total ?? res.items?.length ?? 0 };
+}
+
+export async function upsertAttShift(payload: UpsertAttShiftPayload) {
+  return requestHrm<HrmAttShiftRecord>('/api/hrm/attendance/shifts', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function retireAttShift(id: string, company_id: string) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(company_id));
+  return requestHrm<{ retired: boolean }>(
+    /api/hrm/attendance/shifts/ + encodeURIComponent(id) + /retire? + search.toString(),
+    { method: 'POST' },
+  );
+}
+
+export type HrmAttRuleRecord = {
+  id: string;
+  company_id: string;
+  code: string;
+  name_vi: string;
+  rule_type: string;
+  formula_desc: string | null;
+  apply_to: string | null;
+  description: string | null;
+  status: string;
+};
+
+export type UpsertAttRulePayload = {
+  company_id: string;
+  code: string;
+  name_vi: string;
+  rule_type: string;
+  formula_desc?: string | null;
+  apply_to?: string | null;
+  description?: string | null;
+  status?: string;
+};
+
+export async function listAttRules(params: { company_id: string; q?: string }) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(params.company_id));
+  if (params.q?.trim()) search.set('q', params.q.trim());
+  const res = await requestHrm<{ total?: number; items?: HrmAttRuleRecord[] }>(
+    /api/hrm/attendance/rules? + search.toString(),
+    { method: 'GET' },
+  );
+  return { items: res.items ?? [], total: res.total ?? res.items?.length ?? 0 };
+}
+
+export async function upsertAttRule(payload: UpsertAttRulePayload) {
+  return requestHrm<HrmAttRuleRecord>('/api/hrm/attendance/rules', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function retireAttRule(id: string, company_id: string) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(company_id));
+  return requestHrm<{ retired: boolean }>(
+    /api/hrm/attendance/rules/ + encodeURIComponent(id) + /retire? + search.toString(),
+    { method: 'POST' },
+  );
+}
+
+export type HrmAttScheduleRecord = {
+  id: string;
+  company_id: string;
+  code: string;
+  name_vi: string;
+  default_shift_code: string | null;
+  working_days: string | null;
+  apply_to: string | null;
+  description: string | null;
+  status: string;
+};
+
+export type UpsertAttSchedulePayload = {
+  company_id: string;
+  code: string;
+  name_vi: string;
+  default_shift_code?: string | null;
+  working_days?: string | null;
+  apply_to?: string | null;
+  description?: string | null;
+  status?: string;
+};
+
+export async function listAttSchedules(params: { company_id: string; q?: string }) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(params.company_id));
+  if (params.q?.trim()) search.set('q', params.q.trim());
+  const res = await requestHrm<{ total?: number; items?: HrmAttScheduleRecord[] }>(
+    /api/hrm/attendance/schedules? + search.toString(),
+    { method: 'GET' },
+  );
+  return { items: res.items ?? [], total: res.total ?? res.items?.length ?? 0 };
+}
+
+export async function upsertAttSchedule(payload: UpsertAttSchedulePayload) {
+  return requestHrm<HrmAttScheduleRecord>('/api/hrm/attendance/schedules', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function retireAttSchedule(id: string, company_id: string) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(company_id));
+  return requestHrm<{ retired: boolean }>(
+    /api/hrm/attendance/schedules/ + encodeURIComponent(id) + /retire? + search.toString(),
+    { method: 'POST' },
+  );
+}

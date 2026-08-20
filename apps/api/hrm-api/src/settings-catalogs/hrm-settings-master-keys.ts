@@ -73,6 +73,16 @@ const CATALOG_FAMILIES: readonly CatalogFamilyDef[] = [
     storageKey: 'employment_types',
   },
   {
+    familyId: 'contract_status',
+    aliases: ['contract_statuses', 'contract_status'],
+    storageKey: 'contract_statuses',
+  },
+  {
+    familyId: 'contract_term_reason',
+    aliases: ['contract_termination_reasons', 'termination_reasons'],
+    storageKey: 'contract_termination_reasons',
+  },
+  {
     familyId: 'shift',
     aliases: ['shifts'],
     storageKey: 'shifts',
