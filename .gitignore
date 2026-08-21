@@ -76,3 +76,8 @@ scripts/tmp-*
 docs/qa/evidence/
 docs/ops/evidence/
 docs/docs/qa/evidence/
+
+# Local testing scripts
+query.js
+test_*.js
+

@@ -52,6 +52,9 @@ concurrency:
   group: deploy-xevn-ecosystem
   cancel-in-progress: false   # Không cancel deploy đang chạy — tránh broken state
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
