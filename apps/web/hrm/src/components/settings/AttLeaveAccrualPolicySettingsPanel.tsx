@@ -285,10 +285,10 @@ export function AttLeaveAccrualPolicySettingsPanel() {
             <CardTitle className="text-[20px] font-bold text-xevn-text">Quy tắc quỹ phép</CardTitle>
             <CardDescription className="text-[15px] text-xevn-textSecondary">
               Chính sách tích lũy versioned — không thay thế Cài đặt chấm công chung.
-              <span className="block mt-1 text-xs" data-testid="att-04-honesty" className="hidden" className="hidden">
+              <span className="hidden block mt-1 text-xs" data-testid="att-04-honesty">
                 {att04HonestyBannerText()}
               </span>
-              <span className="block mt-1 text-xs" data-testid="att-05-lvrule-honesty" className="hidden" className="hidden">
+              <span className="hidden block mt-1 text-xs" data-testid="att-05-lvrule-honesty">
                 {att05HonestyBannerText()}
               </span>
             </CardDescription>

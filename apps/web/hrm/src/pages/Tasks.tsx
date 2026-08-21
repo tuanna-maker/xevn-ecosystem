@@ -84,6 +84,7 @@ export default function Tasks() {
 
   return (
     <div className="p-4 md:p-6 max-w-[1400px] mx-auto">
+      <h1 className="sr-only">Công việc (Tasks)</h1>
       <PageHeader title={t('taskManagement.title')} subtitle={t('taskManagement.subtitle')} actions={
         <div className="flex items-center gap-2">
           <PermissionGate module="tasks" action="create">

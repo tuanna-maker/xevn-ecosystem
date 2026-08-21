@@ -51,6 +51,8 @@ export const WORKFLOW_EDGE_CANVAS_TAGS: Record<WorkflowTransitionKind, string> =
 export type WorkflowGraphTransition = {
   kind: WorkflowTransitionKind;
   destinationId: string;
+  /** Biểu thức rẽ nhánh (VD: payload.position_code === 'DRIVER'). Nền tảng cho Gateway logic. */
+  conditionExpression?: string;
 };
 
 export type WorkflowStepAction = 'approve' | 'sign' | 'input';

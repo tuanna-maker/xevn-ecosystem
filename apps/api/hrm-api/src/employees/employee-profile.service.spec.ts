@@ -168,7 +168,7 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
           `Bearer ${token}`,
         ),
       ).rejects.toThrow(
-        expect.objectContaining<ApiException>({ code: 'HRM-EMP-PROFILE-409' }),
+        expect.objectContaining({ code: 'HRM-EMP-PROFILE-409' }),
       );
 
       const updateCall = db.query.mock.calls.find(([sql]) =>
@@ -258,7 +258,7 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
           },
         ),
       ).rejects.toThrow(
-        expect.objectContaining<ApiException>({ code: 'HRM-EMP-PROFILE-409' }),
+        expect.objectContaining({ code: 'HRM-EMP-PROFILE-409' }),
       );
 
       const deleteCall = db.query.mock.calls.find(([sql]) =>

@@ -119,10 +119,7 @@ import { JdMasterLibrarySettingsPanel } from '@/components/settings/JdMasterLibr
 import { ContractLegalPrintSettingsPanel } from '@/components/settings/ContractLegalPrintSettingsPanel';
 import { MergeTokenSettingsPanel } from '@/components/settings/MergeTokenSettingsPanel';
 import { PaySheetTemplateSettingsPanel } from '@/components/settings/PaySheetTemplateSettingsPanel';
-import { AttLeaveTypeSettingsPanel } from '@/components/settings/AttLeaveTypeSettingsPanel';
-import { AttAttendanceCodeSettingsPanel } from '@/components/settings/AttAttendanceCodeSettingsPanel';
-import { AttOtTypeSettingsPanel } from '@/components/settings/AttOtTypeSettingsPanel';
-import { AttOtCompTypeSettingsPanel } from '@/components/settings/AttOtCompTypeSettingsPanel';
+
 import { EmpDocumentTypeSettingsPanel } from '@/components/settings/EmpDocumentTypeSettingsPanel';
 import { EmpEmploymentTypeSettingsPanel } from '@/components/settings/EmpEmploymentTypeSettingsPanel';
 import { EmpEmploymentStatusSettingsPanel } from '@/components/settings/EmpEmploymentStatusSettingsPanel';
@@ -141,9 +138,7 @@ import { PayTaxTableSettingsPanel } from '@/components/settings/payroll/PayTaxTa
 import { PayPaySlipTemplateSettingsPanel } from '@/components/settings/payroll/PayPayslipTemplateSettingsPanel';
 import { ContractTypeSettingsPanel } from '@/components/settings/ContractTypeSettingsPanel';
 import { ContractTerminationReasonSettingsPanel } from '@/components/settings/ContractTerminationReasonSettingsPanel';
-import { AttShiftSettingsPanel } from '@/components/settings/AttShiftSettingsPanel';
-import { AttWorkRuleSettingsPanel } from '@/components/settings/AttWorkRuleSettingsPanel';
-import { AttScheduleGroupSettingsPanel } from '@/components/settings/AttScheduleGroupSettingsPanel';
+
 
 
 const currencies = [
@@ -521,19 +516,7 @@ export default function Settings() {
 
         {settingsTab === 'pay-sheet-tpl' && <PaySheetTemplateSettingsPanel />}
 
-        {settingsTab === 'att-leave-types' && <AttLeaveTypeSettingsPanel />}
 
-        {settingsTab === 'att-attendance-codes' && (<div className="space-y-4">
-          <AttAttendanceCodeSettingsPanel />
-        </div>)}
-
-        {settingsTab === 'att-ot-types' && (<div className="space-y-4">
-          <AttOtTypeSettingsPanel />
-        </div>)}
-
-        {settingsTab === 'att-ot-comp-types' && (<div className="space-y-4">
-          <AttOtCompTypeSettingsPanel />
-        </div>)}
 
         {settingsTab === 'emp-document-types' && (<div className="space-y-4">
           <EmpDocumentTypeSettingsPanel />
@@ -609,15 +592,7 @@ export default function Settings() {
         {settingsTab === 'contract-termination-reasons' && (
           <ContractTerminationReasonSettingsPanel />
         )}
-        {settingsTab === 'att-shifts' && (
-          <AttShiftSettingsPanel />
-        )}
-        {settingsTab === 'att-work-rules' && (
-          <AttWorkRuleSettingsPanel />
-        )}
-        {settingsTab === 'att-schedule-groups' && (
-          <AttScheduleGroupSettingsPanel />
-        )}
+
         {settingsTab === 'pay-salary-components' && (
           <PaySalaryComponentList />
         )}

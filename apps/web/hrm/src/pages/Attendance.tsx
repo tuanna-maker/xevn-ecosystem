@@ -339,6 +339,8 @@ import {
   CalendarOff,
   Loader2,
   ScanLine,
+  Calculator,
+  Layers,
 } from 'lucide-react';
 import { LeaveTab } from '@/components/attendance/LeaveTab';
 import { LeaveOverviewRecentPanel } from '@/components/attendance/LeaveOverviewRecentPanel';
@@ -349,6 +351,9 @@ import { AttSickLeaveFundOrderSettingsPanel } from '@/components/settings/AttSic
 import { AttAttendanceCodeSettingsPanel } from '@/components/settings/AttAttendanceCodeSettingsPanel';
 import { AttOtTypeSettingsPanel } from '@/components/settings/AttOtTypeSettingsPanel';
 import { AttOtCompTypeSettingsPanel } from '@/components/settings/AttOtCompTypeSettingsPanel';
+import { AttShiftSettingsPanel } from '@/components/settings/AttShiftSettingsPanel';
+import { AttWorkRuleSettingsPanel } from '@/components/settings/AttWorkRuleSettingsPanel';
+import { AttScheduleGroupSettingsPanel } from '@/components/settings/AttScheduleGroupSettingsPanel';
 import { OvertimeRequestTab } from '@/components/attendance/OvertimeRequestTab';
 import { BusinessTripRequestTab } from '@/components/attendance/BusinessTripRequestTab';
 import { LateEarlyRequestTab } from '@/components/attendance/LateEarlyRequestTab';
@@ -518,6 +523,9 @@ const getSidebarMenuItems = (t: any) => [
   { id: 'ot-comp-types', label: 'Loại chi trả OT', icon: FileText },
   { id: 'ot-comp-leave-policy', label: 'Chế độ phép bù OT', icon: FileText },
   { id: 'sick-leave-fund-order', label: 'Thứ tự quỹ nghỉ ốm', icon: FileText },
+  { id: 'shifts-config', label: 'Ca làm việc', icon: Clock },
+  { id: 'work-rules-config', label: 'Quy tắc tính công', icon: Calculator },
+  { id: 'schedule-groups-config', label: 'Nhóm lịch làm việc', icon: Layers },
   { id: 'late-early', label: t('attendance.settingsMenu.lateEarly'), icon: Clock },
   { id: 'request-rules', label: t('attendance.settingsMenu.requestRules'), icon: FileText },
   { id: 'users', label: t('attendance.settingsMenu.users'), icon: UserCheck },
@@ -2998,6 +3006,27 @@ export default function Attendance() {
         </div>
       );
     }
+    if (activeSidebarItem === 'shifts-config') {
+      return (
+        <div className="space-y-4" data-testid="att-cfg-shifts-config-precision">
+          <AttShiftSettingsPanel />
+        </div>
+      );
+    }
+    if (activeSidebarItem === 'work-rules-config') {
+      return (
+        <div className="space-y-4" data-testid="att-cfg-work-rules-config-precision">
+          <AttWorkRuleSettingsPanel />
+        </div>
+      );
+    }
+    if (activeSidebarItem === 'schedule-groups-config') {
+      return (
+        <div className="space-y-4" data-testid="att-cfg-schedule-groups-config-precision">
+          <AttScheduleGroupSettingsPanel />
+        </div>
+      );
+    }
     if (activeSidebarItem === 'ot-comp-leave-policy') {
       return (
         <div className="space-y-4" data-testid="att-cfg-ot-comp-leave-policy-precision">
@@ -4102,6 +4131,7 @@ export default function Attendance() {
 
   return (
     <div className="space-y-0 animate-fade-in -mt-3 -mx-3 md:-mt-6 md:-mx-6">
+      <h1 className="sr-only">Chấm công (Attendance)</h1>
       {/* Top Navigation Tabs - Pill Style */}
       <div className="bg-background border-b px-2 md:px-6 py-2 md:py-3">
         <div className="mobile-scroll-tabs">

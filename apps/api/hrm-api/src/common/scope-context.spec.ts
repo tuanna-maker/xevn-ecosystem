@@ -30,7 +30,7 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
         companyId: 'main',
       }),
     ).toThrow(
-      expect.objectContaining<Partial<ApiException>>({
+      expect.objectContaining<Partial>({
         code: 'SCOPE_CONTEXT_MISMATCH',
         getStatus: expect.any(Function),
       }),
@@ -91,7 +91,7 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
         companyId: 'holding',
       }),
     ).toThrow(
-      expect.objectContaining<Partial<ApiException>>({
+      expect.objectContaining<Partial>({
         code: 'SCOPE_CONTEXT_MISMATCH',
       }),
     );
@@ -130,7 +130,7 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
         companyId: 'main',
       }),
     ).toThrow(
-      expect.objectContaining<Partial<ApiException>>({
+      expect.objectContaining<Partial>({
         code: 'SCOPE_CONTEXT_MISMATCH',
         getStatus: expect.any(Function),
       }),
@@ -158,7 +158,7 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
         companyId: 'holding',
       }),
     ).toThrow(
-      expect.objectContaining<Partial<ApiException>>({
+      expect.objectContaining<Partial>({
         code: 'SCOPE_CONTEXT_MISMATCH',
       }),
     );
@@ -208,7 +208,7 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
         companyId: '11111111-1111-4111-8111-111111111111',
       }),
     ).toThrow(
-      expect.objectContaining<Partial<ApiException>>({
+      expect.objectContaining<Partial>({
         code: 'SCOPE_CONTEXT_MISMATCH',
       }),
     );
@@ -226,7 +226,7 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
         companyId: '85945933-632a-4bca-8fe9-3bbe8bc9294b',
       }),
     ).toThrow(
-      expect.objectContaining<Partial<ApiException>>({
+      expect.objectContaining<Partial>({
         code: 'SCOPE_CONTEXT_MISMATCH',
       }),
     );
@@ -321,7 +321,7 @@ describe('resolveScopeContext (UC-ECO-SCOPE-02)', () => {
         companyId: 'main',
       }),
     ).toThrow(
-      expect.objectContaining<Partial<ApiException>>({
+      expect.objectContaining<Partial>({
         code: 'SCOPE_CONTEXT_MISMATCH',
       }),
     );

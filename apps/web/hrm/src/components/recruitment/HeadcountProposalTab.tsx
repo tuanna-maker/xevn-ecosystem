@@ -183,7 +183,7 @@ function normalizeHeadcountProposalRows(
 
 export type HeadcountProposalTabProps = {
   /** O5 — redirect to YCTD out_of_plan create (DENY dual persist). */
-  onCreateOutOfPlanYctd?: () => void;
+  onCreateOutOfPlanYctd?: (proposal?: HeadcountProposal) => void;
 };
 
 export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposalTabProps = {}) {
@@ -581,56 +581,22 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
     });
   };
 
-  const handleConvertToJobPosting = async (proposal: HeadcountProposal) => {
+  const handleConvertToRequisition = async (proposal: HeadcountProposal) => {
     if (proposal.status !== 'approved') {
       toast({
         title: 'Không thể chuyển đổi',
-        description: 'Chỉ có thể chuyển đổi đề xuất đã được phê duyệt thành tin tuyển dụng',
+        description: 'Chỉ có thể tạo YCTD từ đề xuất đã được phê duyệt',
         variant: 'destructive',
       });
       return;
     }
-
-    try {
-      // Map priority from proposal to job posting
-      const priorityMapping: Record<string, string> = {
-        high: 'urgent',
-        medium: 'normal',
-        low: 'low',
-      };
-
-      if (!effectiveCompanyId) {
-        throw new Error('Could not get company_id from proposal');
-      }
-
-      const jobPostingData = {
-        title: `Tuyển dụng ${proposal.position_name} - ${proposal.department}`,
-        position: proposal.position_name,
-        department: proposal.department,
-        headcount: proposal.requested_headcount,
-        job_template_id: proposal.job_template_id || '',
-        salary_min: proposal.salary_budget_min,
-        salary_max: proposal.salary_budget_max,
-        deadline: proposal.expected_start_date,
-        priority: priorityMapping[proposal.priority] || 'normal',
-        employment_type: 'full-time',
-        status: 'active',
-        is_salary_visible: true,
-        company_id: effectiveCompanyId,
-        source_proposal_id: proposal.id,
-      };
-      // Update linked job postings state
-      await refetchProposals();
-
-      toast({
-        title: 'Thành công',
-        description: `Đã tạo tin tuyển dụng "${jobPostingData.title}" từ đề xuất ngoài định biên`,
-      });
-    } catch (error) {
-      console.error('Error converting to job posting:', error);
+    
+    if (onCreateOutOfPlanYctd) {
+      onCreateOutOfPlanYctd(proposal);
+    } else {
       toast({
         title: 'Lỗi',
-        description: 'Không thể tạo tin tuyển dụng từ đề xuất',
+        description: 'Tính năng tạo YCTD chưa khả dụng trong ngữ cảnh này.',
         variant: 'destructive',
       });
     }
@@ -1004,12 +970,12 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
                                   </DropdownMenuItem>
                                 </>
                               )}
-                              {proposal.status === 'approved' && !linkedJobPostings[proposal.id] && (
-                                <DropdownMenuItem onClick={() => handleConvertToJobPosting(proposal)}>
-                                  <Briefcase className="w-4 h-4 mr-2 text-blue-600" />
-                                  Tạo tin tuyển dụng
-                                </DropdownMenuItem>
-                              )}
+                                {proposal.status === 'approved' && !linkedJobPostings[proposal.id] && (
+                                  <DropdownMenuItem onClick={() => handleConvertToRequisition(proposal)}>
+                                    <Briefcase className="w-4 h-4 mr-2 text-blue-600" />
+                                    Tạo yêu cầu tuyển dụng (YCTD)
+                                  </DropdownMenuItem>
+                                )}
                               <DropdownMenuItem 
                                 onClick={() => handleDeleteProposal(proposal.id)}
                                 className="text-red-600"

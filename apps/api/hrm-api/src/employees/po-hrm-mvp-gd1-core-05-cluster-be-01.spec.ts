@@ -277,7 +277,7 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
         `Bearer ${token}`,
       ),
     ).rejects.toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: HRM_EMP_ASSET_SERIAL_CONFLICT,
       }),
     );
@@ -441,7 +441,7 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
         `Bearer ${token}`,
       ),
     ).rejects.toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: HRM_EMP_ASSET_SERIAL_CONFLICT,
       }),
     );
@@ -477,7 +477,7 @@ describe('PO-HRM-MVP-GD1-CORE-05-CLUSTER-BE-01 (F-CORE-AST-01/BB-01)', () => {
         `Bearer ${token}`,
       ),
     ).rejects.toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: HRM_EMP_ASSET_DELETE_FORBIDDEN,
       }),
     );

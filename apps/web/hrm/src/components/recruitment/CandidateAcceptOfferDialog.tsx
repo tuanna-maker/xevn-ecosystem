@@ -221,7 +221,7 @@ export function CandidateAcceptOfferDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-lg max-h-[90vh] overflow-y-auto"
+        className="max-w-3xl max-h-[90vh] overflow-y-auto"
         data-testid="rec-accept-offer-dialog"
       >
         <DialogHeader>

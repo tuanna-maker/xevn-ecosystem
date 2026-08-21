@@ -22,6 +22,9 @@ import { AttOtTypeService } from './att-ot-type.service';
 import { AttOtCompTypeService } from './att-ot-comp-type.service';
 import { AttOtCompLeavePolicyService } from './att-ot-comp-leave-policy.service';
 import { AttSickLeaveFundOrderService } from './att-sick-leave-fund-order.service';
+import { AttShiftService } from './att-shift.service';
+import { AttRuleService } from './att-rule.service';
+import { AttScheduleService } from './att-schedule.service';
 
 const SHEET_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 
@@ -79,6 +82,9 @@ describe('ATT sheet scope parity (SP-ATT-SIGN-01..04)', () => {
         { provide: LeaveBalanceService, useValue: {} },
         { provide: AttActivateEnrollService, useValue: {} },
         { provide: AttHolidayCalendarService, useValue: {} },
+        { provide: AttShiftService, useValue: {} },
+        { provide: AttRuleService, useValue: {} },
+        { provide: AttScheduleService, useValue: {} },
         { provide: AttendanceRequestsService, useValue: {} },
         { provide: AttendanceOverviewService, useValue: {} },
         { provide: AttendanceSheetSignService, useValue: signService },

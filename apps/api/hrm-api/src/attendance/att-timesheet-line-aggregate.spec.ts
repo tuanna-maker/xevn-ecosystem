@@ -115,7 +115,7 @@ describe('aggregateAttendanceSheetLines', () => {
     } as unknown as HrmDbService;
     await expect(
       aggregateAttendanceSheetLines(db, { ...header, status: 'closed' }),
-    ).rejects.toMatchObject<Partial<ApiException>>({
+    ).rejects.toMatchObject<Partial>({
       code: 'HRM-ATT-SHEET-LOCKED',
     });
   });

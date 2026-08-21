@@ -132,7 +132,7 @@ describe('CatalogExtensionsService', () => {
     await expect(
       service.deleteFaceData(employeeId, 'main', `Bearer ${token}`),
     ).rejects.toThrow(
-      expect.objectContaining<ApiException>({ code: 'HRM-FACE-409' }),
+      expect.objectContaining({ code: 'HRM-FACE-409' }),
     );
     const deleteCall = query.mock.calls.find(([sql]) =>
       String(sql).includes('DELETE FROM public.hrm_face_data'),
@@ -207,7 +207,7 @@ describe('CatalogExtensionsService', () => {
         `Bearer ${token}`,
       ),
     ).rejects.toThrow(
-      expect.objectContaining<ApiException>({ code: 'HRM-BONUS-409' }),
+      expect.objectContaining({ code: 'HRM-BONUS-409' }),
     );
   });
 
@@ -249,7 +249,7 @@ describe('CatalogExtensionsService', () => {
         mimetype: 'image/png',
       }),
     ).rejects.toThrow(
-      expect.objectContaining<ApiException>({ code: 'HRM-FILE-409' }),
+      expect.objectContaining({ code: 'HRM-FILE-409' }),
     );
     expect(jest.mocked(writeFile)).not.toHaveBeenCalled();
   });
@@ -273,7 +273,7 @@ describe('CatalogExtensionsService', () => {
     await expect(
       service.readUploadedFile('holding', '../secret.png', undefined),
     ).rejects.toThrow(
-      expect.objectContaining<ApiException>({ code: 'HRM-FILE-404' }),
+      expect.objectContaining({ code: 'HRM-FILE-404' }),
     );
     expect(jest.mocked(readFile)).not.toHaveBeenCalled();
   });

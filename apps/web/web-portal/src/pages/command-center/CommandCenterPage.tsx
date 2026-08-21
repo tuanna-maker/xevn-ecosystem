@@ -78,6 +78,7 @@ import {
   workflowHandlerRoleAllowsRejectOutcome,
   type WorkflowDefinition,
   type WorkflowGraphStep,
+  type WorkflowGraphTransition,
   type WorkflowStepAction,
   type WorkflowTransitionKind,
 } from '../../data/workflow-graph';
@@ -1957,6 +1958,7 @@ const CommandCenterPage: React.FC = () => {
   const [workflowCanvasSelectedStepId, setWorkflowCanvasSelectedStepId] = useState<string | null>(
     null,
   );
+  const [workflowCanvasSelectedTransitionId, setWorkflowCanvasSelectedTransitionId] = useState<string | null>(null);
   const [documentRows, setDocumentRows] = useState<CcRegulationRow[]>([]);
   const [measurementRows, setMeasurementRows] = useState<CcMeasurementRow[]>([]);
   const [pricingRows, setPricingRows] = useState<CcPricingRow[]>([]);
@@ -2501,6 +2503,7 @@ const CommandCenterPage: React.FC = () => {
       setWorkflowForm(null);
       setWorkflowDetailTab('graph');
       setWorkflowCanvasSelectedStepId(null);
+      setWorkflowCanvasSelectedTransitionId(null);
     }
   }, [activeSettingsMenu]);
 
@@ -3953,6 +3956,7 @@ const CommandCenterPage: React.FC = () => {
     setWorkflowForm(null);
     setWorkflowDetailTab('graph');
     setWorkflowCanvasSelectedStepId(null);
+    setWorkflowCanvasSelectedTransitionId(null);
   }
 
   function openNewWorkflow() {
@@ -3962,6 +3966,7 @@ const CommandCenterPage: React.FC = () => {
     setWorkflowView('detail');
     setWorkflowDetailTab('graph');
     setWorkflowCanvasSelectedStepId(null);
+    setWorkflowCanvasSelectedTransitionId(null);
   }
 
   /**
@@ -3985,6 +3990,7 @@ const CommandCenterPage: React.FC = () => {
     setWorkflowView('detail');
     setWorkflowDetailTab('graph');
     setWorkflowCanvasSelectedStepId(null);
+    setWorkflowCanvasSelectedTransitionId(null);
     setPublishMessage(
       `Mẫu ${preset.code} đã điền sẵn — nhấn Lưu để kích hoạt trên workflow-engine (không seed).`,
     );
@@ -3998,6 +4004,7 @@ const CommandCenterPage: React.FC = () => {
     setWorkflowView('detail');
     setWorkflowDetailTab('graph');
     setWorkflowCanvasSelectedStepId(null);
+    setWorkflowCanvasSelectedTransitionId(null);
   }
 
   async function saveWorkflow() {
@@ -4124,7 +4131,7 @@ const CommandCenterPage: React.FC = () => {
   function patchWorkflowGraphTransition(
     stepId: string,
     kind: WorkflowTransitionKind,
-    destinationId: string,
+    patch: Partial<Omit<WorkflowGraphTransition, 'id' | 'kind'>>,
   ) {
     setWorkflowForm((f) => {
       if (!f) return f;
@@ -4138,7 +4145,7 @@ const CommandCenterPage: React.FC = () => {
           return {
             ...s,
             transitions: s.transitions.map((t) =>
-              t.kind === kind ? { ...t, destinationId } : t,
+              t.kind === kind ? { ...t, ...patch } : t,
             ),
           };
         }),
@@ -7616,6 +7623,7 @@ const CommandCenterPage: React.FC = () => {
                     onClick={() => {
                       setWorkflowDetailTab('graph');
                       setWorkflowCanvasSelectedStepId(null);
+                      setWorkflowCanvasSelectedTransitionId(null);
                     }}
                     className={`rounded-input px-4 py-2 text-base transition active:scale-[0.99] ${
                       workflowDetailTab === 'graph'
@@ -7814,33 +7822,50 @@ const CommandCenterPage: React.FC = () => {
                                 );
                               }
                               return (
-                                <label key={kind} className={`min-w-0 ${SETTINGS_FIELD_COMPACT}`}>
-                                  <span className="block min-w-0 break-words text-left text-[15px] font-medium leading-snug text-xevn-textSecondary hyphens-auto">
-                                    → {WORKFLOW_EDGE_FULL_LABELS[kind]}
-                                  </span>
-                                  <div className="relative min-w-0">
-                                    <select
-                                      value={destId}
+                                <div key={kind} className="space-y-2 rounded-input border border-xevn-border/50 bg-slate-50/50 p-2">
+                                  <label className={`min-w-0 ${SETTINGS_FIELD_COMPACT}`}>
+                                    <span className="block min-w-0 break-words text-left text-[15px] font-medium leading-snug text-xevn-textSecondary hyphens-auto">
+                                      → {WORKFLOW_EDGE_FULL_LABELS[kind]}
+                                    </span>
+                                    <div className="relative min-w-0">
+                                      <select
+                                        value={destId}
+                                        onChange={(e) =>
+                                          patchWorkflowGraphTransition(step.id, kind, { destinationId: e.target.value })
+                                        }
+                                        className={deptSelectClass}
+                                        aria-label={`Đích ${WORKFLOW_EDGE_FULL_LABELS[kind]}`}
+                                        title={destTitle(destId)}
+                                      >
+                                        {destOpts.map((o) => (
+                                          <option key={o.value} value={o.value}>
+                                            {o.label}
+                                          </option>
+                                        ))}
+                                      </select>
+                                      <ChevronDown
+                                        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
+                                        strokeWidth={RAIL_STROKE}
+                                        aria-hidden
+                                      />
+                                    </div>
+                                  </label>
+                                  <label className={`min-w-0 ${SETTINGS_FIELD_COMPACT}`}>
+                                    <span className="block min-w-0 text-[13px] text-slate-500">
+                                      Điều kiện rẽ nhánh (opt)
+                                    </span>
+                                    <input
+                                      type="text"
+                                      value={tr?.conditionExpression ?? ''}
                                       onChange={(e) =>
-                                        patchWorkflowGraphTransition(step.id, kind, e.target.value)
+                                        patchWorkflowGraphTransition(step.id, kind, { conditionExpression: e.target.value })
                                       }
-                                      className={deptSelectClass}
-                                      aria-label={`Đích ${WORKFLOW_EDGE_FULL_LABELS[kind]}`}
-                                      title={destTitle(destId)}
-                                    >
-                                      {destOpts.map((o) => (
-                                        <option key={o.value} value={o.value}>
-                                          {o.label}
-                                        </option>
-                                      ))}
-                                    </select>
-                                    <ChevronDown
-                                      className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-xevn-textSecondary"
-                                      strokeWidth={RAIL_STROKE}
-                                      aria-hidden
+                                      className={deptInputClass}
+                                      placeholder="VD: payload.amount > 1000"
+                                      aria-label={`Điều kiện ${WORKFLOW_EDGE_FULL_LABELS[kind]}`}
                                     />
-                                  </div>
-                                </label>
+                                  </label>
+                                </div>
                               );
                             })}
                           </div>
@@ -7898,6 +7923,8 @@ const CommandCenterPage: React.FC = () => {
                       steps={workflowForm.steps}
                       selectedStepId={workflowCanvasSelectedStepId}
                       onSelectStep={setWorkflowCanvasSelectedStepId}
+                      selectedTransitionId={workflowCanvasSelectedTransitionId}
+                      onSelectTransition={setWorkflowCanvasSelectedTransitionId}
                       resolveRoleLabel={(id: string) =>
                         WORKFLOW_HANDLER_ROLES.find((r) => r.id === id)?.label ?? id
                       }
@@ -8361,6 +8388,90 @@ const CommandCenterPage: React.FC = () => {
                     >
                       Chỉnh sửa tại Cấu hình đồ thị
                     </button>
+                  </div>
+                </aside>
+              </>
+            );
+          })()
+        : null}
+      {activeSettingsMenu === 'workflow' &&
+      workflowView === 'detail' &&
+      workflowForm &&
+      workflowCanvasSelectedTransitionId
+        ? (() => {
+            const [stepId, kind, destId] = workflowCanvasSelectedTransitionId.split('-');
+            const step = workflowForm.steps.find((s) => s.id === stepId);
+            if (!step) return null;
+            const transition = step.transitions.find((t) => t.kind === kind && t.destinationId === destId);
+            if (!transition) return null;
+
+            return (
+              <>
+                <div
+                  className="fixed inset-0 z-[75] bg-black/25 backdrop-blur-[2px]"
+                  aria-hidden
+                  onClick={() => setWorkflowCanvasSelectedTransitionId(null)}
+                />
+                <aside
+                  className="fixed bottom-0 right-0 top-0 z-[80] flex w-full max-w-md flex-col border-l border-xevn-border bg-xevn-surface shadow-overlay sm:rounded-l-xl"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="workflow-transition-drawer-title"
+                >
+                  <div className="flex items-center justify-between gap-3 border-b border-xevn-border px-4 py-3">
+                    <h3 id="workflow-transition-drawer-title" className="text-lg font-bold text-xevn-text">
+                      Chi tiết chuyển hướng
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setWorkflowCanvasSelectedTransitionId(null)}
+                      className="rounded-lg p-2 text-xevn-textSecondary transition hover:bg-slate-100"
+                      aria-label="Đóng"
+                    >
+                      <X className="h-5 w-5" strokeWidth={RAIL_STROKE} />
+                    </button>
+                  </div>
+                  <div className="xevn-safe-inline flex-1 overflow-y-auto px-4 py-4">
+                    <div className="mb-4 text-sm text-xevn-textSecondary">
+                      {WORKFLOW_EDGE_FULL_LABELS[kind as WorkflowTransitionKind]} đến{' '}
+                      <span className="font-semibold text-xevn-text">{workflowDestinationLabel(workflowForm, destId)}</span>
+                    </div>
+                    <div className="mt-4 rounded-input border border-xevn-border bg-white p-3 shadow-soft">
+                      <label className={SETTINGS_LABEL_CLASS}>
+                        Biểu thức điều kiện (Expression)
+                      </label>
+                      <textarea
+                        className={`mt-1 block w-full rounded-input border border-xevn-border px-3 py-2 text-sm text-xevn-text shadow-sm focus:border-xevn-primary focus:outline-none focus:ring-1 focus:ring-xevn-primary ${SETTINGS_CONTROL_TEXT}`}
+                        rows={5}
+                        placeholder="VD: {amount} > 5000000"
+                        value={transition.conditionExpression || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setWorkflowForm((prev) => {
+                            if (!prev) return prev;
+                            const newSteps = [...prev.steps];
+                            const stepIdx = newSteps.findIndex((s) => s.id === stepId);
+                            if (stepIdx === -1) return prev;
+                            const newStep = { ...newSteps[stepIdx] };
+                            const transIdx = newStep.transitions.findIndex(
+                              (t) => t.kind === kind && t.destinationId === destId
+                            );
+                            if (transIdx === -1) return prev;
+                            const newTrans = [...newStep.transitions];
+                            newTrans[transIdx] = {
+                              ...newTrans[transIdx],
+                              conditionExpression: val || undefined,
+                            };
+                            newStep.transitions = newTrans;
+                            newSteps[stepIdx] = newStep;
+                            return { ...prev, steps: newSteps };
+                          });
+                        }}
+                      />
+                      <p className="mt-2 text-xs text-xevn-textMuted">
+                        Bỏ trống nếu không có điều kiện rẽ nhánh. Bấm «Lưu quy trình» để lưu.
+                      </p>
+                    </div>
                   </div>
                 </aside>
               </>

@@ -21,11 +21,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+// HMR trigger
 import { AlertTriangle, CheckCircle2, Clock3, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ViMonthPickerField as MonthPicker } from '@/components/ui/ViMonthPickerField';
 import {
   Select,
   SelectContent,
@@ -163,7 +165,7 @@ export function RecruitmentNestDashboardPanel({
             <SelectTrigger className="h-10 w-[140px]" data-testid="rec-dash-period-mode">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent portalScope="iframe">
               <SelectItem value="year">Theo năm</SelectItem>
               <SelectItem value="range">Từ tháng – đến</SelectItem>
             </SelectContent>
@@ -173,7 +175,7 @@ export function RecruitmentNestDashboardPanel({
               <SelectTrigger className="h-10 w-[110px]" data-testid="rec-dash-year">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent portalScope="iframe">
                 {yearOptions.map((y) => (
                   <SelectItem key={y} value={String(y)}>
                     {y}
@@ -183,20 +185,18 @@ export function RecruitmentNestDashboardPanel({
             </Select>
           ) : (
             <>
-              <Input
-                type="month"
+              <ViMonthPickerField
                 className="h-10 w-[150px]"
                 value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                data-testid="rec-dash-from"
+                onValueChange={setFrom}
+                portalScope="iframe"
               />
               <span className="text-sm text-xevn-textSecondary">→</span>
-              <Input
-                type="month"
+              <ViMonthPickerField
                 className="h-10 w-[150px]"
                 value={to}
-                onChange={(e) => setTo(e.target.value)}
-                data-testid="rec-dash-to"
+                onValueChange={setTo}
+                portalScope="iframe"
               />
             </>
           )}
@@ -212,7 +212,7 @@ export function RecruitmentNestDashboardPanel({
               <SelectTrigger className="h-10 w-[220px]" data-testid="rec-dash-company">
                 <SelectValue placeholder="Trong quyền" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent portalScope="iframe">
                 <SelectItem value="all">Tất cả (trong quyền)</SelectItem>
                 {units.map((u) => (
                   <SelectItem key={u.operating_slug} value={u.operating_slug}>

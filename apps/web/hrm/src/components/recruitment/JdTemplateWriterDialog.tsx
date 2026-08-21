@@ -99,6 +99,32 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
 
+function SyncTextarea({ value, onChange, ...props }: any) {
+  const [val, setVal] = useState(value);
+  useEffect(() => { setVal(value); }, [value]);
+  return (
+    <Textarea 
+      {...props} 
+      value={val} 
+      onChange={e => setVal(e.target.value)} 
+      onBlur={() => onChange(val)} 
+    />
+  );
+}
+
+function SyncInput({ value, onChange, ...props }: any) {
+  const [val, setVal] = useState(value);
+  useEffect(() => { setVal(value); }, [value]);
+  return (
+    <Input 
+      {...props} 
+      value={val} 
+      onChange={e => setVal(e.target.value)} 
+      onBlur={() => onChange(val)} 
+    />
+  );
+}
+
 function groupCodeOf(g: HrmJdGroupDef): string {
   return (g.group_code || g.code || '').trim();
 }
@@ -652,15 +678,15 @@ export function JdTemplateWriterDialog({
                                               {f.is_required ? ' *' : ''}
                                             </Label>
                                             {f.field_type === 'long_text' ? (
-                                              <Textarea
+                                              <SyncTextarea
                                                 rows={3}
                                                 value={values[f.field_key] ?? ''}
-                                                onChange={(e) => setFieldValue(f.field_key, e.target.value)}
+                                                onChange={(v: string) => setFieldValue(f.field_key, v)}
                                               />
                                             ) : (
-                                              <Input
+                                              <SyncInput
                                                 value={values[f.field_key] ?? ''}
-                                                onChange={(e) => setFieldValue(f.field_key, e.target.value)}
+                                                onChange={(v: string) => setFieldValue(f.field_key, v)}
                                               />
                                             )}
                                           </div>

@@ -1,4 +1,4 @@
-﻿import { toast } from 'sonner';
+import { toast } from 'sonner';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -66,6 +66,7 @@ import {
   type HrmCandidateApplicationEnriched,
 } from '@/integrations/hrmApi';
 import { HireEmployeeLinkDialog } from './HireEmployeeLinkDialog';
+import { CandidateFormDialog } from './CandidateFormDialog';
 import { toErrorMessage } from '@/lib/apiError';
 import {
   needsHireEmployeePicker,
@@ -106,7 +107,7 @@ interface CandidateApplication {
 interface JobCandidatesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  jobPostingId: string;
+  requisitionId: string;
   jobTitle: string;
 }
 
@@ -123,7 +124,7 @@ const getStageOptions = (t: (k: string) => string) => [
 export function JobCandidatesDialog({
   open,
   onOpenChange,
-  jobPostingId,
+  requisitionId,
   jobTitle,
 }: JobCandidatesDialogProps) {
   const { t } = useTranslation();
@@ -150,6 +151,7 @@ export function JobCandidatesDialog({
   const [searchQuery, setSearchQuery] = useState('');
   const [stageFilter, setStageFilter] = useState('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<CandidateApplication | null>(null);
   const [candidateSearchQuery, setCandidateSearchQuery] = useState('');
@@ -157,38 +159,38 @@ export function JobCandidatesDialog({
   const [hirePendingStage, setHirePendingStage] = useState<string | null>(null);
   const [hireSubmitting, setHireSubmitting] = useState(false);
 
-  // Fetch applications for this job posting (+ soft employee_id from pool for hire bind)
+  // Fetch candidates from pool for this requisition
   const { data: applications = [], isLoading } = useQuery({
-    queryKey: ['candidate_applications', jobPostingId, currentCompanyId],
+    queryKey: ['candidate_applications', requisitionId, currentCompanyId],
     queryFn: async () => {
-      if (!currentCompanyId) return [] as CandidateApplication[];
-      const [result, pool] = await Promise.all([
-        listCandidateApplications({
-          company_id: currentCompanyId,
-          job_posting_id: jobPostingId,
-        }),
-        listCandidatesPool({ company_id: currentCompanyId }),
-      ]);
-      const employeeByCandidateId = new Map(
-        (pool.data ?? []).map((c) => [c.id, c.employee_id?.trim() || null] as const),
-      );
-      return ((result.data ?? []) as unknown as HrmCandidateApplicationEnriched[]).map((app) => ({
-        ...app,
-        candidates: {
-          ...app.candidates,
-          employee_id:
-            app.candidates?.employee_id?.trim() ||
-            employeeByCandidateId.get(app.candidate_id) ||
-            null,
-        },
+      if (!currentCompanyId || !requisitionId) return [] as CandidateApplication[];
+      const pool = await listCandidatesPool({ 
+        company_id: currentCompanyId,
+        requisition_id: requisitionId
+      });
+      
+      return (pool.data ?? []).map((c) => ({
+        id: c.id, // Use candidate ID as pseudo-application ID
+        candidate_id: c.id,
+        job_posting_id: requisitionId,
+        company_id: currentCompanyId,
+        stage: c.stage,
+        rating: c.rating,
+        applied_date: c.applied_date,
+        interview_date: null,
+        interviewer: null,
+        salary_expectation: null,
+        notes: c.notes,
+        created_at: c.applied_date || new Date().toISOString(),
+        candidates: c,
       })) as CandidateApplication[];
     },
-    enabled: open && !!jobPostingId && !!currentCompanyId,
+    enabled: open && !!requisitionId && !!currentCompanyId,
   });
 
   // Fetch all candidates not yet linked to this job
   const { data: availableCandidates = [] } = useQuery({
-    queryKey: ['available_candidates', jobPostingId, currentCompanyId, applications.length],
+    queryKey: ['available_candidates', requisitionId, currentCompanyId, applications.length],
     queryFn: async () => {
       if (!currentCompanyId) return [];
       const pool = await listCandidatesPool({ company_id: currentCompanyId });
@@ -225,8 +227,8 @@ export function JobCandidatesDialog({
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['candidate_applications', jobPostingId] });
-      queryClient.invalidateQueries({ queryKey: ['available_candidates', jobPostingId] });
+      queryClient.invalidateQueries({ queryKey: ['candidate_applications', requisitionId] });
+      queryClient.invalidateQueries({ queryKey: ['available_candidates', requisitionId] });
       queryClient.invalidateQueries({ queryKey: ['job_postings'] });
       toast.success(t('jobCand.addedSuccess'));
       setIsAddDialogOpen(false);
@@ -251,7 +253,7 @@ export function JobCandidatesDialog({
       await updateCandidateApplicationStage(id, currentCompanyId, stage, employeeId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['candidate_applications', jobPostingId] });
+      queryClient.invalidateQueries({ queryKey: ['candidate_applications', requisitionId] });
       toast.success(t('jobCand.stageUpdated'));
     },
     onError: (error: unknown) => {
@@ -298,8 +300,8 @@ export function JobCandidatesDialog({
       await deleteCandidateApplication(id, currentCompanyId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['candidate_applications', jobPostingId] });
-      queryClient.invalidateQueries({ queryKey: ['available_candidates', jobPostingId] });
+      queryClient.invalidateQueries({ queryKey: ['candidate_applications', requisitionId] });
+      queryClient.invalidateQueries({ queryKey: ['available_candidates', requisitionId] });
       queryClient.invalidateQueries({ queryKey: ['job_postings'] });
       toast.success(t('jobCand.removedSuccess'));
       setIsRemoveDialogOpen(false);
@@ -386,10 +388,16 @@ export function JobCandidatesDialog({
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={() => setIsAddDialogOpen(true)}>
-                <UserPlus className="w-4 h-4 mr-2" />
-                {t('jobCand.addCandidate')}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={() => setIsCreateDialogOpen(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  {t('jobCand.createCandidate', 'Tạo ứng viên')}
+                </Button>
+                <Button onClick={() => setIsAddDialogOpen(true)}>
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  {t('jobCand.addCandidate')}
+                </Button>
+              </div>
             </div>
 
             {/* Candidates Table */}
@@ -413,6 +421,7 @@ export function JobCandidatesDialog({
                        <TableHead>{t('jobCand.col.candidate')}</TableHead>
                        <TableHead>{t('jobCand.col.contact')}</TableHead>
                        <TableHead>{t('jobCand.col.appliedDate')}</TableHead>
+                       <TableHead>Nguồn</TableHead>
                        <TableHead>{t('jobCand.col.rating')}</TableHead>
                        <TableHead>{t('jobCand.col.stage')}</TableHead>
                       <TableHead className="w-20"></TableHead>
@@ -453,6 +462,15 @@ export function JobCandidatesDialog({
                         </TableCell>
                         <TableCell>
                           {app.applied_date ? format(new Date(app.applied_date), 'dd/MM/yyyy') : '-'}
+                        </TableCell>
+                        <TableCell>
+                          {app.source === 'internal_scan' ? (
+                            <Badge variant="outline" className="bg-primary/10 text-primary">Nội bộ</Badge>
+                          ) : app.source ? (
+                            <Badge variant="outline">{app.source}</Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-muted-foreground">Mới nộp</Badge>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
@@ -604,6 +622,18 @@ export function JobCandidatesDialog({
         initialEmployeeId={hirePendingApp?.candidates?.employee_id}
         submitting={hireSubmitting}
         onConfirm={handleConfirmHireLink}
+      />
+
+      <CandidateFormDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+        companyId={currentCompanyId || ''}
+        defaultRequisitionId={null}
+        onSuccess={(candidateId?: string) => {
+          if (candidateId) {
+            addCandidateMutation.mutate(candidateId);
+          }
+        }}
       />
     </>
   );

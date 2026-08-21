@@ -18,6 +18,9 @@ import { AttOtCompLeavePolicyService } from './att-ot-comp-leave-policy.service'
 import { AttSickLeaveFundOrderService } from './att-sick-leave-fund-order.service';
 import { AttendanceOverviewService } from './attendance-overview.service';
 import { AttendanceSheetSignService } from './attendance-sheet-sign.service';
+import { AttShiftService } from './att-shift.service';
+import { AttRuleService } from './att-rule.service';
+import { AttScheduleService } from './att-schedule.service';
 import { ApiException } from '../common/api.exception';
 import { HRM_ATT_LVRULE_KEY } from './att-leave-accrual-policy.constants';
 import { HttpStatus } from '@nestjs/common';
@@ -309,6 +312,9 @@ describe('AttendanceController (HRM-AT-01..13)', () => {
         { provide: LeaveBalanceService, useValue: leaveBalanceMock },
         { provide: AttActivateEnrollService, useValue: {} },
         { provide: AttHolidayCalendarService, useValue: {} },
+        { provide: AttShiftService, useValue: {} },
+        { provide: AttRuleService, useValue: {} },
+        { provide: AttScheduleService, useValue: {} },
         {
           provide: AttendanceRequestsService,
           useValue: attendanceRequestsMock,

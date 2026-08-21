@@ -788,6 +788,7 @@ export default function Decisions() {
 
   return (
     <div className="flex flex-col h-full">
+      <h1 className="sr-only">Quyết định (Decisions)</h1>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 md:px-6 py-3 md:py-4 border-b bg-card">
         <div className="flex items-center gap-2">

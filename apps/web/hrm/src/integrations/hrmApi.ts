@@ -11083,3 +11083,16 @@ export async function retireAttSchedule(id: string, company_id: string) {
     { method: 'POST' },
   );
 }
+export const hrmApi = {
+  get: <T>(path: string, init?: RequestInit & { headers?: Record<string, string> }) =>
+    requestHrm<T>(path, { ...init, method: 'GET' }),
+  post: <T>(path: string, body?: unknown, init?: RequestInit & { headers?: Record<string, string> }) =>
+    requestHrm<T>(path, { ...init, method: 'POST', body: JSON.stringify(body) }),
+  put: <T>(path: string, body?: unknown, init?: RequestInit & { headers?: Record<string, string> }) =>
+    requestHrm<T>(path, { ...init, method: 'PUT', body: JSON.stringify(body) }),
+  delete: <T>(path: string, init?: RequestInit & { headers?: Record<string, string>; data?: unknown }) =>
+    requestHrm<T>(path, { ...init, method: 'DELETE', body: init?.data ? JSON.stringify(init.data) : undefined }),
+  resolvePortalParentCompanyId: () => {
+    return inferRuntimeScope()?.companyId || 'main';
+  },
+};

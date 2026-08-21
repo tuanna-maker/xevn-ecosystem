@@ -132,7 +132,7 @@ describe('D-HDSD-BF-03-BH-400-01 createInsurancePolicyParticipant', () => {
         `Bearer ${token}`,
       ),
     ).rejects.toThrow(
-      expect.objectContaining<Partial<ApiException>>({
+      expect.objectContaining<Partial>({
         code: HRM_INS_POL_404,
       }),
     );
@@ -164,7 +164,7 @@ describe('D-HDSD-BF-03-BH-400-01 createInsurancePolicyParticipant', () => {
         `Bearer ${token}`,
       ),
     ).rejects.toThrow(
-      expect.objectContaining<Partial<ApiException>>({
+      expect.objectContaining<Partial>({
         code: HRM_INS_POL_AMBIG,
       }),
     );
@@ -211,7 +211,7 @@ describe('D-HDSD-BF-03-BH-400-01 createInsurancePolicyParticipant', () => {
         `Bearer ${token}`,
       ),
     ).rejects.toThrow(
-      expect.objectContaining<Partial<ApiException>>({
+      expect.objectContaining<Partial>({
         code: HRM_INS_EMP_404,
       }),
     );

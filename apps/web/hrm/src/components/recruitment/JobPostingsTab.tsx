@@ -1490,7 +1490,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
         <JobCandidatesDialog
           open={isCandidatesOpen}
           onOpenChange={setIsCandidatesOpen}
-          jobPostingId={selectedJob.id}
+          requisitionId={selectedJob.id}
           jobTitle={selectedJob.title}
         />
       )}

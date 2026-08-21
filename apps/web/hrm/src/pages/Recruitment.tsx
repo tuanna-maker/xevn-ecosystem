@@ -316,7 +316,7 @@ const getTopNavTabs = (t: any) => [
   { id: 'dashboard', label: t('recruitment.tabs.dashboard'), icon: LayoutDashboard },
   { id: 'requisitions', label: 'Yêu cầu tuyển dụng', icon: Briefcase },
   { id: 'jd-library', label: 'Thư viện JD', icon: FileText },
-  { id: 'jobs', label: t('recruitment.tabs.jobs'), icon: Briefcase, hasDropdown: true },
+  // { id: 'jobs', label: t('recruitment.tabs.jobs'), icon: Briefcase, hasDropdown: true }, // OUT_MVP (leftover)
   { id: 'candidates', label: t('recruitment.tabs.candidates'), icon: Users, hasDropdown: true },
   { id: 'proposals', label: t('recruitment.tabs.proposals'), icon: FileText },
   { id: 'campaigns', label: t('recruitment.tabs.campaigns'), icon: Megaphone },
@@ -1008,6 +1008,7 @@ export default function Recruitment() {
           : 'h-[calc(100vh-120px)]',
       )}
     >
+      <h1 className="sr-only">Tuyển dụng (Recruitment)</h1>
       {/* Top Navigation — L-OPS neutral (no rainbow pills) */}
       <div className="flex-shrink-0 border-b bg-background px-3 py-2 md:px-6 md:py-3">
         <div className="flex items-center gap-1.5 md:gap-2 overflow-x-auto scrollbar-hide pb-1">
@@ -1241,13 +1242,13 @@ export default function Recruitment() {
                 ) : (
                   <DragDropContext onDragEnd={handleDragEnd}>
                     <div
-                      className="flex gap-3 overflow-x-auto pb-2"
+                      className="flex gap-6 overflow-x-auto pb-4 h-full"
                       data-testid="rec-kanban-board"
                     >
                       {stages.map((stage) => (
                         <div
                           key={stage.id}
-                          className="kanban-column min-w-[160px] w-[180px] flex-shrink-0"
+                          className="kanban-column min-w-[260px] w-[280px] flex-shrink-0 flex flex-col"
                         >
                           <div className="flex items-center justify-between mb-3 gap-2">
                             <div className="flex items-center gap-1.5 min-w-0">
@@ -1269,8 +1270,8 @@ export default function Recruitment() {
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                                 className={cn(
-                                  "space-y-2 min-h-[200px] p-2 rounded-lg transition-colors",
-                                  snapshot.isDraggingOver ? "bg-primary/10" : "bg-transparent"
+                                  "space-y-2 min-h-[300px] flex-1 p-3 rounded-lg transition-colors border border-dashed border-transparent",
+                                  snapshot.isDraggingOver ? "bg-primary/10 border-primary/30" : "bg-muted/50"
                                 )}
                               >
                                 {getCandidatesByStage(stage.id).map((candidate, index) => (

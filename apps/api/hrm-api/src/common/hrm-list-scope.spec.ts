@@ -267,7 +267,7 @@ describe('assertResourceInHrmScope (P1-01)', () => {
     const scope = resolveHrmListScope(undefined, 'holding');
     expect(() =>
       assertResourceInHrmScope({ company_id: 'other-co' }, scope),
-    ).toThrow(expect.objectContaining<ApiException>({ code: 'HRM-SCOPE-409' }));
+    ).toThrow(expect.objectContaining({ code: 'HRM-SCOPE-409' }));
   });
 
   it('allows holding UUID when group CEO scope uses member slugs (P1-02)', () => {
@@ -520,7 +520,7 @@ describe('employee restore scope parity (P1-PHASE1-BE-SCOPE-P0-S5-01)', () => {
     });
     expect(() =>
       assertResourceInHrmScope({ company_id: 'holding' }, scope),
-    ).toThrow(expect.objectContaining<ApiException>({ code: 'HRM-SCOPE-409' }));
+    ).toThrow(expect.objectContaining({ code: 'HRM-SCOPE-409' }));
   });
 
   it('member CEO scope rejects holding UUID partition row (main slug must not rollup)', () => {
@@ -541,7 +541,7 @@ describe('employee restore scope parity (P1-PHASE1-BE-SCOPE-P0-S5-01)', () => {
         },
         scope,
       ),
-    ).toThrow(expect.objectContaining<ApiException>({ code: 'HRM-SCOPE-409' }));
+    ).toThrow(expect.objectContaining({ code: 'HRM-SCOPE-409' }));
   });
 
   it('member CEO scope rejects master-tenant archived row even when company_id=main', () => {
@@ -560,6 +560,6 @@ describe('employee restore scope parity (P1-PHASE1-BE-SCOPE-P0-S5-01)', () => {
         scope,
         { mismatchCode: 'HRM-EMP-409' },
       ),
-    ).toThrow(expect.objectContaining<ApiException>({ code: 'HRM-EMP-409' }));
+    ).toThrow(expect.objectContaining({ code: 'HRM-EMP-409' }));
   });
 });

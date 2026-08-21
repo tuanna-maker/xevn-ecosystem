@@ -212,7 +212,7 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
       ).rejects.toMatchObject({
         code: 'HRM-EMP-CURSOR-001',
         status: HttpStatus.BAD_REQUEST,
-      } satisfies Partial<ApiException>);
+      } satisfies Partial);
       expect(db.query).not.toHaveBeenCalled();
     });
 

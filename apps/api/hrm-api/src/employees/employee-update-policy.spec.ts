@@ -136,7 +136,7 @@ describe('employee-update-policy', () => {
         `Bearer ${token}`,
       ),
     ).toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: 'HRM-EMP-403',
       }),
     );
@@ -157,7 +157,7 @@ describe('employee-update-policy', () => {
         `Bearer ${token}`,
       ),
     ).toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: 'HRM-EMP-403',
       }),
     );
@@ -179,7 +179,7 @@ describe('employee-update-policy', () => {
         `Bearer ${token}`,
       ),
     ).toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: 'HRM-EMP-403',
       }),
     );
@@ -200,7 +200,7 @@ describe('employee-update-policy', () => {
         `Bearer ${token}`,
       ),
     ).toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: 'HRM-EMP-403',
       }),
     );
@@ -261,7 +261,7 @@ describe('employee-update-policy', () => {
         `Bearer ${token}`,
       ),
     ).toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: 'HRM-EMP-403',
       }),
     );

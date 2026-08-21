@@ -41,7 +41,7 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
 
     it('assertHrmMappedCompanyUuidOrThrow rejects LE', () => {
       expect(() => assertHrmMappedCompanyUuidOrThrow(XBOS_LE_UUID)).toThrow(
-        expect.objectContaining<ApiException>({ code: 'HRM-PLANE-409' }),
+        expect.objectContaining({ code: 'HRM-PLANE-409' }),
       );
       expect(
         assertHrmMappedCompanyUuidOrThrow(HRM_COMPANY_UUID_BY_SLUG.finance),
@@ -73,7 +73,7 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
       expect(() =>
         resolveHrmOperationsPersistCompanyId(undefined, XBOS_LE_UUID),
       ).toThrow(
-        expect.objectContaining<ApiException>({ code: 'HRM-PLANE-409' }),
+        expect.objectContaining({ code: 'HRM-PLANE-409' }),
       );
     });
   });

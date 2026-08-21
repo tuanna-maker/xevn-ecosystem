@@ -19,6 +19,9 @@ import { LeaveBalanceService } from '../attendance/leave-balance.service';
 import { LeaveRequestsService } from '../attendance/leave-requests.service';
 import { AttActivateEnrollService } from '../attendance/att-activate-enroll.service';
 import { AttHolidayCalendarService } from '../attendance/att-holiday-calendar.service';
+import { AttShiftService } from '../attendance/att-shift.service';
+import { AttRuleService } from '../attendance/att-rule.service';
+import { AttScheduleService } from '../attendance/att-schedule.service';
 import { PayrollCatalogService } from '../payroll/payroll-catalog.service';
 import { PayrollController } from '../payroll/payroll.controller';
 import { PayrollService } from '../payroll/payroll.service';
@@ -128,6 +131,9 @@ describe('P1-PHASE1-BE-MOB-JMOB-04-05-01 (mobile HTTPS scope parity)', () => {
         { provide: LeaveBalanceService, useValue: {} },
         { provide: AttActivateEnrollService, useValue: {} },
         { provide: AttHolidayCalendarService, useValue: {} },
+        { provide: AttShiftService, useValue: {} },
+        { provide: AttRuleService, useValue: {} },
+        { provide: AttScheduleService, useValue: {} },
         { provide: AttendanceSheetSignService, useValue: {} },
       ],
     }).compile();

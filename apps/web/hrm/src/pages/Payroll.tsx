@@ -2794,6 +2794,7 @@ export default function Payroll() {
 
   return (
     <div className="space-y-0 animate-fade-in">
+      <h1 className="sr-only">Tiền lương (Payroll)</h1>
       {/* Top Navigation Tabs */}
       <div className="border-b bg-card">
         <div className="mobile-scroll-tabs px-2 md:px-4 py-2">

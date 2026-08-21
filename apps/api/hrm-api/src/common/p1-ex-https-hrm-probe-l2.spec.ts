@@ -29,6 +29,9 @@ import { AttOtTypeService } from '../attendance/att-ot-type.service';
 import { AttOtCompTypeService } from '../attendance/att-ot-comp-type.service';
 import { LeaveBalanceService } from '../attendance/leave-balance.service';
 import { AttHolidayCalendarService } from '../attendance/att-holiday-calendar.service';
+import { AttShiftService } from '../attendance/att-shift.service';
+import { AttRuleService } from '../attendance/att-rule.service';
+import { AttScheduleService } from '../attendance/att-schedule.service';
 import { LeaveRequestsService } from '../attendance/leave-requests.service';
 import { PayrollCatalogService } from '../payroll/payroll-catalog.service';
 import { PayrollController } from '../payroll/payroll.controller';
@@ -169,6 +172,9 @@ describe('P1-EX HTTPS HRM probe L2 (HTTP)', () => {
         { provide: LeaveBalanceService, useValue: {} },
         { provide: AttActivateEnrollService, useValue: {} },
         { provide: AttHolidayCalendarService, useValue: {} },
+        { provide: AttShiftService, useValue: {} },
+        { provide: AttRuleService, useValue: {} },
+        { provide: AttScheduleService, useValue: {} },
         { provide: AttendanceRequestsService, useValue: {} },
         { provide: AttendanceOverviewService, useValue: {} },
         { provide: AttendanceSheetSignService, useValue: {} },

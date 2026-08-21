@@ -88,12 +88,17 @@ describe('PayrollService', () => {
         .mockResolvedValue({ winner_id: null, ambiguous: false }),
       persistPayslipGroupSnapshot: jest.fn().mockResolvedValue(undefined),
     };
+    const payrollParams = {
+      ensureSchema: jest.fn().mockResolvedValue(undefined),
+      getPayrollParams: jest.fn().mockResolvedValue({}),
+    };
     service = new PayrollService(
       db,
       payFormulas as unknown as PayFormulaService,
       payInputPack as unknown as PayPeriodInputPackService,
       settingsTaxParams as unknown as import('../settings/settings-tax-params.service').SettingsTaxParamsService,
       payPayrollGroups as unknown as PayPayrollGroupService,
+      payrollParams as unknown as import('../settings/settings-payroll-params.service').SettingsPayrollParamsService,
     );
   });
 

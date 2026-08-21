@@ -17,8 +17,8 @@ describe('parseQaLoginDeepLink', () => {
   it('backfills scope fields from JWT claims when query omits them', () => {
     const url = `xevn://qa-login?token=${encodeURIComponent(SAMPLE_JWT)}`;
     const parsed = parseQaLoginDeepLink(url);
-    expect(parsed?.companyUuid).toBe('10000000-0000-4000-8000-000000000001');
-    expect(parsed?.employeeId).toBe('3796d949-4513-45c0-88fa-33030a062b17');
+    expect(parsed?.companyUuid).toBe('00000000-0000-4000-8000-000000000001');
+    expect(parsed?.employeeId).toBe('00000000-0000-4000-8000-000000000002');
   });
 
   it('returns null for unrelated URLs', () => {
@@ -48,7 +48,7 @@ describe('qaDeepLinkToSignInPayload', () => {
     expect(payload.roles).toContain('employee');
     expect(payload.memberships).toHaveLength(1);
     expect(payload.memberships[0]?.company_id).toBe('holding');
-    expect(payload.memberships[0]?.employee_id).toBe('3796d949-4513-45c0-88fa-33030a062b17');
+    expect(payload.memberships[0]?.employee_id).toBe('00000000-0000-4000-8000-000000000002');
   });
 
   it('normalizes pilot base_url from deep link', () => {
@@ -66,8 +66,8 @@ describe('qaDeepLinkToSignInPayload', () => {
     const params = parseQaLoginDeepLink(url);
     expect(params).not.toBeNull();
     const payload = qaDeepLinkToSignInPayload(params!);
-    expect(payload.companyId).toBe('holding');
-    expect(payload.memberships[0]?.company_id).toBe('holding');
+    expect(payload.companyId).toBe('test-company');
+    expect(payload.memberships[0]?.company_id).toBe('test-company');
   });
 
   it('W1-B-04: maps company_label/tenant_label/role_label/job_title_label into memberships', () => {

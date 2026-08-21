@@ -591,6 +591,8 @@ export type WorkflowCanvasProps = {
   steps: WorkflowGraphStep[];
   selectedStepId: string | null;
   onSelectStep: (id: string | null) => void;
+  selectedTransitionId?: string | null;
+  onSelectTransition?: (id: string | null) => void;
   resolveRoleLabel: (handlerRoleId: string) => string;
   resolveModuleLabel: (relatedModuleId: string) => string;
   /** Runtime task status keyed by step_key / step id (from workflow-engine instance detail). */
@@ -614,6 +616,8 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
   steps,
   selectedStepId,
   onSelectStep,
+  selectedTransitionId,
+  onSelectTransition,
   resolveRoleLabel,
   resolveModuleLabel,
   stepRuntimeStatus,
@@ -846,14 +850,24 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                 />
               </marker>
             </defs>
-            {edges.map((e) => (
-              <g key={e.id} className={edgeGroupClass(e.transitionKind)}>
+            {edges.map((e) => {
+              const isSelected = e.id === selectedTransitionId;
+              return (
+              <g 
+                key={e.id} 
+                className={`${edgeGroupClass(e.transitionKind)} ${isSelected ? 'drop-shadow-md' : ''}`}
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  onSelectStep(null);
+                  if (onSelectTransition) onSelectTransition(isSelected ? null : e.id);
+                }}
+              >
                 <path
                   data-wf-edge-hit
                   d={e.hitD}
                   fill="none"
                   stroke="transparent"
-                  strokeWidth={18}
+                  strokeWidth={24}
                   className="cursor-pointer"
                 />
                 <path
@@ -862,14 +876,14 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                   strokeLinecap="round"
                   markerEnd={markerEndForKind(e.transitionKind)}
                   style={edgePathStyle(e.transitionKind)}
-                  className={`pointer-events-none ${edgeStrokeClasses(e.transitionKind)}`}
+                  className={`pointer-events-none ${edgeStrokeClasses(e.transitionKind)} ${isSelected ? 'stroke-[2.5px]' : ''}`}
                 />
                 <text
                   x={e.labelX}
                   y={e.labelY}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  className="pointer-events-none text-[10px] font-medium"
+                  className={`pointer-events-none text-[10px] font-medium ${isSelected ? 'font-bold' : ''}`}
                   fill={edgeLabelFill(e.transitionKind)}
                   style={{
                     paintOrder: 'stroke fill',
@@ -881,7 +895,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                   {e.lineLabel}
                 </text>
               </g>
-            ))}
+            )})}
           </svg>
 
           {Array.from(rects.entries()).map(([id, r]) => {

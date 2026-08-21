@@ -15,8 +15,8 @@ type ProfileManagerApprovalsEntryProps = {
 };
 
 /**
- * Manager approvals CTA on Profile â†’ ThĂ´ng tin (default tab).
- * J-MOB-05 / HDSD Ch.12 â€” visible without switching to CĂ´ng viá»‡c.
+ * Manager approvals CTA on Profile → Thông tin (default tab).
+ * J-MOB-05 / HDSD Ch.12 — visible without switching to Công việc.
  */
 export function ProfileManagerApprovalsEntry({
   pendingCount,
@@ -39,7 +39,7 @@ export function ProfileManagerApprovalsEntry({
       </View>
       <View style={styles.copy}>
         <Text style={styles.title}>{label}</Text>
-        <Text style={styles.subtitle}>PhĂª duyá»‡t Ä‘Æ¡n nghá»‰ phĂ©p vĂ  chá»‰nh sá»­a cháº¥m cĂ´ng</Text>
+        <Text style={styles.subtitle}>Phê duyệt đơn nghỉ phép và chỉnh sửa chấm công</Text>
       </View>
       <Ionicons name="chevron-forward" size={20} color={colors.primary} accessibilityElementsHidden />
     </PressableScale>
