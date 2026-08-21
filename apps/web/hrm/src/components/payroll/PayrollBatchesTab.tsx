@@ -137,6 +137,7 @@ import {
 } from '@/components/payroll/payrollPaySheetTemplateSelect';
 import { PAY_SHEET_TPL_PACK_ALIAS_NOTE } from '@/lib/paySheetTemplateCatalog';
 import { cn } from '@/lib/utils';
+import { toErrorMessage } from '@/lib/apiError';
 import { toast } from 'sonner';
 import { PayrollPeriodTimesheetBindPanel } from '@/components/payroll/PayrollPeriodTimesheetBindPanel';
 import { PayrollPeriodGroupScopePanel } from '@/components/payroll/PayrollPeriodGroupScopePanel';
@@ -437,7 +438,7 @@ export function PayrollBatchesTab() {
         payroll_group_id: '',
       });
     } catch (error) {
-      console.error(error);
+      toast.error(toErrorMessage(error, 'Lỗi khi tạo bảng lương'));
     }
   };
 
@@ -915,7 +916,7 @@ export function PayrollBatchesTab() {
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Trạng thái" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent portalScope="iframe">
               <SelectItem value="all">Tất cả</SelectItem>
               <SelectItem value="draft">Nháp</SelectItem>
               <SelectItem value="pending">Chờ duyệt</SelectItem>
@@ -1048,7 +1049,7 @@ export function PayrollBatchesTab() {
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" portalScope="iframe">
                           <DropdownMenuItem onClick={() => openBatchDetail(batch)}>
                             <Eye className="w-4 h-4 mr-2" />
                             Xem chi tiết

@@ -1,9 +1,10 @@
 /**
- * Select dropdown trong Dialog/Sheet HRM embed — mount parent + z floating (không iframe).
- * WorkItem: DEF-SETTINGS-SELECT-IN-DIALOG-EMBED-01 · PO-HRM-SETTINGS-IA-UX-REMasters-SPONSOR-01
+ * Select dropdown trong Dialog/Sheet HRM embed.
+ * WorkItem: DEF-SETTINGS-SELECT-IN-DIALOG-EMBED-01 · DEF-FLOATING-IN-DIALOG-Z-INDEX-01
  *
- * AC: Mở popup catalog → Select «Nhóm» → danh sách option **trên** overlay dialog, click được.
- * Cấm `portalScope="iframe"` trong Dialog — z-50 iframe body nằm dưới dialog z-[100000] parent.
+ * SelectContent tự đọc HrmOverlayPortalScopeContext từ Dialog/Sheet:
+ * - Dialog parent (CC embed): dropdown parent z-[100010]
+ * - Dialog iframe / standalone: dropdown iframe z-[100] (trên overlay dialog z-50)
  */
 import * as React from 'react';
 import { SelectContent } from '@/components/ui/select';

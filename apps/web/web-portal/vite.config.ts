@@ -23,9 +23,33 @@
  * Change: Comment proxy `/hr` bỏ tham chiếu perimeter; giữ `changeOrigin: false` cho Docker Host `hrm-fe`.
  * must_keep: VITE_DEV_PROXY_* defaults 127.0.0.1
  */
+import http from 'node:http'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+
+/** Dev-only: align proxy pool keepalive with Nest HTTP_KEEPALIVE_TIMEOUT_MS (65s). */
+function createDevProxyAgent(): http.Agent {
+  const keepAliveMs = 65_000
+  return new http.Agent({
+    keepAlive: true,
+    keepAliveMsecs: keepAliveMs,
+    maxSockets: 64,
+    maxFreeSockets: 16,
+  })
+}
+
+function configureNestApiProxy(
+  proxy: { on: (event: 'proxyReq', listener: (proxyReq: http.ClientRequest) => void) => void },
+  env: Record<string, string>,
+) {
+  proxy.on('proxyReq', (proxyReq) => {
+    const key = env.VITE_INTERNAL_API_KEY || 'xevn-dev-internal-key'
+    if (key) {
+      proxyReq.setHeader('x-internal-api-key', key)
+    }
+  })
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -75,31 +99,20 @@ export default defineConfig(({ mode }) => {
           changeOrigin: false,
           secure: false,
           ws: true,
+          agent: createDevProxyAgent(),
         },
         // HRM API gọi cùng origin từ portal/iframe -> proxy sang NestJS.
         '/api/hrm': {
           target: proxyHrmApi,
           changeOrigin: true,
-          configure: (proxy) => {
-            proxy.on('proxyReq', (proxyReq) => {
-              const key = env.VITE_INTERNAL_API_KEY || 'xevn-dev-internal-key';
-              if (key) {
-                proxyReq.setHeader('x-internal-api-key', key);
-              }
-            });
-          },
+          agent: createDevProxyAgent(),
+          configure: (proxy) => configureNestApiProxy(proxy, env),
         },
         '/api/xbos': {
           target: proxyXbosApi,
           changeOrigin: true,
-          configure: (proxy) => {
-            proxy.on('proxyReq', (proxyReq) => {
-              const key = env.VITE_INTERNAL_API_KEY || 'xevn-dev-internal-key';
-              if (key) {
-                proxyReq.setHeader('x-internal-api-key', key);
-              }
-            });
-          },
+          agent: createDevProxyAgent(),
+          configure: (proxy) => configureNestApiProxy(proxy, env),
         },
       },
     },

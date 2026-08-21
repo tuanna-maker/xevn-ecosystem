@@ -1,113 +1,201 @@
-// @CODE-MEMORY: Dialog soạn thảo công thức lương với Formula Builder thân thiện.
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+/**
+ * @CODE-MEMORY
+ * Screen:     Dialog công thức lương — gộp từ thành phần lương + toán tử
+ * UC:         FR-UC-BP-PAY-02 · AC-PAY-FORMULA-SETTINGS-01
+ * BR:         TP = mã catalog; công thức lương = LUONG_CHINH + PC_XE - BHXH (chip builder)
+ * Purpose:    UI gốc token/chip; parent expand → hyperformula_v1 khi lưu Nest.
+ * WorkItem:   PO-HRM-SETTINGS-PAY-COMPOSITE-UI-01
+ * Callers:    PayFormulaSettingsPanel
+ * must_keep:  payroll_e2e_ready=false; vars từ useSalaryComponentsEffective
+ */
+import React, { useEffect, useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { SettingsDialogSelectContent } from '@/components/settings/SettingsDialogSelectContent';
+import type { PayFormulaComponentToken } from '@/lib/payFormulaCatalog';
+import {
+  PAY_FORMULA_STATUS_LABELS,
+  payFormulaStatusLabel,
+  tokensToComponentExpression,
+} from '@/lib/payFormulaCatalog';
 
-const FORMULA_VARIABLES = [
-  { label: 'Lương cơ bản theo ngạch', value: 'LUONG_CO_BAN_NGACH' },
-  { label: 'Lương hợp đồng (Tổng đài)', value: 'LUONG_HOP_DONG_TD' },
-  { label: 'Lương thời gian (Tổng đài)', value: 'LUONG_THOI_GIAN_TD' },
-  { label: 'Lương cuộc nghe', value: 'LUONG_CUOC_NGHE' },
-  { label: 'Lương lượt chạy (LX Tuyến)', value: 'LUONG_CUOC_LX_TUYEN' },
-  { label: 'Lương cứng (LX Tải)', value: 'LUONG_CUNG_LX_TAI' },
-  { label: 'Lương trách nhiệm QLPT', value: 'LUONG_QLPT' },
-  { label: 'Thưởng doanh thu', value: 'THUONG_DOANH_THU' },
-  { label: 'Thưởng chuyên cần', value: 'THUONG_CHUYEN_CAN' },
-  { label: 'Thưởng an toàn', value: 'THUONG_AN_TOAN' },
-  { label: 'Thưởng Top (Tổng đài)', value: 'THUONG_TOP_TD' },
-  { label: 'Thưởng tỷ lệ nhỡ', value: 'THUONG_GOI_NHO' },
-  { label: 'Thưởng KPI (LX Tải)', value: 'THUONG_KPI_LX_TC' },
-  { label: 'Thưởng Tết', value: 'THUONG_TET' },
-  { label: 'Thưởng hiệu suất', value: 'THUONG_HIEU_SUAT' },
-  { label: 'Phụ cấp ăn ca CN', value: 'PC_AN_CA_CN' },
-  { label: 'Phụ cấp giao hàng', value: 'PC_GIAO_HANG_PP' },
-  { label: 'Phụ cấp bốc xếp', value: 'PC_BOC_XEP_TC' },
-  { label: 'Phụ cấp điện thoại', value: 'PC_DIEN_THOAI' },
-  { label: 'Phụ cấp xăng xe', value: 'PC_XANG_XE' },
-  { label: 'Phụ cấp ăn trưa', value: 'PC_AN_TRUA' },
-  { label: 'Phụ cấp trách nhiệm', value: 'PC_TRACH_NHIEM' },
-  { label: 'Phụ cấp ca đêm', value: 'PC_CA_DEM' },
-  { label: 'Khấu trừ BHXH', value: 'KT_BHXH_NLD' },
-  { label: 'Khấu trừ thuế TNCN', value: 'KT_THUE_TNCN' },
-  { label: 'Khấu trừ tạm ứng', value: 'KT_TAM_UNG' },
-  { label: 'Khấu trừ vi phạm', value: 'KT_VI_PHAM' },
-  { label: 'Ngày công thực tế', value: 'ACTUAL_DAYS' },
-  { label: 'Ngày công chuẩn', value: 'STD_DAYS' },
-];
+export type FormulaEditorInitial = {
+  id?: string;
+  name?: string;
+  description?: string;
+  tokens?: PayFormulaComponentToken[];
+  status?: string;
+};
 
-const OPERATORS = ['+', '-', '*', '/', '(', ')'];
+export type PayFormulaTargetStatus = 'draft' | 'pending_publish' | 'active';
 
-export function PayFormulaEditorDialog({ open, onClose, onSave, initialData = null }) {
-  const [name, setName] = useState(initialData?.name || '');
-  const [description, setDescription] = useState(initialData?.description || '');
-  
-  // expressionTokens holds the UI view of the formula: [{ type: 'var'|'op'|'num', label: '...', value: '...' }]
-  const [tokens, setTokens] = useState([]);
+type ComponentOption = { label: string; value: string };
 
-  const handleInsertVar = (v) => {
-    setTokens([...tokens, { type: 'var', label: `[${v.label}]`, value: v.value }]);
+type PayFormulaEditorDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  onSave: (payload: {
+    id?: string;
+    name: string;
+    description: string;
+    tokens: PayFormulaComponentToken[];
+    expression: string;
+    targetStatus: PayFormulaTargetStatus;
+  }) => void | Promise<void>;
+  initialData?: FormulaEditorInitial | null;
+  componentOptions?: ComponentOption[];
+  saving?: boolean;
+};
+
+const OPERATORS = ['+', '-', '*', '/', '(', ')'] as const;
+
+const TARGET_STATUSES: PayFormulaTargetStatus[] = ['draft', 'pending_publish', 'active'];
+
+function normalizeTargetStatus(raw: string | null | undefined): PayFormulaTargetStatus {
+  const s = String(raw ?? 'draft').trim().toLowerCase();
+  if (s === 'pending_publish' || s === 'active') return s;
+  return 'draft';
+}
+
+export function PayFormulaEditorDialog({
+  open,
+  onClose,
+  onSave,
+  initialData = null,
+  componentOptions = [],
+  saving = false,
+}: PayFormulaEditorDialogProps) {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [tokens, setTokens] = useState<PayFormulaComponentToken[]>([]);
+  const [targetStatus, setTargetStatus] = useState<PayFormulaTargetStatus>('draft');
+
+  const currentStatus = initialData?.status ? String(initialData.status).toLowerCase() : 'draft';
+  const statusLocked = currentStatus === 'active' || currentStatus === 'retired';
+
+  useEffect(() => {
+    if (!open) return;
+    setName(initialData?.name || '');
+    setDescription(initialData?.description || '');
+    setTokens(initialData?.tokens ? [...initialData.tokens] : []);
+    setTargetStatus(normalizeTargetStatus(initialData?.status));
+  }, [open, initialData]);
+
+  const insertVar = (opt: ComponentOption) => {
+    setTokens((prev) => [
+      ...prev,
+      { type: 'var', label: `[${opt.label}]`, value: opt.value },
+    ]);
   };
 
-  const handleInsertOp = (op) => {
-    setTokens([...tokens, { type: 'op', label: op, value: op }]);
+  const insertOp = (op: string) => {
+    setTokens((prev) => [...prev, { type: 'op', label: op, value: op }]);
   };
 
-  const handleRemoveLast = () => {
-    setTokens(tokens.slice(0, -1));
-  };
+  const removeLast = () => setTokens((prev) => prev.slice(0, -1));
+  const clearAll = () => setTokens([]);
 
   const handleSave = () => {
-    // Chuyển đổi tokens thành expression cho hệ thống
-    const expression = tokens.map(t => t.value).join(' ');
-    onSave({
-      id: initialData?.id || Date.now().toString(),
-      name,
-      description,
-      expression,
+    void onSave({
+      id: initialData?.id,
+      name: name.trim(),
+      description: description.trim(),
       tokens,
+      expression: tokensToComponentExpression(tokens),
+      targetStatus,
     });
-    onClose();
   };
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>{initialData ? 'Sửa công thức lương' : 'Thêm công thức lương'}</DialogTitle>
-          <DialogDescription>Xây dựng công thức bằng cách click vào các biến và toán tử bên dưới.</DialogDescription>
+          <DialogTitle>{initialData?.id ? 'Sửa công thức lương' : 'Thêm công thức lương'}</DialogTitle>
+          <DialogDescription>
+            Ghép các <strong>thành phần lương</strong> (đã có công thức trên trường dữ liệu) bằng{' '}
+            <strong>+ − × ÷</strong>. Ví dụ: Lương chính + Phụ cấp − Khấu trừ BHXH.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label>Tên công thức (Mã hệ thống)</Label>
-              <Input 
-                placeholder="VD: CONG_THUC_LAI_XE" 
-                value={name} 
-                onChange={e => setName(e.target.value)}
+              <Label>Mã công thức</Label>
+              <Input
+                placeholder="VD: formula_lx_tai"
+                value={name}
+                onChange={(e) => setName(e.target.value.toLowerCase())}
+                disabled={Boolean(initialData?.id)}
               />
             </div>
             <div className="space-y-2">
               <Label>Mô tả / Tên hiển thị</Label>
-              <Input 
-                placeholder="VD: Lương lái xe tuyến Nam Định" 
-                value={description} 
-                onChange={e => setDescription(e.target.value)}
+              <Input
+                placeholder="VD: Lương lái xe tải"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Trạng thái</Label>
+              {statusLocked ? (
+                <Input
+                  value={payFormulaStatusLabel(currentStatus)}
+                  disabled
+                  data-testid="pay-formula-status-readonly"
+                />
+              ) : (
+                <Select
+                  value={targetStatus}
+                  onValueChange={(v) => setTargetStatus(normalizeTargetStatus(v))}
+                >
+                  <SelectTrigger data-testid="pay-formula-status">
+                    <SelectValue placeholder="Chọn trạng thái" />
+                  </SelectTrigger>
+                  <SettingsDialogSelectContent>
+                    {TARGET_STATUSES.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {PAY_FORMULA_STATUS_LABELS[s]}
+                      </SelectItem>
+                    ))}
+                  </SettingsDialogSelectContent>
+                </Select>
+              )}
+              {!statusLocked && targetStatus === 'active' ? (
+                <p className="text-[11px] text-amber-700 leading-snug">
+                  Phát hành cần dual-control — nếu bạn là người soạn, hệ thống có thể từ chối và
+                  giữ ở «Chờ phát hành».
+                </p>
+              ) : null}
             </div>
           </div>
 
           <div className="space-y-2 border rounded-md p-4 bg-gray-50">
-            <Label className="text-gray-700">Khung soạn thảo công thức</Label>
+            <Label className="text-gray-700">Biểu thức gộp thành phần</Label>
             <div className="min-h-[100px] p-3 bg-white border border-gray-200 rounded-md flex flex-wrap gap-2 items-start font-mono text-sm leading-relaxed shadow-inner">
               {tokens.length === 0 ? (
-                <span className="text-gray-400 italic">Công thức trống. Click các nút bên dưới để chèn...</span>
+                <span className="text-gray-400 italic">
+                  Chưa có thành phần. Chọn TP và toán tử bên dưới…
+                </span>
               ) : (
                 tokens.map((t, idx) => (
-                  <span 
-                    key={idx} 
+                  <span
+                    key={idx}
                     className={`px-2 py-1 rounded inline-flex items-center justify-center
                       ${t.type === 'var' ? 'bg-blue-100 text-blue-700 font-semibold' : 'bg-gray-200 text-gray-800 font-bold'}`}
                   >
@@ -116,11 +204,20 @@ export function PayFormulaEditorDialog({ open, onClose, onSave, initialData = nu
                 ))
               )}
             </div>
-            <div className="flex justify-end mt-2">
-              <Button variant="outline" size="sm" onClick={handleRemoveLast} disabled={tokens.length === 0}>
+            <p className="text-xs text-gray-500 font-mono">
+              {tokens.length > 0 ? tokensToComponentExpression(tokens) : '—'}
+            </p>
+            <div className="flex justify-end mt-2 gap-2">
+              <Button variant="outline" size="sm" onClick={removeLast} disabled={tokens.length === 0}>
                 Xóa phần tử cuối
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => setTokens([])} className="text-red-600 ml-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearAll}
+                className="text-red-600"
+                disabled={tokens.length === 0}
+              >
                 Xóa tất cả
               </Button>
             </div>
@@ -128,27 +225,35 @@ export function PayFormulaEditorDialog({ open, onClose, onSave, initialData = nu
 
           <div className="grid grid-cols-3 gap-6">
             <div className="col-span-2 space-y-2">
-              <Label className="text-sm font-semibold text-gray-600">Thành phần lương (Biến số)</Label>
-              <div className="flex flex-wrap gap-2 h-48 overflow-y-auto pr-2 content-start">
-                {FORMULA_VARIABLES.map(v => (
-                  <button 
-                    key={v.value}
-                    onClick={() => handleInsertVar(v)}
-                    className="text-xs bg-white border border-blue-200 text-blue-700 px-3 py-1.5 rounded-full hover:bg-blue-50 transition-colors shadow-sm"
-                  >
-                    {v.label}
-                  </button>
-                ))}
+              <Label className="text-sm font-semibold text-gray-600">Thành phần lương</Label>
+              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-2 content-start">
+                {componentOptions.length === 0 ? (
+                  <p className="text-xs text-amber-700">
+                    Chưa có TP trong Nest — thêm tại tab Thành phần lương trước.
+                  </p>
+                ) : (
+                  componentOptions.map((v) => (
+                    <button
+                      key={v.value}
+                      type="button"
+                      onClick={() => insertVar(v)}
+                      className="text-xs bg-white border border-blue-200 text-blue-700 px-3 py-1.5 rounded-full hover:bg-blue-50 transition-colors shadow-sm"
+                    >
+                      {v.label}
+                    </button>
+                  ))
+                )}
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label className="text-sm font-semibold text-gray-600">Toán tử</Label>
               <div className="grid grid-cols-3 gap-2">
-                {OPERATORS.map(op => (
-                  <button 
+                {OPERATORS.map((op) => (
+                  <button
                     key={op}
-                    onClick={() => handleInsertOp(op)}
+                    type="button"
+                    onClick={() => insertOp(op)}
                     className="text-sm font-bold bg-gray-100 border border-gray-300 text-gray-800 h-10 rounded hover:bg-gray-200 shadow-sm"
                   >
                     {op}
@@ -157,12 +262,15 @@ export function PayFormulaEditorDialog({ open, onClose, onSave, initialData = nu
               </div>
             </div>
           </div>
-
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Hủy</Button>
-          <Button onClick={handleSave} className="bg-blue-600">Lưu công thức</Button>
+          <Button variant="outline" onClick={onClose} disabled={saving}>
+            Hủy
+          </Button>
+          <Button onClick={handleSave} disabled={saving} className="bg-blue-600">
+            {saving ? 'Đang lưu...' : 'Lưu công thức'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
