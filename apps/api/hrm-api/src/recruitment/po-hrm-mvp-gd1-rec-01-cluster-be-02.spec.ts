@@ -8,7 +8,10 @@ import { ApiException } from '../common/api.exception';
 import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
 import { RecruitmentCatalogService } from './recruitment-catalog.service';
-import { HRM_HC_CELL_LOCKED, HRM_HC_VAL_400 } from './recruitment-plan-headcount';
+import {
+  HRM_HC_CELL_LOCKED,
+  HRM_HC_VAL_400,
+} from './recruitment-plan-headcount';
 
 const PLAN_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
 const CELL_ID = '11111111-2222-4333-8444-555555555555';
@@ -66,7 +69,10 @@ function storedCell(lifecycle: 'open' | 'need_hire_approved') {
 }
 
 /** In-memory grid so a stray DELETE is observable, not just counted in SQL text. */
-function makeStore(planStatus: string, cellLifecycle: 'open' | 'need_hire_approved' = 'need_hire_approved') {
+function makeStore(
+  planStatus: string,
+  cellLifecycle: 'open' | 'need_hire_approved' = 'need_hire_approved',
+) {
   const state = {
     plan: {
       id: PLAN_ID,
@@ -110,9 +116,13 @@ function makeStore(planStatus: string, cellLifecycle: 'open' | 'need_hire_approv
     if (schemaOk(sql)) return { rows: [] };
 
     if (sql.includes('DELETE FROM public.recruitment_plan_departments')) {
-      const removed = state.depts.filter((d) => d.plan_id === params[0]).map((d) => d.id);
+      const removed = state.depts
+        .filter((d) => d.plan_id === params[0])
+        .map((d) => d.id);
       state.depts = state.depts.filter((d) => d.plan_id !== params[0]);
-      state.positions = state.positions.filter((p) => !removed.includes(p.department_id));
+      state.positions = state.positions.filter(
+        (p) => !removed.includes(p.department_id),
+      );
       return { rows: [] };
     }
     if (sql.includes('INSERT INTO public.recruitment_plan_departments')) {
@@ -139,7 +149,11 @@ function makeStore(planStatus: string, cellLifecycle: 'open' | 'need_hire_approv
       return { rows: [] };
     }
     if (sql.includes('INSERT INTO public.recruitment_plans')) {
-      state.plan = { ...state.plan, id: String(params[0]), company_id: String(params[1]) };
+      state.plan = {
+        ...state.plan,
+        id: String(params[0]),
+        company_id: String(params[1]),
+      };
       return { rows: [] };
     }
     if (sql.includes('INSERT INTO public.job_requisitions')) {
@@ -151,10 +165,16 @@ function makeStore(planStatus: string, cellLifecycle: 'open' | 'need_hire_approv
       return { rows: [state.plan] };
     }
     if (sql.includes('FROM public.recruitment_plan_departments')) {
-      return { rows: state.depts.filter((d) => matchesId(params[0], d.plan_id)) };
+      return {
+        rows: state.depts.filter((d) => matchesId(params[0], d.plan_id)),
+      };
     }
     if (sql.includes('FROM public.recruitment_plan_positions')) {
-      return { rows: state.positions.filter((p) => matchesId(params[0], p.department_id)) };
+      return {
+        rows: state.positions.filter((p) =>
+          matchesId(params[0], p.department_id),
+        ),
+      };
     }
     if (sql.includes('FROM public.job_requisitions')) return { rows: [] };
     return { rows: [] };
@@ -162,15 +182,23 @@ function makeStore(planStatus: string, cellLifecycle: 'open' | 'need_hire_approv
 
   const db = {
     query,
-    withTransaction: jest.fn(async (fn: (q: typeof query) => Promise<unknown>) => fn(query)),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof query) => Promise<unknown>) => fn(query),
+    ),
   };
 
   const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-  const svc = new RecruitmentCatalogService(db as unknown as HrmDbService, bridge as never);
+  const svc = new RecruitmentCatalogService(
+    db as unknown as HrmDbService,
+    bridge as never,
+  );
   return { state, db, svc };
 }
 
-function bumpNeedHirePayload(needHire: number, extra?: Record<string, unknown>) {
+function bumpNeedHirePayload(
+  needHire: number,
+  extra?: Record<string, unknown>,
+) {
   return {
     company_id: 'main',
     departments: [
@@ -199,7 +227,9 @@ function bumpNeedHirePayload(needHire: number, extra?: Record<string, unknown>) 
 
 function expectApiCode(error: unknown, code: string) {
   expect(error).toBeInstanceOf(ApiException);
-  expect((error as ApiException).getResponse()).toEqual(expect.objectContaining({ code }));
+  expect((error as ApiException).getResponse()).toEqual(
+    expect.objectContaining({ code }),
+  );
 }
 
 describe('REC-01 cluster BE-02 — locked PUT must not wipe grid (R-REC-HC-PUT-LOCKED-WIPE)', () => {
@@ -216,10 +246,14 @@ describe('REC-01 cluster BE-02 — locked PUT must not wipe grid (R-REC-HC-PUT-L
     expectApiCode(thrown, HRM_HC_CELL_LOCKED);
 
     // No destructive statement reached the DB, and no transaction was opened.
-    expect(state.sqls.some((s) => s.includes('DELETE FROM public.recruitment_plan_departments'))).toBe(
-      false,
-    );
-    expect(state.sqls.some((s) => s.includes('UPDATE public.recruitment_plans'))).toBe(false);
+    expect(
+      state.sqls.some((s) =>
+        s.includes('DELETE FROM public.recruitment_plan_departments'),
+      ),
+    ).toBe(false);
+    expect(
+      state.sqls.some((s) => s.includes('UPDATE public.recruitment_plans')),
+    ).toBe(false);
     expect(db.withTransaction).not.toHaveBeenCalled();
 
     // Grid still present in store.
@@ -227,7 +261,11 @@ describe('REC-01 cluster BE-02 — locked PUT must not wipe grid (R-REC-HC-PUT-L
     expect(state.positions).toHaveLength(1);
 
     // getById still returns the same positions + need_hire_approved cell.
-    const detail = (await svc.getRecruitmentPlanById(PLAN_ID, 'main', auth)) as {
+    const detail = (await svc.getRecruitmentPlanById(
+      PLAN_ID,
+      'main',
+      auth,
+    )) as {
       departments: Array<{
         positions: Array<{
           months: Array<{
@@ -265,7 +303,9 @@ describe('REC-01 cluster BE-02 — locked PUT must not wipe grid (R-REC-HC-PUT-L
     expect(db.withTransaction).toHaveBeenCalledTimes(1);
     expect(state.depts).toHaveLength(1);
     expect(state.positions).toHaveLength(1);
-    const cells = state.positions[0].months_data as Array<{ headcount_need_hire: number }>;
+    const cells = state.positions[0].months_data as Array<{
+      headcount_need_hire: number;
+    }>;
     expect(cells[0].headcount_need_hire).toBe(7);
   });
 
@@ -276,11 +316,15 @@ describe('REC-01 cluster BE-02 — locked PUT must not wipe grid (R-REC-HC-PUT-L
     await svc.upsertRecruitmentPlan(PLAN_ID, bumpNeedHirePayload(4), auth);
 
     expect(db.withTransaction).toHaveBeenCalledTimes(1);
-    expect(state.sqls.some((s) => s.includes('DELETE FROM public.recruitment_plan_departments'))).toBe(
-      true,
-    );
+    expect(
+      state.sqls.some((s) =>
+        s.includes('DELETE FROM public.recruitment_plan_departments'),
+      ),
+    ).toBe(true);
     expect(state.positions).toHaveLength(1);
-    const cells = state.positions[0].months_data as Array<{ headcount_need_hire: number }>;
+    const cells = state.positions[0].months_data as Array<{
+      headcount_need_hire: number;
+    }>;
     expect(cells[0].headcount_need_hire).toBe(4);
   });
 
@@ -301,7 +345,9 @@ describe('REC-01 cluster BE-02 — locked PUT must not wipe grid (R-REC-HC-PUT-L
     expectApiCode(thrown, HRM_HC_VAL_400);
     expect(db.withTransaction).not.toHaveBeenCalled();
     expect(state.positions).toHaveLength(1);
-    const cells = state.positions[0].months_data as Array<{ headcount_need_hire: number }>;
+    const cells = state.positions[0].months_data as Array<{
+      headcount_need_hire: number;
+    }>;
     expect(cells[0].headcount_need_hire).toBe(2);
   });
 
@@ -323,7 +369,13 @@ describe('REC-01 cluster BE-02 — locked PUT must not wipe grid (R-REC-HC-PUT-L
                 {
                   name: 'NV',
                   position_key: 'staff',
-                  months: [{ month: 1, cell_status: 'need_hire', headcount_need_hire: 0 }],
+                  months: [
+                    {
+                      month: 1,
+                      cell_status: 'need_hire',
+                      headcount_need_hire: 0,
+                    },
+                  ],
                 },
               ],
             },
@@ -335,6 +387,10 @@ describe('REC-01 cluster BE-02 — locked PUT must not wipe grid (R-REC-HC-PUT-L
       thrown = error;
     }
     expectApiCode(thrown, HRM_HC_VAL_400);
-    expect(state.sqls.some((s) => s.includes('INSERT INTO public.recruitment_plans'))).toBe(false);
+    expect(
+      state.sqls.some((s) =>
+        s.includes('INSERT INTO public.recruitment_plans'),
+      ),
+    ).toBe(false);
   });
 });

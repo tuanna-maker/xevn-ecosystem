@@ -84,7 +84,10 @@ describe('yctd-requisition-gates helpers (Y-S*)', () => {
 
   it('Y-S9/O4: unclassified + approved out_of_plan gates', () => {
     try {
-      assertYctdReceivableForMutateOrThrow({ status: 'open', headcount_mode: null });
+      assertYctdReceivableForMutateOrThrow({
+        status: 'open',
+        headcount_mode: null,
+      });
       fail('expected throw');
     } catch (e) {
       expect(codeOf(e)).toBe(HRM_YCTD_MODE_UNCLASSIFIED);
@@ -127,11 +130,18 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
     };
     const bridge = {
       ensureSchema: jest.fn().mockImplementation(async () => {
-        sqls.push(`ADD CONSTRAINT chk_job_requisitions_status CHECK (status IN ('open_for_hire'))`);
+        sqls.push(
+          `ADD CONSTRAINT chk_job_requisitions_status CHECK (status IN ('open_for_hire'))`,
+        );
       }),
     };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
-    await (svc as unknown as { ensureSchema: () => Promise<void> }).ensureSchema();
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
+    await (
+      svc as unknown as { ensureSchema: () => Promise<void> }
+    ).ensureSchema();
     const joined = sqls.join('\n');
     expect(joined).toMatch(/hire_reason/);
     expect(joined).toMatch(/replace_employee_id/);
@@ -144,54 +154,59 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
 
   it('Y-S7: create → status draft (cấm open)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_description_templates')) {
-          return {
-            rows: [
-              {
-                id: JD_ID,
-                code: 'JD-01',
-                title: 'NV',
-                job_description: 'desc',
-                requirements: 'req',
-                is_active: true,
-                position_code: 'staff',
-                position_name: 'Nhân viên',
-              },
-            ],
-          };
-        }
-        if (s.includes('INSERT INTO public.job_requisitions')) {
-          expect(s).toMatch(/'draft'/);
-          expect(s).not.toMatch(/'open'/);
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: 'draft',
-                job_description: 'desc',
-                requirements: 'req',
-                job_template_id: JD_ID,
-                headcount_mode: null,
-                pipeline_flags_json: {},
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (s.includes('FROM public.job_description_templates')) {
+            return {
+              rows: [
+                {
+                  id: JD_ID,
+                  code: 'JD-01',
+                  title: 'NV',
+                  job_description: 'desc',
+                  requirements: 'req',
+                  is_active: true,
+                  position_code: 'staff',
+                  position_name: 'Nhân viên',
+                },
+              ],
+            };
+          }
+          if (s.includes('INSERT INTO public.job_requisitions')) {
+            expect(s).toMatch(/'draft'/);
+            expect(s).not.toMatch(/'open'/);
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: 'draft',
+                  job_description: 'desc',
+                  requirements: 'req',
+                  job_template_id: JD_ID,
+                  headcount_mode: null,
+                  pipeline_flags_json: {},
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     const created = await svc.createJobRequisition(
       {
         company_id: 'main',
@@ -253,7 +268,10 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
       }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     try {
       await svc.createJobRequisition(
         {
@@ -280,7 +298,10 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
         if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_requisitions r') && s.includes('LIMIT 1')) {
+        if (
+          s.includes('FROM public.job_requisitions r') &&
+          s.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -311,7 +332,10 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
       ensureSchema: jest.fn().mockResolvedValue(undefined),
       startRecruitmentWorkflowIfConfigured: jest.fn(),
     };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     try {
       await svc.submitJobRequisitionForApproval(
         REQ_ID,
@@ -328,67 +352,77 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
   it('Y-S8/S10: submit in_plan snapshots SHORT + conditions', async () => {
     let updatedMatrix: string | null = null;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_requisitions r') && s.includes('LIMIT 1')) {
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: 'draft',
-                job_description: null,
-                requirements: null,
-                job_template_id: JD_ID,
-                headcount_mode: 'in_plan',
-                headcount_cell_id: CELL_ID,
-                hire_reason: 'new',
-                out_of_plan_reason: null,
-                pipeline_flags_json: {},
-                jd_code: 'JD-01',
-                jd_title: 'NV',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.recruitment_plan_positions')) {
-          return {
-            rows: [
-              {
-                plan_id: PLAN_ID,
-                plan_status: 'approved',
-                company_id: 'holding',
-                months_data: [
-                  {
-                    cell_id: CELL_ID,
-                    month: 1,
-                    cell_status: 'need_hire',
-                    lifecycle_status: 'need_hire_approved',
-                    headcount_need_hire: 2,
-                    headcount_current: 1,
-                    headcount_projected: null,
-                  },
-                ],
-              },
-            ],
-          };
-        }
-        if (s.includes('SELECT id::text AS id FROM public.job_requisitions')) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (
+            s.includes('FROM public.job_requisitions r') &&
+            s.includes('LIMIT 1')
+          ) {
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: 'draft',
+                  job_description: null,
+                  requirements: null,
+                  job_template_id: JD_ID,
+                  headcount_mode: 'in_plan',
+                  headcount_cell_id: CELL_ID,
+                  hire_reason: 'new',
+                  out_of_plan_reason: null,
+                  pipeline_flags_json: {},
+                  jd_code: 'JD-01',
+                  jd_title: 'NV',
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.recruitment_plan_positions')) {
+            return {
+              rows: [
+                {
+                  plan_id: PLAN_ID,
+                  plan_status: 'approved',
+                  company_id: 'holding',
+                  months_data: [
+                    {
+                      cell_id: CELL_ID,
+                      month: 1,
+                      cell_status: 'need_hire',
+                      lifecycle_status: 'need_hire_approved',
+                      headcount_need_hire: 2,
+                      headcount_current: 1,
+                      headcount_projected: null,
+                    },
+                  ],
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('SELECT id::text AS id FROM public.job_requisitions')
+          ) {
+            return { rows: [] };
+          }
+          if (
+            s.includes('UPDATE public.job_requisitions') &&
+            s.includes('approval_matrix_key')
+          ) {
+            updatedMatrix = String(params?.[6] ?? '');
+            return { rows: [] };
+          }
           return { rows: [] };
-        }
-        if (s.includes('UPDATE public.job_requisitions') && s.includes('approval_matrix_key')) {
-          updatedMatrix = String(params?.[6] ?? '');
-          return { rows: [] };
-        }
-        return { rows: [] };
-      }),
+        }),
     };
     const bridge = {
       ensureSchema: jest.fn().mockResolvedValue(undefined),
@@ -396,7 +430,10 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
         workflowInstanceId: '11111111-1111-4111-8111-111111111111',
       }),
     };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     const res = await svc.submitJobRequisitionForApproval(
       REQ_ID,
       { company_id: 'main' },
@@ -418,63 +455,79 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
     const state = {
       status: 'pending_approval',
       mode: 'out_of_plan',
-      flags: { posted: false, has_cv: false, interview_started: false, cv_intake_allowed: false },
+      flags: {
+        posted: false,
+        has_cv: false,
+        interview_started: false,
+        cv_intake_allowed: false,
+      },
     };
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_requisitions WHERE id') && s.includes('headcount_mode')) {
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                status: state.status,
-                headcount_mode: state.mode,
-                hire_reason: 'new',
-                out_of_plan_reason: 'vượt ĐB',
-                pipeline_flags_json: state.flags,
-                workflow_instance_id: null,
-              },
-            ],
-          };
-        }
-        if (s.includes('UPDATE public.job_requisitions') && s.includes('pipeline_flags_json')) {
-          if (s.includes("status = $1") || s.includes('SET status = $1')) {
-            state.status = String(params?.[0]);
-            state.flags = JSON.parse(String(params?.[2] ?? '{}'));
-          } else {
-            state.flags = JSON.parse(String(params?.[0] ?? '{}'));
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (
+            s.includes('FROM public.job_requisitions WHERE id') &&
+            s.includes('headcount_mode')
+          ) {
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  status: state.status,
+                  headcount_mode: state.mode,
+                  hire_reason: 'new',
+                  out_of_plan_reason: 'vượt ĐB',
+                  pipeline_flags_json: state.flags,
+                  workflow_instance_id: null,
+                },
+              ],
+            };
           }
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: state.status,
-                job_description: null,
-                requirements: null,
-                job_template_id: JD_ID,
-                headcount_mode: state.mode,
-                out_of_plan_reason: 'vượt ĐB',
-                hire_reason: 'new',
-                pipeline_flags_json: state.flags,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+          if (
+            s.includes('UPDATE public.job_requisitions') &&
+            s.includes('pipeline_flags_json')
+          ) {
+            if (s.includes('status = $1') || s.includes('SET status = $1')) {
+              state.status = String(params?.[0]);
+              state.flags = JSON.parse(String(params?.[2] ?? '{}'));
+            } else {
+              state.flags = JSON.parse(String(params?.[0] ?? '{}'));
+            }
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: state.status,
+                  job_description: null,
+                  requirements: null,
+                  job_template_id: JD_ID,
+                  headcount_mode: state.mode,
+                  out_of_plan_reason: 'vượt ĐB',
+                  hire_reason: 'new',
+                  pipeline_flags_json: state.flags,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     const approved = await svc.transitionJobRequisition(
       REQ_ID,
       { action: 'approve' },
@@ -509,57 +562,68 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
     let updateSql = '';
     let updateParams: unknown[] = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_requisitions WHERE id') && s.includes('headcount_mode')) {
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                status: 'pending_approval',
-                headcount_mode: 'out_of_plan',
-                hire_reason: 'new',
-                out_of_plan_reason: 'vượt ĐB',
-                pipeline_flags_json: { cv_intake_allowed: false },
-                workflow_instance_id: null,
-              },
-            ],
-          };
-        }
-        if (s.includes('UPDATE public.job_requisitions') && s.includes("status = 'rejected'")) {
-          updateSql = s;
-          updateParams = params ?? [];
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: 'rejected',
-                job_description: null,
-                requirements: null,
-                job_template_id: JD_ID,
-                headcount_mode: 'out_of_plan',
-                hire_reason: 'new',
-                out_of_plan_reason: 'vượt ĐB',
-                pipeline_flags_json: { cv_intake_allowed: false },
-                rejected_reason: String(params?.[0] ?? ''),
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (
+            s.includes('FROM public.job_requisitions WHERE id') &&
+            s.includes('headcount_mode')
+          ) {
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  status: 'pending_approval',
+                  headcount_mode: 'out_of_plan',
+                  hire_reason: 'new',
+                  out_of_plan_reason: 'vượt ĐB',
+                  pipeline_flags_json: { cv_intake_allowed: false },
+                  workflow_instance_id: null,
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('UPDATE public.job_requisitions') &&
+            s.includes("status = 'rejected'")
+          ) {
+            updateSql = s;
+            updateParams = params ?? [];
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: 'rejected',
+                  job_description: null,
+                  requirements: null,
+                  job_template_id: JD_ID,
+                  headcount_mode: 'out_of_plan',
+                  hire_reason: 'new',
+                  out_of_plan_reason: 'vượt ĐB',
+                  pipeline_flags_json: { cv_intake_allowed: false },
+                  rejected_reason: String(params?.[0] ?? ''),
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     const rejected = await svc.transitionJobRequisition(
       REQ_ID,
       { action: 'reject', rejected_reason: rejectReason },
@@ -582,54 +646,65 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
   it('must_keep SHORT: in_plan approve → open_for_hire + approved_by $2', async () => {
     let updateParams: unknown[] = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_requisitions WHERE id') && s.includes('headcount_mode')) {
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                status: 'pending_approval',
-                headcount_mode: 'in_plan',
-                hire_reason: 'new',
-                pipeline_flags_json: { cv_intake_allowed: false },
-                workflow_instance_id: null,
-              },
-            ],
-          };
-        }
-        if (s.includes('UPDATE public.job_requisitions') && s.includes('SET status = $1')) {
-          updateParams = params ?? [];
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: String(params?.[0]),
-                job_description: null,
-                requirements: null,
-                job_template_id: JD_ID,
-                headcount_mode: 'in_plan',
-                hire_reason: 'new',
-                pipeline_flags_json: JSON.parse(String(params?.[2] ?? '{}')),
-                approved_by: params?.[1] ?? null,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (
+            s.includes('FROM public.job_requisitions WHERE id') &&
+            s.includes('headcount_mode')
+          ) {
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  status: 'pending_approval',
+                  headcount_mode: 'in_plan',
+                  hire_reason: 'new',
+                  pipeline_flags_json: { cv_intake_allowed: false },
+                  workflow_instance_id: null,
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('UPDATE public.job_requisitions') &&
+            s.includes('SET status = $1')
+          ) {
+            updateParams = params ?? [];
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: String(params?.[0]),
+                  job_description: null,
+                  requirements: null,
+                  job_template_id: JD_ID,
+                  headcount_mode: 'in_plan',
+                  hire_reason: 'new',
+                  pipeline_flags_json: JSON.parse(String(params?.[2] ?? '{}')),
+                  approved_by: params?.[1] ?? null,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     const open = await svc.transitionJobRequisition(
       REQ_ID,
       { action: 'approve' },
@@ -666,7 +741,10 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
       }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     try {
       await svc.patchRequisitionPipelineFlags(
         REQ_ID,
@@ -730,7 +808,10 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
       }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     try {
       await svc.createJobRequisition(
         {
@@ -755,103 +836,118 @@ describe('PO-HRM-MVP-GD1-REC-02-CLUSTER-BE-01 service', () => {
   it('U19 scope_parity: list company filter matches get/transitions/flags', async () => {
     const seen: string[] = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('company_id')) seen.push(s);
-        if (s.includes('COUNT(*)')) return { rows: [{ total: '1' }] };
-        if (s.includes('FROM public.job_requisitions r') && s.includes('ORDER BY')) {
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: 'open_for_hire',
-                job_description: null,
-                requirements: null,
-                job_template_id: JD_ID,
-                headcount_mode: 'in_plan',
-                pipeline_flags_json: {},
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.job_requisitions r') && s.includes('LIMIT 1')) {
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: 'open_for_hire',
-                job_description: null,
-                requirements: null,
-                job_template_id: JD_ID,
-                headcount_mode: 'in_plan',
-                pipeline_flags_json: {},
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.job_requisitions WHERE id')) {
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                status: 'open_for_hire',
-                headcount_mode: 'in_plan',
-                pipeline_flags_json: {},
-              },
-            ],
-          };
-        }
-        if (s.includes('UPDATE public.job_requisitions')) {
-          const flagsJson =
-            typeof params?.[0] === 'string'
-              ? JSON.parse(params[0] as string)
-              : { posted: true };
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: 'open_for_hire',
-                job_description: null,
-                requirements: null,
-                job_template_id: JD_ID,
-                headcount_mode: 'in_plan',
-                pipeline_flags_json: flagsJson,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (s.includes('company_id')) seen.push(s);
+          if (s.includes('COUNT(*)')) return { rows: [{ total: '1' }] };
+          if (
+            s.includes('FROM public.job_requisitions r') &&
+            s.includes('ORDER BY')
+          ) {
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: 'open_for_hire',
+                  job_description: null,
+                  requirements: null,
+                  job_template_id: JD_ID,
+                  headcount_mode: 'in_plan',
+                  pipeline_flags_json: {},
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('FROM public.job_requisitions r') &&
+            s.includes('LIMIT 1')
+          ) {
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: 'open_for_hire',
+                  job_description: null,
+                  requirements: null,
+                  job_template_id: JD_ID,
+                  headcount_mode: 'in_plan',
+                  pipeline_flags_json: {},
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.job_requisitions WHERE id')) {
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  status: 'open_for_hire',
+                  headcount_mode: 'in_plan',
+                  pipeline_flags_json: {},
+                },
+              ],
+            };
+          }
+          if (s.includes('UPDATE public.job_requisitions')) {
+            const flagsJson =
+              typeof params?.[0] === 'string'
+                ? JSON.parse(params[0])
+                : { posted: true };
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: 'open_for_hire',
+                  job_description: null,
+                  requirements: null,
+                  job_template_id: JD_ID,
+                  headcount_mode: 'in_plan',
+                  pipeline_flags_json: flagsJson,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     const auth = groupCeoToken();
     const list = await svc.listJobRequisitions({ company_id: 'main' }, auth);
     expect(list.data[0].id).toBe(REQ_ID);
-    const detail = await svc.getJobRequisitionById(REQ_ID, { company_id: 'main' }, auth);
+    const detail = await svc.getJobRequisitionById(
+      REQ_ID,
+      { company_id: 'main' },
+      auth,
+    );
     expect(detail.company_id).toBe('holding');
     const flags = await svc.patchRequisitionPipelineFlags(
       REQ_ID,
@@ -896,54 +992,59 @@ describe('R-REC-02-TARGET-MONTH-DATE (PO-HRM-MVP-GD1-REC-02-TARGET-MONTH-BE-01)'
   it('create: target_month YYYY-MM → INSERT $12 = YYYY-MM-01 (not PG cast raw)', async () => {
     let insertParams: unknown[] | null = null;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_description_templates')) {
-          return {
-            rows: [
-              {
-                id: JD_ID,
-                code: 'JD-01',
-                title: 'NV',
-                job_description: 'desc',
-                requirements: 'req',
-                is_active: true,
-                position_code: 'staff',
-                position_name: 'Nhân viên',
-              },
-            ],
-          };
-        }
-        if (s.includes('INSERT INTO public.job_requisitions')) {
-          insertParams = params ?? null;
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: 'draft',
-                job_description: 'desc',
-                requirements: 'req',
-                job_template_id: JD_ID,
-                target_month: '2026-09-01',
-                headcount_mode: null,
-                pipeline_flags_json: {},
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (s.includes('FROM public.job_description_templates')) {
+            return {
+              rows: [
+                {
+                  id: JD_ID,
+                  code: 'JD-01',
+                  title: 'NV',
+                  job_description: 'desc',
+                  requirements: 'req',
+                  is_active: true,
+                  position_code: 'staff',
+                  position_name: 'Nhân viên',
+                },
+              ],
+            };
+          }
+          if (s.includes('INSERT INTO public.job_requisitions')) {
+            insertParams = params ?? null;
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: 'draft',
+                  job_description: 'desc',
+                  requirements: 'req',
+                  job_template_id: JD_ID,
+                  target_month: '2026-09-01',
+                  headcount_mode: null,
+                  pipeline_flags_json: {},
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     const created = await svc.createJobRequisition(
       {
         company_id: 'main',
@@ -964,54 +1065,59 @@ describe('R-REC-02-TARGET-MONTH-DATE (PO-HRM-MVP-GD1-REC-02-TARGET-MONTH-BE-01)'
   it('create: target_month YYYY-MM-01 → INSERT unchanged first-day', async () => {
     let insertParams: unknown[] | null = null;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_description_templates')) {
-          return {
-            rows: [
-              {
-                id: JD_ID,
-                code: 'JD-01',
-                title: 'NV',
-                job_description: 'desc',
-                requirements: 'req',
-                is_active: true,
-                position_code: 'staff',
-                position_name: 'Nhân viên',
-              },
-            ],
-          };
-        }
-        if (s.includes('INSERT INTO public.job_requisitions')) {
-          insertParams = params ?? null;
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: 'draft',
-                job_description: 'desc',
-                requirements: 'req',
-                job_template_id: JD_ID,
-                target_month: '2026-08-01',
-                headcount_mode: null,
-                pipeline_flags_json: {},
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (s.includes('FROM public.job_description_templates')) {
+            return {
+              rows: [
+                {
+                  id: JD_ID,
+                  code: 'JD-01',
+                  title: 'NV',
+                  job_description: 'desc',
+                  requirements: 'req',
+                  is_active: true,
+                  position_code: 'staff',
+                  position_name: 'Nhân viên',
+                },
+              ],
+            };
+          }
+          if (s.includes('INSERT INTO public.job_requisitions')) {
+            insertParams = params ?? null;
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: 'draft',
+                  job_description: 'desc',
+                  requirements: 'req',
+                  job_template_id: JD_ID,
+                  target_month: '2026-08-01',
+                  headcount_mode: null,
+                  pipeline_flags_json: {},
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     await svc.createJobRequisition(
       {
         company_id: 'main',
@@ -1055,7 +1161,10 @@ describe('R-REC-02-TARGET-MONTH-DATE (PO-HRM-MVP-GD1-REC-02-TARGET-MONTH-BE-01)'
       }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     try {
       await svc.createJobRequisition(
         {
@@ -1080,54 +1189,59 @@ describe('R-REC-02-TARGET-MONTH-DATE (PO-HRM-MVP-GD1-REC-02-TARGET-MONTH-BE-01)'
   it('create: omit target_month → INSERT null (unchanged)', async () => {
     let insertParams: unknown[] | null = null;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.job_description_templates')) {
-          return {
-            rows: [
-              {
-                id: JD_ID,
-                code: 'JD-01',
-                title: 'NV',
-                job_description: 'desc',
-                requirements: 'req',
-                is_active: true,
-                position_code: 'staff',
-                position_name: 'Nhân viên',
-              },
-            ],
-          };
-        }
-        if (s.includes('INSERT INTO public.job_requisitions')) {
-          insertParams = params ?? null;
-          return {
-            rows: [
-              {
-                id: REQ_ID,
-                company_id: 'holding',
-                title: 'YCTD',
-                department: 'HCNS',
-                employment_type: 'full-time',
-                headcount: 1,
-                status: 'draft',
-                job_description: 'desc',
-                requirements: 'req',
-                job_template_id: JD_ID,
-                target_month: null,
-                headcount_mode: null,
-                pipeline_flags_json: {},
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (s.includes('FROM public.job_description_templates')) {
+            return {
+              rows: [
+                {
+                  id: JD_ID,
+                  code: 'JD-01',
+                  title: 'NV',
+                  job_description: 'desc',
+                  requirements: 'req',
+                  is_active: true,
+                  position_code: 'staff',
+                  position_name: 'Nhân viên',
+                },
+              ],
+            };
+          }
+          if (s.includes('INSERT INTO public.job_requisitions')) {
+            insertParams = params ?? null;
+            return {
+              rows: [
+                {
+                  id: REQ_ID,
+                  company_id: 'holding',
+                  title: 'YCTD',
+                  department: 'HCNS',
+                  employment_type: 'full-time',
+                  headcount: 1,
+                  status: 'draft',
+                  job_description: 'desc',
+                  requirements: 'req',
+                  job_template_id: JD_ID,
+                  target_month: null,
+                  headcount_mode: null,
+                  pipeline_flags_json: {},
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     await svc.createJobRequisition(
       {
         company_id: 'main',

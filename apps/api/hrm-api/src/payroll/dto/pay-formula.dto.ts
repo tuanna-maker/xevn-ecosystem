@@ -92,11 +92,17 @@ export class UpdatePayFormulaDto {
   @MaxLength(64)
   company_id?: string;
 
-  @ValidateIf((o: UpdatePayFormulaDto) => o.expression == null && o.expressionJson != null)
+  @ValidateIf(
+    (o: UpdatePayFormulaDto) =>
+      o.expression == null && o.expressionJson != null,
+  )
   @IsObject()
   expressionJson?: Record<string, unknown>;
 
-  @ValidateIf((o: UpdatePayFormulaDto) => o.expressionJson == null && o.expression != null)
+  @ValidateIf(
+    (o: UpdatePayFormulaDto) =>
+      o.expressionJson == null && o.expression != null,
+  )
   @IsObject()
   expression?: Record<string, unknown>;
 

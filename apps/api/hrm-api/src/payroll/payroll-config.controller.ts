@@ -16,16 +16,26 @@ export class PayrollConfigController {
     const tenantId = req.headers['x-tenant-id'] || 'xevn';
     const companyId = req.headers['x-company-id'] || 'company_1';
 
-    const data = await this.configService.getSalaryComponents(tenantId, companyId);
+    const data = await this.configService.getSalaryComponents(
+      tenantId,
+      companyId,
+    );
     return { data, meta: { total: data.length } };
   }
 
   @Post('components')
-  async createComponent(@Req() req: any, @Body() dto: CreateSalaryComponentDto) {
+  async createComponent(
+    @Req() req: any,
+    @Body() dto: CreateSalaryComponentDto,
+  ) {
     const tenantId = req.headers['x-tenant-id'] || 'xevn';
     const companyId = req.headers['x-company-id'] || 'company_1';
 
-    const result = await this.configService.createSalaryComponent(tenantId, companyId, dto);
+    const result = await this.configService.createSalaryComponent(
+      tenantId,
+      companyId,
+      dto,
+    );
     return { data: result };
   }
 
@@ -34,7 +44,10 @@ export class PayrollConfigController {
     const tenantId = req.headers['x-tenant-id'] || 'xevn';
     const companyId = req.headers['x-company-id'] || 'company_1';
 
-    const data = await this.configService.getSystemSettings(tenantId, companyId);
+    const data = await this.configService.getSystemSettings(
+      tenantId,
+      companyId,
+    );
     return { data };
   }
 }

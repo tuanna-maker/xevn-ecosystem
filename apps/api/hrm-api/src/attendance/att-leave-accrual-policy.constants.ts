@@ -36,7 +36,8 @@ export type AttLeaveAccrualPolicyStatus =
 /** Format-only for accrual_mode / leave_type_key soft FK (not closed type ceiling). */
 export const ATT_LEAVE_ACCRUAL_KEY_FORMAT = /^[a-z][a-z0-9_]*$/;
 
-export const ATT_LEAVE_ACCRUAL_POLICY_KIND = 'att_leave_accrual_policy' as const;
+export const ATT_LEAVE_ACCRUAL_POLICY_KIND =
+  'att_leave_accrual_policy' as const;
 
 /** Consumer invent unknown policy_id / ad-hoc mode|days when active policy >0. */
 export const HRM_ATT_LVRULE_KEY = 'HRM-ATT-LVRULE-KEY';

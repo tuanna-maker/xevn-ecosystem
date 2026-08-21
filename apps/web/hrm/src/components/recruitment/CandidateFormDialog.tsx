@@ -177,7 +177,7 @@ interface CandidateFormDialogProps {
   onOpenChange: (open: boolean) => void;
   candidate?: Candidate | null;
   companyId: string;
-  onSuccess: () => void;
+  onSuccess: (candidateId?: string) => void;
   /** AC-REC-UV-04 — prefill from YCTD context / ?requisition_id= */
   defaultRequisitionId?: string | null;
   /** Empty CTA — navigate to YCTD tab (parent owns routing). */
@@ -398,6 +398,7 @@ export function CandidateFormDialog({
 
   const onSubmit = async (data: CandidateFormValues) => {
     setIsSubmitting(true);
+    let candidateIdToReturn: string | undefined;
     try {
       if (candidate) {
         const updatePayload = {
@@ -420,6 +421,7 @@ export function CandidateFormDialog({
             : {}),
         };
         await updateCandidatePool(candidate.id, companyId, updatePayload);
+        candidateIdToReturn = candidate.id;
         toast({
           title: t('common.success'),
           description: r('formUpdateSuccess'),
@@ -447,14 +449,15 @@ export function CandidateFormDialog({
             ? { employee_id: data.employee_id.trim() }
             : {}),
         });
-        await createCandidatePool(createBody);
+        const res = await createCandidatePool(createBody);
+        candidateIdToReturn = res.data?.id;
         toast({
           title: t('common.success'),
           description: r('formCreateSuccess'),
         });
       }
 
-      onSuccess();
+      onSuccess(candidateIdToReturn);
       onOpenChange(false);
     } catch (error: unknown) {
       console.error('Error saving candidate:', error);
@@ -473,7 +476,7 @@ export function CandidateFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-2xl max-h-[90vh]"
+        className="max-w-3xl max-h-[90vh]"
         data-testid={HDSD_MUTATE_TEST_IDS.candidateFormDialog}
       >
         <DialogHeader>
@@ -616,9 +619,7 @@ export function CandidateFormDialog({
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="phone"
@@ -639,7 +640,7 @@ export function CandidateFormDialog({
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="font-medium text-sm text-muted-foreground">{r('formRecruitmentInfo')}</h3>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="source"
@@ -839,7 +840,7 @@ export function CandidateFormDialog({
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="font-medium text-sm text-muted-foreground">{r('formPersonalInfo')}</h3>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="nationality"

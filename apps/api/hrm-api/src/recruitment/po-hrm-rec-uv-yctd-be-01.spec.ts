@@ -74,7 +74,10 @@ function openRequisition(overrides: Record<string, unknown> = {}) {
 }
 
 /** Count ensureSchema ALTER/CREATE calls (variable) then stub business queries. */
-function schemaThen(db: { query: jest.Mock }, ...business: Array<{ rows: unknown[] }>) {
+function schemaThen(
+  db: { query: jest.Mock },
+  ...business: Array<{ rows: unknown[] }>
+) {
   db.query.mockImplementation(async (sql: string) => {
     const s = String(sql);
     if (
@@ -95,7 +98,9 @@ function schemaThen(db: { query: jest.Mock }, ...business: Array<{ rows: unknown
 describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
   describe('alias helper', () => {
     it('UT-REC-UV-10: recruitment_request_id only → physical; ambiguous → ALIAS', () => {
-      expect(resolveUvYctdRequisitionId({ recruitment_request_id: REQ_OPEN })).toBe(REQ_OPEN);
+      expect(
+        resolveUvYctdRequisitionId({ recruitment_request_id: REQ_OPEN }),
+      ).toBe(REQ_OPEN);
       try {
         resolveUvYctdRequisitionId({
           requisition_id: REQ_OPEN,
@@ -115,7 +120,13 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
         sqlLog.push(String(sql));
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('DO $$') || s.includes('CREATE UNIQUE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('COUNT(*)')) return { rows: [{ total: '1' }] };
@@ -131,7 +142,9 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
       expect(list.items?.[0]?.id).toBe(REQ_OPEN);
       expect(list.items?.[0]?.position_key).toBe('DRIVER');
       expect(sqlLog.some((s) => s.includes('job_postings'))).toBe(false);
-      expect(sqlLog.some((s) => s.includes("lower(r.status) IN ('open'"))).toBe(true);
+      expect(sqlLog.some((s) => s.includes("lower(r.status) IN ('open'"))).toBe(
+        true,
+      );
     });
 
     it('UT-REC-UV-02: no receivable → 200 items=[]', async () => {
@@ -152,7 +165,9 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
   describe('F-REC-UV-YCTD-02 bind STATUS', () => {
     it('UT-REC-UV-03: GET :id for=uv closed → STATUS', async () => {
       const db = { query: jest.fn() } as unknown as jest.Mocked<HrmDbService>;
-      schemaThen(db as never, { rows: [openRequisition({ id: REQ_CLOSED, status: 'closed' })] });
+      schemaThen(db as never, {
+        rows: [openRequisition({ id: REQ_CLOSED, status: 'closed' })],
+      });
       const service = new RecruitmentService(db, mockBridge() as never);
       await expect(
         service.getJobRequisitionById(
@@ -179,12 +194,13 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
         catalogMock as never,
         {} as never,
         {} as never,
+        {} as never,
       );
       try {
         controller.createCandidate(undefined, 'test-key', 'xevn', undefined, {
           company_id: 'holding',
           full_name: 'Nguyen Van A',
-        } as never);
+        });
         throw new Error('expected REQUIRED');
       } catch (err) {
         expect(err).toMatchObject({ code: HRM_REC_UV_YCTD_REQUIRED });
@@ -232,35 +248,43 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
     it('UT-REC-UV-07: free-text position ignored — not persisted as SoT', async () => {
       const db = { query: jest.fn() } as unknown as jest.Mocked<HrmDbService>;
       const insertSql: string[] = [];
-      (db.query as jest.Mock).mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('DO $$') || s.includes('CREATE UNIQUE') || s.includes('CREATE INDEX')) {
+      (db.query as jest.Mock).mockImplementation(
+        async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('ALTER TABLE') ||
+            s.includes('DO $$') ||
+            s.includes('CREATE UNIQUE') ||
+            s.includes('CREATE INDEX')
+          ) {
+            return { rows: [] };
+          }
+          if (s.includes('FROM public.job_requisitions')) {
+            return { rows: [openRequisition()] };
+          }
+          if (s.includes('INSERT INTO public.recruitment_candidates')) {
+            insertSql.push(s);
+            expect(params).not.toContain('FreeText Position SoT');
+            return {
+              rows: [
+                {
+                  id: CAND_1,
+                  company_id: 'holding',
+                  requisition_id: REQ_OPEN,
+                  full_name: 'Pham D',
+                  email: '',
+                  source: 'web',
+                  status: 'new',
+                  created_at: '2026-08-06T00:00:00.000Z',
+                  updated_at: '2026-08-06T00:00:00.000Z',
+                },
+              ],
+            };
+          }
           return { rows: [] };
-        }
-        if (s.includes('FROM public.job_requisitions')) {
-          return { rows: [openRequisition()] };
-        }
-        if (s.includes('INSERT INTO public.recruitment_candidates')) {
-          insertSql.push(s);
-          expect(params).not.toContain('FreeText Position SoT');
-          return {
-            rows: [
-              {
-                id: CAND_1,
-                company_id: 'holding',
-                requisition_id: REQ_OPEN,
-                full_name: 'Pham D',
-                email: '',
-                source: 'web',
-                status: 'new',
-                created_at: '2026-08-06T00:00:00.000Z',
-                updated_at: '2026-08-06T00:00:00.000Z',
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      });
+        },
+      );
       const service = new RecruitmentService(db, mockBridge() as never);
       const created = await service.createCandidate(
         {
@@ -300,7 +324,13 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
       let phase = 0;
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('DO $$') || s.includes('CREATE UNIQUE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.job_requisitions') && phase === 0) {
@@ -346,7 +376,13 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
       (db.query as jest.Mock).mockReset();
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('DO $$') || s.includes('CREATE UNIQUE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.job_requisitions')) {
@@ -373,10 +409,17 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
         sqlLog.push(String(sql));
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('DO $$') || s.includes('CREATE UNIQUE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.job_requisitions')) return { rows: [openRequisition()] };
+        if (s.includes('FROM public.job_requisitions'))
+          return { rows: [openRequisition()] };
         if (s.includes('INSERT INTO public.recruitment_candidates')) {
           return {
             rows: [
@@ -406,7 +449,9 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
         },
         groupCeoToken(),
       );
-      expect(sqlLog.some((s) => /job_postings|job_posting_id/i.test(s))).toBe(false);
+      expect(sqlLog.some((s) => /job_postings|job_posting_id/i.test(s))).toBe(
+        false,
+      );
     });
   });
 
@@ -432,14 +477,26 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
       };
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('DO $$') || s.includes('CREATE UNIQUE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('pool_candidate_id') || s.includes('FROM public.candidates')) {
+        if (
+          s.includes('pool_candidate_id') ||
+          s.includes('FROM public.candidates')
+        ) {
           return { rows: [] };
         }
         if (s.includes('COUNT(*)')) return { rows: [{ total: '1' }] };
-        if (s.includes('FROM public.recruitment_candidates') && s.includes('LIMIT 1')) {
+        if (
+          s.includes('FROM public.recruitment_candidates') &&
+          s.includes('LIMIT 1')
+        ) {
           return { rows: [listRow] };
         }
         if (s.includes('FROM public.recruitment_candidates')) {
@@ -456,9 +513,14 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
       expect(list.data[0].requisition_id).toBe(REQ_OPEN);
       expect(list.data[0].recruitment_request_id).toBe(REQ_OPEN);
       expect(list.data[0].position_key).toBe('DRIVER');
-      const detail = await service.getCandidateById(CAND_1, 'main', groupCeoToken(), {
-        tenantId: 'xevn',
-      });
+      const detail = await service.getCandidateById(
+        CAND_1,
+        'main',
+        groupCeoToken(),
+        {
+          tenantId: 'xevn',
+        },
+      );
       expect(detail.requisition_id).toBe(REQ_OPEN);
       expect(detail.position_name).toBe('Lái xe');
     });
@@ -467,11 +529,18 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
       const db = { query: jest.fn() } as unknown as jest.Mocked<HrmDbService>;
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('DO $$') || s.includes('CREATE UNIQUE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('COUNT(*)')) return { rows: [{ total: '1' }] };
-        if (s.includes('FROM public.job_requisitions')) return { rows: [openRequisition()] };
+        if (s.includes('FROM public.job_requisitions'))
+          return { rows: [openRequisition()] };
         return { rows: [] };
       });
       const service = new RecruitmentService(db, mockBridge() as never);
@@ -480,7 +549,7 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
         groupCeoToken(),
         { tenantId: 'xevn' },
       );
-      const id = list.items?.[0]?.id as string;
+      const id = list.items?.[0]?.id;
       const detail = await service.getJobRequisitionById(
         id,
         { company_id: 'main', for: 'uv' },
@@ -494,7 +563,9 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
 
   describe('F-REC-CMP', () => {
     it('UT-REC-CMP-01 / UT-REC-CMP-07: filter SoT alias only — no job_postings', async () => {
-      expect(resolveUvYctdRequisitionId({ requisition_id: REQ_OPEN })).toBe(REQ_OPEN);
+      expect(resolveUvYctdRequisitionId({ requisition_id: REQ_OPEN })).toBe(
+        REQ_OPEN,
+      );
       expect(() =>
         resolveUvYctdRequisitionId({
           requisition_id: REQ_OPEN,
@@ -506,7 +577,13 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
         sqlLog.push(String(sql));
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('DO $$') || s.includes('CREATE UNIQUE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('COUNT(*)')) return { rows: [{ total: '0' }] };
@@ -536,17 +613,21 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
     });
 
     it('UT-REC-CMP-03: > N → MAX-N', () => {
-      expect(() => assertCompareMaxNOrThrow([CAND_1, CAND_2, CAND_3, CAND_4, CAND_5])).toThrow(
-        expect.objectContaining({ code: HRM_REC_CMP_MAX_N }),
-      );
+      expect(() =>
+        assertCompareMaxNOrThrow([CAND_1, CAND_2, CAND_3, CAND_4, CAND_5]),
+      ).toThrow(expect.objectContaining({ code: HRM_REC_CMP_MAX_N }));
     });
 
     it('UT-REC-CMP-06: YCTD-MIX', () => {
       expect(() =>
-        assertCompareSameYctdOrThrow(REQ_OPEN, [
-          { id: CAND_1, requisition_id: REQ_OPEN },
-          { id: CAND_OTHER_YCTD, requisition_id: REQ_OTHER },
-        ], [CAND_1, CAND_OTHER_YCTD]),
+        assertCompareSameYctdOrThrow(
+          REQ_OPEN,
+          [
+            { id: CAND_1, requisition_id: REQ_OPEN },
+            { id: CAND_OTHER_YCTD, requisition_id: REQ_OTHER },
+          ],
+          [CAND_1, CAND_OTHER_YCTD],
+        ),
       ).toThrow(expect.objectContaining({ code: HRM_REC_CMP_YCTD_MIX }));
     });
 
@@ -569,11 +650,26 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
       (db.query as jest.Mock).mockReset();
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('DO $$') || s.includes('CREATE UNIQUE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('requisition_id = $2')) {
-          return { rows: [{ id: CAND_1, requisition_id: REQ_OPEN, full_name: 'A', status: 'new' }] };
+          return {
+            rows: [
+              {
+                id: CAND_1,
+                requisition_id: REQ_OPEN,
+                full_name: 'A',
+                status: 'new',
+              },
+            ],
+          };
         }
         if (s.includes('FROM public.recruitment_candidates')) {
           return {

@@ -63,7 +63,10 @@ import { existsSync } from 'node:fs';
 import { Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { HttpStatus } from '@nestjs/common';
-import { extractBearerToken, getVerifiedInternalJwtPayload } from '../common/internal-auth';
+import {
+  extractBearerToken,
+  getVerifiedInternalJwtPayload,
+} from '../common/internal-auth';
 import { signServiceJwt } from '../common/jwt-sign';
 import { fetchWithTimeoutAndRetry } from '../common/http-retry-fetch';
 import { HrmDbService } from '../db/hrm-db.service';
@@ -71,7 +74,10 @@ import {
   HRM_GROUP_MEMBER_COMPANY_SLUGS,
   MASTER_TENANT_ID,
 } from '../common/hrm-list-scope';
-import { defaultCompanyIdFromEnv, masterTenantIdFromEnv } from '../common/tenant-scope-env';
+import {
+  defaultCompanyIdFromEnv,
+  masterTenantIdFromEnv,
+} from '../common/tenant-scope-env';
 import {
   catalogAliasTryList,
   normalizeMasterCatalogKey,
@@ -150,13 +156,25 @@ export function mapXbosUpstreamException(error: unknown): ApiException {
     (error instanceof DOMException && error.name === 'AbortError') ||
     (error instanceof Error && error.name === 'AbortError');
   if (aborted) {
-    return new ApiException('HRM-SYNC-001', 'XBOS API request timed out', HttpStatus.BAD_GATEWAY);
+    return new ApiException(
+      'HRM-SYNC-001',
+      'XBOS API request timed out',
+      HttpStatus.BAD_GATEWAY,
+    );
   }
   const msg = error instanceof Error ? error.message : 'XBOS API unreachable';
   if (UPSTREAM_NETWORK_RE.test(msg)) {
-    return new ApiException('HRM-SYNC-001', msg || 'XBOS API unreachable', HttpStatus.BAD_GATEWAY);
+    return new ApiException(
+      'HRM-SYNC-001',
+      msg || 'XBOS API unreachable',
+      HttpStatus.BAD_GATEWAY,
+    );
   }
-  return new ApiException('HRM-SYNC-001', msg || 'XBOS API unreachable', HttpStatus.BAD_GATEWAY);
+  return new ApiException(
+    'HRM-SYNC-001',
+    msg || 'XBOS API unreachable',
+    HttpStatus.BAD_GATEWAY,
+  );
 }
 
 /** UF-HRM-10 — docker/VPS must reach xbos-be (28002), not localhost:3002. */
@@ -164,7 +182,10 @@ export function resolveXbosApiBaseUrl(): string {
   const explicit = process.env.XBOS_API_URL?.trim();
   if (explicit) {
     const normalized = explicit.replace(/\/+$/, '');
-    if (!normalized.includes('localhost') && !normalized.includes('127.0.0.1')) {
+    if (
+      !normalized.includes('localhost') &&
+      !normalized.includes('127.0.0.1')
+    ) {
       return normalized;
     }
   }
@@ -179,7 +200,11 @@ export function resolveXbosApiBaseUrl(): string {
   } catch {
     inDocker = false;
   }
-  if (inDocker || process.env.DOCKER === '1' || process.env.KUBERNETES_SERVICE_HOST) {
+  if (
+    inDocker ||
+    process.env.DOCKER === '1' ||
+    process.env.KUBERNETES_SERVICE_HOST
+  ) {
     return `http://${XBOS_DOCKER_HOSTS[0]}:${port}`;
   }
   return `http://127.0.0.1:${port}`;
@@ -218,7 +243,10 @@ export class CatalogSyncService {
           roles: ['service'],
         });
       } catch {
-        if (callerBearer && getVerifiedInternalJwtPayload(`Bearer ${callerBearer}`)) {
+        if (
+          callerBearer &&
+          getVerifiedInternalJwtPayload(`Bearer ${callerBearer}`)
+        ) {
           bearer = callerBearer;
         }
       }
@@ -232,10 +260,17 @@ export class CatalogSyncService {
     return headers;
   }
 
-  private normalizeScopeId(rawScopeId: string, label: 'tenantId' | 'companyId'): string {
+  private normalizeScopeId(
+    rawScopeId: string,
+    label: 'tenantId' | 'companyId',
+  ): string {
     const normalized = rawScopeId.trim().toLowerCase();
     if (!/^[a-z0-9][a-z0-9_-]{1,62}$/.test(normalized)) {
-      throw new ApiException('HRM-SYNC-003', `Invalid ${label} format`, HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-SYNC-003',
+        `Invalid ${label} format`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return normalized;
   }
@@ -252,7 +287,10 @@ export class CatalogSyncService {
     payload: unknown;
     resolvedFrom?: string;
   }): HrmSyncedCatalog {
-    const display = buildSyncedCatalogDisplayReady(input.payload, input.version);
+    const display = buildSyncedCatalogDisplayReady(
+      input.payload,
+      input.version,
+    );
     const version = display.published_version;
     return {
       tenantId: input.tenantId,
@@ -305,13 +343,19 @@ export class CatalogSyncService {
     await this.db.query(
       `ALTER TABLE public.synced_catalogs ADD COLUMN IF NOT EXISTS company_id TEXT NOT NULL DEFAULT '${companySql}';`,
     );
-    await this.db.query(`ALTER TABLE public.synced_catalogs DROP CONSTRAINT IF EXISTS synced_catalogs_catalog_key_key;`);
+    await this.db.query(
+      `ALTER TABLE public.synced_catalogs DROP CONSTRAINT IF EXISTS synced_catalogs_catalog_key_key;`,
+    );
     await this.db.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS uq_synced_catalogs_scope_key
       ON public.synced_catalogs (tenant_id, company_id, catalog_key);
     `);
-    await this.db.query(`ALTER TABLE public.synced_catalogs ADD COLUMN IF NOT EXISTS version INT NOT NULL DEFAULT 1;`);
-    await this.db.query(`ALTER TABLE public.synced_catalogs ADD COLUMN IF NOT EXISTS checksum TEXT NOT NULL DEFAULT '';`);
+    await this.db.query(
+      `ALTER TABLE public.synced_catalogs ADD COLUMN IF NOT EXISTS version INT NOT NULL DEFAULT 1;`,
+    );
+    await this.db.query(
+      `ALTER TABLE public.synced_catalogs ADD COLUMN IF NOT EXISTS checksum TEXT NOT NULL DEFAULT '';`,
+    );
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.sync_audit_logs (
         id BIGSERIAL PRIMARY KEY,
@@ -412,7 +456,9 @@ export class CatalogSyncService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const checksum = Buffer.from(JSON.stringify(remotePayload)).toString('base64');
+    const checksum = Buffer.from(JSON.stringify(remotePayload)).toString(
+      'base64',
+    );
     // FR-UC-B04 — store XBOS publisher version (khóa mang), not local pull counter.
     const publishedVersion = extractPublishedVersion(remotePayload, 1);
     await this.db.query(
@@ -572,7 +618,11 @@ export class CatalogSyncService {
   }
 
   /** Alias-aware get — try storageKey then aliases (API_DESIGN §7.2). */
-  async getSyncedCatalog(catalogKey: string, tenantId: string, companyId: string) {
+  async getSyncedCatalog(
+    catalogKey: string,
+    tenantId: string,
+    companyId: string,
+  ) {
     const requested = normalizeMasterCatalogKey(catalogKey);
     const tryList = catalogAliasTryList(requested);
     for (const key of tryList) {
@@ -612,7 +662,9 @@ export class CatalogSyncService {
       [normalizedTenantId, normalizedCompanyId],
     );
     const data = res.rows
-      .filter((row: { catalog_key: string }) => isValidCatalogKeyFormat(row.catalog_key))
+      .filter((row: { catalog_key: string }) =>
+        isValidCatalogKeyFormat(row.catalog_key),
+      )
       .map(
         (row: {
           catalog_key: string;
@@ -636,7 +688,10 @@ export class CatalogSyncService {
     return { total: data.length, data };
   }
 
-  async getCatalogSyncStatus(tenantId: string, companyId: string): Promise<HrmCatalogSyncStatus> {
+  async getCatalogSyncStatus(
+    tenantId: string,
+    companyId: string,
+  ): Promise<HrmCatalogSyncStatus> {
     const catalogs = await this.listSyncedCatalogs(tenantId, companyId);
     const lastSyncedAt =
       catalogs.data.reduce<string | null>((latest, item) => {
@@ -659,7 +714,11 @@ export class CatalogSyncService {
   /**
    * Lists catalogs assigned to HRM on XBOS (live). Used by settings UI to bulk-pull into `synced_catalogs`.
    */
-  async listRemoteCatalogsFromXbos(tenantId: string, companyId: string, authorization?: string) {
+  async listRemoteCatalogsFromXbos(
+    tenantId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     const normalizedTenantId = this.normalizeScopeId(tenantId, 'tenantId');
     const normalizedCompanyId = this.normalizeScopeId(companyId, 'companyId');
     // Xử lý: list keys từ XBOS holding SoT khi HRM store partition là member OU.
@@ -689,7 +748,13 @@ export class CatalogSyncService {
     }
     let body: {
       success: boolean;
-      data?: { total?: number; target?: string; tenantId?: string; companyId?: string; data?: unknown[] };
+      data?: {
+        total?: number;
+        target?: string;
+        tenantId?: string;
+        companyId?: string;
+        data?: unknown[];
+      };
       error?: string;
     };
     try {

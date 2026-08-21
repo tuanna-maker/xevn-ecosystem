@@ -6,7 +6,9 @@ import type { HrmListScopeContext } from './hrm-list-scope';
  * Guard typeof string — Nest `@Headers()` bag has no `.trim` (D-XHRM-REC-WF-SUBMIT-SCOPE → 500).
  * Call sites must pass `tenantId` from `@Headers('x-tenant-id')`, never the headers object.
  */
-export function toHrmListScopeContext(tenantId?: string): HrmListScopeContext | undefined {
+export function toHrmListScopeContext(
+  tenantId?: string,
+): HrmListScopeContext | undefined {
   if (typeof tenantId !== 'string') {
     return undefined;
   }

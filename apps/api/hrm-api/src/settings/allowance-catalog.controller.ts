@@ -64,7 +64,10 @@ export class AllowanceCatalogController {
     @Query() query: ListAllowanceDeductionTypesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.service
       .listTypes(query, authorization, tenantId)
       .then((data) => ok(data, HRM_ALLOW_CAT_200, 'Allowance/deduction types'));
@@ -81,11 +84,17 @@ export class AllowanceCatalogController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     const retired =
-      includeRetired === 'true' || includeRetired === '1' || includeRetired === 'TRUE';
+      includeRetired === 'true' ||
+      includeRetired === '1' ||
+      includeRetired === 'TRUE';
     return this.service
       .listMergeTokensForType(id, companyId, authorization, tenantId, retired)
       .then((data) => ok(data, HRM_ALLOW_CAT_200, 'Allowance merge tokens'));
@@ -101,7 +110,11 @@ export class AllowanceCatalogController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
@@ -120,7 +133,9 @@ export class AllowanceCatalogController {
     resolveScopeContext(authorization, { tenantId, companyId: body.companyId });
     return this.service
       .createType(body, authorization, tenantId)
-      .then((data) => ok(data, HRM_ALLOW_CAT_201, 'Allowance/deduction type created'));
+      .then((data) =>
+        ok(data, HRM_ALLOW_CAT_201, 'Allowance/deduction type created'),
+      );
   }
 
   @Patch(':id')
@@ -134,12 +149,18 @@ export class AllowanceCatalogController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
       .updateType(id, companyId, body, authorization, tenantId)
-      .then((data) => ok(data, HRM_ALLOW_CAT_200, 'Allowance/deduction type updated'));
+      .then((data) =>
+        ok(data, HRM_ALLOW_CAT_200, 'Allowance/deduction type updated'),
+      );
   }
 
   @Post(':id/retire')
@@ -153,11 +174,17 @@ export class AllowanceCatalogController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.service
       .retireType(id, companyId, authorization, tenantId)
-      .then((data) => ok(data, HRM_ALLOW_CAT_200, 'Allowance/deduction type retired'));
+      .then((data) =>
+        ok(data, HRM_ALLOW_CAT_200, 'Allowance/deduction type retired'),
+      );
   }
 }

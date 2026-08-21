@@ -233,7 +233,12 @@ export class PayrollCatalogService {
       filters.push(`company_id = ANY($${values.length}::text[])`);
     }
     try {
-      const res = await this.db.query<{ id: string; code: string; version: number; status: string }>(
+      const res = await this.db.query<{
+        id: string;
+        code: string;
+        version: number;
+        status: string;
+      }>(
         `
           SELECT id, code, version, status
           FROM public.pay_formula_definitions
@@ -302,7 +307,10 @@ export class PayrollCatalogService {
    * Aligns REF codes with PAY_SALARY_COMPONENT_STARTER_ROWS.component_type.
    * Alternate UF path (documented): Settings → POST /settings-catalogs/items category_key=pay_types.
    */
-  async ensureStarterPayTypes(companyId: string, authorization?: string): Promise<void> {
+  async ensureStarterPayTypes(
+    companyId: string,
+    authorization?: string,
+  ): Promise<void> {
     if (!this.settingsCatalogs) return;
     const tenantId = this.resolveCatalogTenantId();
     const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
@@ -310,9 +318,14 @@ export class PayrollCatalogService {
       tenantId,
       companyId,
     );
-    const picker = await this.settingsCatalogs.listPickerItems(tenantId, catalogCompanyId, 'pay_types', {
-      status: 'active',
-    });
+    const picker = await this.settingsCatalogs.listPickerItems(
+      tenantId,
+      catalogCompanyId,
+      'pay_types',
+      {
+        status: 'active',
+      },
+    );
     if (picker.total > 0) return;
     await this.settingsCatalogs.appendExtensionItems(
       tenantId,
@@ -385,7 +398,10 @@ export class PayrollCatalogService {
   }
 
   /** FR-HRM-PAY-CLEAN-E2-01 #3/#5 — nature ∈ effective pay_types. */
-  private async assertPayTypeKey(companyId: string, componentType: string | null | undefined): Promise<string> {
+  private async assertPayTypeKey(
+    companyId: string,
+    componentType: string | null | undefined,
+  ): Promise<string> {
     const code = componentType?.trim() ?? '';
     if (!code) {
       throw new ApiException(
@@ -437,9 +453,15 @@ export class PayrollCatalogService {
     query?: ListSalaryComponentsQueryDto,
   ) {
     await this.ensureSalaryComponentSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
-    const persistCompanyId = resolveHrmPersistCompanyIdText(authorization, companyId);
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      companyId,
+    );
     await this.ensureStarterPayTypes(persistCompanyId, authorization);
     await this.ensureStarterSalaryComponents(persistCompanyId);
     const filters: string[] = [];
@@ -451,7 +473,9 @@ export class PayrollCatalogService {
     if (query?.active_only) {
       filters.push('sc.is_active = TRUE');
     }
-    const where = filters.map((f) => f.replace(/\bcompany_id\b/g, 'sc.company_id')).join(' AND ');
+    const where = filters
+      .map((f) => f.replace(/\bcompany_id\b/g, 'sc.company_id'))
+      .join(' AND ');
     const res = await this.db.query(
       `SELECT sc.*,
         CASE WHEN c.id IS NOT NULL THEN json_build_object(
@@ -472,19 +496,30 @@ export class PayrollCatalogService {
     );
     return {
       total: res.rows.length,
-      data: res.rows.map((row) => this.mapSalaryComponentRow(row as SalaryComponentRow)),
+      data: res.rows.map((row) =>
+        this.mapSalaryComponentRow(row as SalaryComponentRow),
+      ),
       payroll_e2e_ready: false,
     };
   }
 
-  async getSalaryComponentById(id: string, companyId: string, authorization?: string) {
+  async getSalaryComponentById(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSalaryComponentSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['sc.id = $1::uuid'];
     const values: unknown[] = [id];
     pushCompanyIdFilter(filters, values, expandPayrollPeriodCompanyIds(scope));
-    const where = filters.map((f) => f.replace(/\bcompany_id\b/g, 'sc.company_id')).join(' AND ');
+    const where = filters
+      .map((f) => f.replace(/\bcompany_id\b/g, 'sc.company_id'))
+      .join(' AND ');
     const res = await this.db.query(
       `SELECT sc.*,
         CASE WHEN c.id IS NOT NULL THEN json_build_object(
@@ -505,12 +540,19 @@ export class PayrollCatalogService {
     );
     const row = res.rows[0] as SalaryComponentRow | undefined;
     if (!row) {
-      throw new ApiException(HRM_PAY_COMP_404, 'Salary component not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_COMP_404,
+        'Salary component not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapSalaryComponentRow(row);
   }
 
-  async listSalaryComponentCategories(companyId: string, authorization?: string) {
+  async listSalaryComponentCategories(
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSalaryComponentSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = [];
@@ -545,7 +587,11 @@ export class PayrollCatalogService {
         [salaryComponentId],
       );
       if (res.rows[0]) {
-        throw new ApiException(linkedCode, ALLOWANCE_CATALOG_LINKED_VI, HttpStatus.CONFLICT);
+        throw new ApiException(
+          linkedCode,
+          ALLOWANCE_CATALOG_LINKED_VI,
+          HttpStatus.CONFLICT,
+        );
       }
     } catch (err) {
       if (err instanceof ApiException) throw err;
@@ -553,15 +599,28 @@ export class PayrollCatalogService {
     }
   }
 
-  async createSalaryComponent(payload: CreateSalaryComponentDto, authorization?: string) {
+  async createSalaryComponent(
+    payload: CreateSalaryComponentDto,
+    authorization?: string,
+  ) {
     await this.ensureSalaryComponentSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const code = this.assertComponentCodeFormat(String(payload.code ?? ''));
     const name = String(payload.name ?? '').trim();
     if (!name) {
-      throw new ApiException('HRM-SC-001', 'code and name are required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-SC-001',
+        'code and name are required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const componentType = await this.assertPayTypeKey(companyId, payload.component_type);
+    const componentType = await this.assertPayTypeKey(
+      companyId,
+      payload.component_type,
+    );
     this.assertNotPcKtDualWrite(componentType);
     await this.assertUniqueComponentCode(companyId, code);
     const scope = resolveHrmListScope(authorization, companyId);
@@ -627,7 +686,10 @@ export class PayrollCatalogService {
     authorization?: string,
   ) {
     await this.ensureSalaryComponentSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const peek = await this.db.query<{
       company_id: string;
@@ -644,14 +706,24 @@ export class PayrollCatalogService {
       mismatchCode: HRM_PAY_COMP_409,
     });
     if (peek.rows[0]?.archived_at) {
-      throw new ApiException(HRM_PAY_COMP_404, 'Salary component is archived', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_COMP_404,
+        'Salary component is archived',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const persistCompanyId = String(peek.rows[0].company_id);
     const companyIds = expandPayrollPeriodCompanyIds(scope);
-    await this.assertNotLinkedAllowanceCatalog(id, HRM_ALLOW_CAT_409_DUAL_WRITE);
+    await this.assertNotLinkedAllowanceCatalog(
+      id,
+      HRM_ALLOW_CAT_409_DUAL_WRITE,
+    );
     const patch: Record<string, unknown> = { ...payload };
     if (payload.component_type !== undefined) {
-      patch.component_type = await this.assertPayTypeKey(persistCompanyId, payload.component_type);
+      patch.component_type = await this.assertPayTypeKey(
+        persistCompanyId,
+        payload.component_type,
+      );
       const prevType = String(peek.rows[0].component_type ?? '');
       if (
         isAllowanceDeductionComponentType(String(patch.component_type)) &&
@@ -665,7 +737,11 @@ export class PayrollCatalogService {
     }
     if (payload.code !== undefined) {
       patch.code = this.assertComponentCodeFormat(String(payload.code ?? ''));
-      await this.assertUniqueComponentCode(persistCompanyId, patch.code as string, id);
+      await this.assertUniqueComponentCode(
+        persistCompanyId,
+        patch.code as string,
+        id,
+      );
     }
     if (payload.default_formula_definition_id !== undefined) {
       if (payload.default_formula_definition_id === null) {
@@ -681,9 +757,23 @@ export class PayrollCatalogService {
     const fields: string[] = [];
     const values: unknown[] = [];
     const allowed = [
-      'code', 'name', 'category_id', 'component_type', 'nature', 'value_type', 'is_taxable',
-      'is_insurance_base', 'formula', 'default_value', 'min_value', 'max_value', 'description',
-      'applied_to', 'is_active', 'sort_order', 'default_formula_definition_id',
+      'code',
+      'name',
+      'category_id',
+      'component_type',
+      'nature',
+      'value_type',
+      'is_taxable',
+      'is_insurance_base',
+      'formula',
+      'default_value',
+      'min_value',
+      'max_value',
+      'description',
+      'applied_to',
+      'is_active',
+      'sort_order',
+      'default_formula_definition_id',
     ];
     for (const key of allowed) {
       if (patch[key] !== undefined) {
@@ -696,7 +786,11 @@ export class PayrollCatalogService {
       }
     }
     if (fields.length === 0) {
-      throw new ApiException('HRM-VAL-001', 'No fields to update', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'No fields to update',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     values.push(id);
     try {
@@ -706,7 +800,11 @@ export class PayrollCatalogService {
         values,
       );
       if (!res.rows[0]) {
-        throw new ApiException(HRM_PAY_COMP_404, 'Salary component not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          HRM_PAY_COMP_404,
+          'Salary component not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       return this.mapSalaryComponentRow(res.rows[0] as SalaryComponentRow);
     } catch (err) {
@@ -723,16 +821,26 @@ export class PayrollCatalogService {
     }
   }
 
-  async deleteSalaryComponent(id: string, companyId: string, authorization?: string) {
+  async deleteSalaryComponent(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSalaryComponentSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      companyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     await this.assertNotLinkedAllowanceCatalog(id, HRM_ALLOW_CAT_409_LINKED);
     const peekType = await this.db.query<{ component_type: string }>(
       `SELECT component_type FROM public.salary_components WHERE id = $1::uuid AND archived_at IS NULL LIMIT 1;`,
       [id],
     );
-    if (peekType.rows[0] && isAllowanceDeductionComponentType(peekType.rows[0].component_type)) {
+    if (
+      peekType.rows[0] &&
+      isAllowanceDeductionComponentType(peekType.rows[0].component_type)
+    ) {
       throw new ApiException(
         HRM_ALLOW_CAT_409_LINKED,
         ALLOWANCE_CATALOG_LINKED_VI,
@@ -750,14 +858,24 @@ export class PayrollCatalogService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException(HRM_PAY_COMP_404, 'Salary component not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_COMP_404,
+        'Salary component not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: res.rows[0].id, archived: true, payroll_e2e_ready: false };
   }
 
-  async createSalaryComponentCategory(payload: Record<string, unknown>, authorization?: string) {
+  async createSalaryComponentCategory(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSalaryComponentSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const res = await this.db.query(
       `INSERT INTO public.salary_component_categories (id, company_id, code, name, description, sort_order, is_active)
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`,
@@ -774,7 +892,11 @@ export class PayrollCatalogService {
     return res.rows[0];
   }
 
-  async deleteSalaryComponentCategory(id: string, companyId: string, authorization?: string) {
+  async deleteSalaryComponentCategory(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSalaryComponentSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
@@ -784,7 +906,12 @@ export class PayrollCatalogService {
       `DELETE FROM public.salary_component_categories WHERE ${filters.join(' AND ')} RETURNING id;`,
       values,
     );
-    if (!res.rows[0]) throw new ApiException('HRM-SC-404', 'Category not found', HttpStatus.NOT_FOUND);
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-SC-404',
+        'Category not found',
+        HttpStatus.NOT_FOUND,
+      );
     return { id };
   }
 
@@ -801,11 +928,21 @@ export class PayrollCatalogService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async listPaymentBatchRecords(batchId: string, companyId: string, authorization?: string) {
+  async listPaymentBatchRecords(
+    batchId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensurePaymentBatchSchema();
     const scope = resolveHrmListScope(authorization, companyId);
-    const batchPeek = await this.db.query(`SELECT company_id FROM public.payment_batches WHERE id = $1::uuid LIMIT 1;`, [batchId]);
-    assertResourceInHrmScope(batchPeek.rows[0], scope, { notFoundCode: 'HRM-PB-404', mismatchCode: 'HRM-PB-409' });
+    const batchPeek = await this.db.query(
+      `SELECT company_id FROM public.payment_batches WHERE id = $1::uuid LIMIT 1;`,
+      [batchId],
+    );
+    assertResourceInHrmScope(batchPeek.rows[0], scope, {
+      notFoundCode: 'HRM-PB-404',
+      mismatchCode: 'HRM-PB-409',
+    });
     const res = await this.db.query(
       `SELECT * FROM public.payment_records WHERE payment_batch_id = $1::uuid ORDER BY created_at;`,
       [batchId],
@@ -813,9 +950,15 @@ export class PayrollCatalogService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createPaymentBatch(payload: Record<string, unknown>, authorization?: string) {
+  async createPaymentBatch(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensurePaymentBatchSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const res = await this.db.query(
       `INSERT INTO public.payment_batches (
         id, company_id, payroll_batch_id, name, salary_period, department, position,
@@ -838,11 +981,22 @@ export class PayrollCatalogService {
     return res.rows[0];
   }
 
-  async updatePaymentBatch(id: string, payload: Record<string, unknown>, companyId: string, authorization?: string) {
+  async updatePaymentBatch(
+    id: string,
+    payload: Record<string, unknown>,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensurePaymentBatchSchema();
     const scope = resolveHrmListScope(authorization, companyId);
-    const peek = await this.db.query(`SELECT company_id FROM public.payment_batches WHERE id = $1::uuid LIMIT 1;`, [id]);
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-PB-404', mismatchCode: 'HRM-PB-409' });
+    const peek = await this.db.query(
+      `SELECT company_id FROM public.payment_batches WHERE id = $1::uuid LIMIT 1;`,
+      [id],
+    );
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-PB-404',
+      mismatchCode: 'HRM-PB-409',
+    });
     const res = await this.db.query(
       `UPDATE public.payment_batches SET
         name = COALESCE($2, name),
@@ -867,18 +1021,35 @@ export class PayrollCatalogService {
         payload.status ?? null,
       ],
     );
-    if (!res.rows[0]) throw new ApiException('HRM-PB-404', 'Payment batch not found', HttpStatus.NOT_FOUND);
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-PB-404',
+        'Payment batch not found',
+        HttpStatus.NOT_FOUND,
+      );
     return res.rows[0];
   }
 
-  async deletePaymentBatch(id: string, companyId: string, authorization?: string) {
+  async deletePaymentBatch(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensurePaymentBatchSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [id];
     pushCompanyIdFilter(filters, values, scope.companyIds);
-    const res = await this.db.query(`DELETE FROM public.payment_batches WHERE ${filters.join(' AND ')} RETURNING id;`, values);
-    if (!res.rows[0]) throw new ApiException('HRM-PB-404', 'Payment batch not found', HttpStatus.NOT_FOUND);
+    const res = await this.db.query(
+      `DELETE FROM public.payment_batches WHERE ${filters.join(' AND ')} RETURNING id;`,
+      values,
+    );
+    if (!res.rows[0])
+      throw new ApiException(
+        'HRM-PB-404',
+        'Payment batch not found',
+        HttpStatus.NOT_FOUND,
+      );
     return { id };
   }
 
@@ -921,11 +1092,18 @@ export class PayrollCatalogService {
     authorization?: string,
   ) {
     await this.ensurePaymentBatchSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, payload.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      payload.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const periodFilters = ['pp.id = $1::uuid'];
     const periodValues: unknown[] = [periodId];
-    pushCompanyIdFilter(periodFilters, periodValues, expandPayrollPeriodCompanyIds(scope));
+    pushCompanyIdFilter(
+      periodFilters,
+      periodValues,
+      expandPayrollPeriodCompanyIds(scope),
+    );
     const periodRes = await this.db.query<{
       id: string;
       company_id: string;
@@ -945,7 +1123,11 @@ export class PayrollCatalogService {
     );
     const period = periodRes.rows[0];
     if (!period) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(period, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -959,7 +1141,10 @@ export class PayrollCatalogService {
       );
     }
 
-    const payslipFilters = ['ps.period_id = $1::uuid', "ps.status = 'processed'"];
+    const payslipFilters = [
+      'ps.period_id = $1::uuid',
+      "ps.status = 'processed'",
+    ];
     const payslipValues: unknown[] = [periodId];
     if (payload.require_ess_confirm) {
       payslipFilters.push('ps.employee_confirmed_at IS NOT NULL');
@@ -1008,8 +1193,7 @@ export class PayrollCatalogService {
       const batchId = randomUUID();
       const salaryPeriod = `${period.start_date} — ${period.end_date}`;
       const batchName =
-        payload.name?.trim() ||
-        `Chi trả ${period.period_label}`.trim();
+        payload.name?.trim() || `Chi trả ${period.period_label}`.trim();
       batchRow = (
         await this.db.query(
           `INSERT INTO public.payment_batches (
@@ -1027,7 +1211,7 @@ export class PayrollCatalogService {
             payload.bank_name ?? null,
           ],
         )
-      ).rows[0] as Record<string, unknown>;
+      ).rows[0];
     }
 
     const batchId = String(batchRow.id);
@@ -1070,7 +1254,7 @@ export class PayrollCatalogService {
           `Wired from payslip ${payslip.id}`,
         ],
       );
-      recordsAdded.push(recordRes.rows[0] as Record<string, unknown>);
+      recordsAdded.push(recordRes.rows[0]);
       existingPayslipIds.add(payslip.id);
     }
 
@@ -1086,7 +1270,10 @@ export class PayrollCatalogService {
     };
   }
 
-  private async refreshPaymentBatchSummary(batchId: string, processedBy?: string) {
+  private async refreshPaymentBatchSummary(
+    batchId: string,
+    processedBy?: string,
+  ) {
     const res = await this.db.query(
       `UPDATE public.payment_batches pb SET
         employee_count = stats.employee_count,
@@ -1137,8 +1324,14 @@ export class PayrollCatalogService {
   ) {
     await this.ensurePaymentBatchSchema();
     const scope = resolveHrmListScope(authorization, payload.company_id);
-    const batchPeek = await this.db.query(`SELECT company_id FROM public.payment_batches WHERE id = $1::uuid LIMIT 1;`, [batchId]);
-    assertResourceInHrmScope(batchPeek.rows[0], scope, { notFoundCode: 'HRM-PB-404', mismatchCode: 'HRM-PB-409' });
+    const batchPeek = await this.db.query(
+      `SELECT company_id FROM public.payment_batches WHERE id = $1::uuid LIMIT 1;`,
+      [batchId],
+    );
+    assertResourceInHrmScope(batchPeek.rows[0], scope, {
+      notFoundCode: 'HRM-PB-404',
+      mismatchCode: 'HRM-PB-409',
+    });
     const recordRes = await this.db.query(
       `INSERT INTO public.payment_records (
         id, company_id, payment_batch_id, payroll_record_id, employee_id, employee_code, employee_name,
@@ -1173,8 +1366,14 @@ export class PayrollCatalogService {
   ) {
     await this.ensurePaymentBatchSchema();
     const scope = resolveHrmListScope(authorization, companyId);
-    const batchPeek = await this.db.query(`SELECT company_id FROM public.payment_batches WHERE id = $1::uuid LIMIT 1;`, [batchId]);
-    assertResourceInHrmScope(batchPeek.rows[0], scope, { notFoundCode: 'HRM-PB-404', mismatchCode: 'HRM-PB-409' });
+    const batchPeek = await this.db.query(
+      `SELECT company_id FROM public.payment_batches WHERE id = $1::uuid LIMIT 1;`,
+      [batchId],
+    );
+    assertResourceInHrmScope(batchPeek.rows[0], scope, {
+      notFoundCode: 'HRM-PB-404',
+      mismatchCode: 'HRM-PB-409',
+    });
     const recordRes = await this.db.query(
       `UPDATE public.payment_records
        SET status = 'paid',
@@ -1185,10 +1384,19 @@ export class PayrollCatalogService {
        WHERE id = $1::uuid
          AND payment_batch_id = $2::uuid
        RETURNING *;`,
-      [recordId, batchId, payload.transaction_ref ?? null, payload.notes ?? null],
+      [
+        recordId,
+        batchId,
+        payload.transaction_ref ?? null,
+        payload.notes ?? null,
+      ],
     );
     if (!recordRes.rows[0]) {
-      throw new ApiException('HRM-PB-REC-404', 'Payment record not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PB-REC-404',
+        'Payment record not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     await this.syncPayslipPaidFromRecord(recordId);
     await this.refreshPaymentBatchSummary(batchId);
@@ -1203,8 +1411,14 @@ export class PayrollCatalogService {
   ) {
     await this.ensurePaymentBatchSchema();
     const scope = resolveHrmListScope(authorization, companyId);
-    const batchPeek = await this.db.query(`SELECT company_id FROM public.payment_batches WHERE id = $1::uuid LIMIT 1;`, [batchId]);
-    assertResourceInHrmScope(batchPeek.rows[0], scope, { notFoundCode: 'HRM-PB-404', mismatchCode: 'HRM-PB-409' });
+    const batchPeek = await this.db.query(
+      `SELECT company_id FROM public.payment_batches WHERE id = $1::uuid LIMIT 1;`,
+      [batchId],
+    );
+    assertResourceInHrmScope(batchPeek.rows[0], scope, {
+      notFoundCode: 'HRM-PB-404',
+      mismatchCode: 'HRM-PB-409',
+    });
     const updateRes = await this.db.query(
       `UPDATE public.payment_records
        SET status = 'paid',

@@ -72,14 +72,26 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
     } as unknown as HrmDbService;
     const svc = new RecPipelineStageService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.rec_pipeline_stage'))).toBe(
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.rec_pipeline_stage'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('uq_rec_pipeline_stage_company_key_active')),
+    ).toBe(true);
+    expect(
+      sqls.some((q) =>
+        q.includes('uq_rec_pipeline_stage_hired_outcome_active'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('chk_rec_pipeline_stage_key_format')),
+    ).toBe(true);
+    expect(sqls.some((q) => q.includes('chk_rec_pipeline_stage_flags'))).toBe(
       true,
     );
-    expect(sqls.some((q) => q.includes('uq_rec_pipeline_stage_company_key_active'))).toBe(true);
-    expect(sqls.some((q) => q.includes('uq_rec_pipeline_stage_hired_outcome_active'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_rec_pipeline_stage_key_format'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_rec_pipeline_stage_flags'))).toBe(true);
-    expect(sqls.every((q) => !q.includes("stage_key IN ("))).toBe(true);
+    expect(sqls.every((q) => !q.includes('stage_key IN ('))).toBe(true);
     expect(sqls.every((q) => !q.includes("'screening'"))).toBe(true);
   });
 
@@ -108,7 +120,10 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.rec_pipeline_stage') && s.includes('archived_at IS NULL')) {
+        if (
+          s.includes('FROM public.rec_pipeline_stage') &&
+          s.includes('archived_at IS NULL')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.rec_pipeline_stage')) {
@@ -182,11 +197,16 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.rec_pipeline_stage') && s.includes('archived_at IS NULL')) {
+        if (
+          s.includes('FROM public.rec_pipeline_stage') &&
+          s.includes('archived_at IS NULL')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.rec_pipeline_stage')) {
-          throw new Error('duplicate key value violates unique constraint "uq_rec_pipeline_stage_hired_outcome_active"');
+          throw new Error(
+            'duplicate key value violates unique constraint "uq_rec_pipeline_stage_hired_outcome_active"',
+          );
         }
         return { rows: [] };
       }),
@@ -208,18 +228,26 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
 
   it('scope_parity: list id → getById 200 (group CEO main→holding)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        if (schemaPassthrough(sql)) return { rows: [] };
-        const s = String(sql);
-        if (s.includes('FROM public.rec_pipeline_stage') && s.includes('ORDER BY sort_order')) {
-          expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
-          return { rows: [baseRow()] };
-        }
-        if (s.includes('FROM public.rec_pipeline_stage') && s.includes('id = $1')) {
-          return { rows: [baseRow()] };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          if (schemaPassthrough(sql)) return { rows: [] };
+          const s = String(sql);
+          if (
+            s.includes('FROM public.rec_pipeline_stage') &&
+            s.includes('ORDER BY sort_order')
+          ) {
+            expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
+            return { rows: [baseRow()] };
+          }
+          if (
+            s.includes('FROM public.rec_pipeline_stage') &&
+            s.includes('id = $1')
+          ) {
+            return { rows: [baseRow()] };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const svc = new RecPipelineStageService(db);
     const auth = groupCeoToken();
@@ -234,7 +262,10 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
-        if (String(sql).includes('FROM public.rec_pipeline_stage') && String(sql).includes('id = $1')) {
+        if (
+          String(sql).includes('FROM public.rec_pipeline_stage') &&
+          String(sql).includes('id = $1')
+        ) {
           return { rows: [baseRow({ company_id: 'holding' })] };
         }
         return { rows: [] };
@@ -261,7 +292,11 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
                 is_hired_outcome: true,
                 sort_order: 400,
               }),
-              baseRow({ stage_key: 'screening', name_vi: 'Sàng lọc', sort_order: 10 }),
+              baseRow({
+                stage_key: 'screening',
+                name_vi: 'Sàng lọc',
+                sort_order: 10,
+              }),
             ],
           };
         }
@@ -269,7 +304,10 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
       }),
     } as unknown as HrmDbService;
     const svc = new RecPipelineStageService(db);
-    const effective = await svc.listEffective({ company_id: 'holding' }, groupCeoToken());
+    const effective = await svc.listEffective(
+      { company_id: 'holding' },
+      groupCeoToken(),
+    );
     expect(effective.total).toBe(2);
     expect(effective.hiredOutcomeKey).toBe('hired');
   });
@@ -279,7 +317,9 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         if (String(sql).includes('FROM public.rec_pipeline_stage')) {
-          return { rows: [baseRow({ stage_key: 'screening', name_vi: 'Sàng lọc' })] };
+          return {
+            rows: [baseRow({ stage_key: 'screening', name_vi: 'Sàng lọc' })],
+          };
         }
         return { rows: [] };
       }),
@@ -315,7 +355,10 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.rec_pipeline_stage') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.rec_pipeline_stage') &&
+          s.includes('id = $1')
+        ) {
           return {
             rows: [
               baseRow({
@@ -346,10 +389,16 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
         sqls.push(String(sql));
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.rec_pipeline_stage') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.rec_pipeline_stage') &&
+          s.includes('id = $1')
+        ) {
           return { rows: [baseRow()] };
         }
-        if (s.includes('UPDATE public.rec_pipeline_stage') && s.includes("status = 'retired'")) {
+        if (
+          s.includes('UPDATE public.rec_pipeline_stage') &&
+          s.includes("status = 'retired'")
+        ) {
           return {
             rows: [
               baseRow({
@@ -366,7 +415,9 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
     const row = await svc.retireStage(STG_ID, 'holding', groupCeoToken());
     expect(row.status).toBe('retired');
     expect(row.archivedAt).toBeTruthy();
-    expect(sqls.every((q) => !q.includes('DELETE FROM public.rec_pipeline_stage'))).toBe(true);
+    expect(
+      sqls.every((q) => !q.includes('DELETE FROM public.rec_pipeline_stage')),
+    ).toBe(true);
   });
 
   it('VAL-REC-STG-15: wf_task_type_key ops map does not invent second catalog row', async () => {
@@ -375,7 +426,10 @@ describe('RecPipelineStageService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE-01)', (
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.rec_pipeline_stage') && s.includes('archived_at IS NULL')) {
+        if (
+          s.includes('FROM public.rec_pipeline_stage') &&
+          s.includes('archived_at IS NULL')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.rec_pipeline_stage')) {

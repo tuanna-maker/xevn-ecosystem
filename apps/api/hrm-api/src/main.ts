@@ -31,7 +31,9 @@ async function bootstrap() {
   try {
     await app.get(PayPayrollGroupService).ensureSchema();
   } catch (err) {
-    console.error(`[hrm-api] PayPayrollGroupService.ensureSchema failed: ${(err as Error)?.message ?? err}`);
+    console.error(
+      `[hrm-api] PayPayrollGroupService.ensureSchema failed: ${(err as Error)?.message ?? err}`,
+    );
   }
   await useRedisIoAdapter(app);
   const pilotUatAuth =
@@ -49,7 +51,7 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
   app.use((req: Request, _res: Response, next: NextFunction) => {
-    normalizeAuthorizationHeaderInPlace(req.headers as Record<string, unknown>);
+    normalizeAuthorizationHeaderInPlace(req.headers);
     next();
   });
   app.use(hrmMobileEssConnectionGuard);
@@ -69,7 +71,8 @@ async function bootstrap() {
   const httpServer = app.getHttpServer();
   const keepAliveMs = Number(process.env.HTTP_KEEPALIVE_TIMEOUT_MS ?? 65_000);
   const headersMs = Number(
-    process.env.HTTP_HEADERS_TIMEOUT_MS ?? Math.max(keepAliveMs + 5_000, 70_000),
+    process.env.HTTP_HEADERS_TIMEOUT_MS ??
+      Math.max(keepAliveMs + 5_000, 70_000),
   );
   httpServer.keepAliveTimeout = keepAliveMs;
   httpServer.headersTimeout = headersMs;

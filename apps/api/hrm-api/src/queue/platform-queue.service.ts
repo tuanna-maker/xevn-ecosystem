@@ -27,7 +27,11 @@ export class PlatformQueueService implements OnModuleInit, OnModuleDestroy {
     );
   }
 
-  async enqueue(name: PlatformJobName, data: Record<string, unknown>, idempotencyKey?: string) {
+  async enqueue(
+    name: PlatformJobName,
+    data: Record<string, unknown>,
+    idempotencyKey?: string,
+  ) {
     if (!this.queue) return { queued: false, reason: 'bullmq_disabled' };
     const job = await this.queue.add(name, data, {
       jobId: idempotencyKey,

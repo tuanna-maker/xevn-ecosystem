@@ -1,4 +1,11 @@
-import { IsArray, IsBoolean, IsIn, IsISO8601, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsIn,
+  IsISO8601,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 
 export class TerminationSettleDto {
   @IsOptional()

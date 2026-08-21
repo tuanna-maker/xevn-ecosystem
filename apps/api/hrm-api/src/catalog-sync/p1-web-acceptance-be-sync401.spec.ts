@@ -19,10 +19,17 @@ describe('P1-WEB-ACCEPTANCE-BE-SYNC-401 buildXbosUpstreamHeaders', () => {
     process.env = { ...envSnapshot };
   });
 
-  function createJwt(payload: Record<string, unknown>, secret = 'xevn-dev-jwt-secret'): string {
-    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  function createJwt(
+    payload: Record<string, unknown>,
+    secret = 'xevn-dev-jwt-secret',
+  ): string {
+    const header = Buffer.from(
+      JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+    ).toString('base64url');
     const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
-    const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+    const sig = createHmac('sha256', secret)
+      .update(`${header}.${body}`)
+      .digest('base64url');
     return `${header}.${body}.${sig}`;
   }
 
@@ -38,10 +45,13 @@ describe('P1-WEB-ACCEPTANCE-BE-SYNC-401 buildXbosUpstreamHeaders', () => {
       },
       'portal-login-secret',
     );
-    const headers = service.buildXbosUpstreamHeaders(`Bearer ${portalSession}`, {
-      tenantId: 'xevn',
-      companyId: 'holding',
-    });
+    const headers = service.buildXbosUpstreamHeaders(
+      `Bearer ${portalSession}`,
+      {
+        tenantId: 'xevn',
+        companyId: 'holding',
+      },
+    );
     expect(headers.Authorization).toMatch(/^Bearer /);
     expect(headers.Authorization).not.toBe(`Bearer ${portalSession}`);
     const payload = getVerifiedInternalJwtPayload(headers.Authorization);
@@ -84,13 +94,23 @@ describe('P1-WEB-ACCEPTANCE-BE-SYNC-401 buildXbosUpstreamHeaders', () => {
       ok: true,
       json: async () => ({
         success: true,
-        data: { total: 1, target: 'hrm', tenantId: 'xevn', companyId: 'holding', data: [{ key: 'job_titles' }] },
+        data: {
+          total: 1,
+          target: 'hrm',
+          tenantId: 'xevn',
+          companyId: 'holding',
+          data: [{ key: 'job_titles' }],
+        },
       }),
     });
     const originalFetch = global.fetch;
     global.fetch = fetchMock as typeof fetch;
     try {
-      await service.listRemoteCatalogsFromXbos('xevn', 'holding', `Bearer ${portalSession}`);
+      await service.listRemoteCatalogsFromXbos(
+        'xevn',
+        'holding',
+        `Bearer ${portalSession}`,
+      );
     } finally {
       global.fetch = originalFetch;
     }
@@ -99,6 +119,9 @@ describe('P1-WEB-ACCEPTANCE-BE-SYNC-401 buildXbosUpstreamHeaders', () => {
     const authHeader = (init.headers as Record<string, string>).Authorization;
     expect(authHeader).toMatch(/^Bearer /);
     expect(authHeader).not.toBe(`Bearer ${portalSession}`);
-    expect(getVerifiedInternalJwtPayload(authHeader)).toMatchObject({ sub: 'hrm-be', svc: 'catalog-sync' });
+    expect(getVerifiedInternalJwtPayload(authHeader)).toMatchObject({
+      sub: 'hrm-be',
+      svc: 'catalog-sync',
+    });
   });
 });

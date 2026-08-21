@@ -9,7 +9,15 @@
  *       membership assert in AttendanceService → HRM-ATT-CODE-KEY when EFF>0.
  * must_keep: format MaxLength only · no product ceiling IsIn(4) · CNS-05 check_in_method
  */
-import { IsDateString, IsIn, IsNumber, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import {
+  IsDateString,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateAttendanceRecordDto {
   @IsString()

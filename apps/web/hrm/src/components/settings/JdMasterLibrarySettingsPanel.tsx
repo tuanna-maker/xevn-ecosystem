@@ -502,7 +502,7 @@ export function JdMasterLibrarySettingsPanel() {
           {viewLoading ? (
             <p className="text-sm text-muted-foreground">Đang tải chi tiết…</p>
           ) : viewRow ? (
-            <JdTemplateViewPanel row={viewRow} />
+            <JdTemplateViewPanel row={viewRow} showEmptyFields={true} />
           ) : null}
         </DialogContent>
       </Dialog>

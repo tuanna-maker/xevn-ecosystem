@@ -140,9 +140,13 @@ function makeStore(
     if (schemaOk(sql)) return { rows: [] };
 
     if (sql.includes('DELETE FROM public.recruitment_plan_departments')) {
-      const removed = state.depts.filter((d) => d.plan_id === params[0]).map((d) => d.id);
+      const removed = state.depts
+        .filter((d) => d.plan_id === params[0])
+        .map((d) => d.id);
       state.depts = state.depts.filter((d) => d.plan_id !== params[0]);
-      state.positions = state.positions.filter((p) => !removed.includes(p.department_id));
+      state.positions = state.positions.filter(
+        (p) => !removed.includes(p.department_id),
+      );
       return { rows: [] };
     }
     if (sql.includes('INSERT INTO public.recruitment_plan_departments')) {
@@ -169,7 +173,11 @@ function makeStore(
       return { rows: [] };
     }
     if (sql.includes('INSERT INTO public.recruitment_plans')) {
-      state.plan = { ...state.plan, id: String(params[0]), company_id: String(params[1]) };
+      state.plan = {
+        ...state.plan,
+        id: String(params[0]),
+        company_id: String(params[1]),
+      };
       return { rows: [] };
     }
     if (sql.includes('INSERT INTO public.job_requisitions')) {
@@ -187,10 +195,16 @@ function makeStore(
       return { rows: [state.plan] };
     }
     if (sql.includes('FROM public.recruitment_plan_departments')) {
-      return { rows: state.depts.filter((d) => matchesId(params[0], d.plan_id)) };
+      return {
+        rows: state.depts.filter((d) => matchesId(params[0], d.plan_id)),
+      };
     }
     if (sql.includes('FROM public.recruitment_plan_positions')) {
-      return { rows: state.positions.filter((p) => matchesId(params[0], p.department_id)) };
+      return {
+        rows: state.positions.filter((p) =>
+          matchesId(params[0], p.department_id),
+        ),
+      };
     }
     if (sql.includes('FROM public.job_requisitions')) {
       const cellId = String(params[1] ?? '');
@@ -209,11 +223,16 @@ function makeStore(
 
   const db = {
     query,
-    withTransaction: jest.fn(async (fn: (q: typeof query) => Promise<unknown>) => fn(query)),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof query) => Promise<unknown>) => fn(query),
+    ),
   };
 
   const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-  const svc = new RecruitmentCatalogService(db as unknown as HrmDbService, bridge as never);
+  const svc = new RecruitmentCatalogService(
+    db as unknown as HrmDbService,
+    bridge as never,
+  );
   return { state, db, svc };
 }
 
@@ -225,7 +244,10 @@ type PositionInput = {
   cell_id?: string;
 };
 
-function putPayload(positions: PositionInput[], extra?: Record<string, unknown>) {
+function putPayload(
+  positions: PositionInput[],
+  extra?: Record<string, unknown>,
+) {
   return {
     company_id: 'main',
     departments: [
@@ -253,7 +275,9 @@ function putPayload(positions: PositionInput[], extra?: Record<string, unknown>)
 
 function expectApiCode(error: unknown, code: string) {
   expect(error).toBeInstanceOf(ApiException);
-  expect((error as ApiException).getResponse()).toEqual(expect.objectContaining({ code }));
+  expect((error as ApiException).getResponse()).toEqual(
+    expect.objectContaining({ code }),
+  );
 }
 
 async function readCell(svc: RecruitmentCatalogService, auth: string) {
@@ -261,7 +285,11 @@ async function readCell(svc: RecruitmentCatalogService, auth: string) {
     departments: Array<{
       positions: Array<{
         position_key: string | null;
-        months: Array<{ cell_id: string; need_hire: number; lifecycle_status: string }>;
+        months: Array<{
+          cell_id: string;
+          need_hire: number;
+          lifecycle_status: string;
+        }>;
       }>;
     }>;
   };
@@ -277,9 +305,12 @@ describe('REC-HC override cell_id — stable identity reuse (R-REC-HC-OVERRIDE-C
 
     await svc.upsertRecruitmentPlan(
       PLAN_ID,
-      putPayload([{ name: 'NV', position_key: 'staff', month: 3, needHire: 7 }], {
-        allow_override: true,
-      }),
+      putPayload(
+        [{ name: 'NV', position_key: 'staff', month: 3, needHire: 7 }],
+        {
+          allow_override: true,
+        },
+      ),
       auth,
     );
 
@@ -306,7 +337,9 @@ describe('REC-HC override cell_id — stable identity reuse (R-REC-HC-OVERRIDE-C
     const yctd = state.requisitions.find((r) => r.id === YCTD_ID);
     expect(yctd?.headcount).toBe(2);
     // Exactly one YCTD for this cell — BR-BP-HC-04 intact.
-    expect(state.requisitions.filter((r) => r.headcount_cell_id === CELL_ID)).toHaveLength(1);
+    expect(
+      state.requisitions.filter((r) => r.headcount_cell_id === CELL_ID),
+    ).toHaveLength(1);
   });
 
   it('AC-REC-HC-CELL-ALT-02 — draft/unlocked + OMIT cell_id + NK hit → reuse without override', async () => {
@@ -315,7 +348,9 @@ describe('REC-HC override cell_id — stable identity reuse (R-REC-HC-OVERRIDE-C
 
     await svc.upsertRecruitmentPlan(
       PLAN_ID,
-      putPayload([{ name: 'NV', position_key: 'staff', month: 3, needHire: 5 }]),
+      putPayload([
+        { name: 'NV', position_key: 'staff', month: 3, needHire: 5 },
+      ]),
       auth,
     );
 
@@ -333,9 +368,20 @@ describe('REC-HC override cell_id — stable identity reuse (R-REC-HC-OVERRIDE-C
 
     await svc.upsertRecruitmentPlan(
       PLAN_ID,
-      putPayload([{ name: 'NV', position_key: 'staff', month: 3, needHire: 6, cell_id: CELL_ID }], {
-        allow_override: true,
-      }),
+      putPayload(
+        [
+          {
+            name: 'NV',
+            position_key: 'staff',
+            month: 3,
+            needHire: 6,
+            cell_id: CELL_ID,
+          },
+        ],
+        {
+          allow_override: true,
+        },
+      ),
       auth,
     );
 
@@ -356,7 +402,15 @@ describe('REC-HC override cell_id — stable identity reuse (R-REC-HC-OVERRIDE-C
       await svc.upsertRecruitmentPlan(
         PLAN_ID,
         putPayload(
-          [{ name: 'NV', position_key: 'staff', month: 3, needHire: 7, cell_id: FOREIGN_CELL_ID }],
+          [
+            {
+              name: 'NV',
+              position_key: 'staff',
+              month: 3,
+              needHire: 7,
+              cell_id: FOREIGN_CELL_ID,
+            },
+          ],
           { allow_override: true },
         ),
         auth,
@@ -368,9 +422,11 @@ describe('REC-HC override cell_id — stable identity reuse (R-REC-HC-OVERRIDE-C
 
     // Rejected BEFORE the destructive replace transaction.
     expect(db.withTransaction).not.toHaveBeenCalled();
-    expect(state.sqls.some((s) => s.includes('DELETE FROM public.recruitment_plan_departments'))).toBe(
-      false,
-    );
+    expect(
+      state.sqls.some((s) =>
+        s.includes('DELETE FROM public.recruitment_plan_departments'),
+      ),
+    ).toBe(false);
     const cells = state.positions[0].months_data as Array<{ cell_id: string }>;
     expect(cells[0].cell_id).toBe(CELL_ID);
   });
@@ -383,7 +439,9 @@ describe('REC-HC override cell_id — stable identity reuse (R-REC-HC-OVERRIDE-C
     try {
       await svc.upsertRecruitmentPlan(
         PLAN_ID,
-        putPayload([{ name: 'NV', position_key: 'staff', month: 3, needHire: 9 }]),
+        putPayload([
+          { name: 'NV', position_key: 'staff', month: 3, needHire: 9 },
+        ]),
         auth,
       );
     } catch (error) {
@@ -416,8 +474,12 @@ describe('REC-HC override cell_id — stable identity reuse (R-REC-HC-OVERRIDE-C
     );
 
     const detail = await readCell(svc, auth);
-    const staff = detail.departments[0].positions.find((p) => p.position_key === 'staff');
-    const staff2 = detail.departments[0].positions.find((p) => p.position_key === 'staff2');
+    const staff = detail.departments[0].positions.find(
+      (p) => p.position_key === 'staff',
+    );
+    const staff2 = detail.departments[0].positions.find(
+      (p) => p.position_key === 'staff2',
+    );
     // Existing NK keeps its identity.
     expect(staff?.months[0].cell_id).toBe(CELL_ID);
     // Brand-new NK mints a valid, distinct surrogate (MINT-ONCE).

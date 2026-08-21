@@ -41,7 +41,9 @@ function ceoAuth(): string {
   })}`;
 }
 
-function ddlAwareQuery(extra?: (sql: string, params?: unknown[]) => { rows: unknown[] } | null) {
+function ddlAwareQuery(
+  extra?: (sql: string, params?: unknown[]) => { rows: unknown[] } | null,
+) {
   return jest.fn().mockImplementation((sql: string, params?: unknown[]) => {
     const s = String(sql);
     if (
@@ -131,10 +133,16 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Work timeline (WH)', () => {
   it('create rejects missing position_key (HRM-WH-POS-KEY)', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
     const employees = {
-      getEmployeeById: jest.fn().mockResolvedValue({ id: 'e1', company_id: 'holding' }),
+      getEmployeeById: jest
+        .fn()
+        .mockResolvedValue({ id: 'e1', company_id: 'holding' }),
     };
     const catalogs = { assertCodeInEffectiveCatalog: jest.fn() };
-    const svc = new EmployeeProfileService(db as never, employees as never, catalogs as never);
+    const svc = new EmployeeProfileService(
+      db as never,
+      employees as never,
+      catalogs as never,
+    );
     await expect(
       svc.createWorkTimelineItem(
         'e1',
@@ -142,7 +150,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Work timeline (WH)', () => {
         { event_date: '2026-01-01', title: 'Bổ nhiệm', position: 'Invented' },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_WH_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_WH_POS_KEY });
     expect(catalogs.assertCodeInEffectiveCatalog).not.toHaveBeenCalled();
   });
 
@@ -167,7 +175,9 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Work timeline (WH)', () => {
       onModuleDestroy: jest.fn(),
     };
     const employees = {
-      getEmployeeById: jest.fn().mockResolvedValue({ id: 'e1', company_id: 'holding' }),
+      getEmployeeById: jest
+        .fn()
+        .mockResolvedValue({ id: 'e1', company_id: 'holding' }),
     };
     const catalogs = {
       assertCodeInEffectiveCatalog: jest.fn().mockResolvedValue({
@@ -176,7 +186,11 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Work timeline (WH)', () => {
         status: 'active',
       }),
     };
-    const svc = new EmployeeProfileService(db as never, employees as never, catalogs as never);
+    const svc = new EmployeeProfileService(
+      db as never,
+      employees as never,
+      catalogs as never,
+    );
     const row = await svc.createWorkTimelineItem(
       'e1',
       { company_id: 'holding' },
@@ -197,11 +211,17 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Work timeline (WH)', () => {
   it('update invent-only position without key → HRM-WH-POS-KEY', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
     const employees = {
-      getEmployeeById: jest.fn().mockResolvedValue({ id: 'e1', company_id: 'holding' }),
+      getEmployeeById: jest
+        .fn()
+        .mockResolvedValue({ id: 'e1', company_id: 'holding' }),
     };
-    const svc = new EmployeeProfileService(db as never, employees as never, {
-      assertCodeInEffectiveCatalog: jest.fn(),
-    } as never);
+    const svc = new EmployeeProfileService(
+      db as never,
+      employees as never,
+      {
+        assertCodeInEffectiveCatalog: jest.fn(),
+      } as never,
+    );
     await expect(
       svc.updateWorkTimelineItem(
         'item-1',
@@ -210,7 +230,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Work timeline (WH)', () => {
         { position: 'Free text only' },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_WH_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_WH_POS_KEY });
   });
 });
 
@@ -228,7 +248,10 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Decisions (DEC)', () => {
       onModuleDestroy: jest.fn(),
     };
     const svc = new DecisionsService(db as never);
-    await svc.listDecisions({ company_id: 'holding', page: '1', page_size: '20' }, ceoAuth());
+    await svc.listDecisions(
+      { company_id: 'holding', page: '1', page_size: '20' },
+      ceoAuth(),
+    );
     const joined = ddl.join('\n');
     expect(joined).toMatch(/ADD COLUMN IF NOT EXISTS position_key/);
     expect(joined).toMatch(/ADD COLUMN IF NOT EXISTS signer_position_key/);
@@ -238,7 +261,10 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Decisions (DEC)', () => {
     const empId = '11111111-1111-4111-8111-111111111111';
     const db = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('FROM public.employees') && sql.includes('id = $1::uuid')) {
+        if (
+          sql.includes('FROM public.employees') &&
+          sql.includes('id = $1::uuid')
+        ) {
           return {
             rows: [{ id: empId, full_name: 'NV A', employee_code: 'HLD-0001' }],
           };
@@ -260,7 +286,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Decisions (DEC)', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_DEC_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_DEC_POS_KEY });
   });
 
   it('create asserts position_key + decision_type; signer key when signer present', async () => {
@@ -268,7 +294,10 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Decisions (DEC)', () => {
     const insertParams: unknown[][] = [];
     const db = {
       query: ddlAwareQuery((sql, params) => {
-        if (sql.includes('FROM public.employees') && sql.includes('id = $1::uuid')) {
+        if (
+          sql.includes('FROM public.employees') &&
+          sql.includes('id = $1::uuid')
+        ) {
           return {
             rows: [{ id: empId, full_name: 'NV A', employee_code: 'HLD-0001' }],
           };
@@ -291,11 +320,13 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Decisions (DEC)', () => {
       onModuleDestroy: jest.fn(),
     };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { code: string }) => ({
-        code: opts.code,
-        label: opts.code === 'TP_NS' ? 'Trưởng phòng NS' : 'Nhân viên KD',
-        status: 'active',
-      })),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockImplementation(async (opts: { code: string }) => ({
+          code: opts.code,
+          label: opts.code === 'TP_NS' ? 'Trưởng phòng NS' : 'Nhân viên KD',
+          status: 'active',
+        })),
     };
     const svc = new DecisionsService(db as never, catalogs as never);
     await svc.createDecision(
@@ -314,7 +345,10 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Decisions (DEC)', () => {
       expect.objectContaining({ errorCode: 'HRM-DEC-TYPE' }),
     );
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
-      expect.objectContaining({ errorCode: HRM_DEC_POS_KEY, catalogKey: 'job_titles' }),
+      expect.objectContaining({
+        errorCode: HRM_DEC_POS_KEY,
+        catalogKey: 'job_titles',
+      }),
     );
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
       expect.objectContaining({ errorCode: HRM_DEC_SIGNER_POS_KEY }),
@@ -332,17 +366,26 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Job postings / Headcount (JP/HCP)', () => {
       }),
       onModuleDestroy: jest.fn(),
     };
-    const svc = new RecruitmentCatalogService(db as never, mockBridge() as never);
+    const svc = new RecruitmentCatalogService(
+      db as never,
+      mockBridge() as never,
+    );
     await svc.listJobPostings({ company_id: 'holding' }, ceoAuth());
     const joined = ddl.join('\n');
-    expect(joined).toMatch(/job_postings[\s\S]*position_key|ADD COLUMN IF NOT EXISTS position_key/);
+    expect(joined).toMatch(
+      /job_postings[\s\S]*position_key|ADD COLUMN IF NOT EXISTS position_key/,
+    );
     expect(joined).toMatch(/headcount_proposals/);
   });
 
   it('createJobPosting rejects invent-only position (HRM-JP-POS-KEY)', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
     const catalogs = { assertCodeInEffectiveCatalog: jest.fn() };
-    const svc = new RecruitmentCatalogService(db as never, mockBridge() as never, catalogs as never);
+    const svc = new RecruitmentCatalogService(
+      db as never,
+      mockBridge() as never,
+      catalogs as never,
+    );
     await expect(
       svc.createJobPosting(
         {
@@ -353,7 +396,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Job postings / Headcount (JP/HCP)', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_JP_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_JP_POS_KEY });
   });
 
   it('createJobPosting asserts catalog and persists position_key', async () => {
@@ -363,7 +406,13 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Job postings / Headcount (JP/HCP)', () => {
         if (sql.includes('INSERT INTO public.job_postings')) {
           insertParams.push(params ?? []);
           return {
-            rows: [{ id: params?.[0], position_key: 'NV_KD', position: 'Nhân viên KD' }],
+            rows: [
+              {
+                id: params?.[0],
+                position_key: 'NV_KD',
+                position: 'Nhân viên KD',
+              },
+            ],
           };
         }
         return null;
@@ -377,22 +426,33 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Job postings / Headcount (JP/HCP)', () => {
         status: 'active',
       }),
     };
-    const svc = new RecruitmentCatalogService(db as never, mockBridge() as never, catalogs as never);
+    const svc = new RecruitmentCatalogService(
+      db as never,
+      mockBridge() as never,
+      catalogs as never,
+    );
     const row = await svc.createJobPosting(
       { company_id: 'holding', title: 'Tin TD', position_key: 'NV_KD' },
       ceoAuth(),
     );
     expect(row.position_key).toBe('NV_KD');
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
-      expect.objectContaining({ errorCode: HRM_JP_POS_KEY, catalogKey: 'job_titles' }),
+      expect.objectContaining({
+        errorCode: HRM_JP_POS_KEY,
+        catalogKey: 'job_titles',
+      }),
     );
   });
 
   it('createHeadcountProposal requires position_key (HRM-HCP-POS-KEY)', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
-    const svc = new RecruitmentCatalogService(db as never, mockBridge() as never, {
-      assertCodeInEffectiveCatalog: jest.fn(),
-    } as never);
+    const svc = new RecruitmentCatalogService(
+      db as never,
+      mockBridge() as never,
+      {
+        assertCodeInEffectiveCatalog: jest.fn(),
+      } as never,
+    );
     await expect(
       svc.createHeadcountProposal(
         {
@@ -403,13 +463,17 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Job postings / Headcount (JP/HCP)', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_HCP_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_HCP_POS_KEY });
   });
 
   it('must_keep: JD position_code still uses HRM-REC-JD-POS (regression)', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
     const catalogs = { assertCodeInEffectiveCatalog: jest.fn() };
-    const svc = new RecruitmentCatalogService(db as never, mockBridge() as never, catalogs as never);
+    const svc = new RecruitmentCatalogService(
+      db as never,
+      mockBridge() as never,
+      catalogs as never,
+    );
     await expect(
       svc.createJobDescriptionTemplate(
         {
@@ -421,7 +485,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Job postings / Headcount (JP/HCP)', () => {
         ceoAuth(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_JD_POS });
+    ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
   });
 });
 
@@ -441,14 +505,19 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Contracts (CI)', () => {
     const svc = new ContractsInsuranceService(db as never);
     await svc.listContracts({ company_id: 'holding' }, ceoAuth());
     const joined = ddl.join('\n');
-    expect(joined).toMatch(/employee_contracts[\s\S]*position_key|ADD COLUMN IF NOT EXISTS position_key/);
+    expect(joined).toMatch(
+      /employee_contracts[\s\S]*position_key|ADD COLUMN IF NOT EXISTS position_key/,
+    );
     expect(joined).toMatch(/signer_position_key/);
   });
 
   it('create rejects missing position_key after end_date policy', async () => {
     const db = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('FROM public.employees') && sql.includes('job_title_key')) {
+        if (
+          sql.includes('FROM public.employees') &&
+          sql.includes('job_title_key')
+        ) {
           return { rows: [{ job_title_key: null }] };
         }
         return null;
@@ -458,12 +527,20 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Contracts (CI)', () => {
     // E2: contract_types assert runs before position_key — mock must resolve type, then POS-KEY fails.
     // UF-HRM-05 resolveContractPositionKey also calls getEffectiveItemsForKey (empty → POS-KEY).
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { catalogKey: string; code: string }) => {
-        if (opts.catalogKey === 'contract_types') {
-          return { code: opts.code, label: opts.code, status: 'active' };
-        }
-        throw new ApiException(HRM_CON_POS_KEY, 'position', HttpStatus.BAD_REQUEST);
-      }),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockImplementation(
+          async (opts: { catalogKey: string; code: string }) => {
+            if (opts.catalogKey === 'contract_types') {
+              return { code: opts.code, label: opts.code, status: 'active' };
+            }
+            throw new ApiException(
+              HRM_CON_POS_KEY,
+              'position',
+              HttpStatus.BAD_REQUEST,
+            );
+          },
+        ),
       getEffectiveItemsForKey: jest.fn().mockResolvedValue([]),
     };
     const svc = new ContractsInsuranceService(db as never, catalogs as never);
@@ -478,7 +555,7 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Contracts (CI)', () => {
         },
         ceoAuth(),
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_CON_POS_KEY });
+    ).rejects.toMatchObject({ code: HRM_CON_POS_KEY });
   });
 
   it('create asserts position_key + signer_position_key when signer present', async () => {
@@ -501,11 +578,13 @@ describe('D-BE-ERP-E1A-POS-KEY-01 Contracts (CI)', () => {
       onModuleDestroy: jest.fn(),
     };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { code: string }) => ({
-        code: opts.code,
-        label: opts.code,
-        status: 'active',
-      })),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockImplementation(async (opts: { code: string }) => ({
+          code: opts.code,
+          label: opts.code,
+          status: 'active',
+        })),
       getEffectiveItemsForKey: jest.fn().mockResolvedValue([
         { code: 'NV_KD', label: 'NV KD', status: 'active' },
         { code: 'TP_NS', label: 'TP NS', status: 'active' },

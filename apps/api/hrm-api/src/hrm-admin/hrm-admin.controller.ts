@@ -33,7 +33,17 @@
  * TechSpec: docs/hrm/API_DESIGN_HRM_ADMIN.md §A–D · docs/api/openapi/hrm-api.yaml
  * must_keep: G-ADM-DTO-01 CLOSED · Auth/Tenant · U65 · HOLD_DEPLOY · không wipe DTO plane
  */
-import { Body, Controller, Delete, Get, Headers, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { HrmAdminService } from './hrm-admin.service';
 import { CreateCompanyAdminDto } from './dto/create-company-admin.dto';
 import { CreatePlatformAdminDto } from './dto/create-platform-admin.dto';
@@ -62,7 +72,9 @@ export class HrmAdminController {
   ) {
     return this.hrmAdminService
       .createCompanyAdmin(authorization, body)
-      .then((data) => ok(data, 'HRM-ADMIN-202', 'Company admin created or updated'));
+      .then((data) =>
+        ok(data, 'HRM-ADMIN-202', 'Company admin created or updated'),
+      );
   }
 
   @Post('invite-employee')
@@ -72,7 +84,9 @@ export class HrmAdminController {
   ) {
     return this.hrmAdminService
       .inviteEmployees(authorization, body)
-      .then((data) => ok(data, 'HRM-ADMIN-203', 'Employee invitation batch processed'));
+      .then((data) =>
+        ok(data, 'HRM-ADMIN-203', 'Employee invitation batch processed'),
+      );
   }
 
   @Post('reset-user-password')
@@ -86,7 +100,9 @@ export class HrmAdminController {
   }
 
   @Get('companies')
-  listAdminCompanies(@Headers('authorization') authorization: string | undefined) {
+  listAdminCompanies(
+    @Headers('authorization') authorization: string | undefined,
+  ) {
     return this.hrmAdminService
       .listAdminCompanies(authorization)
       .then((data) => ok(data, 'HRM-ADMIN-205', 'Admin companies listed'));
@@ -124,7 +140,14 @@ export class HrmAdminController {
   updateCompanyMembership(
     @Headers('authorization') authorization: string | undefined,
     @Param('membershipId') membershipId: string,
-    @Body() body: { role?: string; employee_id?: string | null; status?: string; full_name?: string; email?: string },
+    @Body()
+    body: {
+      role?: string;
+      employee_id?: string | null;
+      status?: string;
+      full_name?: string;
+      email?: string;
+    },
   ) {
     return this.hrmAdminService
       .updateCompanyMembership(authorization, membershipId, body)

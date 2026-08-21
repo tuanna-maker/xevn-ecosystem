@@ -58,7 +58,9 @@ export type HrmOperatingUnitRow = {
 };
 
 export function rollupOrderForSlug(slug: string): number {
-  const idx = (HRM_GROUP_MEMBER_COMPANY_SLUGS as readonly string[]).indexOf(slug);
+  const idx = (HRM_GROUP_MEMBER_COMPANY_SLUGS as readonly string[]).indexOf(
+    slug,
+  );
   return idx >= 0 ? idx + 1 : 99;
 }
 

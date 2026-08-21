@@ -127,16 +127,26 @@ export const WORK_HISTORY_NEO_DECISION_TYPES = new Set([
 ]);
 
 /** Normalize catalog / legacy decision_type for Set lookups. */
-export function normalizeDecisionTypeKey(decisionType: string | null | undefined): string {
+export function normalizeDecisionTypeKey(
+  decisionType: string | null | undefined,
+): string {
   return (decisionType ?? '').trim().toLowerCase();
 }
 
-export function isPersonBoundDecisionType(decisionType: string | null | undefined): boolean {
-  return PERSON_BOUND_DECISION_TYPES.has(normalizeDecisionTypeKey(decisionType));
+export function isPersonBoundDecisionType(
+  decisionType: string | null | undefined,
+): boolean {
+  return PERSON_BOUND_DECISION_TYPES.has(
+    normalizeDecisionTypeKey(decisionType),
+  );
 }
 
-export function isWorkHistoryNeoDecisionType(decisionType: string | null | undefined): boolean {
-  return WORK_HISTORY_NEO_DECISION_TYPES.has(normalizeDecisionTypeKey(decisionType));
+export function isWorkHistoryNeoDecisionType(
+  decisionType: string | null | undefined,
+): boolean {
+  return WORK_HISTORY_NEO_DECISION_TYPES.has(
+    normalizeDecisionTypeKey(decisionType),
+  );
 }
 
 /** Map catalog/legacy type → WH event_type (TEXT; appointment|transfer|termination). */
@@ -169,12 +179,16 @@ export class DecisionsService {
     @Optional() private readonly decisionTypeCatalog?: HrDecisionTypeService,
   ) {}
 
-  private flagsFromCatalogRow(row: HrDecisionTypeDisplay): DecisionTypeRuntimeFlags {
+  private flagsFromCatalogRow(
+    row: HrDecisionTypeDisplay,
+  ): DecisionTypeRuntimeFlags {
     return {
       canonicalKey: row.decisionTypeKey,
       isPersonBound: row.isPersonBound,
       writesWorkHistory: row.writesWorkHistory,
-      whEventType: row.whEventType?.trim() || resolveWorkHistoryEventType(row.decisionTypeKey),
+      whEventType:
+        row.whEventType?.trim() ||
+        resolveWorkHistoryEventType(row.decisionTypeKey),
       requiresPositionKey: row.requiresPositionKey,
       fromCatalog: true,
     };
@@ -201,11 +215,12 @@ export class DecisionsService {
   }): Promise<DecisionTypeRuntimeFlags> {
     const decisionType = input.decisionType.trim() || 'appointment';
     if (this.decisionTypeCatalog) {
-      const hit = await this.decisionTypeCatalog.assertDecisionTypeInEffectiveCatalog({
-        companyId: input.companyId,
-        decisionType,
-        authorization: input.authorization,
-      });
+      const hit =
+        await this.decisionTypeCatalog.assertDecisionTypeInEffectiveCatalog({
+          companyId: input.companyId,
+          decisionType,
+          authorization: input.authorization,
+        });
       if (hit) {
         return this.flagsFromCatalogRow(hit);
       }
@@ -224,13 +239,19 @@ export class DecisionsService {
     return this.legacyFlags(decisionType);
   }
 
-  private resolvePage(value: number | string | undefined, fallback: number): number {
+  private resolvePage(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.trunc(parsed);
   }
 
-  private resolvePageSize(value: number | string | undefined, fallback: number): number {
+  private resolvePageSize(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
     const parsed = Number(value ?? fallback);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.min(100, Math.trunc(parsed));
@@ -328,7 +349,10 @@ export class DecisionsService {
     `);
   }
 
-  private isPersonBoundType(decisionType: string, flags?: DecisionTypeRuntimeFlags): boolean {
+  private isPersonBoundType(
+    decisionType: string,
+    flags?: DecisionTypeRuntimeFlags,
+  ): boolean {
     if (flags) return flags.isPersonBound;
     return isPersonBoundDecisionType(decisionType);
   }
@@ -358,18 +382,30 @@ export class DecisionsService {
     employeeId: string,
     authorization: string | undefined,
     fallbackName: string,
-  ): Promise<{ employee_id: string; employee_name: string; employee_code: string | null }> {
+  ): Promise<{
+    employee_id: string;
+    employee_name: string;
+    employee_code: string | null;
+  }> {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['id = $1::uuid', 'archived_at IS NULL'];
     const values: unknown[] = [employeeId];
     pushCompanyIdFilter(filters, values, scope.companyIds);
-    const res = await this.db.query<{ id: string; full_name: string; employee_code: string | null }>(
+    const res = await this.db.query<{
+      id: string;
+      full_name: string;
+      employee_code: string | null;
+    }>(
       `SELECT id, full_name, employee_code FROM public.employees WHERE ${filters.join(' AND ')} LIMIT 1;`,
       values,
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-DEC-404', 'Employee not found in scope for decision', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-DEC-404',
+        'Employee not found in scope for decision',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return {
       employee_id: row.id,
@@ -430,9 +466,15 @@ export class DecisionsService {
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
     `);
-    const eventType = resolved.whEventType || resolveWorkHistoryEventType(decision.decision_type);
-    const eventDate = decision.effective_date || new Date().toISOString().slice(0, 10);
-    const title = decision.position?.trim() || decision.title?.trim() || decision.position_key;
+    const eventType =
+      resolved.whEventType ||
+      resolveWorkHistoryEventType(decision.decision_type);
+    const eventDate =
+      decision.effective_date || new Date().toISOString().slice(0, 10);
+    const title =
+      decision.position?.trim() ||
+      decision.title?.trim() ||
+      decision.position_key;
     const existing = await this.db.query<{ id: string }>(
       `
         SELECT id FROM public.employee_work_timeline
@@ -500,7 +542,9 @@ export class DecisionsService {
     return { work_history_id: ins.rows[0].id };
   }
 
-  private async archiveWorkHistoryForDecision(decisionId: string): Promise<void> {
+  private async archiveWorkHistoryForDecision(
+    decisionId: string,
+  ): Promise<void> {
     await this.db.query(
       `
         UPDATE public.employee_work_timeline
@@ -588,15 +632,26 @@ export class DecisionsService {
        ORDER BY created_at DESC;`,
       values,
     );
-    return { total: res.rows.length, page, page_size: pageSize, data: res.rows.slice(offset, offset + pageSize) };
+    return {
+      total: res.rows.length,
+      page,
+      page_size: pageSize,
+      data: res.rows.slice(offset, offset + pageSize),
+    };
   }
 
   async createDecision(payload: CreateDecisionDto, authorization?: string) {
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     await this.ensureSchema();
     const id = randomUUID();
     const decisionCode = payload.decision_code?.trim() || `DEC-${Date.now()}`;
-    const title = payload.title?.trim() || payload.reason?.trim() || `Decision ${decisionCode}`;
+    const title =
+      payload.title?.trim() ||
+      payload.reason?.trim() ||
+      `Decision ${decisionCode}`;
     const rawType = payload.decision_type?.trim() || 'appointment';
     // F-DEC-CAT-EFF-01 / BR-PLT-02 — assert ∈ effective when catalog >0; else settings + legacy Sets.
     const typeFlags = await this.resolveDecisionTypeFlags({
@@ -632,7 +687,9 @@ export class DecisionsService {
       typeFlags.requiresPositionKey,
     );
     const signerPresent = Boolean(
-      payload.signer_name?.trim() || payload.signer_position?.trim() || payload.signer_position_key?.trim(),
+      payload.signer_name?.trim() ||
+      payload.signer_position?.trim() ||
+      payload.signer_position_key?.trim(),
     );
     const signerPos = await this.assertDecSignerPositionKey(
       companyId,
@@ -640,7 +697,8 @@ export class DecisionsService {
       signerPresent,
     );
     const content = payload.content?.trim() ?? payload.reason?.trim() ?? null;
-    const effectiveDate = payload.effective_date ?? payload.decision_date ?? null;
+    const effectiveDate =
+      payload.effective_date ?? payload.decision_date ?? null;
     const positionSnapshot = payload.position?.trim() || pos?.label || null;
     const signerPositionSnapshot =
       payload.signer_position?.trim() || (signerPos ? signerPos.label : null);
@@ -691,13 +749,25 @@ export class DecisionsService {
     return row;
   }
 
-  async updateDecision(decisionId: string, payload: UpdateDecisionDto, authorization?: string) {
+  async updateDecision(
+    decisionId: string,
+    payload: UpdateDecisionDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     if (!payload.company_id?.trim()) {
-      throw new ApiException('HRM-DEC-002', 'company_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-DEC-002',
+        'company_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const scope = resolveHrmListScope(authorization, payload.company_id.trim());
-    const existing = await this.getDecisionScoped(decisionId, payload.company_id.trim(), authorization);
+    const existing = await this.getDecisionScoped(
+      decisionId,
+      payload.company_id.trim(),
+      authorization,
+    );
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-DEC-404',
       mismatchCode: 'HRM-DEC-409',
@@ -708,7 +778,8 @@ export class DecisionsService {
       values.push(val);
       fields.push(`${col} = $${values.length}`);
     };
-    if (payload.decision_code != null) set('decision_code', payload.decision_code.trim());
+    if (payload.decision_code != null)
+      set('decision_code', payload.decision_code.trim());
     let nextType = existing.decision_type;
     let typeFlags = await this.resolveDecisionTypeFlags({
       companyId: existing.company_id,
@@ -726,12 +797,19 @@ export class DecisionsService {
       nextType = typeFlags.canonicalKey;
     }
     if (payload.title != null) set('title', payload.title.trim());
-    if (payload.content !== undefined) set('content', payload.content?.trim() ?? null);
+    if (payload.content !== undefined)
+      set('content', payload.content?.trim() ?? null);
     const nextEmployeeId =
-      payload.employee_id !== undefined ? payload.employee_id : existing.employee_id;
-    const nextStatus = payload.status != null ? payload.status : existing.status;
+      payload.employee_id !== undefined
+        ? payload.employee_id
+        : existing.employee_id;
+    const nextStatus =
+      payload.status != null ? payload.status : existing.status;
     // F-CORE-DEC-01 — re-validate person-bound on type/status/employee change.
-    if (this.isPersonBoundType(nextType, typeFlags) || nextStatus === 'effective') {
+    if (
+      this.isPersonBoundType(nextType, typeFlags) ||
+      nextStatus === 'effective'
+    ) {
       this.assertPersonBoundEmployeeId(nextType, nextEmployeeId, typeFlags);
     }
     if (payload.employee_id !== undefined) {
@@ -743,7 +821,8 @@ export class DecisionsService {
           payload.employee_name?.trim() || existing.employee_name,
         );
         set('employee_id', emp.employee_id);
-        if (payload.employee_name == null) set('employee_name', emp.employee_name);
+        if (payload.employee_name == null)
+          set('employee_name', emp.employee_name);
         if (payload.employee_code === undefined && emp.employee_code) {
           set('employee_code', emp.employee_code);
         }
@@ -751,10 +830,14 @@ export class DecisionsService {
         set('employee_id', null);
       }
     }
-    if (payload.employee_name != null) set('employee_name', payload.employee_name.trim());
-    if (payload.employee_code !== undefined) set('employee_code', payload.employee_code?.trim() ?? null);
-    if (payload.department !== undefined) set('department', payload.department?.trim() ?? null);
-    if (payload.department_key !== undefined) set('department_key', payload.department_key?.trim() ?? null);
+    if (payload.employee_name != null)
+      set('employee_name', payload.employee_name.trim());
+    if (payload.employee_code !== undefined)
+      set('employee_code', payload.employee_code?.trim() ?? null);
+    if (payload.department !== undefined)
+      set('department', payload.department?.trim() ?? null);
+    if (payload.department_key !== undefined)
+      set('department_key', payload.department_key?.trim() ?? null);
     if (payload.position !== undefined && payload.position_key === undefined) {
       throw new ApiException(
         HRM_DEC_POS_KEY,
@@ -773,10 +856,16 @@ export class DecisionsService {
     } else if (payload.position !== undefined) {
       set('position', payload.position?.trim() ?? null);
     }
-    if (payload.effective_date !== undefined) set('effective_date', payload.effective_date);
-    if (payload.expiry_date !== undefined) set('expiry_date', payload.expiry_date);
-    if (payload.signer_name !== undefined) set('signer_name', payload.signer_name?.trim() ?? null);
-    if (payload.signer_position !== undefined && payload.signer_position_key === undefined) {
+    if (payload.effective_date !== undefined)
+      set('effective_date', payload.effective_date);
+    if (payload.expiry_date !== undefined)
+      set('expiry_date', payload.expiry_date);
+    if (payload.signer_name !== undefined)
+      set('signer_name', payload.signer_name?.trim() ?? null);
+    if (
+      payload.signer_position !== undefined &&
+      payload.signer_position_key === undefined
+    ) {
       throw new ApiException(
         HRM_DEC_SIGNER_POS_KEY,
         'signer_position_key is required when updating signer_position',
@@ -790,14 +879,20 @@ export class DecisionsService {
         true,
       );
       set('signer_position_key', signerPos!.code);
-      set('signer_position', payload.signer_position?.trim() || signerPos!.label);
+      set(
+        'signer_position',
+        payload.signer_position?.trim() || signerPos!.label,
+      );
     } else if (payload.signer_position !== undefined) {
       set('signer_position', payload.signer_position?.trim() ?? null);
     }
-    if (payload.signing_date !== undefined) set('signing_date', payload.signing_date);
-    if (payload.file_url !== undefined) set('file_url', payload.file_url ?? null);
+    if (payload.signing_date !== undefined)
+      set('signing_date', payload.signing_date);
+    if (payload.file_url !== undefined)
+      set('file_url', payload.file_url ?? null);
     if (payload.status != null) set('status', payload.status);
-    if (payload.notes !== undefined) set('notes', payload.notes?.trim() ?? null);
+    if (payload.notes !== undefined)
+      set('notes', payload.notes?.trim() ?? null);
     if (fields.length === 0) return existing;
     fields.push('updated_at = NOW()');
     values.push(decisionId);
@@ -819,26 +914,49 @@ export class DecisionsService {
     return row;
   }
 
-  async deleteDecision(decisionId: string, companyId: string, authorization?: string) {
+  async deleteDecision(
+    decisionId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, companyId);
-    const existing = await this.getDecisionScoped(decisionId, companyId, authorization);
+    const existing = await this.getDecisionScoped(
+      decisionId,
+      companyId,
+      authorization,
+    );
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-DEC-404',
       mismatchCode: 'HRM-DEC-409',
     });
     // Soft-archive WH before decision hard-delete (soft FK; no CASCADE).
     await this.archiveWorkHistoryForDecision(decisionId);
-    await this.db.query(`DELETE FROM public.hr_decisions WHERE id = $1::uuid;`, [decisionId]);
+    await this.db.query(
+      `DELETE FROM public.hr_decisions WHERE id = $1::uuid;`,
+      [decisionId],
+    );
     return { id: decisionId };
   }
 
-  async getDecisionById(decisionId: string, companyId: string, authorization?: string) {
+  async getDecisionById(
+    decisionId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, companyId);
-    const row = await this.getDecisionScoped(decisionId, companyId, authorization);
+    const row = await this.getDecisionScoped(
+      decisionId,
+      companyId,
+      authorization,
+    );
     if (!row) {
-      throw new ApiException('HRM-DEC-404', 'Decision not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-DEC-404',
+        'Decision not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: 'HRM-DEC-404',
@@ -847,7 +965,11 @@ export class DecisionsService {
     return row;
   }
 
-  private async getDecisionScoped(decisionId: string, companyId: string, authorization?: string) {
+  private async getDecisionScoped(
+    decisionId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [decisionId];
@@ -868,7 +990,11 @@ export class DecisionsService {
     file: { buffer: Buffer; originalname: string; mimetype: string },
   ) {
     await this.ensureSchema();
-    const existing = await this.getDecisionScoped(decisionId, companyId, authorization);
+    const existing = await this.getDecisionScoped(
+      decisionId,
+      companyId,
+      authorization,
+    );
     const scope = resolveHrmListScope(authorization, companyId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-DEC-404',
@@ -878,7 +1004,9 @@ export class DecisionsService {
       process.env.HRM_DECISION_UPLOAD_DIR?.trim() ||
       join(process.cwd(), 'uploads', 'hrm-decisions');
     await mkdir(baseDir, { recursive: true });
-    const safeName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
+    const safeName = file.originalname
+      .replace(/[^a-zA-Z0-9._-]/g, '_')
+      .slice(0, 120);
     const storedName = `${decisionId}-${Date.now()}-${safeName}`;
     const absolutePath = join(baseDir, storedName);
     await writeFile(absolutePath, file.buffer);
@@ -894,7 +1022,11 @@ export class DecisionsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-DEC-404', 'Decision not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-DEC-404',
+        'Decision not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return {
       ...row,

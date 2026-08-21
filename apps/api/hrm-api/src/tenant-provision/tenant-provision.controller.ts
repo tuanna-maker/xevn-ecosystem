@@ -9,7 +9,14 @@
  * Auth:       x-internal-api-key or internal JWT (isAuthorizedInternalRequest)
  * must_keep:  no cross-DB query; delegate all business logic to TenantProvisionService
  */
-import { Body, Controller, HttpStatus, Logger, Post, Headers } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpStatus,
+  Logger,
+  Post,
+  Headers,
+} from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -35,10 +42,16 @@ export class TenantProvisionController {
     @Body() payload: TenantProvisionedPayload,
   ) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized internal request', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized internal request',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
-    this.logger.log(`[HRM] REST tenant-provisioned: tenantId=${payload.tenantId}`);
+    this.logger.log(
+      `[HRM] REST tenant-provisioned: tenantId=${payload.tenantId}`,
+    );
     await this.service.handleTenantProvisioned(payload);
 
     return ok(

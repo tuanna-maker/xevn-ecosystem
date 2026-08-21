@@ -26,13 +26,21 @@ describe('F-REC-APP-02 stage catalog wire (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE
     const assertStageInEffectiveCatalog = jest
       .fn()
       .mockRejectedValue(
-        new ApiException('HRM-REC-STAGE-UNKNOWN', 'not in catalog', HttpStatus.BAD_REQUEST),
+        new ApiException(
+          'HRM-REC-STAGE-UNKNOWN',
+          'not in catalog',
+          HttpStatus.BAD_REQUEST,
+        ),
       );
 
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.candidate_applications ca')) {
@@ -77,7 +85,11 @@ describe('F-REC-APP-02 stage catalog wire (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.candidate_applications ca')) {
@@ -122,13 +134,21 @@ describe('F-REC-APP-02 stage catalog wire (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE
     const assertStageInEffectiveCatalog = jest
       .fn()
       .mockRejectedValue(
-        new ApiException('HRM-REC-STAGE-UNKNOWN', 'not in catalog', HttpStatus.BAD_REQUEST),
+        new ApiException(
+          'HRM-REC-STAGE-UNKNOWN',
+          'not in catalog',
+          HttpStatus.BAD_REQUEST,
+        ),
       );
 
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE ') || s.includes('ALTER ') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE ') ||
+          s.includes('ALTER ') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (s.includes('FROM public.candidates WHERE id')) {
@@ -161,7 +181,12 @@ describe('F-REC-APP-02 stage catalog wire (PO-HRM-DYNAMIC-CONFIG-PLATFORM-REC-BE
     );
 
     await expect(
-      catalog.updateCandidatePoolStage(CAND_ID, 'holding', 'ghost_stage', groupCeoToken()),
+      catalog.updateCandidatePoolStage(
+        CAND_ID,
+        'holding',
+        'ghost_stage',
+        groupCeoToken(),
+      ),
     ).rejects.toMatchObject({ code: 'HRM-REC-STAGE-UNKNOWN' });
   });
 });

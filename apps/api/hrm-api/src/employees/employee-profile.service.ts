@@ -352,7 +352,11 @@ export class EmployeeProfileService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const employee = await this.employees.getEmployeeById(employeeId, query, authorization);
+    const employee = await this.employees.getEmployeeById(
+      employeeId,
+      query,
+      authorization,
+    );
     const filters = ['employee_id = $1::uuid'];
     const values: unknown[] = [employeeId];
     pushCompanyIdFilter(filters, values, [employee.company_id]);
@@ -372,7 +376,11 @@ export class EmployeeProfileService {
     };
   }
 
-  listDegrees(employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
+  listDegrees(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
     return this.listScopedRows(
       'public.hrm_employee_degrees',
       'id, employee_id, company_id, payload, created_at, updated_at',
@@ -385,7 +393,9 @@ export class EmployeeProfileService {
         id: row.id,
         employee_id: employeeId,
         company_id: row.company_id,
-        ...(typeof row.payload === 'object' && row.payload ? (row.payload as Record<string, unknown>) : {}),
+        ...(typeof row.payload === 'object' && row.payload
+          ? (row.payload as Record<string, unknown>)
+          : {}),
         created_at: row.created_at,
         updated_at: row.updated_at,
       })),
@@ -393,7 +403,11 @@ export class EmployeeProfileService {
     }));
   }
 
-  listTraining(employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
+  listTraining(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
     return this.listScopedRows(
       'public.employee_trainings',
       '*',
@@ -408,14 +422,23 @@ export class EmployeeProfileService {
    * R-CORE-06-TERM-CHK-01 — optional query.status filters SQL (e.g. assigned-only checklist).
    * Soft termination_context_id accepted on DTO only (HOLD invent TERM PK / join).
    */
-  async listAssets(employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
+  async listAssets(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const employee = await this.employees.getEmployeeById(employeeId, query, authorization);
+    const employee = await this.employees.getEmployeeById(
+      employeeId,
+      query,
+      authorization,
+    );
     const filters = ['employee_id = $1::uuid'];
     const values: unknown[] = [employeeId];
     pushCompanyIdFilter(filters, values, [employee.company_id]);
 
-    const statusRaw = typeof query.status === 'string' ? query.status.trim().toLowerCase() : '';
+    const statusRaw =
+      typeof query.status === 'string' ? query.status.trim().toLowerCase() : '';
     if (statusRaw) {
       if (!ASSET_STATUS_LABEL_VI[statusRaw]) {
         throw new ApiException(
@@ -454,9 +477,13 @@ export class EmployeeProfileService {
     await this.ensureSchema();
     // Fail-fast emp/scope before serial gate (U19 — no empty-mask).
     await this.employees.getEmployeeById(employeeId, query, authorization);
-    const normalized = this.normalizeAssetWritePayload(payload, { forCreate: true });
+    const normalized = this.normalizeAssetWritePayload(payload, {
+      forCreate: true,
+    });
     const assetName =
-      typeof normalized.asset_name === 'string' ? normalized.asset_name.trim() : '';
+      typeof normalized.asset_name === 'string'
+        ? normalized.asset_name.trim()
+        : '';
     if (!assetName) {
       throw new ApiException(
         'HRM-EMP-PROFILE-400',
@@ -465,7 +492,11 @@ export class EmployeeProfileService {
       );
     }
     normalized.asset_name = assetName;
-    if (normalized.status === undefined || normalized.status === null || normalized.status === '') {
+    if (
+      normalized.status === undefined ||
+      normalized.status === null ||
+      normalized.status === ''
+    ) {
       normalized.status = 'assigned';
     }
     // Create never stamps BB confirm (Diễn biến #2 = PATCH).
@@ -508,7 +539,11 @@ export class EmployeeProfileService {
     const existing = await this.peekAssetRow(assetId, employeeId);
     this.guardProfileRowMutate(existing, authorization, query.company_id);
     if (!existing) {
-      throw new ApiException('HRM-EMP-PROFILE-404', 'Profile row not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-PROFILE-404',
+        'Profile row not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const normalized = this.normalizeAssetWritePayload(payload, {
@@ -516,7 +551,11 @@ export class EmployeeProfileService {
       authorization,
     });
     if (Object.keys(normalized).length === 0) {
-      throw new ApiException('HRM-EMP-PROFILE-400', 'No fields to update', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-EMP-PROFILE-400',
+        'No fields to update',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const nextSerial =
@@ -524,7 +563,9 @@ export class EmployeeProfileService {
         ? normalized.serial_number
         : existing.serial_number;
     const nextStatus = String(
-      normalized.status !== undefined ? normalized.status : existing.status ?? 'assigned',
+      normalized.status !== undefined
+        ? normalized.status
+        : (existing.status ?? 'assigned'),
     );
     await this.assertAssetSerialAvailable({
       serial: nextSerial,
@@ -563,7 +604,11 @@ export class EmployeeProfileService {
     const existing = await this.peekAssetRow(assetId, employeeId);
     this.guardProfileRowMutate(existing, authorization, query.company_id);
     if (!existing) {
-      throw new ApiException('HRM-EMP-PROFILE-404', 'Profile row not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-PROFILE-404',
+        'Profile row not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const issued = this.isAssetIssued(existing);
@@ -575,7 +620,13 @@ export class EmployeeProfileService {
       );
     }
 
-    return this.deleteProfileRow('public.employee_assets', assetId, employeeId, query, authorization);
+    return this.deleteProfileRow(
+      'public.employee_assets',
+      assetId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
   private assetStatusLabelVi(status: unknown): string {
@@ -605,7 +656,13 @@ export class EmployeeProfileService {
   private resolveAssetActorId(authorization?: string): string | null {
     const payload = getVerifiedInternalJwtPayload(authorization);
     if (!payload) return null;
-    for (const key of ['email', 'sub', 'userId', 'user_id', 'preferred_username'] as const) {
+    for (const key of [
+      'email',
+      'sub',
+      'userId',
+      'user_id',
+      'preferred_username',
+    ] as const) {
       const value = payload[key];
       if (typeof value === 'string' && value.trim()) return value.trim();
     }
@@ -631,14 +688,22 @@ export class EmployeeProfileService {
     const out: Record<string, unknown> = {};
     for (const [rawKey, value] of Object.entries(payload)) {
       if (value === undefined) continue;
-      if (rawKey === 'handoverConfirmed' || rawKey === 'handover_confirmed') continue;
+      if (rawKey === 'handoverConfirmed' || rawKey === 'handover_confirmed')
+        continue;
       const snake = camelToSnake[rawKey] ?? rawKey;
       if ((ASSET_WRITE_FIELDS as readonly string[]).includes(snake)) {
-        if (assetDateFields.has(snake) && typeof value === 'string' && value.trim() === '') {
+        if (
+          assetDateFields.has(snake) &&
+          typeof value === 'string' &&
+          value.trim() === ''
+        ) {
           out[snake] = null;
           continue;
         }
-        out[snake] = typeof value === 'string' && snake === 'serial_number' ? value.trim() : value;
+        out[snake] =
+          typeof value === 'string' && snake === 'serial_number'
+            ? value.trim()
+            : value;
       }
     }
 
@@ -648,8 +713,12 @@ export class EmployeeProfileService {
       if (out.handover_confirmed_at === undefined) {
         out.handover_confirmed_at = new Date().toISOString();
       }
-      if (out.handover_confirmed_by === undefined || out.handover_confirmed_by === null) {
-        out.handover_confirmed_by = this.resolveAssetActorId(opts.authorization) ?? 'system';
+      if (
+        out.handover_confirmed_by === undefined ||
+        out.handover_confirmed_by === null
+      ) {
+        out.handover_confirmed_by =
+          this.resolveAssetActorId(opts.authorization) ?? 'system';
       }
     } else if (!opts.forCreate && confirmFlag === false) {
       out.handover_confirmed_at = null;
@@ -676,8 +745,14 @@ export class EmployeeProfileService {
     status?: string | null;
     handover_confirmed_at?: unknown;
   }): boolean {
-    const status = typeof row.status === 'string' ? row.status.trim().toLowerCase() : '';
-    if (status === 'assigned' || status === 'returned' || status === 'maintenance' || status === 'lost') {
+    const status =
+      typeof row.status === 'string' ? row.status.trim().toLowerCase() : '';
+    if (
+      status === 'assigned' ||
+      status === 'returned' ||
+      status === 'maintenance' ||
+      status === 'lost'
+    ) {
       return true;
     }
     const confirmedAt = row.handover_confirmed_at;
@@ -751,39 +826,84 @@ export class EmployeeProfileService {
     }
   }
 
-  listSkills(employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
-    return this.listScopedRows('public.employee_skills', '*', employeeId, query, authorization);
+  listSkills(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
+    return this.listScopedRows(
+      'public.employee_skills',
+      '*',
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
-  createSkill(employeeId: string, query: EmployeeProfileListQueryDto, payload: Record<string, unknown>, authorization?: string) {
+  createSkill(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     const skillLevel = this.resolveSkillLevel(payload, 50);
-    return this.insertProfileRow('public.employee_skills', employeeId, query, authorization, {
-      category: payload.category ?? 'technical',
-      name: payload.name,
-      level: skillLevel,
-      notes: payload.notes ?? null,
-    });
+    return this.insertProfileRow(
+      'public.employee_skills',
+      employeeId,
+      query,
+      authorization,
+      {
+        category: payload.category ?? 'technical',
+        name: payload.name,
+        level: skillLevel,
+        notes: payload.notes ?? null,
+      },
+    );
   }
 
-  updateSkill(skillId: string, employeeId: string, query: EmployeeProfileListQueryDto, payload: Record<string, unknown>, authorization?: string) {
+  updateSkill(
+    skillId: string,
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     const normalizedPayload: Record<string, unknown> = { ...payload };
     const skillLevel = this.resolveSkillLevel(payload);
     if (skillLevel !== undefined) {
       normalizedPayload.level = skillLevel;
     }
-    return this.updateProfileRow('public.employee_skills', skillId, employeeId, query, authorization, normalizedPayload, [
-      'category',
-      'name',
-      'level',
-      'notes',
-    ]);
+    return this.updateProfileRow(
+      'public.employee_skills',
+      skillId,
+      employeeId,
+      query,
+      authorization,
+      normalizedPayload,
+      ['category', 'name', 'level', 'notes'],
+    );
   }
 
-  deleteSkill(skillId: string, employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
-    return this.deleteProfileRow('public.employee_skills', skillId, employeeId, query, authorization);
+  deleteSkill(
+    skillId: string,
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
+    return this.deleteProfileRow(
+      'public.employee_skills',
+      skillId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
-  listWorkTimeline(employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
+  listWorkTimeline(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
     return this.listWorkTimelineScoped(employeeId, query, authorization);
   }
 
@@ -794,7 +914,11 @@ export class EmployeeProfileService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const employee = await this.employees.getEmployeeById(employeeId, query, authorization);
+    const employee = await this.employees.getEmployeeById(
+      employeeId,
+      query,
+      authorization,
+    );
     const filters = ['wt.employee_id = $1::uuid', 'wt.archived_at IS NULL'];
     const values: unknown[] = [employeeId];
     pushCompanyIdFilter(filters, values, [employee.company_id]);
@@ -832,9 +956,16 @@ export class EmployeeProfileService {
   /**
    * Settings picker partition (main / member OU → holding on group tenant) — parity settings-catalogs controller.
    */
-  private resolveWhCatalogCompanyId(persistCompanyId: string, authorization?: string): string {
+  private resolveWhCatalogCompanyId(
+    persistCompanyId: string,
+    authorization?: string,
+  ): string {
     const tenantId = this.resolveCatalogTenantId();
-    return resolveHrmSettingsCatalogCompanyId(authorization, tenantId, persistCompanyId);
+    return resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      tenantId,
+      persistCompanyId,
+    );
   }
 
   private async assertWhPositionKey(
@@ -854,7 +985,10 @@ export class EmployeeProfileService {
       return { code, label: code };
     }
     const tenantId = this.resolveCatalogTenantId();
-    const catalogCompanyId = this.resolveWhCatalogCompanyId(companyId, authorization);
+    const catalogCompanyId = this.resolveWhCatalogCompanyId(
+      companyId,
+      authorization,
+    );
     try {
       const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
         tenantId,
@@ -897,7 +1031,10 @@ export class EmployeeProfileService {
     }
     if (!this.settingsCatalogs) return code;
     const tenantId = this.resolveCatalogTenantId();
-    const catalogCompanyId = this.resolveWhCatalogCompanyId(companyId, authorization);
+    const catalogCompanyId = this.resolveWhCatalogCompanyId(
+      companyId,
+      authorization,
+    );
     const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
       tenantId,
       companyId: catalogCompanyId,
@@ -915,7 +1052,8 @@ export class EmployeeProfileService {
     decisionId: unknown,
     authorization?: string,
   ): Promise<string | null> {
-    if (decisionId === undefined || decisionId === null || decisionId === '') return null;
+    if (decisionId === undefined || decisionId === null || decisionId === '')
+      return null;
     const id = typeof decisionId === 'string' ? decisionId.trim() : '';
     if (!id) return null;
     const scope = resolveHrmListScope(authorization, companyId);
@@ -943,10 +1081,20 @@ export class EmployeeProfileService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const employee = await this.employees.getEmployeeById(employeeId, query, authorization);
+    const employee = await this.employees.getEmployeeById(
+      employeeId,
+      query,
+      authorization,
+    );
     // F-CORE-WH-02 — reject free-text-only SoT (position without position_key).
-    const hasPositionKey = Object.prototype.hasOwnProperty.call(payload, 'position_key');
-    const hasPositionText = Object.prototype.hasOwnProperty.call(payload, 'position');
+    const hasPositionKey = Object.prototype.hasOwnProperty.call(
+      payload,
+      'position_key',
+    );
+    const hasPositionText = Object.prototype.hasOwnProperty.call(
+      payload,
+      'position',
+    );
     if (hasPositionText && !hasPositionKey) {
       throw new ApiException(
         HRM_WH_PICK_REQUIRED,
@@ -954,7 +1102,11 @@ export class EmployeeProfileService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const pos = await this.assertWhPositionKey(employee.company_id, payload.position_key, authorization);
+    const pos = await this.assertWhPositionKey(
+      employee.company_id,
+      payload.position_key,
+      authorization,
+    );
     const departmentKey = await this.assertWhDepartmentKey(
       employee.company_id,
       payload.department_key,
@@ -975,7 +1127,8 @@ export class EmployeeProfileService {
       position_key: pos.code,
       position: positionSnapshot,
       source_module:
-        typeof payload.source_module === 'string' && payload.source_module.trim()
+        typeof payload.source_module === 'string' &&
+        payload.source_module.trim()
           ? payload.source_module.trim()
           : 'manual',
     };
@@ -987,7 +1140,13 @@ export class EmployeeProfileService {
     } else {
       delete normalized.decision_id;
     }
-    return this.insertProfileRow('public.employee_work_timeline', employeeId, query, authorization, normalized);
+    return this.insertProfileRow(
+      'public.employee_work_timeline',
+      employeeId,
+      query,
+      authorization,
+      normalized,
+    );
   }
 
   async updateWorkTimelineItem(
@@ -998,10 +1157,20 @@ export class EmployeeProfileService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const employee = await this.employees.getEmployeeById(employeeId, query, authorization);
+    const employee = await this.employees.getEmployeeById(
+      employeeId,
+      query,
+      authorization,
+    );
     const normalized: Record<string, unknown> = { ...payload };
-    const hasPositionKey = Object.prototype.hasOwnProperty.call(payload, 'position_key');
-    const hasPositionText = Object.prototype.hasOwnProperty.call(payload, 'position');
+    const hasPositionKey = Object.prototype.hasOwnProperty.call(
+      payload,
+      'position_key',
+    );
+    const hasPositionText = Object.prototype.hasOwnProperty.call(
+      payload,
+      'position',
+    );
     if (hasPositionText && !hasPositionKey) {
       throw new ApiException(
         HRM_WH_PICK_REQUIRED,
@@ -1010,7 +1179,11 @@ export class EmployeeProfileService {
       );
     }
     if (hasPositionKey) {
-      const pos = await this.assertWhPositionKey(employee.company_id, payload.position_key, authorization);
+      const pos = await this.assertWhPositionKey(
+        employee.company_id,
+        payload.position_key,
+        authorization,
+      );
       normalized.position_key = pos.code;
       if (
         payload.position === undefined ||
@@ -1036,21 +1209,29 @@ export class EmployeeProfileService {
       );
       normalized.decision_id = decisionId;
     }
-    return this.updateProfileRow('public.employee_work_timeline', itemId, employeeId, query, authorization, normalized, [
-      'event_date',
-      'title',
-      'description',
-      'event_type',
-      'status',
-      'contract_code',
-      'department',
-      'department_key',
-      'position',
-      'position_key',
-      'notes',
-      'decision_id',
-      'source_module',
-    ]);
+    return this.updateProfileRow(
+      'public.employee_work_timeline',
+      itemId,
+      employeeId,
+      query,
+      authorization,
+      normalized,
+      [
+        'event_date',
+        'title',
+        'description',
+        'event_type',
+        'status',
+        'contract_code',
+        'department',
+        'department_key',
+        'position',
+        'position_key',
+        'notes',
+        'decision_id',
+        'source_module',
+      ],
+    );
   }
 
   async deleteWorkTimelineItem(
@@ -1063,7 +1244,11 @@ export class EmployeeProfileService {
     await this.ensureSchema();
     await this.employees.getEmployeeById(employeeId, query, authorization);
     this.guardProfileRowMutate(
-      await this.peekProfileRow('public.employee_work_timeline', itemId, employeeId),
+      await this.peekProfileRow(
+        'public.employee_work_timeline',
+        itemId,
+        employeeId,
+      ),
       authorization,
       query.company_id,
     );
@@ -1077,55 +1262,158 @@ export class EmployeeProfileService {
       [itemId, employeeId],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-EMP-PROFILE-404', 'Profile row not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-PROFILE-404',
+        'Profile row not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: itemId, archived: true };
   }
 
-  listResumeFiles(employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
-    return this.listScopedRows('public.employee_resume_files', '*', employeeId, query, authorization);
+  listResumeFiles(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
+    return this.listScopedRows(
+      'public.employee_resume_files',
+      '*',
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
-  createResumeFile(employeeId: string, query: EmployeeProfileListQueryDto, payload: Record<string, unknown>, authorization?: string) {
-    return this.insertProfileRow('public.employee_resume_files', employeeId, query, authorization, payload);
+  createResumeFile(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
+    return this.insertProfileRow(
+      'public.employee_resume_files',
+      employeeId,
+      query,
+      authorization,
+      payload,
+    );
   }
 
-  deleteResumeFile(fileId: string, employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
-    return this.deleteProfileRow('public.employee_resume_files', fileId, employeeId, query, authorization);
+  deleteResumeFile(
+    fileId: string,
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
+    return this.deleteProfileRow(
+      'public.employee_resume_files',
+      fileId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
-  listRewards(employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
-    return this.listScopedRows('public.employee_rewards', '*', employeeId, query, authorization);
+  listRewards(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
+    return this.listScopedRows(
+      'public.employee_rewards',
+      '*',
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
-  listDiscipline(employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
-    return this.listScopedRows('public.employee_discipline', '*', employeeId, query, authorization);
+  listDiscipline(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
+    return this.listScopedRows(
+      'public.employee_discipline',
+      '*',
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
-  createReward(employeeId: string, query: EmployeeProfileListQueryDto, payload: Record<string, unknown>, authorization?: string) {
-    return this.insertProfileRow('public.employee_rewards', employeeId, query, authorization, payload);
+  createReward(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
+    return this.insertProfileRow(
+      'public.employee_rewards',
+      employeeId,
+      query,
+      authorization,
+      payload,
+    );
   }
 
-  updateReward(rewardId: string, employeeId: string, query: EmployeeProfileListQueryDto, payload: Record<string, unknown>, authorization?: string) {
-    return this.updateProfileRow('public.employee_rewards', rewardId, employeeId, query, authorization, payload, [
-      'reward_date',
-      'reward_type',
-      'title',
-      'description',
-      'decision_number',
-      'amount',
-      'issued_by',
-      'status',
-      'notes',
-    ]);
+  updateReward(
+    rewardId: string,
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
+    return this.updateProfileRow(
+      'public.employee_rewards',
+      rewardId,
+      employeeId,
+      query,
+      authorization,
+      payload,
+      [
+        'reward_date',
+        'reward_type',
+        'title',
+        'description',
+        'decision_number',
+        'amount',
+        'issued_by',
+        'status',
+        'notes',
+      ],
+    );
   }
 
-  deleteReward(rewardId: string, employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
-    return this.deleteProfileRow('public.employee_rewards', rewardId, employeeId, query, authorization);
+  deleteReward(
+    rewardId: string,
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
+    return this.deleteProfileRow(
+      'public.employee_rewards',
+      rewardId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
-  createDiscipline(employeeId: string, query: EmployeeProfileListQueryDto, payload: Record<string, unknown>, authorization?: string) {
-    return this.insertProfileRow('public.employee_discipline', employeeId, query, authorization, payload);
+  createDiscipline(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
+    return this.insertProfileRow(
+      'public.employee_discipline',
+      employeeId,
+      query,
+      authorization,
+      payload,
+    );
   }
 
   updateDiscipline(
@@ -1135,27 +1423,57 @@ export class EmployeeProfileService {
     payload: Record<string, unknown>,
     authorization?: string,
   ) {
-    return this.updateProfileRow('public.employee_discipline', disciplineId, employeeId, query, authorization, payload, [
-      'discipline_date',
-      'discipline_type',
-      'title',
-      'description',
-      'decision_number',
-      'penalty_amount',
-      'issued_by',
-      'effective_from',
-      'effective_to',
-      'status',
-      'notes',
-    ]);
+    return this.updateProfileRow(
+      'public.employee_discipline',
+      disciplineId,
+      employeeId,
+      query,
+      authorization,
+      payload,
+      [
+        'discipline_date',
+        'discipline_type',
+        'title',
+        'description',
+        'decision_number',
+        'penalty_amount',
+        'issued_by',
+        'effective_from',
+        'effective_to',
+        'status',
+        'notes',
+      ],
+    );
   }
 
-  deleteDiscipline(disciplineId: string, employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
-    return this.deleteProfileRow('public.employee_discipline', disciplineId, employeeId, query, authorization);
+  deleteDiscipline(
+    disciplineId: string,
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
+    return this.deleteProfileRow(
+      'public.employee_discipline',
+      disciplineId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
-  createTraining(employeeId: string, query: EmployeeProfileListQueryDto, payload: Record<string, unknown>, authorization?: string) {
-    return this.insertProfileRow('public.employee_trainings', employeeId, query, authorization, payload);
+  createTraining(
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
+    return this.insertProfileRow(
+      'public.employee_trainings',
+      employeeId,
+      query,
+      authorization,
+      payload,
+    );
   }
 
   updateTraining(
@@ -1165,34 +1483,56 @@ export class EmployeeProfileService {
     payload: Record<string, unknown>,
     authorization?: string,
   ) {
-    return this.updateProfileRow('public.employee_trainings', trainingId, employeeId, query, authorization, payload, [
-      'name',
-      'type',
-      'category',
-      'provider',
-      'instructor',
-      'start_date',
-      'end_date',
-      'duration',
-      'duration_unit',
-      'location',
-      'status',
-      'progress',
-      'score',
-      'certificate_number',
-      'certificate_file_url',
-      'cost',
-      'paid_by',
-      'description',
-      'skills',
-    ]);
+    return this.updateProfileRow(
+      'public.employee_trainings',
+      trainingId,
+      employeeId,
+      query,
+      authorization,
+      payload,
+      [
+        'name',
+        'type',
+        'category',
+        'provider',
+        'instructor',
+        'start_date',
+        'end_date',
+        'duration',
+        'duration_unit',
+        'location',
+        'status',
+        'progress',
+        'score',
+        'certificate_number',
+        'certificate_file_url',
+        'cost',
+        'paid_by',
+        'description',
+        'skills',
+      ],
+    );
   }
 
-  deleteTraining(trainingId: string, employeeId: string, query: EmployeeProfileListQueryDto, authorization?: string) {
-    return this.deleteProfileRow('public.employee_trainings', trainingId, employeeId, query, authorization);
+  deleteTraining(
+    trainingId: string,
+    employeeId: string,
+    query: EmployeeProfileListQueryDto,
+    authorization?: string,
+  ) {
+    return this.deleteProfileRow(
+      'public.employee_trainings',
+      trainingId,
+      employeeId,
+      query,
+      authorization,
+    );
   }
 
-  private resolveSkillLevel(payload: Record<string, unknown>, fallback?: unknown) {
+  private resolveSkillLevel(
+    payload: Record<string, unknown>,
+    fallback?: unknown,
+  ) {
     const candidate = payload.level ?? payload.proficiency ?? fallback;
     if (candidate === undefined || candidate === null) {
       return undefined;
@@ -1225,18 +1565,27 @@ export class EmployeeProfileService {
     payload: Record<string, unknown>,
   ) {
     await this.ensureSchema();
-    const employee = await this.employees.getEmployeeById(employeeId, query, authorization);
+    const employee = await this.employees.getEmployeeById(
+      employeeId,
+      query,
+      authorization,
+    );
     const id = randomUUID();
     const columns = ['id', 'employee_id', 'company_id'];
     const values: unknown[] = [id, employeeId, employee.company_id];
-    const allowed = Object.keys(payload).filter((k) => payload[k] !== undefined);
+    const allowed = Object.keys(payload).filter(
+      (k) => payload[k] !== undefined,
+    );
     for (const key of allowed) {
       columns.push(key);
-      values.push(key === 'skills' ? JSON.stringify(payload[key] ?? []) : payload[key]);
+      values.push(
+        key === 'skills' ? JSON.stringify(payload[key] ?? []) : payload[key],
+      );
     }
     const placeholders = values.map((_, i) => {
       if (columns[i] === 'skills') return `$${i + 1}::jsonb`;
-      if (columns[i]?.includes('date') && columns[i] !== 'updated_at') return `$${i + 1}::date`;
+      if (columns[i]?.includes('date') && columns[i] !== 'updated_at')
+        return `$${i + 1}::date`;
       return `$${i + 1}`;
     });
     const res = await this.db.query<ProfileRow>(
@@ -1258,7 +1607,11 @@ export class EmployeeProfileService {
     });
   }
 
-  private async peekProfileRow(table: string, rowId: string, employeeId: string) {
+  private async peekProfileRow(
+    table: string,
+    rowId: string,
+    employeeId: string,
+  ) {
     const peek = await this.db.query<{ company_id: string }>(
       `SELECT company_id FROM ${table} WHERE id = $1::uuid AND employee_id = $2::uuid LIMIT 1;`,
       [rowId, employeeId],
@@ -1286,12 +1639,22 @@ export class EmployeeProfileService {
     const values: unknown[] = [rowId, employeeId];
     for (const field of fields) {
       if (payload[field] === undefined) continue;
-      values.push(field === 'skills' ? JSON.stringify(payload[field]) : payload[field]);
-      const cast = field.includes('date') ? '::date' : field === 'skills' ? '::jsonb' : '';
+      values.push(
+        field === 'skills' ? JSON.stringify(payload[field]) : payload[field],
+      );
+      const cast = field.includes('date')
+        ? '::date'
+        : field === 'skills'
+          ? '::jsonb'
+          : '';
       sets.push(`${field} = $${values.length}${cast}`);
     }
     if (sets.length === 0) {
-      throw new ApiException('HRM-EMP-PROFILE-400', 'No fields to update', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-EMP-PROFILE-400',
+        'No fields to update',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     sets.push('updated_at = NOW()');
     const res = await this.db.query<ProfileRow>(
@@ -1299,7 +1662,11 @@ export class EmployeeProfileService {
       values,
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-EMP-PROFILE-404', 'Profile row not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-PROFILE-404',
+        'Profile row not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return res.rows[0];
   }
@@ -1318,12 +1685,16 @@ export class EmployeeProfileService {
       authorization,
       query.company_id,
     );
-    const res = await this.db.query(`DELETE FROM ${table} WHERE id = $1::uuid AND employee_id = $2::uuid RETURNING id;`, [
-      rowId,
-      employeeId,
-    ]);
+    const res = await this.db.query(
+      `DELETE FROM ${table} WHERE id = $1::uuid AND employee_id = $2::uuid RETURNING id;`,
+      [rowId, employeeId],
+    );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-EMP-PROFILE-404', 'Profile row not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-PROFILE-404',
+        'Profile row not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: rowId };
   }

@@ -18,30 +18,51 @@ describe('BE-HRM-G-RC-01 CreateJobRequisitionDto headcount', () => {
 
   it('rejects missing headcount', () => {
     const dto = Object.assign(new CreateJobRequisitionDto(), { ...base });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors.some((e) => e.property === 'headcount')).toBe(true);
   });
 
   it('rejects headcount ≤ 0', () => {
     for (const headcount of [0, -1, -10]) {
-      const dto = Object.assign(new CreateJobRequisitionDto(), { ...base, headcount });
-      const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+      const dto = Object.assign(new CreateJobRequisitionDto(), {
+        ...base,
+        headcount,
+      });
+      const errors = validateSync(dto, {
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      });
       expect(errors.some((e) => e.property === 'headcount')).toBe(true);
     }
   });
 
   it('accepts headcount ≥ 1', () => {
     for (const headcount of [1, 2, 15]) {
-      const dto = Object.assign(new CreateJobRequisitionDto(), { ...base, headcount });
-      const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+      const dto = Object.assign(new CreateJobRequisitionDto(), {
+        ...base,
+        headcount,
+      });
+      const errors = validateSync(dto, {
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      });
       expect(errors).toHaveLength(0);
       expect(dto.headcount).toBe(headcount);
     }
   });
 
   it('UpdateJobRequisitionDto rejects optional headcount ≤ 0', () => {
-    const dto = Object.assign(new UpdateJobRequisitionDto(), { status: 'open', headcount: 0 });
-    const errors = validateSync(dto, { whitelist: true, forbidNonWhitelisted: true });
+    const dto = Object.assign(new UpdateJobRequisitionDto(), {
+      status: 'open',
+      headcount: 0,
+    });
+    const errors = validateSync(dto, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
     expect(errors.some((e) => e.property === 'headcount')).toBe(true);
   });
 });
@@ -115,9 +136,17 @@ describe('BE-HRM-G-RC-01 RecruitmentService headcount wire', () => {
     });
 
     expect(result.headcount).toBe(3);
-    const insertCall = db.query.mock.calls.find((c) => String(c[0]).includes('INSERT INTO public.job_requisitions'));
+    const insertCall = db.query.mock.calls.find((c) =>
+      String(c[0]).includes('INSERT INTO public.job_requisitions'),
+    );
     expect(insertCall?.[1]).toEqual(
-      expect.arrayContaining(['holding', 'Lái xe container', 'Vận tải', 'full_time', 3]),
+      expect.arrayContaining([
+        'holding',
+        'Lái xe container',
+        'Vận tải',
+        'full_time',
+        3,
+      ]),
     );
   });
 
@@ -138,7 +167,10 @@ describe('BE-HRM-G-RC-01 RecruitmentService headcount wire', () => {
       if (sql.includes('SELECT COUNT(*)')) {
         return { rows: [{ total: '1' }] } as never;
       }
-      if (sql.includes('FROM public.job_requisitions') && sql.includes('ORDER BY')) {
+      if (
+        sql.includes('FROM public.job_requisitions') &&
+        sql.includes('ORDER BY')
+      ) {
         expect(sql).toContain('headcount');
         return {
           rows: [
@@ -168,16 +200,20 @@ describe('BE-HRM-G-RC-01 RecruitmentService headcount wire', () => {
   });
 
   it('ensureSchema adds job_requisitions.headcount (not postings/proposals)', async () => {
-    await service.createJobRequisition({
-      company_id: 'holding',
-      title: 'NV Kho',
-      department: 'Kho',
-      employment_type: 'full_time',
-      headcount: 1,
-    }).catch(() => undefined);
+    await service
+      .createJobRequisition({
+        company_id: 'holding',
+        title: 'NV Kho',
+        department: 'Kho',
+        employment_type: 'full_time',
+        headcount: 1,
+      })
+      .catch(() => undefined);
 
     const ddl = db.query.mock.calls.map((c) => String(c[0])).join('\n');
-    expect(ddl).toMatch(/job_requisitions[\s\S]*headcount|ADD COLUMN IF NOT EXISTS headcount/i);
+    expect(ddl).toMatch(
+      /job_requisitions[\s\S]*headcount|ADD COLUMN IF NOT EXISTS headcount/i,
+    );
     expect(ddl).not.toMatch(/ALTER TABLE public\.job_postings[\s\S]*headcount/);
   });
 });

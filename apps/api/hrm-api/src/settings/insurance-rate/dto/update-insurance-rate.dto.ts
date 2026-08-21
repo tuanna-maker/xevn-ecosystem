@@ -1,4 +1,11 @@
-import { IsOptional, IsNumber, IsIn, Min, Max, IsDateString } from 'class-validator';
+import {
+  IsOptional,
+  IsNumber,
+  IsIn,
+  Min,
+  Max,
+  IsDateString,
+} from 'class-validator';
 
 export class UpdateInsuranceRateDto {
   @IsOptional()

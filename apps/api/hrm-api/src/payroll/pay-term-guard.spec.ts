@@ -17,7 +17,7 @@ describe('pay-term-guard', () => {
     try {
       assertNoPayTermPayoutOverrideInBody({ leave_cashout_vnd: 500_000 });
     } catch (e) {
-      expect(e).toMatchObject<ApiException>({
+      expect(e).toMatchObject({
         code: HRM_PAY_TERM_403,
         status: HttpStatus.FORBIDDEN,
       });
@@ -25,13 +25,18 @@ describe('pay-term-guard', () => {
   });
 
   it('assertNoIncludeTerminationsSettleSoT — dedicated settle route only', () => {
-    expect(() => assertNoIncludeTerminationsSettleSoT(null, { include_terminations: 'true' })).toThrow(
-      ApiException,
-    );
+    expect(() =>
+      assertNoIncludeTerminationsSettleSoT(null, {
+        include_terminations: 'true',
+      }),
+    ).toThrow(ApiException);
     try {
-      assertNoIncludeTerminationsSettleSoT({ include_terminations: true }, null);
+      assertNoIncludeTerminationsSettleSoT(
+        { include_terminations: true },
+        null,
+      );
     } catch (e) {
-      expect(e).toMatchObject<ApiException>({
+      expect(e).toMatchObject({
         code: HRM_PAY_TERM_400_USE_DEDICATED_SETTLE,
         status: HttpStatus.BAD_REQUEST,
       });

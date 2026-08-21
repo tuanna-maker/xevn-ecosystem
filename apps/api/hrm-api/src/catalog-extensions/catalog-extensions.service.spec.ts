@@ -22,7 +22,9 @@ const GROUP_CEO_TOKEN = () =>
 
 describe('CatalogExtensionsService', () => {
   const query = jest.fn();
-  const service = new CatalogExtensionsService({ query } as unknown as HrmDbService);
+  const service = new CatalogExtensionsService({
+    query,
+  } as unknown as HrmDbService);
 
   beforeEach(() => {
     query.mockReset();
@@ -37,7 +39,10 @@ describe('CatalogExtensionsService', () => {
 
   it('lists sales data with company filter', async () => {
     query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('FROM public.hrm_sales_data')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.hrm_sales_data')
+      ) {
         return { rows: [{ id: '1' }] };
       }
       return { rows: [] };
@@ -49,7 +54,10 @@ describe('CatalogExtensionsService', () => {
 
   it('lists bonus policies empty array without 404', async () => {
     query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('FROM public.hrm_bonus_policies')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.hrm_bonus_policies')
+      ) {
         return { rows: [] };
       }
       return { rows: [] };
@@ -61,7 +69,10 @@ describe('CatalogExtensionsService', () => {
   it('syncSalesData applies company_id ANY rollup for group CEO main (P1-QUAL-BE-W3-SCOPE-01)', async () => {
     const token = GROUP_CEO_TOKEN();
     query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('UPDATE public.hrm_sales_data')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('UPDATE public.hrm_sales_data')
+      ) {
         return { rows: [{ id: '1' }, { id: '2' }] };
       }
       return { rows: [] };
@@ -81,10 +92,16 @@ describe('CatalogExtensionsService', () => {
     const employeeId = '289a9388-22c5-49be-a795-f498a0c72436';
     const token = GROUP_CEO_TOKEN();
     query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.hrm_face_data')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('SELECT company_id FROM public.hrm_face_data')
+      ) {
         return { rows: [{ company_id: 'logistics' }] };
       }
-      if (typeof sql === 'string' && sql.includes('DELETE FROM public.hrm_face_data')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('DELETE FROM public.hrm_face_data')
+      ) {
         return { rows: [] };
       }
       return { rows: [] };
@@ -104,14 +121,19 @@ describe('CatalogExtensionsService', () => {
     const employeeId = '289a9388-22c5-49be-a795-f498a0c72436';
     const token = GROUP_CEO_TOKEN();
     query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.hrm_face_data')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('SELECT company_id FROM public.hrm_face_data')
+      ) {
         return { rows: [{ company_id: 'other-co' }] };
       }
       return { rows: [] };
     });
     await expect(
       service.deleteFaceData(employeeId, 'main', `Bearer ${token}`),
-    ).rejects.toThrow(expect.objectContaining<ApiException>({ code: 'HRM-FACE-409' }));
+    ).rejects.toThrow(
+      expect.objectContaining({ code: 'HRM-FACE-409' }),
+    );
     const deleteCall = query.mock.calls.find(([sql]) =>
       String(sql).includes('DELETE FROM public.hrm_face_data'),
     );
@@ -122,10 +144,16 @@ describe('CatalogExtensionsService', () => {
     const policyId = 'a1b2c3d4-e5f6-4789-a012-3456789abcde';
     const token = GROUP_CEO_TOKEN();
     query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('FROM public.hrm_bonus_policies WHERE id')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.hrm_bonus_policies WHERE id')
+      ) {
         return { rows: [{ company_id: 'holding' }] };
       }
-      if (typeof sql === 'string' && sql.includes('INSERT INTO public.hrm_bonus_policy_participants')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('INSERT INTO public.hrm_bonus_policy_participants')
+      ) {
         return {
           rows: [
             {
@@ -160,7 +188,10 @@ describe('CatalogExtensionsService', () => {
     const policyId = 'a1b2c3d4-e5f6-4789-a012-3456789abcde';
     const token = GROUP_CEO_TOKEN();
     query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('FROM public.hrm_bonus_policies WHERE id')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.hrm_bonus_policies WHERE id')
+      ) {
         return { rows: [{ company_id: 'other-co' }] };
       }
       return { rows: [] };
@@ -175,16 +206,23 @@ describe('CatalogExtensionsService', () => {
         },
         `Bearer ${token}`,
       ),
-    ).rejects.toThrow(expect.objectContaining<ApiException>({ code: 'HRM-BONUS-409' }));
+    ).rejects.toThrow(
+      expect.objectContaining({ code: 'HRM-BONUS-409' }),
+    );
   });
 
   it('storeUploadedFile binds company_id and scoped storage path for group CEO main (P1-RESID-C01 / CE-04)', async () => {
     const token = GROUP_CEO_TOKEN();
-    const out = await service.storeUploadedFile('main', `Bearer ${token}`, 'resume', {
-      buffer: Buffer.from('data'),
-      originalname: 'cv.pdf',
-      mimetype: 'application/pdf',
-    });
+    const out = await service.storeUploadedFile(
+      'main',
+      `Bearer ${token}`,
+      'resume',
+      {
+        buffer: Buffer.from('data'),
+        originalname: 'cv.pdf',
+        mimetype: 'application/pdf',
+      },
+    );
     expect(out.company_id).toBe('holding');
     expect(out.url).toMatch(/^\/api\/hrm\/files\/holding\//);
     expect(jest.mocked(mkdir)).toHaveBeenCalledWith(
@@ -210,40 +248,63 @@ describe('CatalogExtensionsService', () => {
         originalname: 'a.png',
         mimetype: 'image/png',
       }),
-    ).rejects.toThrow(expect.objectContaining<ApiException>({ code: 'HRM-FILE-409' }));
+    ).rejects.toThrow(
+      expect.objectContaining({ code: 'HRM-FILE-409' }),
+    );
     expect(jest.mocked(writeFile)).not.toHaveBeenCalled();
   });
 
   it('readUploadedFile serves scoped path without auth (P1-RESID-C01 / GWC-AVT-01)', async () => {
-    const out = await service.readUploadedFile('holding', 'employee-avatar-1-test.png', undefined);
+    const out = await service.readUploadedFile(
+      'holding',
+      'employee-avatar-1-test.png',
+      undefined,
+    );
     expect(out.buffer.toString()).toBe('png-bytes');
     expect(out.mimetype).toBe('image/png');
     expect(jest.mocked(readFile)).toHaveBeenCalledWith(
-      expect.stringMatching(/hrm-files[\\/]holding[\\/]employee-avatar-1-test\.png$/),
+      expect.stringMatching(
+        /hrm-files[\\/]holding[\\/]employee-avatar-1-test\.png$/,
+      ),
     );
   });
 
   it('readUploadedFile rejects path traversal (GWC-AVT-01)', async () => {
-    await expect(service.readUploadedFile('holding', '../secret.png', undefined)).rejects.toThrow(
-      expect.objectContaining<ApiException>({ code: 'HRM-FILE-404' }),
+    await expect(
+      service.readUploadedFile('holding', '../secret.png', undefined),
+    ).rejects.toThrow(
+      expect.objectContaining({ code: 'HRM-FILE-404' }),
     );
     expect(jest.mocked(readFile)).not.toHaveBeenCalled();
   });
 
   it('readUploadedFile applies scope when JWT present (P1-RESID-C01)', async () => {
     const token = GROUP_CEO_TOKEN();
-    await service.readUploadedFile('main', 'employee-avatar-2-test.png', `Bearer ${token}`);
+    await service.readUploadedFile(
+      'main',
+      'employee-avatar-2-test.png',
+      `Bearer ${token}`,
+    );
     expect(jest.mocked(readFile)).toHaveBeenCalledWith(
-      expect.stringMatching(/hrm-files[\\/]holding[\\/]employee-avatar-2-test\.png$/),
+      expect.stringMatching(
+        /hrm-files[\\/]holding[\\/]employee-avatar-2-test\.png$/,
+      ),
     );
   });
 
   it('returns trial subscription when missing', async () => {
     query.mockImplementation(async (sql: string) => {
-      if (typeof sql === 'string' && sql.includes('FROM public.hrm_company_subscriptions') && sql.includes('LIMIT 1')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('FROM public.hrm_company_subscriptions') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [] };
       }
-      if (typeof sql === 'string' && sql.includes('INSERT INTO public.hrm_company_subscriptions')) {
+      if (
+        typeof sql === 'string' &&
+        sql.includes('INSERT INTO public.hrm_company_subscriptions')
+      ) {
         return {
           rows: [
             {

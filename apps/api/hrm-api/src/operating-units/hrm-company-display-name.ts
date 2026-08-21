@@ -22,7 +22,10 @@
  * must_keep: LE resolve/upsert semantics; reject Khối*; no label rename
  */
 import type { QueryResultRow } from 'pg';
-import { HRM_GROUP_MEMBER_COMPANY_SLUGS, MASTER_TENANT_ID } from '../common/hrm-list-scope';
+import {
+  HRM_GROUP_MEMBER_COMPANY_SLUGS,
+  MASTER_TENANT_ID,
+} from '../common/hrm-list-scope';
 import {
   buildOperatingUnitSeedRows,
   HRM_LEGACY_KHOI_DISPLAY_NAMES,
@@ -35,7 +38,9 @@ export type CompanyDisplayQueryFn = <T extends QueryResultRow = QueryResultRow>(
   params?: unknown[],
 ) => Promise<{ rows: T[] }>;
 
-export function isLegacyKhoiDisplayName(name: string | null | undefined): boolean {
+export function isLegacyKhoiDisplayName(
+  name: string | null | undefined,
+): boolean {
   const trimmed = name?.trim() ?? '';
   if (!trimmed) return false;
   if (HRM_LEGACY_KHOI_DISPLAY_NAMES.has(trimmed)) return true;
@@ -99,7 +104,10 @@ export async function loadCompanyDisplayNameBySlug(
       : [...HRM_GROUP_MEMBER_COMPANY_SLUGS];
   if (!wanted.length) return new Map();
 
-  const res = await query<{ company_slug: string; display_name: string | null }>(
+  const res = await query<{
+    company_slug: string;
+    display_name: string | null;
+  }>(
     `SELECT company_slug, display_name
      FROM public.company_slug_map
      WHERE tenant_id = $1 AND company_slug = ANY($2::text[])`,

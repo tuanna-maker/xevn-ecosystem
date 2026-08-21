@@ -136,7 +136,7 @@ describe('employee-update-policy', () => {
         `Bearer ${token}`,
       ),
     ).toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: 'HRM-EMP-403',
       }),
     );
@@ -151,9 +151,13 @@ describe('employee-update-policy', () => {
       roles: ['employee'],
     });
     expect(() =>
-      assertEmployeeUpdateAllowed(employeeId, { full_name: 'New Name' }, `Bearer ${token}`),
+      assertEmployeeUpdateAllowed(
+        employeeId,
+        { full_name: 'New Name' },
+        `Bearer ${token}`,
+      ),
     ).toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: 'HRM-EMP-403',
       }),
     );
@@ -169,9 +173,13 @@ describe('employee-update-policy', () => {
     });
     expect(canFullEmployeeUpdate(`Bearer ${token}`)).toBe(true);
     expect(() =>
-      assertEmployeeUpdateAllowed(employeeId, { full_name: 'SHOULD_NOT_APPLY' }, `Bearer ${token}`),
+      assertEmployeeUpdateAllowed(
+        employeeId,
+        { full_name: 'SHOULD_NOT_APPLY' },
+        `Bearer ${token}`,
+      ),
     ).toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: 'HRM-EMP-403',
       }),
     );
@@ -192,7 +200,7 @@ describe('employee-update-policy', () => {
         `Bearer ${token}`,
       ),
     ).toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: 'HRM-EMP-403',
       }),
     );
@@ -253,7 +261,7 @@ describe('employee-update-policy', () => {
         `Bearer ${token}`,
       ),
     ).toThrow(
-      expect.objectContaining<ApiException>({
+      expect.objectContaining({
         code: 'HRM-EMP-403',
       }),
     );
@@ -261,7 +269,12 @@ describe('employee-update-policy', () => {
 
   it('mergeSelfEssCustomFields applies only phone keys and preserves others', () => {
     const merged = mergeSelfEssCustomFields(
-      { phone_number: '0901234567', gender: 'male', tenant_id: 'xevn', salary: '1000' },
+      {
+        phone_number: '0901234567',
+        gender: 'male',
+        tenant_id: 'xevn',
+        salary: '1000',
+      },
       {
         phone_number: '0911111111',
         work_phone: '0289999999',

@@ -12,7 +12,10 @@ import {
   HRM_DEC_EMP_REQUIRED,
   PERSON_BOUND_DECISION_TYPES,
 } from '../decisions/decisions.service';
-import { EmployeeInsurancesService, HRM_SI_ACTION_400 } from '../employee-insurances/employee-insurances.service';
+import {
+  EmployeeInsurancesService,
+  HRM_SI_ACTION_400,
+} from '../employee-insurances/employee-insurances.service';
 import {
   EmployeeProfileService,
   HRM_WH_PICK_REQUIRED,
@@ -38,7 +41,9 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
     let db: jest.Mocked<HrmDbService>;
 
     beforeEach(() => {
-      db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as jest.Mocked<HrmDbService>;
+      db = {
+        query: jest.fn().mockResolvedValue({ rows: [] }),
+      } as unknown as jest.Mocked<HrmDbService>;
       service = new DecisionsService(db);
     });
 
@@ -64,7 +69,9 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
       db.query.mockImplementation(async (sql: string) => {
         if (sql.includes('FROM public.employees WHERE')) {
           return {
-            rows: [{ id: EMP_ID, full_name: 'Nguyen A', employee_code: 'NV001' }],
+            rows: [
+              { id: EMP_ID, full_name: 'Nguyen A', employee_code: 'NV001' },
+            ],
           } as never;
         }
         if (sql.includes('INSERT INTO public.hr_decisions')) {
@@ -99,7 +106,10 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
             ],
           } as never;
         }
-        if (sql.includes('FROM public.employee_work_timeline') && sql.includes('decision_id')) {
+        if (
+          sql.includes('FROM public.employee_work_timeline') &&
+          sql.includes('decision_id')
+        ) {
           return { rows: [] } as never;
         }
         if (sql.includes('INSERT INTO public.employee_work_timeline')) {
@@ -122,16 +132,23 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
       );
 
       expect(out).toMatchObject({ id: DEC_ID, status: 'effective' });
-      expect((out as { work_history_id?: string }).work_history_id).toBe('wh-1');
-      expect(db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.employee_work_timeline'))).toBe(
-        true,
+      expect((out as { work_history_id?: string }).work_history_id).toBe(
+        'wh-1',
       );
+      expect(
+        db.query.mock.calls.some(([sql]) =>
+          String(sql).includes('INSERT INTO public.employee_work_timeline'),
+        ),
+      ).toBe(true);
     });
 
     it('scope_parity: getDecisionById uses company_id = ANY for group CEO main', async () => {
       const token = groupCeoToken();
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.hr_decisions WHERE') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.hr_decisions WHERE') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -180,7 +197,9 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
     let db: jest.Mocked<HrmDbService>;
 
     beforeEach(() => {
-      db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as jest.Mocked<HrmDbService>;
+      db = {
+        query: jest.fn().mockResolvedValue({ rows: [] }),
+      } as unknown as jest.Mocked<HrmDbService>;
       employees = {
         getEmployeeById: jest.fn().mockResolvedValue({
           id: EMP_ID,
@@ -204,10 +223,15 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
 
     it('soft-archives WH on delete (no hard DELETE)', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('SELECT company_id FROM public.employee_work_timeline')) {
+        if (
+          sql.includes('SELECT company_id FROM public.employee_work_timeline')
+        ) {
           return { rows: [{ company_id: 'holding' }] } as never;
         }
-        if (sql.includes('UPDATE public.employee_work_timeline') && sql.includes('archived_at')) {
+        if (
+          sql.includes('UPDATE public.employee_work_timeline') &&
+          sql.includes('archived_at')
+        ) {
           return { rows: [{ id: 'wh-1' }] } as never;
         }
         return { rows: [] } as never;
@@ -219,9 +243,11 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
         `Bearer ${groupCeoToken()}`,
       );
       expect(out).toMatchObject({ id: 'wh-1', archived: true });
-      expect(db.query.mock.calls.some(([sql]) => String(sql).includes('DELETE FROM public.employee_work_timeline'))).toBe(
-        false,
-      );
+      expect(
+        db.query.mock.calls.some(([sql]) =>
+          String(sql).includes('DELETE FROM public.employee_work_timeline'),
+        ),
+      ).toBe(false);
     });
   });
 
@@ -230,14 +256,19 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
     let db: jest.Mocked<HrmDbService>;
 
     beforeEach(() => {
-      db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as jest.Mocked<HrmDbService>;
+      db = {
+        query: jest.fn().mockResolvedValue({ rows: [] }),
+      } as unknown as jest.Mocked<HrmDbService>;
       service = new EmployeeInsurancesService(db);
     });
 
     it('scope_parity list↔get use company_id = ANY for group CEO main', async () => {
       const token = groupCeoToken();
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.employee_insurances') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.employee_insurances') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -275,18 +306,27 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
       await service.getById(INS_ID, 'main', `Bearer ${token}`);
 
       const listCall = db.query.mock.calls.find(
-        ([sql]) => String(sql).includes('FROM public.employee_insurances') && !String(sql).includes('LIMIT 1'),
+        ([sql]) =>
+          String(sql).includes('FROM public.employee_insurances') &&
+          !String(sql).includes('LIMIT 1'),
       );
       const getCall = db.query.mock.calls.find(
-        ([sql]) => String(sql).includes('FROM public.employee_insurances') && String(sql).includes('LIMIT 1'),
+        ([sql]) =>
+          String(sql).includes('FROM public.employee_insurances') &&
+          String(sql).includes('LIMIT 1'),
       );
-      expect(listCall?.[0]).toEqual(expect.stringContaining('company_id = ANY'));
+      expect(listCall?.[0]).toEqual(
+        expect.stringContaining('company_id = ANY'),
+      );
       expect(getCall?.[0]).toEqual(expect.stringContaining('company_id = ANY'));
     });
 
     it('applyAction suspend without reason → HRM-SI-ACTION-400', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.employee_insurances') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.employee_insurances') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -320,7 +360,11 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
       await expect(
         service.applyAction(
           INS_ID,
-          { company_id: 'holding', action: 'suspend', effective_from: '2026-08-01' },
+          {
+            company_id: 'holding',
+            action: 'suspend',
+            effective_from: '2026-08-01',
+          },
           `Bearer ${groupCeoToken()}`,
         ),
       ).rejects.toMatchObject({ code: HRM_SI_ACTION_400 });
@@ -329,7 +373,10 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
     it('applyAction close appends period + sets enrollment closed', async () => {
       let enrollmentStatus = 'active';
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.employee_insurances') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.employee_insurances') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -354,11 +401,17 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
             ],
           } as never;
         }
-        if (sql.includes('UPDATE public.employee_insurances') && sql.includes('SET status')) {
+        if (
+          sql.includes('UPDATE public.employee_insurances') &&
+          sql.includes('SET status')
+        ) {
           enrollmentStatus = 'closed';
           return { rows: [] } as never;
         }
-        if (sql.includes('FROM public.hrm_insurance_rate_period') && sql.includes('ORDER BY')) {
+        if (
+          sql.includes('FROM public.hrm_insurance_rate_period') &&
+          sql.includes('ORDER BY')
+        ) {
           return {
             rows: [
               {
@@ -388,14 +441,20 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
 
       const out = await service.applyAction(
         INS_ID,
-        { company_id: 'holding', action: 'close', effective_from: '2026-08-01' },
+        {
+          company_id: 'holding',
+          action: 'close',
+          effective_from: '2026-08-01',
+        },
         `Bearer ${groupCeoToken()}`,
       );
       expect(out.status).toBe('closed');
       expect(out.periods?.length).toBeGreaterThan(0);
       expect(out.periods[0].action).toBe('close');
       expect(
-        db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.hrm_insurance_rate_period')),
+        db.query.mock.calls.some(([sql]) =>
+          String(sql).includes('INSERT INTO public.hrm_insurance_rate_period'),
+        ),
       ).toBe(true);
     });
   });
@@ -405,7 +464,9 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
     let db: jest.Mocked<HrmDbService>;
 
     beforeEach(() => {
-      db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as jest.Mocked<HrmDbService>;
+      db = {
+        query: jest.fn().mockResolvedValue({ rows: [] }),
+      } as unknown as jest.Mocked<HrmDbService>;
       service = new EmployeesService(db);
       jest.spyOn(service, 'getEmployeeById').mockResolvedValue({
         id: EMP_ID,
@@ -419,7 +480,10 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
 
     it('no active contract → ready_for_payroll=false + HRM-HTP-NO-ACTIVE-CONTRACT', async () => {
       db.query.mockResolvedValue({ rows: [] } as never);
-      const out = await service.getHireReadiness(EMP_ID, { company_id: 'holding', as_of: '2026-08-06' });
+      const out = await service.getHireReadiness(EMP_ID, {
+        company_id: 'holding',
+        as_of: '2026-08-06',
+      });
       expect(out.ready_for_payroll).toBe(false);
       expect(out.blockers).toContain('HRM-HTP-NO-ACTIVE-CONTRACT');
       expect(out.active_contract).toBeNull();
@@ -432,9 +496,15 @@ describe('PO-HRM-E2E-LINK-EMP-BE-01', () => {
         }
         return { rows: [] } as never;
       });
-      const out = await service.getHireReadiness(EMP_ID, { company_id: 'holding', as_of: '2026-08-06' });
+      const out = await service.getHireReadiness(EMP_ID, {
+        company_id: 'holding',
+        as_of: '2026-08-06',
+      });
       expect(out.ready_for_payroll).toBe(true);
-      expect(out.active_contract).toEqual({ contract_id: 'ctr-1', status: 'active' });
+      expect(out.active_contract).toEqual({
+        contract_id: 'ctr-1',
+        status: 'active',
+      });
       expect(out.blockers).toEqual([]);
     });
   });

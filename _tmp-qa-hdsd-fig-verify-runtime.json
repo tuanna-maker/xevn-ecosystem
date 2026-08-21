@@ -1,0 +1,71 @@
+﻿{
+  "htmlPath": "C:\\Users\\ADMIN\\OneDrive\\Tà€i liĂª̀£u\\Vibe Coding\\projects\\xevn-ecosystem\\docs\\client-delivery\\hdsd\\artifacts\\HDSD_XEVN_ECOSYSTEM_v1.html",
+  "htmlSizeKb": 23344,
+  "figTotal": 8,
+  "imgTotal": 95,
+  "webFigCount": 0,
+  "mobileFigCount": 8,
+  "figTokens": [
+    "[[FIG:MĂ n Ä‘Äƒng nháº­p HRM Mobile: trÆ°á»ng Email, Máº­t kháº©u vĂ  nĂºt ÄÄƒng nháº­p (áº£nh chÆ°a cĂ³: hrm/hrm-12-1.png)]]",
+    "[[FIG:Trang chá»§ HRM Mobile: thanh trĂªn, lÆ°á»›i tiá»‡n Ă­ch vĂ  FAB Cháº¥m cĂ´ng (áº£nh chÆ°a cĂ³: hrm/hrm-12-2.png)]]",
+    "[[FIG:Danh báº¡ Ä‘á»™i nhĂ³m vĂ  mĂ n cháº¥m cĂ´ng vĂ o: GPS, nĂºt Cháº¥m cĂ´ng vĂ  lá»‹ch sá»­ (áº£nh chÆ°a cĂ³: hrm/hrm-12-3.png)]]",
+    "[[FIG:Danh sĂ¡ch Ä‘Æ¡n nghá»‰ phĂ©p: tab tráº¡ng thĂ¡i, sá»‘ dÆ° phĂ©p vĂ  nĂºt Táº¡o Ä‘Æ¡n (áº£nh chÆ°a cĂ³: hrm/hrm-12-4.png)]]",
+    "[[FIG:Phiáº¿u lÆ°Æ¡ng: danh sĂ¡ch ká»³ lÆ°Æ¡ng vĂ  chi tiáº¿t cĂ¡c khoáº£n thu nháº­p (áº£nh chÆ°a cĂ³: hrm/hrm-12-5.png)]]",
+    "[[FIG:Há»™p phĂª duyá»‡t quáº£n lĂ½: danh sĂ¡ch yĂªu cáº§u chá» duyá»‡t vĂ  nĂºt Äá»“ng Ă½/Tá»« chá»‘i (áº£nh chÆ°a cĂ³: hrm/hrm-12-6.png)]]",
+    "[[FIG:Há»“ sÆ¡ cĂ¡ nhĂ¢n: thĂ´ng tin nhĂ¢n viĂªn, menu CĂ i Ä‘áº·t vĂ  Ä‘á»•i pháº¡m vi cĂ´ng ty (áº£nh chÆ°a cĂ³: hrm/hrm-12-7.png)]]",
+    "[[FIG:Trung tĂ¢m thĂ´ng bĂ¡o: danh sĂ¡ch thĂ´ng bĂ¡o theo thá»i gian vĂ  tráº¡ng thĂ¡i Ä‘Ă£ Ä‘á»c (áº£nh chÆ°a cĂ³: hrm/hrm-12-8.png)]]"
+  ],
+  "imgUnique": 89
+}
+
+--- Chapter spot ---
+{
+  "ch03": {
+    "fig": 0,
+    "img": 0,
+    "hinhStandalone": 0,
+    "pngRefs": 0
+  },
+  "ch05": {
+    "fig": 0,
+    "img": 0,
+    "hinhStandalone": 0,
+    "pngRefs": 0
+  },
+  "ch12": {
+    "fig": 0,
+    "img": 0
+  }
+}
+
+--- Mobile PNG missing (expected) ---
+[
+  "assets/hrm/hrm-12-1.png",
+  "assets/hrm/hrm-12-2.png",
+  "assets/hrm/hrm-12-3.png",
+  "assets/hrm/hrm-12-4.png",
+  "assets/hrm/hrm-12-5.png",
+  "assets/hrm/hrm-12-6.png",
+  "assets/hrm/hrm-12-7.png",
+  "assets/hrm/hrm-12-8.png"
+]
+
+--- Duplicate placeholder check ---
+{
+  "imgThenFigWithin120chars": 0,
+  "figThenImgWithin120chars": 0,
+  "ch03HasXbos30Img": true,
+  "ch05HasHrm51Img": true,
+  "ecoCh01HasEco1Img": true,
+  "imgByDomain": {
+    "ecosystem": 2,
+    "xbos": 25,
+    "hrm": 66
+  }
+}
+
+--- MD source spot (manifest files) ---
+{
+  "hinhStandalone": 0,
+  "imgMdRefs": 21
+}

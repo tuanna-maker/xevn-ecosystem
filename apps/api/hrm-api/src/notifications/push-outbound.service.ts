@@ -18,11 +18,13 @@ export class PushOutboundService {
     try {
       const cred = JSON.parse(raw) as Record<string, unknown>;
       if (!getApps().length) {
-        initializeApp({ credential: cert(cred as never) });
+        initializeApp({ credential: cert(cred) });
       }
       this.fcmReady = true;
     } catch (e) {
-      this.logger.error(`firebase-admin init failed: ${e instanceof Error ? e.message : String(e)}`);
+      this.logger.error(
+        `firebase-admin init failed: ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
   }
 
@@ -45,7 +47,12 @@ export class PushOutboundService {
     `);
   }
 
-  async upsertToken(companyId: string, employeeId: string, platform: 'expo' | 'fcm', token: string) {
+  async upsertToken(
+    companyId: string,
+    employeeId: string,
+    platform: 'expo' | 'fcm',
+    token: string,
+  ) {
     await this.ensureTokenSchema();
     await this.db.query(
       `
@@ -63,7 +70,9 @@ export class PushOutboundService {
     void this.dispatchAttendanceEventAsync(envelope);
   }
 
-  private async dispatchAttendanceEventAsync(envelope: HrmRealtimeEventEnvelope) {
+  private async dispatchAttendanceEventAsync(
+    envelope: HrmRealtimeEventEnvelope,
+  ) {
     try {
       await this.ensureTokenSchema();
       const targets = await this.resolveTargetTokens(envelope);
@@ -71,17 +80,31 @@ export class PushOutboundService {
 
       const expo = targets.filter((t) => t.platform === 'expo');
       const fcm = targets.filter((t) => t.platform === 'fcm');
-      if (expo.length) await this.sendExpoChunks(expo.map((t) => t.token), envelope);
-      if (fcm.length && this.fcmReady) await this.sendFcmBatch(fcm.map((t) => t.token), envelope);
+      if (expo.length)
+        await this.sendExpoChunks(
+          expo.map((t) => t.token),
+          envelope,
+        );
+      if (fcm.length && this.fcmReady)
+        await this.sendFcmBatch(
+          fcm.map((t) => t.token),
+          envelope,
+        );
       else if (fcm.length && !this.fcmReady) {
-        this.logger.warn('FCM tokens present but FIREBASE_SERVICE_ACCOUNT_JSON is not configured');
+        this.logger.warn(
+          'FCM tokens present but FIREBASE_SERVICE_ACCOUNT_JSON is not configured',
+        );
       }
     } catch (e) {
-      this.logger.warn(`push dispatch failed: ${e instanceof Error ? e.message : String(e)}`);
+      this.logger.warn(
+        `push dispatch failed: ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
   }
 
-  private async resolveTargetTokens(envelope: HrmRealtimeEventEnvelope): Promise<TokenRow[]> {
+  private async resolveTargetTokens(
+    envelope: HrmRealtimeEventEnvelope,
+  ): Promise<TokenRow[]> {
     const { type, request } = envelope;
     if (type === 'service_request.created') {
       if (!request.employee_id) {
@@ -100,7 +123,10 @@ export class PushOutboundService {
       );
       return res.rows;
     }
-    if (type === 'attendance_update_request.created' || type === 'leave_request.created') {
+    if (
+      type === 'attendance_update_request.created' ||
+      type === 'leave_request.created'
+    ) {
       const res = await this.db.query<TokenRow>(
         `
           SELECT token, platform FROM public.hrm_push_device_tokens
@@ -111,7 +137,9 @@ export class PushOutboundService {
       return res.rows;
     }
     const employeeId =
-      'employee_id' in request && request.employee_id != null && String(request.employee_id).trim() !== ''
+      'employee_id' in request &&
+      request.employee_id != null &&
+      String(request.employee_id).trim() !== ''
         ? String(request.employee_id).trim()
         : null;
     if (!employeeId) return [];
@@ -125,7 +153,10 @@ export class PushOutboundService {
     return res.rows;
   }
 
-  private pushCopy(envelope: HrmRealtimeEventEnvelope): { title: string; body: string } {
+  private pushCopy(envelope: HrmRealtimeEventEnvelope): {
+    title: string;
+    body: string;
+  } {
     if (envelope.type === 'employee.activated') {
       const r = envelope.request;
       return {
@@ -136,11 +167,20 @@ export class PushOutboundService {
     const n = envelope.request.employee_name;
     switch (envelope.type) {
       case 'attendance_update_request.created':
-        return { title: 'Đơn công mới', body: `${n} — ${envelope.request.update_type}` };
+        return {
+          title: 'Đơn công mới',
+          body: `${n} — ${envelope.request.update_type}`,
+        };
       case 'attendance_update_request.approved':
-        return { title: 'Đơn công đã duyệt', body: `Yêu cầu của ${n} đã được duyệt.` };
+        return {
+          title: 'Đơn công đã duyệt',
+          body: `Yêu cầu của ${n} đã được duyệt.`,
+        };
       case 'attendance_update_request.rejected':
-        return { title: 'Đơn công bị từ chối', body: `Yêu cầu của ${n} bị từ chối.` };
+        return {
+          title: 'Đơn công bị từ chối',
+          body: `Yêu cầu của ${n} bị từ chối.`,
+        };
       case 'leave_request.created': {
         const r = envelope.request;
         return {
@@ -149,12 +189,20 @@ export class PushOutboundService {
         };
       }
       case 'leave_request.approved':
-        return { title: 'Đơn nghỉ đã duyệt', body: `Đơn nghỉ của ${n} đã được duyệt.` };
+        return {
+          title: 'Đơn nghỉ đã duyệt',
+          body: `Đơn nghỉ của ${n} đã được duyệt.`,
+        };
       case 'leave_request.rejected': {
-        const reason = 'rejected_reason' in envelope.request ? envelope.request.rejected_reason : null;
+        const reason =
+          'rejected_reason' in envelope.request
+            ? envelope.request.rejected_reason
+            : null;
         return {
           title: 'Đơn nghỉ bị từ chối',
-          body: reason ? `Đơn nghỉ của ${n} bị từ chối: ${reason}` : `Đơn nghỉ của ${n} bị từ chối.`,
+          body: reason
+            ? `Đơn nghỉ của ${n} bị từ chối: ${reason}`
+            : `Đơn nghỉ của ${n} bị từ chối.`,
         };
       }
       case 'service_request.created':
@@ -163,20 +211,28 @@ export class PushOutboundService {
           body: `${n} — ${envelope.request.service_type}`,
         };
       case 'service_request.approved':
-        return { title: 'Yêu cầu dịch vụ đã duyệt', body: `Yêu cầu của ${n} đã được duyệt.` };
+        return {
+          title: 'Yêu cầu dịch vụ đã duyệt',
+          body: `Yêu cầu của ${n} đã được duyệt.`,
+        };
       case 'service_request.rejected': {
         const r = envelope.request;
         const reason = r.rejected_reason?.trim();
         return {
           title: 'Yêu cầu dịch vụ bị từ chối',
-          body: reason ? `Yêu cầu của ${n} bị từ chối: ${reason}` : `Yêu cầu của ${n} bị từ chối.`,
+          body: reason
+            ? `Yêu cầu của ${n} bị từ chối: ${reason}`
+            : `Yêu cầu của ${n} bị từ chối.`,
         };
       }
     }
     return { title: 'HRM', body: (envelope as { type: string }).type };
   }
 
-  private async sendExpoChunks(tokens: string[], envelope: HrmRealtimeEventEnvelope) {
+  private async sendExpoChunks(
+    tokens: string[],
+    envelope: HrmRealtimeEventEnvelope,
+  ) {
     const expoAccess = process.env.EXPO_ACCESS_TOKEN?.trim();
     const { title, body } = this.pushCopy(envelope);
     const chunkSize = 90;
@@ -211,12 +267,17 @@ export class PushOutboundService {
         signal: AbortSignal.timeout(12_000),
       });
       if (!res.ok) {
-        this.logger.warn(`Expo push API HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
+        this.logger.warn(
+          `Expo push API HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`,
+        );
       }
     }
   }
 
-  private async sendFcmBatch(tokens: string[], envelope: HrmRealtimeEventEnvelope) {
+  private async sendFcmBatch(
+    tokens: string[],
+    envelope: HrmRealtimeEventEnvelope,
+  ) {
     const messaging = getMessaging();
     const { title, body } = this.pushCopy(envelope);
     const requestId =
@@ -239,7 +300,9 @@ export class PushOutboundService {
         data,
       });
     } catch (e) {
-      this.logger.warn(`FCM sendEachForMulticast failed: ${e instanceof Error ? e.message : String(e)}`);
+      this.logger.warn(
+        `FCM sendEachForMulticast failed: ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
   }
 }

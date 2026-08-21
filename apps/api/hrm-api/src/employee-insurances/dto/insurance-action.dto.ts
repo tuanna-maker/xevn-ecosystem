@@ -1,4 +1,11 @@
-import { IsIn, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 /** F-CORE-SI-03 — lifecycle action on enrollment SoT `employee_insurances`. */
 export class InsuranceActionDto {

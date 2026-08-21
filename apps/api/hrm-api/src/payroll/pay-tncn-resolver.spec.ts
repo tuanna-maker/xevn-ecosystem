@@ -77,7 +77,9 @@ describe('computePayTncnBreakdown', () => {
     });
     const expectedBase = 50_000_000 - 11_000_000 - 1_000_000 - 11_000_000;
     expect(breakdown.postDeductionBaseVnd).toBe(expectedBase);
-    expect(breakdown.taxAmountVnd).toBe(computeProgressiveVnV1Tax(expectedBase));
+    expect(breakdown.taxAmountVnd).toBe(
+      computeProgressiveVnV1Tax(expectedBase),
+    );
   });
 
   it('regime other yields zero tax without progressive', () => {

@@ -45,76 +45,100 @@ function schemaOk(sql: string): boolean {
 describe('REC-01 cluster BE scope_parity + spawn (PO-HRM-MVP-GD1-REC-01-CLUSTER-BE-01)', () => {
   it('list id under holding → getById 200 with group CEO main (U19)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.recruitment_plans WHERE') && s.includes('ORDER BY')) {
-          expect(s).toMatch(/company_id/);
-          return {
-            rows: [
-              {
-                id: PLAN_ID,
-                company_id: 'holding',
-                title: 'ĐB 2026',
-                year: 2026,
-                status: 'pending',
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.recruitment_plans WHERE id = $1')) {
-          expect(params?.[0]).toBe(PLAN_ID);
-          return {
-            rows: [
-              {
-                id: PLAN_ID,
-                company_id: 'holding',
-                title: 'ĐB 2026',
-                year: 2026,
-                status: 'pending',
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.recruitment_plan_departments')) {
-          return { rows: [{ id: DEPT_ID, plan_id: PLAN_ID, company_id: 'holding', name: 'HCNS', department_key: 'hr', sort_order: 0 }] };
-        }
-        if (s.includes('FROM public.recruitment_plan_positions')) {
-          return {
-            rows: [
-              {
-                id: POS_ID,
-                department_id: DEPT_ID,
-                company_id: 'holding',
-                name: 'NV',
-                position_key: 'staff',
-                months_data: [
-                  {
-                    cell_id: CELL_ID,
-                    month: 1,
-                    cell_status: 'need_hire',
-                    lifecycle_status: 'open',
-                    headcount_need_hire: 2,
-                    headcount_current: 5,
-                    headcount_projected: null,
-                  },
-                ],
-                sort_order: 0,
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (
+            s.includes('FROM public.recruitment_plans WHERE') &&
+            s.includes('ORDER BY')
+          ) {
+            expect(s).toMatch(/company_id/);
+            return {
+              rows: [
+                {
+                  id: PLAN_ID,
+                  company_id: 'holding',
+                  title: 'ĐB 2026',
+                  year: 2026,
+                  status: 'pending',
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.recruitment_plans WHERE id = $1')) {
+            expect(params?.[0]).toBe(PLAN_ID);
+            return {
+              rows: [
+                {
+                  id: PLAN_ID,
+                  company_id: 'holding',
+                  title: 'ĐB 2026',
+                  year: 2026,
+                  status: 'pending',
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.recruitment_plan_departments')) {
+            return {
+              rows: [
+                {
+                  id: DEPT_ID,
+                  plan_id: PLAN_ID,
+                  company_id: 'holding',
+                  name: 'HCNS',
+                  department_key: 'hr',
+                  sort_order: 0,
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.recruitment_plan_positions')) {
+            return {
+              rows: [
+                {
+                  id: POS_ID,
+                  department_id: DEPT_ID,
+                  company_id: 'holding',
+                  name: 'NV',
+                  position_key: 'staff',
+                  months_data: [
+                    {
+                      cell_id: CELL_ID,
+                      month: 1,
+                      cell_status: 'need_hire',
+                      lifecycle_status: 'open',
+                      headcount_need_hire: 2,
+                      headcount_current: 5,
+                      headcount_projected: null,
+                    },
+                  ],
+                  sort_order: 0,
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentCatalogService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentCatalogService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     const auth = groupCeoToken();
     const list = await svc.listRecruitmentPlans('main', auth);
     expect(list.total).toBe(1);
     expect(list.data[0].id).toBe(PLAN_ID);
-    const months = (list.data[0] as { departments: Array<{ positions: Array<{ months: Array<{ need_hire: number }> }> }> })
-      .departments[0].positions[0].months;
+    const months = (
+      list.data[0] as {
+        departments: Array<{
+          positions: Array<{ months: Array<{ need_hire: number }> }>;
+        }>;
+      }
+    ).departments[0].positions[0].months;
     expect(months[0].need_hire).toBe(2);
 
     const detail = await svc.getRecruitmentPlanById(PLAN_ID, 'main', auth);
@@ -129,17 +153,28 @@ describe('REC-01 cluster BE scope_parity + spawn (PO-HRM-MVP-GD1-REC-01-CLUSTER-
         if (schemaOk(s)) return { rows: [] };
         if (s.includes('FROM public.recruitment_plans WHERE id = $1')) {
           return {
-            rows: [{ id: PLAN_ID, company_id: 'holding', title: 'ĐB', year: 2026, status: 'pending' }],
+            rows: [
+              {
+                id: PLAN_ID,
+                company_id: 'holding',
+                title: 'ĐB',
+                year: 2026,
+                status: 'pending',
+              },
+            ],
           };
         }
         return { rows: [] };
       }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentCatalogService(db as unknown as HrmDbService, bridge as never);
-    await expect(svc.getRecruitmentPlanById(PLAN_ID, 'main', memberToken())).rejects.toBeInstanceOf(
-      ApiException,
+    const svc = new RecruitmentCatalogService(
+      db as unknown as HrmDbService,
+      bridge as never,
     );
+    await expect(
+      svc.getRecruitmentPlanById(PLAN_ID, 'main', memberToken()),
+    ).rejects.toBeInstanceOf(ApiException);
   });
 
   it('HC-S1: spawn on non-approved plan → HRM-HC-SPAWN-PLAN-NOT-APPROVED', async () => {
@@ -165,7 +200,10 @@ describe('REC-01 cluster BE scope_parity + spawn (PO-HRM-MVP-GD1-REC-01-CLUSTER-
       }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentCatalogService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentCatalogService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     try {
       await svc.spawnRecruitmentPlanRequests(PLAN_ID, 'main', groupCeoToken());
       fail('expected throw');
@@ -180,89 +218,97 @@ describe('REC-01 cluster BE scope_parity + spawn (PO-HRM-MVP-GD1-REC-01-CLUSTER-
   it('HC-S3/S4: approved plan spawns YCTD then skip duplicate', async () => {
     let inserted = false;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.recruitment_plans WHERE id = $1')) {
-          return {
-            rows: [
-              {
-                id: PLAN_ID,
-                company_id: 'holding',
-                title: 'ĐB 2026',
-                year: 2026,
-                status: 'approved',
-                activation_mode: 'on_approve',
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.recruitment_plan_departments')) {
-          return {
-            rows: [
-              {
-                id: DEPT_ID,
-                plan_id: PLAN_ID,
-                company_id: 'holding',
-                name: 'HCNS',
-                department_key: 'hr',
-                sort_order: 0,
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.recruitment_plan_positions')) {
-          return {
-            rows: [
-              {
-                id: POS_ID,
-                department_id: DEPT_ID,
-                company_id: 'holding',
-                name: 'NV',
-                position_key: 'staff',
-                months_data: [
-                  {
-                    cell_id: CELL_ID,
-                    month: 3,
-                    cell_status: 'need_hire',
-                    lifecycle_status: 'need_hire_approved',
-                    headcount_need_hire: 2,
-                    headcount_current: 1,
-                    headcount_projected: null,
-                  },
-                ],
-                sort_order: 0,
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.job_requisitions') && s.includes('headcount_mode')) {
-          if (!inserted) return { rows: [] };
-          return { rows: [{ id: 'req-1', headcount: 2 }] };
-        }
-        if (s.includes('INSERT INTO public.job_requisitions')) {
-          expect(params).toEqual(
-            expect.arrayContaining([
-              expect.any(String),
-              'holding',
-              expect.any(String),
-              expect.any(String),
-              2,
-              CELL_ID,
-              '2026-03-01',
-              PLAN_ID,
-              'hr',
-              'staff',
-            ]),
-          );
-          inserted = true;
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaOk(s)) return { rows: [] };
+          if (s.includes('FROM public.recruitment_plans WHERE id = $1')) {
+            return {
+              rows: [
+                {
+                  id: PLAN_ID,
+                  company_id: 'holding',
+                  title: 'ĐB 2026',
+                  year: 2026,
+                  status: 'approved',
+                  activation_mode: 'on_approve',
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.recruitment_plan_departments')) {
+            return {
+              rows: [
+                {
+                  id: DEPT_ID,
+                  plan_id: PLAN_ID,
+                  company_id: 'holding',
+                  name: 'HCNS',
+                  department_key: 'hr',
+                  sort_order: 0,
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.recruitment_plan_positions')) {
+            return {
+              rows: [
+                {
+                  id: POS_ID,
+                  department_id: DEPT_ID,
+                  company_id: 'holding',
+                  name: 'NV',
+                  position_key: 'staff',
+                  months_data: [
+                    {
+                      cell_id: CELL_ID,
+                      month: 3,
+                      cell_status: 'need_hire',
+                      lifecycle_status: 'need_hire_approved',
+                      headcount_need_hire: 2,
+                      headcount_current: 1,
+                      headcount_projected: null,
+                    },
+                  ],
+                  sort_order: 0,
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('FROM public.job_requisitions') &&
+            s.includes('headcount_mode')
+          ) {
+            if (!inserted) return { rows: [] };
+            return { rows: [{ id: 'req-1', headcount: 2 }] };
+          }
+          if (s.includes('INSERT INTO public.job_requisitions')) {
+            expect(params).toEqual(
+              expect.arrayContaining([
+                expect.any(String),
+                'holding',
+                expect.any(String),
+                expect.any(String),
+                2,
+                CELL_ID,
+                '2026-03-01',
+                PLAN_ID,
+                'hr',
+                'staff',
+              ]),
+            );
+            inserted = true;
+            return { rows: [] };
+          }
           return { rows: [] };
-        }
-        return { rows: [] };
-      }),
+        }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentCatalogService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentCatalogService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     const auth = groupCeoToken();
     const first = await svc.spawnRecruitmentPlanRequests(PLAN_ID, 'main', auth);
     expect(first.created).toHaveLength(1);
@@ -270,7 +316,11 @@ describe('REC-01 cluster BE scope_parity + spawn (PO-HRM-MVP-GD1-REC-01-CLUSTER-
     expect(first.created[0].headcount).toBe(2);
     expect(first.skipped_duplicate).toHaveLength(0);
 
-    const second = await svc.spawnRecruitmentPlanRequests(PLAN_ID, 'main', auth);
+    const second = await svc.spawnRecruitmentPlanRequests(
+      PLAN_ID,
+      'main',
+      auth,
+    );
     expect(second.created).toHaveLength(0);
     expect(second.skipped_duplicate).toHaveLength(1);
     expect(second.skipped_duplicate[0].existing_requisition_id).toBe('req-1');
@@ -285,7 +335,10 @@ describe('REC-01 cluster BE scope_parity + spawn (PO-HRM-MVP-GD1-REC-01-CLUSTER-
       }),
     };
     const bridge = { ensureSchema: jest.fn().mockResolvedValue(undefined) };
-    const svc = new RecruitmentCatalogService(db as unknown as HrmDbService, bridge as never);
+    const svc = new RecruitmentCatalogService(
+      db as unknown as HrmDbService,
+      bridge as never,
+    );
     await svc.listRecruitmentPlans('holding', groupCeoToken());
     const joined = sqls.join('\n');
     expect(joined).toMatch(/uq_job_requisitions_spawn_cell/);
@@ -293,6 +346,8 @@ describe('REC-01 cluster BE scope_parity + spawn (PO-HRM-MVP-GD1-REC-01-CLUSTER-
     expect(joined).toMatch(/submitted_by_dept_key/);
     expect(joined).toMatch(/department_key/);
     expect(joined).toMatch(/position_key/);
-    expect(joined).not.toMatch(/CREATE TABLE IF NOT EXISTS public\.rec_headcount_plan/);
+    expect(joined).not.toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.rec_headcount_plan/,
+    );
   });
 });

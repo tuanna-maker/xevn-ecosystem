@@ -13,7 +13,10 @@ describe('AttendanceRequestsService', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    const out = await svc.listOvertimeRequests({ company_id: 'main' }, `Bearer ${token}`);
+    const out = await svc.listOvertimeRequests(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+    );
     const [sql] = queryMock.mock.calls.at(-1) as [string, unknown[]];
     expect(sql).toContain('overtime_requests');
     expect(sql).toContain('employee_id IN');
@@ -26,8 +29,8 @@ describe('AttendanceRequestsService', () => {
     await svc.listBusinessTripRequests({
       company_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
     });
-    const listCall = queryMock.mock.calls.find(
-      ([sql]) => String(sql).includes('FROM public.business_trip_requests'),
+    const listCall = queryMock.mock.calls.find(([sql]) =>
+      String(sql).includes('FROM public.business_trip_requests'),
     );
     const [sql, params] = listCall as [string, unknown[]];
     expect(sql).toContain('company_id = $1::text');
@@ -63,7 +66,9 @@ describe('AttendanceRequestsService', () => {
       },
       `Bearer ${token}`,
     );
-    const insertCall = queryMock.mock.calls.find(([sql]) => String(sql).includes('INSERT INTO public.late_early_requests'));
+    const insertCall = queryMock.mock.calls.find(([sql]) =>
+      String(sql).includes('INSERT INTO public.late_early_requests'),
+    );
     expect(insertCall).toBeDefined();
     expect((insertCall as [string, unknown[]])[1][1]).toBe('holding');
     expect(row.company_id).toBe('holding');
@@ -75,8 +80,8 @@ describe('AttendanceRequestsService', () => {
     await svc.listShiftChangeRequests({
       company_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
     });
-    const listCall = queryMock.mock.calls.find(
-      ([sql]) => String(sql).includes('FROM public.shift_change_requests'),
+    const listCall = queryMock.mock.calls.find(([sql]) =>
+      String(sql).includes('FROM public.shift_change_requests'),
     );
     const [sql, params] = listCall as [string, unknown[]];
     expect(sql).toContain('company_id = $1::text');
@@ -99,7 +104,10 @@ describe('AttendanceRequestsService', () => {
       if (s.includes('CREATE TABLE')) {
         return Promise.resolve({ rows: [] });
       }
-      if (s.includes('FROM public.overtime_requests') && s.includes('SELECT id')) {
+      if (
+        s.includes('FROM public.overtime_requests') &&
+        s.includes('SELECT id')
+      ) {
         return Promise.resolve({ rows: [otRow] });
       }
       if (s.includes('SELECT company_id FROM public.overtime_requests')) {
@@ -136,7 +144,10 @@ describe('AttendanceRequestsService', () => {
       if (s.includes('CREATE TABLE')) {
         return Promise.resolve({ rows: [] });
       }
-      if (s.includes('FROM public.overtime_requests') && s.includes('SELECT id')) {
+      if (
+        s.includes('FROM public.overtime_requests') &&
+        s.includes('SELECT id')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -211,15 +222,16 @@ describe('AttendanceRequestsService', () => {
 
   it('VAL-ATT-SHIFT-CNS-01 wire: createShiftChangeRequest invent → HRM-ATT-SHIFT-KEY', async () => {
     const queryMock = jest.fn().mockResolvedValue({ rows: [] });
-    const assertShiftKeysForConsumer = jest
-      .fn()
-      .mockRejectedValue(
-        new ApiException('HRM-ATT-SHIFT-KEY', 'invent', HttpStatus.BAD_REQUEST, {
-          field: 'requested_shift',
-        }),
-      );
+    const assertShiftKeysForConsumer = jest.fn().mockRejectedValue(
+      new ApiException('HRM-ATT-SHIFT-KEY', 'invent', HttpStatus.BAD_REQUEST, {
+        field: 'requested_shift',
+      }),
+    );
     const catalog = { assertShiftKeysForConsumer } as never;
-    const svc = new AttendanceRequestsService({ query: queryMock } as never, catalog);
+    const svc = new AttendanceRequestsService(
+      { query: queryMock } as never,
+      catalog,
+    );
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
       tenantId: 'xevn',
@@ -274,7 +286,10 @@ describe('AttendanceRequestsService', () => {
     });
     const assertShiftKeysForConsumer = jest.fn().mockResolvedValue(undefined);
     const catalog = { assertShiftKeysForConsumer } as never;
-    const svc = new AttendanceRequestsService({ query: queryMock } as never, catalog);
+    const svc = new AttendanceRequestsService(
+      { query: queryMock } as never,
+      catalog,
+    );
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
       tenantId: 'xevn',
@@ -308,15 +323,22 @@ describe('AttendanceRequestsService', () => {
 
   it('VAL-ATT-OT-CNS-01 wire: createOvertimeRequest invent → HRM-ATT-OT-TYPE-KEY', async () => {
     const queryMock = jest.fn().mockResolvedValue({ rows: [] });
-    const assertOtTypeInEffectiveCatalog = jest
-      .fn()
-      .mockRejectedValue(
-        new ApiException('HRM-ATT-OT-TYPE-KEY', 'invent', HttpStatus.BAD_REQUEST, {
+    const assertOtTypeInEffectiveCatalog = jest.fn().mockRejectedValue(
+      new ApiException(
+        'HRM-ATT-OT-TYPE-KEY',
+        'invent',
+        HttpStatus.BAD_REQUEST,
+        {
           overtime_type: 'ghost_ot',
-        }),
-      );
+        },
+      ),
+    );
     const otCatalog = { assertOtTypeInEffectiveCatalog } as never;
-    const svc = new AttendanceRequestsService({ query: queryMock } as never, undefined, otCatalog);
+    const svc = new AttendanceRequestsService(
+      { query: queryMock } as never,
+      undefined,
+      otCatalog,
+    );
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
       tenantId: 'xevn',
@@ -357,14 +379,25 @@ describe('AttendanceRequestsService', () => {
       }
       if (String(sql).includes('INSERT INTO public.overtime_requests')) {
         return Promise.resolve({
-          rows: [{ id: 'ot-1', company_id: 'holding', overtime_type: 'weekday', status: 'pending' }],
+          rows: [
+            {
+              id: 'ot-1',
+              company_id: 'holding',
+              overtime_type: 'weekday',
+              status: 'pending',
+            },
+          ],
         });
       }
       return Promise.resolve({ rows: [] });
     });
     const assertOtTypeInEffectiveCatalog = jest.fn().mockResolvedValue(null);
     const otCatalog = { assertOtTypeInEffectiveCatalog } as never;
-    const svc = new AttendanceRequestsService({ query: queryMock } as never, undefined, otCatalog);
+    const svc = new AttendanceRequestsService(
+      { query: queryMock } as never,
+      undefined,
+      otCatalog,
+    );
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
       tenantId: 'xevn',

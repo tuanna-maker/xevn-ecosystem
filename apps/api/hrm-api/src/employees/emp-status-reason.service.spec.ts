@@ -48,14 +48,21 @@ function schemaPassthrough(sql: string): boolean {
 }
 
 function mockDb(
-  queryImpl: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
+  queryImpl: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
 ): HrmDbService {
-  const query = jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-    return queryImpl(sql, params);
-  });
+  const query = jest
+    .fn()
+    .mockImplementation(async (sql: string, params?: unknown[]) => {
+      return queryImpl(sql, params);
+    });
   return {
     query,
-    withTransaction: jest.fn(async (fn: (q: typeof query) => Promise<unknown>) => fn(query)),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof query) => Promise<unknown>) => fn(query),
+    ),
   } as unknown as HrmDbService;
 }
 
@@ -70,10 +77,14 @@ describe('EmpStatusReasonService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-CATA
     } as unknown as HrmDbService;
     const svc = new EmpStatusReasonService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.emp_status_reason'))).toBe(
-      true,
-    );
-    expect(sqls.some((q) => q.includes('uq_emp_status_reason_company_key_active'))).toBe(true);
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.emp_status_reason'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('uq_emp_status_reason_company_key_active')),
+    ).toBe(true);
     expect(sqls.every((q) => !q.includes('reason_key IN ('))).toBe(true);
   });
 
@@ -81,7 +92,10 @@ describe('EmpStatusReasonService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-CATA
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_status_reason') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.emp_status_reason') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.emp_status_reason')) {
@@ -179,12 +193,20 @@ describe('EmpStatusReasonService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-STATUS-CATA
         return { rows: [baseRow()] };
       }
       if (s.includes('UPDATE') && s.includes('archived_at = NOW()')) {
-        return { rows: [baseRow({ status: 'retired', archived_at: '2026-08-08T02:00:00Z' })] };
+        return {
+          rows: [
+            baseRow({ status: 'retired', archived_at: '2026-08-08T02:00:00Z' }),
+          ],
+        };
       }
       return { rows: [] };
     });
     const svc = new EmpStatusReasonService(db);
-    const row = await svc.retireStatusReason(STR_ID, 'holding', groupCeoToken());
+    const row = await svc.retireStatusReason(
+      STR_ID,
+      'holding',
+      groupCeoToken(),
+    );
     expect(row.archivedAt).toBeTruthy();
   });
 });

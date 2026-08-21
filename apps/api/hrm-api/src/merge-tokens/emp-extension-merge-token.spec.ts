@@ -32,30 +32,47 @@ function schemaPassthrough(sql: string): boolean {
 }
 
 function mockDb(
-  queryImpl: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
+  queryImpl: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
 ): HrmDbService {
-  const query = jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-    return queryImpl(sql, params);
-  });
+  const query = jest
+    .fn()
+    .mockImplementation(async (sql: string, params?: unknown[]) => {
+      return queryImpl(sql, params);
+    });
   return {
     query,
-    withTransaction: jest.fn(async (fn: (q: typeof query) => Promise<unknown>) => fn(query)),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof query) => Promise<unknown>) => fn(query),
+    ),
   } as unknown as HrmDbService;
 }
 
 describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-EXT-BE-01', () => {
   it('allow-list + aliases recognize EMP field catalogs', () => {
-    expect(isEmpExtensionFieldCatalogKey('hrm_employee_basic_fields')).toBe(true);
-    expect(isEmpExtensionFieldCatalogKey('employee_personal_fields')).toBe(true);
-    expect(isEmpExtensionFieldCatalogKey('hrm_employee_work_fields')).toBe(true);
+    expect(isEmpExtensionFieldCatalogKey('hrm_employee_basic_fields')).toBe(
+      true,
+    );
+    expect(isEmpExtensionFieldCatalogKey('employee_personal_fields')).toBe(
+      true,
+    );
+    expect(isEmpExtensionFieldCatalogKey('hrm_employee_work_fields')).toBe(
+      true,
+    );
     expect(isEmpExtensionFieldCatalogKey('employee_finance_fields')).toBe(true);
     expect(isEmpExtensionFieldCatalogKey('leave_types')).toBe(false);
     expect(isEmpExtensionFieldCatalogKey('job_titles')).toBe(false);
-    expect(isEmpExtensionFieldCatalogKey('hrm_employee_contact_fields')).toBe(false);
+    expect(isEmpExtensionFieldCatalogKey('hrm_employee_contact_fields')).toBe(
+      false,
+    );
   });
 
   it('key builder custom.emp.<code> + core column skip', () => {
-    expect(mergeTokenKeyForEmpExtension('Fleet-Badge')).toBe('custom.emp.fleet_badge');
+    expect(mergeTokenKeyForEmpExtension('Fleet-Badge')).toBe(
+      'custom.emp.fleet_badge',
+    );
     expect(shouldSkipEmpExtensionCoreColumn('full_name')).toBe(true);
     expect(shouldSkipEmpExtensionCoreColumn('fleet_badge')).toBe(false);
   });
@@ -68,7 +85,10 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-EXT-BE-01', () => {
       if (s.includes('INSERT INTO public.hrm_catalog_extension_items')) {
         return { rows: [] };
       }
-      if (s.includes('FROM public.hrm_merge_tokens') && s.includes('SELECT id, version')) {
+      if (
+        s.includes('FROM public.hrm_merge_tokens') &&
+        s.includes('SELECT id, version')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.hrm_merge_tokens')) {
@@ -84,12 +104,24 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-EXT-BE-01', () => {
         listSyncedCatalogs: jest.fn(),
         getSyncedCatalogExact: jest.fn().mockResolvedValue(null),
       } as unknown as CatalogSyncService,
-      { startCatalogExtensionWorkflow: jest.fn() } as unknown as XbosCatalogWorkflowBridge,
+      {
+        startCatalogExtensionWorkflow: jest.fn(),
+      } as unknown as XbosCatalogWorkflowBridge,
     );
 
-    const out = await service.appendExtensionItems('xevn', 'holding', 'hrm_employee_basic_fields', [
-      { code: 'fleet_badge', label: 'Mã thẻ đội xe', unit: 'text', status: 'active' },
-    ]);
+    const out = await service.appendExtensionItems(
+      'xevn',
+      'holding',
+      'hrm_employee_basic_fields',
+      [
+        {
+          code: 'fleet_badge',
+          label: 'Mã thẻ đội xe',
+          unit: 'text',
+          status: 'active',
+        },
+      ],
+    );
 
     expect(out.upserted).toBe(1);
     expect(db.withTransaction).toHaveBeenCalled();
@@ -117,9 +149,12 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-EXT-BE-01', () => {
       {} as CatalogSyncService,
       {} as XbosCatalogWorkflowBridge,
     );
-    await service.appendExtensionItems('xevn', 'holding', 'employee_work_fields', [
-      { code: 'shift_pod', label: 'Pod ca', status: 'active' },
-    ]);
+    await service.appendExtensionItems(
+      'xevn',
+      'holding',
+      'employee_work_fields',
+      [{ code: 'shift_pod', label: 'Pod ca', status: 'active' }],
+    );
     expect(tokenInserts[0]?.[2]).toBe('custom.emp.shift_pod');
   });
 
@@ -128,10 +163,20 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-EXT-BE-01', () => {
     const db = mockDb(async (sql: string, params?: unknown[]) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('UPDATE public.hrm_catalog_extension_items') && s.includes("status = 'draft'")) {
-        return { rows: [{ code: 'fleet_badge', catalog_key: 'hrm_employee_basic_fields' }] };
+      if (
+        s.includes('UPDATE public.hrm_catalog_extension_items') &&
+        s.includes("status = 'draft'")
+      ) {
+        return {
+          rows: [
+            { code: 'fleet_badge', catalog_key: 'hrm_employee_basic_fields' },
+          ],
+        };
       }
-      if (s.includes('UPDATE public.hrm_merge_tokens') && s.includes("status = 'retired'")) {
+      if (
+        s.includes('UPDATE public.hrm_merge_tokens') &&
+        s.includes("status = 'retired'")
+      ) {
         retireCalls.push(params ?? []);
         return { rows: [] };
       }
@@ -154,13 +199,15 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-EXT-BE-01', () => {
 
   it('VAL-EMP-TOK-05: core column full_name does not invent custom.emp.full_name', async () => {
     const tokenInserts: unknown[][] = [];
-    const query = jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-      if (schemaPassthrough(sql)) return { rows: [] };
-      if (String(sql).includes('INSERT INTO public.hrm_merge_tokens')) {
-        tokenInserts.push(params ?? []);
-      }
-      return { rows: [] };
-    });
+    const query = jest
+      .fn()
+      .mockImplementation(async (sql: string, params?: unknown[]) => {
+        if (schemaPassthrough(sql)) return { rows: [] };
+        if (String(sql).includes('INSERT INTO public.hrm_merge_tokens')) {
+          tokenInserts.push(params ?? []);
+        }
+        return { rows: [] };
+      });
     const key = await upsertEmpExtensionFieldMergeToken(query, {
       companyId: 'holding',
       code: 'full_name',
@@ -203,7 +250,9 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-EXT-BE-01', () => {
   it('VAL-EMP-TOK-05t: token upsert fail rolls back via withTransaction throw', async () => {
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
-      if (String(sql).includes('INSERT INTO public.hrm_catalog_extension_items')) {
+      if (
+        String(sql).includes('INSERT INTO public.hrm_catalog_extension_items')
+      ) {
         return { rows: [] };
       }
       if (String(sql).includes('FROM public.hrm_merge_tokens')) {
@@ -220,9 +269,18 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-EXT-BE-01', () => {
       {} as XbosCatalogWorkflowBridge,
     );
     await expect(
-      service.appendExtensionItems('xevn', 'holding', 'hrm_employee_finance_fields', [
-        { code: 'cost_center_ext', label: 'Cost center mở rộng', status: 'active' },
-      ]),
+      service.appendExtensionItems(
+        'xevn',
+        'holding',
+        'hrm_employee_finance_fields',
+        [
+          {
+            code: 'cost_center_ext',
+            label: 'Cost center mở rộng',
+            status: 'active',
+          },
+        ],
+      ),
     ).rejects.toThrow(/simulated token insert fail/);
     expect(db.withTransaction).toHaveBeenCalled();
   });
@@ -232,7 +290,9 @@ describe('PO-HRM-DYNAMIC-CONFIG-PLATFORM-MERGE-TOKEN-EMP-EXT-BE-01', () => {
       join(__dirname, '../employees/employees.service.ts'),
       'utf8',
     );
-    expect(src).not.toMatch(/emp-merge-token-register|upsertEmpExtensionFieldMergeToken|custom\.emp/);
+    expect(src).not.toMatch(
+      /emp-merge-token-register|upsertEmpExtensionFieldMergeToken|custom\.emp/,
+    );
     expect(src).toContain('custom_fields = $');
   });
 });

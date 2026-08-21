@@ -7,7 +7,11 @@ export const HRM_PAY_INP_PROFILE_422 = 'HRM-PAY-INP-PROFILE-422';
 
 export const PAY_POLICY_PACK_SCOPES = ['CHUNG', 'RIENG'] as const;
 export const PAY_POLICY_PACK_STATUSES = ['draft', 'active', 'retired'] as const;
-export const PAY_INPUT_PROFILE_STATUSES = ['draft', 'active', 'retired'] as const;
+export const PAY_INPUT_PROFILE_STATUSES = [
+  'draft',
+  'active',
+  'retired',
+] as const;
 
 /** Open slug — same family as pay sheet template codes. */
 export const PAY_CNTT_CODE_FORMAT = /^[a-z0-9][a-z0-9_-]{0,63}$/;

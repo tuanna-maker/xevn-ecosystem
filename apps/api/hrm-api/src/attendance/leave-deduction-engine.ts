@@ -81,7 +81,10 @@ export function parseLeaveDateInput(raw: string): string | null {
   return null;
 }
 
-export function yearsSpanningLeaveRange(startIso: string, endIso: string): number[] {
+export function yearsSpanningLeaveRange(
+  startIso: string,
+  endIso: string,
+): number[] {
   const y0 = Number(startIso.slice(0, 4));
   const y1 = Number(endIso.slice(0, 4));
   if (!Number.isFinite(y0) || !Number.isFinite(y1) || y1 < y0) {
@@ -93,7 +96,9 @@ export function yearsSpanningLeaveRange(startIso: string, endIso: string): numbe
 }
 
 export function normalizeLeaveUnit(raw: unknown): LeaveDeductionUnit {
-  const u = String(raw ?? 'day').trim().toLowerCase();
+  const u = String(raw ?? 'day')
+    .trim()
+    .toLowerCase();
   return u === 'hour' ? 'hour' : 'day';
 }
 
@@ -109,8 +114,12 @@ export function computeLeaveDeduction(input: {
   halfDay?: boolean;
   hours?: number;
 }): LeaveDeductionResult {
-  const start = parseLeaveDateInput(input.startDate) ?? String(input.startDate).trim().slice(0, 10);
-  const end = parseLeaveDateInput(input.endDate) ?? String(input.endDate).trim().slice(0, 10);
+  const start =
+    parseLeaveDateInput(input.startDate) ??
+    String(input.startDate).trim().slice(0, 10);
+  const end =
+    parseLeaveDateInput(input.endDate) ??
+    String(input.endDate).trim().slice(0, 10);
   const days = expandLeaveDateRange(start, end);
   const holidaySet =
     input.holidayDates instanceof Set

@@ -42,7 +42,10 @@ describe('EmployeeInsurancesService', () => {
       return { rows: [] } as never;
     });
 
-    await service.list({ company_id: 'main', employee_id: EMP_ID }, `Bearer ${token}`);
+    await service.list(
+      { company_id: 'main', employee_id: EMP_ID },
+      `Bearer ${token}`,
+    );
 
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('company_id = ANY'),
@@ -190,7 +193,10 @@ describe('EmployeeInsurancesService — VAL-SI-CNS-02 open EFF gate (BE-02)', ()
     expect(out.type).toBe(openKey);
     expect(out.id).toBe(ENROLL_ID);
     expect(catalog.assertInsuranceTypeInEffectiveCatalog).toHaveBeenCalledWith(
-      expect.objectContaining({ insuranceType: openKey, companyId: expect.any(String) }),
+      expect.objectContaining({
+        insuranceType: openKey,
+        companyId: expect.any(String),
+      }),
     );
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('INSERT INTO public.employee_insurances'),
@@ -207,7 +213,7 @@ describe('EmployeeInsurancesService — VAL-SI-CNS-02 open EFF gate (BE-02)', ()
       );
     });
     const db = {
-      query: jest.fn().mockResolvedValue({ rows: [] } as never),
+      query: jest.fn().mockResolvedValue({ rows: [] }),
     } as unknown as jest.Mocked<HrmDbService>;
     const svc = new EmployeeInsurancesService(db, catalog);
 
@@ -237,7 +243,7 @@ describe('EmployeeInsurancesService — VAL-SI-CNS-02 open EFF gate (BE-02)', ()
       eligibleForRateCfg: true,
     }));
     const db = {
-      query: jest.fn().mockResolvedValue({ rows: [] } as never),
+      query: jest.fn().mockResolvedValue({ rows: [] }),
     } as unknown as jest.Mocked<HrmDbService>;
     const svc = new EmployeeInsurancesService(db, catalog);
 
@@ -270,7 +276,10 @@ describe('EmployeeInsurancesService — VAL-SI-CNS-02 open EFF gate (BE-02)', ()
     }));
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.employee_insurances') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.employee_insurances') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [enrollmentRow()] } as never;
         }
         if (sql.includes('FROM public.hrm_insurance_rate_period')) {
@@ -299,16 +308,25 @@ describe('EmployeeInsurancesService — VAL-SI-CNS-02 open EFF gate (BE-02)', ()
     let enrollmentStatus = 'active';
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.employee_insurances') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.employee_insurances') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [enrollmentRow({ type: 'social', status: enrollmentStatus })],
           } as never;
         }
-        if (sql.includes('UPDATE public.employee_insurances') && sql.includes('SET status')) {
+        if (
+          sql.includes('UPDATE public.employee_insurances') &&
+          sql.includes('SET status')
+        ) {
           enrollmentStatus = 'closed';
           return { rows: [] } as never;
         }
-        if (sql.includes('FROM public.hrm_insurance_rate_period') && sql.includes('ORDER BY')) {
+        if (
+          sql.includes('FROM public.hrm_insurance_rate_period') &&
+          sql.includes('ORDER BY')
+        ) {
           return {
             rows: [
               {

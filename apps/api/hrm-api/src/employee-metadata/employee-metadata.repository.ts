@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { pushCompanyIdUuidFilter, resolveHrmListScope } from '../common/hrm-list-scope';
+import {
+  pushCompanyIdUuidFilter,
+  resolveHrmListScope,
+} from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 
-export type EmployeeMetadataChangeStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
+export type EmployeeMetadataChangeStatus =
+  | 'pending'
+  | 'approved'
+  | 'rejected'
+  | 'cancelled';
 
 export type EmployeeMetadataValueRecord = {
   id: string;
@@ -281,7 +288,10 @@ export class EmployeeMetadataRepository {
     return res.rows[0] ?? null;
   }
 
-  async upsertMetadataValue(request: EmployeeMetadataChangeRequestRecord, decision: DecisionInput) {
+  async upsertMetadataValue(
+    request: EmployeeMetadataChangeRequestRecord,
+    decision: DecisionInput,
+  ) {
     const res = await this.db.query<EmployeeMetadataValueRecord>(
       `
         INSERT INTO public.employee_metadata_values (
@@ -312,7 +322,9 @@ export class EmployeeMetadataRepository {
         JSON.stringify(request.requested_value),
         request.source_catalog_key,
         request.workflow_code,
-        decision.actor_user_id?.trim() ?? decision.actor_name?.trim() ?? 'hrm-api',
+        decision.actor_user_id?.trim() ??
+          decision.actor_name?.trim() ??
+          'hrm-api',
       ],
     );
     return res.rows[0];
@@ -339,7 +351,9 @@ export class EmployeeMetadataRepository {
           decided_by, decided_note, decided_at, submitted_at, updated_at;
       `,
       [
-        decision.actor_user_id?.trim() ?? decision.actor_name?.trim() ?? 'hrm-api',
+        decision.actor_user_id?.trim() ??
+          decision.actor_name?.trim() ??
+          'hrm-api',
         decision.note?.trim() ?? null,
         changeRequestId,
       ],
@@ -383,7 +397,9 @@ export class EmployeeMetadataRepository {
           decided_by, decided_note, decided_at, submitted_at, updated_at;
       `,
       [
-        decision.actor_user_id?.trim() ?? decision.actor_name?.trim() ?? 'hrm-api',
+        decision.actor_user_id?.trim() ??
+          decision.actor_name?.trim() ??
+          'hrm-api',
         decision.note?.trim() ?? null,
         changeRequestId,
       ],
@@ -408,7 +424,11 @@ export class EmployeeMetadataRepository {
     return rejected;
   }
 
-  async listAuditLogs(requestedCompanyId: string, employeeId?: string, authorization?: string) {
+  async listAuditLogs(
+    requestedCompanyId: string,
+    employeeId?: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, requestedCompanyId);
     const clauses: string[] = [];

@@ -38,8 +38,16 @@ describe('PO-HRM-MVP-GD1-ATT-12-CLUSTER-BE-01', () => {
   });
 
   it('idempotency key stable for same activate triple', () => {
-    const a = buildActivateEnrollIdempotencyKey('holding', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', '2026-08-31');
-    const b = buildActivateEnrollIdempotencyKey('holding', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', '2026-08-31');
+    const a = buildActivateEnrollIdempotencyKey(
+      'holding',
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      '2026-08-31',
+    );
+    const b = buildActivateEnrollIdempotencyKey(
+      'holding',
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      '2026-08-31',
+    );
     expect(a).toBe(b);
     expect(a.length).toBe(64);
   });
@@ -52,12 +60,23 @@ describe('PO-HRM-MVP-GD1-ATT-12-CLUSTER-BE-01', () => {
     const employeeId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
     const queryMock = jest.fn().mockImplementation((sql: string) => {
       const s = String(sql);
-      if (s.includes('FROM public.att_activate_enroll_ledger WHERE idempotency_key')) {
+      if (
+        s.includes(
+          'FROM public.att_activate_enroll_ledger WHERE idempotency_key',
+        )
+      ) {
         return Promise.resolve({ rows: [{ id: 'ledger-1' }] });
       }
       if (s.includes('FROM public.employees')) {
         return Promise.resolve({
-          rows: [{ id: employeeId, company_id: 'holding', status: 'active', custom_fields: {} }],
+          rows: [
+            {
+              id: employeeId,
+              company_id: 'holding',
+              status: 'active',
+              custom_fields: {},
+            },
+          ],
         });
       }
       return Promise.resolve({ rows: [] });

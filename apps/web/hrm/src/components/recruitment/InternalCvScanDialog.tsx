@@ -46,6 +46,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -61,6 +68,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   requisition: HrmJobRequisition | null;
   companyId: string;
+  jobTitleOptions?: { value: string; label: string }[];
   onCompleted: (updated: HrmJobRequisition) => void;
 };
 
@@ -69,6 +77,7 @@ export function InternalCvScanDialog({
   onOpenChange,
   requisition,
   companyId,
+  jobTitleOptions = [],
   onCompleted,
 }: Props) {
   const defaults = useMemo(
@@ -291,13 +300,25 @@ export function InternalCvScanDialog({
 
           <div className="grid grid-cols-12 gap-3">
             <label className="col-span-12 space-y-1 sm:col-span-4">
-              <span className="text-xs font-medium text-xevn-text">Chức danh *</span>
-              <Input
-                value={positionCode}
-                onChange={(e) => setPositionCode(e.target.value)}
-                placeholder={defaults.position_label || 'position_code / chức danh'}
-                data-testid="yctd-cv-scan-position"
-              />
+              <span className="text-sm font-medium text-xevn-text">Chức danh *</span>
+              <Select value={positionCode} onValueChange={setPositionCode}>
+                <SelectTrigger data-testid="yctd-cv-scan-position">
+                  <SelectValue placeholder={defaults.position_label || 'Chọn chức danh'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_no_value_" disabled>
+                    — Chọn chức danh —
+                  </SelectItem>
+                  {jobTitleOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                  {positionCode && !jobTitleOptions.some((o) => o.value === positionCode) ? (
+                    <SelectItem value={positionCode}>{positionCode}</SelectItem>
+                  ) : null}
+                </SelectContent>
+              </Select>
             </label>
             <label className="col-span-12 space-y-1 sm:col-span-4">
               <span className="text-xs font-medium text-xevn-text">Kỹ năng *</span>

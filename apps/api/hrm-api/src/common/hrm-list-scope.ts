@@ -93,7 +93,10 @@ export const HRM_GROUP_MEMBER_COMPANY_SLUGS = [
 export const HRM_PILOT_OPERATING_COMPANY_ID = 'main';
 
 /** Pilot UUIDs for `hrm_tasks` / `service_requests` (seed-full-ecosystem). */
-export const HRM_COMPANY_UUID_BY_SLUG: Record<(typeof HRM_GROUP_MEMBER_COMPANY_SLUGS)[number], string> = {
+export const HRM_COMPANY_UUID_BY_SLUG: Record<
+  (typeof HRM_GROUP_MEMBER_COMPANY_SLUGS)[number],
+  string
+> = {
   holding: '10000000-0000-4000-8000-000000000001',
   trsport: '10000000-0000-4000-8000-000000000002',
   logistics: '10000000-0000-4000-8000-000000000003',
@@ -139,7 +142,9 @@ export function assertHrmMappedCompanyUuidOrThrow(
 }
 
 /** UF-HRM-11 — employee list + metadata submit expose legal UUID for slug partitions. */
-export function resolveHrmCompanyUuidForSlug(companySlug: string): string | null {
+export function resolveHrmCompanyUuidForSlug(
+  companySlug: string,
+): string | null {
   const trimmed = companySlug.trim().toLowerCase();
   if (!trimmed) {
     return null;
@@ -150,7 +155,8 @@ export function resolveHrmCompanyUuidForSlug(companySlug: string): string | null
   if (trimmed === HRM_PILOT_OPERATING_COMPANY_ID) {
     return HRM_COMPANY_UUID_BY_SLUG.holding;
   }
-  const mapped = HRM_COMPANY_UUID_BY_SLUG[trimmed as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+  const mapped =
+    HRM_COMPANY_UUID_BY_SLUG[trimmed as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
   return mapped ?? null;
 }
 
@@ -188,7 +194,10 @@ export type HrmListScopeContext = {
   tenantId?: string;
 };
 
-function readClaim(payload: Record<string, unknown>, ...keys: string[]): string | undefined {
+function readClaim(
+  payload: Record<string, unknown>,
+  ...keys: string[]
+): string | undefined {
   for (const key of keys) {
     const value = payload[key];
     if (typeof value === 'string' && value.trim()) {
@@ -202,8 +211,10 @@ function normalizeUuid(value: string): string {
   return value.trim().toLowerCase();
 }
 
-function readJwtPayload(authorization: string | undefined): Record<string, unknown> | null {
-  return getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+function readJwtPayload(
+  authorization: string | undefined,
+): Record<string, unknown> | null {
+  return getVerifiedInternalJwtPayload(authorization);
 }
 
 /** Documented portal Group CEO — mobile standalone login row uses company_id=holding (ADR §3.1). */
@@ -282,11 +293,18 @@ export function normalizeHomeSummaryCompanyId(
   if (!payload) {
     return slug;
   }
-  const claimSlug = readClaim(payload, 'companyId', 'company_id', 'cid')?.toLowerCase();
+  const claimSlug = readClaim(
+    payload,
+    'companyId',
+    'company_id',
+    'cid',
+  )?.toLowerCase();
   if (!claimSlug) {
     return slug;
   }
-  const roleCode = (readClaim(payload, 'roleCode', 'role_code', 'role') ?? '').toLowerCase();
+  const roleCode = (
+    readClaim(payload, 'roleCode', 'role_code', 'role') ?? ''
+  ).toLowerCase();
   const isGroupRollupClaim =
     claimSlug === HRM_PILOT_OPERATING_COMPANY_ID ||
     roleCode === 'group_ceo' ||
@@ -312,7 +330,9 @@ export function expandHrmTextCompanyIds(
   authorization: string | undefined,
   requestedCompanyId?: string,
 ): string[] {
-  const out = new Set(scope.companyIds.map((id) => id.trim().toLowerCase()).filter(Boolean));
+  const out = new Set(
+    scope.companyIds.map((id) => id.trim().toLowerCase()).filter(Boolean),
+  );
   // Xử lý: slug list filter phải thấy row UUID (Plane B′) — CEO OU=trsport vs persist UUID.
   for (const id of [...out]) {
     if (id === HRM_PILOT_OPERATING_COMPANY_ID) {
@@ -320,7 +340,8 @@ export function expandHrmTextCompanyIds(
       out.add(HRM_COMPANY_UUID_BY_SLUG.holding);
       continue;
     }
-    const mapped = HRM_COMPANY_UUID_BY_SLUG[id as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+    const mapped =
+      HRM_COMPANY_UUID_BY_SLUG[id as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
     if (mapped) {
       out.add(mapped.toLowerCase());
       continue;
@@ -336,11 +357,26 @@ export function expandHrmTextCompanyIds(
   if (!payload) {
     return [...out];
   }
-  const claimUuid = readClaim(payload, 'company_uuid', 'companyUuid')?.toLowerCase();
-  const claimSlug = readClaim(payload, 'companyId', 'company_id', 'cid')?.toLowerCase();
+  const claimUuid = readClaim(
+    payload,
+    'company_uuid',
+    'companyUuid',
+  )?.toLowerCase();
+  const claimSlug = readClaim(
+    payload,
+    'companyId',
+    'company_id',
+    'cid',
+  )?.toLowerCase();
   const req = requestedCompanyId?.trim().toLowerCase() ?? '';
   if (claimUuid && claimSlug) {
-    if (!req || req === claimSlug || req === claimUuid || out.has(claimSlug) || out.has(claimUuid)) {
+    if (
+      !req ||
+      req === claimSlug ||
+      req === claimUuid ||
+      out.has(claimSlug) ||
+      out.has(claimUuid)
+    ) {
       out.add(claimSlug);
       out.add(claimUuid);
     }
@@ -357,20 +393,32 @@ export function resolveHrmListScope(
   requestedCompanyId: string,
   context?: HrmListScopeContext,
 ): HrmListScope {
-  const jwtPayload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+  const jwtPayload = getVerifiedInternalJwtPayload(authorization);
   const tenantId =
-    (jwtPayload ? readClaim(jwtPayload, 'tenantId', 'tenant_id', 'tid') : undefined) ??
+    (jwtPayload
+      ? readClaim(jwtPayload, 'tenantId', 'tenant_id', 'tid')
+      : undefined) ??
     context?.tenantId?.trim() ??
     '';
-  const roleCode = (jwtPayload ? readClaim(jwtPayload, 'roleCode', 'role_code', 'role') ?? '' : '').toLowerCase();
+  const roleCode = (
+    jwtPayload
+      ? (readClaim(jwtPayload, 'roleCode', 'role_code', 'role') ?? '')
+      : ''
+  ).toLowerCase();
   const claimCompany = jwtPayload
-    ? readClaim(jwtPayload, 'companyId', 'company_id', 'cid') ?? requestedCompanyId
+    ? (readClaim(jwtPayload, 'companyId', 'company_id', 'cid') ??
+      requestedCompanyId)
     : requestedCompanyId;
 
   const isGroupRollup =
     tenantId === MASTER_TENANT_ID &&
     requestedCompanyId === HRM_PILOT_OPERATING_COMPANY_ID &&
-    isGroupCeoMasterOperatingBucket(jwtPayload, tenantId, claimCompany, roleCode);
+    isGroupCeoMasterOperatingBucket(
+      jwtPayload,
+      tenantId,
+      claimCompany,
+      roleCode,
+    );
 
   const serviceGroupMain =
     !jwtPayload &&
@@ -408,7 +456,10 @@ export function resolveHrmListScope(
  */
 export function expandPayrollPeriodCompanyIds(scope: HrmListScope): string[] {
   const ids = [...scope.companyIds];
-  if (scope.masterTenantPartition && !ids.includes(HRM_PILOT_OPERATING_COMPANY_ID)) {
+  if (
+    scope.masterTenantPartition &&
+    !ids.includes(HRM_PILOT_OPERATING_COMPANY_ID)
+  ) {
     ids.push(HRM_PILOT_OPERATING_COMPANY_ID);
   }
   return ids;
@@ -419,7 +470,9 @@ export function expandPayrollPeriodCompanyIds(scope: HrmListScope): string[] {
  * Unlike group list rollup, must NOT match a closed sheet from another member slug (e.g. trsport)
  * when the payroll period is holding/main. Includes main↔holding parity + pilot UUID aliases.
  */
-export function expandPayrollAttendanceSheetCompanyIds(periodCompanyId: string): string[] {
+export function expandPayrollAttendanceSheetCompanyIds(
+  periodCompanyId: string,
+): string[] {
   const normalized = periodCompanyId.trim().toLowerCase();
   if (!normalized) {
     return [];
@@ -432,7 +485,10 @@ export function expandPayrollAttendanceSheetCompanyIds(periodCompanyId: string):
     out.add(HRM_PILOT_OPERATING_COMPANY_ID);
     out.add(HRM_COMPANY_UUID_BY_SLUG.holding);
   }
-  const mapped = HRM_COMPANY_UUID_BY_SLUG[normalized as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+  const mapped =
+    HRM_COMPANY_UUID_BY_SLUG[
+      normalized as keyof typeof HRM_COMPANY_UUID_BY_SLUG
+    ];
   if (mapped) {
     out.add(mapped.toLowerCase());
   }
@@ -474,7 +530,10 @@ function companyIdsToUuidList(companyIds: string[]): string[] {
     if (trimmed === HRM_PILOT_OPERATING_COMPANY_ID) {
       return HRM_COMPANY_UUID_BY_SLUG.holding;
     }
-    const mapped = HRM_COMPANY_UUID_BY_SLUG[trimmed as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+    const mapped =
+      HRM_COMPANY_UUID_BY_SLUG[
+        trimmed as keyof typeof HRM_COMPANY_UUID_BY_SLUG
+      ];
     return mapped ?? trimmed;
   });
 }
@@ -510,7 +569,11 @@ export function resolveHrmOperationsPersistCompanyId(
     // Xử lý: persist UUID chỉ chấp nhận Plane B′ map — reject LE (FR-HRM-OP-01 #4).
     return assertHrmMappedCompanyUuidOrThrow(trimmed);
   }
-  return HRM_COMPANY_UUID_BY_SLUG[trimmed as keyof typeof HRM_COMPANY_UUID_BY_SLUG] ?? trimmed;
+  return (
+    HRM_COMPANY_UUID_BY_SLUG[
+      trimmed as keyof typeof HRM_COMPANY_UUID_BY_SLUG
+    ] ?? trimmed
+  );
 }
 
 /**
@@ -527,9 +590,13 @@ export function resolveHrmPersistCompanyIdText(
   const raw = resolveHrmCompanySlugForId(requestedCompanyId);
   const scope = resolveHrmListScope(authorization, raw, context);
   const persisted =
-    raw === HRM_PILOT_OPERATING_COMPANY_ID && scope.masterTenantPartition ? 'holding' : raw;
+    raw === HRM_PILOT_OPERATING_COMPANY_ID && scope.masterTenantPartition
+      ? 'holding'
+      : raw;
 
-  const allowed = new Set(scope.companyIds.map((id) => id.trim().toLowerCase()));
+  const allowed = new Set(
+    scope.companyIds.map((id) => id.trim().toLowerCase()),
+  );
   if (!allowed.has(persisted)) {
     throw new ApiException(
       'HRM-SCOPE-409',
@@ -573,7 +640,9 @@ export function pushEmployeeListScopeFilters(
     );
   } else if (scope.memberTenantId) {
     values.push(scope.memberTenantId);
-    filters.push(`NULLIF(TRIM(custom_fields->>'tenant_id'), '') = $${values.length}`);
+    filters.push(
+      `NULLIF(TRIM(custom_fields->>'tenant_id'), '') = $${values.length}`,
+    );
   }
 }
 
@@ -649,7 +718,9 @@ export function resolveHrmSettingsCatalogCompanyId(
 ): string {
   const normalized = resolveHrmCompanySlugForId(companyId);
   const tenant = tenantId.trim().toLowerCase();
-  const scope = resolveHrmListScope(authorization, normalized, { tenantId: tenant });
+  const scope = resolveHrmListScope(authorization, normalized, {
+    tenantId: tenant,
+  });
   if (
     tenant === MASTER_TENANT_ID &&
     normalized === HRM_PILOT_OPERATING_COMPANY_ID &&
@@ -659,13 +730,22 @@ export function resolveHrmSettingsCatalogCompanyId(
   }
   // Group CEO OU narrow (companyId=trsport) — catalog SoT remains holding (picker parity).
   if (tenant === MASTER_TENANT_ID) {
-    const jwtPayload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+    const jwtPayload = getVerifiedInternalJwtPayload(authorization);
     if (jwtPayload) {
-      const claimCompany = readClaim(jwtPayload, 'companyId', 'company_id', 'cid') ?? '';
-      const roleCode = readClaim(jwtPayload, 'roleCode', 'role_code', 'role') ?? '';
+      const claimCompany =
+        readClaim(jwtPayload, 'companyId', 'company_id', 'cid') ?? '';
+      const roleCode =
+        readClaim(jwtPayload, 'roleCode', 'role_code', 'role') ?? '';
       if (
-        isGroupCeoMasterOperatingBucket(jwtPayload, tenant, claimCompany, roleCode) &&
-        (HRM_GROUP_MEMBER_COMPANY_SLUGS as readonly string[]).includes(normalized)
+        isGroupCeoMasterOperatingBucket(
+          jwtPayload,
+          tenant,
+          claimCompany,
+          roleCode,
+        ) &&
+        (HRM_GROUP_MEMBER_COMPANY_SLUGS as readonly string[]).includes(
+          normalized,
+        )
       ) {
         return 'holding';
       }
@@ -674,12 +754,20 @@ export function resolveHrmSettingsCatalogCompanyId(
   return normalized;
 }
 
-function readResourceTenantId(resource: { custom_fields?: Record<string, unknown> | null } | null | undefined): string {
+function readResourceTenantId(
+  resource:
+    | { custom_fields?: Record<string, unknown> | null }
+    | null
+    | undefined,
+): string {
   const raw = resource?.custom_fields?.tenant_id;
   return typeof raw === 'string' ? raw.trim() : '';
 }
 
-function buildAllowedCompanyKeys(scope: HrmListScope): { slugs: Set<string>; uuids: Set<string> } {
+function buildAllowedCompanyKeys(scope: HrmListScope): {
+  slugs: Set<string>;
+  uuids: Set<string>;
+} {
   const slugs = new Set(scope.companyIds.map((id) => id.trim().toLowerCase()));
   if (scope.masterTenantPartition) {
     slugs.add(HRM_PILOT_OPERATING_COMPANY_ID);
@@ -700,7 +788,10 @@ function buildAllowedCompanyKeys(scope: HrmListScope): { slugs: Set<string>; uui
 /** Row-level scope guard for mutate-by-id (P1-01 / P1-02 / U28-R2 tenant partition). */
 export function assertResourceInHrmScope(
   resource:
-    | { company_id?: string | null; custom_fields?: Record<string, unknown> | null }
+    | {
+        company_id?: string | null;
+        custom_fields?: Record<string, unknown> | null;
+      }
     | null
     | undefined,
   scope: HrmListScope,
@@ -710,10 +801,16 @@ export function assertResourceInHrmScope(
   const mismatchCode = options?.mismatchCode ?? 'HRM-SCOPE-409';
   const companyId = resource?.company_id?.trim().toLowerCase();
   if (!companyId) {
-    throw new ApiException(notFoundCode, 'Resource not found', HttpStatus.NOT_FOUND);
+    throw new ApiException(
+      notFoundCode,
+      'Resource not found',
+      HttpStatus.NOT_FOUND,
+    );
   }
-  const { slugs: allowedSlugs, uuids: allowedUuids } = buildAllowedCompanyKeys(scope);
-  const companyAllowed = allowedSlugs.has(companyId) || allowedUuids.has(companyId);
+  const { slugs: allowedSlugs, uuids: allowedUuids } =
+    buildAllowedCompanyKeys(scope);
+  const companyAllowed =
+    allowedSlugs.has(companyId) || allowedUuids.has(companyId);
   if (!companyAllowed) {
     throw new ApiException(
       mismatchCode,

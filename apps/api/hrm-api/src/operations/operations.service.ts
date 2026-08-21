@@ -105,9 +105,13 @@ type ServiceRequestRow = {
 };
 
 /** MP-14 mobile parity — `request_type` mirrors canonical `service_type`. */
-export type ServiceRequestResponse = ServiceRequestRow & { request_type: string };
+export type ServiceRequestResponse = ServiceRequestRow & {
+  request_type: string;
+};
 
-export function mapServiceRequestRow(row: ServiceRequestRow): ServiceRequestResponse {
+export function mapServiceRequestRow(
+  row: ServiceRequestRow,
+): ServiceRequestResponse {
   return { ...row, request_type: row.service_type };
 }
 
@@ -125,14 +129,20 @@ export class OperationsService {
   private assertOperationsCompanyWire(requestedCompanyId: string): void {
     const trimmed = requestedCompanyId.trim();
     // UUID shape but not mapped → LE / unknown; reject before list/summary counts.
-    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(trimmed)) {
+    if (
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        trimmed,
+      )
+    ) {
       if (!isHrmMappedCompanyUuid(trimmed)) {
         assertHrmMappedCompanyUuidOrThrow(trimmed);
       }
     }
   }
 
-  private toServiceRequestRealtimePayload(row: ServiceRequestRow): ServiceRequestRealtimePayload {
+  private toServiceRequestRealtimePayload(
+    row: ServiceRequestRow,
+  ): ServiceRequestRealtimePayload {
     return {
       id: row.id,
       company_id: row.company_id,
@@ -203,27 +213,49 @@ export class OperationsService {
     `);
   }
 
-  async createTask(payload: CreateTaskDto, authorization?: string, tenantId?: string) {
+  async createTask(
+    payload: CreateTaskDto,
+    authorization?: string,
+    tenantId?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmOperationsPersistCompanyId(authorization, payload.company_id, { tenantId });
+    const companyId = resolveHrmOperationsPersistCompanyId(
+      authorization,
+      payload.company_id,
+      { tenantId },
+    );
     const res = await this.db.query<TaskRow>(
       `INSERT INTO public.hrm_tasks
         (id, company_id, title, description, priority, status, due_date)
        VALUES ($1, $2::uuid, $3, $4, $5, 'todo', $6::date)
        RETURNING id, company_id, title, description, priority, status, due_date, created_at, updated_at;`,
-      [randomUUID(), companyId, payload.title.trim(), payload.description?.trim() ?? null, payload.priority, payload.due_date ?? null],
+      [
+        randomUUID(),
+        companyId,
+        payload.title.trim(),
+        payload.description?.trim() ?? null,
+        payload.priority,
+        payload.due_date ?? null,
+      ],
     );
     return res.rows[0];
   }
 
-  async listTasks(query: ListTasksQueryDto, authorization?: string, tenantId?: string) {
+  async listTasks(
+    query: ListTasksQueryDto,
+    authorization?: string,
+    tenantId?: string,
+  ) {
     await this.ensureSchema();
     this.assertOperationsCompanyWire(query.company_id);
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    const scope = resolveHrmListScope(authorization, query.company_id, {
+      tenantId,
+    });
     const filters: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdUuidFilter(filters, values, scope.companyIds);
-    const whereClause = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
+    const whereClause =
+      filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
     const page = query.page ?? 1;
     const pageSize = query.page_size ?? 20;
     const offset = (page - 1) * pageSize;
@@ -240,7 +272,12 @@ export class OperationsService {
        LIMIT $${listValues.length - 1} OFFSET $${listValues.length};`,
       listValues,
     );
-    return { total: Number(countRes.rows[0]?.total ?? 0), page, page_size: pageSize, data: res.rows };
+    return {
+      total: Number(countRes.rows[0]?.total ?? 0),
+      page,
+      page_size: pageSize,
+      data: res.rows,
+    };
   }
 
   private guardUuidResourceMutate(
@@ -250,14 +287,18 @@ export class OperationsService {
     tenantId: string | undefined,
     codes: { notFound: string; mismatch: string },
   ) {
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, {
+      tenantId,
+    });
     assertResourceInHrmScope(resource, scope, {
       notFoundCode: codes.notFound,
       mismatchCode: codes.mismatch,
     });
   }
 
-  private async loadTaskCompanyRow(taskId: string): Promise<{ company_id: string } | null> {
+  private async loadTaskCompanyRow(
+    taskId: string,
+  ): Promise<{ company_id: string } | null> {
     const res = await this.db.query<{ company_id: string }>(
       `SELECT company_id::text AS company_id FROM public.hrm_tasks WHERE id = $1::uuid LIMIT 1;`,
       [taskId],
@@ -265,7 +306,9 @@ export class OperationsService {
     return res.rows[0] ?? null;
   }
 
-  private async loadServiceRequestCompanyRow(requestId: string): Promise<{ company_id: string } | null> {
+  private async loadServiceRequestCompanyRow(
+    requestId: string,
+  ): Promise<{ company_id: string } | null> {
     const res = await this.db.query<{ company_id: string }>(
       `SELECT company_id::text AS company_id FROM public.service_requests WHERE id = $1::uuid LIMIT 1;`,
       [requestId],
@@ -282,10 +325,16 @@ export class OperationsService {
   ) {
     await this.ensureSchema();
     const existing = await this.loadTaskCompanyRow(taskId);
-    this.guardUuidResourceMutate(existing, authorization, requestedCompanyId, tenantId, {
-      notFound: 'HRM-OPS-404',
-      mismatch: 'HRM-OPS-409',
-    });
+    this.guardUuidResourceMutate(
+      existing,
+      authorization,
+      requestedCompanyId,
+      tenantId,
+      {
+        notFound: 'HRM-OPS-404',
+        mismatch: 'HRM-OPS-409',
+      },
+    );
     const res = await this.db.query<TaskRow>(
       `UPDATE public.hrm_tasks
        SET status = $1, updated_at = NOW()
@@ -294,14 +343,26 @@ export class OperationsService {
       [payload.status, taskId],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-OPS-404', 'Task not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-OPS-404',
+        'Task not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return res.rows[0];
   }
 
-  async createServiceRequest(payload: CreateServiceRequestDto, authorization?: string, tenantId?: string) {
+  async createServiceRequest(
+    payload: CreateServiceRequestDto,
+    authorization?: string,
+    tenantId?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmOperationsPersistCompanyId(authorization, payload.company_id, { tenantId });
+    const companyId = resolveHrmOperationsPersistCompanyId(
+      authorization,
+      payload.company_id,
+      { tenantId },
+    );
     const res = await this.db.query<ServiceRequestRow>(
       `
         INSERT INTO public.service_requests (
@@ -342,16 +403,28 @@ export class OperationsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-OPS-500', 'Failed to create service request', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiException(
+        'HRM-OPS-500',
+        'Failed to create service request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    await this.fanout.onServiceRequestCreated(this.toServiceRequestRealtimePayload(row));
+    await this.fanout.onServiceRequestCreated(
+      this.toServiceRequestRealtimePayload(row),
+    );
     return mapServiceRequestRow(row);
   }
 
-  async listServiceRequests(query: ListServiceRequestsQueryDto, authorization?: string, tenantId?: string) {
+  async listServiceRequests(
+    query: ListServiceRequestsQueryDto,
+    authorization?: string,
+    tenantId?: string,
+  ) {
     await this.ensureSchema();
     this.assertOperationsCompanyWire(query.company_id);
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    const scope = resolveHrmListScope(authorization, query.company_id, {
+      tenantId,
+    });
     const clauses: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdUuidFilter(clauses, values, scope.companyIds);
@@ -359,7 +432,8 @@ export class OperationsService {
       values.push(query.service_type);
       clauses.push(`service_type = $${values.length}`);
     }
-    const whereClause = clauses.length > 0 ? `WHERE ${clauses.join(' AND ')}` : '';
+    const whereClause =
+      clauses.length > 0 ? `WHERE ${clauses.join(' AND ')}` : '';
     const res = await this.db.query<ServiceRequestRow>(
       `
         SELECT * FROM public.service_requests
@@ -380,10 +454,16 @@ export class OperationsService {
   ) {
     await this.ensureSchema();
     const existing = await this.loadServiceRequestCompanyRow(requestId);
-    this.guardUuidResourceMutate(existing, authorization, requestedCompanyId, tenantId, {
-      notFound: 'HRM-SVC-404',
-      mismatch: 'HRM-SVC-409',
-    });
+    this.guardUuidResourceMutate(
+      existing,
+      authorization,
+      requestedCompanyId,
+      tenantId,
+      {
+        notFound: 'HRM-SVC-404',
+        mismatch: 'HRM-SVC-409',
+      },
+    );
     const res = await this.db.query<ServiceRequestRow>(
       `
         UPDATE public.service_requests
@@ -423,7 +503,11 @@ export class OperationsService {
       ],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-SVC-404', 'Service request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-SVC-404',
+        'Service request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return mapServiceRequestRow(res.rows[0]);
   }
@@ -436,16 +520,26 @@ export class OperationsService {
   ) {
     await this.ensureSchema();
     const existing = await this.loadServiceRequestCompanyRow(requestId);
-    this.guardUuidResourceMutate(existing, authorization, requestedCompanyId, tenantId, {
-      notFound: 'HRM-SVC-404',
-      mismatch: 'HRM-SVC-409',
-    });
+    this.guardUuidResourceMutate(
+      existing,
+      authorization,
+      requestedCompanyId,
+      tenantId,
+      {
+        notFound: 'HRM-SVC-404',
+        mismatch: 'HRM-SVC-409',
+      },
+    );
     const res = await this.db.query<{ id: string }>(
       `DELETE FROM public.service_requests WHERE id = $1::uuid RETURNING id;`,
       [requestId],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-SVC-404', 'Service request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-SVC-404',
+        'Service request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return { id: requestId };
   }
@@ -459,10 +553,16 @@ export class OperationsService {
   ) {
     await this.ensureSchema();
     const existing = await this.loadServiceRequestCompanyRow(requestId);
-    this.guardUuidResourceMutate(existing, authorization, requestedCompanyId, tenantId, {
-      notFound: 'HRM-SVC-404',
-      mismatch: 'HRM-SVC-409',
-    });
+    this.guardUuidResourceMutate(
+      existing,
+      authorization,
+      requestedCompanyId,
+      tenantId,
+      {
+        notFound: 'HRM-SVC-404',
+        mismatch: 'HRM-SVC-409',
+      },
+    );
     const res = await this.db.query<ServiceRequestRow>(
       `
         UPDATE public.service_requests
@@ -477,10 +577,17 @@ export class OperationsService {
       [payload.approved_by?.trim() ?? null, requestId],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-SVC-404', 'Service request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-SVC-404',
+        'Service request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const row = res.rows[0];
-    await this.fanout.onServiceRequestDecided('approved', this.toServiceRequestRealtimePayload(row));
+    await this.fanout.onServiceRequestDecided(
+      'approved',
+      this.toServiceRequestRealtimePayload(row),
+    );
     return mapServiceRequestRow(row);
   }
 
@@ -493,10 +600,16 @@ export class OperationsService {
   ) {
     await this.ensureSchema();
     const existing = await this.loadServiceRequestCompanyRow(requestId);
-    this.guardUuidResourceMutate(existing, authorization, requestedCompanyId, tenantId, {
-      notFound: 'HRM-SVC-404',
-      mismatch: 'HRM-SVC-409',
-    });
+    this.guardUuidResourceMutate(
+      existing,
+      authorization,
+      requestedCompanyId,
+      tenantId,
+      {
+        notFound: 'HRM-SVC-404',
+        mismatch: 'HRM-SVC-409',
+      },
+    );
     const res = await this.db.query<ServiceRequestRow>(
       `
         UPDATE public.service_requests
@@ -508,13 +621,24 @@ export class OperationsService {
         WHERE id = $3::uuid
         RETURNING *;
       `,
-      [payload.rejected_reason?.trim() ?? null, payload.approved_by?.trim() ?? null, requestId],
+      [
+        payload.rejected_reason?.trim() ?? null,
+        payload.approved_by?.trim() ?? null,
+        requestId,
+      ],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-SVC-404', 'Service request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-SVC-404',
+        'Service request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const row = res.rows[0];
-    await this.fanout.onServiceRequestDecided('rejected', this.toServiceRequestRealtimePayload(row));
+    await this.fanout.onServiceRequestDecided(
+      'rejected',
+      this.toServiceRequestRealtimePayload(row),
+    );
     return mapServiceRequestRow(row);
   }
 
@@ -534,7 +658,8 @@ export class OperationsService {
     } else {
       pushCompanyIdFilter(filters, values, scope.companyIds);
     }
-    const whereClause = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
+    const whereClause =
+      filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
     const res = await this.db.query<{ total: string }>(
       `SELECT COUNT(*)::text AS total FROM public.${table} ${whereClause};`,
       values,
@@ -542,18 +667,25 @@ export class OperationsService {
     return Number(res.rows[0]?.total ?? 0);
   }
 
-  async getSummary(requestedCompanyId: string, authorization?: string, tenantId?: string) {
+  async getSummary(
+    requestedCompanyId: string,
+    authorization?: string,
+    tenantId?: string,
+  ) {
     await this.ensureSchema();
     // OP-04: reject LE UUID wire before mixed-plane counts (no silent fake 0).
     this.assertOperationsCompanyWire(requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
-    const [attendance, payroll, recruitment, tasks, serviceRequests] = await Promise.all([
-      this.countByScope('attendance_records', scope, 'workforce'),
-      this.countByScope('payroll_periods', scope, 'company_text'),
-      this.countByScope('job_requisitions', scope, 'company_text'),
-      this.countByScope('hrm_tasks', scope, 'company_uuid'),
-      this.countByScope('service_requests', scope, 'company_uuid'),
-    ]);
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, {
+      tenantId,
+    });
+    const [attendance, payroll, recruitment, tasks, serviceRequests] =
+      await Promise.all([
+        this.countByScope('attendance_records', scope, 'workforce'),
+        this.countByScope('payroll_periods', scope, 'company_text'),
+        this.countByScope('job_requisitions', scope, 'company_text'),
+        this.countByScope('hrm_tasks', scope, 'company_uuid'),
+        this.countByScope('service_requests', scope, 'company_uuid'),
+      ]);
     return {
       attendance_records: attendance,
       payroll_periods: payroll,

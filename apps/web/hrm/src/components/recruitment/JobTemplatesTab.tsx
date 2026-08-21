@@ -537,7 +537,7 @@ export function JobTemplatesTab({ sharedTemplates }: JobTemplatesTabProps = {}) 
           {viewLoading ? (
             <p className="py-8 text-sm text-muted-foreground">Đang tải chi tiết…</p>
           ) : viewRow ? (
-            <JdTemplateViewPanel row={viewRow} />
+            <JdTemplateViewPanel row={viewRow} showEmptyFields={true} />
           ) : null}
         </DialogContent>
       </Dialog>

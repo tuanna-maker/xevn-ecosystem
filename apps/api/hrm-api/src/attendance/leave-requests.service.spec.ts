@@ -30,7 +30,9 @@ function noopBridge() {
 
 function bridgeReturning(instanceId: string) {
   return {
-    startLeaveWorkflowIfConfigured: jest.fn().mockResolvedValue({ workflowInstanceId: instanceId }),
+    startLeaveWorkflowIfConfigured: jest
+      .fn()
+      .mockResolvedValue({ workflowInstanceId: instanceId }),
   };
 }
 
@@ -53,14 +55,25 @@ function createLeaveQueryMock(opts: {
 }) {
   return jest.fn().mockImplementation((sql: string) => {
     const s = String(sql);
-    if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+    if (
+      s.includes('CREATE TABLE') ||
+      s.includes('ALTER TABLE') ||
+      s.includes('CREATE INDEX')
+    ) {
       return Promise.resolve({ rows: [] });
     }
-    if (s.includes('daterange(start_date, end_date') && s.includes("status IN ('pending', 'approved')")) {
-      return Promise.resolve({ rows: opts.overlapRow ? [opts.overlapRow] : [] });
+    if (
+      s.includes('daterange(start_date, end_date') &&
+      s.includes("status IN ('pending', 'approved')")
+    ) {
+      return Promise.resolve({
+        rows: opts.overlapRow ? [opts.overlapRow] : [],
+      });
     }
     if (s.includes('FROM public.employee_leave_balances')) {
-      return Promise.resolve({ rows: opts.balanceRow ? [opts.balanceRow] : [] });
+      return Promise.resolve({
+        rows: opts.balanceRow ? [opts.balanceRow] : [],
+      });
     }
     if (s.includes('FROM public.employees') && s.includes('custom_fields')) {
       return Promise.resolve({
@@ -80,7 +93,11 @@ function createLeaveQueryMock(opts: {
 describe('LeaveRequestsService listLeaveRequests SQL', () => {
   it('builds filter clauses when employee_id set', async () => {
     const queryMock = jest.fn().mockResolvedValue({ rows: [] });
-    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+    );
     await svc.listLeaveRequests({
       company_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
       employee_id: '11111111-1111-4111-8111-111111111111',
@@ -94,8 +111,16 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
 
   it('uses workforce scope for internal key on company_id=main with tenant xevn', async () => {
     const queryMock = jest.fn().mockResolvedValue({ rows: [{ id: 'lr-1' }] });
-    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
-    const out = await svc.listLeaveRequests({ company_id: 'main' }, undefined, 'xevn');
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+    );
+    const out = await svc.listLeaveRequests(
+      { company_id: 'main' },
+      undefined,
+      'xevn',
+    );
     const [sql] = findLeaveListSqlCall(queryMock.mock.calls);
     expect(sql).toContain('employee_id IN');
     expect(out.total).toBe(1);
@@ -103,11 +128,21 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
 
   it('G-DB-03: ensureSchema emits CREATE TABLE leave_requests before ALTER', async () => {
     const queryMock = jest.fn().mockResolvedValue({ rows: [] });
-    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
-    await svc.listLeaveRequests({ company_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' });
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+    );
+    await svc.listLeaveRequests({
+      company_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    });
     const ddl = queryMock.mock.calls.map((c) => String(c[0])).join('\n');
-    const createIdx = ddl.indexOf('CREATE TABLE IF NOT EXISTS public.leave_requests');
-    const alterAttachIdx = ddl.indexOf('ADD COLUMN IF NOT EXISTS attachment_url');
+    const createIdx = ddl.indexOf(
+      'CREATE TABLE IF NOT EXISTS public.leave_requests',
+    );
+    const alterAttachIdx = ddl.indexOf(
+      'ADD COLUMN IF NOT EXISTS attachment_url',
+    );
     expect(createIdx).toBeGreaterThanOrEqual(0);
     expect(alterAttachIdx).toBeGreaterThan(createIdx);
     expect(ddl).toMatch(/company_id TEXT NOT NULL/);
@@ -143,7 +178,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       attachment_url: null,
     };
     const queryMock = createLeaveQueryMock({ insertRow });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const bridge = noopBridge();
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
@@ -168,7 +205,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       String(c[0]).includes('attachment_url TEXT NULL'),
     );
     expect(schemaCall).toBeDefined();
-    const insertCall = queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ?? [];
+    const insertCall =
+      queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ??
+      [];
     const [sql, params] = insertCall as [string, unknown[]];
     expect(String(sql)).toContain('public.leave_requests');
     expect(String(sql)).toContain('$2::text');
@@ -207,7 +246,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       workflow_instance_id: null,
     };
     const queryMock = createLeaveQueryMock({ insertRow });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const bridge = bridgeReturning(wfId);
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
@@ -274,7 +315,11 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
     const refreshedRow = { ...insertRow, workflow_instance_id: wfId };
     const queryMock = jest.fn().mockImplementation((sql: string) => {
       const s = String(sql);
-      if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+      if (
+        s.includes('CREATE TABLE') ||
+        s.includes('ALTER TABLE') ||
+        s.includes('CREATE INDEX')
+      ) {
         return Promise.resolve({ rows: [] });
       }
       if (s.includes('daterange(start_date, end_date')) {
@@ -294,7 +339,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       }
       return Promise.resolve({ rows: [] });
     });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const bridge = bridgeReturning(wfId);
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
@@ -314,7 +361,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
     });
     expect(row.workflow_instance_id).toBe(wfId);
     expect(
-      queryMock.mock.calls.some((c) => String(c[0]).includes('SELECT * FROM public.leave_requests WHERE id')),
+      queryMock.mock.calls.some((c) =>
+        String(c[0]).includes('SELECT * FROM public.leave_requests WHERE id'),
+      ),
     ).toBe(true);
   });
 
@@ -343,7 +392,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       attachment_url: null,
     };
     const queryMock = createLeaveQueryMock({ insertRow });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const bridge = noopBridge();
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
@@ -370,7 +421,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       `Bearer ${token}`,
       { tenantId: 'xevn' },
     );
-    const insertCall = queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ?? [];
+    const insertCall =
+      queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ??
+      [];
     const [sql, params] = insertCall as [string, unknown[]];
     expect(String(sql)).toMatch(/\$2::text/);
     expect(String(sql)).not.toMatch(/\$2::uuid/);
@@ -406,7 +459,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       attachment_url: null,
     };
     const queryMock = createLeaveQueryMock({ insertRow });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -432,7 +487,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       `Bearer ${token}`,
       { tenantId: 'xevn' },
     );
-    const insertCall = queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ?? [];
+    const insertCall =
+      queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ??
+      [];
     const [sql, params] = insertCall as [string, unknown[]];
     expect(String(sql)).toMatch(/\$2::text/);
     expect(params[1]).toBe('holding');
@@ -465,7 +522,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       attachment_url: attachmentUrl,
     };
     const queryMock = createLeaveQueryMock({ insertRow });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -482,7 +541,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       total_days: 3,
       attachment_url: attachmentUrl,
     });
-    const insertCall = queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ?? [];
+    const insertCall =
+      queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ??
+      [];
     const [, params] = insertCall as [string, unknown[]];
     expect(params).toContain(attachmentUrl);
     expect(row.attachment_url).toBe(attachmentUrl);
@@ -493,7 +554,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       insertRow: { id: 'should-not-insert' },
       overlapRow: { id: 'lr-existing', status: 'pending' },
     });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -510,7 +573,7 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         end_date: '2026-08-03',
         total_days: 3,
       }),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_LEAVE_VAL_OVERLAP,
     });
     try {
@@ -532,7 +595,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         conflicting_status: 'pending',
       });
     }
-    const insertCalls = queryMock.mock.calls.filter((c) => String(c[0]).includes('INSERT INTO'));
+    const insertCalls = queryMock.mock.calls.filter((c) =>
+      String(c[0]).includes('INSERT INTO'),
+    );
     expect(insertCalls).toHaveLength(0);
     expect(fanoutMock.onLeaveRequestCreated).not.toHaveBeenCalled();
   });
@@ -546,7 +611,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         pending_days: '1',
       },
     });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -564,7 +631,7 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         end_date: '2026-09-02',
         total_days: 2,
       }),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_LEAVE_VAL_BALANCE,
     });
     try {
@@ -589,7 +656,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         source: 'employee_leave_balances',
       });
     }
-    const insertCalls = queryMock.mock.calls.filter((c) => String(c[0]).includes('INSERT INTO'));
+    const insertCalls = queryMock.mock.calls.filter((c) =>
+      String(c[0]).includes('INSERT INTO'),
+    );
     expect(insertCalls).toHaveLength(0);
     expect(fanoutMock.onLeaveRequestCreated).not.toHaveBeenCalled();
   });
@@ -604,7 +673,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         advanced_days: '4',
       },
     });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -622,7 +693,7 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         end_date: '2026-09-04',
         total_days: 4,
       }),
-    ).rejects.toMatchObject<ApiException>({
+    ).rejects.toMatchObject({
       code: HRM_LEAVE_VAL_BALANCE,
     });
     try {
@@ -677,7 +748,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         pending_days: '1',
       },
     });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -706,7 +779,11 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
 
   it('PCOMP-W7-BE-LEAVE-DOC: VAL-W7-LATT-02 rejects attachment_url outside /api/hrm/files/', async () => {
     const queryMock = jest.fn().mockResolvedValue({ rows: [] });
-    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+    );
     await expect(
       svc.createLeaveRequest({
         company_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
@@ -719,8 +796,10 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
         total_days: 3,
         attachment_url: 'https://evil.example.com/doc.pdf',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-LEAVE-VAL-ATT' });
-    const insertCalls = queryMock.mock.calls.filter((c) => String(c[0]).includes('INSERT INTO'));
+    ).rejects.toMatchObject({ code: 'HRM-LEAVE-VAL-ATT' });
+    const insertCalls = queryMock.mock.calls.filter((c) =>
+      String(c[0]).includes('INSERT INTO'),
+    );
     expect(insertCalls).toHaveLength(0);
   });
 
@@ -730,7 +809,11 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
     const queryMock = jest.fn().mockResolvedValue({
       rows: [{ id: 'lr-1', attachment_url: attachmentUrl }],
     });
-    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+    );
     const out = await svc.listLeaveRequests({
       company_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
       employee_id: '11111111-1111-4111-8111-111111111111',
@@ -748,7 +831,11 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
     const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
     const employeeId = '3796d949-4513-45c0-88fa-33030a062b17';
     const queryMock = jest.fn().mockResolvedValue({ rows: [{ id: 'lr-1' }] });
-    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+    );
     const token = signServiceJwt({
       sub: 'uat.nv0001@xe.vn',
       tenantId: 'xevn',
@@ -771,7 +858,11 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
   it('D-MOB-PARITY-LEAVE-SLUG-01: company_uuid query normalizes to holding slug scope', async () => {
     const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
     const queryMock = jest.fn().mockResolvedValue({ rows: [] });
-    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+    );
     const token = signServiceJwt({
       sub: 'uat.nv0001@xe.vn',
       tenantId: 'xevn',
@@ -779,7 +870,11 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       company_uuid: holdingUuid,
       roleCode: 'employee',
     });
-    await svc.listLeaveRequests({ company_id: holdingUuid }, `Bearer ${token}`, 'xevn');
+    await svc.listLeaveRequests(
+      { company_id: holdingUuid },
+      `Bearer ${token}`,
+      'xevn',
+    );
     const [sql, params] = findLeaveListSqlCall(queryMock.mock.calls);
     expect(sql).toContain('lr.employee_id IN');
     expect(sql).not.toMatch(/lr\.company_id\s*=\s*\$\d+::uuid/);
@@ -788,14 +883,21 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
 
   it('HRM-AT-11: uses workforce scope for group CEO on company_id=main', async () => {
     const queryMock = jest.fn().mockResolvedValue({ rows: [{ id: 'lr-1' }] });
-    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+    );
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
       tenantId: 'xevn',
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    const out = await svc.listLeaveRequests({ company_id: 'main' }, `Bearer ${token}`);
+    const out = await svc.listLeaveRequests(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+    );
     const [sql] = findLeaveListSqlCall(queryMock.mock.calls);
     expect(sql).toContain('employee_id IN');
     expect(sql).not.toContain('lr.company_id = $1::uuid');
@@ -837,7 +939,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       }
       return Promise.resolve({ rows: [] });
     });
-    const fanoutMock = { onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -900,7 +1004,9 @@ describe('LeaveRequestsService listLeaveRequests SQL', () => {
       }
       return Promise.resolve({ rows: [] });
     });
-    const fanoutMock = { onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -967,8 +1073,12 @@ describe('D-HRM-LEAVE-REQ-CREATE-BE-01 catalog leave_type + company partition', 
   it('holding UUID + LVT_01: assert uses Settings catalog partition holding; INSERT TEXT holding', async () => {
     const insertRow = baseInsertRow('holding', 'LVT_01');
     const queryMock = createLeaveQueryMock({ insertRow });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
-    const assertCode = jest.fn().mockResolvedValue({ code: 'LVT_01', status: 'active' });
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
+    const assertCode = jest
+      .fn()
+      .mockResolvedValue({ code: 'LVT_01', status: 'active' });
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -1000,7 +1110,9 @@ describe('D-HRM-LEAVE-REQ-CREATE-BE-01 catalog leave_type + company partition', 
         errorCode: 'HRM-ATT-LEAVE-TYPE',
       }),
     );
-    const insertCall = queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ?? [];
+    const insertCall =
+      queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ??
+      [];
     const [sql, params] = insertCall as [string, unknown[]];
     expect(String(sql)).toMatch(/\$2::text/);
     expect(String(sql)).not.toMatch(/\$2::uuid/);
@@ -1014,8 +1126,12 @@ describe('D-HRM-LEAVE-REQ-CREATE-BE-01 catalog leave_type + company partition', 
     for (const company_id of ['main', 'holding'] as const) {
       const insertRow = baseInsertRow('holding', 'LVT_01');
       const queryMock = createLeaveQueryMock({ insertRow });
-      const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
-      const assertCode = jest.fn().mockResolvedValue({ code: 'LVT_01', status: 'active' });
+      const fanoutMock = {
+        onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+      };
+      const assertCode = jest
+        .fn()
+        .mockResolvedValue({ code: 'LVT_01', status: 'active' });
       const svc = new LeaveRequestsService(
         { query: queryMock } as never,
         fanoutMock as never,
@@ -1039,7 +1155,10 @@ describe('D-HRM-LEAVE-REQ-CREATE-BE-01 catalog leave_type + company partition', 
       expect(assertCode).toHaveBeenCalledWith(
         expect.objectContaining({ companyId: 'holding', code: 'LVT_01' }),
       );
-      const insertCall = queryMock.mock.calls.find((c) => String(c[0]).includes('INSERT INTO')) ?? [];
+      const insertCall =
+        queryMock.mock.calls.find((c) =>
+          String(c[0]).includes('INSERT INTO'),
+        ) ?? [];
       const [, params] = insertCall as [string, unknown[]];
       expect(params[1]).toBe('holding');
     }
@@ -1048,15 +1167,21 @@ describe('D-HRM-LEAVE-REQ-CREATE-BE-01 catalog leave_type + company partition', 
   it('D-HDSD-MUTATE-BE-01: lazy pull leave_types from XBOS when effective catalog empty', async () => {
     const insertRow = baseInsertRow('holding', 'LVT_01');
     const queryMock = createLeaveQueryMock({ insertRow });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const getEffectiveItemsForKey = jest
       .fn()
       .mockResolvedValueOnce([])
       .mockResolvedValue([
         { code: 'LVT_01', label: 'Phép năm', status: 'active', origin: 'xbos' },
       ]);
-    const assertCode = jest.fn().mockResolvedValue({ code: 'LVT_01', status: 'active' });
-    const pullCatalogFromXbos = jest.fn().mockResolvedValue({ key: 'leave_types' });
+    const assertCode = jest
+      .fn()
+      .mockResolvedValue({ code: 'LVT_01', status: 'active' });
+    const pullCatalogFromXbos = jest
+      .fn()
+      .mockResolvedValue({ key: 'leave_types' });
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -1064,8 +1189,8 @@ describe('D-HRM-LEAVE-REQ-CREATE-BE-01 catalog leave_type + company partition', 
       {
         getEffectiveItemsForKey,
         assertCodeInEffectiveCatalog: assertCode,
-      } as never,
-      { pullCatalogFromXbos } as never,
+      },
+      { pullCatalogFromXbos },
     );
     await svc.createLeaveRequest(
       {
@@ -1150,7 +1275,11 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
 
     queryMock.mockImplementation((sql: string) => {
       const s = String(sql);
-      if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+      if (
+        s.includes('CREATE TABLE') ||
+        s.includes('ALTER TABLE') ||
+        s.includes('CREATE INDEX')
+      ) {
         return Promise.resolve({ rows: [] });
       }
       if (s.includes('SELECT lr.*')) {
@@ -1192,7 +1321,9 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
     const queryMock = jest.fn().mockImplementation((sql: string) => {
       const s = String(sql);
       if (s.includes('SELECT company_id::text')) {
-        return Promise.resolve({ rows: [{ company_id: 'holding', status: 'pending' }] });
+        return Promise.resolve({
+          rows: [{ company_id: 'holding', status: 'pending' }],
+        });
       }
       if (s.includes("SET status = 'approved'")) {
         return Promise.resolve({ rows: [approvedRow] });
@@ -1200,12 +1331,17 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
       if (s.includes('CREATE TABLE') || s.includes('CREATE INDEX')) {
         return Promise.resolve({ rows: [] });
       }
-      if (s.includes('UPDATE public.employee_leave_balances') && s.includes('used_days')) {
+      if (
+        s.includes('UPDATE public.employee_leave_balances') &&
+        s.includes('used_days')
+      ) {
         return Promise.resolve({ rows: [] });
       }
       return Promise.resolve({ rows: [] });
     });
-    const fanoutMock = { onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestDecided: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -1238,7 +1374,11 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
 
   it('API_CONTRACT §4.2: sick ≥3 days without attachment_url → HRM-LEAVE-VAL-ATT', async () => {
     const queryMock = jest.fn().mockResolvedValue({ rows: [] });
-    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+    );
     await expect(
       svc.createLeaveRequest({
         company_id: 'holding',
@@ -1250,12 +1390,16 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
         end_date: '2026-06-12',
         total_days: 3,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_LEAVE_VAL_ATT });
+    ).rejects.toMatchObject({ code: HRM_LEAVE_VAL_ATT });
   });
 
   it('PO-E2E-SPINE-02 LV-03: LVT_02 ≥3 days without attachment_url → HRM-LEAVE-VAL-ATT', async () => {
     const queryMock = jest.fn().mockResolvedValue({ rows: [] });
-    const svc = new LeaveRequestsService({ query: queryMock } as never, {} as never, noopBridge() as never);
+    const svc = new LeaveRequestsService(
+      { query: queryMock } as never,
+      {} as never,
+      noopBridge() as never,
+    );
     await expect(
       svc.createLeaveRequest({
         company_id: 'holding',
@@ -1268,8 +1412,10 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
         total_days: 5,
         reason: 'QA LV-03 fail_deep',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_LEAVE_VAL_ATT });
-    const insertCalls = queryMock.mock.calls.filter((c) => String(c[0]).includes('INSERT INTO'));
+    ).rejects.toMatchObject({ code: HRM_LEAVE_VAL_ATT });
+    const insertCalls = queryMock.mock.calls.filter((c) =>
+      String(c[0]).includes('INSERT INTO'),
+    );
     expect(insertCalls).toHaveLength(0);
   });
 
@@ -1298,7 +1444,9 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
       attachment_url: null,
     };
     const queryMock = createLeaveQueryMock({ insertRow });
-    const fanoutMock = { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) };
+    const fanoutMock = {
+      onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       fanoutMock as never,
@@ -1323,14 +1471,24 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
   it('PO-E2E-SPINE-02 LV-03: catalog label Ốm / metadata is_sick → VAL-ATT when ≥3 no attach', async () => {
     const queryMock = jest.fn().mockResolvedValue({ rows: [] });
     const getEffectiveItemsForKey = jest.fn().mockResolvedValue([
-      { code: 'LVT_99', label: 'Ốm đặc biệt', status: 'active', metadata: { is_sick: true } },
+      {
+        code: 'LVT_99',
+        label: 'Ốm đặc biệt',
+        status: 'active',
+        metadata: { is_sick: true },
+      },
     ]);
-    const assertCode = jest.fn().mockResolvedValue({ code: 'LVT_99', status: 'active' });
+    const assertCode = jest
+      .fn()
+      .mockResolvedValue({ code: 'LVT_99', status: 'active' });
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
       {} as never,
       noopBridge() as never,
-      { getEffectiveItemsForKey, assertCodeInEffectiveCatalog: assertCode } as never,
+      {
+        getEffectiveItemsForKey,
+        assertCodeInEffectiveCatalog: assertCode,
+      },
     );
     await expect(
       svc.createLeaveRequest(
@@ -1347,7 +1505,7 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
         undefined,
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_LEAVE_VAL_ATT });
+    ).rejects.toMatchObject({ code: HRM_LEAVE_VAL_ATT });
     expect(assertCode).toHaveBeenCalled();
     expect(getEffectiveItemsForKey).toHaveBeenCalled();
   });
@@ -1380,7 +1538,9 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
     const queryMock = jest.fn().mockImplementation((sql: string) => {
       const s = String(sql);
       if (s.includes('SELECT company_id::text')) {
-        return Promise.resolve({ rows: [{ company_id: 'holding', status: 'pending' }] });
+        return Promise.resolve({
+          rows: [{ company_id: 'holding', status: 'pending' }],
+        });
       }
       if (s.includes("SET status = 'rejected'")) {
         return Promise.resolve({ rows: [rejectedRow] });
@@ -1417,8 +1577,9 @@ describe('W1-B-01-TC-LEAVE display-ready + balance settle', () => {
     expect(row.employee_display_name).toBe('Nguyễn Văn A');
     expect(row.rejected_reason).toBe('Lý do cá nhân');
     const release = queryMock.mock.calls.find(
-      (c) => String(c[0]).includes('UPDATE public.employee_leave_balances') &&
-            String(c[0]).includes('pending_days = GREATEST(0, pending_days -'),
+      (c) =>
+        String(c[0]).includes('UPDATE public.employee_leave_balances') &&
+        String(c[0]).includes('pending_days = GREATEST(0, pending_days -'),
     );
     expect(release).toBeDefined();
     expect(fanoutMock.onLeaveRequestDecided).toHaveBeenCalledWith(
@@ -1481,14 +1642,19 @@ describe('G-AT10-01 CreateLeaveRequestDto / ListLeaveRequestsQueryDto company_id
 
   it('accepts company_id=holding and company_id=main (not @IsUUID)', async () => {
     for (const company_id of ['holding', 'main', 'du-lich']) {
-      const dto = plainToInstance(CreateLeaveRequestDto, { ...baseCreate, company_id });
+      const dto = plainToInstance(CreateLeaveRequestDto, {
+        ...baseCreate,
+        company_id,
+      });
       const errors = await validate(dto);
       expect(errors).toHaveLength(0);
     }
   });
 
   it('list query accepts slug company_id', async () => {
-    const dto = plainToInstance(ListLeaveRequestsQueryDto, { company_id: 'holding' });
+    const dto = plainToInstance(ListLeaveRequestsQueryDto, {
+      company_id: 'holding',
+    });
     await expect(validate(dto)).resolves.toHaveLength(0);
   });
 });
@@ -1528,7 +1694,9 @@ describe('R-PLT-ATT-01 wire leave-requests → F-ATT-CAT-EFF-01', () => {
     const assertCode = jest.fn();
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,
-      { onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined) } as never,
+      {
+        onLeaveRequestCreated: jest.fn().mockResolvedValue(undefined),
+      } as never,
       noopBridge() as never,
       { assertCodeInEffectiveCatalog: assertCode } as never,
       undefined,
@@ -1566,7 +1734,11 @@ describe('R-PLT-ATT-01 wire leave-requests → F-ATT-CAT-EFF-01', () => {
     const assertLeaveTypeInEffectiveCatalog = jest
       .fn()
       .mockRejectedValue(
-        new ApiException('HRM-LEAVE-TYPE-UNKNOWN', 'not in catalog', HttpStatus.BAD_REQUEST),
+        new ApiException(
+          'HRM-LEAVE-TYPE-UNKNOWN',
+          'not in catalog',
+          HttpStatus.BAD_REQUEST,
+        ),
       );
     const svc = new LeaveRequestsService(
       { query: queryMock } as never,

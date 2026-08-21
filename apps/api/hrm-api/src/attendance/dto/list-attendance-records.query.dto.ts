@@ -1,5 +1,12 @@
 import { Transform } from 'class-transformer';
-import { IsDateString, IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
+import {
+  IsDateString,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 
 function pickScalar(value: unknown): string | undefined {
   if (Array.isArray(value)) {
@@ -17,7 +24,12 @@ export class ListAttendanceRecordsQueryDto {
   companyId?: string;
 
   @IsString()
-  @Transform(({ value, obj }) => pickScalar(value) ?? pickScalar(obj?.companyId) ?? pickScalar(obj?.company_id))
+  @Transform(
+    ({ value, obj }) =>
+      pickScalar(value) ??
+      pickScalar(obj?.companyId) ??
+      pickScalar(obj?.company_id),
+  )
   @MaxLength(64)
   company_id!: string;
 
@@ -47,13 +59,22 @@ export class ListAttendanceRecordsQueryDto {
   page?: number | string = '1';
 
   @IsOptional()
-  @Transform(({ value, obj }) => pickScalar(value) ?? pickScalar(obj?.page_size) ?? pickScalar(obj?.pageSize))
+  @Transform(
+    ({ value, obj }) =>
+      pickScalar(value) ??
+      pickScalar(obj?.page_size) ??
+      pickScalar(obj?.pageSize),
+  )
   @Matches(/^\d+$/)
   pageSize?: number | string;
 
   @IsOptional()
   @Transform(({ value, obj }) => {
-    return pickScalar(value) ?? pickScalar(obj?.pageSize) ?? pickScalar(obj?.page_size);
+    return (
+      pickScalar(value) ??
+      pickScalar(obj?.pageSize) ??
+      pickScalar(obj?.page_size)
+    );
   })
   @Matches(/^\d+$/)
   page_size?: number | string = '20';

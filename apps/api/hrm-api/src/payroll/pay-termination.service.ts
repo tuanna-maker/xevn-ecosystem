@@ -58,9 +58,16 @@ function parseIsoDateOnly(value: string): Date {
   return new Date(Date.UTC(y, m - 1, d));
 }
 
-function dateInInclusiveRange(iso: string, fromIso: string, toIso: string): boolean {
+function dateInInclusiveRange(
+  iso: string,
+  fromIso: string,
+  toIso: string,
+): boolean {
   const d = parseIsoDateOnly(iso).getTime();
-  return d >= parseIsoDateOnly(fromIso).getTime() && d <= parseIsoDateOnly(toIso).getTime();
+  return (
+    d >= parseIsoDateOnly(fromIso).getTime() &&
+    d <= parseIsoDateOnly(toIso).getTime()
+  );
 }
 
 /** O3 — deterministic opaque termination_id per soft case. */
@@ -88,11 +95,14 @@ function isTerminalEmploymentStatus(status: string): boolean {
   return PAY_TERM_TERMINAL_STATUS_KEYS.has(key);
 }
 
-function mandatoryReasonCodesFromChecklist(checklist: PayTermChecklistSnapshot): PayTermChecklistReasonCode[] {
+function mandatoryReasonCodesFromChecklist(
+  checklist: PayTermChecklistSnapshot,
+): PayTermChecklistReasonCode[] {
   const codes: PayTermChecklistReasonCode[] = [];
   if (!checklist.assetAck) codes.push(PAY_TERM_CHECKLIST_REASON.ASSET_OPEN);
   if (!checklist.siCutoff) codes.push(PAY_TERM_CHECKLIST_REASON.SI_CUTOFF_OPEN);
-  if (!checklist.leaveCashout) codes.push(PAY_TERM_CHECKLIST_REASON.LEAVE_CASHOUT_OPEN);
+  if (!checklist.leaveCashout)
+    codes.push(PAY_TERM_CHECKLIST_REASON.LEAVE_CASHOUT_OPEN);
   if (!checklist.rdIncluded) codes.push(PAY_TERM_CHECKLIST_REASON.RD_PENDING);
   return codes;
 }
@@ -124,8 +134,10 @@ export class PayTerminationService {
     const emp = empRes.rows[0];
     if (!emp) return null;
 
-    const cf = (emp.custom_fields ?? {}) as Record<string, unknown>;
-    const statusFromCf = String(cf.employment_status ?? cf.employmentStatus ?? '').trim();
+    const cf = emp.custom_fields ?? {};
+    const statusFromCf = String(
+      cf.employment_status ?? cf.employmentStatus ?? '',
+    ).trim();
     const statusKey = (statusFromCf || emp.status || '').trim().toLowerCase();
     if (!isTerminalEmploymentStatus(statusKey)) {
       return null;
@@ -148,14 +160,18 @@ export class PayTerminationService {
       [input.employeeId, input.companyId],
     );
     const decision = decisionRes.rows[0];
-    const fromCustom = String(cf.termination_date ?? cf.terminationDate ?? '').trim().slice(0, 10);
+    const fromCustom = String(cf.termination_date ?? cf.terminationDate ?? '')
+      .trim()
+      .slice(0, 10);
     const fromDecision = decision?.effective_date?.slice(0, 10) ?? '';
     const override = input.terminationDateOverride?.slice(0, 10) ?? '';
     const terminationDate = override || fromCustom || fromDecision;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(terminationDate)) {
       return null;
     }
-    if (!dateInInclusiveRange(terminationDate, input.periodFrom, input.periodTo)) {
+    if (
+      !dateInInclusiveRange(terminationDate, input.periodFrom, input.periodTo)
+    ) {
       return null;
     }
 
@@ -199,16 +215,23 @@ export class PayTerminationService {
       assetAck = false;
     }
 
-    const empRes = await this.db.query<{ custom_fields: Record<string, unknown> | null }>(
+    const empRes = await this.db.query<{
+      custom_fields: Record<string, unknown> | null;
+    }>(
       `SELECT custom_fields FROM public.employees WHERE id = $1::uuid LIMIT 1;`,
       [employeeId],
     );
-    const cf = (empRes.rows[0]?.custom_fields ?? {}) as Record<string, unknown>;
+    const cf = empRes.rows[0]?.custom_fields ?? {};
 
     const siCutoff = Boolean(cf.pay_si_cutoff_done ?? cf.si_cutoff_done);
-    const leaveCashout = Boolean(cf.pay_leave_cashout_done ?? cf.leave_cashout_done);
+    const leaveCashout = Boolean(
+      cf.pay_leave_cashout_done ?? cf.leave_cashout_done,
+    );
     const rdIncluded = Boolean(
-      cf.pay_rd_included ?? cf.reward_discipline_included ?? cf.rd_included ?? false,
+      cf.pay_rd_included ??
+      cf.reward_discipline_included ??
+      cf.rd_included ??
+      false,
     );
 
     return {
@@ -293,7 +316,10 @@ export class PayTerminationService {
     if (!requireClosedTimesheet) {
       return null;
     }
-    const companyIds = [period.company_id, period.company_id === 'main' ? 'holding' : period.company_id];
+    const companyIds = [
+      period.company_id,
+      period.company_id === 'main' ? 'holding' : period.company_id,
+    ];
     const res = await this.db.query<{ sheet_id: string | null }>(
       `
         SELECT s.id::text AS sheet_id
@@ -308,7 +334,11 @@ export class PayTerminationService {
     return res.rows[0]?.sheet_id ?? null;
   }
 
-  throwTerm409(reasonCodes: PayTermChecklistReasonCode[], employeeId?: string, settlementId?: string): never {
+  throwTerm409(
+    reasonCodes: PayTermChecklistReasonCode[],
+    employeeId?: string,
+    settlementId?: string,
+  ): never {
     throw new ApiException(
       HRM_PAY_TERM_409,
       'Checklist tất toán nghỉ chưa đủ điều kiện bắt buộc',
@@ -371,7 +401,11 @@ export class PayTerminationService {
     let closedSheetId: string | null = null;
     if (input.targetStatus === 'posted') {
       closedSheetId = await this.assertClosedSheetForPosted(
-        { id: input.periodId, company_id: input.companyId, start_date: input.periodStartDate },
+        {
+          id: input.periodId,
+          company_id: input.companyId,
+          start_date: input.periodStartDate,
+        },
         input.requireClosedTimesheet,
       );
       if (input.requireClosedTimesheet && !closedSheetId) {
@@ -390,7 +424,8 @@ export class PayTerminationService {
         employeeId,
         periodFrom: input.periodFrom,
         periodTo: input.periodTo,
-        terminationDateOverride: input.terminationDateByEmployee?.[employeeId] ?? null,
+        terminationDateOverride:
+          input.terminationDateByEmployee?.[employeeId] ?? null,
       });
       if (!resolved) {
         throw new ApiException(
@@ -401,7 +436,10 @@ export class PayTerminationService {
         );
       }
 
-      const checklist = await this.readTerminationChecklistSnapshot(employeeId, input.companyId);
+      const checklist = await this.readTerminationChecklistSnapshot(
+        employeeId,
+        input.companyId,
+      );
       const reasonCodes = mandatoryReasonCodesFromChecklist(checklist);
 
       let targetStatus = input.targetStatus;
@@ -412,7 +450,11 @@ export class PayTerminationService {
         this.throwTerm409(reasonCodes, employeeId);
       }
 
-      const existing = await this.loadOpenSettlement(input.companyId, employeeId, input.periodId);
+      const existing = await this.loadOpenSettlement(
+        input.companyId,
+        employeeId,
+        input.periodId,
+      );
       if (existing?.status === 'posted' && targetStatus !== 'posted') {
         throw new ApiException(
           HRM_PAY_TERM_409,
@@ -516,13 +558,22 @@ export class PayTerminationService {
         periodFrom: period.start_date,
         periodTo: period.end_date,
       });
-      const row = await this.loadOpenSettlement(companyId, employeeId, period.id);
+      const row = await this.loadOpenSettlement(
+        companyId,
+        employeeId,
+        period.id,
+      );
       if (!resolved && !row) continue;
       if (!row || row.status !== 'posted') {
-        const checklist = await this.readTerminationChecklistSnapshot(employeeId, companyId);
+        const checklist = await this.readTerminationChecklistSnapshot(
+          employeeId,
+          companyId,
+        );
         const reasonCodes = mandatoryReasonCodesFromChecklist(checklist);
         this.throwTerm409(
-          reasonCodes.length > 0 ? reasonCodes : [PAY_TERM_CHECKLIST_REASON.SI_CUTOFF_OPEN],
+          reasonCodes.length > 0
+            ? reasonCodes
+            : [PAY_TERM_CHECKLIST_REASON.SI_CUTOFF_OPEN],
           employeeId,
           row?.id,
         );
@@ -537,7 +588,11 @@ export class PayTerminationService {
     employeeId: string;
     payslipId: string;
   }): Promise<void> {
-    const settlement = await this.loadOpenSettlement(input.companyId, input.employeeId, input.periodId);
+    const settlement = await this.loadOpenSettlement(
+      input.companyId,
+      input.employeeId,
+      input.periodId,
+    );
     if (!settlement || settlement.status !== 'posted') {
       return;
     }

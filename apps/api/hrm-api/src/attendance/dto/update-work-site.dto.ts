@@ -1,4 +1,11 @@
-import { IsBoolean, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 /** UC-BP-ATT-03d — sửa điểm GPS; `radius` = alias FE. */
 export class UpdateWorkSiteDto {

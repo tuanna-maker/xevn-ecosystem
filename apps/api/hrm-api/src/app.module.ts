@@ -24,6 +24,10 @@ import { AttLeaveAccrualPolicyService } from './attendance/att-leave-accrual-pol
 import { AttAttendanceCodeService } from './attendance/att-attendance-code.service';
 import { AttOtTypeService } from './attendance/att-ot-type.service';
 import { AttOtCompTypeService } from './attendance/att-ot-comp-type.service';
+import { AttShiftScheduleSetupService } from './attendance/att-shift-schedule-setup.service';
+import { AttShiftService } from './attendance/att-shift.service';
+import { AttRuleService } from './attendance/att-rule.service';
+import { AttScheduleService } from './attendance/att-schedule.service';
 import { AttOtCompLeavePolicyService } from './attendance/att-ot-comp-leave-policy.service';
 import { AttSickLeaveFundOrderService } from './attendance/att-sick-leave-fund-order.service';
 import { AttActivateEnrollService } from './attendance/att-activate-enroll.service';
@@ -76,6 +80,7 @@ import { AllowanceCatalogController } from './settings/allowance-catalog.control
 import { AllowanceCatalogSyncService } from './settings/allowance-catalog-sync.service';
 import { SettingsCompanySettingsController } from './settings/settings-company-settings.controller';
 import { SettingsTaxParamsService } from './settings/settings-tax-params.service';
+import { SettingsPayrollParamsService } from './settings/settings-payroll-params.service';
 import { InsuranceRateCfgController } from './settings/insurance-rate-cfg.controller';
 import { InsuranceRateCfgService } from './settings/insurance-rate-cfg.service';
 import { PositionCompensationPolicyController } from './settings/position-compensation-policy.controller';
@@ -100,7 +105,15 @@ import { HomeService } from './home/home.service';
 import { ContractTemplatesModule } from './contract-templates/contract-templates.module';
 
 @Module({
-  imports: [CoreModule, SettingsCatalogsModule, EmployeesModule, FleetModule, SpreadsheetModule, TenantProvisionModule, ContractTemplatesModule],
+  imports: [
+    CoreModule,
+    SettingsCatalogsModule,
+    EmployeesModule,
+    FleetModule,
+    SpreadsheetModule,
+    TenantProvisionModule,
+    ContractTemplatesModule,
+  ],
   controllers: [
     AppController,
     HrmAdminController,
@@ -140,6 +153,7 @@ import { ContractTemplatesModule } from './contract-templates/contract-templates
     HrmAdminService,
     AllowanceCatalogSyncService,
     SettingsTaxParamsService,
+    SettingsPayrollParamsService,
     InsuranceRateCfgService,
     PositionCompensationPolicyService,
     PayrollService,
@@ -156,8 +170,12 @@ import { ContractTemplatesModule } from './contract-templates/contract-templates
     AttHolidayCalendarService,
     AttLeaveAccrualPolicyService,
     AttAttendanceCodeService,
-    AttOtTypeService,
     AttOtCompTypeService,
+    AttShiftScheduleSetupService,
+    AttShiftService,
+    AttRuleService,
+    AttScheduleService,
+    AttOtTypeService,
     AttOtCompLeavePolicyService,
     AttSickLeaveFundOrderService,
     AttActivateEnrollService,

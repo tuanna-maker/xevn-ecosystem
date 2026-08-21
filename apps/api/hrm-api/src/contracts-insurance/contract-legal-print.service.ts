@@ -545,7 +545,9 @@ export class ContractLegalPrintService {
       'print_overlay_clause_ids JSONB NULL',
     ];
     for (const col of expandCols) {
-      await this.db.query(`ALTER TABLE public.employee_contracts ADD COLUMN IF NOT EXISTS ${col};`);
+      await this.db.query(
+        `ALTER TABLE public.employee_contracts ADD COLUMN IF NOT EXISTS ${col};`,
+      );
     }
     await this.db.query(`
       CREATE INDEX IF NOT EXISTS ix_employee_contracts_template_code
@@ -621,7 +623,9 @@ export class ContractLegalPrintService {
       'hrm_contract_pack_rules',
     ] as const) {
       for (const col of lineageCols) {
-        await this.db.query(`ALTER TABLE public.${table} ADD COLUMN IF NOT EXISTS ${col};`);
+        await this.db.query(
+          `ALTER TABLE public.${table} ADD COLUMN IF NOT EXISTS ${col};`,
+        );
       }
     }
     await this.db.query(`
@@ -791,14 +795,26 @@ export class ContractLegalPrintService {
     requestedCompanyId: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, scopeContext);
-    const expandedCompanyIds = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
+    const expandedCompanyIds = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, expandedCompanyIds, scopeCompanyId };
   }
 
   private parseJsonObject(raw: unknown): Record<string, unknown> {
-    if (raw && typeof raw === 'object' && !Array.isArray(raw)) return raw as Record<string, unknown>;
+    if (raw && typeof raw === 'object' && !Array.isArray(raw))
+      return raw as Record<string, unknown>;
     if (typeof raw === 'string') {
       try {
         const parsed = JSON.parse(raw) as unknown;
@@ -848,7 +864,11 @@ export class ContractLegalPrintService {
   private requirePack(raw: string): ContractPackCode {
     const n = normalizeContractPackCode(raw);
     if (!n) {
-      throw new ApiException(HRM_CTR_PACK_INVALID, `Unknown pack_code '${raw}'`, HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_CTR_PACK_INVALID,
+        `Unknown pack_code '${raw}'`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return n;
   }
@@ -894,7 +914,11 @@ export class ContractLegalPrintService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (term === 'probation' && input.durationDays != null && input.durationDays <= 0) {
+    if (
+      term === 'probation' &&
+      input.durationDays != null &&
+      input.durationDays <= 0
+    ) {
       throw new ApiException(
         HRM_CTR_TERM_INVALID,
         'default_duration_days must be positive for probation',
@@ -911,7 +935,11 @@ export class ContractLegalPrintService {
     pack: ContractPackCode,
     matrixFamily: string | null | undefined,
   ): void {
-    if (matrixFamily === XEVN_MATRIX_FAMILY && pack !== 'IT_OFFICE' && pack !== 'DRIVER') {
+    if (
+      matrixFamily === XEVN_MATRIX_FAMILY &&
+      pack !== 'IT_OFFICE' &&
+      pack !== 'DRIVER'
+    ) {
       throw new ApiException(
         HRM_CTR_TPL_PACK_MISMATCH,
         `matrix_family=XEVN_MATRIX requires pack_code IT_OFFICE or DRIVER (got ${pack})`,
@@ -929,11 +957,15 @@ export class ContractLegalPrintService {
     return trimmed === '' ? null : trimmed;
   }
 
-  private resolveMatrixFieldsForCreate(payload: UpsertContractTemplateDto, code: string, pack: ContractPackCode) {
+  private resolveMatrixFieldsForCreate(
+    payload: UpsertContractTemplateDto,
+    code: string,
+    pack: ContractPackCode,
+  ) {
     const starter = getXevnMatrixRow(code);
     let matrixFamily: string | null;
     if (payload.matrix_family !== undefined) {
-      matrixFamily = this.normalizeMatrixFamilyInput(payload.matrix_family as string | null);
+      matrixFamily = this.normalizeMatrixFamilyInput(payload.matrix_family);
     } else {
       matrixFamily = starter ? XEVN_MATRIX_FAMILY : null;
     }
@@ -976,14 +1008,20 @@ export class ContractLegalPrintService {
         (pack === 'DRIVER'
           ? { show_driver_license_block: true }
           : { show_driver_license_block: false }),
-      keywordMap: payload.keyword_map ?? (starter ? defaultXevnKeywordMap(starter.pack_code) : {}),
+      keywordMap:
+        payload.keyword_map ??
+        (starter ? defaultXevnKeywordMap(starter.pack_code) : {}),
     };
   }
 
   private clauseAppliesToPack(clause: ClauseRow, pack: string): boolean {
-    const packs = Array.isArray(clause.apply_to_packs) ? clause.apply_to_packs : [];
+    const packs = Array.isArray(clause.apply_to_packs)
+      ? clause.apply_to_packs
+      : [];
     if (!packs.length) return true;
-    return packs.some((p) => p === '*' || p.toUpperCase() === pack.toUpperCase());
+    return packs.some(
+      (p) => p === '*' || p.toUpperCase() === pack.toUpperCase(),
+    );
   }
 
   private readonly tplSelectCols = `id, company_id, code, name_vi, pack_code, layout_json, keyword_map, status, version,
@@ -999,7 +1037,11 @@ export class ContractLegalPrintService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const { expandedCompanyIds } = this.resolveScope(authorization, query.company_id, scopeContext);
+    const { expandedCompanyIds } = this.resolveScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const filters: string[] = ['archived_at IS NULL'];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, expandedCompanyIds);
@@ -1024,7 +1066,10 @@ export class ContractLegalPrintService {
     );
     const data = [];
     for (const row of res.rows) {
-      const clauses = await this.loadTemplateClausesOrdered(row.id, expandedCompanyIds);
+      const clauses = await this.loadTemplateClausesOrdered(
+        row.id,
+        expandedCompanyIds,
+      );
       data.push(this.displayTemplate(row, clauses));
     }
     return { total: data.length, data };
@@ -1052,13 +1097,20 @@ export class ContractLegalPrintService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_CTR_TPL_404, 'Contract template not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CTR_TPL_404,
+        'Contract template not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_CTR_TPL_404,
       mismatchCode: 'HRM-CTR-409',
     });
-    const clauses = await this.loadTemplateClausesOrdered(row.id, expandedCompanyIds);
+    const clauses = await this.loadTemplateClausesOrdered(
+      row.id,
+      expandedCompanyIds,
+    );
     return this.displayTemplate(row, clauses);
   }
 
@@ -1066,7 +1118,10 @@ export class ContractLegalPrintService {
     templateId: string,
     expandedCompanyIds: string[],
   ): Promise<ClauseRow[]> {
-    const filters: string[] = ['tc.template_id = $1::uuid', 'c.archived_at IS NULL'];
+    const filters: string[] = [
+      'tc.template_id = $1::uuid',
+      'c.archived_at IS NULL',
+    ];
     const values: unknown[] = [templateId];
     pushCompanyIdFilter(filters, values, expandedCompanyIds, 'c.company_id');
     const res = await this.db.query<ClauseRow>(
@@ -1083,18 +1138,32 @@ export class ContractLegalPrintService {
     return res.rows;
   }
 
-  async createTemplate(payload: UpsertContractTemplateDto, authorization?: string) {
+  async createTemplate(
+    payload: UpsertContractTemplateDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const pack = this.requirePack(payload.pack_code);
     const code = this.requireTemplateCode(payload.code);
     const nameVi = payload.name_vi.trim();
     if (!nameVi) {
-      throw new ApiException(HRM_CTR_CL_REQUIRED, 'Template name_vi is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_CTR_CL_REQUIRED,
+        'Template name_vi is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const matrix = this.resolveMatrixFieldsForCreate(payload, code, pack);
     const status = payload.status ?? 'draft';
-    if (status === 'active' && matrix.matrixFamily === XEVN_MATRIX_FAMILY && !matrix.titlePrint) {
+    if (
+      status === 'active' &&
+      matrix.matrixFamily === XEVN_MATRIX_FAMILY &&
+      !matrix.titlePrint
+    ) {
       throw new ApiException(
         HRM_CTR_CL_REQUIRED,
         'title_print_vi required when activating XEVN_MATRIX template',
@@ -1126,7 +1195,12 @@ export class ContractLegalPrintService {
         ],
       );
       if (payload.clause_ids) {
-        await this.replaceTemplateClauses(id, companyId, payload.clause_ids, authorization);
+        await this.replaceTemplateClauses(
+          id,
+          companyId,
+          payload.clause_ids,
+          authorization,
+        );
       }
       return this.getTemplateById(id, companyId, authorization);
     } catch (err: unknown) {
@@ -1149,28 +1223,32 @@ export class ContractLegalPrintService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const existing = await this.getTemplateById(templateId, requestedCompanyId, authorization);
+    const existing = await this.getTemplateById(
+      templateId,
+      requestedCompanyId,
+      authorization,
+    );
     const pack =
       payload.pack_code !== undefined
         ? this.requirePack(payload.pack_code)
         : this.requirePack(String(existing.pack_code));
     const matrixFamily =
       payload.matrix_family !== undefined
-        ? this.normalizeMatrixFamilyInput(payload.matrix_family as string | null)
-        : ((existing.matrix_family as string | null) ?? null);
+        ? this.normalizeMatrixFamilyInput(payload.matrix_family)
+        : (existing.matrix_family ?? null);
     this.assertMatrixPack(pack, matrixFamily);
     const termType =
       payload.default_term_type !== undefined
         ? payload.default_term_type
-        : ((existing.default_term_type as string | null) ?? null);
+        : (existing.default_term_type ?? null);
     const durationDays =
       payload.default_duration_days !== undefined
         ? payload.default_duration_days
-        : ((existing.default_duration_days as number | null) ?? null);
+        : (existing.default_duration_days ?? null);
     const durationMonths =
       payload.default_duration_months !== undefined
         ? payload.default_duration_months
-        : ((existing.default_duration_months as number | null) ?? null);
+        : (existing.default_duration_months ?? null);
     this.assertTermDurationRules({
       termType,
       durationDays,
@@ -1211,8 +1289,12 @@ export class ContractLegalPrintService {
       [
         payload.name_vi?.trim() ?? null,
         pack,
-        payload.layout_json !== undefined ? JSON.stringify(payload.layout_json) : null,
-        payload.keyword_map !== undefined ? JSON.stringify(payload.keyword_map) : null,
+        payload.layout_json !== undefined
+          ? JSON.stringify(payload.layout_json)
+          : null,
+        payload.keyword_map !== undefined
+          ? JSON.stringify(payload.keyword_map)
+          : null,
         payload.status ?? null,
         payload.default_term_type ?? null,
         payload.default_duration_days !== undefined,
@@ -1229,7 +1311,7 @@ export class ContractLegalPrintService {
     if (payload.clause_ids) {
       await this.replaceTemplateClauses(
         templateId,
-        existing.company_id as string,
+        existing.company_id,
         payload.clause_ids,
         authorization,
       );
@@ -1243,7 +1325,11 @@ export class ContractLegalPrintService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const existing = await this.getTemplateById(templateId, requestedCompanyId, authorization);
+    const existing = await this.getTemplateById(
+      templateId,
+      requestedCompanyId,
+      authorization,
+    );
     if (
       existing.matrix_family === XEVN_MATRIX_FAMILY &&
       !String(existing.title_print_vi ?? '').trim()
@@ -1268,7 +1354,7 @@ export class ContractLegalPrintService {
        WHERE id = $1::uuid;`,
       [templateId, bump],
     );
-    return this.getTemplateById(templateId, existing.company_id as string, authorization);
+    return this.getTemplateById(templateId, existing.company_id, authorization);
   }
 
   async putTemplateClauses(
@@ -1277,10 +1363,14 @@ export class ContractLegalPrintService {
     requestedCompanyId: string,
     authorization?: string,
   ) {
-    const existing = await this.getTemplateById(templateId, requestedCompanyId, authorization);
+    const existing = await this.getTemplateById(
+      templateId,
+      requestedCompanyId,
+      authorization,
+    );
     await this.replaceTemplateClauses(
       templateId,
-      existing.company_id as string,
+      existing.company_id,
       payload.clause_ids,
       authorization,
     );
@@ -1303,12 +1393,17 @@ export class ContractLegalPrintService {
         values,
       );
       if (!found.rows[0]) {
-        throw new ApiException(HRM_CTR_CL_404, `Clause ${clauseId} not found in scope`, HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          HRM_CTR_CL_404,
+          `Clause ${clauseId} not found in scope`,
+          HttpStatus.NOT_FOUND,
+        );
       }
     }
-    await this.db.query(`DELETE FROM public.hrm_contract_template_clauses WHERE template_id = $1::uuid;`, [
-      templateId,
-    ]);
+    await this.db.query(
+      `DELETE FROM public.hrm_contract_template_clauses WHERE template_id = $1::uuid;`,
+      [templateId],
+    );
     let order = 0;
     for (const clauseId of clauseIds) {
       await this.db.query(
@@ -1327,7 +1422,11 @@ export class ContractLegalPrintService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const { expandedCompanyIds } = this.resolveScope(authorization, query.company_id, scopeContext);
+    const { expandedCompanyIds } = this.resolveScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const filters: string[] = ['archived_at IS NULL'];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, expandedCompanyIds);
@@ -1355,7 +1454,10 @@ export class ContractLegalPrintService {
        ORDER BY sort_order ASC, code ASC;`,
       values,
     );
-    return { total: res.rows.length, data: res.rows.map((r) => this.displayClause(r)) };
+    return {
+      total: res.rows.length,
+      data: res.rows.map((r) => this.displayClause(r)),
+    };
   }
 
   async getClauseById(
@@ -1382,7 +1484,11 @@ export class ContractLegalPrintService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_CTR_CL_404, 'Contract clause not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CTR_CL_404,
+        'Contract clause not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_CTR_CL_404,
@@ -1403,14 +1509,21 @@ export class ContractLegalPrintService {
 
   async createClause(payload: UpsertContractClauseDto, authorization?: string) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
-    this.assertClauseRequired(payload.code, payload.title_vi, payload.body_vi);
-    const packs = (payload.apply_to_packs?.length ? payload.apply_to_packs : ['*']).map((p) =>
-      p.trim().toUpperCase(),
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
     );
+    this.assertClauseRequired(payload.code, payload.title_vi, payload.body_vi);
+    const packs = (
+      payload.apply_to_packs?.length ? payload.apply_to_packs : ['*']
+    ).map((p) => p.trim().toUpperCase());
     for (const p of packs) {
       if (p !== '*' && !normalizeContractPackCode(p)) {
-        throw new ApiException(HRM_CTR_PACK_INVALID, `Invalid apply_to_packs entry '${p}'`, HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          HRM_CTR_PACK_INVALID,
+          `Invalid apply_to_packs entry '${p}'`,
+          HttpStatus.BAD_REQUEST,
+        );
       }
     }
     const status = payload.status ?? 'draft';
@@ -1453,7 +1566,11 @@ export class ContractLegalPrintService {
     }
   }
 
-  private async assertNoActiveCodeConflict(companyId: string, code: string, excludeId?: string) {
+  private async assertNoActiveCodeConflict(
+    companyId: string,
+    code: string,
+    excludeId?: string,
+  ) {
     const res = await this.db.query<{ id: string }>(
       `SELECT id FROM public.hrm_contract_clauses
        WHERE company_id = $1 AND lower(code) = lower($2) AND status = 'active' AND archived_at IS NULL
@@ -1477,19 +1594,34 @@ export class ContractLegalPrintService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const existing = await this.getClauseById(clauseId, requestedCompanyId, authorization);
-    const title = payload.title_vi !== undefined ? payload.title_vi.trim() : (existing.title_vi as string);
-    const body = payload.body_vi !== undefined ? payload.body_vi.trim() : (existing.body_vi as string);
-    this.assertClauseRequired(existing.code as string, title, body);
-    if (payload.status === 'active' || (existing.status === 'active' && payload.body_vi !== undefined)) {
+    const existing = await this.getClauseById(
+      clauseId,
+      requestedCompanyId,
+      authorization,
+    );
+    const title =
+      payload.title_vi !== undefined
+        ? payload.title_vi.trim()
+        : existing.title_vi;
+    const body =
+      payload.body_vi !== undefined ? payload.body_vi.trim() : existing.body_vi;
+    this.assertClauseRequired(existing.code, title, body);
+    if (
+      payload.status === 'active' ||
+      (existing.status === 'active' && payload.body_vi !== undefined)
+    ) {
       // Active body change that was issued → force activate path (version bump) — soft-block silent overwrite
       const issued = await this.clauseHasIssuedSnapshot(
-        existing.code as string,
-        existing.company_id as string,
+        existing.code,
+        existing.company_id,
         authorization,
         requestedCompanyId,
       );
-      if (issued && payload.body_vi !== undefined && existing.status === 'active') {
+      if (
+        issued &&
+        payload.body_vi !== undefined &&
+        existing.status === 'active'
+      ) {
         throw new ApiException(
           HRM_CTR_CL_CODE_CONFLICT,
           'Active issued clause body change requires POST …/activate (version bump)',
@@ -1551,7 +1683,9 @@ export class ContractLegalPrintService {
     const { expandedCompanyIds } = this.resolveScope(authorization, scopeKey);
     const companyIds = [
       ...new Set(
-        [...expandedCompanyIds, clauseCompanyId.trim()].map((id) => id.trim().toLowerCase()).filter(Boolean),
+        [...expandedCompanyIds, clauseCompanyId.trim()]
+          .map((id) => id.trim().toLowerCase())
+          .filter(Boolean),
       ),
     ];
     const normalizedCode = code.trim();
@@ -1585,15 +1719,19 @@ export class ContractLegalPrintService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const existing = await this.getClauseById(clauseId, requestedCompanyId, authorization);
+    const existing = await this.getClauseById(
+      clauseId,
+      requestedCompanyId,
+      authorization,
+    );
     this.assertClauseRequired(
-      existing.code as string,
-      existing.title_vi as string,
-      existing.body_vi as string,
+      existing.code,
+      existing.title_vi,
+      existing.body_vi,
     );
     await this.assertNoActiveCodeConflict(
-      existing.company_id as string,
-      existing.code as string,
+      existing.company_id,
+      existing.code,
       clauseId,
     );
     // Retire other active same code (same company)
@@ -1605,8 +1743,8 @@ export class ContractLegalPrintService {
       [existing.company_id, existing.code, clauseId],
     );
     const issued = await this.clauseHasIssuedSnapshot(
-      existing.code as string,
-      existing.company_id as string,
+      existing.code,
+      existing.company_id,
       authorization,
       requestedCompanyId,
     );
@@ -1618,7 +1756,7 @@ export class ContractLegalPrintService {
        WHERE id = $1::uuid;`,
       [clauseId, issued],
     );
-    return this.getClauseById(clauseId, existing.company_id as string, authorization);
+    return this.getClauseById(clauseId, existing.company_id, authorization);
   }
 
   async retireClause(
@@ -1627,12 +1765,16 @@ export class ContractLegalPrintService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const existing = await this.getClauseById(clauseId, requestedCompanyId, authorization);
+    const existing = await this.getClauseById(
+      clauseId,
+      requestedCompanyId,
+      authorization,
+    );
     await this.db.query(
       `UPDATE public.hrm_contract_clauses SET status = 'retired', updated_at = NOW() WHERE id = $1::uuid;`,
       [clauseId],
     );
-    return this.getClauseById(clauseId, existing.company_id as string, authorization);
+    return this.getClauseById(clauseId, existing.company_id, authorization);
   }
 
   async softDeleteClause(
@@ -1658,7 +1800,11 @@ export class ContractLegalPrintService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const { expandedCompanyIds } = this.resolveScope(authorization, query.company_id, scopeContext);
+    const { expandedCompanyIds } = this.resolveScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const filters: string[] = [`archived_at IS NULL`, `status = 'active'`];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, expandedCompanyIds);
@@ -1685,11 +1831,18 @@ export class ContractLegalPrintService {
 
   async putPackRules(payload: PutContractPackRulesDto, authorization?: string) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     for (const r of payload.rules) {
       this.requirePack(r.pack_code);
       if (r.match_type !== 'job_family' && r.match_type !== 'fallback') {
-        throw new ApiException(HRM_CTR_PACK_INVALID, `Invalid match_type '${r.match_type}'`, HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          HRM_CTR_PACK_INVALID,
+          `Invalid match_type '${r.match_type}'`,
+          HttpStatus.BAD_REQUEST,
+        );
       }
     }
     await this.db.query(
@@ -1706,7 +1859,9 @@ export class ContractLegalPrintService {
           randomUUID(),
           companyId,
           r.match_type,
-          r.match_type === 'fallback' ? null : (r.match_value?.trim().toUpperCase() ?? null),
+          r.match_type === 'fallback'
+            ? null
+            : (r.match_value?.trim().toUpperCase() ?? null),
           this.requirePack(r.pack_code),
           r.priority ?? 100,
         ],
@@ -1722,10 +1877,19 @@ export class ContractLegalPrintService {
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const { scope, expandedCompanyIds } = this.resolveScope(authorization, companyId, scopeContext);
+    const { scope, expandedCompanyIds } = this.resolveScope(
+      authorization,
+      companyId,
+      scopeContext,
+    );
     const empFilters: string[] = ['e.id = $1::uuid', 'e.archived_at IS NULL'];
     const empValues: unknown[] = [employeeId];
-    pushCompanyIdFilter(empFilters, empValues, expandedCompanyIds, 'e.company_id');
+    pushCompanyIdFilter(
+      empFilters,
+      empValues,
+      expandedCompanyIds,
+      'e.company_id',
+    );
     const emp = await this.db.query<{
       id: string;
       company_id: string;
@@ -1738,7 +1902,11 @@ export class ContractLegalPrintService {
     );
     const row = emp.rows[0];
     if (!row) {
-      throw new ApiException('HRM-CON-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-CON-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     // pg JSONB may arrive as string | object — normalize before scope assert (TS2345 watch).
     const cf = this.parseJsonObject(row.custom_fields);
@@ -1751,17 +1919,29 @@ export class ContractLegalPrintService {
       },
     );
     const jobFamily = String(
-      cf.job_family ?? cf.job_family_key ?? cf.position_family ?? row.job_title_key ?? '',
+      cf.job_family ??
+        cf.job_family_key ??
+        cf.position_family ??
+        row.job_title_key ??
+        '',
     )
       .trim()
       .toUpperCase();
 
-    const rules = await this.listPackRules({ company_id: companyId }, authorization, scopeContext);
+    const rules = await this.listPackRules(
+      { company_id: companyId },
+      authorization,
+      scopeContext,
+    );
     let suggested: ContractPackCode = CONTRACT_PACK_DEFAULT;
     let reason = 'hard_default_GENERAL';
     const sorted = [...rules.data].sort((a, b) => a.priority - b.priority);
     for (const r of sorted) {
-      if (r.match_type === 'job_family' && r.match_value && jobFamily.includes(r.match_value)) {
+      if (
+        r.match_type === 'job_family' &&
+        r.match_value &&
+        jobFamily.includes(r.match_value)
+      ) {
         suggested = this.requirePack(r.pack_code);
         reason = `job_family:${r.match_value}`;
         break;
@@ -1804,7 +1984,9 @@ export class ContractLegalPrintService {
     const values: unknown[] = [contractId];
     pushCompanyIdFilter(filters, values, expandedCompanyIds, 'ec.company_id');
     const res = await this.db.query<
-      ContractPrintRow & { employee_custom_fields?: Record<string, unknown> | string | null }
+      ContractPrintRow & {
+        employee_custom_fields?: Record<string, unknown> | string | null;
+      }
     >(
       `SELECT ec.id, ec.company_id, ec.employee_id, ec.contract_code, ec.contract_type,
               ec.start_date, ec.end_date, ec.status, ec.notes, ec.position, ec.position_key,
@@ -1825,7 +2007,11 @@ export class ContractLegalPrintService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-CON-404', 'Contract not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-CON-404',
+        'Contract not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: 'HRM-CON-404',
@@ -1834,12 +2020,16 @@ export class ContractLegalPrintService {
     const cf = this.parseJsonObject(row.employee_custom_fields);
     return {
       ...row,
-      print_overlay_clause_ids: this.parseOverlayClauseIds(row.print_overlay_clause_ids),
+      print_overlay_clause_ids: this.parseOverlayClauseIds(
+        row.print_overlay_clause_ids,
+      ),
       employee_dob: (cf.date_of_birth as string) ?? (cf.dob as string) ?? null,
       employee_gender: (cf.gender as string) ?? null,
-      employee_id_number: (cf.id_number as string) ?? (cf.cccd as string) ?? null,
+      employee_id_number:
+        (cf.id_number as string) ?? (cf.cccd as string) ?? null,
       employee_phone: (cf.phone as string) ?? (cf.mobile as string) ?? null,
-      employee_address: (cf.address as string) ?? (cf.residence_address as string) ?? null,
+      employee_address:
+        (cf.address as string) ?? (cf.residence_address as string) ?? null,
     };
   }
 
@@ -1973,8 +2163,12 @@ export class ContractLegalPrintService {
     scopeContext?: HrmListScopeContext,
   ): Promise<ContractDetailLayoutEnrichment> {
     await this.ensureSchema();
-    const overlayStored = this.parseOverlayClauseIds(contract.print_overlay_clause_ids);
-    const print_overlay_clause_ids = overlayStored.length ? overlayStored : null;
+    const overlayStored = this.parseOverlayClauseIds(
+      contract.print_overlay_clause_ids,
+    );
+    const print_overlay_clause_ids = overlayStored.length
+      ? overlayStored
+      : null;
 
     let template: TemplateRow | null = null;
     let pack: ContractPackCode = CONTRACT_PACK_DEFAULT;
@@ -2083,11 +2277,22 @@ export class ContractLegalPrintService {
       scopeContext,
     );
     const template = contract.template_id
-      ? await this.getTemplateRowById(contract.template_id, contract.company_id, authorization)
+      ? await this.getTemplateRowById(
+          contract.template_id,
+          contract.company_id,
+          authorization,
+        )
       : null;
-    const pack = this.requirePack(template?.pack_code ?? contract.pack_code ?? CONTRACT_PACK_DEFAULT);
+    const pack = this.requirePack(
+      template?.pack_code ?? contract.pack_code ?? CONTRACT_PACK_DEFAULT,
+    );
     const clauseIds = payload.clause_ids ?? [];
-    await this.resolveClausesByOrderedIds(contract.company_id, pack, clauseIds, authorization);
+    await this.resolveClausesByOrderedIds(
+      contract.company_id,
+      pack,
+      clauseIds,
+      authorization,
+    );
     await this.db.query(
       `UPDATE public.employee_contracts
        SET print_overlay_clause_ids = $1::jsonb, updated_at = NOW()
@@ -2136,12 +2341,19 @@ export class ContractLegalPrintService {
     }
     // Format-only gate before EFF soft-skip — CODE-INVALID ≠ invent KEY.
     const code = rawCode ? this.requireTemplateCode(rawCode) : '';
-    const activeCount = await this.countActiveTemplates(input.companyId, input.authorization);
+    const activeCount = await this.countActiveTemplates(
+      input.companyId,
+      input.authorization,
+    );
     if (activeCount === 0) {
       return;
     }
     if (code) {
-      const hit = await this.findActiveTemplateByCode(input.companyId, code, input.authorization);
+      const hit = await this.findActiveTemplateByCode(
+        input.companyId,
+        code,
+        input.authorization,
+      );
       if (!hit) {
         throw new ApiException(
           HRM_CTR_TPL_KEY,
@@ -2152,7 +2364,11 @@ export class ContractLegalPrintService {
       }
     }
     if (rawId) {
-      const hit = await this.findTemplateRowById(input.companyId, rawId, input.authorization);
+      const hit = await this.findTemplateRowById(
+        input.companyId,
+        rawId,
+        input.authorization,
+      );
       if (!hit || hit.status !== 'active' || hit.archived_at) {
         throw new ApiException(
           HRM_CTR_TPL_KEY,
@@ -2230,7 +2446,10 @@ export class ContractLegalPrintService {
     raw: string;
     authorization?: string;
   }): Promise<never> {
-    const activeCount = await this.countActiveTemplates(input.companyId, input.authorization);
+    const activeCount = await this.countActiveTemplates(
+      input.companyId,
+      input.authorization,
+    );
     if (activeCount > 0) {
       throw new ApiException(
         HRM_CTR_TPL_KEY,
@@ -2254,7 +2473,11 @@ export class ContractLegalPrintService {
     authorization?: string,
   ): Promise<TemplateRow> {
     if (templateId) {
-      const tpl = await this.findTemplateRowById(companyId, templateId, authorization);
+      const tpl = await this.findTemplateRowById(
+        companyId,
+        templateId,
+        authorization,
+      );
       if (!tpl || tpl.status !== 'active') {
         return await this.rejectConsumerInventOrEmpty({
           companyId,
@@ -2267,7 +2490,11 @@ export class ContractLegalPrintService {
     }
     if (templateCode?.trim()) {
       const code = this.requireTemplateCode(templateCode);
-      const hit = await this.findActiveTemplateByCode(companyId, code, authorization);
+      const hit = await this.findActiveTemplateByCode(
+        companyId,
+        code,
+        authorization,
+      );
       if (!hit) {
         return await this.rejectConsumerInventOrEmpty({
           companyId,
@@ -2330,7 +2557,10 @@ export class ContractLegalPrintService {
     authorization?: string,
   ): Promise<ClauseRow[]> {
     const { expandedCompanyIds } = this.resolveScope(authorization, companyId);
-    const attached = await this.loadTemplateClausesOrdered(templateId, expandedCompanyIds);
+    const attached = await this.loadTemplateClausesOrdered(
+      templateId,
+      expandedCompanyIds,
+    );
     if (attached.length) {
       return attached.filter(
         (c) => c.status === 'active' && this.clauseAppliesToPack(c, pack),
@@ -2341,7 +2571,7 @@ export class ContractLegalPrintService {
       { company_id: companyId, status: 'active', pack_code: pack },
       authorization,
     );
-    return list.data as ClauseRow[];
+    return list.data;
   }
 
   private buildMergedFields(
@@ -2351,25 +2581,33 @@ export class ContractLegalPrintService {
   ): Record<string, unknown> {
     const ov = { ...(overrides ?? {}) };
     // Alias driver_license_class → license_class (ONE physical col)
-    if (ov.driver_license_class !== undefined && ov.license_class === undefined) {
+    if (
+      ov.driver_license_class !== undefined &&
+      ov.license_class === undefined
+    ) {
       ov.license_class = ov.driver_license_class;
     }
-    const licenseClass = String(
-      ov.license_class ?? contract.license_class ?? '',
-    ).trim() || null;
-    const licNum = String(
-      ov.driver_license_number ?? contract.driver_license_number ?? '',
-    ).trim() || null;
-    const licOn = String(
-      ov.driver_license_issued_on ?? contract.driver_license_issued_on ?? '',
-    ).trim() || null;
-    const licPlace = String(
-      ov.driver_license_issued_place ?? contract.driver_license_issued_place ?? '',
-    ).trim() || null;
+    const licenseClass =
+      String(ov.license_class ?? contract.license_class ?? '').trim() || null;
+    const licNum =
+      String(
+        ov.driver_license_number ?? contract.driver_license_number ?? '',
+      ).trim() || null;
+    const licOn =
+      String(
+        ov.driver_license_issued_on ?? contract.driver_license_issued_on ?? '',
+      ).trim() || null;
+    const licPlace =
+      String(
+        ov.driver_license_issued_place ??
+          contract.driver_license_issued_place ??
+          '',
+      ).trim() || null;
 
     const termType =
-      String(ov.term_type ?? contract.term_type ?? template?.default_term_type ?? '').trim() ||
-      null;
+      String(
+        ov.term_type ?? contract.term_type ?? template?.default_term_type ?? '',
+      ).trim() || null;
     const titlePrint = template?.title_print_vi ?? null;
 
     const base: Record<string, unknown> = {
@@ -2397,7 +2635,8 @@ export class ContractLegalPrintService {
       driver_license_number: licNum,
       driver_license_issued_on: licOn,
       driver_license_issued_place: licPlace,
-      vehicle_plate: String(ov.vehicle_plate ?? contract.vehicle_plate ?? '').trim() || null,
+      vehicle_plate:
+        String(ov.vehicle_plate ?? contract.vehicle_plate ?? '').trim() || null,
       route_or_region: contract.route_or_region,
       contract_code: ov.contract_code ?? contract.contract_code,
       contract_number: ov.contract_code ?? contract.contract_code,
@@ -2409,7 +2648,12 @@ export class ContractLegalPrintService {
       department: contract.department,
       template_code: template?.code ?? contract.template_code ?? null,
     };
-    return { ...base, ...ov, license_class: licenseClass, driver_license_class: licenseClass };
+    return {
+      ...base,
+      ...ov,
+      license_class: licenseClass,
+      driver_license_class: licenseClass,
+    };
   }
 
   private validatePreview(
@@ -2438,7 +2682,10 @@ export class ContractLegalPrintService {
     let term_error = false;
     const term = (termType ?? '').toLowerCase();
     if (term === 'probation' || term === 'definite') {
-      if (!String(merged.effective_from ?? '').trim() || !String(merged.effective_to ?? '').trim()) {
+      if (
+        !String(merged.effective_from ?? '').trim() ||
+        !String(merged.effective_to ?? '').trim()
+      ) {
         missing_fields.push({
           field: 'end_date',
           message: 'probation/definite term requires start_date and end_date',
@@ -2447,7 +2694,10 @@ export class ContractLegalPrintService {
       }
     } else if (term === 'indefinite') {
       if (!String(merged.effective_from ?? '').trim()) {
-        missing_fields.push({ field: 'start_date', message: 'indefinite term requires start_date' });
+        missing_fields.push({
+          field: 'start_date',
+          message: 'indefinite term requires start_date',
+        });
         term_error = true;
       }
       // do NOT require end_date for indefinite (VAL-XEVN-04)
@@ -2465,10 +2715,13 @@ export class ContractLegalPrintService {
       for (const k of driverKeys) {
         const v =
           k.field === 'driver_license_class'
-            ? merged.driver_license_class ?? merged.license_class
+            ? (merged.driver_license_class ?? merged.license_class)
             : merged[k.field];
         if (v === null || v === undefined || String(v).trim() === '') {
-          missing_fields.push({ field: k.field, message: `DRIVER pack requires ${k.label}` });
+          missing_fields.push({
+            field: k.field,
+            message: `DRIVER pack requires ${k.label}`,
+          });
           driver_error = true;
         }
       }
@@ -2487,12 +2740,17 @@ export class ContractLegalPrintService {
       { company_id: companyId, status: 'active', pack_code: pack },
       authorization,
     );
-    const resolvedCodes = new Set(resolved.map((c) => String(c.code).toLowerCase()));
+    const resolvedCodes = new Set(
+      resolved.map((c) => String(c.code).toLowerCase()),
+    );
     const missing: Array<{ code: string; title_vi: string }> = [];
     for (const c of all.data) {
-      if (c.mandatory && this.clauseAppliesToPack(c as ClauseRow, pack)) {
+      if (c.mandatory && this.clauseAppliesToPack(c, pack)) {
         if (!resolvedCodes.has(String(c.code).toLowerCase())) {
-          missing.push({ code: c.code as string, title_vi: c.title_vi as string });
+          missing.push({
+            code: c.code,
+            title_vi: c.title_vi,
+          });
         }
       }
     }
@@ -2552,9 +2810,17 @@ export class ContractLegalPrintService {
             template.id,
             authorization,
           );
-    const baseMerged = this.buildMergedFields(contract, payload.field_overrides, template);
+    const baseMerged = this.buildMergedFields(
+      contract,
+      payload.field_overrides,
+      template,
+    );
     // F-CORE-CTR-PREV deepen: shared §5.2 resolve (registry wins; empty → keyword_map)
-    let registry: Array<{ tokenKey: string; sourcePath: string; ring: string }> = [];
+    let registry: Array<{
+      tokenKey: string;
+      sourcePath: string;
+      ring: string;
+    }> = [];
     if (this.mergeTokens) {
       try {
         registry = await this.mergeTokens.loadActiveRegistry(
@@ -2592,8 +2858,12 @@ export class ContractLegalPrintService {
       ...resolvedPreview.mergedPreview,
     };
     const termType =
-      String(merged.term_type ?? template.default_term_type ?? contract.term_type ?? '').trim() ||
-      null;
+      String(
+        merged.term_type ??
+          template.default_term_type ??
+          contract.term_type ??
+          '',
+      ).trim() || null;
 
     // Duration hints when dates empty (preview only — user-editable)
     if (!String(merged.effective_to ?? '').trim() && termType === 'probation') {
@@ -2629,11 +2899,12 @@ export class ContractLegalPrintService {
     );
     validation.missing_clauses.push(...missing_clauses);
 
-    const { number_pattern_hint, contract_number_suggested } = await this.buildNumberHints(
-      contract.company_id,
-      template.code,
-      authorization,
-    );
+    const { number_pattern_hint, contract_number_suggested } =
+      await this.buildNumberHints(
+        contract.company_id,
+        template.code,
+        authorization,
+      );
     merged.contract_number_suggested = contract_number_suggested;
     if (number_pattern_hint) merged.number_pattern_hint = number_pattern_hint;
 
@@ -2652,7 +2923,7 @@ export class ContractLegalPrintService {
           const base =
             payloadObj.base_salary ??
             payloadObj.base_salary_amount ??
-            (this.parseJsonObject(payloadObj.meta).base_salary as unknown) ??
+            this.parseJsonObject(payloadObj.meta).base_salary ??
             null;
           compensation_snapshot = {
             package_id: pkg.rows[0].id,
@@ -2685,13 +2956,16 @@ export class ContractLegalPrintService {
       list.push(c);
       byGroup.set(c.clause_group, list);
     }
-    const sections = [...byGroup.entries()].map(([clause_group, groupClauses]) => ({
-      clause_group,
-      clauses: groupClauses,
-    }));
+    const sections = [...byGroup.entries()].map(
+      ([clause_group, groupClauses]) => ({
+        clause_group,
+        clauses: groupClauses,
+      }),
+    );
 
     const can_issue =
-      validation.missing_fields.length === 0 && validation.missing_clauses.length === 0;
+      validation.missing_fields.length === 0 &&
+      validation.missing_clauses.length === 0;
 
     return {
       pack_code: pack,
@@ -2720,7 +2994,10 @@ export class ContractLegalPrintService {
     companyId: string,
     templateCode: string,
     authorization?: string,
-  ): Promise<{ number_pattern_hint: string | null; contract_number_suggested: string | null }> {
+  ): Promise<{
+    number_pattern_hint: string | null;
+    contract_number_suggested: string | null;
+  }> {
     const suffixRow = await this.readCompanySetting(
       companyId,
       CONTRACT_SETTING_ORG_SUFFIX,
@@ -2732,9 +3009,12 @@ export class ContractLegalPrintService {
       authorization,
     );
     const suffix =
-      typeof suffixRow?.value?.suffix === 'string' ? String(suffixRow.value.suffix).trim() : '';
+      typeof suffixRow?.value?.suffix === 'string'
+        ? String(suffixRow.value.suffix).trim()
+        : '';
     const pattern =
-      typeof patternRow?.value?.pattern === 'string' && patternRow.value.pattern.trim()
+      typeof patternRow?.value?.pattern === 'string' &&
+      patternRow.value.pattern.trim()
         ? String(patternRow.value.pattern).trim()
         : CONTRACT_NUMBER_PATTERN_DEFAULT;
     const docKind = docKindFromTemplateCode(templateCode);
@@ -2771,8 +3051,8 @@ export class ContractLegalPrintService {
       scopeContext,
     );
     if (!preview.can_issue) {
-      const driverMissing = preview.missing_fields.some((f) =>
-        f.field.startsWith('driver_') || f.field === 'vehicle_plate',
+      const driverMissing = preview.missing_fields.some(
+        (f) => f.field.startsWith('driver_') || f.field === 'vehicle_plate',
       );
       const termMissing = preview.missing_fields.some(
         (f) => f.field === 'end_date' || f.field === 'start_date',
@@ -2814,7 +3094,7 @@ export class ContractLegalPrintService {
     const mergedWithMeta = {
       ...preview.merged_fields,
       _meta: {
-        ...(this.parseJsonObject(preview.merged_fields._meta) as Record<string, unknown>),
+        ...this.parseJsonObject(preview.merged_fields._meta),
         template_code: templateCode,
       },
     };
@@ -2851,7 +3131,9 @@ export class ContractLegalPrintService {
         preview.template_version,
         JSON.stringify(mergedWithMeta),
         JSON.stringify(preview.clauses),
-        preview.compensation_snapshot ? JSON.stringify(preview.compensation_snapshot) : null,
+        preview.compensation_snapshot
+          ? JSON.stringify(preview.compensation_snapshot)
+          : null,
         issuedBy ?? null,
       ],
     );
@@ -2877,7 +3159,8 @@ export class ContractLegalPrintService {
     const template_code = colCode ?? metaCode;
     let compensation = row.compensation_snapshot_json;
     if (!canViewCb) {
-      if (merged.base_salary_amount !== undefined) merged.base_salary_amount = '***';
+      if (merged.base_salary_amount !== undefined)
+        merged.base_salary_amount = '***';
       compensation = compensation ? { masked: true } : null;
     }
     let clauses = row.clauses_snapshot_json;
@@ -2905,8 +3188,17 @@ export class ContractLegalPrintService {
     canViewCb = true,
   ) {
     await this.ensureSchema();
-    await this.loadContractForPrint(contractId, requestedCompanyId, authorization, scopeContext);
-    const { expandedCompanyIds } = this.resolveScope(authorization, requestedCompanyId, scopeContext);
+    await this.loadContractForPrint(
+      contractId,
+      requestedCompanyId,
+      authorization,
+      scopeContext,
+    );
+    const { expandedCompanyIds } = this.resolveScope(
+      authorization,
+      requestedCompanyId,
+      scopeContext,
+    );
     const filters: string[] = ['contract_id = $1::uuid', 'archived_at IS NULL'];
     const values: unknown[] = [contractId];
     pushCompanyIdFilter(filters, values, expandedCompanyIds);
@@ -2951,7 +3243,11 @@ export class ContractLegalPrintService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_CTR_PV_404, 'Print version not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_CTR_PV_404,
+        'Print version not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_CTR_PV_404,
@@ -2985,8 +3281,9 @@ export class ContractLegalPrintService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const merged = version.merged_fields_json as Record<string, unknown>;
-    const clauses = (version.clauses_snapshot_json as ClauseSnapshotItem[]) ?? [];
+    const merged = version.merged_fields_json;
+    const clauses =
+      (version.clauses_snapshot_json as ClauseSnapshotItem[]) ?? [];
     const input = {
       contract_id: version.contract_id,
       version_no: version.version_no,
@@ -3019,7 +3316,11 @@ export class ContractLegalPrintService {
       };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'PDF render failed';
-      throw new ApiException(HRM_CTR_RENDER_FAIL, message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiException(
+        HRM_CTR_RENDER_FAIL,
+        message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -3049,7 +3350,11 @@ export class ContractLegalPrintService {
   } | null> {
     await this.ensureSchema();
     const settingKey = this.assertSettingKey(key);
-    const { expandedCompanyIds } = this.resolveScope(authorization, companyId, scopeContext);
+    const { expandedCompanyIds } = this.resolveScope(
+      authorization,
+      companyId,
+      scopeContext,
+    );
     const filters: string[] = ['setting_key = $1', 'archived_at IS NULL'];
     const values: unknown[] = [settingKey];
     pushCompanyIdFilter(filters, values, expandedCompanyIds);
@@ -3087,7 +3392,12 @@ export class ContractLegalPrintService {
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
-    return this.readCompanySetting(query.company_id, query.key, authorization, scopeContext);
+    return this.readCompanySetting(
+      query.company_id,
+      query.key,
+      authorization,
+      scopeContext,
+    );
   }
 
   async putCompanySetting(
@@ -3097,7 +3407,10 @@ export class ContractLegalPrintService {
   ) {
     await this.ensureSchema();
     const settingKey = this.assertSettingKey(payload.setting_key);
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     this.resolveScope(authorization, companyId, scopeContext);
     const existing = await this.db.query<{ id: string }>(
       `SELECT id FROM public.hrm_company_settings
@@ -3117,17 +3430,32 @@ export class ContractLegalPrintService {
         `INSERT INTO public.hrm_company_settings
           (id, tenant_id, company_id, setting_key, value_json)
          VALUES ($1, 'xevn', $2, $3, $4::jsonb);`,
-        [randomUUID(), companyId, settingKey, JSON.stringify(payload.value ?? {})],
+        [
+          randomUUID(),
+          companyId,
+          settingKey,
+          JSON.stringify(payload.value ?? {}),
+        ],
       );
     }
-    return this.readCompanySetting(companyId, settingKey, authorization, scopeContext);
+    return this.readCompanySetting(
+      companyId,
+      settingKey,
+      authorization,
+      scopeContext,
+    );
   }
 }
 
 /** Exported for jest — mandatory clause intersection. */
 export function computeMissingMandatoryClauses(
   pack: string,
-  library: Array<{ code: string; title_vi: string; mandatory: boolean; apply_to_packs: string[] }>,
+  library: Array<{
+    code: string;
+    title_vi: string;
+    mandatory: boolean;
+    apply_to_packs: string[];
+  }>,
   resolvedCodes: string[],
 ): Array<{ code: string; title_vi: string }> {
   const have = new Set(resolvedCodes.map((c) => c.toLowerCase()));
@@ -3149,22 +3477,36 @@ export function computeMissingMandatoryClauses(
 /** Exported for jest — pack resolve algorithm. */
 export function resolveContractPackFromRules(
   jobFamily: string,
-  rules: Array<{ match_type: string; match_value: string | null; pack_code: string; priority: number }>,
+  rules: Array<{
+    match_type: string;
+    match_value: string | null;
+    pack_code: string;
+    priority: number;
+  }>,
 ): { suggested_pack: ContractPackCode; reason: string } {
   const family = jobFamily.trim().toUpperCase();
   const sorted = [...rules].sort((a, b) => a.priority - b.priority);
   for (const r of sorted) {
-    if (r.match_type === 'job_family' && r.match_value && family.includes(r.match_value.toUpperCase())) {
-      const pack = normalizeContractPackCode(r.pack_code) ?? CONTRACT_PACK_DEFAULT;
+    if (
+      r.match_type === 'job_family' &&
+      r.match_value &&
+      family.includes(r.match_value.toUpperCase())
+    ) {
+      const pack =
+        normalizeContractPackCode(r.pack_code) ?? CONTRACT_PACK_DEFAULT;
       return { suggested_pack: pack, reason: `job_family:${r.match_value}` };
     }
   }
   const fb = sorted.find((r) => r.match_type === 'fallback');
   if (fb) {
     return {
-      suggested_pack: normalizeContractPackCode(fb.pack_code) ?? CONTRACT_PACK_DEFAULT,
+      suggested_pack:
+        normalizeContractPackCode(fb.pack_code) ?? CONTRACT_PACK_DEFAULT,
       reason: 'fallback_rule',
     };
   }
-  return { suggested_pack: CONTRACT_PACK_DEFAULT, reason: 'hard_default_GENERAL' };
+  return {
+    suggested_pack: CONTRACT_PACK_DEFAULT,
+    reason: 'hard_default_GENERAL',
+  };
 }

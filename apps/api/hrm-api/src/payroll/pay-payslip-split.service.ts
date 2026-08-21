@@ -146,7 +146,9 @@ export function buildSplitSegmentWindows(
   periodTo: string,
   cutDates: string[],
 ): PaySplitSegmentWindow[] {
-  const sorted = [...cutDates].filter((c) => c > periodFrom && c <= periodTo).sort();
+  const sorted = [...cutDates]
+    .filter((c) => c > periodFrom && c <= periodTo)
+    .sort();
   const windows: PaySplitSegmentWindow[] = [];
   let seq = 1;
   let segmentStart = periodFrom;
@@ -170,7 +172,11 @@ export function buildSplitSegmentWindows(
     });
   }
   if (windows.length === 0) {
-    windows.push({ segmentSeq: 1, effectiveFrom: periodFrom, effectiveTo: periodTo });
+    windows.push({
+      segmentSeq: 1,
+      effectiveFrom: periodFrom,
+      effectiveTo: periodTo,
+    });
   }
   return windows;
 }
@@ -193,13 +199,16 @@ export function isStaticSplitComponentCode(componentCode: string): boolean {
 
 /** Count static deduction lines across segment evals — >1 triggers HRM-PAY-SPLIT-409. */
 export function detectDoubleStaticViolation(
-  segmentEvals: Array<{ lines: Array<{ component_code: string; sign: string }> }>,
+  segmentEvals: Array<{
+    lines: Array<{ component_code: string; sign: string }>;
+  }>,
 ): boolean {
   let staticDeductionSegments = 0;
   for (const evalSeg of segmentEvals) {
     const hasStaticDeduction = evalSeg.lines.some(
       (line) =>
-        line.sign === 'deduction' && isStaticSplitComponentCode(line.component_code),
+        line.sign === 'deduction' &&
+        isStaticSplitComponentCode(line.component_code),
     );
     if (hasStaticDeduction) staticDeductionSegments += 1;
   }
@@ -224,7 +233,9 @@ export function prorateAttHourOverrides(
   return out;
 }
 
-export async function ensurePayPayslipSplitSegmentsSchema(db: HrmDbService): Promise<void> {
+export async function ensurePayPayslipSplitSegmentsSchema(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     CREATE TABLE IF NOT EXISTS public.payroll_payslip_split_segments (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -274,6 +285,7 @@ export class PayPayslipSplitService {
     boundFormula: PublishedFormulaBind;
     authorization?: string;
     simulateDoubleStatic?: boolean;
+    systemParams: Record<string, number>;
   }): Promise<PaySplitEmployeeProcessResult> {
     const cutDates = await loadCompensationCutDatesInPeriod(this.db, {
       employeeId: input.employeeId,
@@ -293,6 +305,7 @@ export class PayPayslipSplitService {
         sheetTemplateSnapshotJson: input.sheetTemplateSnapshotJson,
         boundFormula: input.boundFormula,
         authorization: input.authorization,
+        systemParams: input.systemParams,
       });
       if (evaluated.mode === 'blocked') {
         return evaluated;
@@ -315,7 +328,11 @@ export class PayPayslipSplitService {
       return singlePath();
     }
 
-    const windows = buildSplitSegmentWindows(input.periodFrom, input.periodTo, cutDates);
+    const windows = buildSplitSegmentWindows(
+      input.periodFrom,
+      input.periodTo,
+      cutDates,
+    );
     if (windows.length <= 1) {
       return singlePath();
     }
@@ -337,11 +354,14 @@ export class PayPayslipSplitService {
     }> = [];
 
     for (const window of windows) {
-      const baseSalarySnapshot = await resolveBaseSalarySnapshotForSegment(this.db, {
-        companyId: input.companyId,
-        employeeId: input.employeeId,
-        asOfDate: window.effectiveFrom,
-      });
+      const baseSalarySnapshot = await resolveBaseSalarySnapshotForSegment(
+        this.db,
+        {
+          companyId: input.companyId,
+          employeeId: input.employeeId,
+          asOfDate: window.effectiveFrom,
+        },
+      );
       const hourOverrides = prorateAttHourOverrides(
         fullAtt.vars,
         window.effectiveFrom,
@@ -359,6 +379,7 @@ export class PayPayslipSplitService {
         sheetTemplateSnapshotJson: input.sheetTemplateSnapshotJson,
         boundFormula: input.boundFormula,
         authorization: input.authorization,
+        systemParams: input.systemParams,
       });
       if (evaluated.mode === 'blocked') {
         return evaluated;
@@ -374,7 +395,10 @@ export class PayPayslipSplitService {
       });
     }
 
-    if (input.simulateDoubleStatic || detectDoubleStaticViolation(segmentEvals)) {
+    if (
+      input.simulateDoubleStatic ||
+      detectDoubleStaticViolation(segmentEvals)
+    ) {
       return {
         mode: 'blocked',
         code: HRM_PAY_SPLIT_409,
@@ -389,7 +413,9 @@ export class PayPayslipSplitService {
       };
     }
 
-    const totalSegmentGross = roundMoney(segmentEvals.reduce((sum, s) => sum + s.gross, 0));
+    const totalSegmentGross = roundMoney(
+      segmentEvals.reduce((sum, s) => sum + s.gross, 0),
+    );
     const mergeEval = await this.payFormulas.processEmployeePayslipViaSrc({
       companyId: input.companyId,
       periodId: input.periodId,
@@ -400,6 +426,7 @@ export class PayPayslipSplitService {
       sheetTemplateSnapshotJson: input.sheetTemplateSnapshotJson,
       boundFormula: input.boundFormula,
       authorization: input.authorization,
+      systemParams: input.systemParams,
     });
     if (mergeEval.mode === 'blocked') {
       return mergeEval;
@@ -481,7 +508,9 @@ export class PayPayslipSplitService {
     );
   }
 
-  async loadSplitSegmentsForPayslip(payslipId: string): Promise<PayPayslipSplitSegmentDto[]> {
+  async loadSplitSegmentsForPayslip(
+    payslipId: string,
+  ): Promise<PayPayslipSplitSegmentDto[]> {
     await ensurePayPayslipSplitSegmentsSchema(this.db);
     const res = await this.db.query<{
       segment_seq: number;
@@ -511,8 +540,11 @@ export class PayPayslipSplitService {
       effectiveFrom: row.effective_from,
       effectiveTo: row.effective_to,
       baseSalarySnapshotVnd:
-        row.base_salary_snapshot != null ? Number(row.base_salary_snapshot) : null,
-      hoursPayable: row.hours_payable != null ? Number(row.hours_payable) : null,
+        row.base_salary_snapshot != null
+          ? Number(row.base_salary_snapshot)
+          : null,
+      hoursPayable:
+        row.hours_payable != null ? Number(row.hours_payable) : null,
       segmentGrossVnd: Number(row.segment_gross ?? 0),
     }));
   }
@@ -522,11 +554,16 @@ export class PayPayslipSplitService {
     employeeId: string;
     message: string;
   }): never {
-    throw new ApiException(HRM_PAY_SPLIT_409, details.message, HttpStatus.CONFLICT, {
-      code: HRM_PAY_SPLIT_409,
-      period_id: details.periodId,
-      employee_id: details.employeeId,
-      payroll_e2e_ready: false,
-    });
+    throw new ApiException(
+      HRM_PAY_SPLIT_409,
+      details.message,
+      HttpStatus.CONFLICT,
+      {
+        code: HRM_PAY_SPLIT_409,
+        period_id: details.periodId,
+        employee_id: details.employeeId,
+        payroll_e2e_ready: false,
+      },
+    );
   }
 }

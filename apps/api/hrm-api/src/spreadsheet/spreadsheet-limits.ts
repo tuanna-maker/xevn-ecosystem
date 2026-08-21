@@ -1,6 +1,9 @@
 /** Defaults align with SA contract `2026-05-04 | SA -> Dev-BE` (M2). Env overrides optional. */
 export function getSpreadsheetLimits() {
-  const maxUploadBytes = numEnv('SPREADSHEET_MAX_UPLOAD_BYTES', 10 * 1024 * 1024);
+  const maxUploadBytes = numEnv(
+    'SPREADSHEET_MAX_UPLOAD_BYTES',
+    10 * 1024 * 1024,
+  );
   const maxCsvDataRows = numEnv('SPREADSHEET_MAX_CSV_ROWS', 50_000);
   const maxXlsxDataRows = numEnv('SPREADSHEET_MAX_XLSX_ROWS', 20_000);
   const maxCellChars = numEnv('SPREADSHEET_MAX_CELL_CHARS', 32 * 1024);

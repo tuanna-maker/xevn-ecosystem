@@ -23,7 +23,9 @@ function ceoAuth(): string {
   })}`;
 }
 
-function ddlAwareQuery(extra?: (sql: string, params?: unknown[]) => { rows: unknown[] } | null) {
+function ddlAwareQuery(
+  extra?: (sql: string, params?: unknown[]) => { rows: unknown[] } | null,
+) {
   return jest.fn().mockImplementation((sql: string, params?: unknown[]) => {
     const s = String(sql);
     if (
@@ -80,7 +82,11 @@ describe('D-BE-HRM-WH-POSITION-KEY-01 AC-SET-CONSUMER-JT-WH-01', () => {
         status: 'active',
       }),
     };
-    const svc = new EmployeeProfileService(db as never, mockEmployeeLookup() as never, catalogs as never);
+    const svc = new EmployeeProfileService(
+      db as never,
+      mockEmployeeLookup() as never,
+      catalogs as never,
+    );
     const row = await svc.createWorkTimelineItem(
       EMP_ID,
       { company_id: 'holding' },
@@ -107,11 +113,21 @@ describe('D-BE-HRM-WH-POSITION-KEY-01 AC-SET-CONSUMER-JT-WH-01', () => {
   it('POST rejects unknown position_key (catalog assert fail-closed)', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
-        new ApiException(HRM_WH_PICK_REQUIRED, 'not in catalog', HttpStatus.BAD_REQUEST),
-      ),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockRejectedValue(
+          new ApiException(
+            HRM_WH_PICK_REQUIRED,
+            'not in catalog',
+            HttpStatus.BAD_REQUEST,
+          ),
+        ),
     };
-    const svc = new EmployeeProfileService(db as never, mockEmployeeLookup() as never, catalogs as never);
+    const svc = new EmployeeProfileService(
+      db as never,
+      mockEmployeeLookup() as never,
+      catalogs as never,
+    );
     await expect(
       svc.createWorkTimelineItem(
         EMP_ID,
@@ -126,13 +142,21 @@ describe('D-BE-HRM-WH-POSITION-KEY-01 AC-SET-CONSUMER-JT-WH-01', () => {
     const updateSets: string[] = [];
     const db = {
       query: ddlAwareQuery((sql) => {
-        if (sql.includes('SELECT company_id FROM public.employee_work_timeline')) {
+        if (
+          sql.includes('SELECT company_id FROM public.employee_work_timeline')
+        ) {
           return { rows: [{ company_id: 'holding' }] };
         }
         if (sql.includes('UPDATE public.employee_work_timeline')) {
           updateSets.push(sql);
           return {
-            rows: [{ id: 'wh-item-1', position_key: 'NV_KD', position: 'Nhân viên Kinh doanh' }],
+            rows: [
+              {
+                id: 'wh-item-1',
+                position_key: 'NV_KD',
+                position: 'Nhân viên Kinh doanh',
+              },
+            ],
           };
         }
         return null;
@@ -146,7 +170,11 @@ describe('D-BE-HRM-WH-POSITION-KEY-01 AC-SET-CONSUMER-JT-WH-01', () => {
         status: 'active',
       }),
     };
-    const svc = new EmployeeProfileService(db as never, mockEmployeeLookup() as never, catalogs as never);
+    const svc = new EmployeeProfileService(
+      db as never,
+      mockEmployeeLookup() as never,
+      catalogs as never,
+    );
     await svc.updateWorkTimelineItem(
       'wh-item-1',
       EMP_ID,
@@ -163,11 +191,21 @@ describe('D-BE-HRM-WH-POSITION-KEY-01 AC-SET-CONSUMER-JT-WH-01', () => {
   it('empty job_titles catalog → HRM-WH-PICK-EMPTY-CATALOG (no free-text escape)', async () => {
     const db = { query: ddlAwareQuery(), onModuleDestroy: jest.fn() };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
-        new ApiException(HRM_WH_PICK_REQUIRED, 'no active items in catalog', HttpStatus.BAD_REQUEST),
-      ),
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockRejectedValue(
+          new ApiException(
+            HRM_WH_PICK_REQUIRED,
+            'no active items in catalog',
+            HttpStatus.BAD_REQUEST,
+          ),
+        ),
     };
-    const svc = new EmployeeProfileService(db as never, mockEmployeeLookup() as never, catalogs as never);
+    const svc = new EmployeeProfileService(
+      db as never,
+      mockEmployeeLookup() as never,
+      catalogs as never,
+    );
     await expect(
       svc.createWorkTimelineItem(
         EMP_ID,
@@ -214,7 +252,11 @@ describe('D-BE-HRM-WH-POSITION-KEY-01 AC-SET-CONSUMER-JT-WH-01', () => {
         full_name: 'Le Van C',
       }),
     };
-    const svc = new EmployeeProfileService(db as never, employees as never, catalogs as never);
+    const svc = new EmployeeProfileService(
+      db as never,
+      employees as never,
+      catalogs as never,
+    );
     await svc.createWorkTimelineItem(
       EMP_ID,
       { company_id: 'main' },

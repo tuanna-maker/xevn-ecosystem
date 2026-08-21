@@ -56,7 +56,10 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
           ],
         };
       }
-      if (text.includes('substring(e.custom_fields') && text.includes('FROM public.employees e')) {
+      if (
+        text.includes('substring(e.custom_fields') &&
+        text.includes('FROM public.employees e')
+      ) {
         return { rows: [] };
       }
       if (text.includes('FROM public.leave_requests')) {
@@ -88,7 +91,10 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
       if (text.includes('hrm_inbox_notifications')) {
         return { rows: [] };
       }
-      if (text.includes('FROM public.leave_requests') && text.includes('manager_id')) {
+      if (
+        text.includes('FROM public.leave_requests') &&
+        text.includes('manager_id')
+      ) {
         return {
           rows: [
             {
@@ -156,7 +162,9 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
     expect(summary.manager_pending.preview).toHaveLength(3);
 
     const managerLeaveCall = db.query.mock.calls.find(
-      ([sql]) => String(sql).includes('leave_requests') && String(sql).includes('manager_id'),
+      ([sql]) =>
+        String(sql).includes('leave_requests') &&
+        String(sql).includes('manager_id'),
     );
     expect(managerLeaveCall).toBeDefined();
     expect(String(managerLeaveCall?.[0])).toContain('lr.employee_id IN');
@@ -172,9 +180,15 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
   });
 
   it('BR-MGR-TASK-02: manager filter uses manager_employee_id (direct reports via employees.manager_id)', async () => {
-    await service.getSummary({ company_id: 'holding', employee_id: managerId }, managerToken(), 'xevn');
+    await service.getSummary(
+      { company_id: 'holding', employee_id: managerId },
+      managerToken(),
+      'xevn',
+    );
     const managerLeaveCall = db.query.mock.calls.find(
-      ([sql]) => String(sql).includes('leave_requests') && String(sql).includes('manager_id'),
+      ([sql]) =>
+        String(sql).includes('leave_requests') &&
+        String(sql).includes('manager_id'),
     );
     expect(managerLeaveCall).toBeDefined();
     const managerUpdateCall = attendance.listUpdateRequests.mock.calls.find(
@@ -186,7 +200,11 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
   it('non-manager JWT skips manager_pending aggregation (BR-MGR-TASK-05)', async () => {
     db.query.mockImplementation(async (sql: string) => {
       const text = String(sql);
-      if (text.includes('hrm_inbox_notifications') || text.includes('substring(e.custom_fields') || text.includes('FROM public.leave_requests')) {
+      if (
+        text.includes('hrm_inbox_notifications') ||
+        text.includes('substring(e.custom_fields') ||
+        text.includes('FROM public.leave_requests')
+      ) {
         return { rows: [] };
       }
       return {
@@ -208,7 +226,9 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
     expect(summary.viewer.is_manager).toBe(false);
     expect(summary.manager_pending.total_count).toBe(0);
     const managerLeaveCall = db.query.mock.calls.find(
-      ([sql]) => String(sql).includes('leave_requests') && String(sql).includes('manager_id'),
+      ([sql]) =>
+        String(sql).includes('leave_requests') &&
+        String(sql).includes('manager_id'),
     );
     expect(managerLeaveCall).toBeUndefined();
   });
@@ -232,7 +252,10 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
           ],
         };
       }
-      if (text.includes('FROM public.leave_requests') && !text.includes('manager_id')) {
+      if (
+        text.includes('FROM public.leave_requests') &&
+        !text.includes('manager_id')
+      ) {
         return {
           rows: [
             {
@@ -270,8 +293,12 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
 
     expect(summary.tasks.unread_inbox_count).toBe(1);
     expect(summary.tasks.own_pending_count).toBe(1);
-    expect(summary.tasks.items.some((item) => item.kind === 'inbox')).toBe(true);
-    expect(summary.tasks.items.some((item) => item.kind === 'own_pending_leave')).toBe(true);
+    expect(summary.tasks.items.some((item) => item.kind === 'inbox')).toBe(
+      true,
+    );
+    expect(
+      summary.tasks.items.some((item) => item.kind === 'own_pending_leave'),
+    ).toBe(true);
   });
 
   it('04a response must not contain birth_year anywhere (BR-BDAY-01 / BR-BDAY-02)', async () => {
@@ -288,7 +315,11 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
   });
 
   it('resolveHrmListScope enforced on viewer load — workforce filter in employee SQL', async () => {
-    await service.getSummary({ company_id: 'holding', employee_id: managerId }, managerToken(), 'xevn');
+    await service.getSummary(
+      { company_id: 'holding', employee_id: managerId },
+      managerToken(),
+      'xevn',
+    );
     const [sql] = db.query.mock.calls[0] ?? [];
     expect(String(sql)).toContain('FROM public.employees');
     expect(String(sql)).toContain('e.id = $1::uuid');
@@ -301,7 +332,9 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
       'xevn',
     );
     const managerLeaveCall = db.query.mock.calls.find(
-      ([sql]) => String(sql).includes('leave_requests') && String(sql).includes('manager_id'),
+      ([sql]) =>
+        String(sql).includes('leave_requests') &&
+        String(sql).includes('manager_id'),
     );
     expect(managerLeaveCall).toBeUndefined();
   });
@@ -314,11 +347,15 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
     );
 
     const ownLeaveCall = db.query.mock.calls.find(
-      ([sql]) => String(sql).includes('leave_requests') && !String(sql).includes('manager_id'),
+      ([sql]) =>
+        String(sql).includes('leave_requests') &&
+        !String(sql).includes('manager_id'),
     );
     expect(ownLeaveCall).toBeDefined();
     expect(String(ownLeaveCall?.[0])).toContain('lr.employee_id IN');
-    expect(String(ownLeaveCall?.[0])).not.toMatch(/lr\.company_id\s*=\s*\$\d+::uuid/);
+    expect(String(ownLeaveCall?.[0])).not.toMatch(
+      /lr\.company_id\s*=\s*\$\d+::uuid/,
+    );
   });
 
   it('D-W7-HOME-TASKS-SLUG-01: holding slug inbox uses expanded UUID filter (no holding::uuid cast)', async () => {
@@ -328,7 +365,9 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
       'xevn',
     );
 
-    const inboxCall = db.query.mock.calls.find(([sql]) => String(sql).includes('hrm_inbox_notifications'));
+    const inboxCall = db.query.mock.calls.find(([sql]) =>
+      String(sql).includes('hrm_inbox_notifications'),
+    );
     expect(inboxCall).toBeDefined();
     expect(String(inboxCall?.[0])).toMatch(/company_id = \$|company_id = ANY/);
     expect(String(inboxCall?.[0])).not.toContain('holding::uuid');
@@ -345,7 +384,9 @@ describe('HomeService (PCOMP-W4-BE-HUB-04a)', () => {
       'xevn',
     );
 
-    const leaveCalls = db.query.mock.calls.filter(([sql]) => String(sql).includes('leave_requests'));
+    const leaveCalls = db.query.mock.calls.filter(([sql]) =>
+      String(sql).includes('leave_requests'),
+    );
     expect(leaveCalls.length).toBeGreaterThanOrEqual(2);
     for (const [sql] of leaveCalls) {
       expect(String(sql)).toContain('lr.employee_id IN');
@@ -379,13 +420,17 @@ describe('HomeService (PCOMP-W7-BE-04b-01 — celebrations + whos_out)', () => {
     })}`;
 
   const todayMonthDay = () => {
-    const iso = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
+    const iso = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Ho_Chi_Minh',
+    }).format(new Date());
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
     return match ? `${match[2]}-${match[3]}` : '06-07';
   };
 
   const todayIso = () =>
-    new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
+    new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(
+      new Date(),
+    );
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -404,14 +449,20 @@ describe('HomeService (PCOMP-W7-BE-04b-01 — celebrations + whos_out)', () => {
           ],
         };
       }
-      if (text.includes('substring(e.custom_fields') && text.includes('FROM public.employees e')) {
+      if (
+        text.includes('substring(e.custom_fields') &&
+        text.includes('FROM public.employees e')
+      ) {
         return {
           rows: [
             {
               id: birthdayEmployeeId,
               full_name: 'Trần Thị B',
               avatar_url: '/api/hrm/files/holding/avatar-tran.jpg',
-              custom_fields: { date_of_birth: `1992-${mmdd}`, tenant_id: 'xevn' },
+              custom_fields: {
+                date_of_birth: `1992-${mmdd}`,
+                tenant_id: 'xevn',
+              },
             },
           ],
         };
@@ -464,7 +515,11 @@ describe('HomeService (PCOMP-W7-BE-04b-01 — celebrations + whos_out)', () => {
 
   it('BR-BDAY-06: celebrations SQL uses pushWorkforceEmployeeScopeFilter (same as loadViewer)', async () => {
     await service.getSummary(
-      { company_id: 'holding', employee_id: managerId, include: 'celebrations' },
+      {
+        company_id: 'holding',
+        employee_id: managerId,
+        include: 'celebrations',
+      },
       managerToken(),
       'xevn',
     );
@@ -504,7 +559,10 @@ describe('HomeService (PCOMP-W7-BE-04b-01 — celebrations + whos_out)', () => {
           ],
         };
       }
-      if (text.includes('substring(e.custom_fields') && text.includes('FROM public.employees e')) {
+      if (
+        text.includes('substring(e.custom_fields') &&
+        text.includes('FROM public.employees e')
+      ) {
         return { rows: [] };
       }
       return { rows: [] };
@@ -534,7 +592,9 @@ describe('HomeService (PCOMP-W7-BE-04b-01 — celebrations + whos_out)', () => {
       'xevn',
     );
 
-    const whosOutCall = db.query.mock.calls.find(([sql]) => String(sql).includes('leave_requests'));
+    const whosOutCall = db.query.mock.calls.find(([sql]) =>
+      String(sql).includes('leave_requests'),
+    );
     expect(whosOutCall).toBeDefined();
     const [sql] = whosOutCall ?? [];
     expect(String(sql)).toContain('lr.employee_id IN');
@@ -562,7 +622,9 @@ describe('HomeService (PCOMP-W7-BE-04b-01 — celebrations + whos_out)', () => {
       avatar_url: null,
     });
 
-    const whosOutCall = db.query.mock.calls.find(([sql]) => String(sql).includes('leave_requests'));
+    const whosOutCall = db.query.mock.calls.find(([sql]) =>
+      String(sql).includes('leave_requests'),
+    );
     expect(whosOutCall).toBeDefined();
     const [sql, params] = whosOutCall ?? [];
     expect(String(sql)).toContain("lr.status = 'approved'");
@@ -587,21 +649,33 @@ describe('HomeService (PCOMP-W7-BE-04b-01 — celebrations + whos_out)', () => {
     const celebrationCall = db.query.mock.calls.find(([sql]) =>
       String(sql).includes('substring(e.custom_fields'),
     );
-    const whosOutCall = db.query.mock.calls.find(([sql]) => String(sql).includes('leave_requests'));
+    const whosOutCall = db.query.mock.calls.find(([sql]) =>
+      String(sql).includes('leave_requests'),
+    );
     expect(celebrationCall).toBeDefined();
     expect(whosOutCall).toBeDefined();
-    expect(String(celebrationCall?.[0])).toMatch(/e\.id IN|FROM public\.employees/);
+    expect(String(celebrationCall?.[0])).toMatch(
+      /e\.id IN|FROM public\.employees/,
+    );
     expect(String(whosOutCall?.[0])).toContain('lr.employee_id IN');
-    expect(String(whosOutCall?.[0])).not.toMatch(/lr\.company_id\s*=\s*\$\d+::uuid/);
+    expect(String(whosOutCall?.[0])).not.toMatch(
+      /lr\.company_id\s*=\s*\$\d+::uuid/,
+    );
   });
 
   it('default include omits celebrations/whos_out DB queries', async () => {
-    await service.getSummary({ company_id: 'holding', employee_id: managerId }, managerToken(), 'xevn');
+    await service.getSummary(
+      { company_id: 'holding', employee_id: managerId },
+      managerToken(),
+      'xevn',
+    );
     const celebrationCall = db.query.mock.calls.find(([sql]) =>
       String(sql).includes('substring(e.custom_fields'),
     );
     const whosOutCall = db.query.mock.calls.find(
-      ([sql]) => String(sql).includes('leave_requests') && String(sql).includes('BETWEEN'),
+      ([sql]) =>
+        String(sql).includes('leave_requests') &&
+        String(sql).includes('BETWEEN'),
     );
     expect(celebrationCall).toBeUndefined();
     expect(whosOutCall).toBeUndefined();
@@ -644,7 +718,9 @@ describe('HomeService (PCOMP-W7-BE-04b-01 — celebrations + whos_out)', () => {
       groupCeoToken(),
       'xevn',
     );
-    const whosOutCall = db.query.mock.calls.find(([sql]) => String(sql).includes('leave_requests'));
+    const whosOutCall = db.query.mock.calls.find(([sql]) =>
+      String(sql).includes('leave_requests'),
+    );
     expect(whosOutCall).toBeDefined();
     const [sql] = whosOutCall ?? [];
     expect(String(sql)).toContain('lr.employee_id IN');
@@ -689,7 +765,7 @@ describe('HomeService (PCOMP-W7-BE-04b-01 — celebrations + whos_out)', () => {
     expect(summary.viewer.employee_id).toBe(cooId);
     expect(summary.viewer.is_manager).toBe(true);
     const [viewerSql] = db.query.mock.calls[0] ?? [];
-    expect(String(viewerSql)).toContain("company_id = $");
+    expect(String(viewerSql)).toContain('company_id = $');
     expect(String(viewerSql)).not.toContain(trsportUuid);
   });
 });

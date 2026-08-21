@@ -54,7 +54,9 @@ function allPositions(map: DepartmentPositionMap): string[] {
  * Xây CatalogExtensionItemDto[] cho 2 field department + position của catalog `hrm_employee_basic_fields`.
  * Chỉ dùng khi seed bootstrap được phép và Settings/XBOS POS catalogs còn trống.
  */
-export function buildPositionCatalogItems(catalog: TenantPositionCatalog): CatalogExtensionItemDto[] {
+export function buildPositionCatalogItems(
+  catalog: TenantPositionCatalog,
+): CatalogExtensionItemDto[] {
   const deptSelect = catalog.departments.join('|');
   const posSelect = allPositions(catalog.positionsByDept).join('|');
   return [
@@ -76,7 +78,12 @@ export function buildPositionCatalogItems(catalog: TenantPositionCatalog): Catal
 /** Empty field defs — honest empty until XBOS/Settings POS catalogs are synced (BR-SET-MD-03). */
 export function buildEmptyPositionFieldDefs(): CatalogExtensionItemDto[] {
   return [
-    { code: 'department', label: 'Phòng ban', unit: 'select:', status: 'active' },
+    {
+      code: 'department',
+      label: 'Phòng ban',
+      unit: 'select:',
+      status: 'active',
+    },
     { code: 'position', label: 'Chức danh', unit: 'select:', status: 'active' },
   ];
 }
@@ -173,7 +180,11 @@ const XE_VIETNAM: TenantPositionCatalog = {
       'Thư ký Chủ tịch',
       'Trợ lý chủ tịch HĐTV',
     ],
-    'Ban Giám sát': ['Giám sát dịch vụ', 'Giám sát tuân thủ', 'Trưởng nhóm giám sát'],
+    'Ban Giám sát': [
+      'Giám sát dịch vụ',
+      'Giám sát tuân thủ',
+      'Trưởng nhóm giám sát',
+    ],
     'Phòng Dự Án': ['Lập trình viên'],
     'Phòng HCNS': [
       'Bảo vệ',
@@ -251,6 +262,8 @@ export const TENANT_POSITION_CATALOGS: Record<string, TenantPositionCatalog> = {
 /**
  * Bootstrap lookup only. Runtime pickers/asserts use Settings effectiveItems (XBOS + extension).
  */
-export function getTenantPositionCatalog(tenantId: string): TenantPositionCatalog | undefined {
+export function getTenantPositionCatalog(
+  tenantId: string,
+): TenantPositionCatalog | undefined {
   return TENANT_POSITION_CATALOGS[tenantId.toLowerCase().trim()];
 }

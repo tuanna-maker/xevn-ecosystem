@@ -5,5 +5,10 @@ export const HRM_PAY_GROUP_412 = 'HRM-PAY-GROUP-412';
 export const PAY_PAYROLL_GROUP_STATUS_ACTIVE = 'active';
 export const PAY_PAYROLL_GROUP_STATUS_RETIRED = 'retired';
 
-export const PAY_GROUP_MATCH_SOURCES = ['explicit_list', 'department', 'position'] as const;
-export type PayPayrollGroupMatchSource = (typeof PAY_GROUP_MATCH_SOURCES)[number];
+export const PAY_GROUP_MATCH_SOURCES = [
+  'explicit_list',
+  'department',
+  'position',
+] as const;
+export type PayPayrollGroupMatchSource =
+  (typeof PAY_GROUP_MATCH_SOURCES)[number];

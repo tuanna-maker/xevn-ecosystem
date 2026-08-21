@@ -22,7 +22,10 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
   function buildRows(totalRows: number): EmployeeRow[] {
     return Array.from({ length: totalRows }, (_, i) => {
       const n = String(i + 1).padStart(4, '0');
-      const slug = HRM_GROUP_MEMBER_COMPANY_SLUGS[i % HRM_GROUP_MEMBER_COMPANY_SLUGS.length];
+      const slug =
+        HRM_GROUP_MEMBER_COMPANY_SLUGS[
+          i % HRM_GROUP_MEMBER_COMPANY_SLUGS.length
+        ];
       return {
         id: `30000000-0000-4000-8000-00000000${n}`,
         company_id: slug,
@@ -78,7 +81,9 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
     it('normalizes non-ISO Date.toString payload on decode (legacy page-1 cursor)', () => {
       const id = '22222222-2222-4222-8222-222222222222';
       const localeTs = 'Fri Jun 05 2026 12:01:39 GMT+0700 (Indochina Time)';
-      const legacyEncoded = Buffer.from(`${localeTs}\n${id}`, 'utf8').toString('base64url');
+      const legacyEncoded = Buffer.from(`${localeTs}\n${id}`, 'utf8').toString(
+        'base64url',
+      );
       const decoded = decodeEmployeeListCursor(legacyEncoded);
       expect(decoded.createdAt).toBe('2026-06-05T05:01:39.000Z');
       expect(decoded.createdAt).toMatch(/Z$/);
@@ -99,7 +104,9 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
         created_at: new Date('2026-06-05T05:01:39.993Z'), // would truncate
         created_at_cursor: withMicros,
       });
-      expect(Buffer.from(encoded, 'base64url').toString('utf8')).toBe(`${withMicros}\n${id}`);
+      expect(Buffer.from(encoded, 'base64url').toString('utf8')).toBe(
+        `${withMicros}\n${id}`,
+      );
       expect(decodeEmployeeListCursor(encoded).createdAt).toBe(withMicros);
     });
 
@@ -128,7 +135,10 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
         companyId: 'main',
         roleCode: 'group_ceo',
       });
-      const cursor = encodeEmployeeListCursor(sorted[0].created_at, sorted[0].id);
+      const cursor = encodeEmployeeListCursor(
+        sorted[0].created_at,
+        sorted[0].id,
+      );
 
       const result = await service.listEmployees(
         { company_id: 'main', cursor, page_size: 2 },
@@ -151,7 +161,9 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
 
     it('returns next_cursor=null on final page', async () => {
       const sorted = sortStableDesc(buildRows(3));
-      const lastTwo = sorted.slice(1).map((row) => ({ ...row, list_total: '3' }));
+      const lastTwo = sorted
+        .slice(1)
+        .map((row) => ({ ...row, list_total: '3' }));
       const db = {
         query: jest.fn().mockResolvedValue({ rows: lastTwo }),
         onModuleDestroy: jest.fn(),
@@ -200,7 +212,7 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
       ).rejects.toMatchObject({
         code: 'HRM-EMP-CURSOR-001',
         status: HttpStatus.BAD_REQUEST,
-      } satisfies Partial<ApiException>);
+      } satisfies Partial);
       expect(db.query).not.toHaveBeenCalled();
     });
 
@@ -222,7 +234,10 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
           {
             company_id: 'main',
             view: 'directory',
-            cursor: encodeEmployeeListCursor(sharedCreatedAt, '11111111-1111-4111-8111-111111111111'),
+            cursor: encodeEmployeeListCursor(
+              sharedCreatedAt,
+              '11111111-1111-4111-8111-111111111111',
+            ),
           },
           `Bearer ${token}`,
           { tenantId: 'xevn' },
@@ -232,7 +247,9 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
 
     it('OFFSET path remains when cursor absent (must_keep) and still exposes next_cursor', async () => {
       const sorted = sortStableDesc(buildRows(3));
-      const page1 = sorted.slice(0, 2).map((row) => ({ ...row, list_total: '3' }));
+      const page1 = sorted
+        .slice(0, 2)
+        .map((row) => ({ ...row, list_total: '3' }));
       const db = {
         query: jest.fn().mockResolvedValue({ rows: page1 }),
         onModuleDestroy: jest.fn(),
@@ -295,7 +312,9 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
         { tenantId: 'xevn' },
       );
       expect(page1.next_cursor).toBeTruthy();
-      const rawPayload = Buffer.from(page1.next_cursor!, 'base64url').toString('utf8');
+      const rawPayload = Buffer.from(page1.next_cursor!, 'base64url').toString(
+        'utf8',
+      );
       expect(rawPayload).toMatch(/^2026-06-05T05:01:39\.000Z\n/);
       expect(rawPayload).not.toMatch(/GMT\+/i);
 
@@ -307,8 +326,12 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
       expect(page2.data).toHaveLength(2);
       const cursorParams = db.query.mock.calls[1]?.[1] as unknown[];
       // keyset binds: …, createdAt ISO, id, fetchSize
-      expect(cursorParams[cursorParams.length - 3]).toBe('2026-06-05T05:01:39.000Z');
-      expect(String(cursorParams[cursorParams.length - 3])).not.toMatch(/GMT\+/i);
+      expect(cursorParams[cursorParams.length - 3]).toBe(
+        '2026-06-05T05:01:39.000Z',
+      );
+      expect(String(cursorParams[cursorParams.length - 3])).not.toMatch(
+        /GMT\+/i,
+      );
     });
 
     it('scope parity: cursor list still applies company_id filters for main JWT', async () => {
@@ -327,7 +350,10 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
       await service.listEmployees(
         {
           company_id: 'main',
-          cursor: encodeEmployeeListCursor(sharedCreatedAt, '11111111-1111-4111-8111-111111111111'),
+          cursor: encodeEmployeeListCursor(
+            sharedCreatedAt,
+            '11111111-1111-4111-8111-111111111111',
+          ),
           page_size: 50,
         },
         `Bearer ${token}`,
@@ -337,7 +363,9 @@ describe('CD-FB-05-PERF-BE employees cursor pagination', () => {
       const sql = String(db.query.mock.calls[0]?.[0] ?? '');
       const params = db.query.mock.calls[0]?.[1] as unknown[];
       expect(sql).toContain('company_id');
-      expect(params.some((p) => Array.isArray(p) || typeof p === 'string')).toBe(true);
+      expect(
+        params.some((p) => Array.isArray(p) || typeof p === 'string'),
+      ).toBe(true);
     });
   });
 });

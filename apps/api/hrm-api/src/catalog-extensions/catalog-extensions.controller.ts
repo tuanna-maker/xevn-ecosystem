@@ -30,7 +30,11 @@ export class CatalogExtensionsController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized catalog access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized catalog access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -45,7 +49,12 @@ export class CatalogExtensionsController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { companyId });
     return this.service
-      .listSalesData(companyId, periodMonth ? Number(periodMonth) : undefined, periodYear ? Number(periodYear) : undefined, authorization)
+      .listSalesData(
+        companyId,
+        periodMonth ? Number(periodMonth) : undefined,
+        periodYear ? Number(periodYear) : undefined,
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-SALES-200', 'Sales data listed'));
   }
 
@@ -56,7 +65,9 @@ export class CatalogExtensionsController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.createSalesData(body, authorization).then((data) => ok(data, 'HRM-SALES-201', 'Sales record created'));
+    return this.service
+      .createSalesData(body, authorization)
+      .then((data) => ok(data, 'HRM-SALES-201', 'Sales record created'));
   }
 
   @Patch('sales-data/:id')
@@ -68,7 +79,9 @@ export class CatalogExtensionsController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.updateSalesData(id, companyId, body, authorization).then((data) => ok(data, 'HRM-SALES-200', 'Sales record updated'));
+    return this.service
+      .updateSalesData(id, companyId, body, authorization)
+      .then((data) => ok(data, 'HRM-SALES-200', 'Sales record updated'));
   }
 
   @Delete('sales-data/:id')
@@ -79,7 +92,9 @@ export class CatalogExtensionsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.deleteSalesData(id, companyId, authorization).then((data) => ok(data, 'HRM-SALES-200', 'Sales record deleted'));
+    return this.service
+      .deleteSalesData(id, companyId, authorization)
+      .then((data) => ok(data, 'HRM-SALES-200', 'Sales record deleted'));
   }
 
   @Post('sales-data/sync')
@@ -89,7 +104,9 @@ export class CatalogExtensionsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.syncSalesData(companyId, authorization).then((data) => ok(data, 'HRM-SALES-202', 'Sales data synced'));
+    return this.service
+      .syncSalesData(companyId, authorization)
+      .then((data) => ok(data, 'HRM-SALES-202', 'Sales data synced'));
   }
 
   @Get('bonus-policies')
@@ -99,7 +116,9 @@ export class CatalogExtensionsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.listBonusPolicies(companyId, authorization).then((data) => ok(data, 'HRM-BONUS-200', 'Bonus policies listed'));
+    return this.service
+      .listBonusPolicies(companyId, authorization)
+      .then((data) => ok(data, 'HRM-BONUS-200', 'Bonus policies listed'));
   }
 
   @Post('bonus-policies')
@@ -109,7 +128,9 @@ export class CatalogExtensionsController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.createBonusPolicy(body, authorization).then((data) => ok(data, 'HRM-BONUS-201', 'Bonus policy created'));
+    return this.service
+      .createBonusPolicy(body, authorization)
+      .then((data) => ok(data, 'HRM-BONUS-201', 'Bonus policy created'));
   }
 
   @Patch('bonus-policies/:id')
@@ -121,7 +142,9 @@ export class CatalogExtensionsController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.updateBonusPolicy(id, companyId, body, authorization).then((data) => ok(data, 'HRM-BONUS-200', 'Bonus policy updated'));
+    return this.service
+      .updateBonusPolicy(id, companyId, body, authorization)
+      .then((data) => ok(data, 'HRM-BONUS-200', 'Bonus policy updated'));
   }
 
   @Delete('bonus-policies/:id')
@@ -132,7 +155,9 @@ export class CatalogExtensionsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.deleteBonusPolicy(id, companyId, authorization).then((data) => ok(data, 'HRM-BONUS-200', 'Bonus policy deleted'));
+    return this.service
+      .deleteBonusPolicy(id, companyId, authorization)
+      .then((data) => ok(data, 'HRM-BONUS-200', 'Bonus policy deleted'));
   }
 
   @Get('bonus-policies/:policyId/participants')
@@ -169,7 +194,9 @@ export class CatalogExtensionsController {
     this.assertAccess(authorization, internalApiKey);
     return this.service
       .listInsurancePolicyParticipants(companyId, authorization)
-      .then((data) => ok(data, 'HRM-INS-P-200', 'Insurance participants listed'));
+      .then((data) =>
+        ok(data, 'HRM-INS-P-200', 'Insurance participants listed'),
+      );
   }
 
   @Post('insurance-policy-participants')
@@ -181,7 +208,9 @@ export class CatalogExtensionsController {
     this.assertAccess(authorization, internalApiKey);
     return this.service
       .createInsurancePolicyParticipant(body, authorization)
-      .then((data) => ok(data, 'HRM-INS-P-201', 'Insurance participant created'));
+      .then((data) =>
+        ok(data, 'HRM-INS-P-201', 'Insurance participant created'),
+      );
   }
 
   @Patch('insurance-policy-participants/:id')
@@ -195,7 +224,9 @@ export class CatalogExtensionsController {
     this.assertAccess(authorization, internalApiKey);
     return this.service
       .updateInsurancePolicyParticipant(id, companyId, body, authorization)
-      .then((data) => ok(data, 'HRM-INS-P-200', 'Insurance participant updated'));
+      .then((data) =>
+        ok(data, 'HRM-INS-P-200', 'Insurance participant updated'),
+      );
   }
 
   @Delete('insurance-policy-participants/:id')
@@ -208,7 +239,9 @@ export class CatalogExtensionsController {
     this.assertAccess(authorization, internalApiKey);
     return this.service
       .deleteInsurancePolicyParticipant(id, companyId, authorization)
-      .then((data) => ok(data, 'HRM-INS-P-200', 'Insurance participant deleted'));
+      .then((data) =>
+        ok(data, 'HRM-INS-P-200', 'Insurance participant deleted'),
+      );
   }
 
   @Get('tax-policy-participants')
@@ -218,7 +251,9 @@ export class CatalogExtensionsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.listTaxPolicyParticipants(companyId, authorization).then((data) => ok(data, 'HRM-TAX-200', 'Tax participants listed'));
+    return this.service
+      .listTaxPolicyParticipants(companyId, authorization)
+      .then((data) => ok(data, 'HRM-TAX-200', 'Tax participants listed'));
   }
 
   @Post('tax-policy-participants')
@@ -228,7 +263,9 @@ export class CatalogExtensionsController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.createTaxPolicyParticipant(body, authorization).then((data) => ok(data, 'HRM-TAX-201', 'Tax participant created'));
+    return this.service
+      .createTaxPolicyParticipant(body, authorization)
+      .then((data) => ok(data, 'HRM-TAX-201', 'Tax participant created'));
   }
 
   @Patch('tax-policy-participants/:id')
@@ -240,7 +277,9 @@ export class CatalogExtensionsController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.updateTaxPolicyParticipant(id, companyId, body, authorization).then((data) => ok(data, 'HRM-TAX-200', 'Tax participant updated'));
+    return this.service
+      .updateTaxPolicyParticipant(id, companyId, body, authorization)
+      .then((data) => ok(data, 'HRM-TAX-200', 'Tax participant updated'));
   }
 
   @Delete('tax-policy-participants/:id')
@@ -251,7 +290,9 @@ export class CatalogExtensionsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.deleteTaxPolicyParticipant(id, companyId, authorization).then((data) => ok(data, 'HRM-TAX-200', 'Tax participant deleted'));
+    return this.service
+      .deleteTaxPolicyParticipant(id, companyId, authorization)
+      .then((data) => ok(data, 'HRM-TAX-200', 'Tax participant deleted'));
   }
 
   @Get('face-data')
@@ -261,7 +302,9 @@ export class CatalogExtensionsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.listFaceData(companyId, authorization).then((data) => ok(data, 'HRM-FACE-200', 'Face data listed'));
+    return this.service
+      .listFaceData(companyId, authorization)
+      .then((data) => ok(data, 'HRM-FACE-200', 'Face data listed'));
   }
 
   @Post('face-data')
@@ -271,7 +314,9 @@ export class CatalogExtensionsController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.upsertFaceData(body, authorization).then((data) => ok(data, 'HRM-FACE-201', 'Face data saved'));
+    return this.service
+      .upsertFaceData(body, authorization)
+      .then((data) => ok(data, 'HRM-FACE-201', 'Face data saved'));
   }
 
   @Delete('face-data/:employeeId')
@@ -282,7 +327,9 @@ export class CatalogExtensionsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.deleteFaceData(employeeId, companyId, authorization).then((data) => ok(data, 'HRM-FACE-200', 'Face data deleted'));
+    return this.service
+      .deleteFaceData(employeeId, companyId, authorization)
+      .then((data) => ok(data, 'HRM-FACE-200', 'Face data deleted'));
   }
 
   @Get('company-subscription')
@@ -292,7 +339,9 @@ export class CatalogExtensionsController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.getCompanySubscription(companyId, authorization).then((data) => ok(data, 'HRM-SUB-200', 'Subscription loaded'));
+    return this.service
+      .getCompanySubscription(companyId, authorization)
+      .then((data) => ok(data, 'HRM-SUB-200', 'Subscription loaded'));
   }
 
   @Post('company-subscription/upgrade')
@@ -303,7 +352,9 @@ export class CatalogExtensionsController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.upgradeCompanySubscription(companyId, body, authorization).then((data) => ok(data, 'HRM-SUB-201', 'Subscription upgraded'));
+    return this.service
+      .upgradeCompanySubscription(companyId, body, authorization)
+      .then((data) => ok(data, 'HRM-SUB-201', 'Subscription upgraded'));
   }
 
   @Get('guide-content')
@@ -313,7 +364,9 @@ export class CatalogExtensionsController {
     @Query('company_id') companyId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.listGuideContent(companyId).then((data) => ok(data, 'HRM-GUIDE-200', 'Guide content listed'));
+    return this.service
+      .listGuideContent(companyId)
+      .then((data) => ok(data, 'HRM-GUIDE-200', 'Guide content listed'));
   }
 
   @Post('guide-content')
@@ -323,17 +376,26 @@ export class CatalogExtensionsController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.upsertGuideContent(body, authorization).then((data) => ok(data, 'HRM-GUIDE-201', 'Guide content saved'));
+    return this.service
+      .upsertGuideContent(body, authorization)
+      .then((data) => ok(data, 'HRM-GUIDE-201', 'Guide content saved'));
   }
 
   @Delete('guide-content')
   deleteGuideContent(
     @Headers('authorization') authorization: string | undefined,
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
-    @Body() body: { section_id: string; step_index: number | null; company_id?: string },
+    @Body()
+    body: {
+      section_id: string;
+      step_index: number | null;
+      company_id?: string;
+    },
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return this.service.deleteGuideContent(body).then((data) => ok(data, 'HRM-GUIDE-200', 'Guide content deleted'));
+    return this.service
+      .deleteGuideContent(body)
+      .then((data) => ok(data, 'HRM-GUIDE-200', 'Guide content deleted'));
   }
 
   @Get('files/:companyId/:filename')
@@ -343,7 +405,11 @@ export class CatalogExtensionsController {
     @Headers('authorization') authorization: string | undefined,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    const file = await this.service.readUploadedFile(companyId, filename, authorization);
+    const file = await this.service.readUploadedFile(
+      companyId,
+      filename,
+      authorization,
+    );
     res.set('Cache-Control', 'public, max-age=3600');
     return new StreamableFile(file.buffer, {
       type: file.mimetype,
@@ -352,7 +418,9 @@ export class CatalogExtensionsController {
   }
 
   @Post('files/upload')
-  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 10 * 1024 * 1024 } }))
+  @UseInterceptors(
+    FileInterceptor('file', { limits: { fileSize: 10 * 1024 * 1024 } }),
+  )
   uploadFile(
     @UploadedFile() file: Express.Multer.File | undefined,
     @Query('feature') feature: string,
@@ -370,7 +438,11 @@ export class CatalogExtensionsController {
     }
     resolveScopeContext(authorization, { companyId: companyId.trim() });
     if (!file?.buffer?.length) {
-      throw new ApiException('HRM-FILE-400', 'Multipart file field "file" is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-FILE-400',
+        'Multipart file field "file" is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return this.service
       .storeUploadedFile(companyId.trim(), authorization, feature || 'upload', {

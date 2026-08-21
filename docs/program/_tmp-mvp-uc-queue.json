@@ -1,0 +1,352 @@
+[
+  {
+    "uc": "UC-BP-REC-01",
+    "name": "Quản trị định biên vị trí × 12 tháng (phòng ban trình; HCNS tổng hợp)",
+    "status_paper": "Ưu tiên",
+    "pillar": "REC",
+    "wbs": "WBS-REC-01"
+  },
+  {
+    "uc": "UC-BP-REC-01b",
+    "name": "Auto sinh YCTD theo tháng «Cần tuyển»",
+    "status_paper": "Ưu tiên",
+    "pillar": "REC",
+    "wbs": "WBS-REC-01b"
+  },
+  {
+    "uc": "UC-BP-REC-02",
+    "name": "Yêu cầu tuyển **trong** định biên (luồng rút gọn)",
+    "status_paper": "Ưu tiên",
+    "pillar": "REC",
+    "wbs": "WBS-REC-02"
+  },
+  {
+    "uc": "UC-BP-REC-02b",
+    "name": "Yêu cầu tuyển **ngoài** định biên (có BOD)",
+    "status_paper": "Ưu tiên",
+    "pillar": "REC",
+    "wbs": "WBS-REC-02b"
+  },
+  {
+    "uc": "UC-BP-REC-08",
+    "name": "Báo cáo & bảng điều khiển tuyển dụng («bao giờ đủ người»)",
+    "status_paper": "Ưu tiên",
+    "pillar": "REC",
+    "wbs": "WBS-REC-06"
+  },
+  {
+    "uc": "UC-BP-REC-06a",
+    "name": "Xếp / hủy / đổi lịch PV — tối đa một lịch đang hiệu lực / ứng viên × pháp nhân; badge danh sách",
+    "status_paper": "ADD",
+    "pillar": "REC",
+    "wbs": "WBS-REC-04"
+  },
+  {
+    "uc": "UC-BP-REC-00",
+    "name": "Thư viện mô tả công việc (JD master) — **MVP**",
+    "status_paper": "EXPAND",
+    "pillar": "REC",
+    "wbs": "WBS-REC-00"
+  },
+  {
+    "uc": "UC-BP-REC-04",
+    "name": "Quét kho CV nội bộ trước kênh ngoài",
+    "status_paper": "EXPAND",
+    "pillar": "REC",
+    "wbs": "WBS-REC-03"
+  },
+  {
+    "uc": "UC-BP-REC-05",
+    "name": "Lịch sử trạng thái ứng viên gắn YCTD (N–N; PV trong pipeline)",
+    "status_paper": "EXPAND",
+    "pillar": "REC",
+    "wbs": "WBS-REC-03"
+  },
+  {
+    "uc": "UC-BP-REC-06",
+    "name": "Gửi thư tuyển + đánh giá PV trong pipeline ứng viên",
+    "status_paper": "EXPAND",
+    "pillar": "REC",
+    "wbs": "WBS-REC-04"
+  },
+  {
+    "uc": "UC-BP-REC-07",
+    "name": "Chấp nhận offer → tạo hồ sơ nhân sự (không nhập lại)",
+    "status_paper": "EXPAND",
+    "pillar": "REC",
+    "wbs": "WBS-REC-05"
+  },
+  {
+    "uc": "UC-BP-CORE-01",
+    "name": "Hồ sơ vòng công khai (hành chính / phúc lợi)",
+    "status_paper": "Ưu tiên",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-01"
+  },
+  {
+    "uc": "UC-BP-CORE-02",
+    "name": "Hồ sơ vòng C&B (lương, BH, thuế, ngân hàng)",
+    "status_paper": "Ưu tiên",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-01"
+  },
+  {
+    "uc": "UC-BP-CORE-08",
+    "name": "Khen thưởng & kỷ luật — thi hành → bảng lương",
+    "status_paper": "Ưu tiên",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-06"
+  },
+  {
+    "uc": "UC-BP-CORE-09a",
+    "name": "Thư viện điều khoản HĐ (Cài đặt) — **ADD**",
+    "status_paper": "ADD",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-02"
+  },
+  {
+    "uc": "UC-BP-CORE-09b",
+    "name": "Chọn gói nghề và xem trước HĐLĐ — **ADD**",
+    "status_paper": "ADD",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-02"
+  },
+  {
+    "uc": "UC-BP-CORE-09c",
+    "name": "Lưu phiên bản và in / PDF hợp đồng — **ADD**",
+    "status_paper": "ADD",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-02"
+  },
+  {
+    "uc": "UC-BP-CORE-09d",
+    "name": "Chọn mẫu HĐ theo catalog mở (ví dụ khởi tạo loại × khối · không trần 8) — **ADD**",
+    "status_paper": "ADD",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-02"
+  },
+  {
+    "uc": "UC-BP-CORE-02b",
+    "name": "Cấu hình nhóm field hồ sơ (metadata)",
+    "status_paper": "EXPAND",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-01"
+  },
+  {
+    "uc": "UC-BP-CORE-03",
+    "name": "Checklist giấy tờ động (bắt buộc / tùy chọn)",
+    "status_paper": "EXPAND",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-03"
+  },
+  {
+    "uc": "UC-BP-CORE-05",
+    "name": "Cấp phát tài sản & biên bản bàn giao",
+    "status_paper": "EXPAND",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-04"
+  },
+  {
+    "uc": "UC-BP-CORE-06",
+    "name": "Thu hồi tài sản khi kích hoạt nghỉ việc",
+    "status_paper": "EXPAND",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-04"
+  },
+  {
+    "uc": "UC-BP-CORE-07",
+    "name": "Kích hoạt hồ sơ Hoạt động khi checklist đủ",
+    "status_paper": "EXPAND",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-05"
+  },
+  {
+    "uc": "UC-BP-CORE-09",
+    "name": "Hợp đồng LĐ — mẫu Word keyword fill",
+    "status_paper": "EXPAND",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-02"
+  },
+  {
+    "uc": "UC-BP-CORE-10",
+    "name": "BHXH lifecycle (Hoạt động / Ngừng / Tạm hoãn)",
+    "status_paper": "EXPAND",
+    "pillar": "CORE",
+    "wbs": "WBS-CORE-07"
+  },
+  {
+    "uc": "UC-BP-PLT-01",
+    "name": "Nền tảng cấu hình động (danh mục · schema · trường trộn) — **ADD**",
+    "status_paper": "ADD",
+    "pillar": "PLT",
+    "wbs": "WBS-CORE-02"
+  },
+  {
+    "uc": "UC-BP-ATT-02",
+    "name": "Phạt muộn / về sớm (phút / block / bậc + nguồn hợp lệ)",
+    "status_paper": "Ưu tiên",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-01"
+  },
+  {
+    "uc": "UC-BP-ATT-08",
+    "name": "Tính ngày trừ phép xuyên cuối tuần và lễ (0,5 ngày / 1 giờ)",
+    "status_paper": "Ưu tiên",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-05"
+  },
+  {
+    "uc": "UC-BP-ATT-09",
+    "name": "Nộp & duyệt phép — **hold quỹ** khi submit",
+    "status_paper": "Ưu tiên",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-05"
+  },
+  {
+    "uc": "UC-BP-ATT-10",
+    "name": "Tổng hợp bảng công (phễu giờ công tính lương)",
+    "status_paper": "Ưu tiên",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-06"
+  },
+  {
+    "uc": "UC-BP-ATT-11",
+    "name": "Ký chốt bảng công trước khi tính lương (workflow XBOS)",
+    "status_paper": "Ưu tiên",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-06"
+  },
+  {
+    "uc": "UC-BP-ATT-01",
+    "name": "Thiết lập quy tắc ca theo bộ phận / nhóm",
+    "status_paper": "EXPAND",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-01"
+  },
+  {
+    "uc": "UC-BP-ATT-03b",
+    "name": "Lịch lễ / Tết (dương + âm cấu hình năm)",
+    "status_paper": "EXPAND",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-03"
+  },
+  {
+    "uc": "UC-BP-ATT-03d",
+    "name": "Danh mục điểm GPS chấm công (vùng hợp lệ) — **ADD MVP**",
+    "status_paper": "EXPAND",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-02b"
+  },
+  {
+    "uc": "UC-BP-ATT-04",
+    "name": "Cấp phát phép năm + danh mục loại phép (năm · thâm niên · …)",
+    "status_paper": "EXPAND",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-04"
+  },
+  {
+    "uc": "UC-BP-ATT-04b",
+    "name": "Ứng phép & thời điểm cấp / không lương bù trừ",
+    "status_paper": "EXPAND",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-04"
+  },
+  {
+    "uc": "UC-BP-ATT-05",
+    "name": "Phép chuyển kỳ (bảo lưu theo FY tenant)",
+    "status_paper": "EXPAND",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-04"
+  },
+  {
+    "uc": "UC-BP-ATT-05b",
+    "name": "Panel quỹ phép khi nộp đơn — **ADD MVP**",
+    "status_paper": "EXPAND",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-05b"
+  },
+  {
+    "uc": "UC-BP-ATT-06",
+    "name": "Phép bù OT khi công ty bật chế độ",
+    "status_paper": "EXPAND",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-04"
+  },
+  {
+    "uc": "UC-BP-ATT-07",
+    "name": "Nghỉ ốm — chế độ BH + hỗ trợ CTY (nếu có)",
+    "status_paper": "EXPAND",
+    "pillar": "ATT",
+    "wbs": "WBS-ATT-04"
+  },
+  {
+    "uc": "UC-BP-ATT-12",
+    "name": "Mở quỹ phép & ca mặc định khi hồ sơ Hoạt động",
+    "status_paper": "EXPAND",
+    "pillar": "ATT",
+    "wbs": "WBS-CORE-05"
+  },
+  {
+    "uc": "UC-BP-PAY-01",
+    "name": "Ranh giới: lương chỉ đọc bảng công đã chốt",
+    "status_paper": "Ưu tiên",
+    "pillar": "PAY",
+    "wbs": "WBS-ATT-06"
+  },
+  {
+    "uc": "UC-BP-PAY-02",
+    "name": "Lắp ráp và chạy động cơ công thức lương",
+    "status_paper": "Ưu tiên",
+    "pillar": "PAY",
+    "wbs": "WBS-PAY-01"
+  },
+  {
+    "uc": "UC-BP-PAY-04",
+    "name": "Gộp lương khi đổi điều kiện giữa kỳ (không GTCG kép)",
+    "status_paper": "Ưu tiên",
+    "pillar": "PAY",
+    "wbs": "WBS-PAY-03"
+  },
+  {
+    "uc": "UC-BP-PAY-03",
+    "name": "Giảm trừ gia cảnh từ hồ sơ (đủ quyền)",
+    "status_paper": "EXPAND",
+    "pillar": "PAY",
+    "wbs": "WBS-PAY-02"
+  },
+  {
+    "uc": "UC-BP-PAY-05",
+    "name": "Trần bảo hiểm trên tổng hợp kỳ (kể cả split)",
+    "status_paper": "EXPAND",
+    "pillar": "PAY",
+    "wbs": "WBS-PAY-02"
+  },
+  {
+    "uc": "UC-BP-PAY-06",
+    "name": "Tính lương kỳ khi đã Hoạt động + bảng công chốt",
+    "status_paper": "EXPAND",
+    "pillar": "PAY",
+    "wbs": "WBS-PAY-04"
+  },
+  {
+    "uc": "UC-BP-PAY-07",
+    "name": "Lệnh nghỉ việc — cắt BH, tất toán phép, thu hồi, KT/KL kỳ cuối",
+    "status_paper": "EXPAND",
+    "pillar": "PAY",
+    "wbs": "WBS-PAY-04"
+  },
+  {
+    "uc": "UC-BP-PAY-08",
+    "name": "Phiếu lương — preview, bảo mật, trạng thái TT",
+    "status_paper": "EXPAND",
+    "pillar": "PAY",
+    "wbs": "WBS-PAY-05"
+  },
+  {
+    "uc": "UC-BP-PAY-09",
+    "name": "Phân nhóm bảng lương (VP / KD / tài xế / vận hành)",
+    "status_paper": "EXPAND",
+    "pillar": "PAY",
+    "wbs": "WBS-PAY-05"
+  }
+]

@@ -140,7 +140,9 @@ export class EmployeeDependentsService implements OnModuleInit {
     if (!row && scope.masterTenantPartition) {
       const filters2: string[] = ['id = $1::uuid', 'archived_at IS NULL'];
       const values2: unknown[] = [employeeId];
-      pushEmployeeListScopeFilters(filters2, values2, scope, { skipTenantPartition: true });
+      pushEmployeeListScopeFilters(filters2, values2, scope, {
+        skipTenantPartition: true,
+      });
       const res2 = await this.db.query<EmployeeRow>(
         `
           SELECT
@@ -155,7 +157,11 @@ export class EmployeeDependentsService implements OnModuleInit {
       row = res2.rows[0];
     }
     if (!row) {
-      throw new ApiException('HRM-EMP-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EMP-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: 'HRM-EMP-404',
@@ -191,7 +197,10 @@ export class EmployeeDependentsService implements OnModuleInit {
       authorization,
       scopeContext,
     );
-    const filters: string[] = ['employee_id = $1::uuid', 'company_id = $2::text'];
+    const filters: string[] = [
+      'employee_id = $1::uuid',
+      'company_id = $2::text',
+    ];
     const values: unknown[] = [employeeId, parent.company_id];
     if (!query.include_archived) {
       filters.push('archived_at IS NULL');
@@ -335,7 +344,10 @@ export class EmployeeDependentsService implements OnModuleInit {
       values.push(name);
     }
     if (payload.relation_code !== undefined) {
-      const relation = payload.relation_code.trim().toLowerCase().replace(/-/g, '_');
+      const relation = payload.relation_code
+        .trim()
+        .toLowerCase()
+        .replace(/-/g, '_');
       if (!relation) {
         throw new ApiException(
           HRM_CORE_DEP_VAL_400,

@@ -53,7 +53,9 @@ describe('computeLineHoursFromRecords', () => {
     expect(hours.paid_leave_hours).toBe(ATT_STANDARD_DAY_HOURS);
     expect(hours.unpaid_leave_hours).toBe(ATT_STANDARD_DAY_HOURS);
     expect(hours.ot_hours_weighted).toBe(3);
-    expect(hours.payable_hours).toBe(ATT_STANDARD_DAY_HOURS + ATT_STANDARD_DAY_HOURS + 3);
+    expect(hours.payable_hours).toBe(
+      ATT_STANDARD_DAY_HOURS + ATT_STANDARD_DAY_HOURS + 3,
+    );
     expect(hours.work_days).toBe(1);
   });
 });
@@ -68,10 +70,16 @@ describe('ensureAttTimesheetLineSchema', () => {
       }),
     };
     await ensureAttTimesheetLineSchema(db as never);
-    expect(sql.some((s) => s.includes('CREATE TABLE IF NOT EXISTS public.att_timesheet_line'))).toBe(
-      true,
-    );
-    expect(sql.some((s) => s.includes('att_timesheet_line_header_employee_active_uq'))).toBe(true);
+    expect(
+      sql.some((s) =>
+        s.includes('CREATE TABLE IF NOT EXISTS public.att_timesheet_line'),
+      ),
+    ).toBe(true);
+    expect(
+      sql.some((s) =>
+        s.includes('att_timesheet_line_header_employee_active_uq'),
+      ),
+    ).toBe(true);
     expect(sql.some((s) => s.includes('line_locked'))).toBe(true);
     expect(sql.some((s) => s.includes('payable_hours'))).toBe(true);
   });
@@ -86,7 +94,9 @@ describe('ensureAttTimesheetLineSchema', () => {
     };
     await ensureAttendanceSheetSchema(db as never);
     expect(sql.some((s) => s.includes('att_timesheet_line'))).toBe(false);
-    expect(sql.some((s) => s.includes('ADD COLUMN IF NOT EXISTS closed_at'))).toBe(true);
+    expect(
+      sql.some((s) => s.includes('ADD COLUMN IF NOT EXISTS closed_at')),
+    ).toBe(true);
   });
 });
 
@@ -105,7 +115,9 @@ describe('aggregateAttendanceSheetLines', () => {
     } as unknown as HrmDbService;
     await expect(
       aggregateAttendanceSheetLines(db, { ...header, status: 'closed' }),
-    ).rejects.toMatchObject<Partial<ApiException>>({ code: 'HRM-ATT-SHEET-LOCKED' });
+    ).rejects.toMatchObject<Partial>({
+      code: 'HRM-ATT-SHEET-LOCKED',
+    });
   });
 
   it('upserts lines from records and returns line_count', async () => {
@@ -115,7 +127,8 @@ describe('aggregateAttendanceSheetLines', () => {
       query: jest.fn(async (sql: string) => {
         sqlLog.push(sql);
         if (sql.includes('CREATE TABLE IF NOT EXISTS')) return { rows: [] };
-        if (sql.includes('CREATE UNIQUE INDEX') || sql.includes('CREATE INDEX')) return { rows: [] };
+        if (sql.includes('CREATE UNIQUE INDEX') || sql.includes('CREATE INDEX'))
+          return { rows: [] };
         if (sql.includes('FROM public.attendance_records')) {
           return {
             rows: [
@@ -129,13 +142,22 @@ describe('aggregateAttendanceSheetLines', () => {
             ],
           };
         }
-        if (sql.includes('FROM public.overtime_requests') && sql.includes('DISTINCT')) {
+        if (
+          sql.includes('FROM public.overtime_requests') &&
+          sql.includes('DISTINCT')
+        ) {
           return { rows: [] };
         }
-        if (sql.includes('FROM public.overtime_requests') && sql.includes('SUM')) {
+        if (
+          sql.includes('FROM public.overtime_requests') &&
+          sql.includes('SUM')
+        ) {
           return { rows: [{ weighted: '0' }] };
         }
-        if (sql.includes('FROM public.att_timesheet_line') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.att_timesheet_line') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [] };
         }
         if (sql.includes('INSERT INTO public.att_timesheet_line')) {
@@ -151,8 +173,14 @@ describe('aggregateAttendanceSheetLines', () => {
     const result = await aggregateAttendanceSheetLines(db, header);
     expect(result.line_count).toBe(1);
     expect(result.sheet_id).toBe(header.id);
-    expect(sqlLog.some((s) => s.includes('INSERT INTO public.att_timesheet_line'))).toBe(true);
-    expect(sqlLog.some((s) => s.includes('line_locked = FALSE') || s.includes('FALSE'))).toBe(true);
+    expect(
+      sqlLog.some((s) => s.includes('INSERT INTO public.att_timesheet_line')),
+    ).toBe(true);
+    expect(
+      sqlLog.some(
+        (s) => s.includes('line_locked = FALSE') || s.includes('FALSE'),
+      ),
+    ).toBe(true);
   });
 
   it('BE-ATT-LINE-02: pg Date header dates UPSERT (not AGG_SHEET_DATE_INVALID)', async () => {
@@ -166,7 +194,8 @@ describe('aggregateAttendanceSheetLines', () => {
       query: jest.fn(async (sql: string, params?: unknown[]) => {
         sqlLog.push(sql);
         if (sql.includes('CREATE TABLE IF NOT EXISTS')) return { rows: [] };
-        if (sql.includes('CREATE UNIQUE INDEX') || sql.includes('CREATE INDEX')) return { rows: [] };
+        if (sql.includes('CREATE UNIQUE INDEX') || sql.includes('CREATE INDEX'))
+          return { rows: [] };
         if (sql.includes('FROM public.attendance_records')) {
           expect(params?.[1]).toBe('2026-08-01');
           expect(params?.[2]).toBe('2026-08-31');
@@ -182,13 +211,22 @@ describe('aggregateAttendanceSheetLines', () => {
             ],
           };
         }
-        if (sql.includes('FROM public.overtime_requests') && sql.includes('DISTINCT')) {
+        if (
+          sql.includes('FROM public.overtime_requests') &&
+          sql.includes('DISTINCT')
+        ) {
           return { rows: [] };
         }
-        if (sql.includes('FROM public.overtime_requests') && sql.includes('SUM')) {
+        if (
+          sql.includes('FROM public.overtime_requests') &&
+          sql.includes('SUM')
+        ) {
           return { rows: [{ weighted: '0' }] };
         }
-        if (sql.includes('FROM public.att_timesheet_line') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.att_timesheet_line') &&
+          sql.includes('LIMIT 1')
+        ) {
           return { rows: [] };
         }
         if (sql.includes('INSERT INTO public.att_timesheet_line')) {
@@ -208,7 +246,9 @@ describe('aggregateAttendanceSheetLines', () => {
     });
     expect(result.warnings).not.toContain('AGG_SHEET_DATE_INVALID');
     expect(result.line_count).toBe(1);
-    expect(sqlLog.some((s) => s.includes('INSERT INTO public.att_timesheet_line'))).toBe(true);
+    expect(
+      sqlLog.some((s) => s.includes('INSERT INTO public.att_timesheet_line')),
+    ).toBe(true);
   });
 });
 
@@ -216,7 +256,11 @@ describe('lock / archive lines', () => {
   it('lockAttTimesheetLinesForSheet sets line_locked=true', async () => {
     const db = {
       query: jest.fn(async (sql: string) => {
-        if (sql.includes('CREATE TABLE') || sql.includes('CREATE UNIQUE') || sql.includes('CREATE INDEX')) {
+        if (
+          sql.includes('CREATE TABLE') ||
+          sql.includes('CREATE UNIQUE') ||
+          sql.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (sql.includes('line_locked = TRUE')) {
@@ -225,14 +269,21 @@ describe('lock / archive lines', () => {
         return { rows: [] };
       }),
     } as unknown as HrmDbService;
-    const n = await lockAttTimesheetLinesForSheet(db, 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
+    const n = await lockAttTimesheetLinesForSheet(
+      db,
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    );
     expect(n).toBe(2);
   });
 
   it('archiveAttTimesheetLinesForSheet soft-deletes active lines', async () => {
     const db = {
       query: jest.fn(async (sql: string) => {
-        if (sql.includes('CREATE TABLE') || sql.includes('CREATE UNIQUE') || sql.includes('CREATE INDEX')) {
+        if (
+          sql.includes('CREATE TABLE') ||
+          sql.includes('CREATE UNIQUE') ||
+          sql.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
         if (sql.includes('archived_at = NOW()')) {
@@ -241,7 +292,10 @@ describe('lock / archive lines', () => {
         return { rows: [] };
       }),
     } as unknown as HrmDbService;
-    const n = await archiveAttTimesheetLinesForSheet(db, 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
+    const n = await archiveAttTimesheetLinesForSheet(
+      db,
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    );
     expect(n).toBe(1);
   });
 });

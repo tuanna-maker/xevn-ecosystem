@@ -36,9 +36,10 @@ type Props = {
   row: HrmJobDescriptionTemplate;
   snapshot?: JdLayoutSnapshotV2 | null;
   values?: JdValuesMap | null;
+  showEmptyFields?: boolean;
 };
 
-export function JdTemplateViewPanel({ row, snapshot, values }: Props) {
+export function JdTemplateViewPanel({ row, snapshot, values, showEmptyFields = false }: Props) {
   const snap =
     snapshot ??
     row.layout_snapshot_json ??
@@ -100,20 +101,23 @@ export function JdTemplateViewPanel({ row, snapshot, values }: Props) {
         const isMeta = isChipsStyle(group.view_style) || group.group_code === 'SEC_META';
 
         if (isMeta) {
-          const chips = fields.filter((f) => f.field_key !== 'title' && vals[f.field_key]?.trim());
+          const chips = fields.filter((f) => f.field_key !== 'title' && (showEmptyFields || vals[f.field_key]?.trim()));
           if (chips.length === 0 && !vals.title) return null;
           return (
             <section key={group.group_code} data-testid={`jd-view-group-${group.group_code}`}>
               <div className="flex flex-wrap gap-2">
-                {chips.map((f) => (
-                  <span
-                    key={f.field_key}
-                    className="inline-flex items-center rounded-md border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-medium text-xevn-text"
-                  >
-                    <span className="mr-1 text-xevn-textSecondary">{f.label}:</span>
-                    {vals[f.field_key]}
-                  </span>
-                ))}
+                {chips.map((f) => {
+                  const val = vals[f.field_key]?.trim();
+                  return (
+                    <span
+                      key={f.field_key}
+                      className="inline-flex items-center rounded-md border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-medium text-xevn-text"
+                    >
+                      <span className="mr-1 text-xevn-textSecondary">{f.label}:</span>
+                      {val ? val : <span className="text-muted-foreground italic text-[11px] ml-1">(Trống)</span>}
+                    </span>
+                  );
+                })}
               </div>
             </section>
           );
@@ -121,26 +125,31 @@ export function JdTemplateViewPanel({ row, snapshot, values }: Props) {
 
         const bodyFields = fields.filter((f) => f.field_key !== 'title');
         const hasContent = bodyFields.some((f) => vals[f.field_key]?.trim());
-        if (!hasContent) return null;
+        if (!hasContent && !showEmptyFields) return null;
 
         return (
           <section key={group.group_code} className="space-y-2" data-testid={`jd-view-group-${group.group_code}`}>
             <h3 className="font-display text-[18px] font-semibold text-xevn-text">{group.label}</h3>
             {bodyFields.map((f) => {
               const raw = vals[f.field_key]?.trim() ?? '';
-              if (!raw) return null;
+              if (!raw && !showEmptyFields) return null;
+              
+              const emptyFallback = <span className="text-sm italic text-muted-foreground">(Chưa có nội dung)</span>;
+
               if (isBulletsStyle(group.view_style)) {
-                const items = splitBullets(raw);
+                const items = raw ? splitBullets(raw) : [];
                 return (
                   <div key={f.field_key}>
                     {f.label && bodyFields.length > 1 ? (
                       <p className="mb-1 text-sm font-medium text-xevn-textSecondary">{f.label}</p>
                     ) : null}
-                    <ul className="list-disc space-y-1 pl-5 text-sm text-xevn-text">
-                      {items.map((item, idx) => (
-                        <li key={`${f.field_key}-${idx}`}>{item}</li>
-                      ))}
-                    </ul>
+                    {!raw ? emptyFallback : (
+                      <ul className="list-disc space-y-1 pl-5 text-sm text-xevn-text">
+                        {items.map((item, idx) => (
+                          <li key={`${f.field_key}-${idx}`}>{item}</li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 );
               }
@@ -148,7 +157,7 @@ export function JdTemplateViewPanel({ row, snapshot, values }: Props) {
                 return (
                   <div key={f.field_key} className="grid grid-cols-12 gap-2 text-sm">
                     <dt className="col-span-4 font-medium text-xevn-textSecondary">{f.label}</dt>
-                    <dd className="col-span-8 whitespace-pre-wrap text-xevn-text">{raw}</dd>
+                    <dd className="col-span-8 whitespace-pre-wrap text-xevn-text">{raw || emptyFallback}</dd>
                   </div>
                 );
               }
@@ -157,7 +166,9 @@ export function JdTemplateViewPanel({ row, snapshot, values }: Props) {
                   {bodyFields.length > 1 ? (
                     <p className="text-sm font-medium text-xevn-textSecondary">{f.label}</p>
                   ) : null}
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-xevn-text">{raw}</p>
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed text-xevn-text">
+                    {raw || emptyFallback}
+                  </div>
                 </div>
               );
             })}

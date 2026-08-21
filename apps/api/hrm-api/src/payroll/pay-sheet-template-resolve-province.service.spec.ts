@@ -83,109 +83,121 @@ function createProvinceDb(seed: HeaderRow[] = []) {
   const sqls: string[] = [];
 
   const db = {
-    query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-      const s = String(sql).replace(/\s+/g, ' ').trim();
-      sqls.push(s);
+    query: jest
+      .fn()
+      .mockImplementation(async (sql: string, params?: unknown[]) => {
+        const s = String(sql).replace(/\s+/g, ' ').trim();
+        sqls.push(s);
 
-      if (
-        s.includes('CREATE TABLE') ||
-        s.includes('CREATE INDEX') ||
-        s.includes('CREATE UNIQUE') ||
-        s.includes('ALTER TABLE') ||
-        s.includes('DO $$')
-      ) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$')
+        ) {
+          return { rows: [] };
+        }
+
+        // assertNoProvinceDuplicate (BR-TPL-PROV-02)
+        if (s.startsWith('SELECT id FROM public.pay_sheet_templates WHERE')) {
+          const companyId = String(params?.[0]);
+          const provinceCode = String(params?.[1]);
+          let idx = 2;
+          let tag: string | null = null;
+          let excludeId: string | null = null;
+          if (s.includes('business_line_tag = $')) {
+            tag = String(params?.[idx]);
+            idx += 1;
+          }
+          if (s.includes('id <> $')) {
+            excludeId = String(params?.[idx]);
+            idx += 1;
+          }
+          const match = headers.find(
+            (h) =>
+              h.company_id === companyId &&
+              !h.archived_at &&
+              h.applicability_province_code === provinceCode &&
+              (tag !== null
+                ? h.business_line_tag === tag
+                : h.business_line_tag === null) &&
+              (excludeId ? h.id !== excludeId : true),
+          );
+          return { rows: match ? [{ id: match.id }] : [] };
+        }
+
+        // createTemplate INSERT
+        if (s.includes('INSERT INTO public.pay_sheet_templates (')) {
+          const row: HeaderRow = {
+            id: String(params?.[0]),
+            company_id: String(params?.[1]),
+            code: String(params?.[2]),
+            name: String(params?.[3]),
+            description: (params?.[4] as string | null) ?? null,
+            status: String(params?.[5] ?? 'draft'),
+            is_default: Boolean(params?.[6]),
+            applicability_scope: String(params?.[7] ?? 'company'),
+            ou_id: (params?.[8] as string | null) ?? null,
+            position_key: (params?.[9] as string | null) ?? null,
+            employee_id: (params?.[10] as string | null) ?? null,
+            applicability_province_code:
+              (params?.[11] as string | null) ?? null,
+            business_line_tag: (params?.[12] as string | null) ?? null,
+            policy_pack_id: (params?.[13] as string | null) ?? null,
+            input_pack_profile_id: (params?.[14] as string | null) ?? null,
+            archived_at: null,
+            created_by: (params?.[15] as string | null) ?? null,
+            updated_by: (params?.[15] as string | null) ?? null,
+            created_at: '2026-08-12T00:00:00Z',
+            updated_at: '2026-08-12T00:00:00Z',
+          };
+          headers.push(row);
+          return { rows: [{ ...row }] };
+        }
+
+        // is_default reset (only hit if payload.isDefault === true — unused in this spec but kept safe)
+        if (
+          s.startsWith(
+            'UPDATE public.pay_sheet_templates SET is_default = FALSE',
+          )
+        ) {
+          const companyId = String(params?.[0]);
+          for (const h of headers) {
+            if (h.company_id === companyId && !h.archived_at)
+              h.is_default = false;
+          }
+          return { rows: [] };
+        }
+
+        // resolveForEmployee candidate list
+        if (
+          s.includes('FROM public.pay_sheet_templates t') &&
+          s.includes("t.status = 'active'") &&
+          s.includes('t.archived_at IS NULL')
+        ) {
+          let rows = headers.filter(
+            (h) => h.status === 'active' && !h.archived_at,
+          );
+          if (s.includes('t.company_id = ANY')) {
+            const ids = params?.[0] as string[];
+            rows = rows.filter((h) => ids.includes(h.company_id));
+          } else if (s.includes('t.company_id = $1')) {
+            rows = rows.filter((h) => h.company_id === String(params?.[0]));
+          }
+          if (s.includes('t.business_line_tag = $')) {
+            const tagParam = params?.[(params?.length ?? 1) - 1];
+            rows = rows.filter((h) => h.business_line_tag === String(tagParam));
+          }
+          rows = [...rows].sort((a, b) => {
+            if (a.is_default !== b.is_default) return a.is_default ? -1 : 1;
+            return b.updated_at.localeCompare(a.updated_at);
+          });
+          return { rows: rows.map((r) => ({ ...r })) };
+        }
+
         return { rows: [] };
-      }
-
-      // assertNoProvinceDuplicate (BR-TPL-PROV-02)
-      if (s.startsWith('SELECT id FROM public.pay_sheet_templates WHERE')) {
-        const companyId = String(params?.[0]);
-        const provinceCode = String(params?.[1]);
-        let idx = 2;
-        let tag: string | null = null;
-        let excludeId: string | null = null;
-        if (s.includes('business_line_tag = $')) {
-          tag = String(params?.[idx]);
-          idx += 1;
-        }
-        if (s.includes('id <> $')) {
-          excludeId = String(params?.[idx]);
-          idx += 1;
-        }
-        const match = headers.find(
-          (h) =>
-            h.company_id === companyId &&
-            !h.archived_at &&
-            h.applicability_province_code === provinceCode &&
-            (tag !== null ? h.business_line_tag === tag : h.business_line_tag === null) &&
-            (excludeId ? h.id !== excludeId : true),
-        );
-        return { rows: match ? [{ id: match.id }] : [] };
-      }
-
-      // createTemplate INSERT
-      if (s.includes('INSERT INTO public.pay_sheet_templates (')) {
-        const row: HeaderRow = {
-          id: String(params?.[0]),
-          company_id: String(params?.[1]),
-          code: String(params?.[2]),
-          name: String(params?.[3]),
-          description: (params?.[4] as string | null) ?? null,
-          status: String(params?.[5] ?? 'draft'),
-          is_default: Boolean(params?.[6]),
-          applicability_scope: String(params?.[7] ?? 'company'),
-          ou_id: (params?.[8] as string | null) ?? null,
-          position_key: (params?.[9] as string | null) ?? null,
-          employee_id: (params?.[10] as string | null) ?? null,
-          applicability_province_code: (params?.[11] as string | null) ?? null,
-          business_line_tag: (params?.[12] as string | null) ?? null,
-          policy_pack_id: (params?.[13] as string | null) ?? null,
-          input_pack_profile_id: (params?.[14] as string | null) ?? null,
-          archived_at: null,
-          created_by: (params?.[15] as string | null) ?? null,
-          updated_by: (params?.[15] as string | null) ?? null,
-          created_at: '2026-08-12T00:00:00Z',
-          updated_at: '2026-08-12T00:00:00Z',
-        };
-        headers.push(row);
-        return { rows: [{ ...row }] };
-      }
-
-      // is_default reset (only hit if payload.isDefault === true — unused in this spec but kept safe)
-      if (s.startsWith('UPDATE public.pay_sheet_templates SET is_default = FALSE')) {
-        const companyId = String(params?.[0]);
-        for (const h of headers) {
-          if (h.company_id === companyId && !h.archived_at) h.is_default = false;
-        }
-        return { rows: [] };
-      }
-
-      // resolveForEmployee candidate list
-      if (
-        s.includes('FROM public.pay_sheet_templates t') &&
-        s.includes("t.status = 'active'") &&
-        s.includes('t.archived_at IS NULL')
-      ) {
-        let rows = headers.filter((h) => h.status === 'active' && !h.archived_at);
-        if (s.includes('t.company_id = ANY')) {
-          const ids = params?.[0] as string[];
-          rows = rows.filter((h) => ids.includes(h.company_id));
-        } else if (s.includes('t.company_id = $1')) {
-          rows = rows.filter((h) => h.company_id === String(params?.[0]));
-        }
-        if (s.includes('t.business_line_tag = $')) {
-          const tagParam = params?.[(params?.length ?? 1) - 1];
-          rows = rows.filter((h) => h.business_line_tag === String(tagParam));
-        }
-        rows = [...rows].sort((a, b) => {
-          if (a.is_default !== b.is_default) return a.is_default ? -1 : 1;
-          return b.updated_at.localeCompare(a.updated_at);
-        });
-        return { rows: rows.map((r) => ({ ...r })) };
-      }
-
-      return { rows: [] };
-    }),
+      }),
   } as unknown as HrmDbService;
 
   return { db, sqls, headers };
@@ -306,8 +318,12 @@ describe('PaySheetTemplateService.resolveForEmployee (PO-HRM-PAY-TPL-RESOLVE-PRO
     );
     expect(result.matchStatus).toBe('MATCHED');
     expect(result.recommended?.id).toBe('aaaaaaaa-0000-4000-8000-0000000000nd');
-    expect(result.recommended?.id).not.toBe('aaaaaaaa-0000-4000-8000-0000000000nb');
-    expect(result.recommended?.id).not.toBe('aaaaaaaa-0000-4000-8000-000000000cty');
+    expect(result.recommended?.id).not.toBe(
+      'aaaaaaaa-0000-4000-8000-0000000000nb',
+    );
+    expect(result.recommended?.id).not.toBe(
+      'aaaaaaaa-0000-4000-8000-000000000cty',
+    );
   });
 
   it('AC-PAY-TPL-PROV-04: province_code không khớp catalog (VT khi chỉ có ND/NB/TB) → NO_PROVINCE_MATCH, fallback company, cảnh báo, không tự bịa mẫu', async () => {

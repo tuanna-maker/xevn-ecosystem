@@ -11,9 +11,13 @@ import {
   sumMergedInsuranceBaseFromLines,
 } from './pay-si-ceiling-resolver';
 
-function mockDb(handler: (sql: string, params?: unknown[]) => { rows: unknown[] }): HrmDbService {
+function mockDb(
+  handler: (sql: string, params?: unknown[]) => { rows: unknown[] },
+): HrmDbService {
   return {
-    query: jest.fn(async (sql: string, params?: unknown[]) => handler(sql, params)),
+    query: jest.fn(async (sql: string, params?: unknown[]) =>
+      handler(sql, params),
+    ),
   } as unknown as HrmDbService;
 }
 
@@ -51,9 +55,21 @@ describe('sumMergedInsuranceBaseFromLines', () => {
     const base = await sumMergedInsuranceBaseFromLines(db, {
       companyId: 'main',
       lines: [
-        { component_code: 'LUONG_CO_BAN', amount: 10_000_000, sign: 'earning' } as never,
-        { component_code: 'PHU_CAP_AN', amount: 2_000_000, sign: 'earning' } as never,
-        { component_code: 'LUONG_CO_BAN', amount: 500_000, sign: 'deduction' } as never,
+        {
+          component_code: 'LUONG_CO_BAN',
+          amount: 10_000_000,
+          sign: 'earning',
+        } as never,
+        {
+          component_code: 'PHU_CAP_AN',
+          amount: 2_000_000,
+          sign: 'earning',
+        } as never,
+        {
+          component_code: 'LUONG_CO_BAN',
+          amount: 500_000,
+          sign: 'deduction',
+        } as never,
       ],
     });
     expect(base).toBe(10_000_000);
@@ -88,7 +104,13 @@ describe('applyPaySiCeilingForEmployee', () => {
       periodStart: '2026-08-01',
       periodEnd: '2026-08-31',
       employeeId: '11111111-1111-4111-8111-111111111111',
-      lines: [{ component_code: 'LUONG_CO_BAN', amount: 12_000_000, sign: 'earning' } as never],
+      lines: [
+        {
+          component_code: 'LUONG_CO_BAN',
+          amount: 12_000_000,
+          sign: 'earning',
+        } as never,
+      ],
       failOnMissingCfg: false,
     });
     expect(r.ok).toBe(true);
@@ -116,7 +138,13 @@ describe('applyPaySiCeilingForEmployee', () => {
       periodStart: '2026-08-01',
       periodEnd: '2026-08-31',
       employeeId: '11111111-1111-4111-8111-111111111111',
-      lines: [{ component_code: 'LUONG_CO_BAN', amount: 5_000_000, sign: 'earning' } as never],
+      lines: [
+        {
+          component_code: 'LUONG_CO_BAN',
+          amount: 5_000_000,
+          sign: 'earning',
+        } as never,
+      ],
       failOnMissingCfg: false,
     });
     expect(r.ok).toBe(false);
@@ -140,7 +168,13 @@ describe('applyPaySiCeilingForEmployee', () => {
         periodStart: '2026-08-01',
         periodEnd: '2026-08-31',
         employeeId: '11111111-1111-4111-8111-111111111111',
-        lines: [{ component_code: 'LUONG_CO_BAN', amount: 5_000_000, sign: 'earning' } as never],
+        lines: [
+          {
+            component_code: 'LUONG_CO_BAN',
+            amount: 5_000_000,
+            sign: 'earning',
+          } as never,
+        ],
         failOnMissingCfg: true,
       }),
     ).rejects.toMatchObject({ code: HRM_SET_SI_412_MISSING });

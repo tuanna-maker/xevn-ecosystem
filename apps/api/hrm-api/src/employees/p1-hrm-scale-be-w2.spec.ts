@@ -14,7 +14,10 @@ describe('P1-HRM-SCALE-BE-W2 list/summary round-trip reduction', () => {
   function buildRows(totalRows: number): EmployeeRow[] {
     return Array.from({ length: totalRows }, (_, i) => {
       const n = String(i + 1).padStart(4, '0');
-      const slug = HRM_GROUP_MEMBER_COMPANY_SLUGS[i % HRM_GROUP_MEMBER_COMPANY_SLUGS.length];
+      const slug =
+        HRM_GROUP_MEMBER_COMPANY_SLUGS[
+          i % HRM_GROUP_MEMBER_COMPANY_SLUGS.length
+        ];
       return {
         id: `20000000-0000-4000-8000-00000000${n}`,
         company_id: slug,
@@ -101,7 +104,9 @@ describe('P1-HRM-SCALE-BE-W2 list/summary round-trip reduction', () => {
         if (text.includes('SELECT COUNT(*)::text AS total')) {
           return { rows: [{ total: String(store.length) }] };
         }
-        throw new Error(`Unexpected SQL in BE-W2 regression: ${text.slice(0, 140)}`);
+        throw new Error(
+          `Unexpected SQL in BE-W2 regression: ${text.slice(0, 140)}`,
+        );
       }),
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
@@ -157,7 +162,9 @@ describe('P1-HRM-SCALE-BE-W2 list/summary round-trip reduction', () => {
               salary_range_15_20m: '200',
               salary_range_below_15m: '240',
             },
-            by_department: [{ department: 'Vận hành', count: '400', avg_salary: '18000000' }],
+            by_department: [
+              { department: 'Vận hành', count: '400', avg_salary: '18000000' },
+            ],
             recent: [
               {
                 id: '11111111-1111-4111-8111-111111111111',
@@ -189,7 +196,7 @@ describe('P1-HRM-SCALE-BE-W2 list/summary round-trip reduction', () => {
 
     expect(db.query).toHaveBeenCalledTimes(1);
     const sql = String(db.query.mock.calls[0]?.[0] ?? '');
-    const values = db.query.mock.calls[0]?.[1] as unknown[] | undefined;
+    const values = db.query.mock.calls[0]?.[1];
     expect(sql).toContain('WITH scoped AS');
     expect(sql).toContain('salary_range_above_30m');
     expect(sql).toContain('company_id = ANY');

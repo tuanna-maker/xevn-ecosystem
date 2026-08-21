@@ -32,9 +32,19 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
       });
       const requisitionId = '633e95b7-cf1b-469f-a0f8-4c91f3f35f80';
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
+        if (
+          sql.includes(
+            'FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1',
+          )
+        ) {
           return {
-            rows: [{ company_id: 'holding', status: 'open', workflow_instance_id: null }],
+            rows: [
+              {
+                company_id: 'holding',
+                status: 'open',
+                workflow_instance_id: null,
+              },
+            ],
           } as never;
         }
         if (sql.includes('UPDATE public.job_requisitions')) {
@@ -72,7 +82,9 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
         expect.arrayContaining(['on_hold', requisitionId, expect.any(Array)]),
       );
       const updateSql =
-        db.query.mock.calls.find((c) => String(c[0]).includes('UPDATE public.job_requisitions'))?.[0] ?? '';
+        db.query.mock.calls.find((c) =>
+          String(c[0]).includes('UPDATE public.job_requisitions'),
+        )?.[0] ?? '';
       expect(String(updateSql)).toContain('company_id = ANY');
     });
 
@@ -84,7 +96,11 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
         roleCode: 'group_ceo',
       });
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
+        if (
+          sql.includes(
+            'FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1',
+          )
+        ) {
           return { rows: [] } as never;
         }
         return { rows: [] } as never;
@@ -97,7 +113,7 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
           { company_id: 'main' },
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-404' });
+      ).rejects.toMatchObject({ code: 'HRM-REC-404' });
     });
 
     it('returns HRM-REC-409 when requisition company_id is outside rollup scope (P1-02)', async () => {
@@ -108,9 +124,19 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
         roleCode: 'group_ceo',
       });
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
+        if (
+          sql.includes(
+            'FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1',
+          )
+        ) {
           return {
-            rows: [{ company_id: 'other-co', status: 'open', workflow_instance_id: null }],
+            rows: [
+              {
+                company_id: 'other-co',
+                status: 'open',
+                workflow_instance_id: null,
+              },
+            ],
           } as never;
         }
         return { rows: [] } as never;
@@ -123,7 +149,7 @@ describe('P1-PHASE1-BE-REC-PATCH-01 scope_parity', () => {
           { company_id: 'main' },
           `Bearer ${token}`,
         ),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-409' });
+      ).rejects.toMatchObject({ code: 'HRM-REC-409' });
     });
   });
 });

@@ -28,7 +28,10 @@ describe('AttendanceConfigService', () => {
       if (sql.includes('CREATE TABLE IF NOT EXISTS public.attendance_rules')) {
         return Promise.resolve({ rows: [] } as never);
       }
-      if (sql.includes('SELECT * FROM public.attendance_rules') && sql.includes('WHERE company_id')) {
+      if (
+        sql.includes('SELECT * FROM public.attendance_rules') &&
+        sql.includes('WHERE company_id')
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
       if (sql.includes('INSERT INTO public.attendance_rules')) {
@@ -73,7 +76,10 @@ describe('AttendanceConfigService', () => {
       if (sql.includes('CREATE TABLE IF NOT EXISTS public.attendance_rules')) {
         return Promise.resolve({ rows: [] } as never);
       }
-      if (sql.includes('SELECT * FROM public.attendance_rules') && !sql.includes('UPDATE')) {
+      if (
+        sql.includes('SELECT * FROM public.attendance_rules') &&
+        !sql.includes('UPDATE')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -143,7 +149,9 @@ describe('AttendanceConfigService', () => {
 
   it('listWorkSites scopes by TEXT company_id slug', async () => {
     db.query.mockImplementation((sql: string) => {
-      if (sql.includes('CREATE TABLE IF NOT EXISTS public.attendance_work_sites')) {
+      if (
+        sql.includes('CREATE TABLE IF NOT EXISTS public.attendance_work_sites')
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
       if (sql.includes('ALTER TABLE public.attendance_work_sites')) {
@@ -180,9 +188,10 @@ describe('AttendanceConfigService', () => {
     expect(list.data[0].company_id).toBe('trsport');
     expect(list.data[0].radius).toBe(100);
     const listSql = String(
-      db.query.mock.calls.find(([sql]) =>
-        String(sql).includes('FROM public.attendance_work_sites') &&
-        String(sql).includes('SELECT id'),
+      db.query.mock.calls.find(
+        ([sql]) =>
+          String(sql).includes('FROM public.attendance_work_sites') &&
+          String(sql).includes('SELECT id'),
       )?.[0] ?? '',
     );
     expect(listSql).toContain('active = TRUE');
@@ -222,7 +231,10 @@ describe('AttendanceConfigService', () => {
       ) {
         return Promise.resolve({ rows: [] } as never);
       }
-      if (sql.includes('FROM public.attendance_work_sites') && sql.includes('SELECT id')) {
+      if (
+        sql.includes('FROM public.attendance_work_sites') &&
+        sql.includes('SELECT id')
+      ) {
         const activeOnly = sql.includes('active = TRUE');
         return Promise.resolve({
           rows: activeOnly ? rows.filter((r) => r.active) : rows,
@@ -235,9 +247,14 @@ describe('AttendanceConfigService', () => {
     expect(activeList.total).toBe(1);
     expect(activeList.data[0].id).toBe('site-active');
 
-    const allList = await service.listWorkSites('trsport', groupCeoAuth, undefined, {
-      includeInactive: true,
-    });
+    const allList = await service.listWorkSites(
+      'trsport',
+      groupCeoAuth,
+      undefined,
+      {
+        includeInactive: true,
+      },
+    );
     expect(allList.total).toBe(2);
   });
 
@@ -268,7 +285,10 @@ describe('AttendanceConfigService', () => {
           ],
         } as never);
       }
-      if (sql.includes('UPDATE public.attendance_work_sites') && sql.includes('active = FALSE')) {
+      if (
+        sql.includes('UPDATE public.attendance_work_sites') &&
+        sql.includes('active = FALSE')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -291,8 +311,17 @@ describe('AttendanceConfigService', () => {
       return Promise.resolve({ rows: [] } as never);
     });
 
-    const soft = await service.deleteWorkSite('site-retire', 'trsport', groupCeoAuth);
-    expect(soft).toMatchObject({ id: 'site-retire', active: false, retired: true, hard_deleted: false });
+    const soft = await service.deleteWorkSite(
+      'site-retire',
+      'trsport',
+      groupCeoAuth,
+    );
+    expect(soft).toMatchObject({
+      id: 'site-retire',
+      active: false,
+      retired: true,
+      hard_deleted: false,
+    });
     expect(
       db.query.mock.calls.some(
         ([sql]) =>
@@ -301,18 +330,32 @@ describe('AttendanceConfigService', () => {
       ),
     ).toBe(true);
 
-    await service.deleteWorkSite('site-retire', 'trsport', groupCeoAuth, undefined, { hard: true });
+    await service.deleteWorkSite(
+      'site-retire',
+      'trsport',
+      groupCeoAuth,
+      undefined,
+      { hard: true },
+    );
     expect(
-      db.query.mock.calls.some(([sql]) => String(sql).includes('DELETE FROM public.attendance_work_sites')),
+      db.query.mock.calls.some(([sql]) =>
+        String(sql).includes('DELETE FROM public.attendance_work_sites'),
+      ),
     ).toBe(true);
   });
 
   it('ATT-03d: createWorkSite accepts FE radius alias and persists TEXT company slug', async () => {
     db.query.mockImplementation((sql: string) => {
-      if (sql.includes('CREATE TABLE IF NOT EXISTS public.attendance_work_sites')) {
+      if (
+        sql.includes('CREATE TABLE IF NOT EXISTS public.attendance_work_sites')
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
-      if (sql.includes('ALTER TABLE') || sql.includes('DO $$') || sql.includes('UPDATE public.attendance_work_sites SET company_id')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('DO $$') ||
+        sql.includes('UPDATE public.attendance_work_sites SET company_id')
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
       if (sql.includes('INSERT INTO public.attendance_work_sites')) {
@@ -354,7 +397,15 @@ describe('AttendanceConfigService', () => {
       String(sql).includes('INSERT INTO public.attendance_work_sites'),
     );
     expect(insertCall?.[1]).toEqual(
-      expect.arrayContaining(['holding', 'HQ Gate', null, 21.02, 105.85, 150, true]),
+      expect.arrayContaining([
+        'holding',
+        'HQ Gate',
+        null,
+        21.02,
+        105.85,
+        150,
+        true,
+      ]),
     );
   });
 
@@ -366,10 +417,16 @@ describe('AttendanceConfigService', () => {
       roleCode: 'company_ceo',
     });
     db.query.mockImplementation((sql: string) => {
-      if (sql.includes('CREATE TABLE IF NOT EXISTS public.attendance_work_sites')) {
+      if (
+        sql.includes('CREATE TABLE IF NOT EXISTS public.attendance_work_sites')
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
-      if (sql.includes('ALTER TABLE') || sql.includes('DO $$') || sql.includes('UPDATE public.attendance_work_sites SET company_id')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('DO $$') ||
+        sql.includes('UPDATE public.attendance_work_sites SET company_id')
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
       if (sql.includes('FROM public.attendance_work_sites WHERE id')) {
@@ -449,7 +506,9 @@ describe('AttendanceConfigService', () => {
         const updated = opts?.onUpdate?.(sql, params ?? []) ?? {
           ...baseRulesRow,
           late_penalty_mode: 'minute',
-          late_penalty_bands: [{ fromMinutes: 1, toMinutes: 15, penaltyHours: 0.5 }],
+          late_penalty_bands: [
+            { fromMinutes: 1, toMinutes: 15, penaltyHours: 0.5 },
+          ],
           late_penalty_enabled: true,
         };
         return Promise.resolve({ rows: [updated] } as never);
@@ -474,7 +533,9 @@ describe('AttendanceConfigService', () => {
     );
     expect(updated.mode).toBe('minute');
     expect(updated.modeLabelVi).toBe('Theo phút');
-    expect(updated.bands).toEqual([{ fromMinutes: 1, toMinutes: 15, penaltyHours: 0.5 }]);
+    expect(updated.bands).toEqual([
+      { fromMinutes: 1, toMinutes: 15, penaltyHours: 0.5 },
+    ]);
     expect(updated.latePenaltyEnabled).toBe(true);
     expect(updated.sourceFlags.gpsEnabled).toBe(true);
     expect(updated.notifyLate).toBe(true);
@@ -484,11 +545,7 @@ describe('AttendanceConfigService', () => {
   it('ATT-02: PATCH mixed modes → HRM-VAL-400', async () => {
     mockRulesDb();
     await expect(
-      service.patchRules(
-        'main',
-        { modes: ['minute', 'block'] } as never,
-        groupCeoAuth,
-      ),
+      service.patchRules('main', { modes: ['minute', 'block'] }, groupCeoAuth),
     ).rejects.toMatchObject({ code: 'HRM-VAL-400' });
   });
 

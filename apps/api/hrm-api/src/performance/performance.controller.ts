@@ -38,7 +38,10 @@ import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
 import { CreatePerformanceCycleDto } from './dto/create-performance-cycle.dto';
 import { CreatePerformanceEvaluationDto } from './dto/create-performance-evaluation.dto';
-import { ListPerformanceCyclesQueryDto, ListPerformanceEvaluationsQueryDto } from './dto/list-performance.query.dto';
+import {
+  ListPerformanceCyclesQueryDto,
+  ListPerformanceEvaluationsQueryDto,
+} from './dto/list-performance.query.dto';
 import { UpdatePerformanceCycleDto } from './dto/update-performance-cycle.dto';
 import { UpdatePerformanceEvaluationDto } from './dto/update-performance-evaluation.dto';
 import { PerformanceService } from './performance.service';
@@ -49,7 +52,11 @@ export class PerformanceController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized performance access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized performance access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -62,7 +69,10 @@ export class PerformanceController {
     @Body() body: CreatePerformanceCycleDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.service
       .createCycle(body, authorization)
       .then((data) => ok(data, 'HRM-PERF-201', 'Performance cycle created'));
@@ -77,8 +87,13 @@ export class PerformanceController {
     @Query() query: ListPerformanceCyclesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
-    return this.service.listCycles(query, authorization).then((data) => ok(data, 'HRM-PERF-200', 'Performance cycles listed'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
+    return this.service
+      .listCycles(query, authorization)
+      .then((data) => ok(data, 'HRM-PERF-200', 'Performance cycles listed'));
   }
 
   @Patch('cycles/:cycleId')
@@ -125,8 +140,15 @@ export class PerformanceController {
     @Body() body: CreatePerformanceEvaluationDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.service.createEvaluation(body, authorization).then((data) => ok(data, 'HRM-PERF-202', 'Performance evaluation created'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
+    return this.service
+      .createEvaluation(body, authorization)
+      .then((data) =>
+        ok(data, 'HRM-PERF-202', 'Performance evaluation created'),
+      );
   }
 
   @Get('evaluations')
@@ -138,8 +160,15 @@ export class PerformanceController {
     @Query() query: ListPerformanceEvaluationsQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
-    return this.service.listEvaluations(query, authorization).then((data) => ok(data, 'HRM-PERF-200', 'Performance evaluations listed'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
+    return this.service
+      .listEvaluations(query, authorization)
+      .then((data) =>
+        ok(data, 'HRM-PERF-200', 'Performance evaluations listed'),
+      );
   }
 
   @Patch('evaluations/:evaluationId')
@@ -157,7 +186,9 @@ export class PerformanceController {
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.service
       .updateEvaluation(evaluationId, body, cid, authorization)
-      .then((data) => ok(data, 'HRM-PERF-200', 'Performance evaluation updated'));
+      .then((data) =>
+        ok(data, 'HRM-PERF-200', 'Performance evaluation updated'),
+      );
   }
 
   @Delete('evaluations/:evaluationId')
@@ -174,6 +205,8 @@ export class PerformanceController {
     resolveScopeContext(authorization, { tenantId, companyId: cid });
     return this.service
       .deleteEvaluation(evaluationId, cid, authorization)
-      .then((data) => ok(data, 'HRM-PERF-200', 'Performance evaluation deleted'));
+      .then((data) =>
+        ok(data, 'HRM-PERF-200', 'Performance evaluation deleted'),
+      );
   }
 }

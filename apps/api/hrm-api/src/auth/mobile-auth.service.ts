@@ -139,8 +139,16 @@ export type MobileMembership = {
 
 const ACCESS_TTL_SEC = 12 * 60 * 60;
 const REFRESH_TTL_SEC = 30 * 24 * 60 * 60;
-const MASTER_TENANT = (process.env.MASTER_TENANT_ID ?? 'xevn').trim().toLowerCase();
-const MEMBER_COMPANY_SLUGS = new Set(['holding', 'trsport', 'logistics', 'finance', 'services']);
+const MASTER_TENANT = (process.env.MASTER_TENANT_ID ?? 'xevn')
+  .trim()
+  .toLowerCase();
+const MEMBER_COMPANY_SLUGS = new Set([
+  'holding',
+  'trsport',
+  'logistics',
+  'finance',
+  'services',
+]);
 
 /** Documented portal Group CEO — mobile login after tenant-master wipe (not QA bulk seed). */
 const PORTAL_GROUP_CEO_EMAIL = 'ceo@xe.vn';
@@ -152,7 +160,9 @@ export class MobileAuthService {
   constructor(private readonly db: HrmDbService) {}
 
   private hashPassword(email: string, password: string): string {
-    return createHash('sha256').update(`${email.trim().toLowerCase()}:${password}`).digest('hex');
+    return createHash('sha256')
+      .update(`${email.trim().toLowerCase()}:${password}`)
+      .digest('hex');
   }
 
   private isPortalGroupCeoEmail(email: string): boolean {
@@ -167,14 +177,19 @@ export class MobileAuthService {
     return process.env.PILOT_PORTAL_DEV_PASSWORD?.trim() || 'Xevn@2026';
   }
 
-  private matchesPortalGroupCeoPassword(email: string, password: string): boolean {
+  private matchesPortalGroupCeoPassword(
+    email: string,
+    password: string,
+  ): boolean {
     if (!this.isPortalGroupCeoEmail(email)) return false;
     const portalPw = this.resolvePortalGroupCeoPassword();
     if (!portalPw) return false;
     return password === portalPw;
   }
 
-  private buildPortalGroupCeoCustomFields(portalPassword: string): Record<string, string> {
+  private buildPortalGroupCeoCustomFields(
+    portalPassword: string,
+  ): Record<string, string> {
     const email = PORTAL_GROUP_CEO_EMAIL;
     return {
       tenant_id: MASTER_TENANT,
@@ -189,7 +204,9 @@ export class MobileAuthService {
    * Product ensure (not bulk seed): holding PORTAL-GCEO row for portal Group CEO
    * when tenant-master reset removed all employees — mirrors recruitment bridge ensure.
    */
-  private async ensurePortalGroupCeoEmployeeRow(portalPassword: string): Promise<void> {
+  private async ensurePortalGroupCeoEmployeeRow(
+    portalPassword: string,
+  ): Promise<void> {
     const userKey = PORTAL_GROUP_CEO_EMAIL;
     const customFields = this.buildPortalGroupCeoCustomFields(portalPassword);
 
@@ -286,7 +303,11 @@ export class MobileAuthService {
     return res.rows;
   }
 
-  private verifyPassword(email: string, password: string, row: EmployeeAuthRow): boolean {
+  private verifyPassword(
+    email: string,
+    password: string,
+    row: EmployeeAuthRow,
+  ): boolean {
     const hashEmail = resolveCanonicalUatLoginEmail(email);
     const custom = row.custom_fields ?? {};
     const storedHash = custom.mobile_password_hash?.trim();
@@ -297,7 +318,8 @@ export class MobileAuthService {
         const hashOk = timingSafeEqual(expected, actual);
         if (hashOk) return true;
         // Stale hash after reset/sync — documented portal CEO or UAT matrix password only.
-        if (this.matchesPortalGroupCeoPassword(hashEmail, password)) return true;
+        if (this.matchesPortalGroupCeoPassword(hashEmail, password))
+          return true;
         if (matchesUatMobilePassword(hashEmail, password)) return true;
         return false;
       }
@@ -425,7 +447,8 @@ export class MobileAuthService {
     if (slug === HRM_PILOT_OPERATING_COMPANY_ID) {
       return HRM_COMPANY_UUID_BY_SLUG.holding;
     }
-    const mapped = HRM_COMPANY_UUID_BY_SLUG[slug as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+    const mapped =
+      HRM_COMPANY_UUID_BY_SLUG[slug as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
     if (mapped) {
       return mapped;
     }
@@ -437,10 +460,16 @@ export class MobileAuthService {
     );
   }
 
-  rowToMembership(row: EmployeeAuthRow, rolesHint?: string[]): MobileMembership {
+  rowToMembership(
+    row: EmployeeAuthRow,
+    rolesHint?: string[],
+  ): MobileMembership {
     const custom = row.custom_fields ?? {};
     const tenantId = this.resolveTenantId(row);
-    const companyLabel = mobileCompanyLabelVi(row.company_id, custom.company_display);
+    const companyLabel = mobileCompanyLabelVi(
+      row.company_id,
+      custom.company_display,
+    );
     const roles = rolesHint ?? this.deriveRoles(row.job_title_key);
     return {
       tenant_id: tenantId,
@@ -455,7 +484,8 @@ export class MobileAuthService {
       tenant_label: mobileTenantLabelVi(tenantId),
       role_label: mobileRoleLabelVi(roles),
       job_title_label: mobileJobTitleLabelVi(row.job_title_key),
-      is_primary: custom.is_primary_membership === 'true' || custom.is_primary === 'true',
+      is_primary:
+        custom.is_primary_membership === 'true' || custom.is_primary === 'true',
     };
   }
 
@@ -476,7 +506,10 @@ export class MobileAuthService {
       roles: input.roles,
     };
     const accessToken = signServiceJwt(base, ACCESS_TTL_SEC);
-    const refreshToken = signServiceJwt({ ...base, typ: 'refresh' }, REFRESH_TTL_SEC);
+    const refreshToken = signServiceJwt(
+      { ...base, typ: 'refresh' },
+      REFRESH_TTL_SEC,
+    );
     return {
       access_token: accessToken,
       refresh_token: refreshToken,
@@ -485,19 +518,28 @@ export class MobileAuthService {
     };
   }
 
-  private pickDefaultMembership(memberships: MobileMembership[]): MobileMembership {
+  private pickDefaultMembership(
+    memberships: MobileMembership[],
+  ): MobileMembership {
     return memberships.find((m) => m.is_primary) ?? memberships[0];
   }
 
-  private async buildLoginResponse(email: string, row: EmployeeAuthRow, allRows: EmployeeAuthRow[]) {
+  private async buildLoginResponse(
+    email: string,
+    row: EmployeeAuthRow,
+    allRows: EmployeeAuthRow[],
+  ) {
     const roles = await this.resolveRolesForEmployee(row);
     const memberships = await Promise.all(
       allRows.map(async (r) => {
-        const memberRoles = r.id === row.id ? roles : await this.resolveRolesForEmployee(r);
+        const memberRoles =
+          r.id === row.id ? roles : await this.resolveRolesForEmployee(r);
         return this.rowToMembership(r, memberRoles);
       }),
     );
-    const active = memberships.find((m) => m.employee_id === row.id) ?? this.rowToMembership(row, roles);
+    const active =
+      memberships.find((m) => m.employee_id === row.id) ??
+      this.rowToMembership(row, roles);
     const tokens = this.issueTokens({
       tenantId: active.tenant_id,
       companyId: active.company_id,
@@ -527,7 +569,10 @@ export class MobileAuthService {
     };
   }
 
-  private async ensureDocumentedMobileLoginRow(email: string, password: string): Promise<void> {
+  private async ensureDocumentedMobileLoginRow(
+    email: string,
+    password: string,
+  ): Promise<void> {
     if (this.matchesPortalGroupCeoPassword(email, password)) {
       await this.ensurePortalGroupCeoEmployeeRow(password);
       return;
@@ -538,7 +583,10 @@ export class MobileAuthService {
     }
   }
 
-  async login(body: MobileLoginDto, scopeHint?: { tenantId?: string; companyId?: string }) {
+  async login(
+    body: MobileLoginDto,
+    scopeHint?: { tenantId?: string; companyId?: string },
+  ) {
     const rawEmail = body.email.trim().toLowerCase();
     const email = resolveCanonicalUatLoginEmail(rawEmail);
     const uatSeq = parseUatMobileSeqFromLoginEmail(rawEmail);
@@ -546,19 +594,36 @@ export class MobileAuthService {
     if (uatSeq && matchesUatMobilePassword(rawEmail, body.password)) {
       await ensureUatMobileEmployeeRow(this.db, uatSeq, body.password);
     }
-    let rows = await this.fetchActiveEmployeesByEmail(email, rawEmail !== email ? rawEmail : undefined);
+    let rows = await this.fetchActiveEmployeesByEmail(
+      email,
+      rawEmail !== email ? rawEmail : undefined,
+    );
     if (!rows.length) {
       await this.ensureDocumentedMobileLoginRow(rawEmail, body.password);
-      rows = await this.fetchActiveEmployeesByEmail(email, rawEmail !== email ? rawEmail : undefined);
+      rows = await this.fetchActiveEmployeesByEmail(
+        email,
+        rawEmail !== email ? rawEmail : undefined,
+      );
     }
-    let verified = rows.filter((row) => this.verifyPassword(email, body.password, row));
+    let verified = rows.filter((row) =>
+      this.verifyPassword(email, body.password, row),
+    );
     if (!verified.length) {
       await this.ensureDocumentedMobileLoginRow(rawEmail, body.password);
-      rows = await this.fetchActiveEmployeesByEmail(email, rawEmail !== email ? rawEmail : undefined);
-      verified = rows.filter((row) => this.verifyPassword(email, body.password, row));
+      rows = await this.fetchActiveEmployeesByEmail(
+        email,
+        rawEmail !== email ? rawEmail : undefined,
+      );
+      verified = rows.filter((row) =>
+        this.verifyPassword(email, body.password, row),
+      );
     }
     if (!verified.length) {
-      throw new ApiException('HRM-AUTH-401', 'Email hoặc mật khẩu không đúng', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-401',
+        'Email hoặc mật khẩu không đúng',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     let selected = verified[0];
@@ -566,29 +631,38 @@ export class MobileAuthService {
       const match = verified.find((row) => {
         try {
           const m = this.rowToMembership(row);
-          return m.tenant_id === scopeHint.tenantId && m.company_id === scopeHint.companyId;
+          return (
+            m.tenant_id === scopeHint.tenantId &&
+            m.company_id === scopeHint.companyId
+          );
         } catch {
           return false;
         }
       });
       if (match) selected = match;
     } else if (verified.length > 1) {
-      selected = verified.find((row) => {
-        try {
-          return this.rowToMembership(row).is_primary;
-        } catch {
-          return false;
-        }
-      }) ?? verified[0];
+      selected =
+        verified.find((row) => {
+          try {
+            return this.rowToMembership(row).is_primary;
+          } catch {
+            return false;
+          }
+        }) ?? verified[0];
     }
 
     if (uatSeq && matchesUatMobilePassword(rawEmail, body.password)) {
-      await ensureUatMobilePilotTransactionData(this.db, uatSeq, body.password, {
-        id: selected.id,
-        company_id: selected.company_id,
-        employee_code: selected.employee_code,
-        full_name: selected.full_name,
-      });
+      await ensureUatMobilePilotTransactionData(
+        this.db,
+        uatSeq,
+        body.password,
+        {
+          id: selected.id,
+          company_id: selected.company_id,
+          employee_code: selected.employee_code,
+          full_name: selected.full_name,
+        },
+      );
     }
 
     return await this.buildLoginResponse(email, selected, verified);
@@ -606,7 +680,11 @@ export class MobileAuthService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-AUTH-404', 'Không tìm thấy phạm vi nhân viên', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-AUTH-404',
+        'Không tìm thấy phạm vi nhân viên',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const allRes = await this.db.query<EmployeeAuthRow>(
       `
@@ -620,17 +698,29 @@ export class MobileAuthService {
   }
 
   async refresh(body: MobileRefreshDto) {
-    const payload = getVerifiedInternalJwtPayload(`Bearer ${body.refresh_token.trim()}`);
+    const payload = getVerifiedInternalJwtPayload(
+      `Bearer ${body.refresh_token.trim()}`,
+    );
     if (!payload || payload.typ !== 'refresh') {
-      throw new ApiException('HRM-AUTH-401', 'Refresh token không hợp lệ', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-401',
+        'Refresh token không hợp lệ',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     const tenantId = String(payload.tenantId ?? payload.tenant_id ?? '');
     const companyId = String(payload.companyId ?? payload.company_id ?? '');
     const employeeId = String(payload.employee_id ?? '');
     let companyUuid = String(payload.company_uuid ?? '');
-    const email = String(payload.sub ?? '').trim().toLowerCase();
+    const email = String(payload.sub ?? '')
+      .trim()
+      .toLowerCase();
     if (!tenantId || !companyId || !employeeId) {
-      throw new ApiException('HRM-AUTH-401', 'Refresh token thiếu phạm vi', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-401',
+        'Refresh token thiếu phạm vi',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     let roles = Array.isArray(payload.roles)
       ? payload.roles.filter((r): r is string => typeof r === 'string')
@@ -657,6 +747,13 @@ export class MobileAuthService {
         { company_uuid: companyUuid },
       );
     }
-    return this.issueTokens({ tenantId, companyId, employeeId, email, roles, companyUuid });
+    return this.issueTokens({
+      tenantId,
+      companyId,
+      employeeId,
+      email,
+      roles,
+      companyUuid,
+    });
   }
 }

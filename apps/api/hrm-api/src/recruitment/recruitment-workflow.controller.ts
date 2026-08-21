@@ -43,7 +43,11 @@ export class RecruitmentWorkflowController {
 
   private assertInternal(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized internal access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized internal access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -83,7 +87,13 @@ export class RecruitmentWorkflowController {
     const stepKey = String(body.stepKey ?? '').trim();
     const taskType = String(body.taskType ?? body.task_type ?? '').trim();
     const reviewerUserId = String(body.reviewerUserId ?? '').trim();
-    if (!businessId || !workflowInstanceId || !stepKey || !taskType || !reviewerUserId) {
+    if (
+      !businessId ||
+      !workflowInstanceId ||
+      !stepKey ||
+      !taskType ||
+      !reviewerUserId
+    ) {
       throw new ApiException(
         'HRM-VAL-001',
         'businessId, workflowInstanceId, stepKey, taskType, reviewerUserId required',
@@ -111,7 +121,11 @@ export class RecruitmentWorkflowController {
         );
       }
       if (err instanceof Error && err.message === 'HRM-REC-CP-404') {
-        throw new ApiException('HRM-REC-CP-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          'HRM-REC-CP-404',
+          'Candidate not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       throw err;
     }
@@ -138,7 +152,12 @@ export class RecruitmentWorkflowController {
     const workflowInstanceId = String(body.workflowInstanceId ?? '').trim();
     const terminalStatus = body.terminalStatus;
     const reviewerUserId = String(body.reviewerUserId ?? '').trim();
-    if (!businessId || !workflowInstanceId || !terminalStatus || !reviewerUserId) {
+    if (
+      !businessId ||
+      !workflowInstanceId ||
+      !terminalStatus ||
+      !reviewerUserId
+    ) {
       throw new ApiException(
         'HRM-VAL-001',
         'businessId, workflowInstanceId, terminalStatus, reviewerUserId required',
@@ -162,16 +181,32 @@ export class RecruitmentWorkflowController {
         reviewerName: body.reviewerName,
         rejectedReason: body.rejectedReason,
       });
-      return ok(result, 'HRM-REC-WF-CALLBACK-200', 'Terminal callback processed');
+      return ok(
+        result,
+        'HRM-REC-WF-CALLBACK-200',
+        'Terminal callback processed',
+      );
     } catch (err) {
       if (err instanceof Error && err.message === 'HRM-REC-PLAN-404') {
-        throw new ApiException('HRM-REC-PLAN-404', 'Recruitment plan not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          'HRM-REC-PLAN-404',
+          'Recruitment plan not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       if (err instanceof Error && err.message === 'HRM-REC-404') {
-        throw new ApiException('HRM-REC-404', 'Job requisition not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          'HRM-REC-404',
+          'Job requisition not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       if (err instanceof Error && err.message === 'HRM-REC-CP-404') {
-        throw new ApiException('HRM-REC-CP-404', 'Candidate not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          'HRM-REC-CP-404',
+          'Candidate not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       throw err;
     }

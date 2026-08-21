@@ -116,9 +116,17 @@ export class SettingsTaxParamsService {
     tenantId: string | undefined,
     companyId: string,
   ) {
-    const tenant = (tenantId ?? this.resolveTenant()).trim().toLowerCase() || this.resolveTenant();
-    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(authorization, tenant, companyId);
-    const scope = resolveHrmListScope(authorization, companyId, { tenantId: tenant });
+    const tenant =
+      (tenantId ?? this.resolveTenant()).trim().toLowerCase() ||
+      this.resolveTenant();
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      tenant,
+      companyId,
+    );
+    const scope = resolveHrmListScope(authorization, companyId, {
+      tenantId: tenant,
+    });
     return { tenant, catalogCompanyId, scope };
   }
 
@@ -154,7 +162,9 @@ export class SettingsTaxParamsService {
         archivedAt: null,
         updatedAt: null,
         updatedBy: null,
-        meta: { cta: `Cấu hình ${settingKey} trong Cài đặt → Lương → Thông số thuế` },
+        meta: {
+          cta: `Cấu hình ${settingKey} trong Cài đặt → Lương → Thông số thuế`,
+        },
       };
     }
     return {
@@ -184,7 +194,10 @@ export class SettingsTaxParamsService {
   }
 
   /** VAL-SET-TAX-01/02 — typed shapes for known starters; open registry for other pay_tax_* . */
-  validatePayTaxValue(settingKey: string, raw: unknown): Record<string, unknown> {
+  validatePayTaxValue(
+    settingKey: string,
+    raw: unknown,
+  ): Record<string, unknown> {
     const key = settingKey.trim();
     if (!key.startsWith(PAY_TAX_KEY_PREFIX)) {
       throw new ApiException(
@@ -195,9 +208,14 @@ export class SettingsTaxParamsService {
     }
     const obj = this.normalizeValueObject(raw);
 
-    if (key === PAY_TAX_PERSONAL_DEDUCTION || key === PAY_TAX_DEPENDENT_DEDUCTION) {
+    if (
+      key === PAY_TAX_PERSONAL_DEDUCTION ||
+      key === PAY_TAX_DEPENDENT_DEDUCTION
+    ) {
       const amount = obj.amount ?? obj.Amount;
-      const currency = String(obj.currency ?? obj.Currency ?? 'VND').toUpperCase();
+      const currency = String(
+        obj.currency ?? obj.Currency ?? 'VND',
+      ).toUpperCase();
       if (!this.isFiniteNonNeg(amount)) {
         throw new ApiException(
           HRM_SET_TAX_400_SHAPE,
@@ -239,7 +257,10 @@ export class SettingsTaxParamsService {
         obj.applyDependentDeduction ??
         obj.apply_dependent_deduction ??
         obj.ApplyDependentDeduction;
-      if (typeof applyPersonal !== 'boolean' || typeof applyDependent !== 'boolean') {
+      if (
+        typeof applyPersonal !== 'boolean' ||
+        typeof applyDependent !== 'boolean'
+      ) {
         throw new ApiException(
           HRM_SET_TAX_400_SHAPE,
           'pay_tax_flags requires applyPersonalDeduction + applyDependentDeduction booleans',
@@ -294,7 +315,9 @@ export class SettingsTaxParamsService {
         values,
       );
       return {
-        items: res.rows.map((r) => this.display(r.company_id, r.setting_key, r)),
+        items: res.rows.map((r) =>
+          this.display(r.company_id, r.setting_key, r),
+        ),
       };
     }
 
@@ -329,10 +352,18 @@ export class SettingsTaxParamsService {
     await this.ensureSchema();
     const settingKey = String(body.settingKey ?? '').trim();
     if (!settingKey) {
-      throw new ApiException('HRM-VAL-001', 'settingKey is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'settingKey is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (body.value === undefined) {
-      throw new ApiException('HRM-VAL-001', 'value is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'value is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const value = this.validatePayTaxValue(settingKey, body.value);
     const { tenant, catalogCompanyId, scope } = this.resolvePartition(
@@ -363,7 +394,13 @@ export class SettingsTaxParamsService {
         `INSERT INTO public.hrm_company_settings
           (id, tenant_id, company_id, setting_key, value_json)
          VALUES ($1::uuid, $2, $3, $4, $5::jsonb);`,
-        [randomUUID(), tenant, catalogCompanyId, settingKey, JSON.stringify(value)],
+        [
+          randomUUID(),
+          tenant,
+          catalogCompanyId,
+          settingKey,
+          JSON.stringify(value),
+        ],
       );
     }
     void actor;

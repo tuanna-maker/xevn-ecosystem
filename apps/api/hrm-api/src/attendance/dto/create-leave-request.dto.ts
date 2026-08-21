@@ -33,7 +33,14 @@
  * What: Re-verify DTO slug ladder + TechSpec G-AT10-01 CLOSED; approve/reject scope normalize ở service
  */
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class CreateLeaveRequestDto {
   /** Operating slug (`holding`, member) or UUID text — persist via resolveHrmPersistCompanyIdText. */

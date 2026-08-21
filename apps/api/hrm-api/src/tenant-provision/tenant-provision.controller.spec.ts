@@ -11,7 +11,10 @@ import { HttpStatus } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { TenantProvisionController } from './tenant-provision.controller';
-import { TenantProvisionService, TenantProvisionedPayload } from './tenant-provision.service';
+import {
+  TenantProvisionService,
+  TenantProvisionedPayload,
+} from './tenant-provision.service';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { ok } from '../common/api-response';
 
@@ -20,7 +23,12 @@ jest.mock('../common/internal-auth', () => ({
 }));
 
 jest.mock('../common/api-response', () => ({
-  ok: jest.fn((data, code, message) => ({ data, code, message, success: true })),
+  ok: jest.fn((data, code, message) => ({
+    data,
+    code,
+    message,
+    success: true,
+  })),
 }));
 
 describe('TenantProvisionController', () => {
@@ -48,16 +56,21 @@ describe('TenantProvisionController', () => {
     isAuthorizedInternalRequestMock.mockReturnValue(true);
 
     okMock = ok as jest.Mock;
-    okMock.mockImplementation((data, code, message) => ({ data, code, message, success: true }));
+    okMock.mockImplementation((data, code, message) => ({
+      data,
+      code,
+      message,
+      success: true,
+    }));
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TenantProvisionController],
-      providers: [
-        { provide: TenantProvisionService, useValue: serviceMock },
-      ],
+      providers: [{ provide: TenantProvisionService, useValue: serviceMock }],
     }).compile();
 
-    controller = module.get<TenantProvisionController>(TenantProvisionController);
+    controller = module.get<TenantProvisionController>(
+      TenantProvisionController,
+    );
     loggerSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
     jest.spyOn(Logger.prototype, 'warn').mockImplementation();
     jest.spyOn(Logger.prototype, 'error').mockImplementation();
@@ -70,19 +83,36 @@ describe('TenantProvisionController', () => {
 
   describe('POST /internal/tenant-provisioned', () => {
     it('auth guard isAuthorizedInternalRequest is called with auth headers', async () => {
-      await controller.handleTenantProvisioned('Bearer token123', 'api-key-456', validPayload);
+      await controller.handleTenantProvisioned(
+        'Bearer token123',
+        'api-key-456',
+        validPayload,
+      );
 
-      expect(isAuthorizedInternalRequestMock).toHaveBeenCalledWith('Bearer token123', 'api-key-456');
+      expect(isAuthorizedInternalRequestMock).toHaveBeenCalledWith(
+        'Bearer token123',
+        'api-key-456',
+      );
     });
 
     it('delegates to service.handleTenantProvisioned with payload', async () => {
-      await controller.handleTenantProvisioned('Bearer token123', 'api-key-456', validPayload);
+      await controller.handleTenantProvisioned(
+        'Bearer token123',
+        'api-key-456',
+        validPayload,
+      );
 
-      expect(serviceMock.handleTenantProvisioned).toHaveBeenCalledWith(validPayload);
+      expect(serviceMock.handleTenantProvisioned).toHaveBeenCalledWith(
+        validPayload,
+      );
     });
 
     it('returns ok() envelope with correct structure', async () => {
-      const result = await controller.handleTenantProvisioned('Bearer token123', 'api-key-456', validPayload);
+      const result = await controller.handleTenantProvisioned(
+        'Bearer token123',
+        'api-key-456',
+        validPayload,
+      );
 
       expect(okMock).toHaveBeenCalledWith(
         { tenantId: 'test-tenant-001', seeded: true },
@@ -98,10 +128,16 @@ describe('TenantProvisionController', () => {
     });
 
     it('logs tenantId when request received', async () => {
-      await controller.handleTenantProvisioned('Bearer token123', 'api-key-456', validPayload);
+      await controller.handleTenantProvisioned(
+        'Bearer token123',
+        'api-key-456',
+        validPayload,
+      );
 
       expect(loggerSpy).toHaveBeenCalledWith(
-        expect.stringContaining('REST tenant-provisioned: tenantId=test-tenant-001'),
+        expect.stringContaining(
+          'REST tenant-provisioned: tenantId=test-tenant-001',
+        ),
       );
     });
 
@@ -109,7 +145,11 @@ describe('TenantProvisionController', () => {
       isAuthorizedInternalRequestMock.mockReturnValueOnce(false);
 
       try {
-        await controller.handleTenantProvisioned(undefined, undefined, validPayload);
+        await controller.handleTenantProvisioned(
+          undefined,
+          undefined,
+          validPayload,
+        );
       } catch (err) {
         expect(err).toBeInstanceOf(ApiException);
         expect(err.code).toBe('HRM-AUTH-001');
@@ -123,7 +163,11 @@ describe('TenantProvisionController', () => {
       isAuthorizedInternalRequestMock.mockReturnValueOnce(false);
 
       try {
-        await controller.handleTenantProvisioned('Bearer invalid', 'wrong-key', validPayload);
+        await controller.handleTenantProvisioned(
+          'Bearer invalid',
+          'wrong-key',
+          validPayload,
+        );
       } catch (err) {
         expect(err).toBeInstanceOf(ApiException);
         expect(err.code).toBe('HRM-AUTH-001');
@@ -136,7 +180,11 @@ describe('TenantProvisionController', () => {
       isAuthorizedInternalRequestMock.mockReturnValueOnce(false);
 
       try {
-        await controller.handleTenantProvisioned('Bearer token', 'key', validPayload);
+        await controller.handleTenantProvisioned(
+          'Bearer token',
+          'key',
+          validPayload,
+        );
       } catch (err) {
         expect(err).toBeInstanceOf(ApiException);
         expect(err.getStatus()).toBe(HttpStatus.UNAUTHORIZED);
@@ -149,7 +197,11 @@ describe('TenantProvisionController', () => {
       serviceMock.handleTenantProvisioned.mockRejectedValueOnce(dbError);
 
       await expect(
-        controller.handleTenantProvisioned('Bearer token123', 'api-key-456', validPayload),
+        controller.handleTenantProvisioned(
+          'Bearer token123',
+          'api-key-456',
+          validPayload,
+        ),
       ).rejects.toThrow(dbError);
     });
 
@@ -158,7 +210,11 @@ describe('TenantProvisionController', () => {
       serviceMock.handleTenantProvisioned.mockRejectedValueOnce(genericError);
 
       await expect(
-        controller.handleTenantProvisioned('Bearer token123', 'api-key-456', validPayload),
+        controller.handleTenantProvisioned(
+          'Bearer token123',
+          'api-key-456',
+          validPayload,
+        ),
       ).rejects.toThrow(genericError);
     });
 
@@ -168,9 +224,15 @@ describe('TenantProvisionController', () => {
         modules: ['logistics'],
       };
 
-      await controller.handleTenantProvisioned('Bearer token123', 'api-key-456', payloadNoHrm);
+      await controller.handleTenantProvisioned(
+        'Bearer token123',
+        'api-key-456',
+        payloadNoHrm,
+      );
 
-      expect(serviceMock.handleTenantProvisioned).toHaveBeenCalledWith(payloadNoHrm);
+      expect(serviceMock.handleTenantProvisioned).toHaveBeenCalledWith(
+        payloadNoHrm,
+      );
       expect(okMock).toHaveBeenCalledWith(
         { tenantId: 'test-tenant-001', seeded: true },
         'HRM-TP-200',
@@ -184,21 +246,41 @@ describe('TenantProvisionController', () => {
         modules: [],
       };
 
-      await controller.handleTenantProvisioned('Bearer token123', 'api-key-456', payloadEmpty);
+      await controller.handleTenantProvisioned(
+        'Bearer token123',
+        'api-key-456',
+        payloadEmpty,
+      );
 
-      expect(serviceMock.handleTenantProvisioned).toHaveBeenCalledWith(payloadEmpty);
+      expect(serviceMock.handleTenantProvisioned).toHaveBeenCalledWith(
+        payloadEmpty,
+      );
     });
 
     it('uses x-internal-api-key header when authorization header missing', async () => {
-      await controller.handleTenantProvisioned(undefined, 'api-key-only', validPayload);
+      await controller.handleTenantProvisioned(
+        undefined,
+        'api-key-only',
+        validPayload,
+      );
 
-      expect(isAuthorizedInternalRequestMock).toHaveBeenCalledWith(undefined, 'api-key-only');
+      expect(isAuthorizedInternalRequestMock).toHaveBeenCalledWith(
+        undefined,
+        'api-key-only',
+      );
     });
 
     it('uses authorization header when x-internal-api-key missing', async () => {
-      await controller.handleTenantProvisioned('Bearer token-only', undefined, validPayload);
+      await controller.handleTenantProvisioned(
+        'Bearer token-only',
+        undefined,
+        validPayload,
+      );
 
-      expect(isAuthorizedInternalRequestMock).toHaveBeenCalledWith('Bearer token-only', undefined);
+      expect(isAuthorizedInternalRequestMock).toHaveBeenCalledWith(
+        'Bearer token-only',
+        undefined,
+      );
     });
 
     it('accepts valid payload with all required fields', async () => {
@@ -211,9 +293,15 @@ describe('TenantProvisionController', () => {
         issuedBy: 'xbos-platform',
       };
 
-      await controller.handleTenantProvisioned('Bearer token123', 'api-key-456', fullPayload);
+      await controller.handleTenantProvisioned(
+        'Bearer token123',
+        'api-key-456',
+        fullPayload,
+      );
 
-      expect(serviceMock.handleTenantProvisioned).toHaveBeenCalledWith(fullPayload);
+      expect(serviceMock.handleTenantProvisioned).toHaveBeenCalledWith(
+        fullPayload,
+      );
     });
   });
 });

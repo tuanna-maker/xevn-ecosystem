@@ -37,8 +37,14 @@ export type SalaryComponentCatalogHit = {
   isActive: boolean;
 };
 
-function resolveConsumerCompanyIds(companyId: string, authorization?: string): string[] {
-  const scopeCompanyId = normalizePayrollListCompanyId(authorization, companyId);
+function resolveConsumerCompanyIds(
+  companyId: string,
+  authorization?: string,
+): string[] {
+  const scopeCompanyId = normalizePayrollListCompanyId(
+    authorization,
+    companyId,
+  );
   const scope = resolveHrmListScope(authorization, scopeCompanyId);
   return expandPayrollPeriodCompanyIds(scope);
 }
@@ -94,8 +100,13 @@ export async function assertComponentCodeInEffectiveCatalog(input: {
   if (activeCount === 0) {
     return null;
   }
-  const companyIds = resolveConsumerCompanyIds(input.companyId, input.authorization);
-  let row: { id: string; code: string; company_id: string; is_active: boolean } | undefined;
+  const companyIds = resolveConsumerCompanyIds(
+    input.companyId,
+    input.authorization,
+  );
+  let row:
+    | { id: string; code: string; company_id: string; is_active: boolean }
+    | undefined;
   try {
     const res = await input.query<{
       id: string;
@@ -161,8 +172,13 @@ export async function assertComponentIdInEffectiveCatalog(input: {
     input.companyId,
     input.authorization,
   );
-  const companyIds = resolveConsumerCompanyIds(input.companyId, input.authorization);
-  let row: { id: string; code: string; company_id: string; is_active: boolean } | undefined;
+  const companyIds = resolveConsumerCompanyIds(
+    input.companyId,
+    input.authorization,
+  );
+  let row:
+    | { id: string; code: string; company_id: string; is_active: boolean }
+    | undefined;
   try {
     const res = await input.query<{
       id: string;

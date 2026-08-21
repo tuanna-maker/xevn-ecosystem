@@ -25,14 +25,20 @@ describe('recruitment-plan-headcount (O1 normalize)', () => {
   });
 
   it('O1: plan approved + need_hire → lifecycle need_hire_approved', () => {
-    const cell = normalizeHeadcountCell({ need_hire: 3, month: 1 }, 1, { planApproved: true });
+    const cell = normalizeHeadcountCell({ need_hire: 3, month: 1 }, 1, {
+      planApproved: true,
+    });
     expect(cell.lifecycle_status).toBe('need_hire_approved');
   });
 
   it('DENY dual ns+dx SoT writers (HRM-HC-LEGACY-DUAL)', () => {
-    expect(() => assertNoLegacyDualSotWriters([{ ns: 1, dx: 2 }])).toThrow(ApiException);
+    expect(() => assertNoLegacyDualSotWriters([{ ns: 1, dx: 2 }])).toThrow(
+      ApiException,
+    );
     try {
-      assertNoLegacyDualSotWriters({ departments: [{ positions: [{ months: [{ ns: 1, dx: 1 }] }] }] });
+      assertNoLegacyDualSotWriters({
+        departments: [{ positions: [{ months: [{ ns: 1, dx: 1 }] }] }],
+      });
     } catch (e) {
       expect(e).toBeInstanceOf(ApiException);
       expect((e as ApiException).getResponse()).toEqual(
@@ -43,9 +49,12 @@ describe('recruitment-plan-headcount (O1 normalize)', () => {
 
   it('VAL: need_hire status with qty < 1 → HRM-HC-VAL-400', () => {
     expect(() =>
-      normalizeMonthsData([{ month: 1, cell_status: 'need_hire', need_hire: 0 }], {
-        requireTwelve: false,
-      }),
+      normalizeMonthsData(
+        [{ month: 1, cell_status: 'need_hire', need_hire: 0 }],
+        {
+          requireTwelve: false,
+        },
+      ),
     ).toThrow(ApiException);
   });
 

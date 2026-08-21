@@ -4,7 +4,15 @@
  * WorkItem: PO-HRM-JD-DYNAMIC-BE-01
  */
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsObject, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsObject,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class UpdateJdFieldDefDto {
   @IsOptional()

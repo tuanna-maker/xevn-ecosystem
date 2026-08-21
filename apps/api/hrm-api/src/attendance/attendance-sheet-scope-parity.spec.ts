@@ -22,6 +22,9 @@ import { AttOtTypeService } from './att-ot-type.service';
 import { AttOtCompTypeService } from './att-ot-comp-type.service';
 import { AttOtCompLeavePolicyService } from './att-ot-comp-leave-policy.service';
 import { AttSickLeaveFundOrderService } from './att-sick-leave-fund-order.service';
+import { AttShiftService } from './att-shift.service';
+import { AttRuleService } from './att-rule.service';
+import { AttScheduleService } from './att-schedule.service';
 
 const SHEET_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 
@@ -79,6 +82,9 @@ describe('ATT sheet scope parity (SP-ATT-SIGN-01..04)', () => {
         { provide: LeaveBalanceService, useValue: {} },
         { provide: AttActivateEnrollService, useValue: {} },
         { provide: AttHolidayCalendarService, useValue: {} },
+        { provide: AttShiftService, useValue: {} },
+        { provide: AttRuleService, useValue: {} },
+        { provide: AttScheduleService, useValue: {} },
         { provide: AttendanceRequestsService, useValue: {} },
         { provide: AttendanceOverviewService, useValue: {} },
         { provide: AttendanceSheetSignService, useValue: signService },
@@ -148,7 +154,9 @@ describe('ATT sheet scope parity (SP-ATT-SIGN-01..04)', () => {
     const token = memberCeoToken();
     const auth = `Bearer ${token}`;
 
-    await expect(svc.getAttendanceSheetById(SHEET_ID, 'main', auth)).rejects.toMatchObject({
+    await expect(
+      svc.getAttendanceSheetById(SHEET_ID, 'main', auth),
+    ).rejects.toMatchObject({
       code: 'HRM-AS-409',
     });
   });
@@ -184,7 +192,9 @@ describe('ATT sheet scope parity (SP-ATT-SIGN-01..04)', () => {
       });
     });
     const svc = new AttendanceSheetSignService({ query: queryMock } as never);
-    await expect(svc.listSignatures(SHEET_ID, 'main', auth)).rejects.toMatchObject({
+    await expect(
+      svc.listSignatures(SHEET_ID, 'main', auth),
+    ).rejects.toMatchObject({
       code: 'HRM-AS-409',
     });
   });
@@ -224,7 +234,11 @@ describe('assertAttendanceSheetHeaderInScope (unit)', () => {
     });
     const catalog = new AttendanceCatalogService({ query: queryMock } as never);
     const token = groupCeoToken();
-    const row = await catalog.assertAttendanceSheetHeaderInScope(SHEET_ID, 'main', `Bearer ${token}`);
+    const row = await catalog.assertAttendanceSheetHeaderInScope(
+      SHEET_ID,
+      'main',
+      `Bearer ${token}`,
+    );
     expect(row.company_id).toBe('holding');
   });
 });

@@ -23,7 +23,9 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
   let db: jest.Mocked<HrmDbService>;
 
   beforeEach(() => {
-    db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as jest.Mocked<HrmDbService>;
+    db = {
+      query: jest.fn().mockResolvedValue({ rows: [] }),
+    } as unknown as jest.Mocked<HrmDbService>;
     employees = {
       getEmployeeById: jest.fn().mockResolvedValue({
         id: '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
@@ -94,12 +96,25 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
             ],
           };
         }
-        if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_assets')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('SELECT company_id FROM public.employee_assets')
+        ) {
           return { rows: [{ company_id: 'holding' }] };
         }
-        if (typeof sql === 'string' && sql.includes('UPDATE public.employee_assets')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('UPDATE public.employee_assets')
+        ) {
           return {
-            rows: [{ id: ASSET_ID, employee_id: EMPLOYEE_ID, company_id: 'holding', asset_name: 'Laptop' }],
+            rows: [
+              {
+                id: ASSET_ID,
+                employee_id: EMPLOYEE_ID,
+                company_id: 'holding',
+                asset_name: 'Laptop',
+              },
+            ],
           };
         }
         return { rows: [] };
@@ -152,7 +167,9 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
           { asset_name: 'Laptop' },
           `Bearer ${token}`,
         ),
-      ).rejects.toThrow(expect.objectContaining<ApiException>({ code: 'HRM-EMP-PROFILE-409' }));
+      ).rejects.toThrow(
+        expect.objectContaining({ code: 'HRM-EMP-PROFILE-409' }),
+      );
 
       const updateCall = db.query.mock.calls.find(([sql]) =>
         String(sql).includes('UPDATE public.employee_assets'),
@@ -179,10 +196,16 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
             ],
           };
         }
-        if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_assets')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('SELECT company_id FROM public.employee_assets')
+        ) {
           return { rows: [{ company_id: 'holding' }] };
         }
-        if (typeof sql === 'string' && sql.includes('DELETE FROM public.employee_assets')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('DELETE FROM public.employee_assets')
+        ) {
           return { rows: [{ id: ASSET_ID }] };
         }
         return { rows: [] };
@@ -225,10 +248,18 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
       });
 
       await expect(
-        profile.deleteAsset(ASSET_ID, EMPLOYEE_ID, { company_id: 'main' }, `Bearer ${token}`, {
-          baWaiver: true,
-        }),
-      ).rejects.toThrow(expect.objectContaining<ApiException>({ code: 'HRM-EMP-PROFILE-409' }));
+        profile.deleteAsset(
+          ASSET_ID,
+          EMPLOYEE_ID,
+          { company_id: 'main' },
+          `Bearer ${token}`,
+          {
+            baWaiver: true,
+          },
+        ),
+      ).rejects.toThrow(
+        expect.objectContaining({ code: 'HRM-EMP-PROFILE-409' }),
+      );
 
       const deleteCall = db.query.mock.calls.find(([sql]) =>
         String(sql).includes('DELETE FROM public.employee_assets'),
@@ -244,20 +275,48 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
         if (typeof sql === 'string' && sql.includes('CREATE TABLE')) {
           return { rows: [] };
         }
-        if (typeof sql === 'string' && sql.includes('ALTER TABLE public.employee_assets')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('ALTER TABLE public.employee_assets')
+        ) {
           return { rows: [] };
         }
-        if (typeof sql === 'string' && sql.includes('INSERT INTO public.employee_skills')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('INSERT INTO public.employee_skills')
+        ) {
           return {
-            rows: [{ id: SKILL_ID, employee_id: EMPLOYEE_ID, company_id: 'holding', name: 'TypeScript', level: 50 }],
+            rows: [
+              {
+                id: SKILL_ID,
+                employee_id: EMPLOYEE_ID,
+                company_id: 'holding',
+                name: 'TypeScript',
+                level: 50,
+              },
+            ],
           };
         }
-        if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_skills')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('SELECT company_id FROM public.employee_skills')
+        ) {
           return { rows: [{ company_id: 'holding' }] };
         }
-        if (typeof sql === 'string' && sql.includes('UPDATE public.employee_skills')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('UPDATE public.employee_skills')
+        ) {
           return {
-            rows: [{ id: SKILL_ID, employee_id: EMPLOYEE_ID, company_id: 'holding', name: 'TypeScript', level: 90 }],
+            rows: [
+              {
+                id: SKILL_ID,
+                employee_id: EMPLOYEE_ID,
+                company_id: 'holding',
+                name: 'TypeScript',
+                level: 90,
+              },
+            ],
           };
         }
         return { rows: [] };
@@ -279,27 +338,44 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
 
       expect(created.name).toBe('TypeScript');
       expect(patched.level).toBe(90);
-      const updateCall = db.query.mock.calls.find(([sql]) => String(sql).includes('UPDATE public.employee_skills'));
+      const updateCall = db.query.mock.calls.find(([sql]) =>
+        String(sql).includes('UPDATE public.employee_skills'),
+      );
       expect(updateCall?.[1]).toEqual([SKILL_ID, EMPLOYEE_ID, 90]);
     });
 
     it('updateSkill accepts proficiency alias and persists to level column', async () => {
       const token = groupCeoToken();
       db.query.mockImplementation(async (sql: string) => {
-        if (typeof sql === 'string' && sql.includes('SELECT company_id FROM public.employee_skills')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('SELECT company_id FROM public.employee_skills')
+        ) {
           return { rows: [{ company_id: 'holding' }] };
         }
-        if (typeof sql === 'string' && sql.includes('UPDATE public.employee_skills')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('UPDATE public.employee_skills')
+        ) {
           return {
             rows: [
-              { id: SKILL_ID, employee_id: EMPLOYEE_ID, company_id: 'holding', level: 90, name: 'TypeScript' },
+              {
+                id: SKILL_ID,
+                employee_id: EMPLOYEE_ID,
+                company_id: 'holding',
+                level: 90,
+                name: 'TypeScript',
+              },
             ],
           };
         }
         if (typeof sql === 'string' && sql.includes('CREATE TABLE')) {
           return { rows: [] };
         }
-        if (typeof sql === 'string' && sql.includes('ALTER TABLE public.employee_assets')) {
+        if (
+          typeof sql === 'string' &&
+          sql.includes('ALTER TABLE public.employee_assets')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -314,7 +390,9 @@ describe('EmployeeProfileService (BR-360-SOURCE-01 / P1-EX-BE-02)', () => {
       );
 
       expect(row.level).toBe(90);
-      const updateCall = db.query.mock.calls.find(([sql]) => String(sql).includes('UPDATE public.employee_skills'));
+      const updateCall = db.query.mock.calls.find(([sql]) =>
+        String(sql).includes('UPDATE public.employee_skills'),
+      );
       expect(updateCall?.[1]).toEqual([SKILL_ID, EMPLOYEE_ID, 90]);
     });
   });

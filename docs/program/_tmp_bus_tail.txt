@@ -1,0 +1,80 @@
+﻿## 2026-08-04T16:23:01+07:00 | pm -> ALL | M3 EMP P0 mutate seats CLOSED
+- SCOPE/LIST/DETAIL/CREATE/IMPORT PASS Ă‚Â· await QA-RUNTIME-01 recover (already RE-DISPATCHED)
+- NOT Employees CLOSED Ă‚Â· NOT Attendance CLOSED
+
+## 2026-08-04T16:28:00+07:00 | qa -> pm | PO-MFD-M3-EMP-QA-RUNTIME-01 PASS_TO_PM
+- work_item_id: PO-MFD-M3-EMP-QA-RUNTIME-01
+- from_role: qa
+- to_role: pm
+- lane: execution
+- priority: P0
+- u65_zero_seed: true
+- hdsd_align: true
+- evidence_path: docs/qa/evidence/po-mfd-m3-emp-qa-runtime-01.md
+- runtime_json: docs/qa/evidence/_tmp-po-mfd-m3-emp-qa-runtime-01-browser-r2.json
+- matrix: docs/qa/professional/menu-fidelity/HRM-EMPLOYEES_FIDELITY_MATRIX.md
+- L0: qc:fe-be-health ALL PASS entry+exit
+- stamp: UNKNOWN=0 Ă‚Â· LIVE=25 Ă‚Â· PARTIAL=#9+#18 Ă‚Â· BROKEN=#19 EmployeeTraining stats.completed
+- must_keep: LIST/DETAIL/CREATE/IMPORT/SCOPE LIVE
+- NOT claimed: Employees CLOSED Ă‚Â· Attendance CLOSED Ă‚Â· uat_done Ă‚Â· soft-delete mutate Ă‚Â· import commit
+- residual_P0: PO-MFD-M3-EMP-TRAINING-FIX-01 Ă¢â€ â€™ dev-fe
+- ack_status: **PASS_TO_PM**
+- next_owner: pm
+- next_dispatch_prompt: PO-MFD-M3-EMP-TRAINING-FIX-01 (dev-fe) Guard EmployeeTraining stats.completed after GET Ă¢â‚¬Â¦/training 200; must_keep LIST/CREATE/DETAIL/IMPORT/SCOPE; READY_FOR_QA Ă¢â€ â€™ qa retest #19 LIVE; cĂ¡ÂºÂ¥m invent Employees CLOSED
+
+## 2026-08-04T16:28:00+07:00 | pm -> ALL | FIX SRS PDF sequenceDiagram scale/clip
+- _seq_diagram_pil.py v2: label above arrow Ă‚Â· wrap VI Ă‚Â· wider cols Ă‚Â· clear cache
+- PDF embed: stop hard 160mm crush
+- out: SRS_HRM_ENTERPRISE_KHACH.pdf ~697KB Ă‚Â· 70p Ă‚Â· 16 seq
+
+## 2026-08-04T16:30:00+07:00 | pm -> ALL | CLOSED PO-MFD-M3-EMP-QA-RUNTIME-01
+- evidence: docs/qa/evidence/po-mfd-m3-emp-qa-runtime-01.md
+- UNKNOWN=0 Ă‚Â· LIVE25 Ă‚Â· PARTIAL #9/#18 Ă‚Â· BROKEN #19 Training Ă‚Â· not EMP CLOSED
+## 2026-08-04T16:30:01+07:00 | pm -> dev-fe | DISPATCHED PO-MFD-M3-EMP-TRAINING-FIX-01
+- Guard EmployeeTraining stats.completed when stats undefined after GET training 200
+- must_keep LIST/CREATE/DETAIL/IMPORT/SCOPE Ă‚Â· not invent CLOSED
+- exit: READY_FOR_QA Ă‚Â· evidence docs/qa/evidence/po-mfd-m3-emp-training-fix-01.md
+
+## 2026-08-04T16:33:00+07:00 | dev-fe -> qa | READY_FOR_QA PO-MFD-M3-EMP-TRAINING-FIX-01
+- work_item_id: PO-MFD-M3-EMP-TRAINING-FIX-01
+- from_role: dev-fe
+- to_role: qa
+- ack_status: READY_FOR_QA
+- change_mode: FIX
+- Root cause: EmployeeTraining destructured `stats` but hook only exposed `getStats` ? TypeError after GET training 200
+- Fix: computeTrainingStats + EMPTY_TRAINING_STATS; UI `getStats?.() ?? EMPTY`; vitest 2/2
+- evidence_path: docs/qa/evidence/po-mfd-m3-emp-training-fix-01.md
+- must_keep: LIST #1-6 Â· CREATE #7 Â· DETAIL #10-12 Â· IMPORT #8 Â· SCOPE #28
+- next_owner: qa
+- next_dispatch: PO-MFD-M3-EMP-TRAINING-QA-01 retest matrix #19 LIVE (browser; U65; no seed)
+- Employees CLOSED: false
+
+## 2026-08-04T16:33:49+07:00 | qa -> pm | PO-MFD-M3-EMP-QA-RUNTIME-01 PASS_TO_PM
+- work_item_id: PO-MFD-M3-EMP-QA-RUNTIME-01
+- from_role: qa
+- to_role: pm
+- lane: execution
+- priority: P0
+- u65_zero_seed: true
+- hdsd_align: true
+- evidence_path: docs/qa/evidence/po-mfd-m3-emp-qa-runtime-01.md
+- runtime_json: docs/qa/evidence/_tmp-po-mfd-m3-emp-qa-runtime-01-browser.json
+- runtime_log: docs/qa/professional/menu-fidelity/HRM-EMPLOYEES_RUNTIME_LOG.md
+- matrix: docs/qa/professional/menu-fidelity/HRM-EMPLOYEES_FIDELITY_MATRIX.md
+- L0: qc:fe-be-health ALL PASS entry+exit
+- rollup: UNKNOWN=0 Ă‚Â· LIVE=25 Ă‚Â· PARTIAL=2 (#9 XuĂ¡ÂºÂ¥t Nest Ă‚Â· #18 Job) Ă‚Â· BROKEN=1 (#19 Training pageError .completed)
+- Network: bad=0 Ă‚Â· unexpected mutates=0 Ă‚Â· pageErrors=3 (Training only)
+- NOT claimed: Employees CLOSED Ă‚Â· Attendance CLOSED Ă‚Â· uat_done Ă‚Â· Face LIVE
+- residual_P0: PO-MFD-M3-EMP-TRAINING-FIX-01 Ă¢â€ â€™ dev-fe
+- ack_status: **PASS_TO_PM**
+- next_owner: pm
+- next_dispatch_prompt: PO-MFD-M3-EMP-TRAINING-FIX-01 (dev-fe) guard EmployeeTraining stats.completed; READY_FOR_QA; must_keep #1-18 #20-28; cĂ¡ÂºÂ¥m invent Employees CLOSED
+
+
+## 2026-08-04T16:36:16+07:00 | pm -> all | INTAKE PO-HRM-BP-MEET-DELTA-01
+- source: Desktop B-Minutes HTML (Speaker1=sponsor, Speaker2=customer)
+- extract: docs/client-delivery/hrm-enterprise-blueprint/MEETING_20260804_CUSTOMER_WANTS.md
+- turns: 348 Â· PAY unfinished in meeting
+- key_locks: Campaign OUT MVP; REC=JD+YCTD+Candidate+Report; dept headcount; C&B split; insurance timeline; shift ATT; timesheet SoT
+- DISPATCHED: PO-HRM-BP-MEET-SRS-01 ba-process Â· PO-HRM-BP-MEET-DB-01 ba-data Â· PO-HRM-BP-MEET-TECH-API-01 sa Â· PO-MFD-M3-EMP-TRAINING-QA-01 qa
+- NOT claim: customer signed Â· TechSpec confirmed Â· Employees/Attendance CLOSED

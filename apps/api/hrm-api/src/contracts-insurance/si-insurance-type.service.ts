@@ -235,7 +235,10 @@ export class SiInsuranceTypeService {
       .filter((x) => x.length > 0 && SI_INSURANCE_TYPE_KEY_FORMAT.test(x));
   }
 
-  private display(row: SiInsuranceTypeRow, source: SiInsuranceTypeSource): SiInsuranceTypeDisplay {
+  private display(
+    row: SiInsuranceTypeRow,
+    source: SiInsuranceTypeSource,
+  ): SiInsuranceTypeDisplay {
     return {
       id: row.id,
       companyId: row.company_id,
@@ -280,10 +283,23 @@ export class SiInsuranceTypeService {
     return s;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -334,7 +350,8 @@ export class SiInsuranceTypeService {
     if (String(item.status ?? '').toLowerCase() !== 'active') {
       return null;
     }
-    const meta = item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
+    const meta =
+      item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
     const nameVi = String(item.label ?? item.name ?? code).trim() || code;
     const now = new Date().toISOString();
     return {
@@ -344,7 +361,9 @@ export class SiInsuranceTypeService {
       nameVi,
       sortOrder: Number(meta?.sort_order ?? meta?.sortOrder ?? 100) || 100,
       isStatutory: Boolean(meta?.is_statutory ?? meta?.isStatutory),
-      eligibleForRateCfg: meta?.eligible_for_rate_cfg !== false && meta?.eligibleForRateCfg !== false,
+      eligibleForRateCfg:
+        meta?.eligible_for_rate_cfg !== false &&
+        meta?.eligibleForRateCfg !== false,
       requiresPolicy: Boolean(meta?.requires_policy ?? meta?.requiresPolicy),
       legacyAliasKeys: [],
       metadata: meta,
@@ -366,7 +385,11 @@ export class SiInsuranceTypeService {
     options?: { tenantId?: string },
   ): Promise<{ total: number; data: SiInsuranceTypeDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, options?.tenantId);
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      options?.tenantId,
+    );
     const siRows = await this.loadSiNativeRows(companyKeys, {
       includeArchived: false,
       status: 'active',
@@ -374,12 +397,16 @@ export class SiInsuranceTypeService {
     });
     const byKey = new Map<string, SiInsuranceTypeDisplay>();
     for (const row of siRows) {
-      byKey.set(row.insurance_type_key.toLowerCase(), this.display(row, 'si_native'));
+      byKey.set(
+        row.insurance_type_key.toLowerCase(),
+        this.display(row, 'si_native'),
+      );
     }
 
     const settings = this.resolveSettingsCatalogs();
     if (settings) {
-      const tenantId = options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
+      const tenantId =
+        options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
       const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
         authorization,
         tenantId,
@@ -418,7 +445,9 @@ export class SiInsuranceTypeService {
     }
 
     const data = [...byKey.values()].sort(
-      (a, b) => a.sortOrder - b.sortOrder || a.insuranceTypeKey.localeCompare(b.insuranceTypeKey),
+      (a, b) =>
+        a.sortOrder - b.sortOrder ||
+        a.insuranceTypeKey.localeCompare(b.insuranceTypeKey),
     );
     return { total: data.length, data };
   }
@@ -429,7 +458,9 @@ export class SiInsuranceTypeService {
   ): SiInsuranceTypeDisplay | undefined {
     const needle = rawKey.trim().toLowerCase();
     if (!needle) return undefined;
-    const direct = data.find((r) => r.insuranceTypeKey.toLowerCase() === needle);
+    const direct = data.find(
+      (r) => r.insuranceTypeKey.toLowerCase() === needle,
+    );
     if (direct) return direct;
     return data.find((r) =>
       r.legacyAliasKeys.some((a) => a.toLowerCase() === needle),
@@ -490,7 +521,8 @@ export class SiInsuranceTypeService {
     tenantId?: string,
   ): Promise<{ total: number; data: SiInsuranceTypeDisplay[] }> {
     await this.ensureSchema();
-    const includeGroupRef = String(query.include_group_ref ?? '').toLowerCase() === 'true';
+    const includeGroupRef =
+      String(query.include_group_ref ?? '').toLowerCase() === 'true';
     if (includeGroupRef) {
       return this.listEffective(
         { company_id: query.company_id, q: query.q },
@@ -498,8 +530,13 @@ export class SiInsuranceTypeService {
         { tenantId },
       );
     }
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     const rows = await this.loadSiNativeRows(companyKeys, {
       includeArchived,
       status: query.status,
@@ -527,7 +564,11 @@ export class SiInsuranceTypeService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_SI_INS_TYPE_404, 'Insurance type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_SI_INS_TYPE_404,
+        'Insurance type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_SI_INS_TYPE_404,
@@ -543,7 +584,11 @@ export class SiInsuranceTypeService {
     tenantId?: string,
   ): Promise<SiInsuranceTypeDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const insuranceTypeKey = this.assertKeyFormat(body.insuranceTypeKey);
     const nameVi = body.nameVi.trim();
     if (!nameVi) {
@@ -656,7 +701,11 @@ export class SiInsuranceTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_SI_INS_TYPE_404, 'Insurance type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_SI_INS_TYPE_404,
+        'Insurance type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_SI_INS_TYPE_404,
@@ -678,11 +727,13 @@ export class SiInsuranceTypeService {
     };
     if (body.nameVi !== undefined) assign('name_vi', body.nameVi.trim());
     if (body.sortOrder !== undefined) assign('sort_order', body.sortOrder);
-    if (body.isStatutory !== undefined) assign('is_statutory', body.isStatutory);
+    if (body.isStatutory !== undefined)
+      assign('is_statutory', body.isStatutory);
     if (body.eligibleForRateCfg !== undefined) {
       assign('eligible_for_rate_cfg', body.eligibleForRateCfg);
     }
-    if (body.requiresPolicy !== undefined) assign('requires_policy', body.requiresPolicy);
+    if (body.requiresPolicy !== undefined)
+      assign('requires_policy', body.requiresPolicy);
     if (body.legacyAliasKeys !== undefined) {
       values.push(
         body.legacyAliasKeys == null
@@ -699,7 +750,8 @@ export class SiInsuranceTypeService {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertStatus(body.status));
 
     if (!sets.length) {
       return this.display(row, 'si_native');
@@ -731,7 +783,11 @@ export class SiInsuranceTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_SI_INS_TYPE_404, 'Insurance type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_SI_INS_TYPE_404,
+        'Insurance type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_SI_INS_TYPE_404,

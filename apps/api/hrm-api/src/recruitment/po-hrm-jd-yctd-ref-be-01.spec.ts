@@ -62,7 +62,9 @@ function templateRow(overrides: Record<string, unknown> = {}) {
 describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
   describe('alias helper', () => {
     it('UT-YCTD-JD-10: job_description_id only → physical id; ambiguous → ALIAS', () => {
-      expect(resolveYctdJdTemplateId({ job_description_id: ACTIVE_ID })).toBe(ACTIVE_ID);
+      expect(resolveYctdJdTemplateId({ job_description_id: ACTIVE_ID })).toBe(
+        ACTIVE_ID,
+      );
       try {
         resolveYctdJdTemplateId({
           job_template_id: ACTIVE_ID,
@@ -80,16 +82,28 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
       const db = {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
-          if (s.includes('CREATE') || s.includes('ALTER') || s.includes('CREATE INDEX')) {
+          if (
+            s.includes('CREATE') ||
+            s.includes('ALTER') ||
+            s.includes('CREATE INDEX')
+          ) {
             return { rows: [] };
           }
-          if (s.includes('FROM public.job_description_templates') && s.includes("status = 'active'") && s.includes('is_active = TRUE')) {
+          if (
+            s.includes('FROM public.job_description_templates') &&
+            s.includes("status = 'active'") &&
+            s.includes('is_active = TRUE')
+          ) {
             expect(s).toContain("status = 'active'");
             expect(s).toContain('is_active = TRUE');
             expect(s).not.toContain('values_json');
             return {
               rows: [
-                templateRow({ id: ACTIVE_ID, is_active: true, status: 'active' }),
+                templateRow({
+                  id: ACTIVE_ID,
+                  is_active: true,
+                  status: 'active',
+                }),
               ],
             };
           }
@@ -97,9 +111,13 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
         }),
       } as unknown as HrmDbService;
       const catalog = new RecruitmentCatalogService(db, mockBridge() as never);
-      const result = await catalog.listJobDescriptionTemplates('main', groupCeoToken(), {
-        bindable: 'true',
-      });
+      const result = await catalog.listJobDescriptionTemplates(
+        'main',
+        groupCeoToken(),
+        {
+          bindable: 'true',
+        },
+      );
       expect(result.items).toHaveLength(1);
       expect(result.items?.[0]?.id).toBe(ACTIVE_ID);
       expect(result.data[0]).not.toHaveProperty('values_json');
@@ -110,14 +128,19 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (s.includes('CREATE') || s.includes('ALTER')) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates')) return { rows: [] };
+          if (s.includes('FROM public.job_description_templates'))
+            return { rows: [] };
           return { rows: [] };
         }),
       } as unknown as HrmDbService;
       const catalog = new RecruitmentCatalogService(db, mockBridge() as never);
-      const result = await catalog.listJobDescriptionTemplates('holding', groupCeoToken(), {
-        for: 'yctd',
-      });
+      const result = await catalog.listJobDescriptionTemplates(
+        'holding',
+        groupCeoToken(),
+        {
+          for: 'yctd',
+        },
+      );
       expect(result.items).toEqual([]);
       expect(result.total).toBe(0);
     });
@@ -129,9 +152,18 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (s.includes('CREATE') || s.includes('ALTER')) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates') && s.includes('id = $1')) {
+          if (
+            s.includes('FROM public.job_description_templates') &&
+            s.includes('id = $1')
+          ) {
             return {
-              rows: [templateRow({ id: RETIRED_ID, is_active: false, code: 'JD-OLD' })],
+              rows: [
+                templateRow({
+                  id: RETIRED_ID,
+                  is_active: false,
+                  code: 'JD-OLD',
+                }),
+              ],
             };
           }
           return { rows: [] };
@@ -140,7 +172,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
       const catalog = new RecruitmentCatalogService(db, mockBridge() as never);
       await expect(
         catalog.getYctdJdPreview(RETIRED_ID, 'main', groupCeoToken()),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_STATUS });
+      ).rejects.toMatchObject({ code: HRM_JD_YCTD_STATUS });
 
       const service = new RecruitmentService(db, mockBridge() as never);
       await expect(
@@ -155,7 +187,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
           },
           groupCeoToken(),
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_STATUS });
+      ).rejects.toMatchObject({ code: HRM_JD_YCTD_STATUS });
     });
 
     it('UT-YCTD-JD-04: missing both alias fields → REQUIRED', async () => {
@@ -174,7 +206,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
           },
           groupCeoToken(),
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_REQUIRED });
+      ).rejects.toMatchObject({ code: HRM_JD_YCTD_REQUIRED });
     });
 
     it('UT-YCTD-JD-05: unknown template → NOT-FOUND', async () => {
@@ -182,7 +214,8 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (s.includes('CREATE') || s.includes('ALTER')) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates')) return { rows: [] };
+          if (s.includes('FROM public.job_description_templates'))
+            return { rows: [] };
           return { rows: [] };
         }),
       } as unknown as HrmDbService;
@@ -199,7 +232,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
           },
           groupCeoToken(),
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_NOT_FOUND });
+      ).rejects.toMatchObject({ code: HRM_JD_YCTD_NOT_FOUND });
     });
 
     it('UT-YCTD-JD-06: active preview returns thin YctdJdPreview (no values_json)', async () => {
@@ -214,7 +247,11 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
         }),
       } as unknown as HrmDbService;
       const catalog = new RecruitmentCatalogService(db, mockBridge() as never);
-      const preview = await catalog.getYctdJdPreview(ACTIVE_ID, 'main', groupCeoToken());
+      const preview = await catalog.getYctdJdPreview(
+        ACTIVE_ID,
+        'main',
+        groupCeoToken(),
+      );
       expect(preview).toMatchObject({
         job_template_id: ACTIVE_ID,
         job_description_id: ACTIVE_ID,
@@ -235,10 +272,17 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           sqlLog.push(s);
-          if (s.includes('CREATE') || s.includes('ALTER') || s.includes('DO $$')) {
+          if (
+            s.includes('CREATE') ||
+            s.includes('ALTER') ||
+            s.includes('DO $$')
+          ) {
             return { rows: [] };
           }
-          if (s.includes('FROM public.job_description_templates') && s.includes('id = $1')) {
+          if (
+            s.includes('FROM public.job_description_templates') &&
+            s.includes('id = $1')
+          ) {
             return { rows: [templateRow()] };
           }
           if (s.includes('INSERT INTO public.job_requisitions')) {
@@ -284,7 +328,9 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
       expect(created.jd_code).toBe('JD-DRV-01');
       expect(created.jd_title).toBe('Lái xe tuyến');
       expect(sqlLog.some((s) => s.includes('job_postings'))).toBe(false);
-      expect(sqlLog.some((s) => s.includes('INSERT INTO public.job_requisitions'))).toBe(true);
+      expect(
+        sqlLog.some((s) => s.includes('INSERT INTO public.job_requisitions')),
+      ).toBe(true);
     });
 
     it('UT-YCTD-JD-08: list + get expose jd_code/jd_title + alias', async () => {
@@ -308,11 +354,19 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
       const db = {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
-          if (s.includes('CREATE') || s.includes('ALTER') || s.includes('DO $$')) return { rows: [] };
+          if (
+            s.includes('CREATE') ||
+            s.includes('ALTER') ||
+            s.includes('DO $$')
+          )
+            return { rows: [] };
           if (s.includes('COUNT(*)') && s.includes('job_requisitions')) {
             return { rows: [{ total: '1' }] };
           }
-          if (s.includes('FROM public.job_requisitions r') && s.includes('LEFT JOIN')) {
+          if (
+            s.includes('FROM public.job_requisitions r') &&
+            s.includes('LEFT JOIN')
+          ) {
             return { rows: [row] };
           }
           return { rows: [] };
@@ -345,35 +399,42 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
 
     it('UT-YCTD-JD-10: create with job_description_id only persists physical FK', async () => {
       const db = {
-        query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-          const s = String(sql);
-          if (s.includes('CREATE') || s.includes('ALTER') || s.includes('DO $$')) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates')) {
-            return { rows: [templateRow()] };
-          }
-          if (s.includes('INSERT INTO public.job_requisitions')) {
-            expect(params?.[8]).toBe(ACTIVE_ID);
-            return {
-              rows: [
-                {
-                  id: REQ_ID,
-                  company_id: 'holding',
-                  title: 'YCTD',
-                  department: 'Ops',
-                  employment_type: 'full_time',
-                  headcount: 1,
-                  status: 'open',
-                  job_description: 'Mô tả ngắn JD',
-                  requirements: 'GPL B2',
-                  job_template_id: ACTIVE_ID,
-                  created_at: '2026-08-06T00:00:00.000Z',
-                  updated_at: '2026-08-06T00:00:00.000Z',
-                },
-              ],
-            };
-          }
-          return { rows: [] };
-        }),
+        query: jest
+          .fn()
+          .mockImplementation(async (sql: string, params?: unknown[]) => {
+            const s = String(sql);
+            if (
+              s.includes('CREATE') ||
+              s.includes('ALTER') ||
+              s.includes('DO $$')
+            )
+              return { rows: [] };
+            if (s.includes('FROM public.job_description_templates')) {
+              return { rows: [templateRow()] };
+            }
+            if (s.includes('INSERT INTO public.job_requisitions')) {
+              expect(params?.[8]).toBe(ACTIVE_ID);
+              return {
+                rows: [
+                  {
+                    id: REQ_ID,
+                    company_id: 'holding',
+                    title: 'YCTD',
+                    department: 'Ops',
+                    employment_type: 'full_time',
+                    headcount: 1,
+                    status: 'open',
+                    job_description: 'Mô tả ngắn JD',
+                    requirements: 'GPL B2',
+                    job_template_id: ACTIVE_ID,
+                    created_at: '2026-08-06T00:00:00.000Z',
+                    updated_at: '2026-08-06T00:00:00.000Z',
+                  },
+                ],
+              };
+            }
+            return { rows: [] };
+          }),
       } as unknown as HrmDbService;
       const service = new RecruitmentService(db, mockBridge() as never);
       const created = await service.createJobRequisition(
@@ -397,53 +458,77 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
       const otherActive = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
       let requisitionStatus = 'draft';
       const db = {
-        query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-          const s = String(sql);
-          if (s.includes('CREATE') || s.includes('ALTER') || s.includes('DO $$')) return { rows: [] };
-          if (s.includes('FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1')) {
-            return {
-              rows: [
-                {
-                  company_id: 'holding',
-                  status: requisitionStatus,
-                  workflow_instance_id: null,
-                  job_template_id: ACTIVE_ID,
-                  job_description: null,
-                  requirements: null,
-                },
-              ],
-            };
-          }
-          if (s.includes('FROM public.job_description_templates') && s.includes('id = $1')) {
-            const idParam = String(params?.[0] ?? '');
-            if (idParam === RETIRED_ID) {
-              return { rows: [templateRow({ id: RETIRED_ID, is_active: false })] };
+        query: jest
+          .fn()
+          .mockImplementation(async (sql: string, params?: unknown[]) => {
+            const s = String(sql);
+            if (
+              s.includes('CREATE') ||
+              s.includes('ALTER') ||
+              s.includes('DO $$')
+            )
+              return { rows: [] };
+            if (
+              s.includes(
+                'FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1',
+              )
+            ) {
+              return {
+                rows: [
+                  {
+                    company_id: 'holding',
+                    status: requisitionStatus,
+                    workflow_instance_id: null,
+                    job_template_id: ACTIVE_ID,
+                    job_description: null,
+                    requirements: null,
+                  },
+                ],
+              };
             }
-            return { rows: [templateRow({ id: otherActive, code: 'JD-NEW', title: 'JD mới' })] };
-          }
-          if (s.includes('UPDATE public.job_requisitions')) {
-            return {
-              rows: [
-                {
-                  id: REQ_ID,
-                  company_id: 'holding',
-                  title: 'YCTD',
-                  department: 'Ops',
-                  employment_type: 'full_time',
-                  headcount: 1,
-                  status: 'draft',
-                  job_description: 'x',
-                  requirements: null,
-                  job_template_id: otherActive,
-                  workflow_instance_id: null,
-                  created_at: '2026-08-06T00:00:00.000Z',
-                  updated_at: '2026-08-06T00:00:00.000Z',
-                },
-              ],
-            };
-          }
-          return { rows: [] };
-        }),
+            if (
+              s.includes('FROM public.job_description_templates') &&
+              s.includes('id = $1')
+            ) {
+              const idParam = String(params?.[0] ?? '');
+              if (idParam === RETIRED_ID) {
+                return {
+                  rows: [templateRow({ id: RETIRED_ID, is_active: false })],
+                };
+              }
+              return {
+                rows: [
+                  templateRow({
+                    id: otherActive,
+                    code: 'JD-NEW',
+                    title: 'JD mới',
+                  }),
+                ],
+              };
+            }
+            if (s.includes('UPDATE public.job_requisitions')) {
+              return {
+                rows: [
+                  {
+                    id: REQ_ID,
+                    company_id: 'holding',
+                    title: 'YCTD',
+                    department: 'Ops',
+                    employment_type: 'full_time',
+                    headcount: 1,
+                    status: 'draft',
+                    job_description: 'x',
+                    requirements: null,
+                    job_template_id: otherActive,
+                    workflow_instance_id: null,
+                    created_at: '2026-08-06T00:00:00.000Z',
+                    updated_at: '2026-08-06T00:00:00.000Z',
+                  },
+                ],
+              };
+            }
+            return { rows: [] };
+          }),
       } as unknown as HrmDbService;
       const service = new RecruitmentService(db, mockBridge() as never);
       const ok = await service.updateJobRequisition(
@@ -462,7 +547,7 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
           { company_id: 'main' },
           groupCeoToken(),
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_STATUS });
+      ).rejects.toMatchObject({ code: HRM_JD_YCTD_STATUS });
 
       requisitionStatus = 'approved';
       await expect(
@@ -472,15 +557,25 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
           { company_id: 'main' },
           groupCeoToken(),
         ),
-      ).rejects.toMatchObject<ApiException>({ code: HRM_JD_YCTD_REBIND_LOCKED });
+      ).rejects.toMatchObject({
+        code: HRM_JD_YCTD_REBIND_LOCKED,
+      });
     });
 
     it('UT-YCTD-JD-12: after template retire, GET YCTD still returns ref (no CASCADE null)', async () => {
       const db = {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
-          if (s.includes('CREATE') || s.includes('ALTER') || s.includes('DO $$')) return { rows: [] };
-          if (s.includes('FROM public.job_requisitions r') && s.includes('LEFT JOIN')) {
+          if (
+            s.includes('CREATE') ||
+            s.includes('ALTER') ||
+            s.includes('DO $$')
+          )
+            return { rows: [] };
+          if (
+            s.includes('FROM public.job_requisitions r') &&
+            s.includes('LEFT JOIN')
+          ) {
             return {
               rows: [
                 {
@@ -525,11 +620,17 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (s.includes('CREATE') || s.includes('ALTER')) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates') && s.includes('ORDER BY')) {
+          if (
+            s.includes('FROM public.job_description_templates') &&
+            s.includes('ORDER BY')
+          ) {
             expect(s).toMatch(/company_id/);
             return { rows: [templateRow({ company_id: 'holding' })] };
           }
-          if (s.includes('FROM public.job_description_templates') && s.includes('id = $1')) {
+          if (
+            s.includes('FROM public.job_description_templates') &&
+            s.includes('id = $1')
+          ) {
             expect(s).toMatch(/company_id/);
             return { rows: [templateRow({ company_id: 'holding' })] };
           }
@@ -537,11 +638,19 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
         }),
       } as unknown as HrmDbService;
       const catalog = new RecruitmentCatalogService(db, mockBridge() as never);
-      const list = await catalog.listJobDescriptionTemplates('main', groupCeoToken(), {
-        bindable: 'true',
-      });
+      const list = await catalog.listJobDescriptionTemplates(
+        'main',
+        groupCeoToken(),
+        {
+          bindable: 'true',
+        },
+      );
       expect(list.items?.[0]?.id).toBe(ACTIVE_ID);
-      const preview = await catalog.getYctdJdPreview(ACTIVE_ID, 'main', groupCeoToken());
+      const preview = await catalog.getYctdJdPreview(
+        ACTIVE_ID,
+        'main',
+        groupCeoToken(),
+      );
       expect(preview.job_template_id).toBe(ACTIVE_ID);
     });
 
@@ -566,9 +675,17 @@ describe('PO-HRM-JD-YCTD-REF-BE-01', () => {
       const db = {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
-          if (s.includes('CREATE') || s.includes('ALTER') || s.includes('DO $$')) return { rows: [] };
+          if (
+            s.includes('CREATE') ||
+            s.includes('ALTER') ||
+            s.includes('DO $$')
+          )
+            return { rows: [] };
           if (s.includes('COUNT(*)')) return { rows: [{ total: '1' }] };
-          if (s.includes('FROM public.job_requisitions r') && s.includes('LEFT JOIN')) {
+          if (
+            s.includes('FROM public.job_requisitions r') &&
+            s.includes('LEFT JOIN')
+          ) {
             expect(s).toMatch(/r\.company_id/);
             return { rows: [row] };
           }

@@ -110,6 +110,8 @@ export class AttOtTypeService {
         default_coeff NUMERIC(6,2) NOT NULL DEFAULT 1,
         sort_order INT NOT NULL DEFAULT 100,
         color TEXT NULL,
+        is_night_shift BOOLEAN NOT NULL DEFAULT FALSE,
+        description TEXT NULL,
         metadata_json JSONB NULL,
         status TEXT NOT NULL DEFAULT 'active',
         archived_at TIMESTAMPTZ NULL,
@@ -177,6 +179,11 @@ export class AttOtTypeService {
     `);
     // FORBIDDEN: never ADD CHECK code IN ('weekday','weekend','holiday')
     // U65: optional starter upsert omitted — empty catalog is valid.
+    await this.db.query(`
+      ALTER TABLE public.att_ot_type
+      ADD COLUMN IF NOT EXISTS is_night_shift BOOLEAN NOT NULL DEFAULT FALSE,
+      ADD COLUMN IF NOT EXISTS description TEXT NULL;
+    `);
     this.schemaReady = true;
   }
 
@@ -203,7 +210,10 @@ export class AttOtTypeService {
     return Number.isFinite(n) ? n : 1;
   }
 
-  private display(row: AttOtTypeRow, source: AttOtTypeSource = 'att_native'): AttOtTypeDisplay {
+  private display(
+    row: AttOtTypeRow,
+    source: AttOtTypeSource = 'att_native',
+  ): AttOtTypeDisplay {
     const coeff = this.toCoeff(row.default_coeff);
     return {
       id: row.id,
@@ -260,10 +270,23 @@ export class AttOtTypeService {
     return raw;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -368,7 +391,11 @@ export class AttOtTypeService {
     tenantId?: string,
   ): Promise<{ total: number; data: AttOtTypeDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
     const includeInactive =
       String(query.include_inactive ?? '').toLowerCase() === 'true' ||
       String(query.include_inactive ?? '') === '1' ||
@@ -400,7 +427,11 @@ export class AttOtTypeService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_OT_404, 'OT type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_OT_404,
+        'OT type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_OT_404,
@@ -416,16 +447,27 @@ export class AttOtTypeService {
     tenantId?: string,
   ): Promise<AttOtTypeDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const code = this.assertKeyFormat(body.code);
     const nameVi = body.nameVi.trim();
     if (!nameVi || nameVi.length > 128) {
-      throw new ApiException(HRM_ATT_OT_VAL, 'nameVi is required (1..128)', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_ATT_OT_VAL,
+        'nameVi is required (1..128)',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const defaultCoeff =
-      body.defaultCoeff !== undefined ? this.assertCoeff(Number(body.defaultCoeff)) : 1;
+      body.defaultCoeff !== undefined
+        ? this.assertCoeff(Number(body.defaultCoeff))
+        : 1;
     const status = body.status ? this.assertStatus(body.status) : 'active';
-    const metadataJson = body.metadata != null ? JSON.stringify(body.metadata) : null;
+    const metadataJson =
+      body.metadata != null ? JSON.stringify(body.metadata) : null;
     const sortOrder = body.sortOrder ?? 100;
     const nameEn = body.nameEn?.trim() || null;
     const color = body.color?.trim() || null;
@@ -451,7 +493,16 @@ export class AttOtTypeService {
            updated_at = NOW()
          WHERE id = $1::uuid
          RETURNING ${ROW_SELECT};`,
-        [hit.id, nameVi, nameEn, defaultCoeff, sortOrder, color, metadataJson, status],
+        [
+          hit.id,
+          nameVi,
+          nameEn,
+          defaultCoeff,
+          sortOrder,
+          color,
+          metadataJson,
+          status,
+        ],
       );
       return this.display(updated.rows[0]);
     }
@@ -507,7 +558,11 @@ export class AttOtTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_OT_404, 'OT type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_OT_404,
+        'OT type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_OT_404,
@@ -530,25 +585,36 @@ export class AttOtTypeService {
     if (body.nameVi !== undefined) {
       const nameVi = body.nameVi.trim();
       if (!nameVi || nameVi.length > 128) {
-        throw new ApiException(HRM_ATT_OT_VAL, 'nameVi is required (1..128)', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          HRM_ATT_OT_VAL,
+          'nameVi is required (1..128)',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       assign('name_vi', nameVi);
     }
     if (body.nameEn !== undefined) {
-      assign('name_en', body.nameEn == null ? null : String(body.nameEn).trim() || null);
+      assign(
+        'name_en',
+        body.nameEn == null ? null : String(body.nameEn).trim() || null,
+      );
     }
     if (body.defaultCoeff !== undefined) {
       assign('default_coeff', this.assertCoeff(Number(body.defaultCoeff)));
     }
     if (body.sortOrder !== undefined) assign('sort_order', body.sortOrder);
     if (body.color !== undefined) {
-      assign('color', body.color == null ? null : String(body.color).trim() || null);
+      assign(
+        'color',
+        body.color == null ? null : String(body.color).trim() || null,
+      );
     }
     if (body.metadata !== undefined) {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertStatus(body.status));
 
     if (!sets.length) {
       return this.display(row);
@@ -579,7 +645,11 @@ export class AttOtTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_OT_404, 'OT type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_OT_404,
+        'OT type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_OT_404,

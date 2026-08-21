@@ -24,7 +24,9 @@
 import type { HrmDbService } from '../db/hrm-db.service';
 
 /** Logical att_timesheet_header AS-IS table name in Nest runtime. */
-export async function ensureAttendanceSheetSchema(db: HrmDbService): Promise<void> {
+export async function ensureAttendanceSheetSchema(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     CREATE TABLE IF NOT EXISTS public.attendance_sheets (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -59,7 +61,9 @@ export async function ensureAttendanceSheetSchema(db: HrmDbService): Promise<voi
  * Physical PAY hours grain — Nest name must be exact `att_timesheet_line` (probe hard-coded).
  * Writer: ATT AGG only. Reader: PAY bag when header closed AND line_locked.
  */
-export async function ensureAttTimesheetLineSchema(db: HrmDbService): Promise<void> {
+export async function ensureAttTimesheetLineSchema(
+  db: HrmDbService,
+): Promise<void> {
   await ensureAttendanceSheetSchema(db);
   await db.query(`
     CREATE TABLE IF NOT EXISTS public.att_timesheet_line (

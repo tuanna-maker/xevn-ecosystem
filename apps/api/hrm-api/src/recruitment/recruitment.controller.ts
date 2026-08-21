@@ -100,11 +100,29 @@
  * · mint HRM-REC-HIRE-200/201 · RETAIN APP-02 sole hired-outcome · DENY Nest /rec · PAY · seed
  * change_mode: ADD · UC-BP-REC-07 · API-01 CONFIRMED · DATA-01 · BA O1–O12
  */
-import { Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Res,
+} from '@nestjs/common';
 import type { Response } from 'express';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
-import { isAuthorizedInternalRequest, resolveAuthorizationHeader } from '../common/internal-auth';
+import {
+  isAuthorizedInternalRequest,
+  resolveAuthorizationHeader,
+} from '../common/internal-auth';
 import { toHrmListScopeContext } from '../common/hrm-list-scope-context';
 import { resolveScopeContext } from '../common/scope-context';
 import { CompareCandidatesQueryDto } from './dto/compare-candidates.query.dto';
@@ -174,7 +192,11 @@ export class RecruitmentController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized recruitment access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized recruitment access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -201,7 +223,9 @@ export class RecruitmentController {
         authHeader,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, HRM_REC_DASH_200, 'Recruitment dashboard loaded'));
+      .then((data) =>
+        ok(data, HRM_REC_DASH_200, 'Recruitment dashboard loaded'),
+      );
   }
 
   /**
@@ -226,7 +250,9 @@ export class RecruitmentController {
         authHeader,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, HRM_REC_DASH_200, 'Recruitment dashboard YCTD drill loaded'));
+      .then((data) =>
+        ok(data, HRM_REC_DASH_200, 'Recruitment dashboard YCTD drill loaded'),
+      );
   }
 
   /** VAL-14 — GET only on dashboard routes. */
@@ -255,10 +281,15 @@ export class RecruitmentController {
     @Query() query: ListEffectiveRecPipelineStagesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.recPipelineStages
       .listEffective(query, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-REC-STG-200', 'Effective pipeline stages listed'));
+      .then((data) =>
+        ok(data, 'HRM-REC-STG-200', 'Effective pipeline stages listed'),
+      );
   }
 
   /** F-REC-CAT-STG-01 list */
@@ -270,7 +301,10 @@ export class RecruitmentController {
     @Query() query: ListRecPipelineStagesQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.recPipelineStages
       .listStages(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-REC-STG-200', 'Pipeline stages listed'));
@@ -316,7 +350,10 @@ export class RecruitmentController {
     @Query() query: GetRecPipelineStageQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.recPipelineStages
       .getStageById(stageId, query.company_id, authorization, tenantId)
       .then((data) => ok(data, 'HRM-REC-STG-200', 'Pipeline stage loaded'));
@@ -368,7 +405,10 @@ export class RecruitmentController {
     @Query() query: ListJobPostingsQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.recruitmentCatalog
       .listJobPostings(query, authorization)
       .then((data) => ok(data, 'HRM-REC-JP-200', 'Job postings listed'));
@@ -387,7 +427,10 @@ export class RecruitmentController {
     @Body() body: CreateJobPostingDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.recruitmentCatalog
       .createJobPosting(body, authorization)
       .then((data) => ok(data, 'HRM-REC-JP-201', 'Job posting created'));
@@ -442,7 +485,13 @@ export class RecruitmentController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
-      .updateCandidatePoolStage(candidateId, companyId, stage, authorization, employeeId)
+      .updateCandidatePoolStage(
+        candidateId,
+        companyId,
+        stage,
+        authorization,
+        employeeId,
+      )
       .then((data) => ok(data, 'HRM-REC-CP-200', 'Candidate stage updated'));
   }
 
@@ -519,7 +568,10 @@ export class RecruitmentController {
     @Query() query: ListCandidatesTableQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.recruitmentCatalog
       .listCandidatesTable(query, authorization)
       .then((data) => ok(data, 'HRM-REC-CP-200', 'Candidates pool listed'));
@@ -541,7 +593,10 @@ export class RecruitmentController {
     @Query('company_id') companyId: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.recruitmentCatalog
       .getCandidatePoolById(candidateId, companyId, authorization)
       .then((data) => ok(data, 'HRM-REC-CP-200', 'Candidate pool row loaded'));
@@ -557,22 +612,35 @@ export class RecruitmentController {
     @Query('job_posting_id') jobPostingId?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.recruitmentCatalog
       .listCandidateApplications(companyId, authorization, jobPostingId)
-      .then((data) => ok(data, 'HRM-REC-CA-200', 'Candidate applications listed'));
+      .then((data) =>
+        ok(data, 'HRM-REC-CA-200', 'Candidate applications listed'),
+      );
   }
 
   @Post('candidate-applications')
   createCandidateApplication(
     @Headers('authorization') authorization: string | undefined,
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
-    @Body() body: { company_id: string; candidate_id: string; job_posting_id: string; stage?: string },
+    @Body()
+    body: {
+      company_id: string;
+      candidate_id: string;
+      job_posting_id: string;
+      stage?: string;
+    },
   ) {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
       .createCandidateApplication(body.company_id, body, authorization)
-      .then((data) => ok(data, 'HRM-REC-CA-201', 'Candidate application created'));
+      .then((data) =>
+        ok(data, 'HRM-REC-CA-201', 'Candidate application created'),
+      );
   }
 
   @Delete('candidate-applications/:applicationId')
@@ -585,7 +653,9 @@ export class RecruitmentController {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
       .deleteCandidateApplication(applicationId, companyId, authorization)
-      .then((data) => ok(data, 'HRM-REC-CA-200', 'Candidate application deleted'));
+      .then((data) =>
+        ok(data, 'HRM-REC-CA-200', 'Candidate application deleted'),
+      );
   }
 
   @Patch('candidate-applications/:applicationId/stage')
@@ -599,8 +669,16 @@ export class RecruitmentController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
-      .updateCandidateApplicationStage(applicationId, companyId, stage, authorization, employeeId)
-      .then((data) => ok(data, 'HRM-REC-CA-200', 'Candidate application updated'));
+      .updateCandidateApplicationStage(
+        applicationId,
+        companyId,
+        stage,
+        authorization,
+        employeeId,
+      )
+      .then((data) =>
+        ok(data, 'HRM-REC-CA-200', 'Candidate application updated'),
+      );
   }
 
   /**
@@ -647,7 +725,13 @@ export class RecruitmentController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
-      .updateHeadcountProposalStatus(proposalId, companyId, body.status, authorization, body.rejected_reason)
+      .updateHeadcountProposalStatus(
+        proposalId,
+        companyId,
+        body.status,
+        authorization,
+        body.rejected_reason,
+      )
       .then((data) => ok(data, 'HRM-REC-HC-200', 'Headcount proposal updated'));
   }
 
@@ -669,7 +753,9 @@ export class RecruitmentController {
         applicationId,
         includeLegacy: includeLegacy === 'true' || includeLegacy === '1',
       })
-      .then((data) => ok(data, 'HRM-REC-EVAL-200', 'Candidate evaluations listed'));
+      .then((data) =>
+        ok(data, 'HRM-REC-EVAL-200', 'Candidate evaluations listed'),
+      );
   }
 
   @Post('candidate-evaluations')
@@ -681,7 +767,9 @@ export class RecruitmentController {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
       .createCandidateEvaluation(body, authorization)
-      .then((data) => ok(data, 'HRM-REC-EVAL-201', 'Candidate evaluation created'));
+      .then((data) =>
+        ok(data, 'HRM-REC-EVAL-201', 'Candidate evaluation created'),
+      );
   }
 
   @Delete('candidate-evaluations/:evaluationId')
@@ -694,7 +782,9 @@ export class RecruitmentController {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
       .deleteCandidateEvaluation(evaluationId, companyId, authorization)
-      .then((data) => ok(data, 'HRM-REC-EVAL-200', 'Candidate evaluation archived'));
+      .then((data) =>
+        ok(data, 'HRM-REC-EVAL-200', 'Candidate evaluation archived'),
+      );
   }
 
   @Get('evaluation-criteria-templates')
@@ -706,7 +796,9 @@ export class RecruitmentController {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
       .listEvaluationCriteriaTemplates(companyId, authorization)
-      .then((data) => ok(data, 'HRM-REC-EVAL-200', 'Evaluation criteria templates listed'));
+      .then((data) =>
+        ok(data, 'HRM-REC-EVAL-200', 'Evaluation criteria templates listed'),
+      );
   }
 
   /**
@@ -735,7 +827,9 @@ export class RecruitmentController {
         bindable,
         for: forParam,
       })
-      .then((data) => ok(data, 'HRM-REC-JD-200', 'Job description templates listed'));
+      .then((data) =>
+        ok(data, 'HRM-REC-JD-200', 'Job description templates listed'),
+      );
   }
 
   /**
@@ -760,7 +854,9 @@ export class RecruitmentController {
     }
     return this.recruitmentCatalog
       .getJobDescriptionTemplateById(templateId, companyId, authorization)
-      .then((data) => ok(data, 'HRM-REC-JD-200', 'Job description template detail'));
+      .then((data) =>
+        ok(data, 'HRM-REC-JD-200', 'Job description template detail'),
+      );
   }
 
   @Post('job-templates')
@@ -772,10 +868,15 @@ export class RecruitmentController {
     @Body() body: CreateJobTemplateDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.recruitmentCatalog
       .createJobDescriptionTemplate(body, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-REC-JD-201', 'Job description template created'));
+      .then((data) =>
+        ok(data, 'HRM-REC-JD-201', 'Job description template created'),
+      );
   }
 
   /**
@@ -794,7 +895,9 @@ export class RecruitmentController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.recruitmentCatalog
       .publishJobDescriptionTemplate(templateId, companyId, authorization)
-      .then((data) => ok(data, 'HRM-REC-JD-200', 'Job description template published'));
+      .then((data) =>
+        ok(data, 'HRM-REC-JD-200', 'Job description template published'),
+      );
   }
 
   @Patch('job-templates/:templateId')
@@ -809,8 +912,16 @@ export class RecruitmentController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.recruitmentCatalog
-      .updateJobDescriptionTemplate(templateId, companyId, body, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-REC-JD-200', 'Job description template updated'));
+      .updateJobDescriptionTemplate(
+        templateId,
+        companyId,
+        body,
+        authorization,
+        { tenantId },
+      )
+      .then((data) =>
+        ok(data, 'HRM-REC-JD-200', 'Job description template updated'),
+      );
   }
 
   @Delete('job-templates/:templateId')
@@ -825,7 +936,9 @@ export class RecruitmentController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.recruitmentCatalog
       .deleteJobDescriptionTemplate(templateId, companyId, authorization)
-      .then((data) => ok(data, 'HRM-REC-JD-200', 'Job description template deleted'));
+      .then((data) =>
+        ok(data, 'HRM-REC-JD-200', 'Job description template deleted'),
+      );
   }
 
   // ─── JD dynamic CFG (ARCH-02 + GROUP-ARCH) ──────────────────────────────
@@ -842,7 +955,9 @@ export class RecruitmentController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.jdDynamic
       .listFieldDefs(companyId, authorization, active)
-      .then((data) => ok(data, 'HRM-JD-FIELD-200', 'JD field definitions listed'));
+      .then((data) =>
+        ok(data, 'HRM-JD-FIELD-200', 'JD field definitions listed'),
+      );
   }
 
   @Get('jd-field-defs/:id')
@@ -857,7 +972,9 @@ export class RecruitmentController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.jdDynamic
       .getFieldDefById(id, companyId, authorization)
-      .then((data) => ok(data, 'HRM-JD-FIELD-200', 'JD field definition detail'));
+      .then((data) =>
+        ok(data, 'HRM-JD-FIELD-200', 'JD field definition detail'),
+      );
   }
 
   @Post('jd-field-defs')
@@ -868,10 +985,15 @@ export class RecruitmentController {
     @Body() body: CreateJdFieldDefDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.jdDynamic
       .createFieldDef(body, authorization)
-      .then((data) => ok(data, 'HRM-JD-FIELD-201', 'JD field definition created'));
+      .then((data) =>
+        ok(data, 'HRM-JD-FIELD-201', 'JD field definition created'),
+      );
   }
 
   @Patch('jd-field-defs/:id')
@@ -887,7 +1009,9 @@ export class RecruitmentController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.jdDynamic
       .updateFieldDef(id, companyId, body, authorization)
-      .then((data) => ok(data, 'HRM-JD-FIELD-200', 'JD field definition updated'));
+      .then((data) =>
+        ok(data, 'HRM-JD-FIELD-200', 'JD field definition updated'),
+      );
   }
 
   @Post('jd-field-defs/:id/archive')
@@ -902,7 +1026,9 @@ export class RecruitmentController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.jdDynamic
       .archiveFieldDef(id, companyId, authorization)
-      .then((data) => ok(data, 'HRM-JD-FIELD-200', 'JD field definition archived'));
+      .then((data) =>
+        ok(data, 'HRM-JD-FIELD-200', 'JD field definition archived'),
+      );
   }
 
   @Get('jd-form-layouts')
@@ -941,10 +1067,15 @@ export class RecruitmentController {
     @Body() body: PutJdLayoutDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.jdDynamic
       .putDefaultLayout(body, authorization)
-      .then((data) => ok(data, 'HRM-JD-LAYOUT-200', 'JD default layout published'));
+      .then((data) =>
+        ok(data, 'HRM-JD-LAYOUT-200', 'JD default layout published'),
+      );
   }
 
   @Get('jd-form-layouts/:id')
@@ -974,7 +1105,9 @@ export class RecruitmentController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.jdDynamic
       .listGroupDefs(companyId, authorization, active)
-      .then((data) => ok(data, 'HRM-JD-GRP-200', 'JD group definitions listed'));
+      .then((data) =>
+        ok(data, 'HRM-JD-GRP-200', 'JD group definitions listed'),
+      );
   }
 
   @Get('jd-group-defs/:id')
@@ -1000,10 +1133,15 @@ export class RecruitmentController {
     @Body() body: CreateJdGroupDefDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.jdDynamic
       .createGroupDef(body, authorization)
-      .then((data) => ok(data, 'HRM-JD-GRP-201', 'JD group definition created'));
+      .then((data) =>
+        ok(data, 'HRM-JD-GRP-201', 'JD group definition created'),
+      );
   }
 
   @Patch('jd-group-defs/:id')
@@ -1019,7 +1157,9 @@ export class RecruitmentController {
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.jdDynamic
       .updateGroupDef(id, companyId, body, authorization)
-      .then((data) => ok(data, 'HRM-JD-GRP-200', 'JD group definition updated'));
+      .then((data) =>
+        ok(data, 'HRM-JD-GRP-200', 'JD group definition updated'),
+      );
   }
 
   @Get('jd-default-packs')
@@ -1060,7 +1200,10 @@ export class RecruitmentController {
     @Body() body: PutJdDefaultPackDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.jdDynamic
       .putDefaultPack(code, body, authorization)
       .then((data) => ok(data, 'HRM-JD-PCK-200', 'JD default pack upserted'));
@@ -1088,7 +1231,10 @@ export class RecruitmentController {
     @Body() body: PutJdPackRulesDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.jdDynamic
       .replacePackRules(body, authorization)
       .then((data) => ok(data, 'HRM-JD-RUL-200', 'JD pack rules replaced'));
@@ -1103,7 +1249,10 @@ export class RecruitmentController {
     @Body() body: ResolveJdPackDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id,
+    });
     return this.jdDynamic
       .resolvePack(body, authorization)
       .then((data) => ok(data, 'HRM-JD-RUL-200', 'JD pack resolved'));
@@ -1117,8 +1266,14 @@ export class RecruitmentController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     return this.recruitmentCatalog
-      .replaceEvaluationCriteriaTemplates(body.company_id, body.templates ?? [], authorization)
-      .then((data) => ok(data, 'HRM-REC-EVAL-200', 'Evaluation criteria templates saved'));
+      .replaceEvaluationCriteriaTemplates(
+        body.company_id,
+        body.templates ?? [],
+        authorization,
+      )
+      .then((data) =>
+        ok(data, 'HRM-REC-EVAL-200', 'Evaluation criteria templates saved'),
+      );
   }
 
   @Get('recruitment-plans')
@@ -1131,7 +1286,10 @@ export class RecruitmentController {
     @Query('year') year?: string,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.recruitmentCatalog
       .listRecruitmentPlans(companyId, authorization, { year })
       .then((data) => ok(data, 'HRM-REC-PLAN-200', 'Recruitment plans listed'));
@@ -1175,11 +1333,14 @@ export class RecruitmentController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, {
       tenantId,
-      companyId: typeof body.company_id === 'string' ? body.company_id : undefined,
+      companyId:
+        typeof body.company_id === 'string' ? body.company_id : undefined,
     });
     return this.recruitmentCatalog
       .upsertRecruitmentPlan(planId, body, authorization)
-      .then((data) => ok(data, 'HRM-REC-PLAN-200', 'Recruitment plan upserted'));
+      .then((data) =>
+        ok(data, 'HRM-REC-PLAN-200', 'Recruitment plan upserted'),
+      );
   }
 
   @Delete('recruitment-plans/:planId')
@@ -1202,16 +1363,28 @@ export class RecruitmentController {
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
     @Headers('x-tenant-id') tenantId: string | undefined,
     @Query('company_id') companyId: string,
-    @Body() body: { status?: string; rejected_reason?: string; approved_by?: string; activation_mode?: string },
+    @Body()
+    body: {
+      status?: string;
+      rejected_reason?: string;
+      approved_by?: string;
+      activation_mode?: string;
+    },
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.recruitmentCatalog
-      .updateRecruitmentPlanStatus(planId, companyId, String(body?.status ?? ''), authorization, {
-        rejected_reason: body?.rejected_reason,
-        approved_by: body?.approved_by,
-        activation_mode: body?.activation_mode,
-      })
+      .updateRecruitmentPlanStatus(
+        planId,
+        companyId,
+        String(body?.status ?? ''),
+        authorization,
+        {
+          rejected_reason: body?.rejected_reason,
+          approved_by: body?.approved_by,
+          activation_mode: body?.activation_mode,
+        },
+      )
       .then((data) => ok(data, 'HRM-REC-PLAN-200', 'Recruitment plan updated'));
   }
 
@@ -1227,8 +1400,15 @@ export class RecruitmentController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.recruitmentCatalog
-      .spawnRecruitmentPlanRequests(planId, companyId, authorization, body ?? {})
-      .then((data) => ok(data, 'HRM-HC-SPAWN-200', 'Headcount spawn requests processed'));
+      .spawnRecruitmentPlanRequests(
+        planId,
+        companyId,
+        authorization,
+        body ?? {},
+      )
+      .then((data) =>
+        ok(data, 'HRM-HC-SPAWN-200', 'Headcount spawn requests processed'),
+      );
   }
 
   @Post('recruitment-plans/:planId/submit-workflow')
@@ -1242,14 +1422,23 @@ export class RecruitmentController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
-    const submitterUserId = resolveSubmitterUserIdFromAuth(authorization, userId);
+    const submitterUserId = resolveSubmitterUserIdFromAuth(
+      authorization,
+      userId,
+    );
     return this.recruitmentCatalog
       .submitRecruitmentPlanForApproval(planId, companyId, authorization, {
         submitterUserId,
         tenantId,
         companySlug: companyId,
       })
-      .then((data) => ok(data, 'HRM-REC-PLAN-WF-200', 'Recruitment plan submitted to workflow'));
+      .then((data) =>
+        ok(
+          data,
+          'HRM-REC-PLAN-WF-200',
+          'Recruitment plan submitted to workflow',
+        ),
+      );
   }
 
   @Post('candidates-pool/:candidateId/start-pipeline')
@@ -1263,14 +1452,19 @@ export class RecruitmentController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
-    const submitterUserId = resolveSubmitterUserIdFromAuth(authorization, userId);
+    const submitterUserId = resolveSubmitterUserIdFromAuth(
+      authorization,
+      userId,
+    );
     return this.recruitmentCatalog
       .startCandidatePipeline(candidateId, companyId, authorization, {
         submitterUserId,
         tenantId,
         companySlug: companyId,
       })
-      .then((data) => ok(data, 'HRM-REC-CP-WF-200', 'Candidate pipeline started'));
+      .then((data) =>
+        ok(data, 'HRM-REC-CP-WF-200', 'Candidate pipeline started'),
+      );
   }
 
   /**
@@ -1288,11 +1482,16 @@ export class RecruitmentController {
   ) {
     // Xử lý: Diễn biến #1 — auth/scope trước tạo YCTD.
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.recruitmentService
-      .createJobRequisition(body, authorization)
-      // Thành công: Diễn biến #6 — dòng yêu cầu (headcount) trên list; F5 = #7.
-      .then((data) => ok(data, 'HRM-REC-201', 'Job requisition created'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
+    return (
+      this.recruitmentService
+        .createJobRequisition(body, authorization)
+        // Thành công: Diễn biến #6 — dòng yêu cầu (headcount) trên list; F5 = #7.
+        .then((data) => ok(data, 'HRM-REC-201', 'Job requisition created'))
+    );
   }
 
   @Post('requisitions/:requisitionId/submit-workflow')
@@ -1310,7 +1509,10 @@ export class RecruitmentController {
       tenantId,
       companyId: query.company_id ?? headerCompanyId,
     });
-    const submitterUserId = resolveSubmitterUserIdFromAuth(authorization, userId);
+    const submitterUserId = resolveSubmitterUserIdFromAuth(
+      authorization,
+      userId,
+    );
     return this.recruitmentService
       .submitJobRequisitionForApproval(
         requisitionId,
@@ -1323,7 +1525,9 @@ export class RecruitmentController {
           companySlug: query.company_id ?? headerCompanyId,
         },
       )
-      .then((data) => ok(data, 'HRM-REC-WF-200', 'Job requisition submitted to workflow'));
+      .then((data) =>
+        ok(data, 'HRM-REC-WF-200', 'Job requisition submitted to workflow'),
+      );
   }
 
   /**
@@ -1352,9 +1556,14 @@ export class RecruitmentController {
         query,
         authorization,
         toHrmListScopeContext(tenantId),
-        { actorId: userId ?? resolveSubmitterUserIdFromAuth(authorization, userId) },
+        {
+          actorId:
+            userId ?? resolveSubmitterUserIdFromAuth(authorization, userId),
+        },
       )
-      .then((data) => ok(data, 'HRM-REC-200', 'Job requisition transition applied'));
+      .then((data) =>
+        ok(data, 'HRM-REC-200', 'Job requisition transition applied'),
+      );
   }
 
   /**
@@ -1384,7 +1593,9 @@ export class RecruitmentController {
         authorization,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, 'HRM-REC-200', 'Job requisition pipeline flags updated'));
+      .then((data) =>
+        ok(data, 'HRM-REC-200', 'Job requisition pipeline flags updated'),
+      );
   }
 
   /**
@@ -1475,9 +1686,18 @@ export class RecruitmentController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.recruitmentService
-      .updateJobRequisition(requisitionId, body, query, authHeader, toHrmListScopeContext(tenantId))
+      .updateJobRequisition(
+        requisitionId,
+        body,
+        query,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-REC-200', 'Job requisition updated'));
   }
 
@@ -1493,9 +1713,17 @@ export class RecruitmentController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.recruitmentService
-      .getJobRequisitionById(requisitionId, query, authHeader, toHrmListScopeContext(tenantId))
+      .getJobRequisitionById(
+        requisitionId,
+        query,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-REC-200', 'Job requisition loaded'));
   }
 
@@ -1515,7 +1743,10 @@ export class RecruitmentController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.recruitmentService
       .listJobRequisitions(query, authHeader, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-REC-200', 'Job requisitions listed'));
@@ -1536,7 +1767,10 @@ export class RecruitmentController {
     @Body() body: CreateCandidateDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     // FR-05a #5 — thiếu YCTD → REQUIRED (không fallback pool HRM-REC-CP-201).
     requireUvYctdRequisitionId(body);
     return this.recruitmentService
@@ -1557,7 +1791,10 @@ export class RecruitmentController {
     @Body() body: CreateCandidateDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.recruitmentCatalog
       .createCandidatePool(body, authorization)
       .then((data) => ok(data, 'HRM-REC-CP-201', 'Candidate pool row created'));
@@ -1578,10 +1815,19 @@ export class RecruitmentController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.recruitmentService
-      .listApplicationsByYctd(query, authHeader, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-REC-CMP-200', 'Applications listed by YCTD'));
+      .listApplicationsByYctd(
+        query,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) =>
+        ok(data, 'HRM-REC-CMP-200', 'Applications listed by YCTD'),
+      );
   }
 
   /**
@@ -1614,7 +1860,9 @@ export class RecruitmentController {
         scopeCompany,
         authHeader,
         toHrmListScopeContext(tenantId),
-        { actorId: userId ?? resolveSubmitterUserIdFromAuth(authHeader, userId) },
+        {
+          actorId: userId ?? resolveSubmitterUserIdFromAuth(authHeader, userId),
+        },
       )
       .then((data) => {
         const created = data.mode === 'created';
@@ -1622,7 +1870,9 @@ export class RecruitmentController {
         return ok(
           data,
           created ? HRM_REC_HIRE_201 : HRM_REC_HIRE_200,
-          created ? 'Offer accepted — employee created' : 'Offer accepted — employee linked',
+          created
+            ? 'Offer accepted — employee created'
+            : 'Offer accepted — employee linked',
         );
       });
   }
@@ -1656,7 +1906,9 @@ export class RecruitmentController {
         scopeCompany,
         authHeader,
         toHrmListScopeContext(tenantId),
-        { actorId: userId ?? resolveSubmitterUserIdFromAuth(authHeader, userId) },
+        {
+          actorId: userId ?? resolveSubmitterUserIdFromAuth(authHeader, userId),
+        },
       )
       .then((data) => {
         const created = data.mode === 'created';
@@ -1664,7 +1916,9 @@ export class RecruitmentController {
         return ok(
           data,
           created ? HRM_REC_HIRE_201 : HRM_REC_HIRE_200,
-          created ? 'Offer accepted — employee created' : 'Offer accepted — employee linked',
+          created
+            ? 'Offer accepted — employee created'
+            : 'Offer accepted — employee linked',
         );
       });
   }
@@ -1683,9 +1937,16 @@ export class RecruitmentController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.recruitmentService
-      .compareCandidatesByYctd(query, authHeader, toHrmListScopeContext(tenantId))
+      .compareCandidatesByYctd(
+        query,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-REC-CMP-200', 'Compare matrix'));
   }
 
@@ -1731,7 +1992,10 @@ export class RecruitmentController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.recruitmentService
       .listCandidates(query, authHeader, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-REC-200', 'Candidates listed'));
@@ -1753,9 +2017,17 @@ export class RecruitmentController {
   ) {
     const authHeader = resolveAuthorizationHeader(authorization, headers);
     this.assertAccess(authHeader, internalApiKey);
-    resolveScopeContext(authHeader, { tenantId, companyId: companyId ?? headerCompanyId });
+    resolveScopeContext(authHeader, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
     return this.recruitmentService
-      .getCandidateById(candidateId, companyId, authHeader, toHrmListScopeContext(tenantId))
+      .getCandidateById(
+        candidateId,
+        companyId,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-REC-200', 'Candidate loaded'));
   }
 
@@ -1788,9 +2060,13 @@ export class RecruitmentController {
         scopeCompany,
         authHeader,
         toHrmListScopeContext(tenantId),
-        { actorId: userId ?? resolveSubmitterUserIdFromAuth(authHeader, userId) },
+        {
+          actorId: userId ?? resolveSubmitterUserIdFromAuth(authHeader, userId),
+        },
       )
-      .then((data) => ok(data, 'HRM-REC-200', 'Candidate stage transition applied'));
+      .then((data) =>
+        ok(data, 'HRM-REC-200', 'Candidate stage transition applied'),
+      );
   }
 
   /**
@@ -1820,7 +2096,9 @@ export class RecruitmentController {
         authHeader,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, 'HRM-REC-200', 'Candidate stage history listed'));
+      .then((data) =>
+        ok(data, 'HRM-REC-200', 'Candidate stage history listed'),
+      );
   }
 
   /**
@@ -1852,7 +2130,9 @@ export class RecruitmentController {
         authHeader,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, 'HRM-REC-MAIL-201', 'Recruitment mail enqueued'));
+      .then((data) =>
+        ok(data, 'HRM-REC-MAIL-201', 'Recruitment mail enqueued'),
+      );
   }
 
   /**
@@ -1902,7 +2182,12 @@ export class RecruitmentController {
     const scopeCompany = companyId ?? headerCompanyId ?? 'main';
     resolveScopeContext(authHeader, { tenantId, companyId: scopeCompany });
     return this.recruitmentService
-      .getMailOutboxById(outboxId, scopeCompany, authHeader, toHrmListScopeContext(tenantId))
+      .getMailOutboxById(
+        outboxId,
+        scopeCompany,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-REC-MAIL-200', 'Mail outbox loaded'));
   }
 
@@ -1920,8 +2205,13 @@ export class RecruitmentController {
     @Body() body: ScheduleInterviewDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.recruitmentService.scheduleInterview(body, authorization).then((data) => ok(data, 'HRM-REC-203', 'Interview scheduled'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
+    return this.recruitmentService
+      .scheduleInterview(body, authorization)
+      .then((data) => ok(data, 'HRM-REC-203', 'Interview scheduled'));
   }
 
   @Patch('interviews/:interviewId/status')
@@ -1936,7 +2226,12 @@ export class RecruitmentController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.recruitmentService
-      .updateInterviewStatus(interviewId, body, companyId ?? 'main', authorization)
+      .updateInterviewStatus(
+        interviewId,
+        body,
+        companyId ?? 'main',
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-REC-204', 'Interview updated'));
   }
 
@@ -1957,7 +2252,12 @@ export class RecruitmentController {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.recruitmentService
-      .rescheduleInterview(interviewId, body, companyId ?? 'main', authorization)
+      .rescheduleInterview(
+        interviewId,
+        body,
+        companyId ?? 'main',
+        authorization,
+      )
       .then((data) => ok(data, 'HRM-REC-204', 'Interview rescheduled'));
   }
 }

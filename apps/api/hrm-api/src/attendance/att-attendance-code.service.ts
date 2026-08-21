@@ -151,6 +151,7 @@ export class AttAttendanceCodeService {
         is_paid BOOLEAN NOT NULL DEFAULT TRUE,
         is_present BOOLEAN NOT NULL DEFAULT FALSE,
         color TEXT NULL,
+        description TEXT NULL,
         legacy_alias_keys_json JSONB NULL,
         metadata_json JSONB NULL,
         status TEXT NOT NULL DEFAULT 'active',
@@ -237,6 +238,10 @@ export class AttAttendanceCodeService {
     `);
     // FORBIDDEN: never ADD CHECK code IN ('pending','present','absent','leave',…)
     // U65: optional starter upsert omitted — empty catalog is valid.
+    await this.db.query(`
+      ALTER TABLE public.att_attendance_code
+      ADD COLUMN IF NOT EXISTS description TEXT NULL;
+    `);
     this.schemaReady = true;
   }
 
@@ -288,7 +293,12 @@ export class AttAttendanceCodeService {
     }
     if (!Array.isArray(arr)) return [];
     return arr
-      .map((x) => String(x ?? '').trim().replace(/-/g, '_').toLowerCase())
+      .map((x) =>
+        String(x ?? '')
+          .trim()
+          .replace(/-/g, '_')
+          .toLowerCase(),
+      )
       .filter((k) => !!k && ATT_ATTENDANCE_CODE_KEY_FORMAT.test(k));
   }
 
@@ -380,10 +390,23 @@ export class AttAttendanceCodeService {
     return s;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -427,21 +450,27 @@ export class AttAttendanceCodeService {
     item: GroupRefCodeHint,
     companyId: string,
   ): AttAttendanceCodeDisplay | null {
-    const codeRaw = String(item.code ?? '').trim().replace(/-/g, '_').toLowerCase();
+    const codeRaw = String(item.code ?? '')
+      .trim()
+      .replace(/-/g, '_')
+      .toLowerCase();
     if (!codeRaw || !ATT_ATTENDANCE_CODE_KEY_FORMAT.test(codeRaw)) {
       return null;
     }
     if (String(item.status ?? '').toLowerCase() !== 'active') {
       return null;
     }
-    const meta = item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
+    const meta =
+      item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
     const nameVi = String(item.label ?? item.name ?? codeRaw).trim() || codeRaw;
     const symbolRaw = String(meta?.symbol ?? codeRaw).trim() || codeRaw;
     const symbol = symbolRaw.slice(0, 16);
     const countsAsRaw = String(meta?.counts_as ?? meta?.countsAs ?? 'other')
       .trim()
       .toLowerCase();
-    const countsAs = (ATT_ATTENDANCE_CODE_COUNTS_AS as readonly string[]).includes(countsAsRaw)
+    const countsAs = (
+      ATT_ATTENDANCE_CODE_COUNTS_AS as readonly string[]
+    ).includes(countsAsRaw)
       ? (countsAsRaw as AttAttendanceCodeCountsAs)
       : 'other';
     const now = new Date().toISOString();
@@ -478,7 +507,11 @@ export class AttAttendanceCodeService {
     options?: { tenantId?: string },
   ): Promise<{ total: number; data: AttAttendanceCodeDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, options?.tenantId);
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      options?.tenantId,
+    );
     const attRows = await this.loadNativeRows(companyKeys, {
       includeArchived: false,
       status: 'active',
@@ -491,7 +524,8 @@ export class AttAttendanceCodeService {
 
     const settings = this.resolveSettingsCatalogs();
     if (settings) {
-      const tenantId = options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
+      const tenantId =
+        options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
       const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
         authorization,
         tenantId,
@@ -544,9 +578,13 @@ export class AttAttendanceCodeService {
     authorization?: string,
     tenantId?: string,
   ): Promise<Map<string, AttAttendanceCodeDisplayHints>> {
-    const effective = await this.listEffective({ company_id: companyId }, authorization, {
-      tenantId,
-    });
+    const effective = await this.listEffective(
+      { company_id: companyId },
+      authorization,
+      {
+        tenantId,
+      },
+    );
     const map = new Map<string, AttAttendanceCodeDisplayHints>();
     for (const row of effective.data) {
       const hints = { statusLabel: row.statusLabel, symbol: row.symbol };
@@ -572,7 +610,11 @@ export class AttAttendanceCodeService {
   }): Promise<AttAttendanceCodeDisplay | null> {
     const key = input.code.trim().replace(/-/g, '_').toLowerCase();
     if (!key) {
-      throw new ApiException(HRM_ATT_CODE_KEY, 'status/day-code is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_ATT_CODE_KEY,
+        'status/day-code is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const effective = await this.listEffective(
       { company_id: input.companyId },
@@ -603,7 +645,8 @@ export class AttAttendanceCodeService {
     tenantId?: string,
   ): Promise<{ total: number; data: AttAttendanceCodeDisplay[] }> {
     await this.ensureSchema();
-    const includeGroupRef = String(query.include_group_ref ?? '').toLowerCase() === 'true';
+    const includeGroupRef =
+      String(query.include_group_ref ?? '').toLowerCase() === 'true';
     if (includeGroupRef) {
       return this.listEffective(
         { company_id: query.company_id, q: query.q },
@@ -611,8 +654,13 @@ export class AttAttendanceCodeService {
         { tenantId },
       );
     }
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     const rows = await this.loadNativeRows(companyKeys, {
       includeArchived,
       status: query.status,
@@ -640,7 +688,11 @@ export class AttAttendanceCodeService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_CODE_404, 'Attendance code not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_CODE_404,
+        'Attendance code not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_CODE_404,
@@ -656,18 +708,31 @@ export class AttAttendanceCodeService {
     tenantId?: string,
   ): Promise<AttAttendanceCodeDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const code = this.assertKeyFormat(body.code);
     const nameVi = body.nameVi.trim();
     if (!nameVi) {
-      throw new ApiException(HRM_PLT_CAT_CODE_INVALID, 'nameVi is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_PLT_CAT_CODE_INVALID,
+        'nameVi is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const symbol = this.assertSymbol(body.symbol);
-    const countsAs = body.countsAs ? this.assertCountsAs(body.countsAs) : 'other';
+    const countsAs = body.countsAs
+      ? this.assertCountsAs(body.countsAs)
+      : 'other';
     const dayWeight =
-      body.dayWeight !== undefined ? this.assertDayWeight(Number(body.dayWeight)) : 1;
+      body.dayWeight !== undefined
+        ? this.assertDayWeight(Number(body.dayWeight))
+        : 1;
     const status = body.status ? this.assertRowStatus(body.status) : 'active';
-    const metadataJson = body.metadata != null ? JSON.stringify(body.metadata) : null;
+    const metadataJson =
+      body.metadata != null ? JSON.stringify(body.metadata) : null;
     const aliasJson =
       body.legacyAliasKeys != null
         ? JSON.stringify(
@@ -751,7 +816,9 @@ export class AttAttendanceCodeService {
       return this.display(inserted.rows[0], 'att_native');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (/uq_att_attendance_code_company_code_active|duplicate key/i.test(msg)) {
+      if (
+        /uq_att_attendance_code_company_code_active|duplicate key/i.test(msg)
+      ) {
         throw new ApiException(
           HRM_PLT_CAT_CODE_CONFLICT,
           `Active code '${code}' already exists for company`,
@@ -777,7 +844,11 @@ export class AttAttendanceCodeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_CODE_404, 'Attendance code not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_CODE_404,
+        'Attendance code not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_CODE_404,
@@ -798,20 +869,28 @@ export class AttAttendanceCodeService {
       sets.push(`${col} = $${values.length}`);
     };
     if (body.nameVi !== undefined) assign('name_vi', body.nameVi.trim());
-    if (body.symbol !== undefined) assign('symbol', this.assertSymbol(body.symbol));
+    if (body.symbol !== undefined)
+      assign('symbol', this.assertSymbol(body.symbol));
     if (body.sortOrder !== undefined) assign('sort_order', body.sortOrder);
-    if (body.countsAs !== undefined) assign('counts_as', this.assertCountsAs(body.countsAs));
-    if (body.dayWeight !== undefined) assign('day_weight', this.assertDayWeight(Number(body.dayWeight)));
+    if (body.countsAs !== undefined)
+      assign('counts_as', this.assertCountsAs(body.countsAs));
+    if (body.dayWeight !== undefined)
+      assign('day_weight', this.assertDayWeight(Number(body.dayWeight)));
     if (body.isPaid !== undefined) assign('is_paid', body.isPaid);
     if (body.isPresent !== undefined) assign('is_present', body.isPresent);
     if (body.color !== undefined) {
-      assign('color', body.color == null ? null : String(body.color).trim() || null);
+      assign(
+        'color',
+        body.color == null ? null : String(body.color).trim() || null,
+      );
     }
     if (body.legacyAliasKeys !== undefined) {
       values.push(
         body.legacyAliasKeys == null
           ? null
-          : JSON.stringify(body.legacyAliasKeys.map((k) => this.assertKeyFormat(k))),
+          : JSON.stringify(
+              body.legacyAliasKeys.map((k) => this.assertKeyFormat(k)),
+            ),
       );
       sets.push(`legacy_alias_keys_json = $${values.length}::jsonb`);
     }
@@ -819,7 +898,8 @@ export class AttAttendanceCodeService {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertRowStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertRowStatus(body.status));
 
     if (!sets.length) {
       return this.display(row, 'att_native');
@@ -850,7 +930,11 @@ export class AttAttendanceCodeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_CODE_404, 'Attendance code not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_CODE_404,
+        'Attendance code not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_CODE_404,

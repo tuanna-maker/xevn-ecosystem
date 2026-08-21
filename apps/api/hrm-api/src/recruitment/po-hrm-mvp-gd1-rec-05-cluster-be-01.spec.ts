@@ -95,7 +95,10 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
 
   function stubEnsureThenCandidate(row = candidateRow) {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [row] } as never;
       }
       if (sql.includes('hrm_company_settings')) {
@@ -132,7 +135,13 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
       const q = jest.fn(async (sql: string) => {
         if (sql.includes('UPDATE public.recruitment_candidates')) {
           return {
-            rows: [{ ...candidateRow, status: 'interview', updated_at: '2026-08-09T01:00:00.000Z' }],
+            rows: [
+              {
+                ...candidateRow,
+                status: 'interview',
+                updated_at: '2026-08-09T01:00:00.000Z',
+              },
+            ],
           } as never;
         }
         if (sql.includes('INSERT INTO public.rec_candidate_stage_history')) {
@@ -176,24 +185,44 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
   it('UNKNOWN when to_stage ∉ EFF and EFF>0', async () => {
     stubEnsureThenCandidate();
     await expect(
-      service.transitionCandidateStage(CAND_ID, { to_stage: 'invent_stage' }, HOLDING),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_STAGE_UNKNOWN });
+      service.transitionCandidateStage(
+        CAND_ID,
+        { to_stage: 'invent_stage' },
+        HOLDING,
+      ),
+    ).rejects.toMatchObject({ code: HRM_REC_STAGE_UNKNOWN });
     expect(db.withTransaction).not.toHaveBeenCalled();
   });
 
   it('EMPTY-CATALOG when EFF=0', async () => {
     stubEnsureThenCandidate();
-    catalog.listEffective.mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null });
+    catalog.listEffective.mockResolvedValue({
+      total: 0,
+      data: [],
+      hiredOutcomeKey: null,
+    });
     await expect(
-      service.transitionCandidateStage(CAND_ID, { to_stage: 'interview' }, HOLDING),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_STAGE_EMPTY_CATALOG });
+      service.transitionCandidateStage(
+        CAND_ID,
+        { to_stage: 'interview' },
+        HOLDING,
+      ),
+    ).rejects.toMatchObject({
+      code: HRM_REC_STAGE_EMPTY_CATALOG,
+    });
   });
 
   it('REJECT-REASON when reject-class note empty', async () => {
     stubEnsureThenCandidate();
     await expect(
-      service.transitionCandidateStage(CAND_ID, { to_stage: 'rejected' }, HOLDING),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_STAGE_REJECT_REASON });
+      service.transitionCandidateStage(
+        CAND_ID,
+        { to_stage: 'rejected' },
+        HOLDING,
+      ),
+    ).rejects.toMatchObject({
+      code: HRM_REC_STAGE_REJECT_REASON,
+    });
     expect(db.withTransaction).not.toHaveBeenCalled();
   });
 
@@ -228,7 +257,11 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
     });
     const result = await service.transitionCandidateStage(
       CAND_ID,
-      { to_stage: 'rejected', note: 'Không phù hợp kỹ năng', desired_salary: 25_000_000 },
+      {
+        to_stage: 'rejected',
+        note: 'Không phù hợp kỹ năng',
+        desired_salary: 25_000_000,
+      },
       HOLDING,
     );
     expect(result.stage).toBe('rejected');
@@ -251,8 +284,14 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
       return { rows: [] } as never;
     });
     await expect(
-      service.transitionCandidateStage(CAND_ID, { to_stage: 'screening' }, HOLDING),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_STAGE_REVERSE_FORBIDDEN });
+      service.transitionCandidateStage(
+        CAND_ID,
+        { to_stage: 'screening' },
+        HOLDING,
+      ),
+    ).rejects.toMatchObject({
+      code: HRM_REC_STAGE_REVERSE_FORBIDDEN,
+    });
     expect(db.withTransaction).not.toHaveBeenCalled();
   });
 
@@ -321,14 +360,21 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
       return fn(q as never);
     });
     await expect(
-      service.transitionCandidateStage(CAND_ID, { to_stage: 'interview' }, HOLDING),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_STAGE_HISTORY_FAIL });
+      service.transitionCandidateStage(
+        CAND_ID,
+        { to_stage: 'interview' },
+        HOLDING,
+      ),
+    ).rejects.toMatchObject({ code: HRM_REC_STAGE_HISTORY_FAIL });
   });
 
   it('GET stage-history display-ready + empty [] OK', async () => {
     stubEnsureThenCandidate();
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [candidateRow] } as never;
       }
       if (sql.includes('FROM public.rec_candidate_stage_history')) {
@@ -336,12 +382,17 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
       }
       return { rows: [] } as never;
     });
-    const empty = await service.listCandidateStageHistory(CAND_ID, { company_id: HOLDING });
+    const empty = await service.listCandidateStageHistory(CAND_ID, {
+      company_id: HOLDING,
+    });
     expect(empty.data).toEqual([]);
     expect(empty.stage).toBe('screening');
 
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [candidateRow] } as never;
       }
       if (sql.includes('FROM public.rec_candidate_stage_history')) {
@@ -364,7 +415,9 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
       }
       return { rows: [] } as never;
     });
-    const listed = await service.listCandidateStageHistory(CAND_ID, { company_id: HOLDING });
+    const listed = await service.listCandidateStageHistory(CAND_ID, {
+      company_id: HOLDING,
+    });
     expect(listed.data[0]).toMatchObject({
       id: 'h1',
       from_stage: 'new',
@@ -377,21 +430,40 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
   it('U19 scope_parity: list filters company_id same as get/transition/timeline', async () => {
     const listSql: string[] = [];
     db.query.mockImplementation(async (sql: string, values?: unknown[]) => {
-      if (sql.includes('CREATE TABLE') || sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('CREATE TABLE') ||
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] } as never;
       }
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('COUNT')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('COUNT')
+      ) {
         listSql.push(`COUNT:${JSON.stringify(values)}`);
         return { rows: [{ total: '0' }] } as never;
       }
-      if (sql.includes('FROM public.recruitment_candidates AS c') || sql.includes('FROM public.recruitment_candidates c')) {
-        listSql.push(`SEL:${sql.includes('company_id')}:${JSON.stringify(values)}`);
+      if (
+        sql.includes('FROM public.recruitment_candidates AS c') ||
+        sql.includes('FROM public.recruitment_candidates c')
+      ) {
+        listSql.push(
+          `SEL:${sql.includes('company_id')}:${JSON.stringify(values)}`,
+        );
         return { rows: [] } as never;
       }
       return { rows: [] } as never;
     });
-    await service.listCandidates({ company_id: MEMBER, page: 1, page_size: 10 } as never);
-    expect(listSql.some((s) => s.includes(MEMBER) || s.includes('company'))).toBe(true);
+    await service.listCandidates({
+      company_id: MEMBER,
+      page: 1,
+      page_size: 10,
+    });
+    expect(
+      listSql.some((s) => s.includes(MEMBER) || s.includes('company')),
+    ).toBe(true);
 
     // get / transition / timeline all use pushRequisitionCompanyFilter on candidate load
     stubEnsureThenCandidate({ ...candidateRow, company_id: MEMBER });
@@ -402,7 +474,11 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
     db.withTransaction.mockImplementation(async (fn) => {
       const q = jest.fn(async (sql: string) => {
         if (sql.includes('UPDATE')) {
-          return { rows: [{ ...candidateRow, company_id: MEMBER, status: 'interview' }] } as never;
+          return {
+            rows: [
+              { ...candidateRow, company_id: MEMBER, status: 'interview' },
+            ],
+          } as never;
         }
         if (sql.includes('INSERT')) {
           return {
@@ -444,7 +520,10 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
 
     stubEnsureThenCandidate({ ...candidateRow, company_id: MEMBER });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [{ ...candidateRow, company_id: MEMBER }] } as never;
       }
       if (sql.includes('FROM public.rec_candidate_stage_history')) {
@@ -453,7 +532,9 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
       }
       return { rows: [] } as never;
     });
-    const tl = await service.listCandidateStageHistory(CAND_ID, { company_id: MEMBER });
+    const tl = await service.listCandidateStageHistory(CAND_ID, {
+      company_id: MEMBER,
+    });
     expect(tl.company_id).toBe(MEMBER);
   });
 
@@ -463,11 +544,17 @@ describe('PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 stage transition + timeline', () =
       sqlLog.push(sql);
       return { rows: [] } as never;
     });
-    await expect(service.getCandidateById(CAND_ID, HOLDING)).rejects.toMatchObject({
+    await expect(
+      service.getCandidateById(CAND_ID, HOLDING),
+    ).rejects.toMatchObject({
       code: 'HRM-REC-404',
     });
     const joined = sqlLog.join('\n');
-    expect(joined).not.toMatch(/CREATE TABLE IF NOT EXISTS public\.candidate_stage_history\b/);
-    expect(joined).toMatch(/CREATE TABLE IF NOT EXISTS public\.rec_candidate_stage_history/);
+    expect(joined).not.toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.candidate_stage_history\b/,
+    );
+    expect(joined).toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.rec_candidate_stage_history/,
+    );
   });
 });

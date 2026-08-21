@@ -49,4 +49,9 @@ export const SI_INSURERS_GROUP_REF_KEY = 'insurers';
  * Docs-only bootstrap examples — NOT a product ceiling; NEVER enforce IN (…).
  * Optional ensure upsert later; U65 UF must not treat as required seed.
  */
-export const SI_INSURER_STARTER_KEYS = ['VSS', 'BaoViet', 'PVI', 'BaoMinh'] as const;
+export const SI_INSURER_STARTER_KEYS = [
+  'VSS',
+  'BaoViet',
+  'PVI',
+  'BaoMinh',
+] as const;

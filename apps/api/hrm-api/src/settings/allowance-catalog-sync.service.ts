@@ -226,14 +226,21 @@ export class AllowanceCatalogSyncService {
   async listOverviewSample(
     companyId: string,
     limit = 8,
-  ): Promise<{ count: number; sample: Array<{ code: string; label: string; status: string }> }> {
+  ): Promise<{
+    count: number;
+    sample: Array<{ code: string; label: string; status: string }>;
+  }> {
     await this.ensureSchema();
     const countRes = await this.db.query<{ c: string }>(
       `SELECT COUNT(*)::text AS c FROM public.hrm_allowance_deduction_types
        WHERE company_id = $1 AND archived_at IS NULL AND status <> 'retired';`,
       [companyId],
     );
-    const sampleRes = await this.db.query<{ code: string; name_vi: string; status: string }>(
+    const sampleRes = await this.db.query<{
+      code: string;
+      name_vi: string;
+      status: string;
+    }>(
       `SELECT code, name_vi, status FROM public.hrm_allowance_deduction_types
        WHERE company_id = $1 AND archived_at IS NULL AND status <> 'retired'
        ORDER BY sort_order ASC, code ASC
@@ -281,10 +288,21 @@ export class AllowanceCatalogSyncService {
     authorization: string | undefined,
     tenantId: string | undefined,
     companyId: string,
-  ): { catalogCompanyId: string; scope: ReturnType<typeof resolveHrmListScope> } {
-    const tenant = (tenantId ?? this.resolveCatalogTenantId()).trim().toLowerCase();
-    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(authorization, tenant, companyId);
-    const scope = resolveHrmListScope(authorization, catalogCompanyId, { tenantId: tenant });
+  ): {
+    catalogCompanyId: string;
+    scope: ReturnType<typeof resolveHrmListScope>;
+  } {
+    const tenant = (tenantId ?? this.resolveCatalogTenantId())
+      .trim()
+      .toLowerCase();
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      tenant,
+      companyId,
+    );
+    const scope = resolveHrmListScope(authorization, catalogCompanyId, {
+      tenantId: tenant,
+    });
     return { catalogCompanyId, scope };
   }
 
@@ -300,7 +318,10 @@ export class AllowanceCatalogSyncService {
     return trimmed;
   }
 
-  private assertEntryNature(entryKind: AllowanceEntryKind, nature: AllowanceNature): void {
+  private assertEntryNature(
+    entryKind: AllowanceEntryKind,
+    nature: AllowanceNature,
+  ): void {
     if (entryKind === 'allowance' && nature !== 'income') {
       throw new ApiException(
         HRM_ALLOW_CAT_NATURE_MISMATCH,
@@ -317,10 +338,17 @@ export class AllowanceCatalogSyncService {
     }
   }
 
-  private async assertPayTypeKey(companyId: string, componentType: string): Promise<string> {
+  private async assertPayTypeKey(
+    companyId: string,
+    componentType: string,
+  ): Promise<string> {
     const code = componentType.trim();
     if (!code) {
-      throw new ApiException(HRM_PAY_TYPE_KEY, 'componentType is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_PAY_TYPE_KEY,
+        'componentType is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (!this.settingsCatalogs) return code;
     const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
@@ -379,7 +407,12 @@ export class AllowanceCatalogSyncService {
       filters.push(`company_id = ANY($${values.length}::text[])`);
     }
     try {
-      const res = await query<{ id: string; code: string; version: number; status: string }>(
+      const res = await query<{
+        id: string;
+        code: string;
+        version: number;
+        status: string;
+      }>(
         `SELECT id, code, version, status FROM public.pay_formula_definitions
          WHERE ${filters.join(' AND ')} LIMIT 1;`,
         values,
@@ -408,7 +441,10 @@ export class AllowanceCatalogSyncService {
 
   private mapDisplayRow(
     row: PcRow,
-    extras?: { policyOrphanWarn?: { activePolicyLineCount: number }; mergeTokenKey?: string },
+    extras?: {
+      policyOrphanWarn?: { activePolicyLineCount: number };
+      mergeTokenKey?: string;
+    },
   ) {
     const entryKind = row.entry_kind as AllowanceEntryKind;
     const tokenKey =
@@ -485,11 +521,17 @@ export class AllowanceCatalogSyncService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const { scope } = this.resolvePartition(authorization, tenantId, query.company_id);
+    const { scope } = this.resolvePartition(
+      authorization,
+      tenantId,
+      query.company_id,
+    );
     const filters: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, scope.companyIds);
-    const whereParts = filters.map((f) => f.replace(/\bcompany_id\b/g, 'pc.company_id'));
+    const whereParts = filters.map((f) =>
+      f.replace(/\bcompany_id\b/g, 'pc.company_id'),
+    );
     if (!query.include_retired) {
       whereParts.push("pc.status <> 'retired'");
       whereParts.push('pc.archived_at IS NULL');
@@ -531,15 +573,26 @@ export class AllowanceCatalogSyncService {
     const filters: string[] = ['pc.id = $1::uuid'];
     const values: unknown[] = [id];
     pushCompanyIdFilter(filters, values, scope.companyIds);
-    const where = filters.map((f) => f.replace(/\bcompany_id\b/g, 'pc.company_id')).join(' AND ');
-    const res = await this.db.query<PcRow>(`${this.selectPcSql(where)} LIMIT 1;`, values);
+    const where = filters
+      .map((f) => f.replace(/\bcompany_id\b/g, 'pc.company_id'))
+      .join(' AND ');
+    const res = await this.db.query<PcRow>(
+      `${this.selectPcSql(where)} LIMIT 1;`,
+      values,
+    );
     if (!res.rows[0]) {
-      throw new ApiException(HRM_ALLOW_CAT_404, 'Allowance/deduction type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ALLOW_CAT_404,
+        'Allowance/deduction type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapDisplayRow(res.rows[0]);
   }
 
-  private async ensureSalaryComponentSchema(query: HrmDbQueryFn): Promise<void> {
+  private async ensureSalaryComponentSchema(
+    query: HrmDbQueryFn,
+  ): Promise<void> {
     await query(`
       CREATE TABLE IF NOT EXISTS public.salary_components (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -764,7 +817,10 @@ export class AllowanceCatalogSyncService {
     const tokenKey = mergeTokenKeyForEntry(args.entryKind, args.code);
     const sourcePath = mergeTokenSourcePathForEntry(args.entryKind, args.code);
 
-    if (args.previousTokenKey && args.previousTokenKey.toLowerCase() !== tokenKey.toLowerCase()) {
+    if (
+      args.previousTokenKey &&
+      args.previousTokenKey.toLowerCase() !== tokenKey.toLowerCase()
+    ) {
       await query(
         `UPDATE public.hrm_merge_tokens
          SET status = 'retired', archived_at = NOW(), updated_at = NOW(), updated_by = $3
@@ -811,7 +867,14 @@ export class AllowanceCatalogSyncService {
         (id, company_id, token_key, source_path, ring, domain, label_vi, status, origin, created_by, updated_by)
        VALUES
         ($1::uuid, $2, $3, $4, 'cb', 'SET', $5, 'active', 'allowance_catalog', $6, $6);`,
-      [randomUUID(), args.companyId, tokenKey, sourcePath, args.nameVi, args.actor ?? null],
+      [
+        randomUUID(),
+        args.companyId,
+        tokenKey,
+        sourcePath,
+        args.nameVi,
+        args.actor ?? null,
+      ],
     );
     return tokenKey;
   }
@@ -821,7 +884,11 @@ export class AllowanceCatalogSyncService {
    * policy-lines table/columns are missing (PG aborts TX on error — JS catch alone is insufficient).
    * D-ALLOW-CAT-QA-01 / VAL-ALLOW-09 class: SAVEPOINT → COUNT → RELEASE | ROLLBACK TO.
    */
-  private async countActivePolicyLines(query: HrmDbQueryFn, companyId: string, code: string): Promise<number> {
+  private async countActivePolicyLines(
+    query: HrmDbQueryFn,
+    companyId: string,
+    code: string,
+  ): Promise<number> {
     const sp = 'allow_cat_policy_line_count';
     await query(`SAVEPOINT ${sp};`);
     try {
@@ -860,15 +927,29 @@ export class AllowanceCatalogSyncService {
     const code = this.assertCodeFormat(payload.code);
     const nameVi = String(payload.nameVi ?? '').trim();
     if (!nameVi) {
-      throw new ApiException('HRM-VAL-001', 'nameVi is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'nameVi is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    if (!(ALLOWANCE_ENTRY_KINDS as readonly string[]).includes(payload.entryKind)) {
-      throw new ApiException(HRM_ALLOW_CAT_CODE_INVALID, 'entryKind invalid', HttpStatus.BAD_REQUEST);
+    if (
+      !(ALLOWANCE_ENTRY_KINDS as readonly string[]).includes(payload.entryKind)
+    ) {
+      throw new ApiException(
+        HRM_ALLOW_CAT_CODE_INVALID,
+        'entryKind invalid',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const entryKind = payload.entryKind;
-    const nature = (payload.nature ?? defaultNatureForEntryKind(entryKind)) as AllowanceNature;
+    const nature = payload.nature ?? defaultNatureForEntryKind(entryKind);
     if (!(ALLOWANCE_NATURES as readonly string[]).includes(nature)) {
-      throw new ApiException(HRM_ALLOW_CAT_NATURE_MISMATCH, 'nature invalid', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_ALLOW_CAT_NATURE_MISMATCH,
+        'nature invalid',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     this.assertEntryNature(entryKind, nature);
     const componentType = await this.assertPayTypeKey(
@@ -900,7 +981,8 @@ export class AllowanceCatalogSyncService {
         }
         const id = randomUUID();
         const isActive = status === 'active';
-        const archivedAt = status === 'retired' ? new Date().toISOString() : null;
+        const archivedAt =
+          status === 'retired' ? new Date().toISOString() : null;
         const ins = await query<PcRow>(
           `INSERT INTO public.hrm_allowance_deduction_types (
             id, company_id, code, name_vi, entry_kind, nature, value_type,
@@ -969,7 +1051,11 @@ export class AllowanceCatalogSyncService {
            WHERE id = $1::uuid;`,
           [id, scId, code],
         );
-        const row = { ...ins.rows[0], salary_component_id: scId, sc_component_type: componentType };
+        const row = {
+          ...ins.rows[0],
+          salary_component_id: scId,
+          sc_component_type: componentType,
+        };
         return this.mapDisplayRow(row, { mergeTokenKey: tokenKey });
       });
     } catch (err) {
@@ -1003,7 +1089,11 @@ export class AllowanceCatalogSyncService {
       (k) => (payload as Record<string, unknown>)[k] !== undefined,
     );
     if (keys.length === 0) {
-      throw new ApiException('HRM-VAL-001', 'No fields to update', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'No fields to update',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const { scope } = this.resolvePartition(authorization, tenantId, companyId);
 
@@ -1019,21 +1109,37 @@ export class AllowanceCatalogSyncService {
         });
         const prev = peek.rows[0];
         if (prev.archived_at && payload.status !== 'active') {
-          throw new ApiException(HRM_ALLOW_CAT_404, 'Allowance/deduction type is archived', HttpStatus.NOT_FOUND);
+          throw new ApiException(
+            HRM_ALLOW_CAT_404,
+            'Allowance/deduction type is archived',
+            HttpStatus.NOT_FOUND,
+          );
         }
 
-        const entryKind = (payload.entryKind ?? prev.entry_kind) as AllowanceEntryKind;
+        const entryKind = (payload.entryKind ??
+          prev.entry_kind) as AllowanceEntryKind;
         const nature = (payload.nature ??
-          (payload.entryKind ? defaultNatureForEntryKind(entryKind) : prev.nature)) as AllowanceNature;
+          (payload.entryKind
+            ? defaultNatureForEntryKind(entryKind)
+            : prev.nature)) as AllowanceNature;
         this.assertEntryNature(entryKind, nature);
-        const code = payload.code !== undefined ? this.assertCodeFormat(payload.code) : prev.code;
+        const code =
+          payload.code !== undefined
+            ? this.assertCodeFormat(payload.code)
+            : prev.code;
         if (code.toLowerCase() !== prev.code.toLowerCase()) {
           await this.assertUniquePcCode(query, prev.company_id, code, id);
         }
         const nameVi =
-          payload.nameVi !== undefined ? String(payload.nameVi).trim() : prev.name_vi;
+          payload.nameVi !== undefined
+            ? String(payload.nameVi).trim()
+            : prev.name_vi;
         if (!nameVi) {
-          throw new ApiException('HRM-VAL-001', 'nameVi is required', HttpStatus.BAD_REQUEST);
+          throw new ApiException(
+            'HRM-VAL-001',
+            'nameVi is required',
+            HttpStatus.BAD_REQUEST,
+          );
         }
         const componentType = await this.assertPayTypeKey(
           prev.company_id,
@@ -1046,7 +1152,11 @@ export class AllowanceCatalogSyncService {
             ? payload.defaultFormulaDefinitionId
             : prev.default_formula_definition_id;
         if (defaultFormulaId) {
-          const def = await this.assertPublishedFormula(query, defaultFormulaId, scope.companyIds);
+          const def = await this.assertPublishedFormula(
+            query,
+            defaultFormulaId,
+            scope.companyIds,
+          );
           defaultFormulaId = def.id;
         }
         const status = payload.status ?? prev.status;
@@ -1054,14 +1164,17 @@ export class AllowanceCatalogSyncService {
           status === 'active'
             ? null
             : status === 'retired'
-              ? prev.archived_at ?? new Date().toISOString()
+              ? (prev.archived_at ?? new Date().toISOString())
               : prev.archived_at;
         const valueType = payload.valueType ?? prev.value_type;
         const calcMode = payload.calcMode ?? prev.calc_mode;
         const isTaxable = payload.isTaxable ?? prev.is_taxable;
-        const isInsuranceBase = payload.isInsuranceBase ?? prev.is_insurance_base;
+        const isInsuranceBase =
+          payload.isInsuranceBase ?? prev.is_insurance_base;
         const defaultValue =
-          payload.defaultValue !== undefined ? payload.defaultValue : Number(prev.default_value);
+          payload.defaultValue !== undefined
+            ? payload.defaultValue
+            : Number(prev.default_value);
         const minValue =
           payload.minValue !== undefined
             ? payload.minValue
@@ -1076,7 +1189,9 @@ export class AllowanceCatalogSyncService {
               : Number(prev.max_value);
         const sortOrder = payload.sortOrder ?? prev.sort_order;
         const description =
-          payload.description !== undefined ? payload.description : prev.description;
+          payload.description !== undefined
+            ? payload.description
+            : prev.description;
 
         const upd = await query<PcRow>(
           `UPDATE public.hrm_allowance_deduction_types SET
@@ -1129,7 +1244,10 @@ export class AllowanceCatalogSyncService {
           description,
           existingScId: prev.salary_component_id,
         });
-        const prevTokenKey = mergeTokenKeyForEntry(prev.entry_kind as AllowanceEntryKind, prev.code);
+        const prevTokenKey = mergeTokenKeyForEntry(
+          prev.entry_kind as AllowanceEntryKind,
+          prev.code,
+        );
         const tokenKey = await this.upsertMergeToken(query, {
           companyId: prev.company_id,
           entryKind,
@@ -1145,7 +1263,11 @@ export class AllowanceCatalogSyncService {
            WHERE id = $1::uuid;`,
           [id, scId],
         );
-        const row = { ...upd.rows[0], salary_component_id: scId, sc_component_type: componentType };
+        const row = {
+          ...upd.rows[0],
+          salary_component_id: scId,
+          sc_component_type: componentType,
+        };
         return this.mapDisplayRow(row, { mergeTokenKey: tokenKey });
       });
     } catch (err) {
@@ -1178,7 +1300,11 @@ export class AllowanceCatalogSyncService {
           mismatchCode: HRM_ALLOW_CAT_404,
         });
         const prev = peek.rows[0];
-        const policyCount = await this.countActivePolicyLines(query, prev.company_id, prev.code);
+        const policyCount = await this.countActivePolicyLines(
+          query,
+          prev.company_id,
+          prev.code,
+        );
         const archivedAt = new Date().toISOString();
         const upd = await query<PcRow>(
           `UPDATE public.hrm_allowance_deduction_types
@@ -1213,14 +1339,18 @@ export class AllowanceCatalogSyncService {
         });
         return this.mapDisplayRow(upd.rows[0], {
           policyOrphanWarn:
-            policyCount > 0 ? { activePolicyLineCount: policyCount } : undefined,
+            policyCount > 0
+              ? { activePolicyLineCount: policyCount }
+              : undefined,
         });
       });
     } catch (err) {
       if (err instanceof ApiException) throw err;
       throw new ApiException(
         HRM_ALLOW_CAT_500_SYNC,
-        err instanceof Error ? err.message : 'Allowance catalog retire sync failed',
+        err instanceof Error
+          ? err.message
+          : 'Allowance catalog retire sync failed',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -1236,7 +1366,10 @@ export class AllowanceCatalogSyncService {
     await this.ensureSchema();
     const row = await this.getById(id, companyId, authorization, tenantId);
     await this.ensureMergeTokenSchema(this.db.query.bind(this.db));
-    const tokenKey = mergeTokenKeyForEntry(row.entryKind as AllowanceEntryKind, row.code);
+    const tokenKey = mergeTokenKeyForEntry(
+      row.entryKind as AllowanceEntryKind,
+      row.code,
+    );
     const filters = ['company_id = $1', 'lower(token_key) = lower($2)'];
     const values: unknown[] = [row.companyId, tokenKey];
     if (!includeRetired) {

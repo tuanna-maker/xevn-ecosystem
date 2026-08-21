@@ -37,7 +37,9 @@ function resolveUatPassword(): string {
 }
 
 function hashMobilePassword(email: string, password: string): string {
-  return createHash('sha256').update(`${email.trim().toLowerCase()}:${password}`).digest('hex');
+  return createHash('sha256')
+    .update(`${email.trim().toLowerCase()}:${password}`)
+    .digest('hex');
 }
 
 function parseSeq(raw: string): number | null {
@@ -63,7 +65,10 @@ export function resolveCanonicalUatLoginEmail(email: string): string {
   return `uat.nv${String(seq).padStart(4, '0')}@xe.vn`;
 }
 
-export function matchesUatMobilePassword(email: string, password: string): boolean {
+export function matchesUatMobilePassword(
+  email: string,
+  password: string,
+): boolean {
   if (!parseUatMobileSeqFromLoginEmail(email)) return false;
   return password === resolveUatPassword();
 }
@@ -88,7 +93,15 @@ function personaForSeq(seq: number): UatPersona {
     };
   }
   const companyId =
-    seq <= 200 ? 'holding' : seq <= 400 ? 'trsport' : seq <= 600 ? 'logistics' : seq <= 800 ? 'finance' : 'services';
+    seq <= 200
+      ? 'holding'
+      : seq <= 400
+        ? 'trsport'
+        : seq <= 600
+          ? 'logistics'
+          : seq <= 800
+            ? 'finance'
+            : 'services';
   return {
     companyId,
     employeeCode: `UAT-${String(seq).padStart(4, '0')}`,

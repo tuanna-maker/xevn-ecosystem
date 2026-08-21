@@ -8,7 +8,11 @@ describe('OperatingUnitsController', () => {
 
   const serviceMock = {
     listOperatingUnits: jest.fn().mockResolvedValue([
-      { operating_slug: 'holding', display_name_vi: 'Tập đoàn XeVN', rollup_order: 1 },
+      {
+        operating_slug: 'holding',
+        display_name_vi: 'Tập đoàn XeVN',
+        rollup_order: 1,
+      },
     ]),
   };
 
@@ -23,9 +27,9 @@ describe('OperatingUnitsController', () => {
   });
 
   it('requires bearer or internal key', () => {
-    expect(() => controller.list(undefined, undefined, undefined, undefined)).toThrow(
-      'Unauthorized operating-units access',
-    );
+    expect(() =>
+      controller.list(undefined, undefined, undefined, undefined),
+    ).toThrow('Unauthorized operating-units access');
     expect(serviceMock.listOperatingUnits).not.toHaveBeenCalled();
   });
 
@@ -36,18 +40,28 @@ describe('OperatingUnitsController', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    const result = await controller.list(`Bearer ${token}`, undefined, 'xevn', 'main');
+    const result = await controller.list(
+      `Bearer ${token}`,
+      undefined,
+      'xevn',
+      'main',
+    );
     expect(result.success).toBe(true);
     expect(result.code).toBe('HRM-OPU-200');
     expect(result.data).toHaveLength(1);
-    expect(serviceMock.listOperatingUnits).toHaveBeenCalledWith(`Bearer ${token}`, {
-      tenantId: 'xevn',
-    });
+    expect(serviceMock.listOperatingUnits).toHaveBeenCalledWith(
+      `Bearer ${token}`,
+      {
+        tenantId: 'xevn',
+      },
+    );
   });
 
   it('allows internal API key without JWT', async () => {
     const result = await controller.list(undefined, 'test-key', 'xevn', 'main');
     expect(result.success).toBe(true);
-    expect(serviceMock.listOperatingUnits).toHaveBeenCalledWith(undefined, { tenantId: 'xevn' });
+    expect(serviceMock.listOperatingUnits).toHaveBeenCalledWith(undefined, {
+      tenantId: 'xevn',
+    });
   });
 });

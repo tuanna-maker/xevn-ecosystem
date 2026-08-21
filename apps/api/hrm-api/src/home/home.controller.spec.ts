@@ -17,11 +17,25 @@ describe('HomeController (PCOMP-W4-BE-HUB-04a)', () => {
         is_manager: true,
         is_birthday_today: false,
       },
-      tasks: { total_count: 1, unread_inbox_count: 1, own_pending_count: 0, items: [] },
-      manager_pending: { total_count: 3, leave_count: 2, update_count: 1, preview: [] },
+      tasks: {
+        total_count: 1,
+        unread_inbox_count: 1,
+        own_pending_count: 0,
+        items: [],
+      },
+      manager_pending: {
+        total_count: 3,
+        leave_count: 2,
+        update_count: 1,
+        preview: [],
+      },
       celebrations: { total_count: 0, items: [] },
       whos_out: { total_count: 0, items: [] },
-      attendance_today: { checked_in: true, check_in_at: '2026-06-07T08:02:00+07:00', status: 'present' },
+      attendance_today: {
+        checked_in: true,
+        check_in_at: '2026-06-07T08:02:00+07:00',
+        status: 'present',
+      },
       generated_at: '2026-06-07T09:00:00+07:00',
     }),
   };
@@ -55,15 +69,24 @@ describe('HomeController (PCOMP-W4-BE-HUB-04a)', () => {
       employee_id: managerId,
       roles: ['employee', 'manager'],
     });
-    const result = await controller.getSummary(`Bearer ${token}`, undefined, 'xevn', holdingUuid, {
-      company_id: 'holding',
-      employee_id: managerId,
-    });
+    const result = await controller.getSummary(
+      `Bearer ${token}`,
+      undefined,
+      'xevn',
+      holdingUuid,
+      {
+        company_id: 'holding',
+        employee_id: managerId,
+      },
+    );
     expect(result.success).toBe(true);
     expect(result.code).toBe('HRM-HOME-200');
     expect(result.data.manager_pending.total_count).toBe(3);
     expect(serviceMock.getSummary).toHaveBeenCalledWith(
-      expect.objectContaining({ company_id: 'holding', employee_id: managerId }),
+      expect.objectContaining({
+        company_id: 'holding',
+        employee_id: managerId,
+      }),
       `Bearer ${token}`,
       'xevn',
     );
@@ -80,10 +103,16 @@ describe('HomeController (PCOMP-W4-BE-HUB-04a)', () => {
       employee_id: cooId,
       roles: ['employee', 'manager'],
     });
-    await controller.getSummary(`Bearer ${token}`, undefined, 'xevn', 'trsport', {
-      company_id: 'holding',
-      employee_id: cooId,
-    });
+    await controller.getSummary(
+      `Bearer ${token}`,
+      undefined,
+      'xevn',
+      'trsport',
+      {
+        company_id: 'holding',
+        employee_id: cooId,
+      },
+    );
     expect(serviceMock.getSummary).toHaveBeenCalledWith(
       expect.objectContaining({ company_id: 'trsport', employee_id: cooId }),
       `Bearer ${token}`,
@@ -110,10 +139,16 @@ describe('HomeController (PCOMP-W4-BE-HUB-04a)', () => {
   });
 
   it('allows internal API key without JWT', async () => {
-    const result = await controller.getSummary(undefined, 'test-key', 'xevn', 'holding', {
-      company_id: 'holding',
-      employee_id: managerId,
-    });
+    const result = await controller.getSummary(
+      undefined,
+      'test-key',
+      'xevn',
+      'holding',
+      {
+        company_id: 'holding',
+        employee_id: managerId,
+      },
+    );
     expect(result.success).toBe(true);
     expect(serviceMock.getSummary).toHaveBeenCalled();
   });

@@ -1,5 +1,9 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { recordDbQueryMetrics, readPgPoolEnv, setPgPoolWaiting } from '@xevn/platform-core';
+import {
+  recordDbQueryMetrics,
+  readPgPoolEnv,
+  setPgPoolWaiting,
+} from '@xevn/platform-core';
 import { Pool, QueryResult, QueryResultRow } from 'pg';
 import { HRM_SERVICE_NAME } from '../platform/platform-runtime';
 
@@ -27,7 +31,12 @@ export class HrmDbService implements OnModuleDestroy {
       this.attachPoolErrorGuard(this.pool);
       return;
     }
-    if (process.env.DB_HOST && process.env.DB_PORT && process.env.DB_USER && process.env.DB_PASSWORD) {
+    if (
+      process.env.DB_HOST &&
+      process.env.DB_PORT &&
+      process.env.DB_USER &&
+      process.env.DB_PASSWORD
+    ) {
       this.pool = new Pool({
         host: process.env.DB_HOST,
         port: Number(process.env.DB_PORT),
@@ -47,11 +56,16 @@ export class HrmDbService implements OnModuleDestroy {
   /** PgBouncer idle disconnect must not crash the Nest process (ECONNRESET). */
   private attachPoolErrorGuard(pool: Pool): void {
     pool.on('error', (err: Error) => {
-      console.error(`[${HRM_SERVICE_NAME}] pg pool idle client error: ${err.message}`);
+      console.error(
+        `[${HRM_SERVICE_NAME}] pg pool idle client error: ${err.message}`,
+      );
     });
   }
 
-  async query<T extends QueryResultRow = QueryResultRow>(text: string, values: unknown[] = []) {
+  async query<T extends QueryResultRow = QueryResultRow>(
+    text: string,
+    values: unknown[] = [],
+  ) {
     const startedAt = Date.now();
     const operation = text.trim().split(/\s+/)[0]?.toLowerCase() || 'query';
     try {
@@ -60,7 +74,11 @@ export class HrmDbService implements OnModuleDestroy {
       recordDbQueryMetrics(HRM_SERVICE_NAME, operation, Date.now() - startedAt);
       return result;
     } catch (error) {
-      recordDbQueryMetrics(HRM_SERVICE_NAME, `${operation}_error`, Date.now() - startedAt);
+      recordDbQueryMetrics(
+        HRM_SERVICE_NAME,
+        `${operation}_error`,
+        Date.now() - startedAt,
+      );
       throw error;
     }
   }
@@ -90,11 +108,15 @@ export class HrmDbService implements OnModuleDestroy {
    * Same-connection BEGIN/COMMIT for multi-statement writes (e.g. FR-05 profile + audit).
    * Fail-closed: any thrown error rolls back.
    */
-  async withTransaction<T>(fn: (query: HrmDbQueryFn) => Promise<T>): Promise<T> {
+  async withTransaction<T>(
+    fn: (query: HrmDbQueryFn) => Promise<T>,
+  ): Promise<T> {
     const client = await this.pool.connect();
     try {
       await client.query('BEGIN');
-      const query: HrmDbQueryFn = async <R extends QueryResultRow = QueryResultRow>(
+      const query: HrmDbQueryFn = async <
+        R extends QueryResultRow = QueryResultRow,
+      >(
         text: string,
         values: unknown[] = [],
       ) => {
@@ -102,10 +124,18 @@ export class HrmDbService implements OnModuleDestroy {
         const operation = text.trim().split(/\s+/)[0]?.toLowerCase() || 'query';
         try {
           const result = await client.query<R>(text, values);
-          recordDbQueryMetrics(HRM_SERVICE_NAME, operation, Date.now() - startedAt);
+          recordDbQueryMetrics(
+            HRM_SERVICE_NAME,
+            operation,
+            Date.now() - startedAt,
+          );
           return result;
         } catch (error) {
-          recordDbQueryMetrics(HRM_SERVICE_NAME, `${operation}_error`, Date.now() - startedAt);
+          recordDbQueryMetrics(
+            HRM_SERVICE_NAME,
+            `${operation}_error`,
+            Date.now() - startedAt,
+          );
           throw error;
         }
       };

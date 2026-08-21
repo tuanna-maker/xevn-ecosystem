@@ -105,6 +105,8 @@ export class AttOtCompTypeService {
         name_en TEXT NULL,
         sort_order INT NOT NULL DEFAULT 100,
         color TEXT NULL,
+        method TEXT NULL,
+        description TEXT NULL,
         metadata_json JSONB NULL,
         status TEXT NOT NULL DEFAULT 'active',
         archived_at TIMESTAMPTZ NULL,
@@ -163,6 +165,11 @@ export class AttOtCompTypeService {
     // FORBIDDEN: never ADD CHECK code IN ('salary','compensatory_leave') - open catalog (BR-PLT-05).
     // FORBIDDEN: no payroll formula / amount columns this seat (L-ATT-OTC-10 formula HOLD).
     // U65: optional starter upsert omitted - empty catalog is valid.
+    await this.db.query(`
+      ALTER TABLE public.att_ot_comp_type
+      ADD COLUMN IF NOT EXISTS method TEXT NULL,
+      ADD COLUMN IF NOT EXISTS description TEXT NULL;
+    `);
     this.schemaReady = true;
   }
 
@@ -230,10 +237,23 @@ export class AttOtCompTypeService {
     return s;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -257,7 +277,9 @@ export class AttOtCompTypeService {
     }
     if (opts?.q?.trim()) {
       values.push(`%${opts.q.trim().toLowerCase()}%`);
-      filters.push(`(lower(code) LIKE $${values.length} OR lower(name_vi) LIKE $${values.length})`);
+      filters.push(
+        `(lower(code) LIKE $${values.length} OR lower(name_vi) LIKE $${values.length})`,
+      );
     }
     const where = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
     const res = await this.db.query<AttOtCompTypeRow>(
@@ -277,8 +299,15 @@ export class AttOtCompTypeService {
     opts?: { tenantId?: string },
   ): Promise<{ total: number; data: AttOtCompTypeDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, opts?.tenantId);
-    const rows = await this.loadNativeRows(companyKeys, { status: 'active', q: query.q });
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      opts?.tenantId,
+    );
+    const rows = await this.loadNativeRows(companyKeys, {
+      status: 'active',
+      q: query.q,
+    });
     const data = rows.map((r) => this.display(r));
     return { total: data.length, data };
   }
@@ -326,7 +355,11 @@ export class AttOtCompTypeService {
     tenantId?: string,
   ): Promise<{ total: number; data: AttOtCompTypeDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
     const includeInactive =
       String(query.include_inactive ?? '').toLowerCase() === 'true' ||
       String(query.include_inactive ?? '') === '1' ||
@@ -358,7 +391,11 @@ export class AttOtCompTypeService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_OTC_404, 'OT compensation type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_OTC_404,
+        'OT compensation type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_OTC_404,
@@ -374,14 +411,23 @@ export class AttOtCompTypeService {
     tenantId?: string,
   ): Promise<AttOtCompTypeDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const code = this.assertKeyFormat(body.code);
     const nameVi = body.nameVi.trim();
     if (!nameVi || nameVi.length > 128) {
-      throw new ApiException(HRM_ATT_OTC_VAL, 'nameVi is required (1..128)', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_ATT_OTC_VAL,
+        'nameVi is required (1..128)',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const status = body.status ? this.assertStatus(body.status) : 'active';
-    const metadataJson = body.metadata != null ? JSON.stringify(body.metadata) : null;
+    const metadataJson =
+      body.metadata != null ? JSON.stringify(body.metadata) : null;
     const sortOrder = body.sortOrder ?? 100;
     const nameEn = body.nameEn?.trim() || null;
     const color = body.color?.trim() || null;
@@ -420,7 +466,17 @@ export class AttOtCompTypeService {
            $1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9
          )
          RETURNING ${ROW_SELECT};`,
-        [randomUUID(), companyId, code, nameVi, nameEn, sortOrder, color, metadataJson, status],
+        [
+          randomUUID(),
+          companyId,
+          code,
+          nameVi,
+          nameEn,
+          sortOrder,
+          color,
+          metadataJson,
+          status,
+        ],
       );
       return this.display(inserted.rows[0]);
     } catch (err: unknown) {
@@ -451,7 +507,11 @@ export class AttOtCompTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_OTC_404, 'OT compensation type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_OTC_404,
+        'OT compensation type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_OTC_404,
@@ -474,22 +534,33 @@ export class AttOtCompTypeService {
     if (body.nameVi !== undefined) {
       const nameVi = body.nameVi.trim();
       if (!nameVi || nameVi.length > 128) {
-        throw new ApiException(HRM_ATT_OTC_VAL, 'nameVi is required (1..128)', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          HRM_ATT_OTC_VAL,
+          'nameVi is required (1..128)',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       assign('name_vi', nameVi);
     }
     if (body.nameEn !== undefined) {
-      assign('name_en', body.nameEn == null ? null : String(body.nameEn).trim() || null);
+      assign(
+        'name_en',
+        body.nameEn == null ? null : String(body.nameEn).trim() || null,
+      );
     }
     if (body.sortOrder !== undefined) assign('sort_order', body.sortOrder);
     if (body.color !== undefined) {
-      assign('color', body.color == null ? null : String(body.color).trim() || null);
+      assign(
+        'color',
+        body.color == null ? null : String(body.color).trim() || null,
+      );
     }
     if (body.metadata !== undefined) {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertStatus(body.status));
 
     if (!sets.length) {
       return this.display(row);
@@ -520,7 +591,11 @@ export class AttOtCompTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_OTC_404, 'OT compensation type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_OTC_404,
+        'OT compensation type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_OTC_404,

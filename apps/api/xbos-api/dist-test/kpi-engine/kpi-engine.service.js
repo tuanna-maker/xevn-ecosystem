@@ -1,0 +1,207 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.KpiEngineService = void 0;
+const common_1 = require("@nestjs/common");
+const api_exception_1 = require("../common/api.exception");
+const xbos_db_service_1 = require("../db/xbos-db.service");
+const kpi_scope_constants_1 = require("./kpi-scope.constants");
+let KpiEngineService = class KpiEngineService {
+    db;
+    constructor(db) {
+        this.db = db;
+    }
+    assertEvaluateInput(input) {
+        for (const field of ['target', 'actual']) {
+            const value = input[field];
+            if (value === undefined || value === null || Number.isNaN(Number(value))) {
+                throw new api_exception_1.ApiException('XBOS-VAL-003', `KPI evaluate requires numeric ${field}`, common_1.HttpStatus.BAD_REQUEST, { field });
+            }
+        }
+    }
+    evaluate(input) {
+        this.assertEvaluateInput(input);
+        const target = Number(input.target);
+        const actual = Number(input.actual);
+        const weight = Number(input.weight ?? 1);
+        const warningThreshold = Number(input.warningThreshold ?? target * 0.8);
+        const criticalThreshold = Number(input.criticalThreshold ?? target * 0.6);
+        const ratio = target > 0 ? actual / target : 0;
+        const score = Math.max(0, Math.round(ratio * 100 * weight));
+        let band = 'excellent';
+        if (actual <= criticalThreshold)
+            band = 'critical';
+        else if (actual <= warningThreshold)
+            band = 'warning';
+        const rewardAmount = band === 'excellent' ? Math.round((score - 100) * 10000) : 0;
+        const penaltyAmount = band === 'critical'
+            ? Math.round((100 - score) * 15000)
+            : band === 'warning'
+                ? Math.round((100 - score) * 7000)
+                : 0;
+        return {
+            score,
+            band,
+            rewardAmount: rewardAmount > 0 ? rewardAmount : 0,
+            penaltyAmount: penaltyAmount > 0 ? penaltyAmount : 0,
+            netAmount: Math.max(rewardAmount, 0) - Math.max(penaltyAmount, 0),
+            ratio,
+        };
+    }
+    evaluateBatch(items) {
+        return items.map((item, index) => ({ index, ...this.evaluate(item) }));
+    }
+    async ensureKpiActualsSchema() {
+        await this.db.query(`
+      CREATE TABLE IF NOT EXISTS public.xbos_kpi_actuals (
+        tenant_id TEXT NOT NULL,
+        company_id TEXT NOT NULL,
+        metric_code TEXT NOT NULL,
+        period_date DATE NOT NULL,
+        actual_value NUMERIC NOT NULL DEFAULT 0,
+        target_value NUMERIC NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (tenant_id, company_id, metric_code, period_date)
+      );
+    `);
+    }
+    resolveRollupCompanyIds(companyId) {
+        if ((0, kpi_scope_constants_1.isGroupRollupCompanyId)(companyId)) {
+            return [...kpi_scope_constants_1.GROUP_ROLLUP_COMPANY_IDS];
+        }
+        return [companyId];
+    }
+    async rollup(tenantId, companyId, from, to) {
+        await this.ensureKpiActualsSchema();
+        const fromDate = from ?? new Date(Date.now() - 180 * 86400000).toISOString().slice(0, 10);
+        const toDate = to ?? new Date().toISOString().slice(0, 10);
+        const companyIds = this.resolveRollupCompanyIds(companyId);
+        const groupRollup = (0, kpi_scope_constants_1.isGroupRollupCompanyId)(companyId);
+        const res = await this.db.query(groupRollup
+            ? `
+      SELECT metric_code,
+             period_date::text,
+             SUM(actual_value)::text AS actual_value,
+             AVG(target_value)::text AS target_value
+      FROM public.xbos_kpi_actuals
+      WHERE tenant_id = $1
+        AND company_id = ANY($2::text[])
+        AND period_date >= $3::date AND period_date <= $4::date
+      GROUP BY metric_code, period_date
+      ORDER BY metric_code, period_date
+      `
+            : `
+      SELECT metric_code, period_date::text, actual_value::text, target_value::text
+      FROM public.xbos_kpi_actuals
+      WHERE tenant_id = $1 AND company_id = $2
+        AND period_date >= $3::date AND period_date <= $4::date
+      ORDER BY metric_code, period_date
+      `, groupRollup ? [tenantId, companyIds, fromDate, toDate] : [tenantId, companyId, fromDate, toDate]);
+        const byMetric = new Map();
+        for (const row of res.rows) {
+            const list = byMetric.get(row.metric_code) ?? [];
+            list.push({
+                period: row.period_date,
+                actual: Number(row.actual_value),
+                target: row.target_value != null ? Number(row.target_value) : null,
+            });
+            byMetric.set(row.metric_code, list);
+        }
+        return {
+            tenantId,
+            companyId,
+            rollupMode: groupRollup ? 'group' : 'single',
+            companyIds: groupRollup ? companyIds : [companyId],
+            from: fromDate,
+            to: toDate,
+            series: Array.from(byMetric.entries()).map(([metricCode, points]) => ({ metricCode, points })),
+        };
+    }
+    async ensurePortalAlertsSchema() {
+        await this.db.query(`
+      CREATE TABLE IF NOT EXISTS public.xbos_portal_alerts (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        tenant_id TEXT NOT NULL,
+        company_id TEXT NULL,
+        module_code TEXT NOT NULL DEFAULT 'system',
+        level TEXT NOT NULL DEFAULT 'info',
+        title TEXT NOT NULL,
+        detail TEXT NULL,
+        source_system TEXT NOT NULL DEFAULT 'xbos',
+        source_id TEXT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        dismissed_at TIMESTAMPTZ NULL
+      );
+    `);
+    }
+    async listPortalAlerts(tenantId, limit = 50, companyId) {
+        await this.ensurePortalAlertsSchema();
+        const res = await this.db.query(companyId
+            ? `
+      SELECT id, tenant_id, company_id, module_code, level, title, detail, source_system, source_id, created_at
+      FROM public.xbos_portal_alerts
+      WHERE tenant_id = $1 AND dismissed_at IS NULL
+        AND (company_id IS NULL OR company_id = $3)
+      ORDER BY created_at DESC
+      LIMIT $2
+      `
+            : `
+      SELECT id, tenant_id, company_id, module_code, level, title, detail, source_system, source_id, created_at
+      FROM public.xbos_portal_alerts
+      WHERE tenant_id = $1 AND dismissed_at IS NULL
+      ORDER BY created_at DESC
+      LIMIT $2
+      `, companyId ? [tenantId, limit, companyId] : [tenantId, limit]);
+        return res.rows;
+    }
+    async publishPortalAlert(row) {
+        await this.ensurePortalAlertsSchema();
+        const res = await this.db.query(`
+      INSERT INTO public.xbos_portal_alerts (tenant_id, company_id, module_code, level, title, detail, source_system, source_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING id::text
+      `, [
+            row.tenantId,
+            row.companyId ?? null,
+            row.moduleCode,
+            row.level,
+            row.title,
+            row.detail ?? null,
+            row.sourceSystem,
+            row.sourceId ?? null,
+        ]);
+        return { id: res.rows[0]?.id ?? null };
+    }
+    /** UC-XBOS-KPI-04 — emit portal alert from KPI band evaluation. */
+    async emitKpiBandAlert(params) {
+        const level = params.band;
+        const title = params.band === 'critical'
+            ? `KPI critical: ${params.metricCode}`
+            : `KPI warning: ${params.metricCode}`;
+        const detail = `score=${params.score}; actual=${params.actual}; target=${params.target}`;
+        return this.publishPortalAlert({
+            tenantId: params.tenantId,
+            companyId: params.companyId,
+            moduleCode: 'kpi-engine',
+            level,
+            title,
+            detail,
+            sourceSystem: 'xbos',
+            sourceId: `${params.metricCode}:${params.band}`,
+        });
+    }
+};
+exports.KpiEngineService = KpiEngineService;
+exports.KpiEngineService = KpiEngineService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [xbos_db_service_1.XbosDbService])
+], KpiEngineService);

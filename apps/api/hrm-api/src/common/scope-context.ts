@@ -49,7 +49,9 @@ function isGroupCeoMemberSlugNarrowFilter(
     return false;
   }
   const requested = requestedCompanyId.trim().toLowerCase();
-  return (HRM_GROUP_MEMBER_COMPANY_SLUGS as readonly string[]).includes(requested);
+  return (HRM_GROUP_MEMBER_COMPANY_SLUGS as readonly string[]).includes(
+    requested,
+  );
 }
 
 /** UF-HRM-11 — group CEO on main may submit metadata with employee company_uuid from list. */
@@ -76,7 +78,9 @@ function isGroupCeoPilotCompanyUuid(
     return false;
   }
   const requested = normalizeUuid(requestedCompanyId);
-  return Object.values(HRM_COMPANY_UUID_BY_SLUG).some((uuid) => normalizeUuid(uuid) === requested);
+  return Object.values(HRM_COMPANY_UUID_BY_SLUG).some(
+    (uuid) => normalizeUuid(uuid) === requested,
+  );
 }
 
 /**
@@ -183,7 +187,12 @@ function companyScopeMatches(
   }
   if (
     scopeGate &&
-    isGroupCeoPilotCompanyUuid(scopeGate.claimTenantId, claim, scopeGate.roleCode, requested)
+    isGroupCeoPilotCompanyUuid(
+      scopeGate.claimTenantId,
+      claim,
+      scopeGate.roleCode,
+      requested,
+    )
   ) {
     return true;
   }
@@ -194,13 +203,17 @@ function companyScopeMatches(
   // Plane B′ registry: slug claim ↔ mapped UUID request (attendance_update_requests persist UUID).
   if (isUuid(requested)) {
     const mapped =
-      HRM_COMPANY_UUID_BY_SLUG[claim.toLowerCase() as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+      HRM_COMPANY_UUID_BY_SLUG[
+        claim.toLowerCase() as keyof typeof HRM_COMPANY_UUID_BY_SLUG
+      ];
     if (mapped && normalizeUuid(mapped) === normalizeUuid(requested)) {
       return true;
     }
   } else if (claimUuid && isUuid(claimUuid)) {
     const mapped =
-      HRM_COMPANY_UUID_BY_SLUG[requested.toLowerCase() as keyof typeof HRM_COMPANY_UUID_BY_SLUG];
+      HRM_COMPANY_UUID_BY_SLUG[
+        requested.toLowerCase() as keyof typeof HRM_COMPANY_UUID_BY_SLUG
+      ];
     if (mapped && normalizeUuid(mapped) === normalizeUuid(claimUuid)) {
       return true;
     }
@@ -208,7 +221,10 @@ function companyScopeMatches(
   return false;
 }
 
-function readClaim(payload: Record<string, unknown>, ...keys: string[]): string | undefined {
+function readClaim(
+  payload: Record<string, unknown>,
+  ...keys: string[]
+): string | undefined {
   for (const key of keys) {
     const value = payload[key];
     if (typeof value === 'string' && value.trim()) {
@@ -218,7 +234,10 @@ function readClaim(payload: Record<string, unknown>, ...keys: string[]): string 
   return undefined;
 }
 
-function assertScopeId(value: string | undefined, field: 'tenantId' | 'companyId'): string {
+function assertScopeId(
+  value: string | undefined,
+  field: 'tenantId' | 'companyId',
+): string {
   if (!value) {
     throw new ApiException(
       field === 'tenantId' ? 'SCOPE_TENANT_REQUIRED' : 'SCOPE_COMPANY_REQUIRED',
@@ -279,7 +298,11 @@ export function resolveScopeContext(
     ? readClaim(jwtPayload, 'roleCode', 'role_code', 'role')
     : undefined;
 
-  const portalNormalized = normalizePortalScopeRequest(claimTenantId, claimCompanyId, requested);
+  const portalNormalized = normalizePortalScopeRequest(
+    claimTenantId,
+    claimCompanyId,
+    requested,
+  );
   const normalizedRequest = {
     tenantId: portalNormalized.tenantId,
     companyId: normalizeMemberPortalMainHeader(
@@ -289,11 +312,17 @@ export function resolveScopeContext(
     ),
   };
 
-  const tenantId = assertScopeId(claimTenantId ?? normalizedRequest.tenantId, 'tenantId');
-  let companyId = assertScopeId(claimCompanyId ?? normalizedRequest.companyId, 'companyId');
+  const tenantId = assertScopeId(
+    claimTenantId ?? normalizedRequest.tenantId,
+    'tenantId',
+  );
+  let companyId = assertScopeId(
+    claimCompanyId ?? normalizedRequest.companyId,
+    'companyId',
+  );
   if (
     isGroupCeoHoldingJwtMainRequest(
-      jwtPayload as Record<string, unknown> | null,
+      jwtPayload,
       claimTenantId,
       claimCompanyId,
       roleCode,
@@ -303,37 +332,58 @@ export function resolveScopeContext(
     companyId = HRM_PILOT_OPERATING_COMPANY_ID;
   }
 
-  if (claimTenantId && normalizedRequest.tenantId && claimTenantId !== normalizedRequest.tenantId) {
-    throw new ApiException('SCOPE_CONTEXT_MISMATCH', 'tenantId mismatches token scope', HttpStatus.CONFLICT, {
-      field: 'tenantId',
-      token: claimTenantId,
-      request: normalizedRequest.tenantId,
-    });
+  if (
+    claimTenantId &&
+    normalizedRequest.tenantId &&
+    claimTenantId !== normalizedRequest.tenantId
+  ) {
+    throw new ApiException(
+      'SCOPE_CONTEXT_MISMATCH',
+      'tenantId mismatches token scope',
+      HttpStatus.CONFLICT,
+      {
+        field: 'tenantId',
+        token: claimTenantId,
+        request: normalizedRequest.tenantId,
+      },
+    );
   }
   if (
     claimCompanyId &&
     normalizedRequest.companyId &&
-    !companyScopeMatches(claimCompanyId, claimCompanyUuid, normalizedRequest.companyId, {
-      claimTenantId,
-      roleCode,
-      jwtPayload: jwtPayload as Record<string, unknown> | null,
-    })
+    !companyScopeMatches(
+      claimCompanyId,
+      claimCompanyUuid,
+      normalizedRequest.companyId,
+      {
+        claimTenantId,
+        roleCode,
+        jwtPayload: jwtPayload,
+      },
+    )
   ) {
-    throw new ApiException('SCOPE_CONTEXT_MISMATCH', 'companyId mismatches token scope', HttpStatus.CONFLICT, {
-      field: 'companyId',
-      token: claimCompanyId,
-      request: normalizedRequest.companyId,
-      ...(claimCompanyUuid ? { tokenCompanyUuid: claimCompanyUuid } : {}),
-    });
+    throw new ApiException(
+      'SCOPE_CONTEXT_MISMATCH',
+      'companyId mismatches token scope',
+      HttpStatus.CONFLICT,
+      {
+        field: 'companyId',
+        token: claimCompanyId,
+        request: normalizedRequest.companyId,
+        ...(claimCompanyUuid ? { tokenCompanyUuid: claimCompanyUuid } : {}),
+      },
+    );
   }
 
   // Member portal main→claim: return operating slug so mutate guards match JWT (not header main).
   if (
     normalizedRequest.companyId &&
     claimCompanyId &&
-    normalizedRequest.companyId.trim().toLowerCase() === claimCompanyId.trim().toLowerCase() &&
+    normalizedRequest.companyId.trim().toLowerCase() ===
+      claimCompanyId.trim().toLowerCase() &&
     requested.companyId &&
-    (requested.companyId.trim().toLowerCase() === HRM_PILOT_OPERATING_COMPANY_ID ||
+    (requested.companyId.trim().toLowerCase() ===
+      HRM_PILOT_OPERATING_COMPANY_ID ||
       requested.companyId.trim().toLowerCase() === 'holding')
   ) {
     companyId = claimCompanyId.trim();

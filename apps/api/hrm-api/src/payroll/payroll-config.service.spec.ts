@@ -45,13 +45,15 @@ describe('PayrollConfigService', () => {
       // Giả lập DB trả về có dữ liệu (bị trùng)
       dbService.queryOne.mockResolvedValueOnce({ id: 'uuid-existing' });
 
-      await expect(service.createSalaryComponent('tenant_x', 'company_1', dto))
-        .rejects
-        .toThrow(ConflictException);
+      await expect(
+        service.createSalaryComponent('tenant_x', 'company_1', dto),
+      ).rejects.toThrow(ConflictException);
 
       expect(dbService.queryOne).toHaveBeenCalledWith(
-        expect.stringContaining('SELECT id FROM pay_salary_component WHERE company_id = $1 AND code = $2'),
-        ['company_1', 'LUONG_CO_BAN']
+        expect.stringContaining(
+          'SELECT id FROM pay_salary_component WHERE company_id = $1 AND code = $2',
+        ),
+        ['company_1', 'LUONG_CO_BAN'],
       );
     });
 
@@ -59,9 +61,19 @@ describe('PayrollConfigService', () => {
       // Giả lập DB không trùng
       dbService.queryOne.mockResolvedValueOnce(null);
       // Giả lập DB insert thành công
-      dbService.query.mockResolvedValueOnce({ rows: [{ id: 'new-uuid' }], command: 'INSERT', rowCount: 1, oid: 0, fields: [] });
+      dbService.query.mockResolvedValueOnce({
+        rows: [{ id: 'new-uuid' }],
+        command: 'INSERT',
+        rowCount: 1,
+        oid: 0,
+        fields: [],
+      });
 
-      const result = await service.createSalaryComponent('tenant_x', 'company_1', dto);
+      const result = await service.createSalaryComponent(
+        'tenant_x',
+        'company_1',
+        dto,
+      );
       expect(result).toEqual({ id: 'new-uuid' });
       expect(dbService.query).toHaveBeenCalledTimes(1);
     });
@@ -70,7 +82,10 @@ describe('PayrollConfigService', () => {
   describe('getSalaryComponents', () => {
     it('Should transform boolean to display-ready string badges', async () => {
       dbService.query.mockResolvedValueOnce({
-        command: 'SELECT', rowCount: 1, oid: 0, fields: [],
+        command: 'SELECT',
+        rowCount: 1,
+        oid: 0,
+        fields: [],
         rows: [
           {
             id: 'uuid-1',
@@ -78,9 +93,9 @@ describe('PayrollConfigService', () => {
             name_vi: 'Thử nghiệm',
             component_type: 'ALLOWANCE',
             is_taxable: false,
-            in_bhxh_base: true
-          }
-        ]
+            in_bhxh_base: true,
+          },
+        ],
       });
 
       const result = await service.getSalaryComponents('tenant_x', 'company_1');

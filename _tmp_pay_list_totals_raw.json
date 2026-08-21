@@ -1,0 +1,87 @@
+{
+  "found": [
+    {
+      "id": "d92d3bbb-f53a-4151-9b12-0ebe9dd27d25",
+      "company_id": "holding",
+      "period_label": "QA-EVAL-NF PAYFEQ1-MSIHM5A1",
+      "start_date": "2026-08-31T17:00:00.000Z",
+      "end_date": "2026-09-29T17:00:00.000Z",
+      "status": "processed",
+      "created_by": "ceo@xe.vn",
+      "processed_at": "2026-08-07T10:20:34.284Z",
+      "closed_at": null,
+      "created_at": "2026-08-07T05:11:48.091Z",
+      "updated_at": "2026-08-07T10:20:34.284Z",
+      "employee_count": 53,
+      "formula_definition_id": "f4460176-3335-4856-b924-caa95163fad0",
+      "pay_sheet_template_id": "f3ea4690-28ec-4c81-a5e5-64a125167f10",
+      "sheet_template_snapshot_json": {
+        "columns": [
+          {
+            "sort_order": 10,
+            "display_label": null,
+            "component_code": "base",
+            "override_applied": true,
+            "formula_definition_id": "5d9f0964-62f1-4a64-b791-15e6ffa5613d"
+          },
+          {
+            "sort_order": 20,
+            "display_label": null,
+            "component_code": "phu_cap_an",
+            "override_applied": true,
+            "formula_definition_id": "5d9f0964-62f1-4a64-b791-15e6ffa5613d"
+          }
+        ],
+        "bound_at": "2026-08-07T10:07:39.579Z",
+        "template_id": "f3ea4690-28ec-4c81-a5e5-64a125167f10",
+        "template_code": "qa_t6_is6xdu",
+        "template_name": "probe6"
+      }
+    },
+    {
+      "id": "cf38deac-8b64-474d-9aee-b34249c0f5a1",
+      "company_id": "main",
+      "period_label": "QA-PAY-HIRE-1786011557288",
+      "start_date": "2026-07-31T17:00:00.000Z",
+      "end_date": "2026-08-30T17:00:00.000Z",
+      "status": "processed",
+      "created_by": null,
+      "processed_at": "2026-08-07T10:37:16.994Z",
+      "closed_at": null,
+      "created_at": "2026-08-06T10:19:39.744Z",
+      "updated_at": "2026-08-07T10:37:16.994Z",
+      "employee_count": 1,
+      "formula_definition_id": "f4460176-3335-4856-b924-caa95163fad0",
+      "pay_sheet_template_id": null,
+      "sheet_template_snapshot_json": null
+    }
+  ],
+  "first": {
+    "id": "28875e75-4c5f-49f4-8725-121e22654100",
+    "company_id": "holding",
+    "period_label": "QA-SRC-BE02-EMP-CB",
+    "start_date": "2041-01-31T17:00:00.000Z",
+    "end_date": "2041-02-27T17:00:00.000Z",
+    "status": "processed",
+    "created_by": null,
+    "processed_at": "2026-08-07T10:11:26.299Z",
+    "closed_at": null,
+    "created_at": "2026-08-07T10:11:22.104Z",
+    "updated_at": "2026-08-07T10:11:26.299Z",
+    "employee_count": 1,
+    "formula_definition_id": "f4460176-3335-4856-b924-caa95163fad0",
+    "pay_sheet_template_id": null,
+    "sheet_template_snapshot_json": null
+  },
+  "envelope_keys": [
+    "success",
+    "code",
+    "message",
+    "data",
+    "timestamp"
+  ],
+  "data_keys": [
+    "total",
+    "data"
+  ]
+}

@@ -50,7 +50,9 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
         },
       ],
     };
-    const r = evaluatePayFormulaExpression(expression, { base_salary: 10_000_000 });
+    const r = evaluatePayFormulaExpression(expression, {
+      base_salary: 10_000_000,
+    });
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.gross).toBe(10_500_000);
@@ -84,7 +86,12 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
     const exprOnly = collectExpressionVarKeys({
       form: 'gd1_eval_v1',
       lines: [
-        { component_code: 'A', sign: 'earning', source: 'var', var: 'payable_hours' },
+        {
+          component_code: 'A',
+          sign: 'earning',
+          source: 'var',
+          var: 'payable_hours',
+        },
         {
           component_code: 'B',
           sign: 'earning',
@@ -99,7 +106,12 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
       {
         form: 'gd1_eval_v1',
         lines: [
-          { component_code: 'A', sign: 'earning', source: 'var', var: 'payable_hours' },
+          {
+            component_code: 'A',
+            sign: 'earning',
+            source: 'var',
+            var: 'payable_hours',
+          },
           {
             component_code: 'B',
             sign: 'earning',
@@ -122,7 +134,12 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
       collectExpressionVarKeys({
         form: 'gd1_eval_v1',
         lines: [
-          { component_code: 'BASE', sign: 'earning', source: 'const', amount: 7_500_000 },
+          {
+            component_code: 'BASE',
+            sign: 'earning',
+            source: 'const',
+            amount: 7_500_000,
+          },
         ],
       }),
     ).toEqual([]);
@@ -146,5 +163,45 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
     expect(r.ok).toBe(false);
     if (r.ok) return;
     expect(r.reason).toBe('DIV_BY_ZERO');
+  });
+
+  it('evaluates hyperformula_v1 var + expressions', () => {
+    const expr = {
+      form: 'hyperformula_v1',
+      lines: [
+        {
+          component_code: 'LUONG_CHINH',
+          sign: 'earning',
+          formula: '=base_salary * (payable_hours / 208)'
+        },
+        {
+          component_code: 'PHU_CAP',
+          sign: 'earning',
+          formula: '=allowance_p2'
+        },
+        {
+          component_code: 'BHXH',
+          sign: 'deduction',
+          formula: '=base_salary * 0.1'
+        }
+      ]
+    };
+    const vars = {
+      base_salary: 20800000,
+      payable_hours: 104, // Nửa tháng
+      allowance_p2: 500000
+    };
+    
+    const res = evaluatePayFormulaExpression(expr, vars);
+    expect(res.ok).toBe(true);
+    if (res.ok) {
+      expect(res.lines).toHaveLength(3);
+      expect(res.lines[0].amount).toBe(10400000); // 20.8M * 0.5
+      expect(res.lines[1].amount).toBe(500000);
+      expect(res.lines[2].amount).toBe(2080000);
+      expect(res.gross).toBe(10900000);
+      expect(res.deduction).toBe(2080000);
+      expect(res.net).toBe(8820000);
+    }
   });
 });

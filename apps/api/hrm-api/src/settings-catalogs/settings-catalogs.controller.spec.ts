@@ -10,29 +10,49 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
   const serviceMock = {
     getOverview: jest.fn().mockResolvedValue({ catalogs: [] }),
     appendExtensionItems: jest.fn().mockResolvedValue({ id: 'ext-1' }),
-    submitExtensionItemsForApproval: jest.fn().mockResolvedValue({ message: 'submitted' }),
+    submitExtensionItemsForApproval: jest
+      .fn()
+      .mockResolvedValue({ message: 'submitted' }),
     requestFieldRemoval: jest.fn().mockResolvedValue({ id: 'rem-1' }),
-    reviewExtensionBatch: jest.fn().mockResolvedValue({ batch_id: 'b1', status: 'approved' }),
+    reviewExtensionBatch: jest
+      .fn()
+      .mockResolvedValue({ batch_id: 'b1', status: 'approved' }),
     syncAllFromXbos: jest.fn().mockResolvedValue({ synced: 3 }),
-    reviewExtensionRequest: jest.fn().mockResolvedValue({ id: 'ext-req-1', status: 'rejected' }),
-    seedGroupEmployeeImportCatalogAllTenants: jest.fn().mockResolvedValue({ tenants: 1, seeded: true }),
-    seedTenantPositionCatalogAllTenants: jest.fn().mockResolvedValue({ tenants: 2, seeded: true }),
-    seedTourismFleetCatalog: jest.fn().mockResolvedValue({ tenant: 'xe-du-lich', seeded: true }),
+    reviewExtensionRequest: jest
+      .fn()
+      .mockResolvedValue({ id: 'ext-req-1', status: 'rejected' }),
+    seedGroupEmployeeImportCatalogAllTenants: jest
+      .fn()
+      .mockResolvedValue({ tenants: 1, seeded: true }),
+    seedTenantPositionCatalogAllTenants: jest
+      .fn()
+      .mockResolvedValue({ tenants: 2, seeded: true }),
+    seedTourismFleetCatalog: jest
+      .fn()
+      .mockResolvedValue({ tenant: 'xe-du-lich', seeded: true }),
     seedTenantPositionCatalog: jest.fn().mockResolvedValue({ seeded: true }),
-    seedGroupEmployeeImportCatalog: jest.fn().mockResolvedValue({ seeded: true }),
+    seedGroupEmployeeImportCatalog: jest
+      .fn()
+      .mockResolvedValue({ seeded: true }),
     seedEmployeeProfileTemplate: jest.fn().mockResolvedValue({ seeded: true }),
     listExtensionRequests: jest.fn().mockResolvedValue([]),
-    getExtensionBatchDetail: jest.fn().mockResolvedValue({ batchId: 'batch-1', items: [] }),
+    getExtensionBatchDetail: jest
+      .fn()
+      .mockResolvedValue({ batchId: 'batch-1', items: [] }),
     attachWorkflowToBatch: jest.fn().mockResolvedValue(undefined),
     upsertCatalogItem: jest.fn().mockResolvedValue({ upserted: 1 }),
     deleteCatalogItem: jest.fn().mockResolvedValue({ item_key: 'IT-1' }),
   };
 
   function createInternalJwt(payload: Record<string, unknown>) {
-    const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+    const header = Buffer.from(
+      JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+    ).toString('base64url');
     const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
     const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-    const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+    const sig = createHmac('sha256', secret)
+      .update(`${header}.${body}`)
+      .digest('base64url');
     return `${header}.${body}.${sig}`;
   }
 
@@ -43,11 +63,19 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
       controllers: [SettingsCatalogsController],
       providers: [{ provide: SettingsCatalogsService, useValue: serviceMock }],
     }).compile();
-    controller = module.get<SettingsCatalogsController>(SettingsCatalogsController);
+    controller = module.get<SettingsCatalogsController>(
+      SettingsCatalogsController,
+    );
   });
 
   it('HRM-SC-01 / XBOS-DM-HRM-01: overview returns HRM-SET-200', async () => {
-    const res = await controller.overview(undefined, 'test-key', 'xevn', 'main', undefined);
+    const res = await controller.overview(
+      undefined,
+      'test-key',
+      'xevn',
+      'main',
+      undefined,
+    );
     expect(res.code).toBe('HRM-SET-200');
     expect(serviceMock.getOverview).toHaveBeenCalled();
   });
@@ -56,13 +84,25 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
     serviceMock.getOverview.mockResolvedValueOnce({
       catalogs: [{ key: 'employee_profile_groups', groups: 6 }],
     });
-    const res = await controller.overview(undefined, 'test-key', 'xevn', 'holding', undefined);
+    const res = await controller.overview(
+      undefined,
+      'test-key',
+      'xevn',
+      'holding',
+      undefined,
+    );
     expect(res.code).toBe('HRM-SET-200');
     expect(serviceMock.getOverview).toHaveBeenCalled();
   });
 
   it('D16 policy freeze: internal holding read stays allow-200 on settings overview', async () => {
-    const res = await controller.overview(undefined, 'test-key', 'xevn', 'holding', undefined);
+    const res = await controller.overview(
+      undefined,
+      'test-key',
+      'xevn',
+      'holding',
+      undefined,
+    );
     expect(res.code).toBe('HRM-SET-200');
     expect(serviceMock.getOverview).toHaveBeenCalledWith('xevn', 'holding');
   });
@@ -75,21 +115,45 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    const res = await controller.overview(`Bearer ${token}`, 'test-key', 'xevn', undefined, 'holding');
+    const res = await controller.overview(
+      `Bearer ${token}`,
+      'test-key',
+      'xevn',
+      undefined,
+      'holding',
+    );
     expect(res.code).toBe('HRM-SET-200');
     expect(serviceMock.getOverview).toHaveBeenCalledWith('xevn', 'holding');
   });
 
   it('XBOS-DM-HRM-10 / HRM-SC-02: sync-from-xbos returns HRM-SET-201', async () => {
-    const res = await controller.syncFromXbos(undefined, 'test-key', 'xevn', 'holding');
+    const res = await controller.syncFromXbos(
+      undefined,
+      'test-key',
+      'xevn',
+      'holding',
+    );
     expect(res.code).toBe('HRM-SET-201');
-    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith('xevn', 'holding', undefined);
+    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      undefined,
+    );
   });
 
   it('EX-SA01-P0-01: sync-from-xbos maps group CEO main to holding partition', async () => {
-    const res = await controller.syncFromXbos(undefined, 'test-key', 'xevn', 'main');
+    const res = await controller.syncFromXbos(
+      undefined,
+      'test-key',
+      'xevn',
+      'main',
+    );
     expect(res.code).toBe('HRM-SET-201');
-    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith('xevn', 'holding', undefined);
+    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      undefined,
+    );
   });
 
   it('P1-WEB-ACCEPTANCE-BE-SYNC-401: sync-from-xbos passes Authorization to service layer', async () => {
@@ -101,9 +165,18 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
       roleCode: 'group_ceo',
       exp: Math.floor(Date.now() / 1000) + 3600,
     });
-    const res = await controller.syncFromXbos(`Bearer ${token}`, 'test-key', 'xevn', 'main');
+    const res = await controller.syncFromXbos(
+      `Bearer ${token}`,
+      'test-key',
+      'xevn',
+      'main',
+    );
     expect(res.code).toBe('HRM-SET-201');
-    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith('xevn', 'holding', `Bearer ${token}`);
+    expect(serviceMock.syncAllFromXbos).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      `Bearer ${token}`,
+    );
   });
 
   it('D-W5-HRM-CAT-SYNC-01: appendExtension immediate without bulkSync uses approval path (U64 UF-09)', async () => {
@@ -256,13 +329,21 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
   });
 
   it('HRM-SC-07 seed group employee import all returns HRM-SET-205', async () => {
-    const res = await controller.seedGroupEmployeeImportAll(undefined, 'test-key');
+    const res = await controller.seedGroupEmployeeImportAll(
+      undefined,
+      'test-key',
+    );
     expect(res.code).toBe('HRM-SET-205');
-    expect(serviceMock.seedGroupEmployeeImportCatalogAllTenants).toHaveBeenCalled();
+    expect(
+      serviceMock.seedGroupEmployeeImportCatalogAllTenants,
+    ).toHaveBeenCalled();
   });
 
   it('HRM-SC-08 seed tenant position catalog all returns HRM-SET-208', async () => {
-    const res = await controller.seedTenantPositionCatalogAll(undefined, 'test-key');
+    const res = await controller.seedTenantPositionCatalogAll(
+      undefined,
+      'test-key',
+    );
     expect(res.code).toBe('HRM-SET-208');
     expect(serviceMock.seedTenantPositionCatalogAllTenants).toHaveBeenCalled();
   });
@@ -274,22 +355,43 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
   });
 
   it('XBOS-DM-HRM-06: seed tenant position catalog returns HRM-SET-209', async () => {
-    const res = await controller.seedTenantPositionCatalog(undefined, 'test-key', 'xevn', 'holding');
+    const res = await controller.seedTenantPositionCatalog(
+      undefined,
+      'test-key',
+      'xevn',
+      'holding',
+    );
     expect(res.code).toBe('HRM-SET-209');
   });
 
   it('XBOS-DM-HRM-07: seed group employee import returns HRM-SET-206', async () => {
-    const res = await controller.seedGroupEmployeeImport(undefined, 'test-key', 'xevn', 'holding');
+    const res = await controller.seedGroupEmployeeImport(
+      undefined,
+      'test-key',
+      'xevn',
+      'holding',
+    );
     expect(res.code).toBe('HRM-SET-206');
   });
 
   it('XBOS-DM-HRM-08: assign HRM subsystem via sync-from-xbos', async () => {
-    const res = await controller.syncFromXbos(undefined, 'test-key', 'xevn', 'holding');
+    const res = await controller.syncFromXbos(
+      undefined,
+      'test-key',
+      'xevn',
+      'holding',
+    );
     expect(res.code).toBe('HRM-SET-201');
   });
 
   it('XBOS-DM-HRM-11: list extension requests returns HRM-SET-210', async () => {
-    const res = await controller.listExtensionRequests('pending', 'xevn', 'holding', undefined, 'test-key');
+    const res = await controller.listExtensionRequests(
+      'pending',
+      'xevn',
+      'holding',
+      undefined,
+      'test-key',
+    );
     expect(res.code).toBe('HRM-SET-210');
   });
 
@@ -297,7 +399,13 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
     serviceMock.listExtensionRequests.mockResolvedValueOnce([
       { id: 'ext-hist-1', status: 'approved', catalog_key: 'job_titles' },
     ]);
-    const res = await controller.listExtensionRequests('approved', 'xevn', 'holding', undefined, 'test-key');
+    const res = await controller.listExtensionRequests(
+      'approved',
+      'xevn',
+      'holding',
+      undefined,
+      'test-key',
+    );
     expect(res.code).toBe('HRM-SET-210');
     expect(serviceMock.listExtensionRequests).toHaveBeenCalled();
   });
@@ -344,12 +452,19 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
     expect(serviceMock.upsertCatalogItem).toHaveBeenNthCalledWith(
       1,
       'xevn',
-      expect.objectContaining({ company_id: 'holding', item_key: 'L1', item_name: 'Level 1' }),
+      expect.objectContaining({
+        company_id: 'holding',
+        item_key: 'L1',
+        item_name: 'Level 1',
+      }),
     );
     expect(serviceMock.upsertCatalogItem).toHaveBeenNthCalledWith(
       2,
       'xevn',
-      expect.objectContaining({ company_id: 'holding', item_name: 'Level 1 Updated' }),
+      expect.objectContaining({
+        company_id: 'holding',
+        item_name: 'Level 1 Updated',
+      }),
     );
     expect(serviceMock.deleteCatalogItem).toHaveBeenCalledWith(
       'xevn',
@@ -399,7 +514,11 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
     expect(editRes.code).toBe('HRM-SET-202');
     expect(serviceMock.upsertCatalogItem).toHaveBeenLastCalledWith(
       'xevn',
-      expect.objectContaining({ company_id: 'holding', item_key: 'ACM_01', item_name: 'HRM-QA-EDIT-16137' }),
+      expect.objectContaining({
+        company_id: 'holding',
+        item_key: 'ACM_01',
+        item_name: 'HRM-QA-EDIT-16137',
+      }),
     );
   });
 
@@ -424,7 +543,12 @@ describe('SettingsCatalogsController (HRM-SC / XBOS-DM-HRM)', () => {
   });
 
   it('XBOS-DM-HRM-12: seed employee profile template returns HRM-SET-204', async () => {
-    const res = await controller.seedEmployeeProfileTemplate(undefined, 'test-key', 'xevn', 'holding');
+    const res = await controller.seedEmployeeProfileTemplate(
+      undefined,
+      'test-key',
+      'xevn',
+      'holding',
+    );
     expect(res.code).toBe('HRM-SET-204');
   });
 

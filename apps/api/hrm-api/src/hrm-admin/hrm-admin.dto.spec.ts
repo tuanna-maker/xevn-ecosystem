@@ -22,7 +22,10 @@ describe('HrmAdmin DTO plane (G-ADM-DTO-01)', () => {
     });
 
     it('accepts member slug and UUID-as-text', async () => {
-      for (const company_id of ['trsport', '78b8a663-f5e5-4f4d-a020-b8f950ec2037']) {
+      for (const company_id of [
+        'trsport',
+        '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      ]) {
         const dto = plainToInstance(CreateCompanyAdminDto, {
           email: 'admin@xe.vn',
           password: 'secret123',

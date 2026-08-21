@@ -7,7 +7,15 @@
  * Coded:      2026-08-07
  * must_keep:  pay_tax_* only · U65 zero-seed · payroll_e2e_ready=false
  */
-import { Body, Controller, Get, Headers, HttpStatus, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpStatus,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -25,7 +33,11 @@ export class SettingsCompanySettingsController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized settings access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized settings access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -37,7 +49,10 @@ export class SettingsCompanySettingsController {
     @Query() query: GetSettingsCompanySettingsQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.tax
       .get(query, authorization, tenantId)
       .then((data) => ok(data, HRM_SET_TAX_200, 'Company tax settings'));

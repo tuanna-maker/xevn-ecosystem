@@ -22,9 +22,7 @@
  */
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
-import {
-  assertYctdReceivableForMutateOrThrow,
-} from './yctd-requisition-gates';
+import { assertYctdReceivableForMutateOrThrow } from './yctd-requisition-gates';
 
 export const HRM_REC_UV_YCTD_REQUIRED = 'HRM-REC-UV-YCTD-REQUIRED';
 export const HRM_REC_UV_YCTD_STATUS = 'HRM-REC-UV-YCTD-STATUS';
@@ -80,7 +78,9 @@ export function isUvYctdReceivable(row: {
 }
 
 /** List/picker filter — includes synonym statuses; O4 rows may still appear with warn on get. */
-export function isUvYctdReceivableStatusOnly(row: { status?: string | null }): boolean {
+export function isUvYctdReceivableStatusOnly(row: {
+  status?: string | null;
+}): boolean {
   const s = String(row.status ?? '')
     .trim()
     .toLowerCase();
@@ -92,7 +92,8 @@ export function isUvReceivableListQuery(query?: {
   open_for_hire?: string;
 }): boolean {
   const receivable = query?.receivable?.trim().toLowerCase();
-  if (receivable === '1' || receivable === 'true' || receivable === 'yes') return true;
+  if (receivable === '1' || receivable === 'true' || receivable === 'yes')
+    return true;
   const open = query?.open_for_hire?.trim().toLowerCase();
   return open === '1' || open === 'true' || open === 'yes';
 }
@@ -104,7 +105,8 @@ export function isUvYctdBindTargetQuery(query?: {
   preview?: string;
 }): boolean {
   const forRaw = query?.for?.trim().toLowerCase();
-  if (forRaw === 'uv' || forRaw === 'yctd' || forRaw === 'candidate') return true;
+  if (forRaw === 'uv' || forRaw === 'yctd' || forRaw === 'candidate')
+    return true;
   const bind = query?.bind_check?.trim().toLowerCase();
   if (bind === '1' || bind === 'true' || bind === 'yes') return true;
   const preview = query?.preview?.trim().toLowerCase();
@@ -115,7 +117,9 @@ export function isUvYctdBindTargetQuery(query?: {
  * AV-UV-YCTD-ALIAS-01..02 — normalize to ONE physical requisition_id.
  * Missing both → null (caller may REQUIRED).
  */
-export function resolveUvYctdRequisitionId(input: UvYctdAliasInput): string | null {
+export function resolveUvYctdRequisitionId(
+  input: UvYctdAliasInput,
+): string | null {
   const physical = input.requisition_id?.trim() || '';
   const logical = input.recruitment_request_id?.trim() || '';
   if (physical && logical && physical !== logical) {
@@ -157,16 +161,13 @@ export function assertUvYctdReceivableOrThrow(
 }
 
 /** Derive position SoT from YCTD (+ optional JD catalog join fields). */
-export function toUvPositionDisplay(row: UvYctdReceivableRow): UvPositionDisplay {
+export function toUvPositionDisplay(
+  row: UvYctdReceivableRow,
+): UvPositionDisplay {
   const key =
-    (row.position_key ?? '').trim() ||
-    (row.position_code ?? '').trim() ||
-    '';
+    (row.position_key ?? '').trim() || (row.position_code ?? '').trim() || '';
   const name =
-    (row.position_name ?? '').trim() ||
-    (row.title ?? '').trim() ||
-    key ||
-    '—';
+    (row.position_name ?? '').trim() || (row.title ?? '').trim() || key || '—';
   return {
     recruitment_request_id: row.id,
     requisition_id: row.id,
@@ -210,7 +211,10 @@ export function parseCandidateIdList(raw: unknown): string[] {
     .filter(Boolean);
 }
 
-export function assertCompareMaxNOrThrow(ids: string[], maxN = REC_COMPARE_MAX_N): void {
+export function assertCompareMaxNOrThrow(
+  ids: string[],
+  maxN = REC_COMPARE_MAX_N,
+): void {
   if (ids.length > maxN) {
     throw new ApiException(
       HRM_REC_CMP_MAX_N,
@@ -268,17 +272,20 @@ export function toCandidateUvDisplayReady<T extends Record<string, unknown>>(
 ) {
   const reqId =
     (typeof row.requisition_id === 'string' && row.requisition_id.trim()) ||
-    (typeof row.recruitment_request_id === 'string' && row.recruitment_request_id.trim()) ||
+    (typeof row.recruitment_request_id === 'string' &&
+      row.recruitment_request_id.trim()) ||
     null;
-  const pos = position ?? (reqId
-    ? {
-        recruitment_request_id: reqId,
-        requisition_id: reqId,
-        position_key: String(row.position_key ?? ''),
-        position_name: String(row.position_name ?? ''),
-        source: 'yctd' as const,
-      }
-    : null);
+  const pos =
+    position ??
+    (reqId
+      ? {
+          recruitment_request_id: reqId,
+          requisition_id: reqId,
+          position_key: String(row.position_key ?? ''),
+          position_name: String(row.position_name ?? ''),
+          source: 'yctd' as const,
+        }
+      : null);
   return {
     ...row,
     requisition_id: reqId,

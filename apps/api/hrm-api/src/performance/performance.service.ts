@@ -48,7 +48,10 @@ import { HrmDbService } from '../db/hrm-db.service';
 import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
 import { CreatePerformanceCycleDto } from './dto/create-performance-cycle.dto';
 import { CreatePerformanceEvaluationDto } from './dto/create-performance-evaluation.dto';
-import { ListPerformanceCyclesQueryDto, ListPerformanceEvaluationsQueryDto } from './dto/list-performance.query.dto';
+import {
+  ListPerformanceCyclesQueryDto,
+  ListPerformanceEvaluationsQueryDto,
+} from './dto/list-performance.query.dto';
 import { UpdatePerformanceCycleDto } from './dto/update-performance-cycle.dto';
 import { UpdatePerformanceEvaluationDto } from './dto/update-performance-evaluation.dto';
 
@@ -107,7 +110,9 @@ export class PerformanceService {
   }
 
   /** SRS open ≡ DB active */
-  private normalizeCycleStatus(raw: string | undefined): 'draft' | 'active' | 'closed' | undefined {
+  private normalizeCycleStatus(
+    raw: string | undefined,
+  ): 'draft' | 'active' | 'closed' | undefined {
     if (raw == null) return undefined;
     const s = raw.trim().toLowerCase();
     if (s === 'open') return 'active';
@@ -164,14 +169,18 @@ export class PerformanceService {
       ALTER TABLE public.performance_evaluations
       ALTER COLUMN status SET NOT NULL;
     `);
-    await this.db.query(`ALTER TABLE public.performance_evaluations ADD COLUMN IF NOT EXISTS kpi_code TEXT NULL;`);
+    await this.db.query(
+      `ALTER TABLE public.performance_evaluations ADD COLUMN IF NOT EXISTS kpi_code TEXT NULL;`,
+    );
     await this.db.query(
       `ALTER TABLE public.performance_evaluations ADD COLUMN IF NOT EXISTS job_grade_key TEXT NULL;`,
     );
     await this.db.query(
       `ALTER TABLE public.performance_evaluations ADD COLUMN IF NOT EXISTS department_key TEXT NULL;`,
     );
-    await this.db.query(`ALTER TABLE public.performance_evaluations ADD COLUMN IF NOT EXISTS kpi_name TEXT NULL;`);
+    await this.db.query(
+      `ALTER TABLE public.performance_evaluations ADD COLUMN IF NOT EXISTS kpi_name TEXT NULL;`,
+    );
     await this.db.query(
       `ALTER TABLE public.performance_evaluations ADD COLUMN IF NOT EXISTS submitted_at TIMESTAMPTZ NULL;`,
     );
@@ -237,12 +246,25 @@ export class PerformanceService {
     return { code: hit.code, label: hit.label };
   }
 
-  async createCycle(payload: CreatePerformanceCycleDto, authorization?: string) {
+  async createCycle(
+    payload: CreatePerformanceCycleDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    if (new Date(payload.start_date).getTime() > new Date(payload.end_date).getTime()) {
-      throw new ApiException('HRM-PERF-001', 'start_date must be <= end_date', HttpStatus.BAD_REQUEST);
+    if (
+      new Date(payload.start_date).getTime() >
+      new Date(payload.end_date).getTime()
+    ) {
+      throw new ApiException(
+        'HRM-PERF-001',
+        'start_date must be <= end_date',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const res = await this.db.query<PerformanceCycleRow>(
       `
         INSERT INTO public.performance_cycles
@@ -262,7 +284,10 @@ export class PerformanceService {
     return res.rows[0];
   }
 
-  async listCycles(query: ListPerformanceCyclesQueryDto, authorization?: string) {
+  async listCycles(
+    query: ListPerformanceCyclesQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, query.company_id);
     const filters: string[] = [];
@@ -304,7 +329,7 @@ export class PerformanceService {
       notFoundCode: 'HRM-PERF-404',
       mismatchCode: 'HRM-PERF-409',
     });
-    return row!;
+    return row;
   }
 
   /** AC-PERF-01 — PATCH cycle name/dates/status */
@@ -315,14 +340,22 @@ export class PerformanceService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const current = await this.loadCycleInScope(cycleId, requestedCompanyId, authorization);
+    const current = await this.loadCycleInScope(
+      cycleId,
+      requestedCompanyId,
+      authorization,
+    );
     const nextStatus = this.normalizeCycleStatus(payload.status);
     const touchContent =
       payload.cycle_name !== undefined ||
       payload.start_date !== undefined ||
       payload.end_date !== undefined;
     if (touchContent && current.status === 'closed') {
-      throw new ApiException(HRM_PERF_LOCKED, 'Closed cycle is immutable', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_PERF_LOCKED,
+        'Closed cycle is immutable',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (nextStatus !== undefined) {
       assertStatusTransition({
@@ -335,7 +368,11 @@ export class PerformanceService {
     const start = payload.start_date ?? current.start_date;
     const end = payload.end_date ?? current.end_date;
     if (new Date(start).getTime() > new Date(end).getTime()) {
-      throw new ApiException('HRM-PERF-001', 'start_date must be <= end_date', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-PERF-001',
+        'start_date must be <= end_date',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const res = await this.db.query<PerformanceCycleRow>(
       `
@@ -360,9 +397,17 @@ export class PerformanceService {
   }
 
   /** AC-PERF-02 — DELETE draft only; block if submitted+ evals */
-  async deleteCycle(cycleId: string, requestedCompanyId: string, authorization?: string) {
+  async deleteCycle(
+    cycleId: string,
+    requestedCompanyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const current = await this.loadCycleInScope(cycleId, requestedCompanyId, authorization);
+    const current = await this.loadCycleInScope(
+      cycleId,
+      requestedCompanyId,
+      authorization,
+    );
     if (current.status !== 'draft') {
       throw new ApiException(
         HRM_PERF_DEL_BLOCK,
@@ -382,40 +427,57 @@ export class PerformanceService {
         HttpStatus.CONFLICT,
       );
     }
-    await this.db.query(`DELETE FROM public.performance_cycles WHERE id = $1::uuid;`, [cycleId]);
+    await this.db.query(
+      `DELETE FROM public.performance_cycles WHERE id = $1::uuid;`,
+      [cycleId],
+    );
     return { id: cycleId, deleted: true };
   }
 
-  async createEvaluation(payload: CreatePerformanceEvaluationDto, authorization?: string) {
+  async createEvaluation(
+    payload: CreatePerformanceEvaluationDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, payload.company_id);
     const cycleFilters: string[] = ['id = $1::uuid'];
     const cycleValues: unknown[] = [payload.cycle_id];
     pushCompanyIdFilter(cycleFilters, cycleValues, scope.companyIds);
-    const cycleRes = await this.db.query<{ id: string; company_id: string; status: string }>(
+    const cycleRes = await this.db.query<{
+      id: string;
+      company_id: string;
+      status: string;
+    }>(
       `SELECT id, company_id, status FROM public.performance_cycles WHERE ${cycleFilters.join(' AND ')} LIMIT 1;`,
       cycleValues,
     );
     if (!cycleRes.rows[0]) {
-      throw new ApiException('HRM-PERF-404', 'Performance cycle not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PERF-404',
+        'Performance cycle not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const companyId = cycleRes.rows[0].company_id;
     const kpi = await this.assertPerfCatalogKey(
       companyId,
       'kpi_library',
-      (payload as CreatePerformanceEvaluationDto & { kpi_code?: string }).kpi_code,
+      (payload as CreatePerformanceEvaluationDto & { kpi_code?: string })
+        .kpi_code,
       HRM_PERF_KPI_KEY,
     );
     const grade = await this.assertPerfCatalogKey(
       companyId,
       'job_grades',
-      (payload as CreatePerformanceEvaluationDto & { job_grade_key?: string }).job_grade_key,
+      (payload as CreatePerformanceEvaluationDto & { job_grade_key?: string })
+        .job_grade_key,
       HRM_PERF_GRADE_KEY,
     );
     const dept = await this.assertPerfCatalogKey(
       companyId,
       'departments',
-      (payload as CreatePerformanceEvaluationDto & { department_key?: string }).department_key,
+      (payload as CreatePerformanceEvaluationDto & { department_key?: string })
+        .department_key,
       HRM_PERF_DEPT_KEY,
     );
     try {
@@ -455,7 +517,10 @@ export class PerformanceService {
     }
   }
 
-  async listEvaluations(query: ListPerformanceEvaluationsQueryDto, authorization?: string) {
+  async listEvaluations(
+    query: ListPerformanceEvaluationsQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, query.company_id);
     const filters: string[] = [];
@@ -499,7 +564,7 @@ export class PerformanceService {
       notFoundCode: 'HRM-PERF-404',
       mismatchCode: 'HRM-PERF-409',
     });
-    return row!;
+    return row;
   }
 
   /** AC-PERF-03/04/05 — PATCH content (draft only) + SM */
@@ -510,7 +575,11 @@ export class PerformanceService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const current = await this.loadEvaluationInScope(evaluationId, requestedCompanyId, authorization);
+    const current = await this.loadEvaluationInScope(
+      evaluationId,
+      requestedCompanyId,
+      authorization,
+    );
     const contentTouch =
       payload.score !== undefined ||
       payload.summary !== undefined ||
@@ -526,7 +595,9 @@ export class PerformanceService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const nextStatus = payload.status?.trim().toLowerCase() as PerformanceEvaluationRow['status'] | undefined;
+    const nextStatus = payload.status?.trim().toLowerCase() as
+      | PerformanceEvaluationRow['status']
+      | undefined;
     if (nextStatus) {
       assertStatusTransition({
         domain: 'performance_evaluation',
@@ -534,7 +605,11 @@ export class PerformanceService {
         to: nextStatus,
         entityId: evaluationId,
       });
-      if (nextStatus === 'submitted' || nextStatus === 'approved' || nextStatus === 'completed') {
+      if (
+        nextStatus === 'submitted' ||
+        nextStatus === 'approved' ||
+        nextStatus === 'completed'
+      ) {
         const cycle = await this.db.query<{ status: string }>(
           `SELECT status FROM public.performance_cycles WHERE id = $1::uuid LIMIT 1;`,
           [current.cycle_id],
@@ -568,7 +643,11 @@ export class PerformanceService {
       HRM_PERF_DEPT_KEY,
     );
     const submittedAt =
-      nextStatus === 'submitted' ? 'NOW()' : nextStatus === undefined ? 'submitted_at' : 'submitted_at';
+      nextStatus === 'submitted'
+        ? 'NOW()'
+        : nextStatus === undefined
+          ? 'submitted_at'
+          : 'submitted_at';
     const approvedAt = nextStatus === 'approved' ? 'NOW()' : 'approved_at';
     const completedAt = nextStatus === 'completed' ? 'NOW()' : 'completed_at';
     const res = await this.db.query<PerformanceEvaluationRow>(
@@ -595,9 +674,18 @@ export class PerformanceService {
         payload.summary?.trim() ?? null,
         payload.reviewer?.trim() ?? null,
         nextStatus ?? null,
-        kpi?.code ?? (payload.kpi_code === undefined ? null : payload.kpi_code.trim() || null),
-        grade?.code ?? (payload.job_grade_key === undefined ? null : payload.job_grade_key.trim() || null),
-        dept?.code ?? (payload.department_key === undefined ? null : payload.department_key.trim() || null),
+        kpi?.code ??
+          (payload.kpi_code === undefined
+            ? null
+            : payload.kpi_code.trim() || null),
+        grade?.code ??
+          (payload.job_grade_key === undefined
+            ? null
+            : payload.job_grade_key.trim() || null),
+        dept?.code ??
+          (payload.department_key === undefined
+            ? null
+            : payload.department_key.trim() || null),
         payload.kpi_name?.trim() || kpi?.label || null,
       ],
     );
@@ -607,9 +695,17 @@ export class PerformanceService {
     return res.rows[0];
   }
 
-  async deleteEvaluation(evaluationId: string, requestedCompanyId: string, authorization?: string) {
+  async deleteEvaluation(
+    evaluationId: string,
+    requestedCompanyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const current = await this.loadEvaluationInScope(evaluationId, requestedCompanyId, authorization);
+    const current = await this.loadEvaluationInScope(
+      evaluationId,
+      requestedCompanyId,
+      authorization,
+    );
     if (current.status !== 'draft') {
       throw new ApiException(
         HRM_PERF_DEL_BLOCK,
@@ -617,7 +713,10 @@ export class PerformanceService {
         HttpStatus.CONFLICT,
       );
     }
-    await this.db.query(`DELETE FROM public.performance_evaluations WHERE id = $1::uuid;`, [evaluationId]);
+    await this.db.query(
+      `DELETE FROM public.performance_evaluations WHERE id = $1::uuid;`,
+      [evaluationId],
+    );
     return { id: evaluationId, deleted: true };
   }
 }

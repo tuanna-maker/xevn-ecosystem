@@ -19,7 +19,9 @@
 import type { HrmDbService } from '../db/hrm-db.service';
 
 /** Ensure enrollment + period tables exist (ADD-only; safe to call repeatedly). */
-export async function ensureEmployeeInsuranceEnrollmentSchema(db: HrmDbService): Promise<void> {
+export async function ensureEmployeeInsuranceEnrollmentSchema(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     CREATE TABLE IF NOT EXISTS public.employee_insurances (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

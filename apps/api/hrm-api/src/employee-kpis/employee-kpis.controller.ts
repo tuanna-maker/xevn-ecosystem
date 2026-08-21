@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Headers, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Headers,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -13,7 +23,11 @@ export class EmployeeKpisController {
 
   private assertAccess(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized employee KPI access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized employee KPI access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -26,8 +40,13 @@ export class EmployeeKpisController {
     @Query() query: ListEmployeeKpisQueryDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
-    return this.service.list(query, authorization).then((data) => ok(data, 'HRM-KPI-200', 'Employee KPIs listed'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
+    return this.service
+      .list(query, authorization)
+      .then((data) => ok(data, 'HRM-KPI-200', 'Employee KPIs listed'));
   }
 
   @Post()
@@ -39,8 +58,13 @@ export class EmployeeKpisController {
     @Body() body: CreateEmployeeKpiDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.service.create(body, authorization).then((data) => ok(data, 'HRM-KPI-201', 'Employee KPI created'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
+    return this.service
+      .create(body, authorization)
+      .then((data) => ok(data, 'HRM-KPI-201', 'Employee KPI created'));
   }
 
   @Delete(':kpiId')
@@ -53,6 +77,8 @@ export class EmployeeKpisController {
   ) {
     this.assertAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
-    return this.service.remove(kpiId, companyId, authorization).then((data) => ok(data, 'HRM-KPI-200', 'Employee KPI deleted'));
+    return this.service
+      .remove(kpiId, companyId, authorization)
+      .then((data) => ok(data, 'HRM-KPI-200', 'Employee KPI deleted'));
   }
 }

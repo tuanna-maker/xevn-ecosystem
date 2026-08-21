@@ -63,11 +63,15 @@ export class HrmInboxService {
    * @CODE-MEMORY-CHANGE 2026-07-27 · D-HRM-LEAVE-REQ-CREATE-BE-01
    * What: Map TEXT slug (holding) → pilot UUID before $2::uuid — G-AT10-01 leave create must not 500
    */
-  async persistAttendanceEnvelope(envelope: HrmRealtimeEventEnvelope): Promise<void> {
+  async persistAttendanceEnvelope(
+    envelope: HrmRealtimeEventEnvelope,
+  ): Promise<void> {
     await this.ensureSchema();
     const { type, request } = envelope;
     const payload = JSON.stringify(envelope);
-    const companyUuid = resolveInboxPersistCompanyUuid(String(request.company_id));
+    const companyUuid = resolveInboxPersistCompanyUuid(
+      String(request.company_id),
+    );
 
     if (
       type === 'attendance_update_request.created' ||
@@ -94,7 +98,9 @@ export class HrmInboxService {
     );
 
     const targetEmployeeId =
-      'employee_id' in request && request.employee_id != null && String(request.employee_id).trim() !== ''
+      'employee_id' in request &&
+      request.employee_id != null &&
+      String(request.employee_id).trim() !== ''
         ? String(request.employee_id).trim()
         : null;
     if (!targetEmployeeId) return;
@@ -117,13 +123,21 @@ export class HrmInboxService {
     tenantId?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, requestedCompanyId, { tenantId });
+    const scope = resolveHrmListScope(authorization, requestedCompanyId, {
+      tenantId,
+    });
     const filters: string[] = [];
     const values: unknown[] = [];
-    const companyIds = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+    const companyIds = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     pushCompanyIdUuidFilter(filters, values, companyIds);
     values.push(employeeId);
-    filters.push(`(recipient_employee_id IS NULL OR recipient_employee_id = $${values.length}::uuid)`);
+    filters.push(
+      `(recipient_employee_id IS NULL OR recipient_employee_id = $${values.length}::uuid)`,
+    );
     const lim = Math.min(Math.max(limit, 1), 100);
     const res = await this.db.query<InboxRow>(
       `
@@ -149,7 +163,11 @@ export class HrmInboxService {
     };
   }
 
-  async markRead(notificationId: string, companyId: string, viewerEmployeeId: string) {
+  async markRead(
+    notificationId: string,
+    companyId: string,
+    viewerEmployeeId: string,
+  ) {
     await this.ensureSchema();
     const res = await this.db.query<InboxRow>(
       `
@@ -165,7 +183,11 @@ export class HrmInboxService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-INBOX-404', 'Notification not found or not markable', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-INBOX-404',
+        'Notification not found or not markable',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return {
       id: row.id,

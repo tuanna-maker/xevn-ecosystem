@@ -12,10 +12,14 @@ import { EmployeesController } from './employees.controller';
 import { EmployeesService } from './employees.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
@@ -36,11 +40,19 @@ describe('EmployeesController', () => {
       salary_ranges: [],
       new_hires: { last_30_days: 0, recent: [] },
     }),
-    listEmployeeDirectory: jest.fn().mockResolvedValue({ total: 1, page: 1, page_size: 30, data: [] }),
-    getEmployeeById: jest.fn().mockResolvedValue({ id: 'e1', company_id: 'holding' }),
-    getEmployeeDirectoryById: jest.fn().mockResolvedValue({ id: 'e1', full_name: 'Directory User' }),
+    listEmployeeDirectory: jest
+      .fn()
+      .mockResolvedValue({ total: 1, page: 1, page_size: 30, data: [] }),
+    getEmployeeById: jest
+      .fn()
+      .mockResolvedValue({ id: 'e1', company_id: 'holding' }),
+    getEmployeeDirectoryById: jest
+      .fn()
+      .mockResolvedValue({ id: 'e1', full_name: 'Directory User' }),
     updateEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
-    activateEmployee: jest.fn().mockResolvedValue({ id: 'e1', status: 'active' }),
+    activateEmployee: jest
+      .fn()
+      .mockResolvedValue({ id: 'e1', status: 'active' }),
     archiveEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
     restoreEmployee: jest.fn().mockResolvedValue({ id: 'e1' }),
   };
@@ -92,7 +104,9 @@ describe('EmployeesController', () => {
         {
           provide: EmpDocumentTypeService,
           useValue: {
-            listDocumentTypes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listDocumentTypes: jest
+              .fn()
+              .mockResolvedValue({ total: 0, data: [] }),
             listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
             getDocumentTypeById: jest.fn(),
             upsertDocumentType: jest.fn(),
@@ -103,7 +117,9 @@ describe('EmployeesController', () => {
         {
           provide: EmpEmploymentTypeService,
           useValue: {
-            listEmploymentTypes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEmploymentTypes: jest
+              .fn()
+              .mockResolvedValue({ total: 0, data: [] }),
             listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
             getEmploymentTypeById: jest.fn(),
             upsertEmploymentType: jest.fn(),
@@ -114,7 +130,9 @@ describe('EmployeesController', () => {
         {
           provide: EmpEmploymentStatusService,
           useValue: {
-            listEmploymentStatuses: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEmploymentStatuses: jest
+              .fn()
+              .mockResolvedValue({ total: 0, data: [] }),
             listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
             getEmploymentStatusById: jest.fn(),
             upsertEmploymentStatus: jest.fn(),
@@ -125,7 +143,9 @@ describe('EmployeesController', () => {
         {
           provide: EmpStatusReasonService,
           useValue: {
-            listStatusReasons: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listStatusReasons: jest
+              .fn()
+              .mockResolvedValue({ total: 0, data: [] }),
             listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
             getStatusReasonById: jest.fn(),
             upsertStatusReason: jest.fn(),
@@ -140,18 +160,32 @@ describe('EmployeesController', () => {
   });
 
   it('HRM-EM-01 create HRM-EM-02 list returns deterministic codes', async () => {
-    const created = await controller.createEmployee(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      employee_code: 'E001',
-      email: 'e1@xe.vn',
-      full_name: 'Employee 1',
-    });
-    const listed = await controller.listEmployees(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-    });
+    const created = await controller.createEmployee(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        employee_code: 'E001',
+        email: 'e1@xe.vn',
+        full_name: 'Employee 1',
+      },
+    );
+    const listed = await controller.listEmployees(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      },
+    );
     expect(created.code).toBe('HRM-EMP-201');
     expect(serviceMock.createEmployee).toHaveBeenCalledWith(
-      expect.objectContaining({ company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037' }),
+      expect.objectContaining({
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      }),
       undefined,
       { tenantId: 'xevn' },
     );
@@ -245,14 +279,24 @@ describe('EmployeesController', () => {
   });
 
   it('MOB-W7-5: list view=directory returns HRM-EMP-DIR-200', async () => {
-    const listed = await controller.listEmployees(undefined, 'test-key', 'xevn', undefined, {
-      company_id: 'holding',
-      view: 'directory',
-      q: 'nguyen',
-    });
+    const listed = await controller.listEmployees(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: 'holding',
+        view: 'directory',
+        q: 'nguyen',
+      },
+    );
     expect(listed.code).toBe('HRM-EMP-DIR-200');
     expect(serviceMock.listEmployeeDirectory).toHaveBeenCalledWith(
-      expect.objectContaining({ company_id: 'holding', view: 'directory', q: 'nguyen' }),
+      expect.objectContaining({
+        company_id: 'holding',
+        view: 'directory',
+        q: 'nguyen',
+      }),
       undefined,
       { tenantId: 'xevn' },
     );
@@ -279,9 +323,15 @@ describe('EmployeesController', () => {
   });
 
   it('D-DASH-01: getEmployeesSummary returns HRM-EMP-SUMMARY-200 without hitting get-by-id', async () => {
-    const summary = await controller.getEmployeesSummary(undefined, 'test-key', 'xevn', 'main', {
-      company_id: 'main',
-    });
+    const summary = await controller.getEmployeesSummary(
+      undefined,
+      'test-key',
+      'xevn',
+      'main',
+      {
+        company_id: 'main',
+      },
+    );
     expect(summary.code).toBe('HRM-EMP-SUMMARY-200');
     expect(serviceMock.getEmployeesSummary).toHaveBeenCalledWith(
       { company_id: 'main' },
@@ -320,12 +370,18 @@ describe('EmployeesController', () => {
       companyId: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
     });
     expect(() =>
-      controller.createEmployee(`Bearer ${token}`, undefined, 'xevn', undefined, {
-        company_id: 'a7d2dbec-75d7-4b2e-8c75-c53cd14f22aa',
-        employee_code: 'E001',
-        email: 'e1@xe.vn',
-        full_name: 'Employee 1',
-      }),
+      controller.createEmployee(
+        `Bearer ${token}`,
+        undefined,
+        'xevn',
+        undefined,
+        {
+          company_id: 'a7d2dbec-75d7-4b2e-8c75-c53cd14f22aa',
+          employee_code: 'E001',
+          email: 'e1@xe.vn',
+          full_name: 'Employee 1',
+        },
+      ),
     ).toThrow('companyId mismatches token scope');
     expect(serviceMock.createEmployee).not.toHaveBeenCalled();
   });

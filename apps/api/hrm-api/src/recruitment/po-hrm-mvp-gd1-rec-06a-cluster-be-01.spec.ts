@@ -53,8 +53,13 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
 
   it('RETAIN one-active 409 when ACTIVE exists', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates WHERE') && sql.includes('LIMIT 1')) {
-        return { rows: [{ id: CAND_ID, company_id: 'holding', status: 'interview' }] } as never;
+      if (
+        sql.includes('FROM public.recruitment_candidates WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
+        return {
+          rows: [{ id: CAND_ID, company_id: 'holding', status: 'interview' }],
+        } as never;
       }
       if (sql.includes('hrm_company_settings')) {
         return { rows: [] } as never;
@@ -64,7 +69,9 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
         sql.includes("status IN ('scheduled', 'confirmed')")
       ) {
         return {
-          rows: [{ id: 'active-1', status: 'scheduled', scheduled_at: FUTURE_AT }],
+          rows: [
+            { id: 'active-1', status: 'scheduled', scheduled_at: FUTURE_AT },
+          ],
         } as never;
       }
       return { rows: [] } as never;
@@ -77,13 +84,18 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
         scheduled_at: FUTURE_AT_2,
         interviewer: 'HR Lead',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-IV-409-ACTIVE' });
+    ).rejects.toMatchObject({ code: 'HRM-REC-IV-409-ACTIVE' });
   });
 
   it('no_show TERMINAL unlocks create (ACTIVE filter empty)', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates WHERE') && sql.includes('LIMIT 1')) {
-        return { rows: [{ id: CAND_ID, company_id: 'holding', status: 'interview' }] } as never;
+      if (
+        sql.includes('FROM public.recruitment_candidates WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
+        return {
+          rows: [{ id: CAND_ID, company_id: 'holding', status: 'interview' }],
+        } as never;
       }
       if (sql.includes('hrm_company_settings')) {
         return { rows: [] } as never;
@@ -131,7 +143,13 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
     db.query.mockImplementation(async (sql: string) => {
       if (sql.includes('FROM public.recruitment_interviews WHERE id')) {
         return {
-          rows: [{ company_id: 'holding', candidate_id: CAND_ID, status: 'scheduled' }],
+          rows: [
+            {
+              company_id: 'holding',
+              candidate_id: CAND_ID,
+              status: 'scheduled',
+            },
+          ],
         } as never;
       }
       if (sql.includes('UPDATE public.recruitment_interviews')) {
@@ -154,7 +172,11 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
       return { rows: [] } as never;
     });
 
-    const updated = await service.updateInterviewStatus(IV_ID, { status: 'no_show' }, 'holding');
+    const updated = await service.updateInterviewStatus(
+      IV_ID,
+      { status: 'no_show' },
+      'holding',
+    );
     expect(updated.status).toBe('no_show');
   });
 
@@ -162,7 +184,13 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
     db.query.mockImplementation(async (sql: string) => {
       if (sql.includes('FROM public.recruitment_interviews WHERE id')) {
         return {
-          rows: [{ company_id: 'holding', candidate_id: CAND_ID, status: 'cancelled' }],
+          rows: [
+            {
+              company_id: 'holding',
+              candidate_id: CAND_ID,
+              status: 'cancelled',
+            },
+          ],
         } as never;
       }
       return { rows: [] } as never;
@@ -170,14 +198,22 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
 
     await expect(
       service.updateInterviewStatus(IV_ID, { status: 'completed' }, 'holding'),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-IV-400-INVALID-TRANSITION' });
+    ).rejects.toMatchObject({
+      code: 'HRM-REC-IV-400-INVALID-TRANSITION',
+    });
   });
 
   it('CANCEL-REASON when CFG required and reason empty', async () => {
     db.query.mockImplementation(async (sql: string) => {
       if (sql.includes('FROM public.recruitment_interviews WHERE id')) {
         return {
-          rows: [{ company_id: 'holding', candidate_id: CAND_ID, status: 'scheduled' }],
+          rows: [
+            {
+              company_id: 'holding',
+              candidate_id: CAND_ID,
+              status: 'scheduled',
+            },
+          ],
         } as never;
       }
       if (sql.includes('FROM public.hrm_company_settings')) {
@@ -188,14 +224,22 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
 
     await expect(
       service.updateInterviewStatus(IV_ID, { status: 'cancelled' }, 'holding'),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-IV-400-CANCEL-REASON' });
+    ).rejects.toMatchObject({
+      code: 'HRM-REC-IV-400-CANCEL-REASON',
+    });
   });
 
   it('cancel without reason OK when CFG unset (default optional)', async () => {
     db.query.mockImplementation(async (sql: string) => {
       if (sql.includes('FROM public.recruitment_interviews WHERE id')) {
         return {
-          rows: [{ company_id: 'holding', candidate_id: CAND_ID, status: 'confirmed' }],
+          rows: [
+            {
+              company_id: 'holding',
+              candidate_id: CAND_ID,
+              status: 'confirmed',
+            },
+          ],
         } as never;
       }
       if (sql.includes('hrm_company_settings')) {
@@ -221,14 +265,23 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
       return { rows: [] } as never;
     });
 
-    const updated = await service.updateInterviewStatus(IV_ID, { status: 'cancelled' }, 'holding');
+    const updated = await service.updateInterviewStatus(
+      IV_ID,
+      { status: 'cancelled' },
+      'holding',
+    );
     expect(updated.status).toBe('cancelled');
   });
 
   it('PAST-DATETIME on create when CFG default BLOCK', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates WHERE') && sql.includes('LIMIT 1')) {
-        return { rows: [{ id: CAND_ID, company_id: 'holding', status: 'interview' }] } as never;
+      if (
+        sql.includes('FROM public.recruitment_candidates WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
+        return {
+          rows: [{ id: CAND_ID, company_id: 'holding', status: 'interview' }],
+        } as never;
       }
       if (sql.includes('hrm_company_settings')) {
         return { rows: [] } as never;
@@ -243,13 +296,20 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
         scheduled_at: PAST_AT,
         interviewer: 'HR Lead',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-IV-400-PAST-DATETIME' });
+    ).rejects.toMatchObject({
+      code: 'HRM-REC-IV-400-PAST-DATETIME',
+    });
   });
 
   it('allows past create when CFG allow_past_interview_schedule=true', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates WHERE') && sql.includes('LIMIT 1')) {
-        return { rows: [{ id: CAND_ID, company_id: 'holding', status: 'interview' }] } as never;
+      if (
+        sql.includes('FROM public.recruitment_candidates WHERE') &&
+        sql.includes('LIMIT 1')
+      ) {
+        return {
+          rows: [{ id: CAND_ID, company_id: 'holding', status: 'interview' }],
+        } as never;
       }
       if (sql.includes('FROM public.hrm_company_settings')) {
         return { rows: [{ value_json: true }] } as never;
@@ -293,13 +353,22 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
     db.query.mockImplementation(async (sql: string) => {
       if (sql.includes('FROM public.recruitment_interviews WHERE id')) {
         return {
-          rows: [{ company_id: 'holding', status: 'scheduled', interviewer: 'HR Lead' }],
+          rows: [
+            {
+              company_id: 'holding',
+              status: 'scheduled',
+              interviewer: 'HR Lead',
+            },
+          ],
         } as never;
       }
       if (sql.includes('hrm_company_settings')) {
         return { rows: [] } as never;
       }
-      if (sql.includes('UPDATE public.recruitment_interviews') && sql.includes('scheduled_at')) {
+      if (
+        sql.includes('UPDATE public.recruitment_interviews') &&
+        sql.includes('scheduled_at')
+      ) {
         return {
           rows: [
             {
@@ -333,14 +402,26 @@ describe('PO-HRM-MVP-GD1-REC-06A-CLUSTER-BE-01 interview residual', () => {
     db.query.mockImplementation(async (sql: string) => {
       if (sql.includes('FROM public.recruitment_interviews WHERE id')) {
         return {
-          rows: [{ company_id: 'holding', status: 'no_show', interviewer: 'HR Lead' }],
+          rows: [
+            {
+              company_id: 'holding',
+              status: 'no_show',
+              interviewer: 'HR Lead',
+            },
+          ],
         } as never;
       }
       return { rows: [] } as never;
     });
 
     await expect(
-      service.rescheduleInterview(IV_ID, { scheduled_at: FUTURE_AT_2 }, 'holding'),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-REC-IV-400-INVALID-TRANSITION' });
+      service.rescheduleInterview(
+        IV_ID,
+        { scheduled_at: FUTURE_AT_2 },
+        'holding',
+      ),
+    ).rejects.toMatchObject({
+      code: 'HRM-REC-IV-400-INVALID-TRANSITION',
+    });
   });
 });

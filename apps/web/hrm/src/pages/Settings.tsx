@@ -119,10 +119,7 @@ import { JdMasterLibrarySettingsPanel } from '@/components/settings/JdMasterLibr
 import { ContractLegalPrintSettingsPanel } from '@/components/settings/ContractLegalPrintSettingsPanel';
 import { MergeTokenSettingsPanel } from '@/components/settings/MergeTokenSettingsPanel';
 import { PaySheetTemplateSettingsPanel } from '@/components/settings/PaySheetTemplateSettingsPanel';
-import { AttLeaveTypeSettingsPanel } from '@/components/settings/AttLeaveTypeSettingsPanel';
-import { AttAttendanceCodeSettingsPanel } from '@/components/settings/AttAttendanceCodeSettingsPanel';
-import { AttOtTypeSettingsPanel } from '@/components/settings/AttOtTypeSettingsPanel';
-import { AttOtCompTypeSettingsPanel } from '@/components/settings/AttOtCompTypeSettingsPanel';
+
 import { EmpDocumentTypeSettingsPanel } from '@/components/settings/EmpDocumentTypeSettingsPanel';
 import { EmpEmploymentTypeSettingsPanel } from '@/components/settings/EmpEmploymentTypeSettingsPanel';
 import { EmpEmploymentStatusSettingsPanel } from '@/components/settings/EmpEmploymentStatusSettingsPanel';
@@ -130,6 +127,8 @@ import { DecDecisionTypeSettingsPanel } from '@/components/settings/DecDecisionT
 import { SiInsuranceTypeSettingsPanel } from '@/components/settings/SiInsuranceTypeSettingsPanel';
 import { SiInsurerSettingsPanel } from '@/components/settings/SiInsurerSettingsPanel';
 import { RecPipelineStageSettingsPanel } from '@/components/settings/RecPipelineStageSettingsPanel';
+import { RecCandidateSourceSettingsPanel } from '@/components/settings/RecCandidateSourceSettingsPanel';
+import { RecInterviewTypeSettingsPanel } from '@/components/settings/RecInterviewTypeSettingsPanel';
 import { SettingsDefaultsPanel } from '@/components/settings/SettingsDefaultsPanel';
 import { PaySalaryComponentList } from '@/components/settings/payroll/PaySalaryComponentList';
 import { PayFormulaSettingsPanel } from '@/components/settings/payroll/PayFormulaSettingsPanel';
@@ -137,6 +136,9 @@ import { PayFormulaSettingsPanel } from '@/components/settings/payroll/PayFormul
 import { PaySalaryGroupSettingsPanel } from '@/components/settings/payroll/PaySalaryGroupSettingsPanel';
 import { PayTaxTableSettingsPanel } from '@/components/settings/payroll/PayTaxTableSettingsPanel';
 import { PayPaySlipTemplateSettingsPanel } from '@/components/settings/payroll/PayPayslipTemplateSettingsPanel';
+import { ContractTypeSettingsPanel } from '@/components/settings/ContractTypeSettingsPanel';
+import { ContractTerminationReasonSettingsPanel } from '@/components/settings/ContractTerminationReasonSettingsPanel';
+
 
 
 const currencies = [
@@ -514,19 +516,7 @@ export default function Settings() {
 
         {settingsTab === 'pay-sheet-tpl' && <PaySheetTemplateSettingsPanel />}
 
-        {settingsTab === 'att-leave-types' && <AttLeaveTypeSettingsPanel />}
 
-        {settingsTab === 'att-attendance-codes' && (<div className="space-y-4">
-          <AttAttendanceCodeSettingsPanel />
-        </div>)}
-
-        {settingsTab === 'att-ot-types' && (<div className="space-y-4">
-          <AttOtTypeSettingsPanel />
-        </div>)}
-
-        {settingsTab === 'att-ot-comp-types' && (<div className="space-y-4">
-          <AttOtCompTypeSettingsPanel />
-        </div>)}
 
         {settingsTab === 'emp-document-types' && (<div className="space-y-4">
           <EmpDocumentTypeSettingsPanel />
@@ -569,15 +559,13 @@ export default function Settings() {
           </div>
         )}
         {settingsTab === 'rec-sources' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          <div className="space-y-4">
+             <RecCandidateSourceSettingsPanel />
           </div>
         )}
         {settingsTab === 'rec-interview-types' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          <div className="space-y-4">
+             <RecInterviewTypeSettingsPanel />
           </div>
         )}
         {settingsTab === 'rec-rejection-reasons' && (
@@ -599,35 +587,12 @@ export default function Settings() {
           </div>
         )}
         {settingsTab === 'contract-types' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
+          <ContractTypeSettingsPanel />
         )}
         {settingsTab === 'contract-termination-reasons' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
+          <ContractTerminationReasonSettingsPanel />
         )}
-        {settingsTab === 'att-shifts' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
-        )}
-        {settingsTab === 'att-work-rules' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
-        )}
-        {settingsTab === 'att-schedule-groups' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
-          </div>
-        )}
+
         {settingsTab === 'pay-salary-components' && (
           <PaySalaryComponentList />
         )}

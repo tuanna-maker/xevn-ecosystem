@@ -31,13 +31,17 @@ describe('D-BE-ERP-E1B-ALIAS-KEYS-01', () => {
     });
 
     it('pull try-list prefers hr_decision_types first', () => {
-      expect(catalogAliasTryList('decision_types')[0]).toBe('hr_decision_types');
+      expect(catalogAliasTryList('decision_types')[0]).toBe(
+        'hr_decision_types',
+      );
       expect(catalogAliasTryList(HRM_SC_DEC_KEY)).toContain('decision_types');
     });
 
     it('E1-B surface allow-list has ≥10 logical buckets (aliases expand count)', () => {
       const families = new Set(
-        HRM_E1B_MASTER_SURFACE_KEYS.map((k) => resolveCatalogFamily(k).familyId),
+        HRM_E1B_MASTER_SURFACE_KEYS.map(
+          (k) => resolveCatalogFamily(k).familyId,
+        ),
       );
       // pos, org, leave, dec, contract, emp, shift, grade, rec, pay_nature, pay_comp, pay_tpl
       expect(families.size).toBeGreaterThanOrEqual(10);
@@ -90,25 +94,31 @@ describe('D-BE-ERP-E1B-ALIAS-KEYS-01', () => {
     });
 
     it('getEffectiveItemsForKey(decision_types) merges L1 hr_decision_types items', async () => {
-      (catalogSync.getSyncedCatalogExact as jest.Mock).mockImplementation(async (key: string) => {
-        if (key === 'hr_decision_types') {
-          return {
-            key: 'hr_decision_types',
-            payload: {
+      (catalogSync.getSyncedCatalogExact as jest.Mock).mockImplementation(
+        async (key: string) => {
+          if (key === 'hr_decision_types') {
+            return {
               key: 'hr_decision_types',
-              name: 'Loại quyết định',
-              items: [
-                { code: 'appointment', label: 'Bổ nhiệm', status: 'active' },
-                { code: 'transfer', label: 'Điều chuyển', status: 'active' },
-                { code: 'discipline', label: 'Kỷ luật', status: 'active' },
-              ],
-            },
-          };
-        }
-        return null;
-      });
+              payload: {
+                key: 'hr_decision_types',
+                name: 'Loại quyết định',
+                items: [
+                  { code: 'appointment', label: 'Bổ nhiệm', status: 'active' },
+                  { code: 'transfer', label: 'Điều chuyển', status: 'active' },
+                  { code: 'discipline', label: 'Kỷ luật', status: 'active' },
+                ],
+              },
+            };
+          }
+          return null;
+        },
+      );
 
-      const viaFr = await service.getEffectiveItemsForKey('xevn', 'holding', 'decision_types');
+      const viaFr = await service.getEffectiveItemsForKey(
+        'xevn',
+        'holding',
+        'decision_types',
+      );
       const viaLive = await service.getEffectiveItemsForKey(
         'xevn',
         'holding',
@@ -122,21 +132,27 @@ describe('D-BE-ERP-E1B-ALIAS-KEYS-01', () => {
         'discipline',
         'transfer',
       ]);
-      expect(viaLive.map((i) => i.code).sort()).toEqual(viaFr.map((i) => i.code).sort());
+      expect(viaLive.map((i) => i.code).sort()).toEqual(
+        viaFr.map((i) => i.code).sort(),
+      );
     });
 
     it('assertCodeInEffectiveCatalog accepts code when only hr_decision_types L1 exists', async () => {
-      (catalogSync.getSyncedCatalogExact as jest.Mock).mockImplementation(async (key: string) => {
-        if (key === 'hr_decision_types') {
-          return {
-            key: 'hr_decision_types',
-            payload: {
-              items: [{ code: 'appointment', label: 'Bổ nhiệm', status: 'active' }],
-            },
-          };
-        }
-        return null;
-      });
+      (catalogSync.getSyncedCatalogExact as jest.Mock).mockImplementation(
+        async (key: string) => {
+          if (key === 'hr_decision_types') {
+            return {
+              key: 'hr_decision_types',
+              payload: {
+                items: [
+                  { code: 'appointment', label: 'Bổ nhiệm', status: 'active' },
+                ],
+              },
+            };
+          }
+          return null;
+        },
+      );
 
       const hit = await service.assertCodeInEffectiveCatalog({
         tenantId: 'xevn',
@@ -150,22 +166,32 @@ describe('D-BE-ERP-E1B-ALIAS-KEYS-01', () => {
     });
 
     it('listPickerItems returns storageKey + aliases for DEC', async () => {
-      (catalogSync.getSyncedCatalogExact as jest.Mock).mockImplementation(async (key: string) => {
-        if (key === 'hr_decision_types') {
-          return {
-            key: 'hr_decision_types',
-            payload: {
-              items: [{ code: 'appointment', label: 'Bổ nhiệm', status: 'active' }],
-            },
-          };
-        }
-        return null;
-      });
+      (catalogSync.getSyncedCatalogExact as jest.Mock).mockImplementation(
+        async (key: string) => {
+          if (key === 'hr_decision_types') {
+            return {
+              key: 'hr_decision_types',
+              payload: {
+                items: [
+                  { code: 'appointment', label: 'Bổ nhiệm', status: 'active' },
+                ],
+              },
+            };
+          }
+          return null;
+        },
+      );
 
-      const out = await service.listPickerItems('xevn', 'holding', 'decision_types');
+      const out = await service.listPickerItems(
+        'xevn',
+        'holding',
+        'decision_types',
+      );
       expect(out.catalog_key).toBe('hr_decision_types');
       expect(out.family_id).toBe('dec_types');
-      expect(out.aliases).toEqual(expect.arrayContaining(['hr_decision_types', 'decision_types']));
+      expect(out.aliases).toEqual(
+        expect.arrayContaining(['hr_decision_types', 'decision_types']),
+      );
       expect(out.total).toBe(1);
     });
   });
@@ -178,7 +204,9 @@ describe('D-BE-ERP-E1B-ALIAS-KEYS-01', () => {
     });
 
     it('pullCatalogFromXbos(decision_types) succeeds via hr_decision_types', async () => {
-      const db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as HrmDbService;
+      const db = {
+        query: jest.fn().mockResolvedValue({ rows: [] }),
+      } as unknown as HrmDbService;
       const svc = new CatalogSyncService(db);
 
       process.env.MASTER_TENANT_ID = 'xevn';
@@ -209,10 +237,13 @@ describe('D-BE-ERP-E1B-ALIAS-KEYS-01', () => {
         }
         return { ok: false, status: 500, json: async () => ({}) } as Response;
       });
-      global.fetch = fetchMock as unknown as typeof fetch;
+      global.fetch = fetchMock;
 
       (db.query as jest.Mock).mockImplementation(async (sql: string) => {
-        if (sql.includes('SELECT catalog_key') && sql.includes('synced_catalogs')) {
+        if (
+          sql.includes('SELECT catalog_key') &&
+          sql.includes('synced_catalogs')
+        ) {
           return {
             rows: [
               {
@@ -229,7 +260,11 @@ describe('D-BE-ERP-E1B-ALIAS-KEYS-01', () => {
         return { rows: [] };
       });
 
-      const record = await svc.pullCatalogFromXbos('decision_types', 'xevn', 'holding');
+      const record = await svc.pullCatalogFromXbos(
+        'decision_types',
+        'xevn',
+        'holding',
+      );
       expect(record.key).toBe('hr_decision_types');
       expect(record.resolvedFrom).toBe('decision_types');
       expect(fetchMock).toHaveBeenCalled();
@@ -237,46 +272,62 @@ describe('D-BE-ERP-E1B-ALIAS-KEYS-01', () => {
 
     it('getSyncedCatalog(decision_types) finds exact hr_decision_types row', async () => {
       const db = {
-        query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-          if (
-            sql.includes('CREATE TABLE') ||
-            sql.includes('ALTER TABLE') ||
-            sql.includes('CREATE UNIQUE') ||
-            sql.includes('CREATE INDEX')
-          ) {
+        query: jest
+          .fn()
+          .mockImplementation(async (sql: string, params?: unknown[]) => {
+            if (
+              sql.includes('CREATE TABLE') ||
+              sql.includes('ALTER TABLE') ||
+              sql.includes('CREATE UNIQUE') ||
+              sql.includes('CREATE INDEX')
+            ) {
+              return { rows: [] };
+            }
+            if (
+              sql.includes('FROM public.synced_catalogs') &&
+              params?.[0] === 'decision_types'
+            ) {
+              return { rows: [] };
+            }
+            if (
+              sql.includes('FROM public.synced_catalogs') &&
+              params?.[0] === 'hr_decision_types'
+            ) {
+              return {
+                rows: [
+                  {
+                    catalog_key: 'hr_decision_types',
+                    source_system: 'xbos',
+                    version: 2,
+                    checksum: 'abc',
+                    synced_at: '2026-07-28T00:00:00.000Z',
+                    payload: {
+                      items: [{ code: 'appointment', label: 'Bổ nhiệm' }],
+                    },
+                  },
+                ],
+              };
+            }
             return { rows: [] };
-          }
-          if (sql.includes('FROM public.synced_catalogs') && params?.[0] === 'decision_types') {
-            return { rows: [] };
-          }
-          if (sql.includes('FROM public.synced_catalogs') && params?.[0] === 'hr_decision_types') {
-            return {
-              rows: [
-                {
-                  catalog_key: 'hr_decision_types',
-                  source_system: 'xbos',
-                  version: 2,
-                  checksum: 'abc',
-                  synced_at: '2026-07-28T00:00:00.000Z',
-                  payload: { items: [{ code: 'appointment', label: 'Bổ nhiệm' }] },
-                },
-              ],
-            };
-          }
-          return { rows: [] };
-        }),
+          }),
       } as unknown as HrmDbService;
 
       process.env.MASTER_TENANT_ID = 'xevn';
       process.env.DEFAULT_COMPANY_ID = 'holding';
       const svc = new CatalogSyncService(db);
-      const row = await svc.getSyncedCatalog('decision_types', 'xevn', 'holding');
+      const row = await svc.getSyncedCatalog(
+        'decision_types',
+        'xevn',
+        'holding',
+      );
       expect(row.key).toBe('hr_decision_types');
       expect(row.resolvedFrom).toBe('decision_types');
     });
 
     it('pull throws HRM-SYNC-002 when all aliases miss', async () => {
-      const db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as HrmDbService;
+      const db = {
+        query: jest.fn().mockResolvedValue({ rows: [] }),
+      } as unknown as HrmDbService;
       process.env.MASTER_TENANT_ID = 'xevn';
       process.env.DEFAULT_COMPANY_ID = 'holding';
       const svc = new CatalogSyncService(db);
@@ -286,7 +337,9 @@ describe('D-BE-ERP-E1B-ALIAS-KEYS-01', () => {
         json: async () => ({ success: false }),
       })) as unknown as typeof fetch;
 
-      await expect(svc.pullCatalogFromXbos('decision_types', 'xevn', 'holding')).rejects.toMatchObject({
+      await expect(
+        svc.pullCatalogFromXbos('decision_types', 'xevn', 'holding'),
+      ).rejects.toMatchObject({
         code: 'HRM-SYNC-002',
       });
       try {

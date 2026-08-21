@@ -35,7 +35,10 @@ export class HrmRealtimeGateway implements OnGatewayInit, OnGatewayConnection {
     const authHeader = this.readAuthorization(client);
     const internalKey = this.readInternalApiKey(client);
     if (!isAuthorizedInternalRequest(authHeader, internalKey)) {
-      client.emit('hrm:error', { code: 'HRM-AUTH-001', message: 'Unauthorized realtime access' });
+      client.emit('hrm:error', {
+        code: 'HRM-AUTH-001',
+        message: 'Unauthorized realtime access',
+      });
       client.disconnect(true);
     }
   }
@@ -45,37 +48,53 @@ export class HrmRealtimeGateway implements OnGatewayInit, OnGatewayConnection {
     @ConnectedSocket() client: Socket,
     @MessageBody() body: { companyUuid?: string; employeeId?: string },
   ) {
-    const companyUuid = typeof body?.companyUuid === 'string' ? body.companyUuid.trim() : '';
+    const companyUuid =
+      typeof body?.companyUuid === 'string' ? body.companyUuid.trim() : '';
     if (!companyUuid) {
-      return { ok: false, code: 'HRM-ERR-VALIDATION', message: 'companyUuid required' };
+      return {
+        ok: false,
+        code: 'HRM-ERR-VALIDATION',
+        message: 'companyUuid required',
+      };
     }
     void client.join(`company:${companyUuid}`);
-    const employeeId = typeof body?.employeeId === 'string' ? body.employeeId.trim() : '';
+    const employeeId =
+      typeof body?.employeeId === 'string' ? body.employeeId.trim() : '';
     if (employeeId) {
       void client.join(`employee:${employeeId}`);
     }
-    this.logger.debug(`client ${client.id} joined company:${companyUuid}${employeeId ? ` employee:${employeeId}` : ''}`);
+    this.logger.debug(
+      `client ${client.id} joined company:${companyUuid}${employeeId ? ` employee:${employeeId}` : ''}`,
+    );
     return { ok: true, code: 'HRM-OK-REALTIME-JOIN' };
   }
 
   private readAuthorization(client: Socket): string | undefined {
     const auth = client.handshake.auth as Record<string, unknown> | undefined;
-    const fromAuth = typeof auth?.authorization === 'string' ? auth.authorization.trim() : '';
+    const fromAuth =
+      typeof auth?.authorization === 'string' ? auth.authorization.trim() : '';
     if (fromAuth) return fromAuth;
     const q = client.handshake.query?.authorization;
-    const fromQuery = typeof q === 'string' ? q.trim() : Array.isArray(q) ? q[0]?.trim() : '';
+    const fromQuery =
+      typeof q === 'string' ? q.trim() : Array.isArray(q) ? q[0]?.trim() : '';
     if (fromQuery) {
-      return fromQuery.startsWith('Bearer ') ? fromQuery : `Bearer ${fromQuery}`;
+      return fromQuery.startsWith('Bearer ')
+        ? fromQuery
+        : `Bearer ${fromQuery}`;
     }
     return undefined;
   }
 
   private readInternalApiKey(client: Socket): string | undefined {
     const auth = client.handshake.auth as Record<string, unknown> | undefined;
-    const fromAuth = typeof auth?.internalApiKey === 'string' ? auth.internalApiKey.trim() : '';
+    const fromAuth =
+      typeof auth?.internalApiKey === 'string'
+        ? auth.internalApiKey.trim()
+        : '';
     if (fromAuth) return fromAuth;
     const q = client.handshake.query?.internalApiKey;
-    const fromQuery = typeof q === 'string' ? q.trim() : Array.isArray(q) ? q[0]?.trim() : '';
+    const fromQuery =
+      typeof q === 'string' ? q.trim() : Array.isArray(q) ? q[0]?.trim() : '';
     return fromQuery || undefined;
   }
 }

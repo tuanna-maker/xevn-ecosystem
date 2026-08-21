@@ -56,11 +56,18 @@ const SELF_PATCH_FIELDS = ['avatar_url', 'custom_fields'] as const;
  * Keys inside `custom_fields` that self may mutate (AC-ESS-01).
  * Other catalog keys (gender, DOB, salary, tenant_id, …) remain HR/system-only.
  */
-export const SELF_PATCH_CUSTOM_FIELD_KEYS = ['phone_number', 'work_phone'] as const;
+export const SELF_PATCH_CUSTOM_FIELD_KEYS = [
+  'phone_number',
+  'work_phone',
+] as const;
 
-export type SelfPatchCustomFieldKey = (typeof SELF_PATCH_CUSTOM_FIELD_KEYS)[number];
+export type SelfPatchCustomFieldKey =
+  (typeof SELF_PATCH_CUSTOM_FIELD_KEYS)[number];
 
-function readClaim(payload: Record<string, unknown>, ...keys: string[]): string | undefined {
+function readClaim(
+  payload: Record<string, unknown>,
+  ...keys: string[]
+): string | undefined {
   for (const key of keys) {
     const value = payload[key];
     if (typeof value === 'string' && value.trim()) {
@@ -79,7 +86,7 @@ function readJwtRoles(payload: Record<string, unknown>): string[] {
 }
 
 export function readJwtEmployeeId(authorization?: string): string | undefined {
-  const payload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+  const payload = getVerifiedInternalJwtPayload(authorization);
   if (!payload) {
     return undefined;
   }
@@ -90,17 +97,21 @@ export function readJwtEmployeeId(authorization?: string): string | undefined {
  * True when JWT employee_id matches the target row (ESS self path).
  * Option A: self always uses ESS allowlist even if roles include manager/hr_manager.
  */
-export function isSelfEmployeeTarget(employeeId: string, authorization?: string): boolean {
+export function isSelfEmployeeTarget(
+  employeeId: string,
+  authorization?: string,
+): boolean {
   const jwtEmployeeId = readJwtEmployeeId(authorization);
   return Boolean(jwtEmployeeId && jwtEmployeeId === employeeId);
 }
 
 export function canFullEmployeeUpdate(authorization?: string): boolean {
-  const payload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+  const payload = getVerifiedInternalJwtPayload(authorization);
   if (!payload) {
     return true;
   }
-  const roleCode = readClaim(payload, 'roleCode', 'role_code', 'role')?.toLowerCase() ?? '';
+  const roleCode =
+    readClaim(payload, 'roleCode', 'role_code', 'role')?.toLowerCase() ?? '';
   if (FULL_UPDATE_ROLE_CODES.has(roleCode) || roleCode.startsWith('group_')) {
     return true;
   }
@@ -115,7 +126,8 @@ export function canFullEmployeeUpdate(authorization?: string): boolean {
 function assertSelfEssPatchAllowed(payload: UpdateEmployeeDto): void {
   const fields = definedPatchFields(payload);
   const disallowed = fields.filter(
-    (field) => !SELF_PATCH_FIELDS.includes(field as (typeof SELF_PATCH_FIELDS)[number]),
+    (field) =>
+      !SELF_PATCH_FIELDS.includes(field as (typeof SELF_PATCH_FIELDS)[number]),
   );
   if (disallowed.length > 0) {
     throw new ApiException(
@@ -136,7 +148,9 @@ function definedPatchFields(payload: UpdateEmployeeDto): string[] {
   );
 }
 
-function isSelfPatchCustomFieldKey(key: string): key is SelfPatchCustomFieldKey {
+function isSelfPatchCustomFieldKey(
+  key: string,
+): key is SelfPatchCustomFieldKey {
   return (SELF_PATCH_CUSTOM_FIELD_KEYS as readonly string[]).includes(key);
 }
 
@@ -167,7 +181,9 @@ export function mergeSelfEssCustomFields(
   return next;
 }
 
-function assertSelfCustomFieldsPatch(customFields: Record<string, string>): void {
+function assertSelfCustomFieldsPatch(
+  customFields: Record<string, string>,
+): void {
   const keys = Object.keys(customFields);
   if (keys.filter(isSelfPatchCustomFieldKey).length === 0) {
     throw new ApiException(

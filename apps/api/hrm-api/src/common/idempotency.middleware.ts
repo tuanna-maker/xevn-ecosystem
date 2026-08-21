@@ -3,7 +3,11 @@ import type { NextFunction, Request, Response } from 'express';
 const seenKeys = new Map<string, number>();
 const TTL_MS = 24 * 60 * 60 * 1000;
 
-export function idempotencyMiddleware(req: Request, res: Response, next: NextFunction): void {
+export function idempotencyMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
   if (req.method !== 'POST' && req.method !== 'PUT' && req.method !== 'PATCH') {
     next();
     return;

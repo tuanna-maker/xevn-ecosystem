@@ -26,7 +26,14 @@
  * TechSpec: docs/hrm/API_DESIGN_HRM_ADMIN.md §B · DB_DESIGN §3.3
  * must_keep: email/password validation; Auth/Tenant không unify user_id
  */
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateCompanyAdminDto {
   @IsEmail()

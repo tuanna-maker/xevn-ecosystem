@@ -26,7 +26,14 @@
  * TechSpec: docs/hrm/API_DESIGN_HRM_ADMIN.md §D · docs/xbos/API_DESIGN_XBOS_AUTH_TENANT.md (cite)
  * must_keep: ValidateIf password/email; MinLength(8); Auth dual-plane
  */
-import { IsEmail, IsOptional, IsString, IsUUID, MinLength, ValidateIf } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MinLength,
+  ValidateIf,
+} from 'class-validator';
 
 export class ResetUserPasswordDto {
   /** HRM admin plane profiles.user_id — UUID (≠ XBOS Auth TEXT email user_id). */

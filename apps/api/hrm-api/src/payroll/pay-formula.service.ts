@@ -289,7 +289,11 @@ export class PayFormulaService {
     const payload = getVerifiedInternalJwtPayload(authorization);
     const sub = String(payload?.sub ?? '').trim();
     if (!sub) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized formula access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized formula access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     return sub;
   }
@@ -309,7 +313,11 @@ export class PayFormulaService {
   private assertStatus(status: string): PayFormulaStatus {
     const s = status.trim().toLowerCase() as PayFormulaStatus;
     if (!(PAY_FORMULA_STATUSES as readonly string[]).includes(s)) {
-      throw new ApiException(HRM_PAY_FORMULA_409_STATE, 'Invalid formula status', HttpStatus.CONFLICT);
+      throw new ApiException(
+        HRM_PAY_FORMULA_409_STATE,
+        'Invalid formula status',
+        HttpStatus.CONFLICT,
+      );
     }
     return s;
   }
@@ -324,12 +332,20 @@ export class PayFormulaService {
     const value = body.expressionJson ?? body.expression;
     if (value == null) {
       if (required) {
-        throw new ApiException('HRM-VAL-400', 'expression / expressionJson required', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-VAL-400',
+          'expression / expressionJson required',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       return undefined;
     }
     if (typeof value !== 'object' || Array.isArray(value)) {
-      throw new ApiException('HRM-VAL-400', 'expression_json must be an object', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'expression_json must be an object',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return value;
   }
@@ -341,14 +357,12 @@ export class PayFormulaService {
     return body.requiredVarsJson ?? body.requiredVars;
   }
 
-  private pickEffective(
-    body: {
-      effectiveFrom?: string;
-      effective_from?: string;
-      effectiveTo?: string;
-      effective_to?: string;
-    },
-  ): { from: string | null; to: string | null } {
+  private pickEffective(body: {
+    effectiveFrom?: string;
+    effective_from?: string;
+    effectiveTo?: string;
+    effective_to?: string;
+  }): { from: string | null; to: string | null } {
     return {
       from: body.effectiveFrom ?? body.effective_from ?? null,
       to: body.effectiveTo ?? body.effective_to ?? null,
@@ -407,7 +421,9 @@ export class PayFormulaService {
 
   private mapRow(row: PayFormulaRow) {
     const meta =
-      row.meta_json && typeof row.meta_json === 'object' && !Array.isArray(row.meta_json)
+      row.meta_json &&
+      typeof row.meta_json === 'object' &&
+      !Array.isArray(row.meta_json)
         ? (row.meta_json as Record<string, unknown>)
         : null;
     return {
@@ -436,7 +452,10 @@ export class PayFormulaService {
     requestedCompanyId: string,
     authorization?: string,
   ): Promise<PayFormulaRow> {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [id];
@@ -457,7 +476,11 @@ export class PayFormulaService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_PAY_FORMULA_404, 'Pay formula definition not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_FORMULA_404,
+        'Pay formula definition not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_PAY_FORMULA_404,
@@ -468,13 +491,17 @@ export class PayFormulaService {
 
   async listFormulas(query: ListPayFormulasQueryDto, authorization?: string) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, expandPayrollPeriodCompanyIds(scope));
 
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     if (!includeArchived) {
       filters.push('archived_at IS NULL');
     }
@@ -494,7 +521,9 @@ export class PayFormulaService {
 
     if (query.q?.trim()) {
       values.push(`%${query.q.trim().toLowerCase()}%`);
-      filters.push(`(lower(code) LIKE $${values.length} OR lower(coalesce(meta_json->>'label','')) LIKE $${values.length})`);
+      filters.push(
+        `(lower(code) LIKE $${values.length} OR lower(coalesce(meta_json->>'label','')) LIKE $${values.length})`,
+      );
     }
 
     const where = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
@@ -524,10 +553,15 @@ export class PayFormulaService {
   async createFormula(payload: CreatePayFormulaDto, authorization?: string) {
     await this.ensureSchema();
     const actor = this.resolveActorSub(authorization);
-    const persistCompanyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const code = this.assertCode(payload.code);
     const expression = this.pickExpression(payload, true)!;
-    const requiredVars = this.normalizeRequiredVarsJson(this.pickRequiredVars(payload));
+    const requiredVars = this.normalizeRequiredVarsJson(
+      this.pickRequiredVars(payload),
+    );
     const effective = this.pickEffective(payload);
     const meta = payload.label?.trim() ? { label: payload.label.trim() } : null;
     const id = randomUUID();
@@ -577,12 +611,20 @@ export class PayFormulaService {
     }
   }
 
-  async updateFormula(id: string, payload: UpdatePayFormulaDto, authorization?: string) {
+  async updateFormula(
+    id: string,
+    payload: UpdatePayFormulaDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const actor = this.resolveActorSub(authorization);
     const companyId = payload.company_id;
     if (!companyId?.trim()) {
-      throw new ApiException('HRM-VAL-400', 'company_id required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'company_id required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const row = await this.loadByIdInScope(id, companyId, authorization);
     if (row.status !== 'draft') {
@@ -603,7 +645,9 @@ export class PayFormulaService {
     const nextMeta =
       payload.label !== undefined
         ? {
-            ...((row.meta_json && typeof row.meta_json === 'object' && !Array.isArray(row.meta_json)
+            ...((row.meta_json &&
+            typeof row.meta_json === 'object' &&
+            !Array.isArray(row.meta_json)
               ? row.meta_json
               : {}) as Record<string, unknown>),
             label: payload.label?.trim() || null,
@@ -658,9 +702,15 @@ export class PayFormulaService {
   ) {
     await this.ensureSchema();
     const actor = this.resolveActorSub(authorization);
-    const persistCompanyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const code = this.assertCode(codeParam);
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, payload.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      payload.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['code = $1', 'archived_at IS NULL'];
     const values: unknown[] = [code];
@@ -683,7 +733,11 @@ export class PayFormulaService {
     );
     const prior = latest.rows[0];
     if (!prior) {
-      throw new ApiException(HRM_PAY_FORMULA_404, 'Prior formula version not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_FORMULA_404,
+        'Prior formula version not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(prior, scope, {
       notFoundCode: HRM_PAY_FORMULA_404,
@@ -694,7 +748,11 @@ export class PayFormulaService {
       this.pickExpression(payload, false) ??
       (prior.expression_json as Record<string, unknown>);
     if (!expression || typeof expression !== 'object') {
-      throw new ApiException('HRM-VAL-400', 'expression_json required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'expression_json required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const requiredRaw = this.pickRequiredVars(payload);
     const requiredVars =
@@ -946,9 +1004,15 @@ export class PayFormulaService {
     const scope = resolveHrmListScope(input.authorization, scopeCompanyId);
     const companyIds = expandPayrollPeriodCompanyIds(scope);
 
-    const periodFormulaId = String(input.periodFormulaDefinitionId ?? '').trim();
+    const periodFormulaId = String(
+      input.periodFormulaDefinitionId ?? '',
+    ).trim();
     if (periodFormulaId) {
-      const filters: string[] = ['id = $1::uuid', `status = 'active'`, 'archived_at IS NULL'];
+      const filters: string[] = [
+        'id = $1::uuid',
+        `status = 'active'`,
+        'archived_at IS NULL',
+      ];
       const values: unknown[] = [periodFormulaId];
       pushCompanyIdFilter(filters, values, companyIds);
       const res = await this.db.query<PayFormulaRow>(
@@ -1011,7 +1075,11 @@ export class PayFormulaService {
         'No active published formula bound for period/company — refuse silent zero process',
         HttpStatus.PRECONDITION_FAILED,
         {
-          warnings: ['NO_ACTIVE_FORMULA', 'CATALOG_FORMULA_TEXT_FORBIDDEN', 'TEMPLATE_OVERRIDE_NOT_MERGED'],
+          warnings: [
+            'NO_ACTIVE_FORMULA',
+            'CATALOG_FORMULA_TEXT_FORBIDDEN',
+            'TEMPLATE_OVERRIDE_NOT_MERGED',
+          ],
           payroll_e2e_ready: false,
         },
       );
@@ -1044,6 +1112,7 @@ export class PayFormulaService {
     variableOverrides?: Record<string, unknown> | null;
     /** Default preview — PROCESS must pass surface:'process' for ATT-412. */
     surface?: 'preview' | 'process';
+    systemParams?: Record<string, number>;
   }): Promise<
     | {
         mode: 'computed';
@@ -1131,6 +1200,14 @@ export class PayFormulaService {
           payroll_e2e_ready: false,
         },
       };
+    }
+
+    if (input.systemParams) {
+      for (const [k, v] of Object.entries(input.systemParams)) {
+        if (typeof v === 'number' && Number.isFinite(v)) {
+          bag.vars[k] = v;
+        }
+      }
     }
 
     const missing = missingVarKeys(needed, bag.vars);
@@ -1298,7 +1375,10 @@ export class PayFormulaService {
     authorization?: string;
   }): Promise<PublishedFormulaBind | null> {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(input.authorization, input.companyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      input.authorization,
+      input.companyId,
+    );
     const scope = resolveHrmListScope(input.authorization, scopeCompanyId);
     const companyIds = expandPayrollPeriodCompanyIds(scope);
     const filters: string[] = [
@@ -1349,8 +1429,18 @@ export class PayFormulaService {
     periodTo: string;
     periodId?: string;
   }): Promise<
-    | { ok: true; amount: number; sign: 'earning' | 'deduction'; source_ref: string }
-    | { ok: false; code: string; message: string; details?: Record<string, unknown> }
+    | {
+        ok: true;
+        amount: number;
+        sign: 'earning' | 'deduction';
+        source_ref: string;
+      }
+    | {
+        ok: false;
+        code: string;
+        message: string;
+        details?: Record<string, unknown>;
+      }
   > {
     const evaluated = await this.evaluateBoundFormula({
       formula: input.formula,
@@ -1372,8 +1462,9 @@ export class PayFormulaService {
     }
     const target = input.componentCode.trim();
     const line =
-      evaluated.result.lines.find((l) => componentCodesMatch(target, l.component_code)) ??
-      evaluated.result.lines[0];
+      evaluated.result.lines.find((l) =>
+        componentCodesMatch(target, l.component_code),
+      ) ?? evaluated.result.lines[0];
     if (!line) {
       return {
         ok: false,
@@ -1404,7 +1495,12 @@ export class PayFormulaService {
     authorization?: string;
   }): Promise<
     | { ok: true; line: PaySrcResolvedLine }
-    | { ok: false; code: string; message: string; details?: Record<string, unknown> }
+    | {
+        ok: false;
+        code: string;
+        message: string;
+        details?: Record<string, unknown>;
+      }
   > {
     const componentCode = input.column.component_code.trim();
     const meta = await loadSalaryComponentMeta(this.db, {
@@ -1599,7 +1695,13 @@ export class PayFormulaService {
       message: `No SRC amount for component ${componentCode} — refuse silent zero (BR-AMIS-PAY-SRC-05)`,
       details: {
         componentCode,
-        warnings: ['NO_EMP_CB', 'NO_PERIOD_INPUT', 'NO_TEMPLATE_OVERRIDE', 'NO_CATALOG_FORMULA', 'CATALOG_FORMULA_TEXT_FORBIDDEN'],
+        warnings: [
+          'NO_EMP_CB',
+          'NO_PERIOD_INPUT',
+          'NO_TEMPLATE_OVERRIDE',
+          'NO_CATALOG_FORMULA',
+          'CATALOG_FORMULA_TEXT_FORBIDDEN',
+        ],
         payroll_e2e_ready: false,
       },
     };
@@ -1619,6 +1721,7 @@ export class PayFormulaService {
     sheetTemplateSnapshotJson?: unknown;
     boundFormula: PublishedFormulaBind;
     authorization?: string;
+    systemParams?: Record<string, number>;
   }): Promise<
     | {
         mode: 'computed';
@@ -1645,7 +1748,9 @@ export class PayFormulaService {
 
     let columns = parsePeriodSnapshotColumns(input.sheetTemplateSnapshotJson);
     if (columns.length === 0) {
-      const classified = classifyPayFormulaExpression(input.boundFormula.expression_json);
+      const classified = classifyPayFormulaExpression(
+        input.boundFormula.expression_json,
+      );
       if (classified.kind === 'gd1_eval_v1' && classified.lines.length > 0) {
         columns = classified.lines.map((l, idx) => ({
           component_code: l.component_code,
@@ -1662,7 +1767,8 @@ export class PayFormulaService {
       return {
         mode: 'blocked',
         code: HRM_PAY_FORMULA_412,
-        message: 'No pay sheet template snapshot or evaluable formula lines for SRC process',
+        message:
+          'No pay sheet template snapshot or evaluable formula lines for SRC process',
         details: { payroll_e2e_ready: false },
       };
     }
@@ -1702,7 +1808,8 @@ export class PayFormulaService {
       return {
         mode: 'blocked',
         code: HRM_PAY_FORMULA_412,
-        message: 'SRC resolver produced no payslip lines — refuse silent zero process',
+        message:
+          'SRC resolver produced no payslip lines — refuse silent zero process',
         details: { payroll_e2e_ready: false },
       };
     }
@@ -1737,12 +1844,15 @@ export class PayFormulaService {
     }>;
   }): Promise<void> {
     await this.ensureSchema();
-    await this.db.query(`DELETE FROM public.payroll_payslip_lines WHERE payslip_id = $1::uuid`, [
-      input.payslipId,
-    ]);
+    await this.db.query(
+      `DELETE FROM public.payroll_payslip_lines WHERE payslip_id = $1::uuid`,
+      [input.payslipId],
+    );
     for (const line of input.lines) {
       const sourceTier =
-        resolvePayslipLineSourceTier(line.source_tier, line.source_ref) ?? line.source_tier ?? null;
+        resolvePayslipLineSourceTier(line.source_tier, line.source_ref) ??
+        line.source_tier ??
+        null;
       await this.db.query(
         `
           INSERT INTO public.payroll_payslip_lines (

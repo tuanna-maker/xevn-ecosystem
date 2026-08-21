@@ -117,7 +117,12 @@ export type InsuranceRatePeriodRow = {
 
 export const HRM_SI_ACTION_400 = 'HRM-SI-ACTION-400';
 
-const ENROLLMENT_STATUSES = new Set(['active', 'suspended', 'stopped', 'closed']);
+const ENROLLMENT_STATUSES = new Set([
+  'active',
+  'suspended',
+  'stopped',
+  'closed',
+]);
 
 const ACTION_STATUS_MAP: Record<
   InsuranceActionDto['action'],
@@ -134,7 +139,8 @@ const ACTION_STATUS_MAP: Record<
 export class EmployeeInsurancesService {
   constructor(
     private readonly db: HrmDbService,
-    @Optional() private readonly siInsuranceTypeCatalog?: SiInsuranceTypeService,
+    @Optional()
+    private readonly siInsuranceTypeCatalog?: SiInsuranceTypeService,
     @Optional() private readonly moduleRef?: ModuleRef,
   ) {}
 
@@ -205,14 +211,20 @@ export class EmployeeInsurancesService {
   private mapPeriod(row: InsuranceRatePeriodRow) {
     return {
       ...row,
-      employee_rate_pct: row.employee_rate_pct == null ? null : Number(row.employee_rate_pct),
-      employer_rate_pct: row.employer_rate_pct == null ? null : Number(row.employer_rate_pct),
-      employee_amount: row.employee_amount == null ? null : Number(row.employee_amount),
-      employer_amount: row.employer_amount == null ? null : Number(row.employer_amount),
+      employee_rate_pct:
+        row.employee_rate_pct == null ? null : Number(row.employee_rate_pct),
+      employer_rate_pct:
+        row.employer_rate_pct == null ? null : Number(row.employer_rate_pct),
+      employee_amount:
+        row.employee_amount == null ? null : Number(row.employee_amount),
+      employer_amount:
+        row.employer_amount == null ? null : Number(row.employer_amount),
     };
   }
 
-  private async listPeriods(enrollmentId: string): Promise<ReturnType<EmployeeInsurancesService['mapPeriod']>[]> {
+  private async listPeriods(
+    enrollmentId: string,
+  ): Promise<ReturnType<EmployeeInsurancesService['mapPeriod']>[]> {
     const res = await this.db.query<InsuranceRatePeriodRow>(
       `SELECT ${this.periodSelect}
        FROM public.hrm_insurance_rate_period
@@ -226,7 +238,11 @@ export class EmployeeInsurancesService {
   private dayBefore(isoDate: string): string {
     const d = new Date(`${isoDate}T00:00:00.000Z`);
     if (Number.isNaN(d.getTime())) {
-      throw new ApiException(HRM_SI_ACTION_400, 'effective_from must be a valid date', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_SI_ACTION_400,
+        'effective_from must be a valid date',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     d.setUTCDate(d.getUTCDate() - 1);
     return d.toISOString().slice(0, 10);
@@ -270,7 +286,11 @@ export class EmployeeInsurancesService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-EINS-404', 'Employee insurance not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EINS-404',
+        'Employee insurance not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const enrollment = this.mapRow(row);
     const periods = await this.listPeriods(id);
@@ -306,14 +326,32 @@ export class EmployeeInsurancesService {
 
   async create(payload: CreateEmployeeInsuranceDto, authorization?: string) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const id = randomUUID();
     const status = payload.status ?? 'active';
-    if (!ENROLLMENT_STATUSES.has(status) && status !== 'pending' && status !== 'expired') {
-      throw new ApiException(HRM_SI_ACTION_400, `Invalid enrollment status '${status}'`, HttpStatus.BAD_REQUEST);
+    if (
+      !ENROLLMENT_STATUSES.has(status) &&
+      status !== 'pending' &&
+      status !== 'expired'
+    ) {
+      throw new ApiException(
+        HRM_SI_ACTION_400,
+        `Invalid enrollment status '${status}'`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const typeKey = await this.assertEnrollmentTypeKey(companyId, payload.type, authorization);
-    const startDate = this.optionalEnrollmentDate(payload.start_date, 'start_date');
+    const typeKey = await this.assertEnrollmentTypeKey(
+      companyId,
+      payload.type,
+      authorization,
+    );
+    const startDate = this.optionalEnrollmentDate(
+      payload.start_date,
+      'start_date',
+    );
     const endDate = this.optionalEnrollmentDate(payload.end_date, 'end_date');
     const res = await this.db.query<EmployeeInsuranceRow>(
       `INSERT INTO public.employee_insurances (
@@ -364,7 +402,11 @@ export class EmployeeInsurancesService {
     return { ...enrollment, periods };
   }
 
-  async update(id: string, payload: UpdateEmployeeInsuranceDto, authorization?: string) {
+  async update(
+    id: string,
+    payload: UpdateEmployeeInsuranceDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const existing = await this.getById(id, payload.company_id, authorization);
     const scope = resolveHrmListScope(authorization, payload.company_id);
@@ -378,7 +420,8 @@ export class EmployeeInsurancesService {
       (payload.contribution != null &&
         Number(payload.contribution) !== Number(existing.contribution)) ||
       (payload.employer_contribution != null &&
-        Number(payload.employer_contribution) !== Number(existing.employer_contribution));
+        Number(payload.employer_contribution) !==
+          Number(existing.employer_contribution));
     if (contribDelta) {
       throw new ApiException(
         HRM_CORE_CB_VAL_400,
@@ -406,12 +449,19 @@ export class EmployeeInsurancesService {
       set('type', typeKey);
     }
     if (payload.provider != null) set('provider', payload.provider.trim());
-    if (payload.policy_number !== undefined) set('policy_number', payload.policy_number?.trim() ?? null);
+    if (payload.policy_number !== undefined)
+      set('policy_number', payload.policy_number?.trim() ?? null);
     if (payload.start_date !== undefined) {
-      set('start_date', this.optionalEnrollmentDate(payload.start_date, 'start_date'));
+      set(
+        'start_date',
+        this.optionalEnrollmentDate(payload.start_date, 'start_date'),
+      );
     }
     if (payload.end_date !== undefined) {
-      set('end_date', this.optionalEnrollmentDate(payload.end_date, 'end_date'));
+      set(
+        'end_date',
+        this.optionalEnrollmentDate(payload.end_date, 'end_date'),
+      );
     }
     // Same-value contribution keys ignored (no denorm write without period append).
     if (payload.status != null) set('status', payload.status);
@@ -433,7 +483,11 @@ export class EmployeeInsurancesService {
   /**
    * F-CORE-SI-03 — append rate period + map enrollment status (no silent overwrite of history).
    */
-  async applyAction(id: string, payload: InsuranceActionDto, authorization?: string) {
+  async applyAction(
+    id: string,
+    payload: InsuranceActionDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const existing = await this.getById(id, payload.company_id, authorization);
     const scope = resolveHrmListScope(authorization, payload.company_id);
@@ -443,7 +497,11 @@ export class EmployeeInsurancesService {
     });
     const effectiveFrom = payload.effective_from?.trim();
     if (!effectiveFrom) {
-      throw new ApiException(HRM_SI_ACTION_400, 'effective_from is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_SI_ACTION_400,
+        'effective_from is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     if (payload.action === 'suspend' && !payload.suspend_reason?.trim()) {
       throw new ApiException(
@@ -476,7 +534,9 @@ export class EmployeeInsurancesService {
     const periodId = randomUUID();
     const employeeAmount =
       payload.employee_amount ??
-      (payload.action === 'change_rate' || payload.action === 'resume' ? Number(existing.contribution) : Number(existing.contribution));
+      (payload.action === 'change_rate' || payload.action === 'resume'
+        ? Number(existing.contribution)
+        : Number(existing.contribution));
     const employerAmount =
       payload.employer_amount ??
       (payload.action === 'change_rate' || payload.action === 'resume'
@@ -513,7 +573,10 @@ export class EmployeeInsurancesService {
       );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes('uq_hrm_insurance_rate_period_open') || msg.includes('duplicate key')) {
+      if (
+        msg.includes('uq_hrm_insurance_rate_period_open') ||
+        msg.includes('duplicate key')
+      ) {
         throw new ApiException(
           'HRM-SI-409',
           'Open rate period conflict — close prior period before append',
@@ -525,7 +588,9 @@ export class EmployeeInsurancesService {
 
     // Sync denorm current amounts on enrollment for list UX (history SoT = periods).
     const denormEmployee =
-      payload.action === 'change_rate' || payload.action === 'resume' ? employeeAmount : Number(existing.contribution);
+      payload.action === 'change_rate' || payload.action === 'resume'
+        ? employeeAmount
+        : Number(existing.contribution);
     const denormEmployer =
       payload.action === 'change_rate' || payload.action === 'resume'
         ? employerAmount

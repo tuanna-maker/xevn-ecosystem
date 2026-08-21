@@ -13,7 +13,10 @@ describe('toHrmListScopeContext', () => {
   });
 
   it('does not throw when Nest headers bag is passed by mistake (no .trim)', () => {
-    const headersBag = { 'x-tenant-id': 'xevn', authorization: 'Bearer x' } as unknown as string;
+    const headersBag = {
+      'x-tenant-id': 'xevn',
+      authorization: 'Bearer x',
+    } as unknown as string;
     expect(() => toHrmListScopeContext(headersBag)).not.toThrow();
     expect(toHrmListScopeContext(headersBag)).toBeUndefined();
   });

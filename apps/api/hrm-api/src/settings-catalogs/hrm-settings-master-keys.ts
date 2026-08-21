@@ -73,6 +73,16 @@ const CATALOG_FAMILIES: readonly CatalogFamilyDef[] = [
     storageKey: 'employment_types',
   },
   {
+    familyId: 'contract_status',
+    aliases: ['contract_statuses', 'contract_status'],
+    storageKey: 'contract_statuses',
+  },
+  {
+    familyId: 'contract_term_reason',
+    aliases: ['contract_termination_reasons', 'termination_reasons'],
+    storageKey: 'contract_termination_reasons',
+  },
+  {
     familyId: 'shift',
     aliases: ['shifts'],
     storageKey: 'shifts',
@@ -88,8 +98,23 @@ const CATALOG_FAMILIES: readonly CatalogFamilyDef[] = [
     storageKey: 'recruitment_channels',
   },
   {
+    familyId: 'interview_type',
+    aliases: ['interview_types', 'interview_type'],
+    storageKey: 'interview_types',
+  },
+  {
+    familyId: 'rec_stage',
+    aliases: ['recruitment_pipeline_stages', 'recruitment_stages', 'pipeline_stages'],
+    storageKey: 'recruitment_pipeline_stages',
+  },
+  {
     familyId: 'pay_nature',
-    aliases: ['pay_types', 'component_types', 'pay_natures', 'salary_component_types'],
+    aliases: [
+      'pay_types',
+      'component_types',
+      'pay_natures',
+      'salary_component_types',
+    ],
     storageKey: 'pay_types',
   },
   {
@@ -154,8 +179,15 @@ export const HRM_SC_POS_KEYS = [
 export const HRM_SC_LEAVE_KEY = 'leave_types' as const;
 export const HRM_SC_DEC_KEY = 'decision_types' as const;
 export const HRM_SC_DEC_STORAGE_KEY = 'hr_decision_types' as const;
-export const HRM_SC_DEC_ALIASES = ['hr_decision_types', 'decision_types'] as const;
-export const HRM_SC_PAY_KEYS = ['salary_components', 'payroll_templates', 'pay_types'] as const;
+export const HRM_SC_DEC_ALIASES = [
+  'hr_decision_types',
+  'decision_types',
+] as const;
+export const HRM_SC_PAY_KEYS = [
+  'salary_components',
+  'payroll_templates',
+  'pay_types',
+] as const;
 
 export const HRM_E1B_MASTER_SURFACE_KEYS: readonly string[] = Object.freeze([
   ...new Set(CATALOG_FAMILIES.flatMap((f) => [...f.aliases])),
@@ -178,13 +210,17 @@ export function normalizeMasterCatalogKey(catalogKey: string): string {
 }
 
 /** L1/L2 catalog_key guard — invalid keys must not crash GET /settings-catalogs overview. */
-export function isValidCatalogKeyFormat(catalogKey: string | null | undefined): catalogKey is string {
+export function isValidCatalogKeyFormat(
+  catalogKey: string | null | undefined,
+): catalogKey is string {
   if (catalogKey == null || typeof catalogKey !== 'string') return false;
   const normalized = catalogKey.trim().toLowerCase();
   return /^[a-z0-9_][a-z0-9_-]{1,62}$/.test(normalized);
 }
 
-export function resolveCatalogFamily(catalogKey: string): CatalogFamilyResolution {
+export function resolveCatalogFamily(
+  catalogKey: string,
+): CatalogFamilyResolution {
   const k = normalizeMasterCatalogKey(catalogKey);
   const fam = FAMILY_BY_ALIAS.get(k);
   if (fam) {
@@ -203,7 +239,10 @@ export function resolveCatalogFamily(catalogKey: string): CatalogFamilyResolutio
 
 export function catalogAliasTryList(catalogKey: string): string[] {
   const fam = resolveCatalogFamily(catalogKey);
-  const ordered = [fam.storageKey, ...fam.aliases.filter((a) => a !== fam.storageKey)];
+  const ordered = [
+    fam.storageKey,
+    ...fam.aliases.filter((a) => a !== fam.storageKey),
+  ];
   return [...new Set(ordered)];
 }
 

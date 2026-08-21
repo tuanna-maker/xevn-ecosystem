@@ -32,7 +32,9 @@ export type WorkflowResolverType =
   | 'position_template'
   | 'direct_manager'
   | 'role_code'
-  | 'parallel_group';
+  | 'parallel_group'
+  | 'payload_reference'
+  | 'matrix_lookup';
 
 export type WorkflowResolverConfig = Record<string, unknown>;
 
@@ -45,6 +47,8 @@ export const WORKFLOW_RESOLVER_TYPES: ReadonlyArray<{
   { id: 'parallel_group', label: 'Song song (parallel_group)' },
   { id: 'fixed_user', label: 'User cố định (fixed_user)' },
   { id: 'role_code', label: 'Mã vai trò (role_code)' },
+  { id: 'payload_reference', label: 'Theo dữ liệu form (payload_reference)' },
+  { id: 'matrix_lookup', label: 'Ma trận phê duyệt (matrix_lookup)' },
 ];
 
 export const WORKFLOW_RESOLVER_TYPE_LABELS: Record<WorkflowResolverType, string> = {
@@ -53,6 +57,8 @@ export const WORKFLOW_RESOLVER_TYPE_LABELS: Record<WorkflowResolverType, string>
   parallel_group: 'Song song',
   fixed_user: 'User cố định',
   role_code: 'Mã vai trò',
+  payload_reference: 'Theo dữ liệu form',
+  matrix_lookup: 'Ma trận phê duyệt',
 };
 
 const KNOWN = new Set<string>(WORKFLOW_RESOLVER_TYPES.map((t) => t.id));
@@ -82,6 +88,10 @@ export function defaultResolverConfig(type: WorkflowResolverType): WorkflowResol
         resolver_configs: [{}, { position_code: '', company_id: 'main' }],
         parallel_policy: 'all',
       };
+    case 'payload_reference':
+      return { field_path: 'payload.department.managerId', fallback_role_code: 'admin' };
+    case 'matrix_lookup':
+      return { matrix_code: 'APPROVAL_MATRIX_1', context_fields: ['payload.position_code'] };
     default:
       return {};
   }

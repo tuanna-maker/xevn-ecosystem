@@ -1,4 +1,11 @@
-import { IsBoolean, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 /** UC-BP-ATT-03d — tạo điểm GPS; `radius` = alias FE GPSLocation.radius. */
 export class CreateWorkSiteDto {

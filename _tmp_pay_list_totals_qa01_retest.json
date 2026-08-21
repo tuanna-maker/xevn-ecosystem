@@ -1,0 +1,91 @@
+{
+  "stamp": "PAYLISTTOTQA-MSIZ6H4F",
+  "login_status": 201,
+  "login_code": "XBOS-AUTH-200",
+  "list_status": 200,
+  "list_code": "HRM-PAY-200",
+  "period_count": 33,
+  "processed_count": 7,
+  "draft_count": 24,
+  "keys_sample": [
+    "id",
+    "company_id",
+    "period_label",
+    "start_date",
+    "end_date",
+    "status",
+    "created_by",
+    "processed_at",
+    "closed_at",
+    "created_at",
+    "updated_at",
+    "employee_count",
+    "total_gross",
+    "total_deduction",
+    "total_net",
+    "payslip_summary",
+    "formula_definition_id",
+    "pay_sheet_template_id",
+    "sheet_template_snapshot_json"
+  ],
+  "cf38deac": {
+    "id": "cf38deac-8b64-474d-9aee-b34249c0f5a1",
+    "status": "processed",
+    "employee_count": 1,
+    "total_gross": 12345000,
+    "total_net": 12345000,
+    "total_deduction": 0,
+    "payslip_summary": {
+      "total_gross": 12345000,
+      "total_deduction": 0,
+      "total_net": 12345000
+    }
+  },
+  "draft_sample": {
+    "id": "4d2111d7-c8cd-4dcf-a7a0-acb713f93581",
+    "status": "draft",
+    "employee_count": 0,
+    "total_gross": 0,
+    "total_net": 0,
+    "total_deduction": 0,
+    "payslip_summary": {
+      "total_gross": 0,
+      "total_deduction": 0,
+      "total_net": 0
+    }
+  },
+  "payslip_sum_cf38deac": {
+    "count": 1,
+    "sumGross": 12345000,
+    "sumNet": 12345000,
+    "sumDed": 0,
+    "sample": [
+      {
+        "id": "e511d61e-d8b4-499a-8d36-30eadffa69dc",
+        "gross": 12345000,
+        "net": 12345000,
+        "ded": 0
+      }
+    ]
+  },
+  "ac": {
+    "AC-LIST-TOTALS-01": true,
+    "AC-LIST-SUMMARY-01": true,
+    "AC-LIST-MATCH-SUM-01": true,
+    "AC-DRAFT-ZERO-01": true,
+    "AC-SCOPE-MAIN-01": true,
+    "AC-HONESTY-01": true,
+    "AC-NO-SEED-01": true,
+    "AC-MUST-KEEP-01": true
+  },
+  "match_expected_12345000": true,
+  "overall": "PASS",
+  "parent_devops_stamp": "PAYLISTTOTDEVOPS-MSIZRBLD",
+  "prior_fail_stamp": "PAYLISTTOTQA-MSIYQJRA",
+  "work_item_id": "PO-HRM-PAYROLL-PERIOD-LIST-TOTALS-QA-01",
+  "retest": true,
+  "closes": [
+    "D-PAY-LIST-TOTALS-RUNTIME",
+    "R-PAY-PERIOD-LIST-TOTALS"
+  ]
+}

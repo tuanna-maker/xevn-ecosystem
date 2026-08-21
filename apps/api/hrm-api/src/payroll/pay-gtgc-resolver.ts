@@ -33,7 +33,9 @@ export type PayGtgcResolveBlocked = {
   company_id: string;
 };
 
-export async function ensurePayrollPayslipsGtgcColumn(db: HrmDbService): Promise<void> {
+export async function ensurePayrollPayslipsGtgcColumn(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     ALTER TABLE public.payroll_payslips
       ADD COLUMN IF NOT EXISTS gtgc_amount NUMERIC(15,2) NULL;
@@ -98,12 +100,16 @@ export async function resolvePayGtgcForEmployee(
 ): Promise<PayGtgcResolveOk | PayGtgcResolveBlocked> {
   await ensurePayGtgcStatutoryCfgSchema(db);
   const asOf = input.asOf.slice(0, 10);
-  const employeeCompanyId = await resolveEmployeeCompanyId(db, input.employeeId);
+  const employeeCompanyId = await resolveEmployeeCompanyId(
+    db,
+    input.employeeId,
+  );
   if (!employeeCompanyId) {
     return {
       ok: false,
       code: HRM_PAY_GTCG_412,
-      message: 'Không tìm thấy công ty gắn nhân viên để đọc người phụ thuộc thuế',
+      message:
+        'Không tìm thấy công ty gắn nhân viên để đọc người phụ thuộc thuế',
       as_of: asOf,
       company_id: input.periodCompanyId,
     };
@@ -115,7 +121,10 @@ export async function resolvePayGtgcForEmployee(
     asOf,
   });
 
-  const cfgCompanyIds = expandCbReadCompanyIds(input.periodCompanyId, employeeCompanyId);
+  const cfgCompanyIds = expandCbReadCompanyIds(
+    input.periodCompanyId,
+    employeeCompanyId,
+  );
   let cfg: Awaited<ReturnType<typeof pickPayGtgcStatutoryCfgAtAsOf>> = null;
   for (const co of cfgCompanyIds) {
     cfg = await pickPayGtgcStatutoryCfgAtAsOf(db, { companyId: co, asOf });
@@ -132,12 +141,17 @@ export async function resolvePayGtgcForEmployee(
       company_id: input.periodCompanyId,
     };
     if (input.failOnMissingCfg) {
-      throw new ApiException(HRM_PAY_GTCG_412, blocked.message, HttpStatus.PRECONDITION_FAILED, {
-        code: HRM_PAY_GTCG_412,
-        as_of: asOf,
-        company_id: input.periodCompanyId,
-        payroll_e2e_ready: false,
-      });
+      throw new ApiException(
+        HRM_PAY_GTCG_412,
+        blocked.message,
+        HttpStatus.PRECONDITION_FAILED,
+        {
+          code: HRM_PAY_GTCG_412,
+          as_of: asOf,
+          company_id: input.periodCompanyId,
+          payroll_e2e_ready: false,
+        },
+      );
     }
     return blocked;
   }

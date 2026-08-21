@@ -174,7 +174,10 @@ import { EmpEmploymentStatusService } from './emp-employment-status.service';
 import { EmpEmploymentTypeService } from './emp-employment-type.service';
 import { EmpStatusReasonService } from './emp-status-reason.service';
 import { EmployeeDependentsService } from './employee-dependents.service';
-import { EmployeeProfileService, HRM_EMP_ASSET_DELETE_WAIVER } from './employee-profile.service';
+import {
+  EmployeeProfileService,
+  HRM_EMP_ASSET_DELETE_WAIVER,
+} from './employee-profile.service';
 import { EmployeeRewardDisciplineService } from './employee-reward-discipline.service';
 import { isDirectoryView } from './employee-directory';
 import { EmployeesService } from './employees.service';
@@ -193,9 +196,16 @@ export class EmployeesController {
     private readonly empStatusReasonService: EmpStatusReasonService,
   ) {}
 
-  private assertBusinessAccess(authorization?: string, internalApiKey?: string) {
+  private assertBusinessAccess(
+    authorization?: string,
+    internalApiKey?: string,
+  ) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized employee access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized employee access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -214,11 +224,16 @@ export class EmployeesController {
   ) {
     // Xử lý: Diễn biến #1 — từ chối nếu hết phiên / không đủ quyền.
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
-    return this.employeesService
-      .createEmployee(body, authorization, toHrmListScopeContext(tenantId))
-      // Thành công: Diễn biến #7 — hồ sơ mới trả FE (list sau F5 = #8).
-      .then((data) => ok(data, 'HRM-EMP-201', 'Employee created'));
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
+    return (
+      this.employeesService
+        .createEmployee(body, authorization, toHrmListScopeContext(tenantId))
+        // Thành công: Diễn biến #7 — hồ sơ mới trả FE (list sau F5 = #8).
+        .then((data) => ok(data, 'HRM-EMP-201', 'Employee created'))
+    );
   }
 
   /**
@@ -235,12 +250,17 @@ export class EmployeesController {
     @Query() query: ListEmployeesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     const scopeContext = toHrmListScopeContext(tenantId);
     if (isDirectoryView(query.view)) {
       return this.employeesService
         .listEmployeeDirectory(query, authorization, scopeContext)
-        .then((data) => ok(data, 'HRM-EMP-DIR-200', 'Employee directory listed'));
+        .then((data) =>
+          ok(data, 'HRM-EMP-DIR-200', 'Employee directory listed'),
+        );
     }
     return this.employeesService
       .listEmployees(query, authorization, scopeContext)
@@ -262,11 +282,16 @@ export class EmployeesController {
     @Query() query: EmployeeSummaryQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     const scopeContext = toHrmListScopeContext(tenantId);
     return this.employeesService
       .getEmployeesSummary(query, authorization, scopeContext)
-      .then((data) => ok(data, 'HRM-EMP-SUMMARY-200', 'Employee summary loaded'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-SUMMARY-200', 'Employee summary loaded'),
+      );
   }
 
   // --- F-EMP-CAT-DOC / EFF-01 (must register before :employeeId) ---
@@ -279,10 +304,15 @@ export class EmployeesController {
     @Query() query: ListEffectiveEmpDocumentTypesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empDocumentTypeService
       .listEffective(query, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-EMP-DOC-200', 'Effective document types listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-DOC-200', 'Effective document types listed'),
+      );
   }
 
   @Get('document-types')
@@ -293,7 +323,10 @@ export class EmployeesController {
     @Query() query: ListEmpDocumentTypesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empDocumentTypeService
       .listDocumentTypes(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-EMP-DOC-200', 'Document types listed'));
@@ -336,9 +369,17 @@ export class EmployeesController {
     @Query() query: GetEmpDocumentTypeQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empDocumentTypeService
-      .getDocumentTypeById(documentTypeId, query.company_id, authorization, tenantId)
+      .getDocumentTypeById(
+        documentTypeId,
+        query.company_id,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-EMP-DOC-200', 'Document type loaded'));
   }
 
@@ -354,7 +395,13 @@ export class EmployeesController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.empDocumentTypeService
-      .patchDocumentType(documentTypeId, companyId, body, authorization, tenantId)
+      .patchDocumentType(
+        documentTypeId,
+        companyId,
+        body,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-EMP-DOC-200', 'Document type updated'));
   }
 
@@ -383,10 +430,15 @@ export class EmployeesController {
     @Query() query: ListEffectiveEmpEmploymentTypesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empEmploymentTypeService
       .listEffective(query, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-EMP-ET-200', 'Effective employment types listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-ET-200', 'Effective employment types listed'),
+      );
   }
 
   @Get('employment-types')
@@ -397,7 +449,10 @@ export class EmployeesController {
     @Query() query: ListEmpEmploymentTypesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empEmploymentTypeService
       .listEmploymentTypes(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-EMP-ET-200', 'Employment types listed'));
@@ -440,9 +495,17 @@ export class EmployeesController {
     @Query() query: GetEmpEmploymentTypeQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empEmploymentTypeService
-      .getEmploymentTypeById(employmentTypeId, query.company_id, authorization, tenantId)
+      .getEmploymentTypeById(
+        employmentTypeId,
+        query.company_id,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-EMP-ET-200', 'Employment type loaded'));
   }
 
@@ -458,7 +521,13 @@ export class EmployeesController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.empEmploymentTypeService
-      .patchEmploymentType(employmentTypeId, companyId, body, authorization, tenantId)
+      .patchEmploymentType(
+        employmentTypeId,
+        companyId,
+        body,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-EMP-ET-200', 'Employment type updated'));
   }
 
@@ -473,7 +542,12 @@ export class EmployeesController {
     this.assertBusinessAccess(authorization, internalApiKey);
     resolveScopeContext(authorization, { tenantId, companyId });
     return this.empEmploymentTypeService
-      .retireEmploymentType(employmentTypeId, companyId, authorization, tenantId)
+      .retireEmploymentType(
+        employmentTypeId,
+        companyId,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-EMP-ET-200', 'Employment type retired'));
   }
 
@@ -487,10 +561,15 @@ export class EmployeesController {
     @Query() query: ListEffectiveEmpEmploymentStatusesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empEmploymentStatusService
       .listEffective(query, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-EMP-ST-200', 'Effective employment statuses listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-ST-200', 'Effective employment statuses listed'),
+      );
   }
 
   @Get('employment-statuses')
@@ -501,7 +580,10 @@ export class EmployeesController {
     @Query() query: ListEmpEmploymentStatusesQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empEmploymentStatusService
       .listEmploymentStatuses(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-EMP-ST-200', 'Employment statuses listed'));
@@ -544,9 +626,17 @@ export class EmployeesController {
     @Query() query: GetEmpEmploymentStatusQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empEmploymentStatusService
-      .getEmploymentStatusById(statusId, query.company_id, authorization, tenantId)
+      .getEmploymentStatusById(
+        statusId,
+        query.company_id,
+        authorization,
+        tenantId,
+      )
       .then((data) => ok(data, 'HRM-EMP-ST-200', 'Employment status loaded'));
   }
 
@@ -591,10 +681,15 @@ export class EmployeesController {
     @Query() query: ListEffectiveEmpStatusReasonsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empStatusReasonService
       .listEffective(query, authorization, { tenantId })
-      .then((data) => ok(data, 'HRM-EMP-STR-200', 'Effective status reasons listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-STR-200', 'Effective status reasons listed'),
+      );
   }
 
   @Get('status-reasons')
@@ -605,7 +700,10 @@ export class EmployeesController {
     @Query() query: ListEmpStatusReasonsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empStatusReasonService
       .listStatusReasons(query, authorization, tenantId)
       .then((data) => ok(data, 'HRM-EMP-STR-200', 'Status reasons listed'));
@@ -648,7 +746,10 @@ export class EmployeesController {
     @Query() query: GetEmpStatusReasonQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id,
+    });
     return this.empStatusReasonService
       .getStatusReasonById(reasonId, query.company_id, authorization, tenantId)
       .then((data) => ok(data, 'HRM-EMP-STR-200', 'Status reason loaded'));
@@ -695,10 +796,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .listDegrees(employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee degrees listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee degrees listed'),
+      );
   }
 
   @Get(':employeeId/training')
@@ -711,10 +817,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .listTraining(employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee training listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee training listed'),
+      );
   }
 
   @Get(':employeeId/assets')
@@ -727,10 +838,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .listAssets(employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee assets listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee assets listed'),
+      );
   }
 
   @Post(':employeeId/assets')
@@ -744,10 +860,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .createAsset(employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-201', 'Employee asset created'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-201', 'Employee asset created'),
+      );
   }
 
   @Patch(':employeeId/assets/:assetId')
@@ -762,10 +883,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .updateAsset(assetId, employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-202', 'Employee asset updated'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-202', 'Employee asset updated'),
+      );
   }
 
   @Delete(':employeeId/assets/:assetId')
@@ -780,13 +906,21 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     const waiverRaw = (baWaiver ?? '').trim();
     const waiverOk =
-      waiverRaw === HRM_EMP_ASSET_DELETE_WAIVER || waiverRaw === 'asset-hard-delete';
+      waiverRaw === HRM_EMP_ASSET_DELETE_WAIVER ||
+      waiverRaw === 'asset-hard-delete';
     return this.employeeProfile
-      .deleteAsset(assetId, employeeId, query, authorization, { baWaiver: waiverOk })
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee asset deleted'));
+      .deleteAsset(assetId, employeeId, query, authorization, {
+        baWaiver: waiverOk,
+      })
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee asset deleted'),
+      );
   }
 
   @Get(':employeeId/skills')
@@ -799,10 +933,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .listSkills(employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee skills listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee skills listed'),
+      );
   }
 
   @Post(':employeeId/skills')
@@ -816,10 +955,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .createSkill(employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-201', 'Employee skill created'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-201', 'Employee skill created'),
+      );
   }
 
   @Patch(':employeeId/skills/:skillId')
@@ -834,10 +978,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .updateSkill(skillId, employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-202', 'Employee skill updated'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-202', 'Employee skill updated'),
+      );
   }
 
   @Delete(':employeeId/skills/:skillId')
@@ -851,10 +1000,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .deleteSkill(skillId, employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee skill deleted'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee skill deleted'),
+      );
   }
 
   @Get(':employeeId/work-timeline')
@@ -867,10 +1021,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .listWorkTimeline(employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee work timeline listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee work timeline listed'),
+      );
   }
 
   /** F-CORE-HTP-05 — Hire-to-Pay bước 5 readiness (active contract same company). */
@@ -889,7 +1048,12 @@ export class EmployeesController {
       companyId: query.company_id ?? headerCompanyId,
     });
     return this.employeesService
-      .getHireReadiness(employeeId, query, authorization, toHrmListScopeContext(tenantId))
+      .getHireReadiness(
+        employeeId,
+        query,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-HTP-200', 'Hire readiness loaded'));
   }
 
@@ -933,8 +1097,15 @@ export class EmployeesController {
       companyId: query.company_id ?? headerCompanyId,
     });
     return this.empDocumentChecklist
-      .listChecklist(employeeId, query, authorization, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, HRM_CORE_CHK_200, 'Employee document checklist listed'));
+      .listChecklist(
+        employeeId,
+        query,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) =>
+        ok(data, HRM_CORE_CHK_200, 'Employee document checklist listed'),
+      );
   }
 
   @Post(':employeeId/document-checklist')
@@ -960,7 +1131,9 @@ export class EmployeesController {
         authorization,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, HRM_CORE_CHK_201, 'Employee document checklist item created'));
+      .then((data) =>
+        ok(data, HRM_CORE_CHK_201, 'Employee document checklist item created'),
+      );
   }
 
   @Get(':employeeId/document-checklist/:itemId')
@@ -986,7 +1159,9 @@ export class EmployeesController {
         authorization,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, HRM_CORE_CHK_200, 'Employee document checklist item loaded'));
+      .then((data) =>
+        ok(data, HRM_CORE_CHK_200, 'Employee document checklist item loaded'),
+      );
   }
 
   @Patch(':employeeId/document-checklist/:itemId')
@@ -1014,7 +1189,9 @@ export class EmployeesController {
         authorization,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, HRM_CORE_CHK_200, 'Employee document checklist item updated'));
+      .then((data) =>
+        ok(data, HRM_CORE_CHK_200, 'Employee document checklist item updated'),
+      );
   }
 
   @Post(':employeeId/document-checklist/:itemId/archive')
@@ -1040,7 +1217,9 @@ export class EmployeesController {
         authorization,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, HRM_CORE_CHK_202, 'Employee document checklist item archived'));
+      .then((data) =>
+        ok(data, HRM_CORE_CHK_202, 'Employee document checklist item archived'),
+      );
   }
 
   // --- F-CORE-DEP-01 — dependents (must register before bare :employeeId) ---
@@ -1060,8 +1239,15 @@ export class EmployeesController {
       companyId: query.company_id ?? headerCompanyId,
     });
     return this.employeeDependents
-      .listDependents(employeeId, query, authorization, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-CORE-DEP-200', 'Employee dependents listed'));
+      .listDependents(
+        employeeId,
+        query,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) =>
+        ok(data, 'HRM-CORE-DEP-200', 'Employee dependents listed'),
+      );
   }
 
   @Post(':employeeId/dependents')
@@ -1080,8 +1266,16 @@ export class EmployeesController {
       companyId: query.company_id ?? headerCompanyId,
     });
     return this.employeeDependents
-      .createDependent(employeeId, query, body, authorization, toHrmListScopeContext(tenantId))
-      .then((data) => ok(data, 'HRM-CORE-DEP-201', 'Employee dependent created'));
+      .createDependent(
+        employeeId,
+        query,
+        body,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) =>
+        ok(data, 'HRM-CORE-DEP-201', 'Employee dependent created'),
+      );
   }
 
   @Get(':employeeId/dependents/:dependentId')
@@ -1107,7 +1301,9 @@ export class EmployeesController {
         authorization,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, 'HRM-CORE-DEP-200', 'Employee dependent loaded'));
+      .then((data) =>
+        ok(data, 'HRM-CORE-DEP-200', 'Employee dependent loaded'),
+      );
   }
 
   @Patch(':employeeId/dependents/:dependentId')
@@ -1135,7 +1331,9 @@ export class EmployeesController {
         authorization,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, 'HRM-CORE-DEP-200', 'Employee dependent updated'));
+      .then((data) =>
+        ok(data, 'HRM-CORE-DEP-200', 'Employee dependent updated'),
+      );
   }
 
   @Delete(':employeeId/dependents/:dependentId')
@@ -1161,7 +1359,9 @@ export class EmployeesController {
         authorization,
         toHrmListScopeContext(tenantId),
       )
-      .then((data) => ok(data, 'HRM-CORE-DEP-200', 'Employee dependent archived'));
+      .then((data) =>
+        ok(data, 'HRM-CORE-DEP-200', 'Employee dependent archived'),
+      );
   }
 
   @Post(':employeeId/work-timeline')
@@ -1175,10 +1375,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .createWorkTimelineItem(employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-201', 'Work timeline item created'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-201', 'Work timeline item created'),
+      );
   }
 
   @Patch(':employeeId/work-timeline/:itemId')
@@ -1193,10 +1398,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .updateWorkTimelineItem(itemId, employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-202', 'Work timeline item updated'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-202', 'Work timeline item updated'),
+      );
   }
 
   @Delete(':employeeId/work-timeline/:itemId')
@@ -1210,10 +1420,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .deleteWorkTimelineItem(itemId, employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Work timeline item deleted'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Work timeline item deleted'),
+      );
   }
 
   @Get(':employeeId/resume-files')
@@ -1226,10 +1441,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .listResumeFiles(employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee resume files listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee resume files listed'),
+      );
   }
 
   @Post(':employeeId/resume-files')
@@ -1243,7 +1463,10 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .createResumeFile(employeeId, query, body, authorization)
       .then((data) => ok(data, 'HRM-EMP-PROFILE-201', 'Resume file created'));
@@ -1260,7 +1483,10 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .deleteResumeFile(fileId, employeeId, query, authorization)
       .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Resume file deleted'));
@@ -1276,10 +1502,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .listRewards(employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee rewards listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee rewards listed'),
+      );
   }
 
   @Get(':employeeId/rewards/:rewardId')
@@ -1293,10 +1524,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .getReward(rewardId, employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee reward loaded'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee reward loaded'),
+      );
   }
 
   @Get(':employeeId/discipline')
@@ -1309,10 +1545,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .listDiscipline(employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee discipline listed'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee discipline listed'),
+      );
   }
 
   @Get(':employeeId/discipline/:disciplineId')
@@ -1326,10 +1567,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .getDiscipline(disciplineId, employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee discipline loaded'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee discipline loaded'),
+      );
   }
 
   @Post(':employeeId/rewards')
@@ -1343,10 +1589,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .createReward(employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-201', 'Employee reward created'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-201', 'Employee reward created'),
+      );
   }
 
   @Patch(':employeeId/rewards/:rewardId')
@@ -1361,10 +1612,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .updateReward(rewardId, employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-202', 'Employee reward updated'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-202', 'Employee reward updated'),
+      );
   }
 
   @Post(':employeeId/rewards/:rewardId/enforce')
@@ -1379,10 +1635,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .enforceReward(rewardId, employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee reward enforced'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee reward enforced'),
+      );
   }
 
   @Post(':employeeId/rewards/:rewardId/cancel-enforce')
@@ -1396,10 +1657,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .cancelEnforceReward(rewardId, employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee reward enforce cancelled'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee reward enforce cancelled'),
+      );
   }
 
   @Delete(':employeeId/rewards/:rewardId')
@@ -1413,10 +1679,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .deleteReward(rewardId, employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee reward deleted'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee reward deleted'),
+      );
   }
 
   @Post(':employeeId/discipline')
@@ -1430,10 +1701,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .createDiscipline(employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-201', 'Employee discipline created'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-201', 'Employee discipline created'),
+      );
   }
 
   @Patch(':employeeId/discipline/:disciplineId')
@@ -1448,10 +1724,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .updateDiscipline(disciplineId, employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-202', 'Employee discipline updated'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-202', 'Employee discipline updated'),
+      );
   }
 
   @Post(':employeeId/discipline/:disciplineId/enforce')
@@ -1466,10 +1747,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .enforceDiscipline(disciplineId, employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee discipline enforced'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee discipline enforced'),
+      );
   }
 
   @Post(':employeeId/discipline/:disciplineId/cancel-enforce')
@@ -1483,10 +1769,19 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .cancelEnforceDiscipline(disciplineId, employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee discipline enforce cancelled'));
+      .then((data) =>
+        ok(
+          data,
+          'HRM-EMP-PROFILE-200',
+          'Employee discipline enforce cancelled',
+        ),
+      );
   }
 
   @Delete(':employeeId/discipline/:disciplineId')
@@ -1500,10 +1795,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeRewardDiscipline
       .deleteDiscipline(disciplineId, employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee discipline deleted'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee discipline deleted'),
+      );
   }
 
   @Post(':employeeId/training')
@@ -1517,10 +1817,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .createTraining(employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-201', 'Employee training created'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-201', 'Employee training created'),
+      );
   }
 
   @Patch(':employeeId/training/:trainingId')
@@ -1535,10 +1840,15 @@ export class EmployeesController {
     @Body() body: Record<string, unknown>,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .updateTraining(trainingId, employeeId, query, body, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-202', 'Employee training updated'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-202', 'Employee training updated'),
+      );
   }
 
   @Delete(':employeeId/training/:trainingId')
@@ -1552,10 +1862,15 @@ export class EmployeesController {
     @Query() query: EmployeeProfileListQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeProfile
       .deleteTraining(trainingId, employeeId, query, authorization)
-      .then((data) => ok(data, 'HRM-EMP-PROFILE-200', 'Employee training deleted'));
+      .then((data) =>
+        ok(data, 'HRM-EMP-PROFILE-200', 'Employee training deleted'),
+      );
   }
 
   /**
@@ -1573,12 +1888,22 @@ export class EmployeesController {
     @Query() query: GetEmployeeQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     const scopeContext = toHrmListScopeContext(tenantId);
     if (isDirectoryView(query.view)) {
       return this.employeesService
-        .getEmployeeDirectoryById(employeeId, query, authorization, scopeContext)
-        .then((data) => ok(data, 'HRM-EMP-200', 'Employee directory profile retrieved'));
+        .getEmployeeDirectoryById(
+          employeeId,
+          query,
+          authorization,
+          scopeContext,
+        )
+        .then((data) =>
+          ok(data, 'HRM-EMP-200', 'Employee directory profile retrieved'),
+        );
     }
     return this.employeesService
       .getEmployeeById(employeeId, query, authorization, scopeContext)
@@ -1619,7 +1944,12 @@ export class EmployeesController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.employeesService
-      .archiveEmployee(employeeId, scope.companyId, authorization, toHrmListScopeContext(tenantId))
+      .archiveEmployee(
+        employeeId,
+        scope.companyId,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-EMP-203', 'Employee archived'));
   }
 
@@ -1634,7 +1964,12 @@ export class EmployeesController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.employeesService
-      .restoreEmployee(employeeId, scope.companyId, authorization, toHrmListScopeContext(tenantId))
+      .restoreEmployee(
+        employeeId,
+        scope.companyId,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-EMP-204', 'Employee restored'));
   }
 }

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Headers, HttpStatus, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpStatus,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -10,7 +18,11 @@ export class LeaveWorkflowController {
 
   private assertInternal(authorization?: string, internalApiKey?: string) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized internal access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized internal access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -23,9 +35,16 @@ export class LeaveWorkflowController {
   ) {
     this.assertInternal(authorization, internalApiKey);
     if (!employeeId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'employee_id required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'employee_id required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const data = await this.bridge.resolveManagerForWorkflow(employeeId.trim(), companyId?.trim());
+    const data = await this.bridge.resolveManagerForWorkflow(
+      employeeId.trim(),
+      companyId?.trim(),
+    );
     return ok(data, 'HRM-WF-RESOLVE-200', 'Manager resolved');
   }
 
@@ -44,8 +63,16 @@ export class LeaveWorkflowController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertInternal(authorization, internalApiKey);
-    if (!body.leaveRequestId?.trim() || !body.terminalStatus || !body.reviewerUserId?.trim()) {
-      throw new ApiException('HRM-VAL-001', 'leaveRequestId, terminalStatus, reviewerUserId required', HttpStatus.BAD_REQUEST);
+    if (
+      !body.leaveRequestId?.trim() ||
+      !body.terminalStatus ||
+      !body.reviewerUserId?.trim()
+    ) {
+      throw new ApiException(
+        'HRM-VAL-001',
+        'leaveRequestId, terminalStatus, reviewerUserId required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     try {
       const result = await this.bridge.handleTerminalCallback({
@@ -59,7 +86,11 @@ export class LeaveWorkflowController {
       return ok(result, 'HRM-WF-CALLBACK-200', 'Terminal callback processed');
     } catch (err) {
       if (err instanceof Error && err.message === 'HRM-LEAVE-404') {
-        throw new ApiException('HRM-LEAVE-404', 'Leave request not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          'HRM-LEAVE-404',
+          'Leave request not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       throw err;
     }

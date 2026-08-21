@@ -26,14 +26,20 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
 
   beforeEach(() => {
     repository = {
-      submitChange: jest.fn().mockResolvedValue({ id: 'req-1', status: 'pending' }),
-      listChangeRequests: jest.fn().mockResolvedValue({ total: 0, page: 1, page_size: 20, data: [] }),
+      submitChange: jest
+        .fn()
+        .mockResolvedValue({ id: 'req-1', status: 'pending' }),
+      listChangeRequests: jest
+        .fn()
+        .mockResolvedValue({ total: 0, page: 1, page_size: 20, data: [] }),
       listAuditLogs: jest.fn().mockResolvedValue([]),
       getChangeRequestById: jest.fn(),
       approveChangeRequest: jest.fn(),
       rejectChangeRequest: jest.fn(),
     };
-    service = new EmployeeMetadataService(repository as unknown as EmployeeMetadataRepository);
+    service = new EmployeeMetadataService(
+      repository as unknown as EmployeeMetadataRepository,
+    );
   });
 
   describe('persist happy slug + anti-join LE', () => {
@@ -101,7 +107,7 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
           field_key: 'job_title',
           requested_value: JSON.stringify({ code: 'LE_REJECT' }),
         }),
-      ).rejects.toMatchObject<ApiException>({
+      ).rejects.toMatchObject({
         code: 'HRM-PLANE-409',
         status: HttpStatus.CONFLICT,
       });
@@ -116,7 +122,10 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
           field_key: 'job_title',
           requested_value: JSON.stringify({ code: 'QA' }),
         }),
-      ).rejects.toMatchObject({ code: 'HRM-VAL-001', status: HttpStatus.BAD_REQUEST });
+      ).rejects.toMatchObject({
+        code: 'HRM-VAL-001',
+        status: HttpStatus.BAD_REQUEST,
+      });
       expect(repository.submitChange).not.toHaveBeenCalled();
     });
   });
@@ -125,12 +134,15 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
     it('listChangeRequests LE → HRM-PLANE-409 (no silent empty)', async () => {
       await expect(
         service.listChangeRequests({ company_id: XBOS_LE_UUID }),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PLANE-409' });
+      ).rejects.toMatchObject({ code: 'HRM-PLANE-409' });
       expect(repository.listChangeRequests).not.toHaveBeenCalled();
     });
 
     it('listChangeRequests slug holding reaches repository', async () => {
-      await service.listChangeRequests({ company_id: 'holding', status: 'pending' });
+      await service.listChangeRequests({
+        company_id: 'holding',
+        status: 'pending',
+      });
       expect(repository.listChangeRequests).toHaveBeenCalledWith(
         expect.objectContaining({ status: 'pending', page: 1, page_size: 20 }),
         undefined,
@@ -139,7 +151,9 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
     });
 
     it('listAuditLogs LE → HRM-PLANE-409', async () => {
-      await expect(service.listAuditLogs(XBOS_LE_UUID, undefined)).rejects.toMatchObject<ApiException>({
+      await expect(
+        service.listAuditLogs(XBOS_LE_UUID, undefined),
+      ).rejects.toMatchObject({
         code: 'HRM-PLANE-409',
       });
       expect(repository.listAuditLogs).not.toHaveBeenCalled();
@@ -147,20 +161,32 @@ describe('D-HRM-MD-DUAL-PLANE-GUARD-01', () => {
 
     it('listAuditLogs slug finance reaches repository', async () => {
       await service.listAuditLogs('finance', EMP_ID);
-      expect(repository.listAuditLogs).toHaveBeenCalledWith('finance', EMP_ID, undefined);
+      expect(repository.listAuditLogs).toHaveBeenCalledWith(
+        'finance',
+        EMP_ID,
+        undefined,
+      );
     });
 
     it('approveChangeRequest LE wire → HRM-PLANE-409 before load', async () => {
       await expect(
-        service.approveChangeRequest('req-1', { actor_user_id: 'u-1' }, XBOS_LE_UUID),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PLANE-409' });
+        service.approveChangeRequest(
+          'req-1',
+          { actor_user_id: 'u-1' },
+          XBOS_LE_UUID,
+        ),
+      ).rejects.toMatchObject({ code: 'HRM-PLANE-409' });
       expect(repository.getChangeRequestById).not.toHaveBeenCalled();
     });
 
     it('rejectChangeRequest LE wire → HRM-PLANE-409 before load', async () => {
       await expect(
-        service.rejectChangeRequest('req-1', { actor_user_id: 'u-1', note: 'x' }, XBOS_LE_UUID),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-PLANE-409' });
+        service.rejectChangeRequest(
+          'req-1',
+          { actor_user_id: 'u-1', note: 'x' },
+          XBOS_LE_UUID,
+        ),
+      ).rejects.toMatchObject({ code: 'HRM-PLANE-409' });
       expect(repository.getChangeRequestById).not.toHaveBeenCalled();
     });
   });

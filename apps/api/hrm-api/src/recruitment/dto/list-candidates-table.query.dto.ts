@@ -12,7 +12,15 @@
  * LastVerified: po-hrm-mvp-gd1-rec-04-cluster-be-01.spec.ts
  */
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import {
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 /** Supabase `candidates` table (distinct from recruitment_candidates). */
 export class ListCandidatesTableQueryDto {

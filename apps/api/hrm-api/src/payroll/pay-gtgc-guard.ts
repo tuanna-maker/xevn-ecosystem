@@ -1,8 +1,13 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
-import { HRM_PAY_GTCG_403, PAY_GTCG_FORBIDDEN_BODY_KEYS } from './pay-gtgc.constants';
+import {
+  HRM_PAY_GTCG_403,
+  PAY_GTCG_FORBIDDEN_BODY_KEYS,
+} from './pay-gtgc.constants';
 
-function collectForbiddenKeys(body: Record<string, unknown> | null | undefined): string[] {
+function collectForbiddenKeys(
+  body: Record<string, unknown> | null | undefined,
+): string[] {
   if (!body || typeof body !== 'object') return [];
   const hits: string[] = [];
   for (const key of Object.keys(body)) {
@@ -11,7 +16,11 @@ function collectForbiddenKeys(body: Record<string, unknown> | null | undefined):
       hits.push(key);
       continue;
     }
-    if (PAY_GTCG_FORBIDDEN_BODY_KEYS.includes(key as typeof PAY_GTCG_FORBIDDEN_BODY_KEYS[number])) {
+    if (
+      PAY_GTCG_FORBIDDEN_BODY_KEYS.includes(
+        key as (typeof PAY_GTCG_FORBIDDEN_BODY_KEYS)[number],
+      )
+    ) {
       hits.push(key);
     }
   }

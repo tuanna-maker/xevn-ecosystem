@@ -51,7 +51,10 @@
 import { randomUUID } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
 import { expandWorkflowResolverCompanyIds } from '../attendance/leave-workflow.bridge';
-import { CatalogSyncService, resolveXbosApiBaseUrl } from '../catalog-sync/catalog-sync.service';
+import {
+  CatalogSyncService,
+  resolveXbosApiBaseUrl,
+} from '../catalog-sync/catalog-sync.service';
 import { MASTER_TENANT_ID } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import {
@@ -64,10 +67,13 @@ const GROUP_HOLDING_COMPANY_ID = 'holding';
 const GROUP_OPERATING_MAIN = 'main';
 export const PORTAL_GROUP_CEO_EMAIL = 'ceo@xe.vn';
 const PORTAL_GROUP_CEO_EMPLOYEE_CODE = 'PORTAL-GCEO';
-const HOLDING_BOOTSTRAP_CEO_EMPLOYEE_ID = '11111111-1111-4111-8111-111111111111';
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const HOLDING_BOOTSTRAP_CEO_EMPLOYEE_ID =
+  '11111111-1111-4111-8111-111111111111';
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-export const WF_HRM_RECRUITMENT_PLAN_APPROVAL_CODE = 'hrm_recruitment_plan_approval';
+export const WF_HRM_RECRUITMENT_PLAN_APPROVAL_CODE =
+  'hrm_recruitment_plan_approval';
 export const WF_HRM_REQUISITION_APPROVAL_CODE = 'hrm_requisition_approval';
 export const WF_HRM_CANDIDATE_PIPELINE_CODE = 'hrm_candidate_pipeline';
 export const WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN = 'hrm_recruitment_plan';
@@ -170,7 +176,9 @@ export function isRecruitmentWorkflowLocked(
   return !CANDIDATE_TERMINAL.has(value);
 }
 
-function workflowCodeForBusinessType(businessType: RecruitmentBusinessType): string {
+function workflowCodeForBusinessType(
+  businessType: RecruitmentBusinessType,
+): string {
   if (businessType === WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN) {
     return WF_HRM_RECRUITMENT_PLAN_APPROVAL_CODE;
   }
@@ -207,7 +215,9 @@ export class RecruitmentWorkflowBridge {
   }
 
   /** Inbox display-ready subject (YCTD stamp / plan title / candidate name). */
-  async resolveBusinessSubjectTitle(ctx: RecruitmentWorkflowSpawnContext): Promise<string | null> {
+  async resolveBusinessSubjectTitle(
+    ctx: RecruitmentWorkflowSpawnContext,
+  ): Promise<string | null> {
     try {
       if (ctx.businessType === WF_BUSINESS_TYPE_HRM_CANDIDATE) {
         const { rows } = await this.db.query<{ subject: string | null }>(
@@ -249,18 +259,25 @@ export class RecruitmentWorkflowBridge {
     }
   }
 
-  async resolveSubmitterEmployeeId(ctx: RecruitmentWorkflowSpawnContext): Promise<string | null> {
+  async resolveSubmitterEmployeeId(
+    ctx: RecruitmentWorkflowSpawnContext,
+  ): Promise<string | null> {
     const explicit = ctx.submitterEmployeeId?.trim();
     if (explicit) return explicit;
     const userKey = ctx.submitterUserId?.trim().toLowerCase();
     if (!userKey) return null;
     if (UUID_RE.test(userKey)) return userKey;
     const companyRaw = (ctx.companySlug ?? ctx.companyId ?? '').trim();
-    const companyIds = companyRaw ? expandWorkflowResolverCompanyIds(companyRaw) : [];
+    const companyIds = companyRaw
+      ? expandWorkflowResolverCompanyIds(companyRaw)
+      : [];
     try {
       const byEmail = await this.resolveEmployeeIdByEmail(userKey, companyIds);
       if (byEmail) return byEmail;
-      const byMembership = await this.resolveEmployeeIdViaMembership(userKey, companyIds);
+      const byMembership = await this.resolveEmployeeIdViaMembership(
+        userKey,
+        companyIds,
+      );
       if (byMembership) return byMembership;
       if (this.isPortalGroupCeoIdentity(userKey)) {
         const master = await this.resolveHoldingGroupCeoMasterEmployee(userKey);
@@ -314,7 +331,9 @@ export class RecruitmentWorkflowBridge {
   ): Promise<string | null> {
     try {
       const scopeKeys =
-        companyIds.length > 0 ? companyIds : [GROUP_HOLDING_COMPANY_ID, GROUP_OPERATING_MAIN];
+        companyIds.length > 0
+          ? companyIds
+          : [GROUP_HOLDING_COMPANY_ID, GROUP_OPERATING_MAIN];
       const linked = await this.db.query<{ employee_id: string }>(
         `SELECT employee_id::text AS employee_id
          FROM public.user_company_memberships
@@ -336,7 +355,9 @@ export class RecruitmentWorkflowBridge {
     }
   }
 
-  private async resolveHoldingGroupCeoMasterEmployee(userKey: string): Promise<string | null> {
+  private async resolveHoldingGroupCeoMasterEmployee(
+    userKey: string,
+  ): Promise<string | null> {
     const byPortalCode = await this.db.query<{ id: string }>(
       `SELECT id::text AS id
        FROM public.employees
@@ -348,7 +369,10 @@ export class RecruitmentWorkflowBridge {
       [PORTAL_GROUP_CEO_EMPLOYEE_CODE],
     );
     if (byPortalCode.rows[0]?.id) {
-      await this.linkPortalEmailToEmployeeIfSafe(byPortalCode.rows[0].id, userKey);
+      await this.linkPortalEmailToEmployeeIfSafe(
+        byPortalCode.rows[0].id,
+        userKey,
+      );
       return byPortalCode.rows[0].id;
     }
     const bootstrap = await this.db.query<{ id: string; email: string }>(
@@ -367,7 +391,10 @@ export class RecruitmentWorkflowBridge {
     return null;
   }
 
-  private async linkPortalEmailToEmployeeIfSafe(employeeId: string, userKey: string): Promise<void> {
+  private async linkPortalEmailToEmployeeIfSafe(
+    employeeId: string,
+    userKey: string,
+  ): Promise<void> {
     try {
       await this.db.query(
         `UPDATE public.employees
@@ -394,7 +421,9 @@ export class RecruitmentWorkflowBridge {
     }
   }
 
-  private async ensureHoldingPortalGroupCeoEmployee(userKey: string): Promise<string | null> {
+  private async ensureHoldingPortalGroupCeoEmployee(
+    userKey: string,
+  ): Promise<string | null> {
     const existing = await this.resolveEmployeeIdByEmail(userKey, [
       GROUP_HOLDING_COMPANY_ID,
       GROUP_OPERATING_MAIN,
@@ -408,7 +437,13 @@ export class RecruitmentWorkflowBridge {
          ) VALUES (
            $1::uuid, $2, $3, $4, $5, 'CEO', 'active', CURRENT_DATE
          )`,
-        [newId, GROUP_HOLDING_COMPANY_ID, PORTAL_GROUP_CEO_EMPLOYEE_CODE, userKey, 'CEO Tập đoàn'],
+        [
+          newId,
+          GROUP_HOLDING_COMPANY_ID,
+          PORTAL_GROUP_CEO_EMPLOYEE_CODE,
+          userKey,
+          'CEO Tập đoàn',
+        ],
       );
       this.logger.log(
         `HRM-REC-WF-SUBMITTER-ENSURE: holding portal Group CEO employee created id=${newId} email=${userKey}`,
@@ -523,14 +558,20 @@ export class RecruitmentWorkflowBridge {
     await this.ensureSchema();
     const tenantId = (ctx.tenantId ?? MASTER_TENANT_ID).trim().toLowerCase();
     const companySlug =
-      (ctx.companySlug ?? GROUP_HOLDING_COMPANY_ID).trim().toLowerCase() || GROUP_HOLDING_COMPANY_ID;
+      (ctx.companySlug ?? GROUP_HOLDING_COMPANY_ID).trim().toLowerCase() ||
+      GROUP_HOLDING_COMPANY_ID;
     const workflowCode = workflowCodeForBusinessType(ctx.businessType);
     const { table, statusCol } = tableForBusinessType(ctx.businessType);
     const isGroupCeoPortal =
       tenantId === MASTER_TENANT_ID &&
-      (companySlug === GROUP_OPERATING_MAIN || companySlug === GROUP_HOLDING_COMPANY_ID);
-    const xbosHeaderCompanyId = isGroupCeoPortal ? GROUP_HOLDING_COMPANY_ID : companySlug;
-    const memberCompanyId = isGroupCeoPortal ? GROUP_HOLDING_COMPANY_ID : companySlug;
+      (companySlug === GROUP_OPERATING_MAIN ||
+        companySlug === GROUP_HOLDING_COMPANY_ID);
+    const xbosHeaderCompanyId = isGroupCeoPortal
+      ? GROUP_HOLDING_COMPANY_ID
+      : companySlug;
+    const memberCompanyId = isGroupCeoPortal
+      ? GROUP_HOLDING_COMPANY_ID
+      : companySlug;
     const entityCompanyId =
       (ctx.companyId ?? companySlug).trim().toLowerCase() || memberCompanyId;
 
@@ -554,10 +595,13 @@ export class RecruitmentWorkflowBridge {
       );
     }
 
-    const upstreamHeaders = this.catalogSync.buildXbosUpstreamHeaders(undefined, {
-      tenantId,
-      companyId: xbosHeaderCompanyId,
-    });
+    const upstreamHeaders = this.catalogSync.buildXbosUpstreamHeaders(
+      undefined,
+      {
+        tenantId,
+        companyId: xbosHeaderCompanyId,
+      },
+    );
     const contextKey =
       ctx.businessType === WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN
         ? 'planId'
@@ -572,48 +616,54 @@ export class RecruitmentWorkflowBridge {
       return null;
     }
     const subjectTitle = await this.resolveBusinessSubjectTitle(ctx);
-    const portalSubmitterEmail = ctx.submitterUserId?.trim().toLowerCase() || null;
+    const portalSubmitterEmail =
+      ctx.submitterUserId?.trim().toLowerCase() || null;
     // Portal inbox completes with JWT email (ceo@xe.vn); XBOS BR-WF-04 compares that to context.submitter.userId.
     const xbosSubmitterUserId = submitterEmployeeId;
     try {
-      const res = await fetch(`${this.xbosBaseUrl()}/api/xbos/workflow-engine/instances/start`, {
-        method: 'POST',
-        headers: {
-          ...upstreamHeaders,
-          'content-type': 'application/json',
+      const res = await fetch(
+        `${this.xbosBaseUrl()}/api/xbos/workflow-engine/instances/start`,
+        {
+          method: 'POST',
+          headers: {
+            ...upstreamHeaders,
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            workflowCode,
+            businessType: ctx.businessType,
+            businessId: ctx.businessId,
+            submitter: {
+              userId: xbosSubmitterUserId,
+              employeeId: submitterEmployeeId,
+              companyId: entityCompanyId,
+              companySlug: memberCompanyId,
+              ...(portalSubmitterEmail
+                ? { submitterPortalEmail: portalSubmitterEmail }
+                : {}),
+            },
+            context: {
+              memberTenantId: tenantId,
+              memberCompanyId,
+              entityCompanyId,
+              [contextKey]: ctx.businessId,
+              ...(subjectTitle
+                ? { subjectTitle, businessTitle: subjectTitle }
+                : {}),
+              ...(ctx.conditions
+                ? {
+                    conditions: ctx.conditions,
+                    headcount_mode: ctx.conditions.headcount_mode,
+                    hire_reason: ctx.conditions.hire_reason,
+                  }
+                : {}),
+              ...(ctx.approvalMatrixKey
+                ? { approval_matrix_key: ctx.approvalMatrixKey }
+                : {}),
+            },
+          }),
         },
-        body: JSON.stringify({
-          workflowCode,
-          businessType: ctx.businessType,
-          businessId: ctx.businessId,
-          submitter: {
-            userId: xbosSubmitterUserId,
-            employeeId: submitterEmployeeId,
-            companyId: entityCompanyId,
-            companySlug: memberCompanyId,
-            ...(portalSubmitterEmail ? { submitterPortalEmail: portalSubmitterEmail } : {}),
-          },
-          context: {
-            memberTenantId: tenantId,
-            memberCompanyId,
-            entityCompanyId,
-            [contextKey]: ctx.businessId,
-            ...(subjectTitle
-              ? { subjectTitle, businessTitle: subjectTitle }
-              : {}),
-            ...(ctx.conditions
-              ? {
-                  conditions: ctx.conditions,
-                  headcount_mode: ctx.conditions.headcount_mode,
-                  hire_reason: ctx.conditions.hire_reason,
-                }
-              : {}),
-            ...(ctx.approvalMatrixKey
-              ? { approval_matrix_key: ctx.approvalMatrixKey }
-              : {}),
-          },
-        }),
-      });
+      );
       const json = (await res.json()) as {
         success?: boolean;
         code?: string;
@@ -665,7 +715,8 @@ export class RecruitmentWorkflowBridge {
       return { applied: false, skipReason: 'plan_req_step_noop' };
     }
     const mappedStage =
-      mapRecTaskTypeToStage(payload.taskType) ?? mapRecTaskTypeToStage(payload.stepKey);
+      mapRecTaskTypeToStage(payload.taskType) ??
+      mapRecTaskTypeToStage(payload.stepKey);
     if (!mappedStage) {
       throw new Error('HRM-REC-WF-STAGE-UNMAPPED');
     }
@@ -690,7 +741,11 @@ export class RecruitmentWorkflowBridge {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=instance_mismatch candidate=${payload.businessId}`,
       );
-      return { applied: false, stage: row.stage, skipReason: 'instance_mismatch' };
+      return {
+        applied: false,
+        stage: row.stage,
+        skipReason: 'instance_mismatch',
+      };
     }
     const fingerprint = `${payload.workflowInstanceId}:${payload.stepKey}:${payload.taskId ?? ''}`;
     if (row.wf_callback_fingerprint === fingerprint) {
@@ -711,7 +766,9 @@ export class RecruitmentWorkflowBridge {
     return { applied: true, stage: updated.rows[0]?.stage ?? mappedStage };
   }
 
-  async handleTerminalCallback(payload: RecruitmentTerminalCallbackPayload): Promise<{
+  async handleTerminalCallback(
+    payload: RecruitmentTerminalCallbackPayload,
+  ): Promise<{
     applied: boolean;
     status?: string;
     stage?: string;
@@ -727,12 +784,17 @@ export class RecruitmentWorkflowBridge {
     return this.handleCandidateTerminal(payload);
   }
 
-  private async handlePlanTerminal(payload: RecruitmentTerminalCallbackPayload): Promise<{
+  private async handlePlanTerminal(
+    payload: RecruitmentTerminalCallbackPayload,
+  ): Promise<{
     applied: boolean;
     status?: string;
     skipReason?: string;
   }> {
-    const existing = await this.db.query<{ status: string; workflow_instance_id: string | null }>(
+    const existing = await this.db.query<{
+      status: string;
+      workflow_instance_id: string | null;
+    }>(
       `SELECT status, workflow_instance_id::text AS workflow_instance_id
        FROM public.recruitment_plans WHERE id = $1::uuid LIMIT 1`,
       [payload.businessId],
@@ -743,7 +805,11 @@ export class RecruitmentWorkflowBridge {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=already_terminal plan=${payload.businessId} status=${row.status}`,
       );
-      return { applied: false, status: row.status, skipReason: 'already_terminal' };
+      return {
+        applied: false,
+        status: row.status,
+        skipReason: 'already_terminal',
+      };
     }
     if (
       row.workflow_instance_id &&
@@ -753,9 +819,14 @@ export class RecruitmentWorkflowBridge {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=instance_mismatch plan=${payload.businessId}`,
       );
-      return { applied: false, status: row.status, skipReason: 'instance_mismatch' };
+      return {
+        applied: false,
+        status: row.status,
+        skipReason: 'instance_mismatch',
+      };
     }
-    const nextStatus = payload.terminalStatus === 'completed' ? 'approved' : 'rejected';
+    const nextStatus =
+      payload.terminalStatus === 'completed' ? 'approved' : 'rejected';
     const res = await this.db.query<{ status: string }>(
       `UPDATE public.recruitment_plans
        SET status = $2,
@@ -765,7 +836,11 @@ export class RecruitmentWorkflowBridge {
            updated_at = NOW()
        WHERE id = $1::uuid
        RETURNING status`,
-      [payload.businessId, nextStatus, payload.rejectedReason ?? 'Workflow rejected'],
+      [
+        payload.businessId,
+        nextStatus,
+        payload.rejectedReason ?? 'Workflow rejected',
+      ],
     );
     // F-REC-HC-03 — lock need_hire cells after WF approve (Option A).
     if (nextStatus === 'approved') {
@@ -785,8 +860,13 @@ export class RecruitmentWorkflowBridge {
         `SELECT id, months_data FROM public.recruitment_plan_positions WHERE department_id = $1::uuid`,
         [dept.id],
       );
-      for (const pos of posRes.rows as Array<{ id: string; months_data: unknown }>) {
-        const cells = lockNeedHireCells(projectMonthsForApi(pos.months_data, true));
+      for (const pos of posRes.rows as Array<{
+        id: string;
+        months_data: unknown;
+      }>) {
+        const cells = lockNeedHireCells(
+          projectMonthsForApi(pos.months_data, true),
+        );
         await this.db.query(
           `UPDATE public.recruitment_plan_positions
            SET months_data = $2::jsonb, updated_at = NOW()
@@ -797,7 +877,9 @@ export class RecruitmentWorkflowBridge {
     }
   }
 
-  private async handleRequisitionTerminal(payload: RecruitmentTerminalCallbackPayload): Promise<{
+  private async handleRequisitionTerminal(
+    payload: RecruitmentTerminalCallbackPayload,
+  ): Promise<{
     applied: boolean;
     status?: string;
     skipReason?: string;
@@ -816,11 +898,19 @@ export class RecruitmentWorkflowBridge {
     const row = existing.rows[0];
     if (!row) throw new Error('HRM-REC-404');
     const current = (row.status ?? '').toLowerCase();
-    if (['open', 'open_for_hire', 'rejected', 'closed', 'cancelled'].includes(current)) {
+    if (
+      ['open', 'open_for_hire', 'rejected', 'closed', 'cancelled'].includes(
+        current,
+      )
+    ) {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=already_terminal requisition=${payload.businessId} status=${row.status}`,
       );
-      return { applied: false, status: row.status, skipReason: 'already_terminal' };
+      return {
+        applied: false,
+        status: row.status,
+        skipReason: 'already_terminal',
+      };
     }
     if (
       row.workflow_instance_id &&
@@ -830,7 +920,11 @@ export class RecruitmentWorkflowBridge {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=instance_mismatch requisition=${payload.businessId}`,
       );
-      return { applied: false, status: row.status, skipReason: 'instance_mismatch' };
+      return {
+        applied: false,
+        status: row.status,
+        skipReason: 'instance_mismatch',
+      };
     }
     const mode = (row.headcount_mode ?? '').trim().toLowerCase();
     let nextStatus: string;
@@ -870,7 +964,9 @@ export class RecruitmentWorkflowBridge {
     return { applied: true, status: res.rows[0]?.status ?? nextStatus };
   }
 
-  private async handleCandidateTerminal(payload: RecruitmentTerminalCallbackPayload): Promise<{
+  private async handleCandidateTerminal(
+    payload: RecruitmentTerminalCallbackPayload,
+  ): Promise<{
     applied: boolean;
     stage?: string;
     skipReason?: string;
@@ -892,7 +988,11 @@ export class RecruitmentWorkflowBridge {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=already_terminal candidate=${payload.businessId} stage=${row.stage}`,
       );
-      return { applied: false, stage: row.stage, skipReason: 'already_terminal' };
+      return {
+        applied: false,
+        stage: row.stage,
+        skipReason: 'already_terminal',
+      };
     }
     if (
       row.workflow_instance_id &&
@@ -902,7 +1002,11 @@ export class RecruitmentWorkflowBridge {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=instance_mismatch candidate=${payload.businessId}`,
       );
-      return { applied: false, stage: row.stage, skipReason: 'instance_mismatch' };
+      return {
+        applied: false,
+        stage: row.stage,
+        skipReason: 'instance_mismatch',
+      };
     }
     if (payload.terminalStatus === 'rejected') {
       const res = await this.db.query<{ stage: string }>(
@@ -937,7 +1041,9 @@ export class RecruitmentWorkflowBridge {
            SET stage = 'hired', updated_at = NOW()
            WHERE id = $1::uuid
            RETURNING stage`,
-      linkedEmployeeId ? [payload.businessId, linkedEmployeeId] : [payload.businessId],
+      linkedEmployeeId
+        ? [payload.businessId, linkedEmployeeId]
+        : [payload.businessId],
     );
     return { applied: true, stage: res.rows[0]?.stage ?? 'hired' };
   }
@@ -983,7 +1089,9 @@ export class RecruitmentWorkflowBridge {
     statusOrStage: string | null | undefined,
     entity: 'plan' | 'requisition' | 'candidate',
   ): void {
-    if (isRecruitmentWorkflowLocked(workflowInstanceId, statusOrStage, entity)) {
+    if (
+      isRecruitmentWorkflowLocked(workflowInstanceId, statusOrStage, entity)
+    ) {
       throw new Error('HRM-REC-WF-LOCKED');
     }
   }

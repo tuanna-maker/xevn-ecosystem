@@ -243,7 +243,12 @@ export class EmpEmploymentStatusService {
     }
     if (!Array.isArray(arr)) return [];
     return arr
-      .map((x) => String(x ?? '').trim().replace(/-/g, '_').toLowerCase())
+      .map((x) =>
+        String(x ?? '')
+          .trim()
+          .replace(/-/g, '_')
+          .toLowerCase(),
+      )
       .filter((k) => !!k && EMP_EMPLOYMENT_STATUS_KEY_FORMAT.test(k));
   }
 
@@ -296,10 +301,23 @@ export class EmpEmploymentStatusService {
     return s;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -343,14 +361,18 @@ export class EmpEmploymentStatusService {
     item: GroupRefStatusHint,
     companyId: string,
   ): EmpEmploymentStatusDisplay | null {
-    const codeRaw = String(item.code ?? '').trim().replace(/-/g, '_').toLowerCase();
+    const codeRaw = String(item.code ?? '')
+      .trim()
+      .replace(/-/g, '_')
+      .toLowerCase();
     if (!codeRaw || !EMP_EMPLOYMENT_STATUS_KEY_FORMAT.test(codeRaw)) {
       return null;
     }
     if (String(item.status ?? '').toLowerCase() !== 'active') {
       return null;
     }
-    const meta = item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
+    const meta =
+      item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
     const nameVi = String(item.label ?? item.name ?? codeRaw).trim() || codeRaw;
     const now = new Date().toISOString();
     return {
@@ -360,11 +382,13 @@ export class EmpEmploymentStatusService {
       nameVi,
       sortOrder: Number(meta?.sort_order ?? meta?.sortOrder ?? 100),
       isWorkforceActive:
-        meta?.is_workforce_active !== false && meta?.isWorkforceActive !== false,
+        meta?.is_workforce_active !== false &&
+        meta?.isWorkforceActive !== false,
       isTerminal: Boolean(meta?.is_terminal ?? meta?.isTerminal),
       requiresReason: Boolean(meta?.requires_reason ?? meta?.requiresReason),
       countsTowardHeadcount:
-        meta?.counts_toward_headcount !== false && meta?.countsTowardHeadcount !== false,
+        meta?.counts_toward_headcount !== false &&
+        meta?.countsTowardHeadcount !== false,
       legacyAliasKeys: [],
       metadata: meta,
       status: 'active',
@@ -385,7 +409,11 @@ export class EmpEmploymentStatusService {
     options?: { tenantId?: string },
   ): Promise<{ total: number; data: EmpEmploymentStatusDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, options?.tenantId);
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      options?.tenantId,
+    );
     const empRows = await this.loadNativeRows(companyKeys, {
       includeArchived: false,
       status: 'active',
@@ -398,7 +426,8 @@ export class EmpEmploymentStatusService {
 
     const settings = this.resolveSettingsCatalogs();
     if (settings) {
-      const tenantId = options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
+      const tenantId =
+        options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
       const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
         authorization,
         tenantId,
@@ -424,7 +453,10 @@ export class EmpEmploymentStatusService {
             }
             const existing = byKey.get(mapped.statusKey);
             if (existing) {
-              byKey.set(mapped.statusKey, { ...existing, source: 'emp_override' });
+              byKey.set(mapped.statusKey, {
+                ...existing,
+                source: 'emp_override',
+              });
             } else {
               byKey.set(mapped.statusKey, mapped);
             }
@@ -436,7 +468,8 @@ export class EmpEmploymentStatusService {
     }
 
     const data = [...byKey.values()].sort(
-      (a, b) => a.sortOrder - b.sortOrder || a.statusKey.localeCompare(b.statusKey),
+      (a, b) =>
+        a.sortOrder - b.sortOrder || a.statusKey.localeCompare(b.statusKey),
     );
     return { total: data.length, data };
   }
@@ -450,9 +483,13 @@ export class EmpEmploymentStatusService {
     authorization?: string,
     tenantId?: string,
   ): Promise<Map<string, string>> {
-    const effective = await this.listEffective({ company_id: companyId }, authorization, {
-      tenantId,
-    });
+    const effective = await this.listEffective(
+      { company_id: companyId },
+      authorization,
+      {
+        tenantId,
+      },
+    );
     const map = new Map<string, string>();
     for (const row of effective.data) {
       map.set(row.statusKey.toLowerCase(), row.nameVi);
@@ -477,7 +514,11 @@ export class EmpEmploymentStatusService {
   }): Promise<EmpEmploymentStatusDisplay | null> {
     const key = input.status.trim().replace(/-/g, '_').toLowerCase();
     if (!key) {
-      throw new ApiException(HRM_EMP_STATUS_KEY, 'status is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_EMP_STATUS_KEY,
+        'status is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const effective = await this.listEffective(
       { company_id: input.companyId },
@@ -508,7 +549,8 @@ export class EmpEmploymentStatusService {
     tenantId?: string,
   ): Promise<{ total: number; data: EmpEmploymentStatusDisplay[] }> {
     await this.ensureSchema();
-    const includeGroupRef = String(query.include_group_ref ?? '').toLowerCase() === 'true';
+    const includeGroupRef =
+      String(query.include_group_ref ?? '').toLowerCase() === 'true';
     if (includeGroupRef) {
       return this.listEffective(
         { company_id: query.company_id, q: query.q },
@@ -516,8 +558,13 @@ export class EmpEmploymentStatusService {
         { tenantId },
       );
     }
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     const rows = await this.loadNativeRows(companyKeys, {
       includeArchived,
       status: query.status,
@@ -545,7 +592,11 @@ export class EmpEmploymentStatusService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_EMP_ST_404, 'Employment status not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_EMP_ST_404,
+        'Employment status not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_EMP_ST_404,
@@ -561,14 +612,23 @@ export class EmpEmploymentStatusService {
     tenantId?: string,
   ): Promise<EmpEmploymentStatusDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const statusKey = this.assertKeyFormat(body.statusKey);
     const nameVi = body.nameVi.trim();
     if (!nameVi) {
-      throw new ApiException(HRM_PLT_CAT_CODE_INVALID, 'nameVi is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_PLT_CAT_CODE_INVALID,
+        'nameVi is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const status = body.status ? this.assertRowStatus(body.status) : 'active';
-    const metadataJson = body.metadata != null ? JSON.stringify(body.metadata) : null;
+    const metadataJson =
+      body.metadata != null ? JSON.stringify(body.metadata) : null;
     const aliasJson =
       body.legacyAliasKeys != null
         ? JSON.stringify(
@@ -646,7 +706,9 @@ export class EmpEmploymentStatusService {
       return this.display(inserted.rows[0], 'emp_native');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (/uq_emp_employment_status_company_key_active|duplicate key/i.test(msg)) {
+      if (
+        /uq_emp_employment_status_company_key_active|duplicate key/i.test(msg)
+      ) {
         throw new ApiException(
           HRM_PLT_CAT_CODE_CONFLICT,
           `Active status_key '${statusKey}' already exists for company`,
@@ -672,7 +734,11 @@ export class EmpEmploymentStatusService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_EMP_ST_404, 'Employment status not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_EMP_ST_404,
+        'Employment status not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_EMP_ST_404,
@@ -694,9 +760,11 @@ export class EmpEmploymentStatusService {
     };
     if (body.nameVi !== undefined) assign('name_vi', body.nameVi.trim());
     if (body.sortOrder !== undefined) assign('sort_order', body.sortOrder);
-    if (body.isWorkforceActive !== undefined) assign('is_workforce_active', body.isWorkforceActive);
+    if (body.isWorkforceActive !== undefined)
+      assign('is_workforce_active', body.isWorkforceActive);
     if (body.isTerminal !== undefined) assign('is_terminal', body.isTerminal);
-    if (body.requiresReason !== undefined) assign('requires_reason', body.requiresReason);
+    if (body.requiresReason !== undefined)
+      assign('requires_reason', body.requiresReason);
     if (body.countsTowardHeadcount !== undefined) {
       assign('counts_toward_headcount', body.countsTowardHeadcount);
     }
@@ -704,7 +772,9 @@ export class EmpEmploymentStatusService {
       values.push(
         body.legacyAliasKeys == null
           ? null
-          : JSON.stringify(body.legacyAliasKeys.map((k) => this.assertKeyFormat(k))),
+          : JSON.stringify(
+              body.legacyAliasKeys.map((k) => this.assertKeyFormat(k)),
+            ),
       );
       sets.push(`legacy_alias_keys_json = $${values.length}::jsonb`);
     }
@@ -712,7 +782,8 @@ export class EmpEmploymentStatusService {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertRowStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertRowStatus(body.status));
 
     if (!sets.length) {
       return this.display(row, 'emp_native');
@@ -743,7 +814,11 @@ export class EmpEmploymentStatusService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_EMP_ST_404, 'Employment status not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_EMP_ST_404,
+        'Employment status not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_EMP_ST_404,

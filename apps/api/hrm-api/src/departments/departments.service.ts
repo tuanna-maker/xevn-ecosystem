@@ -72,7 +72,10 @@ export class DepartmentsService {
     employee_count, level, sort_order, status, created_at, updated_at
   `;
 
-  async listDepartments(query: ListDepartmentsQueryDto, authorization?: string) {
+  async listDepartments(
+    query: ListDepartmentsQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, query.company_id);
     const filters: string[] = [];
@@ -95,7 +98,11 @@ export class DepartmentsService {
     return { total: data.length, data };
   }
 
-  async getDepartmentById(departmentId: string, companyId: string, authorization?: string) {
+  async getDepartmentById(
+    departmentId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['id = $1::uuid'];
@@ -110,14 +117,21 @@ export class DepartmentsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-DEPT-404', 'Department not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-DEPT-404',
+        'Department not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapRow(row);
   }
 
   async createDepartment(payload: CreateDepartmentDto, authorization?: string) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const id = randomUUID();
     const res = await this.db.query<DepartmentRow>(
       `INSERT INTO public.departments (
@@ -149,7 +163,11 @@ export class DepartmentsService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const existing = await this.getDepartmentById(departmentId, payload.company_id, authorization);
+    const existing = await this.getDepartmentById(
+      departmentId,
+      payload.company_id,
+      authorization,
+    );
     const scope = resolveHrmListScope(authorization, payload.company_id);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-DEPT-404',
@@ -163,9 +181,12 @@ export class DepartmentsService {
     };
     if (payload.name != null) set('name', payload.name.trim());
     if (payload.code !== undefined) set('code', payload.code?.trim() ?? null);
-    if (payload.description !== undefined) set('description', payload.description ?? null);
-    if (payload.manager_name !== undefined) set('manager_name', payload.manager_name?.trim() ?? null);
-    if (payload.manager_email !== undefined) set('manager_email', payload.manager_email?.trim() ?? null);
+    if (payload.description !== undefined)
+      set('description', payload.description ?? null);
+    if (payload.manager_name !== undefined)
+      set('manager_name', payload.manager_name?.trim() ?? null);
+    if (payload.manager_email !== undefined)
+      set('manager_email', payload.manager_email?.trim() ?? null);
     if (payload.parent_id !== undefined) set('parent_id', payload.parent_id);
     if (payload.level != null) set('level', payload.level);
     if (payload.sort_order != null) set('sort_order', payload.sort_order);
@@ -182,15 +203,25 @@ export class DepartmentsService {
     return this.mapRow(res.rows[0]);
   }
 
-  async deleteDepartment(departmentId: string, companyId: string, authorization?: string) {
+  async deleteDepartment(
+    departmentId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const existing = await this.getDepartmentById(departmentId, companyId, authorization);
+    const existing = await this.getDepartmentById(
+      departmentId,
+      companyId,
+      authorization,
+    );
     const scope = resolveHrmListScope(authorization, companyId);
     assertResourceInHrmScope(existing, scope, {
       notFoundCode: 'HRM-DEPT-404',
       mismatchCode: 'HRM-DEPT-409',
     });
-    await this.db.query(`DELETE FROM public.departments WHERE id = $1::uuid;`, [departmentId]);
+    await this.db.query(`DELETE FROM public.departments WHERE id = $1::uuid;`, [
+      departmentId,
+    ]);
     return { id: departmentId };
   }
 }

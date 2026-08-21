@@ -39,4 +39,8 @@ export const HRM_PLT_CAT_CODE_CONFLICT = 'HRM-PLT-CAT-CODE-CONFLICT';
  * Docs-only bootstrap examples — NOT a product ceiling; NEVER enforce IN (…).
  * U65: ensureSchema does NOT seed these.
  */
-export const ATT_OT_TYPE_STARTER_KEYS = ['weekday', 'weekend', 'holiday'] as const;
+export const ATT_OT_TYPE_STARTER_KEYS = [
+  'weekday',
+  'weekend',
+  'holiday',
+] as const;

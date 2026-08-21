@@ -86,7 +86,9 @@ export function isYctdJdBindable(row: {
 }): boolean {
   const raw = row.status;
   if (raw != null && String(raw).trim() !== '') {
-    return normalizeJdTemplateStatus(row) === 'active' && row.is_active === true;
+    return (
+      normalizeJdTemplateStatus(row) === 'active' && row.is_active === true
+    );
   }
   // Migrate dual-assert: pre-backfill rows without status column value.
   return row.is_active === true;
@@ -98,7 +100,8 @@ export function isYctdBindableListQuery(query?: {
   active?: string;
 }): boolean {
   const bindable = query?.bindable?.trim().toLowerCase();
-  if (bindable === '1' || bindable === 'true' || bindable === 'yes') return true;
+  if (bindable === '1' || bindable === 'true' || bindable === 'yes')
+    return true;
   const forRaw = query?.for?.trim().toLowerCase();
   return forRaw === 'yctd';
 }
@@ -107,7 +110,9 @@ export function isYctdBindableListQuery(query?: {
  * AV-YCTD-JD-ALIAS-01..02 — normalize to ONE physical id.
  * Missing both → null (caller may REQUIRED).
  */
-export function resolveYctdJdTemplateId(input: YctdJdAliasInput): string | null {
+export function resolveYctdJdTemplateId(
+  input: YctdJdAliasInput,
+): string | null {
   const physical = input.job_template_id?.trim() || '';
   const logical = input.job_description_id?.trim() || '';
   if (physical && logical && physical !== logical) {
@@ -133,7 +138,9 @@ export function requireYctdJdTemplateId(input: YctdJdAliasInput): string {
   return id;
 }
 
-export function assertYctdJdBindableOrThrow(row: YctdJdTemplateBindRow | null | undefined): YctdJdTemplateBindRow {
+export function assertYctdJdBindableOrThrow(
+  row: YctdJdTemplateBindRow | null | undefined,
+): YctdJdTemplateBindRow {
   if (!row) {
     throw new ApiException(
       HRM_JD_YCTD_NOT_FOUND,
@@ -152,8 +159,12 @@ export function assertYctdJdBindableOrThrow(row: YctdJdTemplateBindRow | null | 
 }
 
 /** GĐ1: re-bind on draft/rejected/open/on_hold; lock approved+ / closed / cancelled / pending. */
-export function assertYctdJdRebindAllowed(status: string | null | undefined): void {
-  const s = String(status ?? '').trim().toLowerCase();
+export function assertYctdJdRebindAllowed(
+  status: string | null | undefined,
+): void {
+  const s = String(status ?? '')
+    .trim()
+    .toLowerCase();
   const allowed = new Set(['draft', 'rejected', 'open', 'on_hold']);
   if (!allowed.has(s)) {
     throw new ApiException(
@@ -166,9 +177,7 @@ export function assertYctdJdRebindAllowed(status: string | null | undefined): vo
 
 export function toYctdJdPreview(row: YctdJdTemplateBindRow): YctdJdPreview {
   const active = assertYctdJdBindableOrThrow(row);
-  const short =
-    (active.job_description ?? '').trim() ||
-    '';
+  const short = (active.job_description ?? '').trim() || '';
   return {
     job_template_id: active.id,
     job_description_id: active.id,
@@ -205,16 +214,13 @@ export function toRequisitionJdDisplayReady<T extends Record<string, unknown>>(
 ) {
   const templateId =
     (typeof row.job_template_id === 'string' && row.job_template_id.trim()) ||
-    (typeof row.job_description_id === 'string' && row.job_description_id.trim()) ||
+    (typeof row.job_description_id === 'string' &&
+      row.job_description_id.trim()) ||
     null;
   const jdCode =
-    (typeof row.jd_code === 'string' && row.jd_code) ||
-    jd?.code ||
-    null;
+    (typeof row.jd_code === 'string' && row.jd_code) || jd?.code || null;
   const jdTitle =
-    (typeof row.jd_title === 'string' && row.jd_title) ||
-    jd?.title ||
-    null;
+    (typeof row.jd_title === 'string' && row.jd_title) || jd?.title || null;
   return {
     ...row,
     job_template_id: templateId,

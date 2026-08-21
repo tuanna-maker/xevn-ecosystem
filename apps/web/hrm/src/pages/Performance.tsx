@@ -317,6 +317,7 @@ export default function Performance() {
 
   return (
     <div className="space-y-4" data-testid="performance-page-e3">
+      <h1 className="sr-only">Hiệu suất (Performance)</h1>
       <Card>
         <CardHeader>
           <CardTitle>

@@ -276,7 +276,12 @@ export class CatalogExtensionsService {
     return { scope, filters, values };
   }
 
-  async listSalesData(companyId: string, month?: number, year?: number, authorization?: string) {
+  async listSalesData(
+    companyId: string,
+    month?: number,
+    year?: number,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const { filters, values } = this.scopedList(companyId, authorization);
     if (month) {
@@ -294,9 +299,15 @@ export class CatalogExtensionsService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createSalesData(payload: Record<string, unknown>, authorization?: string) {
+  async createSalesData(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const id = randomUUID();
     const res = await this.db.query(
       `INSERT INTO public.hrm_sales_data (
@@ -336,28 +347,63 @@ export class CatalogExtensionsService {
     return res.rows[0];
   }
 
-  async updateSalesData(id: string, companyId: string, payload: Record<string, unknown>, authorization?: string) {
+  async updateSalesData(
+    id: string,
+    companyId: string,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const { scope } = this.scopedList(companyId, authorization);
-    const peek = await this.db.query(`SELECT company_id FROM public.hrm_sales_data WHERE id = $1::uuid LIMIT 1;`, [id]);
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-SALES-404', mismatchCode: 'HRM-SALES-409' });
+    const peek = await this.db.query(
+      `SELECT company_id FROM public.hrm_sales_data WHERE id = $1::uuid LIMIT 1;`,
+      [id],
+    );
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-SALES-404',
+      mismatchCode: 'HRM-SALES-409',
+    });
     const allowed = [
-      'employee_id', 'employee_code', 'employee_name', 'department', 'position',
-      'period_month', 'period_year', 'sales_target', 'actual_sales', 'achievement_rate',
-      'commission_rate', 'commission_amount', 'bonus_amount', 'total_earnings',
-      'order_count', 'customer_count', 'new_customer_count', 'sync_source', 'synced_at', 'external_id', 'notes',
+      'employee_id',
+      'employee_code',
+      'employee_name',
+      'department',
+      'position',
+      'period_month',
+      'period_year',
+      'sales_target',
+      'actual_sales',
+      'achievement_rate',
+      'commission_rate',
+      'commission_amount',
+      'bonus_amount',
+      'total_earnings',
+      'order_count',
+      'customer_count',
+      'new_customer_count',
+      'sync_source',
+      'synced_at',
+      'external_id',
+      'notes',
     ];
     const fields: string[] = [];
     const values: unknown[] = [];
     for (const key of allowed) {
       if (payload[key] !== undefined) {
         values.push(payload[key]);
-        const col = key === 'employee_id' ? `${key} = $${values.length}::uuid` : `${key} = $${values.length}`;
+        const col =
+          key === 'employee_id'
+            ? `${key} = $${values.length}::uuid`
+            : `${key} = $${values.length}`;
         fields.push(col);
       }
     }
     if (!fields.length) {
-      throw new ApiException('HRM-VAL-001', 'No fields to update', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-001',
+        'No fields to update',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     values.push(id);
     const res = await this.db.query(
@@ -371,15 +417,27 @@ export class CatalogExtensionsService {
   async deleteSalesData(id: string, companyId: string, authorization?: string) {
     await this.ensureSchema();
     const { scope } = this.scopedList(companyId, authorization);
-    const peek = await this.db.query(`SELECT company_id FROM public.hrm_sales_data WHERE id = $1::uuid LIMIT 1;`, [id]);
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-SALES-404', mismatchCode: 'HRM-SALES-409' });
-    await this.db.query(`DELETE FROM public.hrm_sales_data WHERE id = $1::uuid;`, [id]);
+    const peek = await this.db.query(
+      `SELECT company_id FROM public.hrm_sales_data WHERE id = $1::uuid LIMIT 1;`,
+      [id],
+    );
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-SALES-404',
+      mismatchCode: 'HRM-SALES-409',
+    });
+    await this.db.query(
+      `DELETE FROM public.hrm_sales_data WHERE id = $1::uuid;`,
+      [id],
+    );
     return { id };
   }
 
   async syncSalesData(companyId: string, authorization?: string) {
     await this.ensureSchema();
-    const { scope, filters, values } = this.scopedList(companyId, authorization);
+    const { scope, filters, values } = this.scopedList(
+      companyId,
+      authorization,
+    );
     const res = await this.db.query(
       `UPDATE public.hrm_sales_data SET sync_source = 'api', synced_at = NOW(), updated_at = NOW()
        WHERE ${filters.join(' AND ')} RETURNING id;`,
@@ -402,9 +460,15 @@ export class CatalogExtensionsService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createBonusPolicy(payload: Record<string, unknown>, authorization?: string) {
+  async createBonusPolicy(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const id = randomUUID();
     const res = await this.db.query(
       `INSERT INTO public.hrm_bonus_policies (
@@ -436,21 +500,43 @@ export class CatalogExtensionsService {
     return res.rows[0];
   }
 
-  async updateBonusPolicy(id: string, companyId: string, payload: Record<string, unknown>, authorization?: string) {
+  async updateBonusPolicy(
+    id: string,
+    companyId: string,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const { scope } = this.scopedList(companyId, authorization);
-    const peek = await this.db.query(`SELECT company_id FROM public.hrm_bonus_policies WHERE id = $1::uuid LIMIT 1;`, [id]);
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-BONUS-404', mismatchCode: 'HRM-BONUS-409' });
+    const peek = await this.db.query(
+      `SELECT company_id FROM public.hrm_bonus_policies WHERE id = $1::uuid LIMIT 1;`,
+      [id],
+    );
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-BONUS-404',
+      mismatchCode: 'HRM-BONUS-409',
+    });
     const allowed = [
-      'code', 'name', 'type', 'description', 'calculation_method', 'base_value', 'percentage_base', 'formula',
-      'effective_date', 'expiry_date', 'status',
+      'code',
+      'name',
+      'type',
+      'description',
+      'calculation_method',
+      'base_value',
+      'percentage_base',
+      'formula',
+      'effective_date',
+      'expiry_date',
+      'status',
     ];
     const fields: string[] = [];
     const values: unknown[] = [];
     for (const key of allowed) {
       if (payload[key] !== undefined) {
         values.push(payload[key]);
-        fields.push(`${key} = $${values.length}${key.includes('date') ? '::date' : ''}`);
+        fields.push(
+          `${key} = $${values.length}${key.includes('date') ? '::date' : ''}`,
+        );
       }
     }
     if (payload.tiers !== undefined) {
@@ -470,16 +556,33 @@ export class CatalogExtensionsService {
     return res.rows[0];
   }
 
-  async deleteBonusPolicy(id: string, companyId: string, authorization?: string) {
+  async deleteBonusPolicy(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const { scope } = this.scopedList(companyId, authorization);
-    const peek = await this.db.query(`SELECT company_id FROM public.hrm_bonus_policies WHERE id = $1::uuid LIMIT 1;`, [id]);
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-BONUS-404', mismatchCode: 'HRM-BONUS-409' });
-    await this.db.query(`DELETE FROM public.hrm_bonus_policies WHERE id = $1::uuid;`, [id]);
+    const peek = await this.db.query(
+      `SELECT company_id FROM public.hrm_bonus_policies WHERE id = $1::uuid LIMIT 1;`,
+      [id],
+    );
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-BONUS-404',
+      mismatchCode: 'HRM-BONUS-409',
+    });
+    await this.db.query(
+      `DELETE FROM public.hrm_bonus_policies WHERE id = $1::uuid;`,
+      [id],
+    );
     return { id };
   }
 
-  async listBonusPolicyParticipants(policyId: string, companyId: string, authorization?: string) {
+  async listBonusPolicyParticipants(
+    policyId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const { filters, values } = this.scopedList(companyId, authorization);
     values.push(policyId);
@@ -491,7 +594,10 @@ export class CatalogExtensionsService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createBonusPolicyParticipant(payload: Record<string, unknown>, authorization?: string) {
+  async createBonusPolicyParticipant(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const requestedCompanyId = String(payload.company_id ?? '');
     const { scope } = this.scopedList(requestedCompanyId, authorization);
@@ -503,7 +609,7 @@ export class CatalogExtensionsService {
       notFoundCode: 'HRM-BONUS-404',
       mismatchCode: 'HRM-BONUS-409',
     });
-    const companyId = String(policyPeek.rows[0]!.company_id);
+    const companyId = String(policyPeek.rows[0].company_id);
     const id = randomUUID();
     const res = await this.db.query(
       `INSERT INTO public.hrm_bonus_policy_participants (
@@ -528,7 +634,10 @@ export class CatalogExtensionsService {
     return res.rows[0];
   }
 
-  async listInsurancePolicyParticipants(companyId: string, authorization?: string) {
+  async listInsurancePolicyParticipants(
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const { filters, values } = this.scopedList(companyId, authorization);
     const res = await this.db.query(
@@ -550,8 +659,12 @@ export class CatalogExtensionsService {
     authorization: string | undefined,
   ): Promise<{ id: string; insurer_key: string | null }> {
     const scope = resolveHrmListScope(authorization, companyId);
-    const explicitId = payload.policy_id ? String(payload.policy_id).trim() : '';
-    const insurerKeyHint = payload.insurer_key ? String(payload.insurer_key).trim() : '';
+    const explicitId = payload.policy_id
+      ? String(payload.policy_id).trim()
+      : '';
+    const insurerKeyHint = payload.insurer_key
+      ? String(payload.insurer_key).trim()
+      : '';
 
     if (explicitId) {
       const policyFilters: string[] = ['id = $1::uuid'];
@@ -568,7 +681,11 @@ export class CatalogExtensionsService {
         policyValues,
       );
       if (!policyPeek.rows[0]) {
-        throw new ApiException(HRM_INS_POL_404, 'Insurance policy not found', HttpStatus.NOT_FOUND);
+        throw new ApiException(
+          HRM_INS_POL_404,
+          'Insurance policy not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       if (policyPeek.rows[0].status !== 'active') {
         throw new ApiException(
@@ -577,7 +694,10 @@ export class CatalogExtensionsService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      return { id: policyPeek.rows[0].id, insurer_key: policyPeek.rows[0].insurer_key };
+      return {
+        id: policyPeek.rows[0].id,
+        insurer_key: policyPeek.rows[0].insurer_key,
+      };
     }
 
     // Soft resolve — FE dialog (ACT-HRM-INS-LINK) historically omitted policy_id.
@@ -588,7 +708,10 @@ export class CatalogExtensionsService {
       values.push(insurerKeyHint);
       filters.push(`insurer_key = $${values.length}`);
     }
-    const candidates = await this.db.query<{ id: string; insurer_key: string | null }>(
+    const candidates = await this.db.query<{
+      id: string;
+      insurer_key: string | null;
+    }>(
       `SELECT id, insurer_key FROM public.hrm_insurance_policies
        WHERE ${filters.join(' AND ')}
        ORDER BY updated_at DESC NULLS LAST, created_at DESC
@@ -596,7 +719,10 @@ export class CatalogExtensionsService {
       values,
     );
     if (candidates.rows.length === 1) {
-      return { id: candidates.rows[0].id, insurer_key: candidates.rows[0].insurer_key };
+      return {
+        id: candidates.rows[0].id,
+        insurer_key: candidates.rows[0].insurer_key,
+      };
     }
     if (candidates.rows.length === 0) {
       throw new ApiException(
@@ -614,16 +740,32 @@ export class CatalogExtensionsService {
     );
   }
 
-  async createInsurancePolicyParticipant(payload: Record<string, unknown>, authorization?: string) {
+  async createInsurancePolicyParticipant(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
-    const employeeId = payload.employee_id ? String(payload.employee_id).trim() : '';
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
+    const employeeId = payload.employee_id
+      ? String(payload.employee_id).trim()
+      : '';
     // E3 — soft FK policy + employee (AC-E3-INS-PART); BH-400 soft-resolve when policy_id omitted
-    const policy = await this.resolvePolicyForParticipantEnroll(payload, companyId, authorization);
+    const policy = await this.resolvePolicyForParticipantEnroll(
+      payload,
+      companyId,
+      authorization,
+    );
     const policyId = policy.id;
     const scope = resolveHrmListScope(authorization, companyId);
     if (!employeeId) {
-      throw new ApiException(HRM_INS_EMP_404, 'employee_id is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_INS_EMP_404,
+        'employee_id is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const empFilters: string[] = ['id = $1::uuid', 'archived_at IS NULL'];
     const empValues: unknown[] = [employeeId];
@@ -633,7 +775,11 @@ export class CatalogExtensionsService {
       empValues,
     );
     if (!empPeek.rows[0]) {
-      throw new ApiException(HRM_INS_EMP_404, 'Employee not found in scope', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_INS_EMP_404,
+        'Employee not found in scope',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const insurerKey =
       (payload.insurer_key ? String(payload.insurer_key).trim() : '') ||
@@ -680,7 +826,11 @@ export class CatalogExtensionsService {
       return res.rows[0];
     } catch (err: unknown) {
       if ((err as { code?: string })?.code === '23505') {
-        throw new ApiException(HRM_INS_P_DUP, 'Employee already enrolled on this policy', HttpStatus.CONFLICT);
+        throw new ApiException(
+          HRM_INS_P_DUP,
+          'Employee already enrolled on this policy',
+          HttpStatus.CONFLICT,
+        );
       }
       throw err;
     }
@@ -698,19 +848,43 @@ export class CatalogExtensionsService {
       `SELECT company_id FROM public.hrm_insurance_policy_participants WHERE id = $1::uuid LIMIT 1;`,
       [id],
     );
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-INS-P-404', mismatchCode: 'HRM-INS-P-409' });
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-INS-P-404',
+      mismatchCode: 'HRM-INS-P-409',
+    });
     const allowed = [
-      'employee_id', 'employee_code', 'employee_name', 'employee_avatar', 'position', 'department',
-      'insurance_type', 'social_insurance_number', 'health_insurance_number', 'unemployment_insurance_number',
-      'social_insurance_rate', 'health_insurance_rate', 'unemployment_insurance_rate', 'base_salary',
-      'effective_date', 'expiry_date', 'status', 'notes', 'policy_id', 'insurer_key',
+      'employee_id',
+      'employee_code',
+      'employee_name',
+      'employee_avatar',
+      'position',
+      'department',
+      'insurance_type',
+      'social_insurance_number',
+      'health_insurance_number',
+      'unemployment_insurance_number',
+      'social_insurance_rate',
+      'health_insurance_rate',
+      'unemployment_insurance_rate',
+      'base_salary',
+      'effective_date',
+      'expiry_date',
+      'status',
+      'notes',
+      'policy_id',
+      'insurer_key',
     ];
     const fields: string[] = [];
     const values: unknown[] = [];
     for (const key of allowed) {
       if (payload[key] !== undefined) {
         values.push(payload[key]);
-        const suffix = key === 'employee_id' ? '::uuid' : key.includes('date') ? '::date' : '';
+        const suffix =
+          key === 'employee_id'
+            ? '::uuid'
+            : key.includes('date')
+              ? '::date'
+              : '';
         fields.push(`${key} = $${values.length}${suffix}`);
       }
     }
@@ -723,15 +897,25 @@ export class CatalogExtensionsService {
     return res.rows[0];
   }
 
-  async deleteInsurancePolicyParticipant(id: string, companyId: string, authorization?: string) {
+  async deleteInsurancePolicyParticipant(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const { scope } = this.scopedList(companyId, authorization);
     const peek = await this.db.query(
       `SELECT company_id FROM public.hrm_insurance_policy_participants WHERE id = $1::uuid LIMIT 1;`,
       [id],
     );
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-INS-P-404', mismatchCode: 'HRM-INS-P-409' });
-    await this.db.query(`DELETE FROM public.hrm_insurance_policy_participants WHERE id = $1::uuid;`, [id]);
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-INS-P-404',
+      mismatchCode: 'HRM-INS-P-409',
+    });
+    await this.db.query(
+      `DELETE FROM public.hrm_insurance_policy_participants WHERE id = $1::uuid;`,
+      [id],
+    );
     return { id };
   }
 
@@ -745,9 +929,15 @@ export class CatalogExtensionsService {
     return { total: res.rows.length, data: res.rows };
   }
 
-  async createTaxPolicyParticipant(payload: Record<string, unknown>, authorization?: string) {
+  async createTaxPolicyParticipant(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const id = randomUUID();
     const res = await this.db.query(
       `INSERT INTO public.hrm_tax_policy_participants (
@@ -780,26 +970,52 @@ export class CatalogExtensionsService {
     return res.rows[0];
   }
 
-  async updateTaxPolicyParticipant(id: string, companyId: string, payload: Record<string, unknown>, authorization?: string) {
+  async updateTaxPolicyParticipant(
+    id: string,
+    companyId: string,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const { scope } = this.scopedList(companyId, authorization);
     const peek = await this.db.query(
       `SELECT company_id FROM public.hrm_tax_policy_participants WHERE id = $1::uuid LIMIT 1;`,
       [id],
     );
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-TAX-404', mismatchCode: 'HRM-TAX-409' });
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-TAX-404',
+      mismatchCode: 'HRM-TAX-409',
+    });
     const allowed = [
-      'employee_id', 'employee_code', 'employee_name', 'department', 'position',
-      'tax_code', 'dependent_count', 'effective_date', 'status', 'notes',
-      'policy_type', 'policy_name', 'flat_rate', 'personal_deduction', 'dependent_deduction',
-      'created_by', 'created_by_position',
+      'employee_id',
+      'employee_code',
+      'employee_name',
+      'department',
+      'position',
+      'tax_code',
+      'dependent_count',
+      'effective_date',
+      'status',
+      'notes',
+      'policy_type',
+      'policy_name',
+      'flat_rate',
+      'personal_deduction',
+      'dependent_deduction',
+      'created_by',
+      'created_by_position',
     ];
     const fields: string[] = [];
     const values: unknown[] = [];
     for (const key of allowed) {
       if (payload[key] !== undefined) {
         values.push(payload[key]);
-        const suffix = key === 'employee_id' ? '::uuid' : key.includes('date') ? '::date' : '';
+        const suffix =
+          key === 'employee_id'
+            ? '::uuid'
+            : key.includes('date')
+              ? '::date'
+              : '';
         fields.push(`${key} = $${values.length}${suffix}`);
       }
     }
@@ -812,15 +1028,25 @@ export class CatalogExtensionsService {
     return res.rows[0];
   }
 
-  async deleteTaxPolicyParticipant(id: string, companyId: string, authorization?: string) {
+  async deleteTaxPolicyParticipant(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const { scope } = this.scopedList(companyId, authorization);
     const peek = await this.db.query(
       `SELECT company_id FROM public.hrm_tax_policy_participants WHERE id = $1::uuid LIMIT 1;`,
       [id],
     );
-    assertResourceInHrmScope(peek.rows[0], scope, { notFoundCode: 'HRM-TAX-404', mismatchCode: 'HRM-TAX-409' });
-    await this.db.query(`DELETE FROM public.hrm_tax_policy_participants WHERE id = $1::uuid;`, [id]);
+    assertResourceInHrmScope(peek.rows[0], scope, {
+      notFoundCode: 'HRM-TAX-404',
+      mismatchCode: 'HRM-TAX-409',
+    });
+    await this.db.query(
+      `DELETE FROM public.hrm_tax_policy_participants WHERE id = $1::uuid;`,
+      [id],
+    );
     return { id };
   }
 
@@ -845,9 +1071,15 @@ export class CatalogExtensionsService {
     };
   }
 
-  async upsertFaceData(payload: Record<string, unknown>, authorization?: string) {
+  async upsertFaceData(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, String(payload.company_id ?? ''));
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const descriptor = JSON.stringify(payload.face_descriptor ?? []);
     const res = await this.db.query(
       `INSERT INTO public.hrm_face_data (id, company_id, employee_id, face_descriptor, face_image_url)
@@ -857,16 +1089,28 @@ export class CatalogExtensionsService {
          face_image_url = EXCLUDED.face_image_url,
          updated_at = NOW()
        RETURNING id, company_id, employee_id, face_descriptor, face_image_url, created_at, updated_at;`,
-      [randomUUID(), companyId, payload.employee_id, descriptor, payload.face_image_url ?? null],
+      [
+        randomUUID(),
+        companyId,
+        payload.employee_id,
+        descriptor,
+        payload.face_image_url ?? null,
+      ],
     );
     const row = res.rows[0];
     return {
       ...row,
-      face_descriptor: Array.isArray(row.face_descriptor) ? row.face_descriptor : JSON.parse(String(row.face_descriptor)),
+      face_descriptor: Array.isArray(row.face_descriptor)
+        ? row.face_descriptor
+        : JSON.parse(String(row.face_descriptor)),
     };
   }
 
-  async deleteFaceData(employeeId: string, companyId: string, authorization?: string) {
+  async deleteFaceData(
+    employeeId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const { scope } = this.scopedList(companyId, authorization);
     const peek = await this.db.query(
@@ -877,7 +1121,7 @@ export class CatalogExtensionsService {
       notFoundCode: 'HRM-FACE-404',
       mismatchCode: 'HRM-FACE-409',
     });
-    const rowCompanyId = String(peek.rows[0]!.company_id);
+    const rowCompanyId = String(peek.rows[0].company_id);
     await this.db.query(
       `DELETE FROM public.hrm_face_data WHERE company_id = $1::text AND employee_id = $2::uuid;`,
       [rowCompanyId, employeeId],
@@ -888,7 +1132,10 @@ export class CatalogExtensionsService {
   async getCompanySubscription(companyId: string, authorization?: string) {
     await this.ensureSchema();
     const company = resolveHrmPersistCompanyIdText(authorization, companyId);
-    let res = await this.db.query(`SELECT * FROM public.hrm_company_subscriptions WHERE company_id = $1 LIMIT 1;`, [company]);
+    let res = await this.db.query(
+      `SELECT * FROM public.hrm_company_subscriptions WHERE company_id = $1 LIMIT 1;`,
+      [company],
+    );
     if (!res.rows[0]) {
       res = await this.db.query(
         `INSERT INTO public.hrm_company_subscriptions (company_id, plan_code, status, max_employees, plan_name_vi, plan_name_en)
@@ -898,12 +1145,21 @@ export class CatalogExtensionsService {
       );
     }
     const row = res.rows[0];
-    const trialEnd = row.trial_end_date ? new Date(row.trial_end_date) : new Date();
-    const days = Math.max(0, Math.ceil((trialEnd.getTime() - Date.now()) / 86400000));
+    const trialEnd = row.trial_end_date
+      ? new Date(row.trial_end_date)
+      : new Date();
+    const days = Math.max(
+      0,
+      Math.ceil((trialEnd.getTime() - Date.now()) / 86400000),
+    );
     return { ...row, trial_days_remaining: days };
   }
 
-  async upgradeCompanySubscription(companyId: string, payload: Record<string, unknown>, authorization?: string) {
+  async upgradeCompanySubscription(
+    companyId: string,
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const company = resolveHrmPersistCompanyIdText(authorization, companyId);
     const res = await this.db.query(
@@ -919,7 +1175,11 @@ export class CatalogExtensionsService {
       [company, payload.plan_code ?? null, payload.max_employees ?? null],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-SUB-404', 'Subscription not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-SUB-404',
+        'Subscription not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return res.rows[0];
   }
@@ -933,14 +1193,23 @@ export class CatalogExtensionsService {
       filters.push(`(company_id = $${values.length} OR company_id IS NULL)`);
     }
     const where = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
-    const res = await this.db.query(`SELECT * FROM public.hrm_guide_content ${where} ORDER BY section_id, step_index;`, values);
+    const res = await this.db.query(
+      `SELECT * FROM public.hrm_guide_content ${where} ORDER BY section_id, step_index;`,
+      values,
+    );
     return { total: res.rows.length, data: res.rows };
   }
 
-  async upsertGuideContent(payload: Record<string, unknown>, authorization?: string) {
+  async upsertGuideContent(
+    payload: Record<string, unknown>,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const companyId = payload.company_id
-      ? resolveHrmPersistCompanyIdText(authorization, String(payload.company_id))
+      ? resolveHrmPersistCompanyIdText(
+          authorization,
+          String(payload.company_id),
+        )
       : null;
     const id = randomUUID();
     const res = await this.db.query(
@@ -968,7 +1237,11 @@ export class CatalogExtensionsService {
     return res.rows[0];
   }
 
-  async deleteGuideContent(payload: { section_id: string; step_index: number | null; company_id?: string }) {
+  async deleteGuideContent(payload: {
+    section_id: string;
+    step_index: number | null;
+    company_id?: string;
+  }) {
     await this.ensureSchema();
     await this.db.query(
       `DELETE FROM public.hrm_guide_content
@@ -985,26 +1258,33 @@ export class CatalogExtensionsService {
     feature: string,
     file: { buffer: Buffer; originalname: string; mimetype: string },
   ) {
-    const scopedCompanyId = resolveHrmPersistCompanyIdText(authorization, companyId);
-    const jwtPayload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+    const scopedCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      companyId,
+    );
+    const jwtPayload = getVerifiedInternalJwtPayload(authorization);
     if (jwtPayload) {
       const claimCompany =
-        (typeof jwtPayload.companyId === 'string' && jwtPayload.companyId.trim()) ||
-        (typeof jwtPayload.company_id === 'string' && jwtPayload.company_id.trim()) ||
+        (typeof jwtPayload.companyId === 'string' &&
+          jwtPayload.companyId.trim()) ||
+        (typeof jwtPayload.company_id === 'string' &&
+          jwtPayload.company_id.trim()) ||
         companyId;
       const tokenScope = resolveHrmListScope(authorization, claimCompany);
-      assertResourceInHrmScope(
-        { company_id: scopedCompanyId },
-        tokenScope,
-        { notFoundCode: 'HRM-FILE-404', mismatchCode: 'HRM-FILE-409' },
-      );
+      assertResourceInHrmScope({ company_id: scopedCompanyId }, tokenScope, {
+        notFoundCode: 'HRM-FILE-404',
+        mismatchCode: 'HRM-FILE-409',
+      });
     }
     const baseDir =
-      process.env.HRM_FILE_UPLOAD_DIR?.trim() || join(process.cwd(), 'uploads', 'hrm-files');
+      process.env.HRM_FILE_UPLOAD_DIR?.trim() ||
+      join(process.cwd(), 'uploads', 'hrm-files');
     const companyDir = join(baseDir, scopedCompanyId);
     await mkdir(companyDir, { recursive: true });
     const safeFeature = feature.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
-    const safeName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
+    const safeName = file.originalname
+      .replace(/[^a-zA-Z0-9._-]/g, '_')
+      .slice(0, 120);
     const storedName = `${safeFeature}-${Date.now()}-${safeName}`;
     const absolutePath = join(companyDir, storedName);
     await writeFile(absolutePath, file.buffer);
@@ -1019,7 +1299,10 @@ export class CatalogExtensionsService {
   }
 
   private resolveFileUploadBaseDir(): string {
-    return process.env.HRM_FILE_UPLOAD_DIR?.trim() || join(process.cwd(), 'uploads', 'hrm-files');
+    return (
+      process.env.HRM_FILE_UPLOAD_DIR?.trim() ||
+      join(process.cwd(), 'uploads', 'hrm-files')
+    );
   }
 
   private guessUploadedFileMime(filename: string): string {
@@ -1042,42 +1325,68 @@ export class CatalogExtensionsService {
     authorization: string | undefined,
   ): Promise<{ buffer: Buffer; mimetype: string; filename: string }> {
     const safeFilename = basename(filename.trim());
-    if (!safeFilename || safeFilename !== filename.trim() || filename.includes('..')) {
-      throw new ApiException('HRM-FILE-404', 'File not found', HttpStatus.NOT_FOUND);
+    if (
+      !safeFilename ||
+      safeFilename !== filename.trim() ||
+      filename.includes('..')
+    ) {
+      throw new ApiException(
+        'HRM-FILE-404',
+        'File not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     let scopedCompanyId = companyId.trim();
     if (!scopedCompanyId) {
-      throw new ApiException('HRM-FILE-404', 'File not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-FILE-404',
+        'File not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    const jwtPayload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+    const jwtPayload = getVerifiedInternalJwtPayload(authorization);
     if (jwtPayload) {
-      scopedCompanyId = resolveHrmPersistCompanyIdText(authorization, companyId);
+      scopedCompanyId = resolveHrmPersistCompanyIdText(
+        authorization,
+        companyId,
+      );
       const claimCompany =
-        (typeof jwtPayload.companyId === 'string' && jwtPayload.companyId.trim()) ||
-        (typeof jwtPayload.company_id === 'string' && jwtPayload.company_id.trim()) ||
+        (typeof jwtPayload.companyId === 'string' &&
+          jwtPayload.companyId.trim()) ||
+        (typeof jwtPayload.company_id === 'string' &&
+          jwtPayload.company_id.trim()) ||
         companyId;
       const tokenScope = resolveHrmListScope(authorization, claimCompany);
-      assertResourceInHrmScope(
-        { company_id: scopedCompanyId },
-        tokenScope,
-        { notFoundCode: 'HRM-FILE-404', mismatchCode: 'HRM-FILE-409' },
-      );
+      assertResourceInHrmScope({ company_id: scopedCompanyId }, tokenScope, {
+        notFoundCode: 'HRM-FILE-404',
+        mismatchCode: 'HRM-FILE-409',
+      });
     }
 
     const baseDir = this.resolveFileUploadBaseDir();
     const companyDir = join(baseDir, scopedCompanyId);
     const absolutePath = join(companyDir, safeFilename);
-    const companyDirWithSep = companyDir.endsWith(sep) ? companyDir : `${companyDir}${sep}`;
+    const companyDirWithSep = companyDir.endsWith(sep)
+      ? companyDir
+      : `${companyDir}${sep}`;
     if (!absolutePath.startsWith(companyDirWithSep)) {
-      throw new ApiException('HRM-FILE-404', 'File not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-FILE-404',
+        'File not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     try {
       await access(absolutePath);
     } catch {
-      throw new ApiException('HRM-FILE-404', 'File not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-FILE-404',
+        'File not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const buffer = await readFile(absolutePath);

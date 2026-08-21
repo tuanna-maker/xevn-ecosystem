@@ -15,7 +15,15 @@
  * ADD optional target_month — service normalizeTargetMonthOrThrow before ::date.
  * change_mode: FIX · residual R-REC-02-TARGET-MONTH-DATE
  */
-import { IsIn, IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import {
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 const REQUISITION_STATUSES = [
   'open',

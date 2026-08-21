@@ -122,7 +122,9 @@ type InputLineRow = {
 };
 
 /** Public for jest + pay-src-resolver bootstrap. */
-export async function ensurePayPeriodTimesheetBindSchema(db: HrmDbService): Promise<void> {
+export async function ensurePayPeriodTimesheetBindSchema(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     CREATE TABLE IF NOT EXISTS public.pay_period_timesheet_bind (
       id UUID PRIMARY KEY,
@@ -151,7 +153,9 @@ export async function ensurePayPeriodTimesheetBindSchema(db: HrmDbService): Prom
   `);
 }
 
-export async function ensurePayPeriodInputPackSchema(db: HrmDbService): Promise<void> {
+export async function ensurePayPeriodInputPackSchema(
+  db: HrmDbService,
+): Promise<void> {
   await ensurePayPeriodTimesheetBindSchema(db);
   await ensurePeriodInputSchema(db);
 }
@@ -175,7 +179,11 @@ export class PayPeriodInputPackService {
   }
 
   private assertPeriodMutable(period: Pick<PayrollPeriodRow, 'status'>): void {
-    if (!PAY_PERIOD_MUTABLE_STATUSES.includes(period.status as (typeof PAY_PERIOD_MUTABLE_STATUSES)[number])) {
+    if (
+      !PAY_PERIOD_MUTABLE_STATUSES.includes(
+        period.status as (typeof PAY_PERIOD_MUTABLE_STATUSES)[number],
+      )
+    ) {
       throw new ApiException(
         HRM_PAY_PERIOD_409_IMMUTABLE,
         'Payroll period is immutable — cannot mutate bind or input lines',
@@ -190,7 +198,10 @@ export class PayPeriodInputPackService {
     authorization?: string,
   ): Promise<PayrollPeriodRow> {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [periodId];
@@ -208,7 +219,11 @@ export class PayPeriodInputPackService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-PAY-404', 'Payroll period not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-404',
+        'Payroll period not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: 'HRM-PAY-404',
@@ -244,7 +259,10 @@ export class PayPeriodInputPackService {
       companyId: row.company_id,
       payrollPeriodId: row.payroll_period_id,
       timesheetHeaderId: row.timesheet_header_id,
-      timesheetDisplayLabel: labelParts.length > 0 ? labelParts.join(' — ') : row.timesheet_header_id,
+      timesheetDisplayLabel:
+        labelParts.length > 0
+          ? labelParts.join(' — ')
+          : row.timesheet_header_id,
       timesheetStatus: row.timesheet_status,
       transferKind: row.transfer_kind,
       boundAt: row.bound_at,
@@ -283,8 +301,15 @@ export class PayPeriodInputPackService {
     requestedCompanyId: string,
     authorization?: string,
   ): Promise<TimesheetBindRow> {
-    const period = await this.loadPeriodInScope(periodId, requestedCompanyId, authorization);
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const period = await this.loadPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const companyIds = expandPayrollPeriodCompanyIds(scope);
     const res = await this.db.query<TimesheetBindRow>(
@@ -301,10 +326,21 @@ export class PayPeriodInputPackService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_PAY_INP_404, 'Timesheet bind not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_INP_404,
+        'Timesheet bind not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    if (row.company_id !== period.company_id && !companyIds.includes(row.company_id)) {
-      throw new ApiException('HRM-SCOPE-409', 'Timesheet bind company scope mismatch', HttpStatus.CONFLICT);
+    if (
+      row.company_id !== period.company_id &&
+      !companyIds.includes(row.company_id)
+    ) {
+      throw new ApiException(
+        'HRM-SCOPE-409',
+        'Timesheet bind company scope mismatch',
+        HttpStatus.CONFLICT,
+      );
     }
     return row;
   }
@@ -312,9 +348,16 @@ export class PayPeriodInputPackService {
   private async assertClosedSheetForBind(
     timesheetHeaderId: string,
     period: PayrollPeriodRow,
-  ): Promise<{ company_id: string; status: string; start_date: string; end_date: string }> {
+  ): Promise<{
+    company_id: string;
+    status: string;
+    start_date: string;
+    end_date: string;
+  }> {
     await ensureAttendanceSheetSchema(this.db);
-    const companyIds = expandPayrollAttendanceSheetCompanyIds(period.company_id);
+    const companyIds = expandPayrollAttendanceSheetCompanyIds(
+      period.company_id,
+    );
     const sheetRes = await this.db.query<{
       company_id: string;
       status: string;
@@ -331,7 +374,11 @@ export class PayPeriodInputPackService {
     );
     const sheet = sheetRes.rows[0];
     if (!sheet) {
-      throw new ApiException(HRM_PAY_INP_404, 'Attendance sheet not found in scope', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_INP_404,
+        'Attendance sheet not found in scope',
+        HttpStatus.NOT_FOUND,
+      );
     }
     if (sheet.status !== 'closed') {
       throw new ApiException(
@@ -362,10 +409,16 @@ export class PayPeriodInputPackService {
     opts?: { includeArchived?: boolean; transferKind?: string },
   ) {
     await this.loadPeriodInScope(periodId, requestedCompanyId, authorization);
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const companyIds = expandPayrollPeriodCompanyIds(scope);
-    const filters = ['b.payroll_period_id = $1::uuid', 'b.company_id = ANY($2::text[])'];
+    const filters = [
+      'b.payroll_period_id = $1::uuid',
+      'b.company_id = ANY($2::text[])',
+    ];
     const values: unknown[] = [periodId, companyIds];
     if (!opts?.includeArchived) {
       filters.push('b.archived_at IS NULL');
@@ -393,7 +446,12 @@ export class PayPeriodInputPackService {
     requestedCompanyId: string,
     authorization?: string,
   ) {
-    const row = await this.loadBindInScope(periodId, bindId, requestedCompanyId, authorization);
+    const row = await this.loadBindInScope(
+      periodId,
+      bindId,
+      requestedCompanyId,
+      authorization,
+    );
     return this.mapBind(row);
   }
 
@@ -403,7 +461,11 @@ export class PayPeriodInputPackService {
     requestedCompanyId: string,
     authorization?: string,
   ) {
-    const period = await this.loadPeriodInScope(periodId, requestedCompanyId, authorization);
+    const period = await this.loadPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     this.assertPeriodMutable(period);
     await this.assertClosedSheetForBind(payload.timesheetHeaderId, period);
     const actor = this.resolveActorSub(authorization);
@@ -434,7 +496,12 @@ export class PayPeriodInputPackService {
           payload.note?.trim() ?? null,
         ],
       );
-      return this.getTimesheetBindById(periodId, res.rows[0].id, requestedCompanyId, authorization);
+      return this.getTimesheetBindById(
+        periodId,
+        res.rows[0].id,
+        requestedCompanyId,
+        authorization,
+      );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       if (/uq_pay_period_timesheet_bind_active|unique/i.test(msg)) {
@@ -454,9 +521,18 @@ export class PayPeriodInputPackService {
     requestedCompanyId: string,
     authorization?: string,
   ) {
-    const period = await this.loadPeriodInScope(periodId, requestedCompanyId, authorization);
+    const period = await this.loadPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     this.assertPeriodMutable(period);
-    await this.loadBindInScope(periodId, bindId, requestedCompanyId, authorization);
+    await this.loadBindInScope(
+      periodId,
+      bindId,
+      requestedCompanyId,
+      authorization,
+    );
     await this.db.query(
       `
         UPDATE public.pay_period_timesheet_bind
@@ -465,7 +541,12 @@ export class PayPeriodInputPackService {
       `,
       [bindId, periodId],
     );
-    return this.getTimesheetBindById(periodId, bindId, requestedCompanyId, authorization);
+    return this.getTimesheetBindById(
+      periodId,
+      bindId,
+      requestedCompanyId,
+      authorization,
+    );
   }
 
   private inputLineSelectSql(): string {
@@ -495,7 +576,7 @@ export class PayPeriodInputPackService {
     authorization?: string,
   ): Promise<void> {
     await assertComponentCodeInEffectiveCatalog({
-      query: this.db.query.bind(this.db) as HrmDbQueryFn,
+      query: this.db.query.bind(this.db),
       companyId,
       componentCode,
       authorization,
@@ -509,7 +590,10 @@ export class PayPeriodInputPackService {
     authorization?: string,
   ): Promise<InputLineRow> {
     await this.loadPeriodInScope(periodId, requestedCompanyId, authorization);
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const companyIds = expandPayrollPeriodCompanyIds(scope);
     const res = await this.db.query<InputLineRow>(
@@ -528,7 +612,11 @@ export class PayPeriodInputPackService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_PAY_INP_404, 'Period input line not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_PAY_INP_404,
+        'Period input line not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return row;
   }
@@ -546,10 +634,16 @@ export class PayPeriodInputPackService {
     },
   ) {
     await this.loadPeriodInScope(periodId, requestedCompanyId, authorization);
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const companyIds = expandPayrollPeriodCompanyIds(scope);
-    const filters = ['l.period_id = $1::uuid', 'l.company_id = ANY($2::text[])'];
+    const filters = [
+      'l.period_id = $1::uuid',
+      'l.company_id = ANY($2::text[])',
+    ];
     const values: unknown[] = [periodId, companyIds];
     if (!opts?.includeArchived) {
       filters.push('l.archived_at IS NULL');
@@ -590,7 +684,12 @@ export class PayPeriodInputPackService {
     requestedCompanyId: string,
     authorization?: string,
   ) {
-    const row = await this.loadInputLineInScope(periodId, lineId, requestedCompanyId, authorization);
+    const row = await this.loadInputLineInScope(
+      periodId,
+      lineId,
+      requestedCompanyId,
+      authorization,
+    );
     return this.mapInputLine(row);
   }
 
@@ -600,16 +699,30 @@ export class PayPeriodInputPackService {
     requestedCompanyId: string,
     authorization?: string,
   ) {
-    const period = await this.loadPeriodInScope(periodId, requestedCompanyId, authorization);
+    const period = await this.loadPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     this.assertPeriodMutable(period);
     if (!Number.isFinite(payload.amount)) {
-      throw new ApiException('HRM-VAL-400', 'amount must be a finite number', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'amount must be a finite number',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const componentCode = payload.componentCode.trim();
-    await this.assertSalaryComponent(period.company_id, componentCode, authorization);
+    await this.assertSalaryComponent(
+      period.company_id,
+      componentCode,
+      authorization,
+    );
     const actor = this.resolveActorSub(authorization);
     const sourceKind = payload.sourceKind?.trim() || 'manual';
-    const setupContext = parseSetupContextFromSnapshot(period.sheet_template_snapshot_json);
+    const setupContext = parseSetupContextFromSnapshot(
+      period.sheet_template_snapshot_json,
+    );
     assertSourceKindAllowedByProfile(sourceKind, setupContext);
     const id = randomUUID();
     try {
@@ -640,7 +753,12 @@ export class PayPeriodInputPackService {
           actor,
         ],
       );
-      return this.getInputLineById(periodId, res.rows[0].id, requestedCompanyId, authorization);
+      return this.getInputLineById(
+        periodId,
+        res.rows[0].id,
+        requestedCompanyId,
+        authorization,
+      );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       if (/uq_pay_period_input_active|unique/i.test(msg)) {
@@ -661,15 +779,28 @@ export class PayPeriodInputPackService {
     requestedCompanyId: string,
     authorization?: string,
   ) {
-    const period = await this.loadPeriodInScope(periodId, requestedCompanyId, authorization);
+    const period = await this.loadPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     this.assertPeriodMutable(period);
-    await this.loadInputLineInScope(periodId, lineId, requestedCompanyId, authorization);
+    await this.loadInputLineInScope(
+      periodId,
+      lineId,
+      requestedCompanyId,
+      authorization,
+    );
     const actor = this.resolveActorSub(authorization);
     const sets: string[] = ['updated_at = NOW()', 'updated_by = $3'];
     const values: unknown[] = [lineId, periodId, actor];
     if (payload.amount != null) {
       if (!Number.isFinite(payload.amount)) {
-        throw new ApiException('HRM-VAL-400', 'amount must be finite', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-VAL-400',
+          'amount must be finite',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       values.push(payload.amount);
       sets.push(`amount = $${values.length}`);
@@ -688,7 +819,9 @@ export class PayPeriodInputPackService {
     }
     if (payload.sourceKind !== undefined) {
       const sourceKind = payload.sourceKind.trim() || 'manual';
-      const setupContext = parseSetupContextFromSnapshot(period.sheet_template_snapshot_json);
+      const setupContext = parseSetupContextFromSnapshot(
+        period.sheet_template_snapshot_json,
+      );
       assertSourceKindAllowedByProfile(sourceKind, setupContext);
       values.push(sourceKind);
       sets.push(`source_kind = $${values.length}`);
@@ -701,7 +834,12 @@ export class PayPeriodInputPackService {
       `,
       values,
     );
-    return this.getInputLineById(periodId, lineId, requestedCompanyId, authorization);
+    return this.getInputLineById(
+      periodId,
+      lineId,
+      requestedCompanyId,
+      authorization,
+    );
   }
 
   async archiveInputLine(
@@ -710,9 +848,18 @@ export class PayPeriodInputPackService {
     requestedCompanyId: string,
     authorization?: string,
   ) {
-    const period = await this.loadPeriodInScope(periodId, requestedCompanyId, authorization);
+    const period = await this.loadPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+    );
     this.assertPeriodMutable(period);
-    await this.loadInputLineInScope(periodId, lineId, requestedCompanyId, authorization);
+    await this.loadInputLineInScope(
+      periodId,
+      lineId,
+      requestedCompanyId,
+      authorization,
+    );
     await this.db.query(
       `
         UPDATE public.pay_period_input_lines
@@ -721,7 +868,12 @@ export class PayPeriodInputPackService {
       `,
       [lineId, periodId],
     );
-    return this.getInputLineById(periodId, lineId, requestedCompanyId, authorization);
+    return this.getInputLineById(
+      periodId,
+      lineId,
+      requestedCompanyId,
+      authorization,
+    );
   }
 
   /** BR-PAY-ADV-BRIDGE-01..02 — upsert advance lines into input pack. */
@@ -734,10 +886,18 @@ export class PayPeriodInputPackService {
     tenantId?: string;
   }): Promise<{ bridgedInputLineIds: string[]; failedEmployees: string[] }> {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(input.authorization, input.requestedCompanyId, {
-      tenantId: input.tenantId,
-    });
-    const reqRes = await this.db.query<{ id: string; company_id: string; status: string }>(
+    const scope = resolveHrmListScope(
+      input.authorization,
+      input.requestedCompanyId,
+      {
+        tenantId: input.tenantId,
+      },
+    );
+    const reqRes = await this.db.query<{
+      id: string;
+      company_id: string;
+      status: string;
+    }>(
       `SELECT id::text AS id, company_id, status FROM public.advance_requests WHERE id = $1::uuid LIMIT 1;`,
       [input.requestId],
     );
@@ -747,7 +907,11 @@ export class PayPeriodInputPackService {
       mismatchCode: 'HRM-ADV-409',
     });
     if (!request) {
-      throw new ApiException('HRM-ADV-404', 'Advance request not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ADV-404',
+        'Advance request not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     let period: PayrollPeriodRow;
@@ -766,8 +930,13 @@ export class PayPeriodInputPackService {
     }
     this.assertPeriodMutable(period);
 
-    const componentCode = input.componentCode?.trim() || DEFAULT_ADVANCE_COMPONENT_CODE;
-    await this.assertSalaryComponent(period.company_id, componentCode, input.authorization);
+    const componentCode =
+      input.componentCode?.trim() || DEFAULT_ADVANCE_COMPONENT_CODE;
+    await this.assertSalaryComponent(
+      period.company_id,
+      componentCode,
+      input.authorization,
+    );
     const actor = this.resolveActorSub(input.authorization);
 
     const empRes = await this.db.query<{
@@ -842,7 +1011,16 @@ export class PayPeriodInputPackService {
                 amount, source_kind, source_ref, created_by, updated_by
               ) VALUES ($1::uuid, $2, $3::uuid, $4::uuid, $5, $6, 'advance', $7, $8, $8);
             `,
-            [lineId, period.company_id, input.payrollPeriodId, employeeId, componentCode, amount, sourceRef, actor],
+            [
+              lineId,
+              period.company_id,
+              input.payrollPeriodId,
+              employeeId,
+              componentCode,
+              amount,
+              sourceRef,
+              actor,
+            ],
           );
           bridgedInputLineIds.push(lineId);
         }

@@ -211,7 +211,10 @@ export class RecPipelineStageService {
     return null;
   }
 
-  private display(row: RecPipelineStageRow, source: RecPipelineStageSource): RecPipelineStageDisplay {
+  private display(
+    row: RecPipelineStageRow,
+    source: RecPipelineStageSource,
+  ): RecPipelineStageDisplay {
     return {
       id: row.id,
       companyId: row.company_id,
@@ -280,10 +283,23 @@ export class RecPipelineStageService {
     }
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -323,8 +339,12 @@ export class RecPipelineStageService {
     return res.rows;
   }
 
-  private resolveHiredOutcomeKey(rows: RecPipelineStageDisplay[]): string | null {
-    const hit = rows.find((r) => r.isHiredOutcome && r.status === 'active' && !r.archivedAt);
+  private resolveHiredOutcomeKey(
+    rows: RecPipelineStageDisplay[],
+  ): string | null {
+    const hit = rows.find(
+      (r) => r.isHiredOutcome && r.status === 'active' && !r.archivedAt,
+    );
     return hit?.stageKey ?? null;
   }
 
@@ -337,7 +357,11 @@ export class RecPipelineStageService {
     options?: { tenantId?: string },
   ): Promise<RecPipelineStageEffectiveResult> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, options?.tenantId);
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      options?.tenantId,
+    );
     const rows = await this.loadNativeRows(companyKeys, {
       includeArchived: false,
       status: 'active',
@@ -434,8 +458,13 @@ export class RecPipelineStageService {
   ): Promise<{ total: number; data: RecPipelineStageDisplay[] }> {
     await this.ensureSchema();
     // GĐ1: include_group_ref reserved — no XBOS stages REF partition yet (BR-PLT-06 / L-REC-CAT-02).
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     const rows = await this.loadNativeRows(companyKeys, {
       includeArchived,
       status: query.status,
@@ -463,7 +492,11 @@ export class RecPipelineStageService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_REC_STG_404, 'Pipeline stage not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_REC_STG_404,
+        'Pipeline stage not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_REC_STG_404,
@@ -479,7 +512,11 @@ export class RecPipelineStageService {
     tenantId?: string,
   ): Promise<RecPipelineStageDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const stageKey = this.assertKeyFormat(body.stageKey);
     const nameVi = body.nameVi.trim();
     if (!nameVi) {
@@ -499,7 +536,8 @@ export class RecPipelineStageService {
     const allowsInterviewSchedule = body.allowsInterviewSchedule ?? true;
     const wfTaskTypeKey = body.wfTaskTypeKey?.trim() || null;
     const colorToken = body.colorToken?.trim() || null;
-    const metadataJson = body.metadata != null ? JSON.stringify(body.metadata) : null;
+    const metadataJson =
+      body.metadata != null ? JSON.stringify(body.metadata) : null;
 
     const existing = await this.db.query<RecPipelineStageRow>(
       `SELECT ${SELECT_COLS}
@@ -596,7 +634,11 @@ export class RecPipelineStageService {
       );
     }
     if (/chk_rec_pipeline_stage_flags/i.test(msg)) {
-      throw new ApiException(HRM_VAL_400, 'Invalid pipeline stage flags', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_VAL_400,
+        'Invalid pipeline stage flags',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     throw err instanceof Error ? err : new Error(String(err));
   }
@@ -616,7 +658,11 @@ export class RecPipelineStageService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_REC_STG_404, 'Pipeline stage not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_REC_STG_404,
+        'Pipeline stage not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_REC_STG_404,
@@ -631,13 +677,17 @@ export class RecPipelineStageService {
     }
 
     const nextHired =
-      body.isHiredOutcome !== undefined ? Boolean(body.isHiredOutcome) : Boolean(row.is_hired_outcome);
+      body.isHiredOutcome !== undefined
+        ? Boolean(body.isHiredOutcome)
+        : Boolean(row.is_hired_outcome);
     const nextReject =
       body.isRejectOutcome !== undefined
         ? Boolean(body.isRejectOutcome)
         : Boolean(row.is_reject_outcome);
     let nextTerminal =
-      body.isTerminal !== undefined ? Boolean(body.isTerminal) : Boolean(row.is_terminal);
+      body.isTerminal !== undefined
+        ? Boolean(body.isTerminal)
+        : Boolean(row.is_terminal);
     if (nextHired) nextTerminal = true;
     this.assertFlags({
       isHiredOutcome: nextHired,
@@ -656,8 +706,10 @@ export class RecPipelineStageService {
     if (body.isTerminal !== undefined || body.isHiredOutcome !== undefined) {
       assign('is_terminal', nextTerminal);
     }
-    if (body.isHiredOutcome !== undefined) assign('is_hired_outcome', nextHired);
-    if (body.isRejectOutcome !== undefined) assign('is_reject_outcome', nextReject);
+    if (body.isHiredOutcome !== undefined)
+      assign('is_hired_outcome', nextHired);
+    if (body.isRejectOutcome !== undefined)
+      assign('is_reject_outcome', nextReject);
     if (body.allowsInterviewSchedule !== undefined) {
       assign('allows_interview_schedule', body.allowsInterviewSchedule);
     }
@@ -671,7 +723,8 @@ export class RecPipelineStageService {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertStatus(body.status));
 
     if (!sets.length) {
       return this.display(row, 'rec_native');
@@ -699,14 +752,22 @@ export class RecPipelineStageService {
     tenantId?: string,
   ): Promise<RecPipelineStageDisplay> {
     await this.ensureSchema();
-    const { scope, companyKeys } = this.resolveScope(authorization, companyId, tenantId);
+    const { scope, companyKeys } = this.resolveScope(
+      authorization,
+      companyId,
+      tenantId,
+    );
     const existing = await this.db.query<RecPipelineStageRow>(
       `SELECT ${SELECT_COLS} FROM public.rec_pipeline_stage WHERE id = $1::uuid LIMIT 1;`,
       [stageId],
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_REC_STG_404, 'Pipeline stage not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_REC_STG_404,
+        'Pipeline stage not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_REC_STG_404,
@@ -725,7 +786,11 @@ export class RecPipelineStageService {
         'id <> $1::uuid',
       ];
       const values: unknown[] = [stageId];
-      pushCompanyIdTextColumnFilter(filters, values, companyKeys.length ? companyKeys : [row.company_id]);
+      pushCompanyIdTextColumnFilter(
+        filters,
+        values,
+        companyKeys.length ? companyKeys : [row.company_id],
+      );
       const others = await this.db.query<{ id: string }>(
         `SELECT id::text AS id FROM public.rec_pipeline_stage
          WHERE ${filters.join(' AND ')}

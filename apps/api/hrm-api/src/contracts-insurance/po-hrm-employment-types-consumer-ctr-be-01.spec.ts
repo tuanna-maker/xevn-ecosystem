@@ -36,37 +36,51 @@ describe('PO-HRM-EMPLOYMENT-TYPES-CONSUMER-CTR-BE-01', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    settingsCatalogs.getEffectiveItemsForKey.mockImplementation(async (_t, _c, key: string) => {
-      if (key === 'job_titles') {
-        return [{ code: 'NV_KD', label: 'NV KD', status: 'active' }];
-      }
-      if (key === 'contract_types') {
-        return [{ code: 'indefinite', label: 'Không thời hạn', status: 'active' }];
-      }
-      if (key === 'work_arrangements') {
-        return [{ code: 'full_time', label: 'Toàn thời gian', status: 'active' }];
-      }
-      return [];
-    });
-    settingsCatalogs.assertCodeInEffectiveCatalog.mockImplementation(async ({ code, catalogKey }) => ({
-      code,
-      label: String(catalogKey),
-      status: 'active',
-    }));
+    settingsCatalogs.getEffectiveItemsForKey.mockImplementation(
+      async (_t, _c, key: string) => {
+        if (key === 'job_titles') {
+          return [{ code: 'NV_KD', label: 'NV KD', status: 'active' }];
+        }
+        if (key === 'contract_types') {
+          return [
+            { code: 'indefinite', label: 'Không thời hạn', status: 'active' },
+          ];
+        }
+        if (key === 'work_arrangements') {
+          return [
+            { code: 'full_time', label: 'Toàn thời gian', status: 'active' },
+          ];
+        }
+        return [];
+      },
+    );
+    settingsCatalogs.assertCodeInEffectiveCatalog.mockImplementation(
+      async ({ code, catalogKey }) => ({
+        code,
+        label: String(catalogKey),
+        status: 'active',
+      }),
+    );
   });
 
   function dbWithContractCount(db: HrmDbService): HrmDbService {
     const base = db.query as jest.Mock;
-    db.query = jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-      const s = String(sql);
-      if (s.includes('COUNT(*)::text AS total FROM public.employee_contracts')) {
-        return { rows: [{ total: '1' }] };
-      }
-      if (s.includes('COUNT(*)::text AS total FROM public.employee_insurance')) {
-        return { rows: [{ total: '1' }] };
-      }
-      return base(sql, params);
-    }) as typeof db.query;
+    db.query = jest
+      .fn()
+      .mockImplementation(async (sql: string, params?: unknown[]) => {
+        const s = String(sql);
+        if (
+          s.includes('COUNT(*)::text AS total FROM public.employee_contracts')
+        ) {
+          return { rows: [{ total: '1' }] };
+        }
+        if (
+          s.includes('COUNT(*)::text AS total FROM public.employee_insurance')
+        ) {
+          return { rows: [{ total: '1' }] };
+        }
+        return base(sql, params);
+      }) as typeof db.query;
     return db;
   }
 
@@ -83,46 +97,54 @@ describe('PO-HRM-EMPLOYMENT-TYPES-CONSUMER-CTR-BE-01', () => {
     });
 
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaNoop(s)) return { rows: [] };
-        if (s.includes('FROM public.recruitment_candidates') && s.includes('WHERE id =')) {
-          return {
-            rows: [
-              {
-                id: CAND_ID,
-                company_id: 'holding',
-                full_name: 'Tran UV',
-                requisition_id: null,
-              },
-            ],
-          };
-        }
-        if (s.includes('INSERT INTO public.employee_contracts') && s.includes('work_arrangement')) {
-          expect(params).toEqual(expect.arrayContaining([EMP_ET_KEY]));
-          return {
-            rows: [
-              {
-                id: 'ct-emp-wa-1',
-                company_id: 'holding',
-                employee_id: null,
-                candidate_id: CAND_ID,
-                subject_type: 'candidate',
-                contract_type: 'indefinite',
-                start_date: '2026-01-01',
-                end_date: null,
-                status: 'active',
-                signed_at: '2026-01-02',
-                work_arrangement: EMP_ET_KEY,
-                salary_ratio_percent: 100,
-                created_at: '2026-01-01T00:00:00.000Z',
-                updated_at: '2026-01-01T00:00:00.000Z',
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaNoop(s)) return { rows: [] };
+          if (
+            s.includes('FROM public.recruitment_candidates') &&
+            s.includes('WHERE id =')
+          ) {
+            return {
+              rows: [
+                {
+                  id: CAND_ID,
+                  company_id: 'holding',
+                  full_name: 'Tran UV',
+                  requisition_id: null,
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('INSERT INTO public.employee_contracts') &&
+            s.includes('work_arrangement')
+          ) {
+            expect(params).toEqual(expect.arrayContaining([EMP_ET_KEY]));
+            return {
+              rows: [
+                {
+                  id: 'ct-emp-wa-1',
+                  company_id: 'holding',
+                  employee_id: null,
+                  candidate_id: CAND_ID,
+                  subject_type: 'candidate',
+                  contract_type: 'indefinite',
+                  start_date: '2026-01-01',
+                  end_date: null,
+                  status: 'active',
+                  signed_at: '2026-01-02',
+                  work_arrangement: EMP_ET_KEY,
+                  salary_ratio_percent: 100,
+                  created_at: '2026-01-01T00:00:00.000Z',
+                  updated_at: '2026-01-01T00:00:00.000Z',
+                },
+              ],
+            };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
 
     empCatalog.listEffective.mockResolvedValue({
@@ -163,10 +185,17 @@ describe('PO-HRM-EMPLOYMENT-TYPES-CONSUMER-CTR-BE-01', () => {
       undefined,
     );
     expect(row.work_arrangement).toBe(EMP_ET_KEY);
-    expect(empCatalog.assertEmploymentTypeInEffectiveCatalog).toHaveBeenCalledWith(
-      expect.objectContaining({ employmentType: EMP_ET_KEY, companyId: 'holding' }),
+    expect(
+      empCatalog.assertEmploymentTypeInEffectiveCatalog,
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        employmentType: EMP_ET_KEY,
+        companyId: 'holding',
+      }),
     );
-    expect(settingsCatalogs.assertCodeInEffectiveCatalog).not.toHaveBeenCalledWith(
+    expect(
+      settingsCatalogs.assertCodeInEffectiveCatalog,
+    ).not.toHaveBeenCalledWith(
       expect.objectContaining({ catalogKey: 'work_arrangements' }),
     );
   });
@@ -178,12 +207,18 @@ describe('PO-HRM-EMPLOYMENT-TYPES-CONSUMER-CTR-BE-01', () => {
     settingsCatalogs.getEffectiveItemsForKey.mockResolvedValue([
       { code: 'full_time', label: 'Toàn thời gian', status: 'active' },
     ]);
-    settingsCatalogs.assertCodeInEffectiveCatalog.mockImplementation(async ({ code, catalogKey }) => {
-      if (catalogKey === 'work_arrangements' && code === 'full_time') {
-        return { code: 'full_time', label: 'Toàn thời gian', status: 'active' };
-      }
-      return { code, label: String(catalogKey), status: 'active' };
-    });
+    settingsCatalogs.assertCodeInEffectiveCatalog.mockImplementation(
+      async ({ code, catalogKey }) => {
+        if (catalogKey === 'work_arrangements' && code === 'full_time') {
+          return {
+            code: 'full_time',
+            label: 'Toàn thời gian',
+            status: 'active',
+          };
+        }
+        return { code, label: String(catalogKey), status: 'active' };
+      },
+    );
 
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
@@ -248,7 +283,10 @@ describe('PO-HRM-EMPLOYMENT-TYPES-CONSUMER-CTR-BE-01', () => {
       }),
     ).resolves.toMatchObject({ work_arrangement: 'full_time' });
     expect(settingsCatalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
-      expect.objectContaining({ catalogKey: 'work_arrangements', code: 'full_time' }),
+      expect.objectContaining({
+        catalogKey: 'work_arrangements',
+        code: 'full_time',
+      }),
     );
   });
 
@@ -280,56 +318,75 @@ describe('PO-HRM-EMPLOYMENT-TYPES-CONSUMER-CTR-BE-01', () => {
     });
 
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (schemaNoop(s)) return { rows: [] };
-        if (s.includes('FROM public.employee_contracts') && s.includes('archived_at IS NULL LIMIT 1')) {
-          return { rows: [{ company_id: 'holding' }] };
-        }
-        if (s.includes('UPDATE public.employee_contracts SET') && s.includes('work_arrangement')) {
-          expect(params).toEqual(expect.arrayContaining([EMP_ET_KEY, CONTRACT_ID]));
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (schemaNoop(s)) return { rows: [] };
+          if (
+            s.includes('FROM public.employee_contracts') &&
+            s.includes('archived_at IS NULL LIMIT 1')
+          ) {
+            return { rows: [{ company_id: 'holding' }] };
+          }
+          if (
+            s.includes('UPDATE public.employee_contracts SET') &&
+            s.includes('work_arrangement')
+          ) {
+            expect(params).toEqual(
+              expect.arrayContaining([EMP_ET_KEY, CONTRACT_ID]),
+            );
+            return { rows: [] };
+          }
+          if (
+            s.includes('FROM public.employee_contracts ec') &&
+            s.includes('WHERE ec.id')
+          ) {
+            return {
+              rows: [
+                {
+                  id: CONTRACT_ID,
+                  company_id: 'holding',
+                  employee_id: EMP_ID,
+                  contract_type: 'indefinite',
+                  start_date: '2026-01-01',
+                  end_date: null,
+                  status: 'active',
+                  work_arrangement: EMP_ET_KEY,
+                  created_at: '2026-01-01T00:00:00.000Z',
+                  updated_at: '2026-01-02T00:00:00.000Z',
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('UPDATE public.employee_contracts') &&
+            s.includes('contract_type = COALESCE')
+          ) {
+            return {
+              rows: [
+                {
+                  id: CONTRACT_ID,
+                  company_id: 'holding',
+                  employee_id: EMP_ID,
+                  contract_type: 'indefinite',
+                  start_date: '2026-01-01',
+                  end_date: null,
+                  status: 'active',
+                  created_at: '2026-01-01T00:00:00.000Z',
+                  updated_at: '2026-01-02T00:00:00.000Z',
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('UPDATE public.employee_contracts SET') &&
+            s.includes('work_arrangement')
+          ) {
+            return { rows: [] };
+          }
           return { rows: [] };
-        }
-        if (s.includes('FROM public.employee_contracts ec') && s.includes('WHERE ec.id')) {
-          return {
-            rows: [
-              {
-                id: CONTRACT_ID,
-                company_id: 'holding',
-                employee_id: EMP_ID,
-                contract_type: 'indefinite',
-                start_date: '2026-01-01',
-                end_date: null,
-                status: 'active',
-                work_arrangement: EMP_ET_KEY,
-                created_at: '2026-01-01T00:00:00.000Z',
-                updated_at: '2026-01-02T00:00:00.000Z',
-              },
-            ],
-          };
-        }
-        if (s.includes('UPDATE public.employee_contracts') && s.includes('contract_type = COALESCE')) {
-          return {
-            rows: [
-              {
-                id: CONTRACT_ID,
-                company_id: 'holding',
-                employee_id: EMP_ID,
-                contract_type: 'indefinite',
-                start_date: '2026-01-01',
-                end_date: null,
-                status: 'active',
-                created_at: '2026-01-01T00:00:00.000Z',
-                updated_at: '2026-01-02T00:00:00.000Z',
-              },
-            ],
-          };
-        }
-        if (s.includes('UPDATE public.employee_contracts SET') && s.includes('work_arrangement')) {
-          return { rows: [] };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
 
     const service = new ContractsInsuranceService(

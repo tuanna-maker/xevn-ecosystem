@@ -27,7 +27,7 @@ describe('ContractsInsuranceService', () => {
         start_date: '2026-05-01',
         end_date: '2026-04-01',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-CON-001' });
+    ).rejects.toMatchObject({ code: 'HRM-CON-001' });
   });
 
   it('G-CI-01: rejects fixed_term create without end_date (HRM-CON-002)', async () => {
@@ -39,7 +39,7 @@ describe('ContractsInsuranceService', () => {
         contract_type: 'fixed_term',
         start_date: '2026-05-01',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-CON-002' });
+    ).rejects.toMatchObject({ code: 'HRM-CON-002' });
   });
 
   it('G-CI-01: creates open-ended contract without end_date (NULL persist)', async () => {
@@ -75,7 +75,13 @@ describe('ContractsInsuranceService', () => {
     expect(row.end_date).toBeNull();
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('INSERT INTO public.employee_contracts'),
-      expect.arrayContaining(['holding', '16f5e2c5-8fbb-4500-8c82-623950f7055e', 'indefinite', '2026-01-01', null]),
+      expect.arrayContaining([
+        'holding',
+        '16f5e2c5-8fbb-4500-8c82-623950f7055e',
+        'indefinite',
+        '2026-01-01',
+        null,
+      ]),
     );
   });
 
@@ -185,7 +191,10 @@ describe('ContractsInsuranceService', () => {
 
   it('lists expiring contracts with deterministic days envelope', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.employee_contracts') && sql.includes('ORDER BY end_date ASC')) {
+      if (
+        sql.includes('FROM public.employee_contracts') &&
+        sql.includes('ORDER BY end_date ASC')
+      ) {
         return {
           rows: [
             {
@@ -217,7 +226,10 @@ describe('ContractsInsuranceService', () => {
 
   it('listContracts joins employee name and department', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.employee_contracts ec') && sql.includes('LEFT JOIN public.employees e')) {
+      if (
+        sql.includes('FROM public.employee_contracts ec') &&
+        sql.includes('LEFT JOIN public.employees e')
+      ) {
         return {
           rows: [
             {
@@ -263,14 +275,23 @@ describe('ContractsInsuranceService', () => {
       return { rows: [] } as never;
     });
 
-    await service.listContracts({ company_id: 'main', page: 1, page_size: 100 }, `Bearer ${token}`);
+    await service.listContracts(
+      { company_id: 'main', page: 1, page_size: 100 },
+      `Bearer ${token}`,
+    );
 
     const listCall = db.query.mock.calls.find(
-      ([sql]) => typeof sql === 'string' && sql.includes('FROM public.employee_contracts ec'),
+      ([sql]) =>
+        typeof sql === 'string' &&
+        sql.includes('FROM public.employee_contracts ec'),
     );
     expect(listCall?.[0]).toEqual(expect.stringContaining('ec.employee_id IN'));
-    expect(listCall?.[0]).not.toEqual(expect.stringContaining('ec.ec.employee_id'));
-    expect(listCall?.[0]).not.toEqual(expect.stringContaining('ec.ec.company_id'));
+    expect(listCall?.[0]).not.toEqual(
+      expect.stringContaining('ec.ec.employee_id'),
+    );
+    expect(listCall?.[0]).not.toEqual(
+      expect.stringContaining('ec.ec.company_id'),
+    );
   });
 
   it('listExpiringContracts never emits ec.ec.employee_id (P1-HRM-INC-API-500-01)', async () => {
@@ -281,13 +302,19 @@ describe('ContractsInsuranceService', () => {
       roleCode: 'group_ceo',
     });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.employee_contracts') && sql.includes('ORDER BY end_date ASC')) {
+      if (
+        sql.includes('FROM public.employee_contracts') &&
+        sql.includes('ORDER BY end_date ASC')
+      ) {
         return { rows: [] } as never;
       }
       return { rows: [] } as never;
     });
 
-    await service.listExpiringContracts({ company_id: 'main', days: 30 }, `Bearer ${token}`);
+    await service.listExpiringContracts(
+      { company_id: 'main', days: 30 },
+      `Bearer ${token}`,
+    );
 
     const listCall = db.query.mock.calls.find(
       ([sql]) =>
@@ -296,8 +323,12 @@ describe('ContractsInsuranceService', () => {
         sql.includes('ORDER BY end_date ASC'),
     );
     expect(listCall?.[0]).toEqual(expect.stringContaining('employee_id IN'));
-    expect(listCall?.[0]).not.toEqual(expect.stringContaining('ec.ec.employee_id'));
-    expect(listCall?.[0]).not.toEqual(expect.stringContaining('ec.employee_id'));
+    expect(listCall?.[0]).not.toEqual(
+      expect.stringContaining('ec.ec.employee_id'),
+    );
+    expect(listCall?.[0]).not.toEqual(
+      expect.stringContaining('ec.employee_id'),
+    );
   });
 
   it('listContracts scopes employee_id to workforce rollup for company_id=main (J-HRM-01)', async () => {
@@ -317,11 +348,17 @@ describe('ContractsInsuranceService', () => {
     await service.listContracts({ company_id: 'main' }, `Bearer ${token}`);
 
     const listCall = db.query.mock.calls.find(
-      ([sql]) => typeof sql === 'string' && sql.includes('FROM public.employee_contracts ec'),
+      ([sql]) =>
+        typeof sql === 'string' &&
+        sql.includes('FROM public.employee_contracts ec'),
     );
     expect(listCall?.[0]).toEqual(expect.stringContaining('ec.employee_id IN'));
-    expect(listCall?.[0]).toEqual(expect.stringContaining("custom_fields->>'tenant_id'"));
-    expect(listCall?.[1]).toEqual(expect.arrayContaining(['xevn', expect.any(Array)]));
+    expect(listCall?.[0]).toEqual(
+      expect.stringContaining("custom_fields->>'tenant_id'"),
+    );
+    expect(listCall?.[1]).toEqual(
+      expect.arrayContaining(['xevn', expect.any(Array)]),
+    );
   });
 
   it('listContracts with employee_id filter does not double-qualify ec.ec.employee_id (J-HRM-INT-02)', async () => {
@@ -339,13 +376,22 @@ describe('ContractsInsuranceService', () => {
       return { rows: [] } as never;
     });
 
-    await service.listContracts({ company_id: 'main', employee_id: employeeId }, `Bearer ${token}`);
+    await service.listContracts(
+      { company_id: 'main', employee_id: employeeId },
+      `Bearer ${token}`,
+    );
 
     const listCall = db.query.mock.calls.find(
-      ([sql]) => typeof sql === 'string' && sql.includes('FROM public.employee_contracts ec'),
+      ([sql]) =>
+        typeof sql === 'string' &&
+        sql.includes('FROM public.employee_contracts ec'),
     );
-    expect(listCall?.[0]).toEqual(expect.stringContaining('ec.employee_id = $'));
-    expect(listCall?.[0]).not.toEqual(expect.stringContaining('ec.ec.employee_id'));
+    expect(listCall?.[0]).toEqual(
+      expect.stringContaining('ec.employee_id = $'),
+    );
+    expect(listCall?.[0]).not.toEqual(
+      expect.stringContaining('ec.ec.employee_id'),
+    );
     expect(listCall?.[1]).toEqual(expect.arrayContaining([employeeId]));
   });
 
@@ -358,7 +404,10 @@ describe('ContractsInsuranceService', () => {
     });
     const contractId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.employee_contracts ec') && sql.includes('ec.id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.employee_contracts ec') &&
+        sql.includes('ec.id = $1::uuid')
+      ) {
         return {
           rows: [
             {
@@ -381,7 +430,11 @@ describe('ContractsInsuranceService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.getContractById(contractId, 'main', `Bearer ${token}`);
+    const result = await service.getContractById(
+      contractId,
+      'main',
+      `Bearer ${token}`,
+    );
 
     expect(result.id).toBe(contractId);
     expect(db.query).toHaveBeenCalledWith(
@@ -395,13 +448,20 @@ describe('ContractsInsuranceService', () => {
     const detailCall = db.query.mock.calls.find(
       ([sql]) => typeof sql === 'string' && sql.includes('ec.id = $1::uuid'),
     );
-    expect(detailCall?.[0]).toEqual(expect.stringContaining('ec.employee_id IN'));
-    expect(detailCall?.[0]).toEqual(expect.stringContaining("custom_fields->>'tenant_id'"));
+    expect(detailCall?.[0]).toEqual(
+      expect.stringContaining('ec.employee_id IN'),
+    );
+    expect(detailCall?.[0]).toEqual(
+      expect.stringContaining("custom_fields->>'tenant_id'"),
+    );
   });
 
   it('lists expiring insurance records with default days', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.employee_insurances') && sql.includes('ORDER BY end_date ASC')) {
+      if (
+        sql.includes('FROM public.employee_insurances') &&
+        sql.includes('ORDER BY end_date ASC')
+      ) {
         return {
           rows: [
             {
@@ -439,17 +499,28 @@ describe('ContractsInsuranceService', () => {
     });
     const contractId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('SELECT company_id::text AS company_id FROM public.employee_contracts')) {
+      if (
+        sql.includes(
+          'SELECT company_id::text AS company_id FROM public.employee_contracts',
+        )
+      ) {
         return { rows: [{ company_id: 'holding' }] } as never;
       }
       // Soft-delete (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01) — archived_at, not hard DELETE
-      if (sql.includes('UPDATE public.employee_contracts') && sql.includes('archived_at = NOW()')) {
+      if (
+        sql.includes('UPDATE public.employee_contracts') &&
+        sql.includes('archived_at = NOW()')
+      ) {
         return { rows: [{ id: contractId }] } as never;
       }
       return { rows: [] } as never;
     });
 
-    const result = await service.deleteContract(contractId, 'main', `Bearer ${token}`);
+    const result = await service.deleteContract(
+      contractId,
+      'main',
+      `Bearer ${token}`,
+    );
 
     expect(result.id).toBe(contractId);
     expect(db.query).toHaveBeenCalledWith(
@@ -481,7 +552,9 @@ describe('ContractsInsuranceService', () => {
 
     await service.listInsurance({ company_id: 'main' }, `Bearer ${token}`);
 
-    expect(schemaSql.some((s) => s.includes('start_date > end_date'))).toBe(true);
+    expect(schemaSql.some((s) => s.includes('start_date > end_date'))).toBe(
+      true,
+    );
     expect(schemaSql.some((s) => s.includes('DO $$'))).toBe(true);
     expect(schemaSql.some((s) => s.includes('DROP CONSTRAINT'))).toBe(false);
   });
@@ -517,7 +590,10 @@ describe('ContractsInsuranceService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.listInsurance({ company_id: 'main' }, `Bearer ${token}`);
+    const result = await service.listInsurance(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+    );
 
     expect(result.total).toBe(1);
     expect(result.data[0]).toMatchObject({
@@ -550,11 +626,17 @@ describe('ContractsInsuranceService', () => {
     await service.listInsurance({ company_id: 'main' }, `Bearer ${token}`);
 
     const listCall = db.query.mock.calls.find(
-      ([sql]) => typeof sql === 'string' && sql.includes('FROM public.employee_insurances ei'),
+      ([sql]) =>
+        typeof sql === 'string' &&
+        sql.includes('FROM public.employee_insurances ei'),
     );
     expect(listCall?.[0]).toEqual(expect.stringContaining('ei.employee_id IN'));
-    expect(listCall?.[0]).toEqual(expect.stringContaining("custom_fields->>'tenant_id'"));
-    expect(listCall?.[1]).toEqual(expect.arrayContaining(['xevn', expect.any(Array)]));
+    expect(listCall?.[0]).toEqual(
+      expect.stringContaining("custom_fields->>'tenant_id'"),
+    );
+    expect(listCall?.[1]).toEqual(
+      expect.arrayContaining(['xevn', expect.any(Array)]),
+    );
   });
 
   it('BR-INS-01: listInsurance maps created_at Date from pg driver (J-HRM-04)', async () => {
@@ -588,7 +670,10 @@ describe('ContractsInsuranceService', () => {
       return { rows: [] } as never;
     });
 
-    const result = await service.listInsurance({ company_id: 'main' }, `Bearer ${token}`);
+    const result = await service.listInsurance(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+    );
 
     expect(result.total).toBe(1);
     expect(result.data[0]).toMatchObject({
@@ -612,7 +697,11 @@ describe('ContractsInsuranceService', () => {
       roleCode: 'group_ceo',
     });
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('SELECT company_id::text AS company_id FROM public.employee_contracts')) {
+      if (
+        sql.includes(
+          'SELECT company_id::text AS company_id FROM public.employee_contracts',
+        )
+      ) {
         return { rows: [{ company_id: 'other-co' }] } as never;
       }
       return { rows: [] } as never;
@@ -652,17 +741,32 @@ describe('ContractsInsuranceService', () => {
     );
 
     const listCall = db.query.mock.calls.find(
-      ([sql]) => typeof sql === 'string' && sql.includes('FROM public.employee_contracts ec'),
+      ([sql]) =>
+        typeof sql === 'string' &&
+        sql.includes('FROM public.employee_contracts ec'),
     );
-    expect(listCall?.[0]).toEqual(expect.stringContaining('ec.company_id = ANY'));
-    expect(listCall?.[0]).toEqual(expect.stringContaining('ec.employee_id = $'));
+    expect(listCall?.[0]).toEqual(
+      expect.stringContaining('ec.company_id = ANY'),
+    );
+    expect(listCall?.[0]).toEqual(
+      expect.stringContaining('ec.employee_id = $'),
+    );
     expect(listCall?.[0]).toEqual(expect.stringContaining('ec.employee_id IN'));
-    expect(listCall?.[0]).not.toEqual(expect.stringContaining('ec.ec.employee_id'));
-    expect(listCall?.[0]).not.toEqual(expect.stringContaining('ec.ec.company_id'));
+    expect(listCall?.[0]).not.toEqual(
+      expect.stringContaining('ec.ec.employee_id'),
+    );
+    expect(listCall?.[0]).not.toEqual(
+      expect.stringContaining('ec.ec.company_id'),
+    );
     // PG 42P01 — ec alias must not leak into workforce IN-subquery (MOB-UX-12d dev-portal HRM-SYS-001).
-    expect(listCall?.[0]).not.toMatch(/FROM public\.employees[\s\S]*\bec\.company_id\b/);
+    expect(listCall?.[0]).not.toMatch(
+      /FROM public\.employees[\s\S]*\bec\.company_id\b/,
+    );
     expect(listCall?.[1]).toEqual(
-      expect.arrayContaining([expect.arrayContaining(['holding', holdingUuid]), employeeId]),
+      expect.arrayContaining([
+        expect.arrayContaining(['holding', holdingUuid]),
+        employeeId,
+      ]),
     );
   });
 
@@ -670,7 +774,10 @@ describe('ContractsInsuranceService', () => {
     const notes = 'UF02-roundtrip-notes';
     const contractId = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
     db.query.mockImplementation(async (sql: string, params?: unknown[]) => {
-      if (sql.includes('INSERT INTO public.employee_contracts') && sql.includes('notes')) {
+      if (
+        sql.includes('INSERT INTO public.employee_contracts') &&
+        sql.includes('notes')
+      ) {
         expect(params?.[10]).toBe(notes);
         return {
           rows: [
@@ -690,7 +797,10 @@ describe('ContractsInsuranceService', () => {
           ],
         } as never;
       }
-      if (sql.includes('FROM public.employee_contracts ec') && sql.includes('ec.id = $1::uuid')) {
+      if (
+        sql.includes('FROM public.employee_contracts ec') &&
+        sql.includes('ec.id = $1::uuid')
+      ) {
         return {
           rows: [
             {
@@ -752,10 +862,17 @@ describe('ContractsInsuranceService', () => {
     const contractId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
     const updatedNotes = 'UF02-updated-notes';
     db.query.mockImplementation(async (sql: string, params?: unknown[]) => {
-      if (sql.includes('SELECT company_id::text AS company_id FROM public.employee_contracts')) {
+      if (
+        sql.includes(
+          'SELECT company_id::text AS company_id FROM public.employee_contracts',
+        )
+      ) {
         return { rows: [{ company_id: 'holding' }] } as never;
       }
-      if (sql.includes('UPDATE public.employee_contracts') && !sql.includes('DO $$')) {
+      if (
+        sql.includes('UPDATE public.employee_contracts') &&
+        !sql.includes('DO $$')
+      ) {
         expect(params?.[4]).toBe(updatedNotes);
         expect(params?.[5]).toBe(true);
         return {
@@ -793,7 +910,11 @@ describe('ContractsInsuranceService', () => {
         sql.includes('UPDATE public.employee_contracts') &&
         !sql.includes('DO $$'),
     );
-    expect(updateCall?.[0]).toEqual(expect.stringContaining('notes = CASE WHEN $6::boolean THEN $5 ELSE notes END'));
+    expect(updateCall?.[0]).toEqual(
+      expect.stringContaining(
+        'notes = CASE WHEN $6::boolean THEN $5 ELSE notes END',
+      ),
+    );
   });
 
   it('updateContract scopes to group rollup when group CEO uses company_id=main', async () => {
@@ -805,7 +926,11 @@ describe('ContractsInsuranceService', () => {
     });
     const contractId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('SELECT company_id::text AS company_id FROM public.employee_contracts')) {
+      if (
+        sql.includes(
+          'SELECT company_id::text AS company_id FROM public.employee_contracts',
+        )
+      ) {
         return { rows: [{ company_id: 'holding' }] } as never;
       }
       if (sql.includes('UPDATE public.employee_contracts')) {
@@ -838,7 +963,15 @@ describe('ContractsInsuranceService', () => {
     expect(result.contract_type).toBe('permanent');
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining('company_id = ANY'),
-      expect.arrayContaining([null, null, null, null, false, contractId, expect.any(Array)]),
+      expect.arrayContaining([
+        null,
+        null,
+        null,
+        null,
+        false,
+        contractId,
+        expect.any(Array),
+      ]),
     );
   });
 
@@ -888,13 +1021,19 @@ describe('ContractsInsuranceService', () => {
 
     it('falls back to first job_titles catalog when position_key and job_title_key absent', async () => {
       const catalogs = {
-        getEffectiveItemsForKey: jest.fn().mockResolvedValue([
-          { code: 'TP_KD', label: 'Trưởng phòng KD', status: 'active' },
-        ]),
-        assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { code: string; catalogKey: string }) => ({
-          code: opts.code,
-          label: opts.code,
-        })),
+        getEffectiveItemsForKey: jest
+          .fn()
+          .mockResolvedValue([
+            { code: 'TP_KD', label: 'Trưởng phòng KD', status: 'active' },
+          ]),
+        assertCodeInEffectiveCatalog: jest
+          .fn()
+          .mockImplementation(
+            async (opts: { code: string; catalogKey: string }) => ({
+              code: opts.code,
+              label: opts.code,
+            }),
+          ),
       };
       const svc = new ContractsInsuranceService(db, catalogs as never);
 
@@ -953,7 +1092,7 @@ describe('ContractsInsuranceService', () => {
           contract_type: 'indefinite',
           start_date: '2026-03-01',
         }),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-CON-POS-KEY' });
+      ).rejects.toMatchObject({ code: 'HRM-CON-POS-KEY' });
     });
   });
 
@@ -963,13 +1102,17 @@ describe('ContractsInsuranceService', () => {
 
     it('ignores FE pass-through employee_code and uses first job_titles catalog (TC-HDSD-06-02-01 wire)', async () => {
       const catalogs = {
-        getEffectiveItemsForKey: jest.fn().mockResolvedValue([
-          { code: 'NV_KD', label: 'Nhân viên KD', status: 'active' },
-        ]),
-        assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { code: string }) => ({
-          code: opts.code,
-          label: opts.code,
-        })),
+        getEffectiveItemsForKey: jest
+          .fn()
+          .mockResolvedValue([
+            { code: 'NV_KD', label: 'Nhân viên KD', status: 'active' },
+          ]),
+        assertCodeInEffectiveCatalog: jest
+          .fn()
+          .mockImplementation(async (opts: { code: string }) => ({
+            code: opts.code,
+            label: opts.code,
+          })),
       };
       const svc = new ContractsInsuranceService(db, catalogs as never);
 
@@ -1020,10 +1163,12 @@ describe('ContractsInsuranceService', () => {
           { code: 'CEO', label: 'CEO', status: 'active' },
           { code: 'NV_KD', label: 'Nhân viên KD', status: 'active' },
         ]),
-        assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { code: string }) => ({
-          code: opts.code,
-          label: opts.code,
-        })),
+        assertCodeInEffectiveCatalog: jest
+          .fn()
+          .mockImplementation(async (opts: { code: string }) => ({
+            code: opts.code,
+            label: opts.code,
+          })),
       };
       const svc = new ContractsInsuranceService(db, catalogs as never);
 
@@ -1068,10 +1213,12 @@ describe('ContractsInsuranceService', () => {
     it('still rejects invent position_key when catalog empty and no employee key', async () => {
       const catalogs = {
         getEffectiveItemsForKey: jest.fn().mockResolvedValue([]),
-        assertCodeInEffectiveCatalog: jest.fn().mockImplementation(async (opts: { code: string }) => ({
-          code: opts.code,
-          label: opts.code,
-        })),
+        assertCodeInEffectiveCatalog: jest
+          .fn()
+          .mockImplementation(async (opts: { code: string }) => ({
+            code: opts.code,
+            label: opts.code,
+          })),
       };
       const svc = new ContractsInsuranceService(db, catalogs as never);
 
@@ -1091,7 +1238,7 @@ describe('ContractsInsuranceService', () => {
           end_date: '2027-01-01',
           position_key: 'INVENT_FREE_TEXT',
         }),
-      ).rejects.toMatchObject<ApiException>({ code: 'HRM-CON-POS-KEY' });
+      ).rejects.toMatchObject({ code: 'HRM-CON-POS-KEY' });
     });
   });
 
@@ -1146,10 +1293,22 @@ describe('ContractsInsuranceService', () => {
         }),
       } as unknown as ContractLegalPrintService;
 
-      const svc = new ContractsInsuranceService(db, undefined, undefined, undefined, undefined, undefined, undefined, layoutMock);
+      const svc = new ContractsInsuranceService(
+        db,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        layoutMock,
+      );
 
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.employee_contracts ec') && sql.includes('ec.id = $1::uuid')) {
+        if (
+          sql.includes('FROM public.employee_contracts ec') &&
+          sql.includes('ec.id = $1::uuid')
+        ) {
           return { rows: [contractDetailRow()] } as never;
         }
         return { rows: [] } as never;
@@ -1179,7 +1338,10 @@ describe('ContractsInsuranceService', () => {
       const svc = new ContractsInsuranceService(db);
 
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.employee_contracts ec') && sql.includes('ec.id = $1::uuid')) {
+        if (
+          sql.includes('FROM public.employee_contracts ec') &&
+          sql.includes('ec.id = $1::uuid')
+        ) {
           return { rows: [contractDetailRow()] } as never;
         }
         return { rows: [] } as never;

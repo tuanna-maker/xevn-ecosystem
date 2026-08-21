@@ -38,13 +38,27 @@ describe('RecruitmentWorkflowBridge map + lock helpers', () => {
   });
 
   it('VAL-REC-WF-09/10: LOCKED only when instance active and non-terminal', () => {
-    expect(isRecruitmentWorkflowLocked('inst-1', 'screening', 'candidate')).toBe(true);
-    expect(isRecruitmentWorkflowLocked('inst-1', 'hired', 'candidate')).toBe(false);
-    expect(isRecruitmentWorkflowLocked(null, 'screening', 'candidate')).toBe(false);
-    expect(isRecruitmentWorkflowLocked('inst-1', 'pending_approval', 'plan')).toBe(true);
-    expect(isRecruitmentWorkflowLocked('inst-1', 'approved', 'plan')).toBe(false);
-    expect(isRecruitmentWorkflowLocked('inst-1', 'pending_approval', 'requisition')).toBe(true);
-    expect(isRecruitmentWorkflowLocked('inst-1', 'open', 'requisition')).toBe(false);
+    expect(
+      isRecruitmentWorkflowLocked('inst-1', 'screening', 'candidate'),
+    ).toBe(true);
+    expect(isRecruitmentWorkflowLocked('inst-1', 'hired', 'candidate')).toBe(
+      false,
+    );
+    expect(isRecruitmentWorkflowLocked(null, 'screening', 'candidate')).toBe(
+      false,
+    );
+    expect(
+      isRecruitmentWorkflowLocked('inst-1', 'pending_approval', 'plan'),
+    ).toBe(true);
+    expect(isRecruitmentWorkflowLocked('inst-1', 'approved', 'plan')).toBe(
+      false,
+    );
+    expect(
+      isRecruitmentWorkflowLocked('inst-1', 'pending_approval', 'requisition'),
+    ).toBe(true);
+    expect(isRecruitmentWorkflowLocked('inst-1', 'open', 'requisition')).toBe(
+      false,
+    );
   });
 });
 
@@ -67,10 +81,17 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('VAL-REC-WF-03: step rec_interview → stage interview', async () => {
     const queryMock = jest.fn(async (sql: string) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
-      if (sql.includes('SELECT stage') && sql.includes('FROM public.candidates')) {
+      if (
+        sql.includes('SELECT stage') &&
+        sql.includes('FROM public.candidates')
+      ) {
         return {
           rows: [
             {
@@ -81,7 +102,10 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
           ],
         };
       }
-      if (sql.includes('UPDATE public.candidates') && sql.includes('SET stage')) {
+      if (
+        sql.includes('UPDATE public.candidates') &&
+        sql.includes('SET stage')
+      ) {
         return { rows: [{ stage: 'interview' }] };
       }
       return { rows: [] };
@@ -101,10 +125,17 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('BM-BE-REC-WF-04: bare screening taskType → stage screening + fingerprint', async () => {
     const queryMock = jest.fn(async (sql: string, params?: unknown[]) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
-      if (sql.includes('SELECT stage') && sql.includes('FROM public.candidates')) {
+      if (
+        sql.includes('SELECT stage') &&
+        sql.includes('FROM public.candidates')
+      ) {
         return {
           rows: [
             {
@@ -115,7 +146,10 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
           ],
         };
       }
-      if (sql.includes('UPDATE public.candidates') && sql.includes('SET stage')) {
+      if (
+        sql.includes('UPDATE public.candidates') &&
+        sql.includes('SET stage')
+      ) {
         expect(params?.[1]).toBe('screening');
         expect(String(params?.[2])).toContain(`${instanceId}:screening:`);
         return { rows: [{ stage: 'screening' }] };
@@ -133,17 +167,26 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
       reviewerUserId: 'ceo@xe.vn',
     });
     expect(result).toEqual({ applied: true, stage: 'screening' });
-    expect(queryMock.mock.calls.some((c) => String(c[0]).includes('wf_callback_fingerprint'))).toBe(
-      true,
-    );
+    expect(
+      queryMock.mock.calls.some((c) =>
+        String(c[0]).includes('wf_callback_fingerprint'),
+      ),
+    ).toBe(true);
   });
 
   it('BM-BE-REC-WF-04: rec_screening still maps → stage screening', async () => {
     const queryMock = jest.fn(async (sql: string) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
-      if (sql.includes('SELECT stage') && sql.includes('FROM public.candidates')) {
+      if (
+        sql.includes('SELECT stage') &&
+        sql.includes('FROM public.candidates')
+      ) {
         return {
           rows: [
             {
@@ -154,7 +197,10 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
           ],
         };
       }
-      if (sql.includes('UPDATE public.candidates') && sql.includes('SET stage')) {
+      if (
+        sql.includes('UPDATE public.candidates') &&
+        sql.includes('SET stage')
+      ) {
         return { rows: [{ stage: 'screening' }] };
       }
       return { rows: [] };
@@ -174,10 +220,17 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('BM-BE-REC-WF-04: empty taskType falls back to bare stepKey', async () => {
     const queryMock = jest.fn(async (sql: string) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
-      if (sql.includes('SELECT stage') && sql.includes('FROM public.candidates')) {
+      if (
+        sql.includes('SELECT stage') &&
+        sql.includes('FROM public.candidates')
+      ) {
         return {
           rows: [
             {
@@ -188,7 +241,10 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
           ],
         };
       }
-      if (sql.includes('UPDATE public.candidates') && sql.includes('SET stage')) {
+      if (
+        sql.includes('UPDATE public.candidates') &&
+        sql.includes('SET stage')
+      ) {
         return { rows: [{ stage: 'screening' }] };
       }
       return { rows: [] };
@@ -223,10 +279,17 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('VAL-REC-WF-06: terminal completed without hire AC → CALLBACK-SKIP', async () => {
     const queryMock = jest.fn(async (sql: string) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
-      if (sql.includes('FROM public.candidates') && sql.includes('SELECT stage')) {
+      if (
+        sql.includes('FROM public.candidates') &&
+        sql.includes('SELECT stage')
+      ) {
         return {
           rows: [
             {
@@ -257,10 +320,17 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('VAL-REC-WF-05: terminal completed with employee_id → hired', async () => {
     const queryMock = jest.fn(async (sql: string) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
-      if (sql.includes('FROM public.candidates') && sql.includes('SELECT stage')) {
+      if (
+        sql.includes('FROM public.candidates') &&
+        sql.includes('SELECT stage')
+      ) {
         return {
           rows: [
             {
@@ -289,10 +359,17 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('VAL-REC-WF-07: terminal rejected → stage rejected', async () => {
     const queryMock = jest.fn(async (sql: string) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
-      if (sql.includes('FROM public.candidates') && sql.includes('SELECT stage')) {
+      if (
+        sql.includes('FROM public.candidates') &&
+        sql.includes('SELECT stage')
+      ) {
         return {
           rows: [
             {
@@ -322,10 +399,17 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('VAL-REC-WF-08: duplicate terminal → applied false', async () => {
     const queryMock = jest.fn(async (sql: string) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
-      if (sql.includes('FROM public.candidates') && sql.includes('SELECT stage')) {
+      if (
+        sql.includes('FROM public.candidates') &&
+        sql.includes('SELECT stage')
+      ) {
         return {
           rows: [
             {
@@ -376,7 +460,7 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('VAL-REC-WF-01/02: spawn success persists instance; spawn fail logs SPAWN-MISSING', async () => {
     const fetchMock = jest.fn();
-    global.fetch = fetchMock as unknown as typeof fetch;
+    global.fetch = fetchMock;
     const submitterEmpId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 
     const queryMock = jest.fn().mockResolvedValue({ rows: [] });
@@ -399,7 +483,9 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
       expect.stringContaining('SET workflow_instance_id'),
       expect.arrayContaining([candidateId, instanceId]),
     );
-    const startBody = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}')) as {
+    const startBody = JSON.parse(
+      String(fetchMock.mock.calls[0]?.[1]?.body ?? '{}'),
+    ) as {
       submitter?: { employeeId?: string; userId?: string };
     };
     expect(startBody.submitter?.employeeId).toBe(submitterEmpId);
@@ -422,20 +508,30 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('XHRM-REC-WF-BE-SPAWN-01: resolves employeeId from email when def active → instance id', async () => {
     const fetchMock = jest.fn();
-    global.fetch = fetchMock as unknown as typeof fetch;
+    global.fetch = fetchMock;
     const submitterEmpId = 'b2c3d4e5-f6a7-8901-bcde-f12345678901';
 
     const queryMock = jest.fn(async (sql: string) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
       if (sql.includes('UPDATE') && sql.includes('pending_approval')) {
         return { rows: [] };
       }
-      if (sql.includes('FROM public.job_requisitions') && sql.includes('AS subject')) {
+      if (
+        sql.includes('FROM public.job_requisitions') &&
+        sql.includes('AS subject')
+      ) {
         return { rows: [{ subject: 'YCTD HireToPay SP2SDD8FM8' }] };
       }
-      if (sql.includes('FROM public.employees') && sql.includes('lower(email)')) {
+      if (
+        sql.includes('FROM public.employees') &&
+        sql.includes('lower(email)')
+      ) {
         return { rows: [{ id: submitterEmpId }] };
       }
       if (sql.includes('SET workflow_instance_id')) {
@@ -468,7 +564,11 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
       workflowCode: string;
       businessType: string;
       businessId: string;
-      submitter: { employeeId: string; userId: string; submitterPortalEmail?: string };
+      submitter: {
+        employeeId: string;
+        userId: string;
+        submitterPortalEmail?: string;
+      };
       context?: { subjectTitle?: string; memberCompanyId?: string };
     };
     expect(body.workflowCode).toBe('hrm_requisition_approval');
@@ -487,10 +587,14 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('XHRM-REC-WF-BE-SPAWN-01: unresolved submitter.employeeId → SPAWN-MISSING (no XBOS call)', async () => {
     const fetchMock = jest.fn();
-    global.fetch = fetchMock as unknown as typeof fetch;
+    global.fetch = fetchMock;
 
     const queryMock = jest.fn(async (sql: string) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
       if (sql.includes('FROM public.employees')) {
@@ -516,10 +620,14 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('XHRM-REC-WF-BE-SPAWN-02: Group CEO ceo@xe.vn with no email row → ensure holding employee → instance id', async () => {
     const fetchMock = jest.fn();
-    global.fetch = fetchMock as unknown as typeof fetch;
+    global.fetch = fetchMock;
 
     const queryMock = jest.fn(async (sql: string, params?: unknown[]) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
       if (sql.includes('UPDATE') && sql.includes('pending_approval')) {
@@ -528,7 +636,10 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
       if (sql.includes('FROM public.user_company_memberships')) {
         return { rows: [] };
       }
-      if (sql.includes('FROM public.employees') && sql.includes('lower(email)')) {
+      if (
+        sql.includes('FROM public.employees') &&
+        sql.includes('lower(email)')
+      ) {
         return { rows: [] };
       }
       if (sql.includes('lower(employee_code)') && sql.includes('PORTAL-GCEO')) {
@@ -567,7 +678,11 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [, init] = fetchMock.mock.calls[0] as [string, { body: string }];
     const body = JSON.parse(init.body) as {
-      submitter: { employeeId: string; userId: string; submitterPortalEmail?: string };
+      submitter: {
+        employeeId: string;
+        userId: string;
+        submitterPortalEmail?: string;
+      };
     };
     expect(body.submitter.userId).toBe(body.submitter.employeeId);
     expect(body.submitter.submitterPortalEmail).toBe('ceo@xe.vn');
@@ -586,17 +701,24 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
 
   it('XHRM-REC-WF-BE-SPAWN-02: membership.employee_id resolves when email miss', async () => {
     const fetchMock = jest.fn();
-    global.fetch = fetchMock as unknown as typeof fetch;
+    global.fetch = fetchMock;
     const memberEmpId = 'd4e5f6a7-b8c9-0123-def0-234567890123';
 
     const queryMock = jest.fn(async (sql: string) => {
-      if (sql.includes('ALTER TABLE') || sql.includes('CREATE INDEX') || sql.includes('DO $$')) {
+      if (
+        sql.includes('ALTER TABLE') ||
+        sql.includes('CREATE INDEX') ||
+        sql.includes('DO $$')
+      ) {
         return { rows: [] };
       }
       if (sql.includes('UPDATE') && sql.includes('pending_approval')) {
         return { rows: [] };
       }
-      if (sql.includes('FROM public.employees') && sql.includes('lower(email)')) {
+      if (
+        sql.includes('FROM public.employees') &&
+        sql.includes('lower(email)')
+      ) {
         return { rows: [] };
       }
       if (sql.includes('FROM public.user_company_memberships')) {
@@ -638,6 +760,8 @@ describe('RecruitmentWorkflowBridge callbacks', () => {
     expect(() =>
       bridge.assertNotLockedOrThrow(instanceId, 'screening', 'candidate'),
     ).toThrow('HRM-REC-WF-LOCKED');
-    expect(() => bridge.assertNotLockedOrThrow(null, 'screening', 'candidate')).not.toThrow();
+    expect(() =>
+      bridge.assertNotLockedOrThrow(null, 'screening', 'candidate'),
+    ).not.toThrow();
   });
 });

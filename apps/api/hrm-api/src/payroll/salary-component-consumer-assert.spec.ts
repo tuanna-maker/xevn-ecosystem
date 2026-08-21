@@ -152,10 +152,10 @@ describe('PAY catalog consumer assert (PO-HRM-DYNAMIC-CONFIG-PLATFORM-PAY-CATALO
   it('VAL-PAY-CNS-03 scope_parity — list↔assert same companyIds; group CEO main sees holding', async () => {
     const queryParams: unknown[][] = [];
     const base = makeQuery([activeHolding]);
-    const query: HrmDbQueryFn = (async (sql: string, params?: unknown[]) => {
+    const query: HrmDbQueryFn = async (sql: string, params?: unknown[]) => {
       queryParams.push([...(params ?? [])]);
       return base(sql, params);
-    }) as HrmDbQueryFn;
+    };
 
     const hit = await assertComponentCodeInEffectiveCatalog({
       query,
@@ -248,6 +248,8 @@ describe('PAY catalog consumer assert (PO-HRM-DYNAMIC-CONFIG-PLATFORM-PAY-CATALO
   it('documents HRM-COMP-004 as 1:1 peer alias of HRM-SC-COMP-KEY', () => {
     // Taxonomy lock — consumers emit HRM-SC-COMP-KEY; legacy HRM-COMP-004 = same class.
     expect(HRM_SC_COMP_KEY).toBe('HRM-SC-COMP-KEY');
-    expect(new ApiException(HRM_SC_COMP_KEY, 'x', 422).code).toBe('HRM-SC-COMP-KEY');
+    expect(new ApiException(HRM_SC_COMP_KEY, 'x', 422).code).toBe(
+      'HRM-SC-COMP-KEY',
+    );
   });
 });

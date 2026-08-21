@@ -25,7 +25,9 @@ describe('late-penalty.util (ATT-02)', () => {
     });
 
     it('rejects mixed modes array → HRM-VAL-400', () => {
-      expect(() => assertXorLatePenaltyMode({ modes: ['minute', 'block'] })).toThrow(ApiException);
+      expect(() =>
+        assertXorLatePenaltyMode({ modes: ['minute', 'block'] }),
+      ).toThrow(ApiException);
       try {
         assertXorLatePenaltyMode({ mode: ['minute', 'tier'] });
         fail('expected throw');
@@ -116,7 +118,14 @@ describe('late-penalty.util (ATT-02)', () => {
         evaluateLatePenaltyHours({
           latePenaltyEnabled: true,
           mode: 'block',
-          bands: [{ fromMinutes: 1, toMinutes: 999, penaltyHours: 0.5, blockMinutes: 30 }],
+          bands: [
+            {
+              fromMinutes: 1,
+              toMinutes: 999,
+              penaltyHours: 0.5,
+              blockMinutes: 30,
+            },
+          ],
           lateMinutes: 45,
         }),
       ).toBe(1);

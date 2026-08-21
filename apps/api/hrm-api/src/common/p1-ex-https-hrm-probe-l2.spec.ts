@@ -29,6 +29,9 @@ import { AttOtTypeService } from '../attendance/att-ot-type.service';
 import { AttOtCompTypeService } from '../attendance/att-ot-comp-type.service';
 import { LeaveBalanceService } from '../attendance/leave-balance.service';
 import { AttHolidayCalendarService } from '../attendance/att-holiday-calendar.service';
+import { AttShiftService } from '../attendance/att-shift.service';
+import { AttRuleService } from '../attendance/att-rule.service';
+import { AttScheduleService } from '../attendance/att-schedule.service';
 import { LeaveRequestsService } from '../attendance/leave-requests.service';
 import { PayrollCatalogService } from '../payroll/payroll-catalog.service';
 import { PayrollController } from '../payroll/payroll.controller';
@@ -44,10 +47,14 @@ import { AttActivateEnrollService } from '../attendance/att-activate-enroll.serv
 import { GlobalHttpExceptionFilter } from './http-exception.filter';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
@@ -59,7 +66,11 @@ async function createProbeApp(controllers: unknown[], providers: unknown[]) {
   const app = moduleRef.createNestApplication();
   app.setGlobalPrefix('api/hrm');
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
   );
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
   await app.init();
@@ -88,7 +99,10 @@ describe('P1-EX HTTPS HRM probe L2 (HTTP)', () => {
         {
           provide: ContractsInsuranceService,
           useValue: {
-            listInsurance: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'ins-1', employee_id: 'emp-1' }] }),
+            listInsurance: jest.fn().mockResolvedValue({
+              total: 1,
+              data: [{ id: 'ins-1', employee_id: 'emp-1' }],
+            }),
           },
         },
         { provide: EmployeeCompensationService, useValue: {} },
@@ -112,7 +126,14 @@ describe('P1-EX HTTPS HRM probe L2 (HTTP)', () => {
     const app = await createProbeApp(
       [RecruitmentController],
       [
-        { provide: RecruitmentService, useValue: { listJobRequisitions: jest.fn().mockResolvedValue({ total: 1, data: [] }) } },
+        {
+          provide: RecruitmentService,
+          useValue: {
+            listJobRequisitions: jest
+              .fn()
+              .mockResolvedValue({ total: 1, data: [] }),
+          },
+        },
         { provide: RecruitmentCatalogService, useValue: {} },
         { provide: JdDynamicService, useValue: {} },
         { provide: RecPipelineStageService, useValue: {} },
@@ -132,7 +153,12 @@ describe('P1-EX HTTPS HRM probe L2 (HTTP)', () => {
     const app = await createProbeApp(
       [AttendanceController],
       [
-        { provide: AttendanceService, useValue: { listRecords: jest.fn().mockResolvedValue({ total: 1, data: [] }) } },
+        {
+          provide: AttendanceService,
+          useValue: {
+            listRecords: jest.fn().mockResolvedValue({ total: 1, data: [] }),
+          },
+        },
         { provide: AttendanceCatalogService, useValue: {} },
         { provide: AttendanceConfigService, useValue: {} },
         { provide: AttLeaveTypeService, useValue: {} },
@@ -146,6 +172,9 @@ describe('P1-EX HTTPS HRM probe L2 (HTTP)', () => {
         { provide: LeaveBalanceService, useValue: {} },
         { provide: AttActivateEnrollService, useValue: {} },
         { provide: AttHolidayCalendarService, useValue: {} },
+        { provide: AttShiftService, useValue: {} },
+        { provide: AttRuleService, useValue: {} },
+        { provide: AttScheduleService, useValue: {} },
         { provide: AttendanceRequestsService, useValue: {} },
         { provide: AttendanceOverviewService, useValue: {} },
         { provide: AttendanceSheetSignService, useValue: {} },
@@ -164,7 +193,12 @@ describe('P1-EX HTTPS HRM probe L2 (HTTP)', () => {
     const app = await createProbeApp(
       [PayrollController],
       [
-        { provide: PayrollService, useValue: { listPayslips: jest.fn().mockResolvedValue({ total: 1, data: [] }) } },
+        {
+          provide: PayrollService,
+          useValue: {
+            listPayslips: jest.fn().mockResolvedValue({ total: 1, data: [] }),
+          },
+        },
         { provide: PayrollCatalogService, useValue: {} },
         { provide: PayFormulaService, useValue: {} },
         { provide: PaySheetTemplateService, useValue: {} },

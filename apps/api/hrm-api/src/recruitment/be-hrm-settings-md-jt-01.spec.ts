@@ -60,7 +60,11 @@ function ddlAwareQuery(handlers: {
     ) {
       return Promise.resolve({ rows: [] });
     }
-    if (s.includes('SELECT id FROM public.job_description_templates WHERE company_id')) {
+    if (
+      s.includes(
+        'SELECT id FROM public.job_description_templates WHERE company_id',
+      )
+    ) {
       return Promise.resolve(handlers.onDup?.() ?? { rows: [] });
     }
     if (s.includes('INSERT INTO public.job_description_templates')) {
@@ -72,7 +76,10 @@ function ddlAwareQuery(handlers: {
     ) {
       return Promise.resolve(handlers.onPeek?.() ?? { rows: [] });
     }
-    if (s.includes('UPDATE public.job_description_templates SET') && s.includes('WHERE id')) {
+    if (
+      s.includes('UPDATE public.job_description_templates SET') &&
+      s.includes('WHERE id')
+    ) {
       return Promise.resolve(handlers.onUpdate?.(params ?? []) ?? { rows: [] });
     }
     return Promise.resolve({ rows: [] });
@@ -126,20 +133,22 @@ describe('D-HRM-SETTINGS-MD-JT-BE-01 RecruitmentCatalogService JD position', () 
         ceoAuth(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_JD_POS });
+    ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
     expect(catalogs.assertCodeInEffectiveCatalog).not.toHaveBeenCalled();
   });
 
   it('create rejects position_code not in job_titles catalog', async () => {
     const db = { query: ddlAwareQuery({}), onModuleDestroy: jest.fn() };
     const catalogs = {
-      assertCodeInEffectiveCatalog: jest.fn().mockRejectedValue(
-        new ApiException(
-          HRM_REC_JD_POS,
-          "position_code 'FAKE' is not in job_titles catalog (free-text SoT forbidden)",
-          HttpStatus.BAD_REQUEST,
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockRejectedValue(
+          new ApiException(
+            HRM_REC_JD_POS,
+            "position_code 'FAKE' is not in job_titles catalog (free-text SoT forbidden)",
+            HttpStatus.BAD_REQUEST,
+          ),
         ),
-      ),
     };
     const svc = new RecruitmentCatalogService(
       db as never,
@@ -157,7 +166,7 @@ describe('D-HRM-SETTINGS-MD-JT-BE-01 RecruitmentCatalogService JD position', () 
         ceoAuth(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_JD_POS });
+    ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
     expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
       expect.objectContaining({
         catalogKey: 'job_titles',
@@ -224,7 +233,9 @@ describe('D-HRM-SETTINGS-MD-JT-BE-01 RecruitmentCatalogService JD position', () 
     const db = {
       query: ddlAwareQuery({
         onPeek: () => ({
-          rows: [{ company_id: 'holding', code: 'JD-OK', position_code: 'NV_KD' }],
+          rows: [
+            { company_id: 'holding', code: 'JD-OK', position_code: 'NV_KD' },
+          ],
         }),
       }),
       onModuleDestroy: jest.fn(),
@@ -245,14 +256,16 @@ describe('D-HRM-SETTINGS-MD-JT-BE-01 RecruitmentCatalogService JD position', () 
         ceoAuth(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_JD_POS });
+    ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
   });
 
   it('update rejects invent-only position_name when existing has no position_code', async () => {
     const db = {
       query: ddlAwareQuery({
         onPeek: () => ({
-          rows: [{ company_id: 'holding', code: 'JD-LEGACY', position_code: null }],
+          rows: [
+            { company_id: 'holding', code: 'JD-LEGACY', position_code: null },
+          ],
         }),
       }),
       onModuleDestroy: jest.fn(),
@@ -273,7 +286,7 @@ describe('D-HRM-SETTINGS-MD-JT-BE-01 RecruitmentCatalogService JD position', () 
         ceoAuth(),
         { tenantId: 'xevn' },
       ),
-    ).rejects.toMatchObject<ApiException>({ code: HRM_REC_JD_POS });
+    ).rejects.toMatchObject({ code: HRM_REC_JD_POS });
     expect(catalogs.assertCodeInEffectiveCatalog).not.toHaveBeenCalled();
   });
 
@@ -282,7 +295,9 @@ describe('D-HRM-SETTINGS-MD-JT-BE-01 RecruitmentCatalogService JD position', () 
     const db = {
       query: ddlAwareQuery({
         onPeek: () => ({
-          rows: [{ company_id: 'holding', code: 'JD-OK', position_code: 'OLD' }],
+          rows: [
+            { company_id: 'holding', code: 'JD-OK', position_code: 'OLD' },
+          ],
         }),
         onUpdate: (params) => {
           updateParams.push(params);

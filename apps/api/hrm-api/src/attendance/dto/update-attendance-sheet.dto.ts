@@ -20,4 +20,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateAttendanceSheetDto } from './create-attendance-sheet.dto';
 
-export class UpdateAttendanceSheetDto extends PartialType(CreateAttendanceSheetDto) {}
+export class UpdateAttendanceSheetDto extends PartialType(
+  CreateAttendanceSheetDto,
+) {}

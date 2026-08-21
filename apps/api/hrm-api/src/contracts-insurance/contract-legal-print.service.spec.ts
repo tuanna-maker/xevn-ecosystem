@@ -76,15 +76,32 @@ function memberCeoToken() {
 describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
   it('pack resolve: job_family DRIVER → DRIVER; unknown → GENERAL', () => {
     const rules = [
-      { match_type: 'job_family', match_value: 'DRIVER', pack_code: 'DRIVER', priority: 10 },
-      { match_type: 'job_family', match_value: 'IT', pack_code: 'IT_OFFICE', priority: 10 },
-      { match_type: 'fallback', match_value: null, pack_code: 'GENERAL', priority: 100 },
+      {
+        match_type: 'job_family',
+        match_value: 'DRIVER',
+        pack_code: 'DRIVER',
+        priority: 10,
+      },
+      {
+        match_type: 'job_family',
+        match_value: 'IT',
+        pack_code: 'IT_OFFICE',
+        priority: 10,
+      },
+      {
+        match_type: 'fallback',
+        match_value: null,
+        pack_code: 'GENERAL',
+        priority: 100,
+      },
     ];
     expect(resolveContractPackFromRules('DRIVER_OPS', rules)).toEqual({
       suggested_pack: 'DRIVER',
       reason: 'job_family:DRIVER',
     });
-    expect(resolveContractPackFromRules('UNKNOWN_X', rules).suggested_pack).toBe('GENERAL');
+    expect(
+      resolveContractPackFromRules('UNKNOWN_X', rules).suggested_pack,
+    ).toBe('GENERAL');
     expect(resolveContractPackFromRules('', []).suggested_pack).toBe('GENERAL');
   });
 
@@ -109,9 +126,15 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
         apply_to_packs: ['IT_OFFICE'],
       },
     ];
-    const missing = computeMissingMandatoryClauses('DRIVER', library, ['JOB_DUTIES']);
-    expect(missing).toEqual([{ code: 'DRIVER_VEHICLE', title_vi: 'Phương tiện' }]);
-    expect(computeMissingMandatoryClauses('GENERAL', library, ['JOB_DUTIES'])).toEqual([]);
+    const missing = computeMissingMandatoryClauses('DRIVER', library, [
+      'JOB_DUTIES',
+    ]);
+    expect(missing).toEqual([
+      { code: 'DRIVER_VEHICLE', title_vi: 'Phương tiện' },
+    ]);
+    expect(
+      computeMissingMandatoryClauses('GENERAL', library, ['JOB_DUTIES']),
+    ).toEqual([]);
   });
 
   it('invalid pack_code → HRM-CTR-PACK-INVALID', async () => {
@@ -120,7 +143,10 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
     await expect(
-      svc.listTemplates({ company_id: 'holding', pack_code: 'NOT_A_PACK' }, groupCeoToken()),
+      svc.listTemplates(
+        { company_id: 'holding', pack_code: 'NOT_A_PACK' },
+        groupCeoToken(),
+      ),
     ).rejects.toMatchObject({ code: HRM_CTR_PACK_INVALID });
   });
 
@@ -146,77 +172,92 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
   it('scope_parity: template list id → getById with same company_id filter (group CEO main→holding)', async () => {
     const queries: string[] = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        queries.push(s);
-        if (
-          s.includes('CREATE TABLE') ||
-          s.includes('CREATE INDEX') ||
-          s.includes('CREATE UNIQUE') ||
-          s.includes('ALTER TABLE')
-        ) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          queries.push(s);
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('CREATE INDEX') ||
+            s.includes('CREATE UNIQUE') ||
+            s.includes('ALTER TABLE')
+          ) {
+            return { rows: [] };
+          }
+          if (
+            s.includes('FROM public.hrm_contract_templates') &&
+            s.includes('ORDER BY code')
+          ) {
+            expect(s).toMatch(/company_id/);
+            // group CEO main expands to rollup array (ANY) or list — holding must be in scope
+            const flat = JSON.stringify(params ?? []);
+            expect(flat).toContain('holding');
+            return {
+              rows: [
+                {
+                  id: TPL_ID,
+                  company_id: 'holding',
+                  code: 'HDLD_STANDARD',
+                  name_vi: 'Mẫu chuẩn',
+                  pack_code: 'GENERAL',
+                  layout_json: {},
+                  keyword_map: {},
+                  status: 'active',
+                  version: 1,
+                  archived_at: null,
+                  created_at: '2026-08-06',
+                  updated_at: '2026-08-06',
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.hrm_contract_template_clauses')) {
+            return { rows: [] };
+          }
+          if (
+            s.includes('FROM public.hrm_contract_templates') &&
+            s.includes('id = $1::uuid')
+          ) {
+            expect(s).toMatch(/company_id/);
+            expect(params?.[0]).toBe(TPL_ID);
+            const flat = JSON.stringify(params ?? []);
+            expect(flat).toContain('holding');
+            return {
+              rows: [
+                {
+                  id: TPL_ID,
+                  company_id: 'holding',
+                  code: 'HDLD_STANDARD',
+                  name_vi: 'Mẫu chuẩn',
+                  pack_code: 'GENERAL',
+                  layout_json: {},
+                  keyword_map: {},
+                  status: 'active',
+                  version: 1,
+                  archived_at: null,
+                  created_at: '2026-08-06',
+                  updated_at: '2026-08-06',
+                },
+              ],
+            };
+          }
           return { rows: [] };
-        }
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes('ORDER BY code')) {
-          expect(s).toMatch(/company_id/);
-          // group CEO main expands to rollup array (ANY) or list — holding must be in scope
-          const flat = JSON.stringify(params ?? []);
-          expect(flat).toContain('holding');
-          return {
-            rows: [
-              {
-                id: TPL_ID,
-                company_id: 'holding',
-                code: 'HDLD_STANDARD',
-                name_vi: 'Mẫu chuẩn',
-                pack_code: 'GENERAL',
-                layout_json: {},
-                keyword_map: {},
-                status: 'active',
-                version: 1,
-                archived_at: null,
-                created_at: '2026-08-06',
-                updated_at: '2026-08-06',
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.hrm_contract_template_clauses')) {
-          return { rows: [] };
-        }
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes('id = $1::uuid')) {
-          expect(s).toMatch(/company_id/);
-          expect(params?.[0]).toBe(TPL_ID);
-          const flat = JSON.stringify(params ?? []);
-          expect(flat).toContain('holding');
-          return {
-            rows: [
-              {
-                id: TPL_ID,
-                company_id: 'holding',
-                code: 'HDLD_STANDARD',
-                name_vi: 'Mẫu chuẩn',
-                pack_code: 'GENERAL',
-                layout_json: {},
-                keyword_map: {},
-                status: 'active',
-                version: 1,
-                archived_at: null,
-                created_at: '2026-08-06',
-                updated_at: '2026-08-06',
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
-    const list = await svc.listTemplates({ company_id: 'main' }, groupCeoToken());
+    const list = await svc.listTemplates(
+      { company_id: 'main' },
+      groupCeoToken(),
+    );
     expect(list.data[0].id).toBe(TPL_ID);
     const got = await svc.getTemplateById(TPL_ID, 'main', groupCeoToken());
     expect(got.id).toBe(TPL_ID);
-    expect(queries.some((q) => q.includes('company_id') && q.includes('id = $1::uuid'))).toBe(true);
+    expect(
+      queries.some(
+        (q) => q.includes('company_id') && q.includes('id = $1::uuid'),
+      ),
+    ).toBe(true);
   });
 
   it('scope_parity: member CEO cannot get holding clause (404/409)', async () => {
@@ -231,16 +272,19 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
         ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.hrm_contract_clauses') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.hrm_contract_clauses') &&
+          s.includes('id = $1')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
       }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
-    await expect(svc.getClauseById(CL_ID, 'holding', memberCeoToken())).rejects.toBeInstanceOf(
-      ApiException,
-    );
+    await expect(
+      svc.getClauseById(CL_ID, 'holding', memberCeoToken()),
+    ).rejects.toBeInstanceOf(ApiException);
   });
 
   it('preview with 0 active template → HRM-CTR-TPL-NONE', async () => {
@@ -360,7 +404,10 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
             ],
           };
         }
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes(`status = 'active'`)) {
+        if (
+          s.includes('FROM public.hrm_contract_templates') &&
+          s.includes(`status = 'active'`)
+        ) {
           return {
             rows: [
               {
@@ -380,7 +427,10 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
             ],
           };
         }
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.hrm_contract_templates') &&
+          s.includes('id = $1')
+        ) {
           return {
             rows: [
               {
@@ -424,7 +474,10 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
             ],
           };
         }
-        if (s.includes('FROM public.hrm_contract_clauses') && s.includes('ORDER BY sort_order')) {
+        if (
+          s.includes('FROM public.hrm_contract_clauses') &&
+          s.includes('ORDER BY sort_order')
+        ) {
           // Library mandatory for pack
           return {
             rows: [
@@ -465,42 +518,44 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
   it('company_id body/query: persist uses resolveHrmPersistCompanyIdText (main→holding)', async () => {
     const inserts: unknown[][] = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (
-          s.includes('CREATE TABLE') ||
-          s.includes('CREATE INDEX') ||
-          s.includes('CREATE UNIQUE') ||
-          s.includes('ALTER TABLE')
-        ) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('CREATE INDEX') ||
+            s.includes('CREATE UNIQUE') ||
+            s.includes('ALTER TABLE')
+          ) {
+            return { rows: [] };
+          }
+          if (s.includes('INSERT INTO public.hrm_contract_clauses')) {
+            inserts.push(params ?? []);
+            return {
+              rows: [
+                {
+                  id: CL_ID,
+                  company_id: params?.[1],
+                  code: 'LEGAL_BASIS_01',
+                  title_vi: 'Căn cứ PL',
+                  body_vi: 'Placeholder citation title',
+                  clause_group: 'LEGAL_BASIS',
+                  apply_to_packs: ['*'],
+                  sort_order: 0,
+                  mandatory: false,
+                  status: 'draft',
+                  version: 1,
+                  effective_from: null,
+                  archived_at: null,
+                  created_at: '2026-08-06',
+                  updated_at: '2026-08-06',
+                },
+              ],
+            };
+          }
           return { rows: [] };
-        }
-        if (s.includes('INSERT INTO public.hrm_contract_clauses')) {
-          inserts.push(params ?? []);
-          return {
-            rows: [
-              {
-                id: CL_ID,
-                company_id: params?.[1],
-                code: 'LEGAL_BASIS_01',
-                title_vi: 'Căn cứ PL',
-                body_vi: 'Placeholder citation title',
-                clause_group: 'LEGAL_BASIS',
-                apply_to_packs: ['*'],
-                sort_order: 0,
-                mandatory: false,
-                status: 'draft',
-                version: 1,
-                effective_from: null,
-                archived_at: null,
-                created_at: '2026-08-06',
-                updated_at: '2026-08-06',
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
     const row = await svc.createClause(
@@ -530,7 +585,10 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
         ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.hrm_contract_print_versions') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.hrm_contract_print_versions') &&
+          s.includes('id = $1')
+        ) {
           expect(s).toMatch(/archived_at IS NULL/);
           expect(s).toMatch(/company_id/);
           return {
@@ -555,7 +613,8 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
                   {
                     code: 'JOB_DUTIES',
                     title_vi: 'Công việc và nhiệm vụ',
-                    body_vi: 'Người lao động thực hiện công việc theo mô tả vị trí.',
+                    body_vi:
+                      'Người lao động thực hiện công việc theo mô tả vị trí.',
                     clause_group: 'JOB',
                     clause_version: 1,
                     sort_order: 1,
@@ -601,7 +660,10 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
         ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.hrm_contract_print_versions') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.hrm_contract_print_versions') &&
+          s.includes('id = $1')
+        ) {
           return {
             rows: [
               {
@@ -612,7 +674,10 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
                 pack_code: 'GENERAL',
                 template_id: TPL_ID,
                 template_version: 1,
-                merged_fields_json: { contract_code: 'HD-HTML-02', employee_full_name: 'Trần B' },
+                merged_fields_json: {
+                  contract_code: 'HD-HTML-02',
+                  employee_full_name: 'Trần B',
+                },
                 clauses_snapshot_json: [
                   {
                     code: 'LEGAL_BASIS',
@@ -639,7 +704,13 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
       }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
-    const html = await svc.renderPrintVersionPdf(PV_ID, 'main', groupCeoToken(), undefined, 'html');
+    const html = await svc.renderPrintVersionPdf(
+      PV_ID,
+      'main',
+      groupCeoToken(),
+      undefined,
+      'html',
+    );
     expect(html.format).toBe('html');
     expect(html.content_type).toMatch(/text\/html/);
     expect(String(html.body)).toContain('HD-HTML-02');
@@ -687,7 +758,9 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
       }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
-    await expect(svc.renderPrintVersionPdf(PV_ID, 'main', groupCeoToken())).rejects.toMatchObject({
+    await expect(
+      svc.renderPrintVersionPdf(PV_ID, 'main', groupCeoToken()),
+    ).rejects.toMatchObject({
       code: HRM_CTR_VERSION_NOT_ISSUED,
     });
   });
@@ -695,53 +768,61 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
   it('DYNAMIC LOCK: CREATE template #9+ with valid format accepts (not closed 8 enum)', async () => {
     const inserted: unknown[][] = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (
-          s.includes('CREATE TABLE') ||
-          s.includes('CREATE INDEX') ||
-          s.includes('CREATE UNIQUE') ||
-          s.includes('ALTER TABLE') ||
-          s.includes('DO $$')
-        ) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('CREATE INDEX') ||
+            s.includes('CREATE UNIQUE') ||
+            s.includes('ALTER TABLE') ||
+            s.includes('DO $$')
+          ) {
+            return { rows: [] };
+          }
+          if (s.includes('INSERT INTO public.hrm_contract_templates')) {
+            inserted.push(params ?? []);
+            return { rows: [] };
+          }
+          if (
+            s.includes('FROM public.hrm_contract_templates') &&
+            s.includes('id = $1')
+          ) {
+            return {
+              rows: [
+                {
+                  id: params?.[0],
+                  company_id: 'holding',
+                  code: 'XEVN_CUSTOM_SEASONAL_OFFICE',
+                  name_vi: 'Mẫu mùa vụ #9',
+                  pack_code: 'IT_OFFICE',
+                  layout_json: {},
+                  keyword_map: {},
+                  status: 'draft',
+                  version: 1,
+                  default_term_type: 'definite',
+                  default_duration_months: 12,
+                  title_print_vi: 'HỢP ĐỒNG LAO ĐỘNG',
+                  matrix_family: 'XEVN_MATRIX',
+                  archived_at: null,
+                  created_at: '2026-08-07',
+                  updated_at: '2026-08-07',
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('FROM public.hrm_contract_templates') &&
+            s.includes('lower(code)')
+          ) {
+            return { rows: [] };
+          }
+          if (s.includes('FROM public.hrm_contract_template_clauses')) {
+            return { rows: [] };
+          }
           return { rows: [] };
-        }
-        if (s.includes('INSERT INTO public.hrm_contract_templates')) {
-          inserted.push(params ?? []);
-          return { rows: [] };
-        }
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes('id = $1')) {
-          return {
-            rows: [
-              {
-                id: params?.[0],
-                company_id: 'holding',
-                code: 'XEVN_CUSTOM_SEASONAL_OFFICE',
-                name_vi: 'Mẫu mùa vụ #9',
-                pack_code: 'IT_OFFICE',
-                layout_json: {},
-                keyword_map: {},
-                status: 'draft',
-                version: 1,
-                default_term_type: 'definite',
-                default_duration_months: 12,
-                title_print_vi: 'HỢP ĐỒNG LAO ĐỘNG',
-                matrix_family: 'XEVN_MATRIX',
-                archived_at: null,
-                created_at: '2026-08-07',
-                updated_at: '2026-08-07',
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes('lower(code)')) {
-          return { rows: [] };
-        }
-        if (s.includes('FROM public.hrm_contract_template_clauses')) {
-          return { rows: [] };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
     const created = await svc.createTemplate(
@@ -794,43 +875,49 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
 
   it('matrix=xevn filters matrix_family=XEVN_MATRIX (open catalog, not code IN 8)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (
-          s.includes('CREATE TABLE') ||
-          s.includes('CREATE INDEX') ||
-          s.includes('CREATE UNIQUE') ||
-          s.includes('ALTER TABLE') ||
-          s.includes('DO $$')
-        ) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('CREATE INDEX') ||
+            s.includes('CREATE UNIQUE') ||
+            s.includes('ALTER TABLE') ||
+            s.includes('DO $$')
+          ) {
+            return { rows: [] };
+          }
+          if (
+            s.includes('FROM public.hrm_contract_templates') &&
+            s.includes('ORDER BY code')
+          ) {
+            expect(s).toContain('matrix_family');
+            expect(JSON.stringify(params ?? [])).toContain('XEVN_MATRIX');
+            return {
+              rows: [
+                {
+                  id: TPL_ID,
+                  company_id: 'holding',
+                  code: 'XEVN_CUSTOM_EXTRA',
+                  name_vi: 'Extra #9',
+                  pack_code: 'IT_OFFICE',
+                  layout_json: {},
+                  keyword_map: {},
+                  status: 'active',
+                  version: 1,
+                  matrix_family: 'XEVN_MATRIX',
+                  archived_at: null,
+                  created_at: '2026-08-07',
+                  updated_at: '2026-08-07',
+                },
+              ],
+            };
+          }
+          if (s.includes('FROM public.hrm_contract_template_clauses'))
+            return { rows: [] };
           return { rows: [] };
-        }
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes('ORDER BY code')) {
-          expect(s).toContain('matrix_family');
-          expect(JSON.stringify(params ?? [])).toContain('XEVN_MATRIX');
-          return {
-            rows: [
-              {
-                id: TPL_ID,
-                company_id: 'holding',
-                code: 'XEVN_CUSTOM_EXTRA',
-                name_vi: 'Extra #9',
-                pack_code: 'IT_OFFICE',
-                layout_json: {},
-                keyword_map: {},
-                status: 'active',
-                version: 1,
-                matrix_family: 'XEVN_MATRIX',
-                archived_at: null,
-                created_at: '2026-08-07',
-                updated_at: '2026-08-07',
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.hrm_contract_template_clauses')) return { rows: [] };
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
     const list = await svc.listTemplates(
@@ -851,10 +938,14 @@ describe('Contract legal print (PO-HRM-CONTRACT-LEGAL-PRINT-BE-01)', () => {
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('DROP CONSTRAINT IF EXISTS chk_hrm_ctr_tpl_xevn_code'))).toBe(
-      true,
-    );
-    expect(sqls.every((q) => !q.includes("code IN ('XEVN_PROBATION_OFFICE'"))).toBe(true);
+    expect(
+      sqls.some((q) =>
+        q.includes('DROP CONSTRAINT IF EXISTS chk_hrm_ctr_tpl_xevn_code'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.every((q) => !q.includes("code IN ('XEVN_PROBATION_OFFICE'")),
+    ).toBe(true);
   });
 });
 
@@ -966,7 +1057,10 @@ describe('CTR template invent KEY CNS (PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-TEMPLA
         if (s.includes('COUNT(*)') && s.includes('hrm_contract_templates')) {
           return { rows: [{ c: '2' }] };
         }
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes('id = $1::uuid')) {
+        if (
+          s.includes('FROM public.hrm_contract_templates') &&
+          s.includes('id = $1::uuid')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -989,14 +1083,19 @@ describe('CTR template invent KEY CNS (PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-TEMPLA
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
         if (schemaOk(s)) return { rows: [] };
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes('id = $1::uuid')) {
+        if (
+          s.includes('FROM public.hrm_contract_templates') &&
+          s.includes('id = $1::uuid')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
       }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
-    await expect(svc.getTemplateById(missId, 'main', groupCeoToken())).rejects.toMatchObject({
+    await expect(
+      svc.getTemplateById(missId, 'main', groupCeoToken()),
+    ).rejects.toMatchObject({
       code: HRM_CTR_TPL_404,
     });
   });
@@ -1075,7 +1174,10 @@ describe('CTR template invent KEY CNS (PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-TEMPLA
         if (s.includes('COUNT(*)') && s.includes('hrm_contract_templates')) {
           return { rows: [{ c: '1' }] };
         }
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes('lower(code)')) {
+        if (
+          s.includes('FROM public.hrm_contract_templates') &&
+          s.includes('lower(code)')
+        ) {
           return { rows: [] };
         }
         return { rows: [] };
@@ -1094,23 +1196,28 @@ describe('CTR template invent KEY CNS (PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-TEMPLA
   it('scope_parity invent KEY: group CEO main rollup uses same company filter as list', async () => {
     const queries: string[] = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        queries.push(s);
-        if (schemaOk(s)) return { rows: [] };
-        if (s.includes('COUNT(*)') && s.includes('hrm_contract_templates')) {
-          const flat = JSON.stringify(params ?? []);
-          expect(flat).toContain('holding');
-          return { rows: [{ c: '1' }] };
-        }
-        if (s.includes('FROM public.hrm_contract_templates') && s.includes('lower(code)')) {
-          const flat = JSON.stringify(params ?? []);
-          expect(flat).toContain('holding');
-          expect(s).toMatch(/company_id/);
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          queries.push(s);
+          if (schemaOk(s)) return { rows: [] };
+          if (s.includes('COUNT(*)') && s.includes('hrm_contract_templates')) {
+            const flat = JSON.stringify(params ?? []);
+            expect(flat).toContain('holding');
+            return { rows: [{ c: '1' }] };
+          }
+          if (
+            s.includes('FROM public.hrm_contract_templates') &&
+            s.includes('lower(code)')
+          ) {
+            const flat = JSON.stringify(params ?? []);
+            expect(flat).toContain('holding');
+            expect(s).toMatch(/company_id/);
+            return { rows: [] };
+          }
           return { rows: [] };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
     await expect(
@@ -1120,7 +1227,9 @@ describe('CTR template invent KEY CNS (PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-TEMPLA
         authorization: groupCeoToken(),
       }),
     ).rejects.toMatchObject({ code: HRM_CTR_TPL_KEY });
-    expect(queries.some((q) => q.includes('hrm_contract_templates'))).toBe(true);
+    expect(queries.some((q) => q.includes('hrm_contract_templates'))).toBe(
+      true,
+    );
   });
 
   it('constant taxonomy: KEY ≠ 404 ≠ NONE ≠ CODE-INVALID', () => {
@@ -1135,56 +1244,64 @@ describe('CTR template invent KEY CNS (PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-TEMPLA
     const ISSUED_CODE = 'CL_IS_CLQA3-KMJRGF';
     let updateAttempt = false;
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (
-          s.includes('CREATE TABLE') ||
-          s.includes('CREATE INDEX') ||
-          s.includes('CREATE UNIQUE') ||
-          s.includes('ALTER TABLE') ||
-          s.includes('DO $$')
-        ) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('CREATE INDEX') ||
+            s.includes('CREATE UNIQUE') ||
+            s.includes('ALTER TABLE') ||
+            s.includes('DO $$')
+          ) {
+            return { rows: [] };
+          }
+          if (
+            s.includes('FROM public.hrm_contract_clauses') &&
+            s.includes('id = $1')
+          ) {
+            return {
+              rows: [
+                {
+                  id: CL_ID,
+                  company_id: 'holding',
+                  code: ISSUED_CODE,
+                  title_vi: 'Điều khoản QA-03',
+                  body_vi: 'Freeze marker V1 CLQA3-KMJRGF',
+                  clause_group: 'JOB',
+                  apply_to_packs: ['*'],
+                  sort_order: 0,
+                  mandatory: false,
+                  status: 'active',
+                  version: 1,
+                  effective_from: null,
+                  archived_at: null,
+                  created_at: '2026-08-09',
+                  updated_at: '2026-08-09',
+                  origin: 'member',
+                  origin_company_id: null,
+                  origin_publish_version: null,
+                  lineage_code: null,
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('FROM public.hrm_contract_print_versions') &&
+            s.includes('jsonb_array_elements')
+          ) {
+            expect(params?.[1]).toBe(ISSUED_CODE);
+            const companyFilter = JSON.stringify(params?.[0] ?? []);
+            expect(companyFilter.toLowerCase()).toContain('holding');
+            return { rows: [{ c: '1' }] };
+          }
+          if (s.includes('UPDATE public.hrm_contract_clauses')) {
+            updateAttempt = true;
+            return { rows: [] };
+          }
           return { rows: [] };
-        }
-        if (s.includes('FROM public.hrm_contract_clauses') && s.includes('id = $1')) {
-          return {
-            rows: [
-              {
-                id: CL_ID,
-                company_id: 'holding',
-                code: ISSUED_CODE,
-                title_vi: 'Điều khoản QA-03',
-                body_vi: 'Freeze marker V1 CLQA3-KMJRGF',
-                clause_group: 'JOB',
-                apply_to_packs: ['*'],
-                sort_order: 0,
-                mandatory: false,
-                status: 'active',
-                version: 1,
-                effective_from: null,
-                archived_at: null,
-                created_at: '2026-08-09',
-                updated_at: '2026-08-09',
-                origin: 'member',
-                origin_company_id: null,
-                origin_publish_version: null,
-                lineage_code: null,
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.hrm_contract_print_versions') && s.includes('jsonb_array_elements')) {
-          expect(params?.[1]).toBe(ISSUED_CODE);
-          const companyFilter = JSON.stringify(params?.[0] ?? []);
-          expect(companyFilter.toLowerCase()).toContain('holding');
-          return { rows: [{ c: '1' }] };
-        }
-        if (s.includes('UPDATE public.hrm_contract_clauses')) {
-          updateAttempt = true;
-          return { rows: [] };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
     await expect(
@@ -1200,57 +1317,72 @@ describe('CTR template invent KEY CNS (PO-HRM-DYNAMIC-CONFIG-PLATFORM-CTR-TEMPLA
 
   it('AC-PLT-CTR-CL-02: draft body edit without issued snapshot still updates (200 path)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        if (
-          s.includes('CREATE TABLE') ||
-          s.includes('CREATE INDEX') ||
-          s.includes('CREATE UNIQUE') ||
-          s.includes('ALTER TABLE') ||
-          s.includes('DO $$')
-        ) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('CREATE INDEX') ||
+            s.includes('CREATE UNIQUE') ||
+            s.includes('ALTER TABLE') ||
+            s.includes('DO $$')
+          ) {
+            return { rows: [] };
+          }
+          if (
+            s.includes('FROM public.hrm_contract_clauses') &&
+            s.includes('id = $1')
+          ) {
+            return {
+              rows: [
+                {
+                  id: CL_ID,
+                  company_id: 'holding',
+                  code: 'DRAFT_ONLY_CL',
+                  title_vi: 'Draft',
+                  body_vi: 'Body V1',
+                  clause_group: 'JOB',
+                  apply_to_packs: ['*'],
+                  sort_order: 0,
+                  mandatory: false,
+                  status: 'draft',
+                  version: 1,
+                  effective_from: null,
+                  archived_at: null,
+                  created_at: '2026-08-09',
+                  updated_at: '2026-08-09',
+                  origin: 'member',
+                  origin_company_id: null,
+                  origin_publish_version: null,
+                  lineage_code: null,
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('FROM public.hrm_contract_print_versions') &&
+            s.includes('jsonb_array_elements')
+          ) {
+            return { rows: [{ c: '0' }] };
+          }
+          if (s.includes('UPDATE public.hrm_contract_clauses')) {
+            return { rows: [] };
+          }
           return { rows: [] };
-        }
-        if (s.includes('FROM public.hrm_contract_clauses') && s.includes('id = $1')) {
-          return {
-            rows: [
-              {
-                id: CL_ID,
-                company_id: 'holding',
-                code: 'DRAFT_ONLY_CL',
-                title_vi: 'Draft',
-                body_vi: 'Body V1',
-                clause_group: 'JOB',
-                apply_to_packs: ['*'],
-                sort_order: 0,
-                mandatory: false,
-                status: 'draft',
-                version: 1,
-                effective_from: null,
-                archived_at: null,
-                created_at: '2026-08-09',
-                updated_at: '2026-08-09',
-                origin: 'member',
-                origin_company_id: null,
-                origin_publish_version: null,
-                lineage_code: null,
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.hrm_contract_print_versions') && s.includes('jsonb_array_elements')) {
-          return { rows: [{ c: '0' }] };
-        }
-        if (s.includes('UPDATE public.hrm_contract_clauses')) {
-          return { rows: [] };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
     const svc = new ContractLegalPrintService(db);
-    await svc.updateClause(CL_ID, { body_vi: 'Body V2 draft OK' }, 'main', groupCeoToken());
+    await svc.updateClause(
+      CL_ID,
+      { body_vi: 'Body V2 draft OK' },
+      'main',
+      groupCeoToken(),
+    );
     expect(
-      db.query.mock.calls.some((c) => String(c[0]).includes('UPDATE public.hrm_contract_clauses')),
+      db.query.mock.calls.some((c) =>
+        String(c[0]).includes('UPDATE public.hrm_contract_clauses'),
+      ),
     ).toBe(true);
   });
 });
@@ -1262,10 +1394,17 @@ describe('PO-HRM-CTR-WORKSPACE-BE-LAYOUT-01 resolveContractDetailLayout', () => 
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         const s = String(sql);
-        if (s.includes('CREATE TABLE') || s.includes('ALTER TABLE') || s.includes('CREATE INDEX')) {
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX')
+        ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.hrm_contract_clauses c') && s.includes('ANY($1::uuid[])')) {
+        if (
+          s.includes('FROM public.hrm_contract_clauses c') &&
+          s.includes('ANY($1::uuid[])')
+        ) {
           return {
             rows: [
               {
@@ -1292,7 +1431,10 @@ describe('PO-HRM-CTR-WORKSPACE-BE-LAYOUT-01 resolveContractDetailLayout', () => 
             ],
           };
         }
-        if (s.includes('FROM public.employee_contracts ec') && s.includes('ec.id = $1::uuid')) {
+        if (
+          s.includes('FROM public.employee_contracts ec') &&
+          s.includes('ec.id = $1::uuid')
+        ) {
           return {
             rows: [
               {
@@ -1368,4 +1510,3 @@ describe('PO-HRM-CTR-WORKSPACE-BE-LAYOUT-01 resolveContractDetailLayout', () => 
     expect(layout.preview_summary?.pack_code).toBeTruthy();
   });
 });
-

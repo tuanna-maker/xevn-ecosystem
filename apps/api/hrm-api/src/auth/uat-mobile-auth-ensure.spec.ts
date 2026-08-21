@@ -38,15 +38,22 @@ describe('uat-mobile-auth-ensure', () => {
   });
 
   it('resolveCanonicalUatLoginEmail maps legacy → uat.nv SoT', () => {
-    expect(resolveCanonicalUatLoginEmail('nguyen.van.an.0042@xe.vn')).toBe('uat.nv0042@xe.vn');
-    expect(resolveCanonicalUatLoginEmail('uat.nv0001@xe.vn')).toBe('uat.nv0001@xe.vn');
+    expect(resolveCanonicalUatLoginEmail('nguyen.van.an.0042@xe.vn')).toBe(
+      'uat.nv0042@xe.vn',
+    );
+    expect(resolveCanonicalUatLoginEmail('uat.nv0001@xe.vn')).toBe(
+      'uat.nv0001@xe.vn',
+    );
   });
 
   it('ensureUatMobileEmployeeRow inserts nv0001 / nv0002 persona lanes', async () => {
     const insertBySeq: Record<number, unknown[]> = {};
     const db = {
       query: jest.fn(async (sql: string, params?: unknown[]) => {
-        if (sql.includes('SELECT id::text AS id') && sql.includes('lower(email)')) {
+        if (
+          sql.includes('SELECT id::text AS id') &&
+          sql.includes('lower(email)')
+        ) {
           return { rows: [] };
         }
         if (sql.includes('INSERT INTO public.employees')) {
@@ -81,23 +88,33 @@ describe('uat-mobile-auth-ensure', () => {
       .digest('hex');
     expect(cf1.mobile_password_hash).toBe(expectedHash);
 
-    const cf2 = JSON.parse(String(insertBySeq[2]?.[6] ?? '{}')) as { mobile_persona?: string };
+    const cf2 = JSON.parse(String(insertBySeq[2]?.[6] ?? '{}')) as {
+      mobile_persona?: string;
+    };
     expect(cf2.mobile_persona).toBe('mgr');
   });
 
   it('matchesUatMobilePassword uses env/default password for UAT seq emails', () => {
     delete process.env.HRM_MOBILE_UAT_PASSWORD;
     delete process.env.PILOT_MOBILE_UAT_PASSWORD;
-    expect(matchesUatMobilePassword('uat.nv0001@xe.vn', 'xevn-uat-2026')).toBe(true);
+    expect(matchesUatMobilePassword('uat.nv0001@xe.vn', 'xevn-uat-2026')).toBe(
+      true,
+    );
     expect(matchesUatMobilePassword('uat.nv0001@xe.vn', 'wrong')).toBe(false);
     expect(matchesUatMobilePassword('ceo@xe.vn', 'xevn-uat-2026')).toBe(false);
-    expect(matchesUatMobilePassword('nguyen.van.an.0001@xe.vn', 'xevn-uat-2026')).toBe(true);
+    expect(
+      matchesUatMobilePassword('nguyen.van.an.0001@xe.vn', 'xevn-uat-2026'),
+    ).toBe(true);
   });
 
   it('matchesUatMobilePassword honors HRM_MOBILE_UAT_PASSWORD override', () => {
     process.env.HRM_MOBILE_UAT_PASSWORD = 'custom-uat-pw';
-    expect(matchesUatMobilePassword('uat.nv0001@xe.vn', 'custom-uat-pw')).toBe(true);
-    expect(matchesUatMobilePassword('uat.nv0001@xe.vn', 'xevn-uat-2026')).toBe(false);
+    expect(matchesUatMobilePassword('uat.nv0001@xe.vn', 'custom-uat-pw')).toBe(
+      true,
+    );
+    expect(matchesUatMobilePassword('uat.nv0001@xe.vn', 'xevn-uat-2026')).toBe(
+      false,
+    );
   });
 
   it('ensureUatMobileEmployeeRow updates existing row by id', async () => {

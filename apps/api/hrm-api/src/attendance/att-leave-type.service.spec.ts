@@ -77,14 +77,24 @@ describe('AttLeaveTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-BE-01)', () =>
     } as unknown as HrmDbService;
     const svc = new AttLeaveTypeService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.att_leave_type'))).toBe(
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.att_leave_type'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('uq_att_leave_type_company_key_active')),
+    ).toBe(true);
+    expect(sqls.some((q) => q.includes('chk_att_leave_type_key_format'))).toBe(
       true,
     );
-    expect(sqls.some((q) => q.includes('uq_att_leave_type_company_key_active'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_att_leave_type_key_format'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_att_leave_type_category'))).toBe(true);
-    expect(sqls.every((q) => !q.includes("leave_type_key IN ("))).toBe(true);
-    expect(sqls.every((q) => !q.includes("leave_type_key IN ('annual'"))).toBe(true);
+    expect(sqls.some((q) => q.includes('chk_att_leave_type_category'))).toBe(
+      true,
+    );
+    expect(sqls.every((q) => !q.includes('leave_type_key IN ('))).toBe(true);
+    expect(sqls.every((q) => !q.includes("leave_type_key IN ('annual'"))).toBe(
+      true,
+    );
     expect(sqls.every((q) => !q.includes("'LVT_01'"))).toBe(true);
   });
 
@@ -114,7 +124,10 @@ describe('AttLeaveTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-BE-01)', () =>
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.att_leave_type') && s.includes('archived_at IS NULL')) {
+        if (
+          s.includes('FROM public.att_leave_type') &&
+          s.includes('archived_at IS NULL')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.att_leave_type')) {
@@ -139,18 +152,26 @@ describe('AttLeaveTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-BE-01)', () =>
 
   it('scope_parity: list id → getById 200 (group CEO main→holding)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        if (schemaPassthrough(sql)) return { rows: [] };
-        const s = String(sql);
-        if (s.includes('FROM public.att_leave_type') && s.includes('ORDER BY leave_type_key')) {
-          expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
-          return { rows: [baseRow()] };
-        }
-        if (s.includes('FROM public.att_leave_type') && s.includes('id = $1')) {
-          return { rows: [baseRow()] };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          if (schemaPassthrough(sql)) return { rows: [] };
+          const s = String(sql);
+          if (
+            s.includes('FROM public.att_leave_type') &&
+            s.includes('ORDER BY leave_type_key')
+          ) {
+            expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
+            return { rows: [baseRow()] };
+          }
+          if (
+            s.includes('FROM public.att_leave_type') &&
+            s.includes('id = $1')
+          ) {
+            return { rows: [baseRow()] };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const svc = new AttLeaveTypeService(db);
     const auth = groupCeoToken();
@@ -165,7 +186,10 @@ describe('AttLeaveTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-BE-01)', () =>
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
-        if (String(sql).includes('FROM public.att_leave_type') && String(sql).includes('id = $1')) {
+        if (
+          String(sql).includes('FROM public.att_leave_type') &&
+          String(sql).includes('id = $1')
+        ) {
           return { rows: [baseRow({ company_id: 'holding' })] };
         }
         return { rows: [] };
@@ -212,9 +236,13 @@ describe('AttLeaveTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-BE-01)', () =>
       }),
     } as unknown as HrmDbService;
     const svc = new AttLeaveTypeService(db, settings);
-    const effective = await svc.listEffective({ company_id: 'holding' }, groupCeoToken(), {
-      tenantId: 'xevn',
-    });
+    const effective = await svc.listEffective(
+      { company_id: 'holding' },
+      groupCeoToken(),
+      {
+        tenantId: 'xevn',
+      },
+    );
     expect(effective.total).toBe(2);
     const annual = effective.data.find((r) => r.leaveTypeKey === 'annual');
     expect(annual?.nameVi).toBe('Phép năm ATT native');
@@ -228,7 +256,9 @@ describe('AttLeaveTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-BE-01)', () =>
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         if (String(sql).includes('FROM public.att_leave_type')) {
-          return { rows: [baseRow({ leave_type_key: 'annual', name_vi: 'Phép năm' })] };
+          return {
+            rows: [baseRow({ leave_type_key: 'annual', name_vi: 'Phép năm' })],
+          };
         }
         return { rows: [] };
       }),
@@ -270,7 +300,10 @@ describe('AttLeaveTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-BE-01)', () =>
         if (s.includes('FROM public.att_leave_type') && s.includes('id = $1')) {
           return { rows: [baseRow()] };
         }
-        if (s.includes('UPDATE public.att_leave_type') && s.includes("status = 'retired'")) {
+        if (
+          s.includes('UPDATE public.att_leave_type') &&
+          s.includes("status = 'retired'")
+        ) {
           return {
             rows: [
               baseRow({
@@ -287,6 +320,8 @@ describe('AttLeaveTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-BE-01)', () =>
     const row = await svc.retireLeaveType(LVT_ID, 'holding', groupCeoToken());
     expect(row.status).toBe('retired');
     expect(row.archivedAt).toBeTruthy();
-    expect(sqls.every((q) => !q.includes('DELETE FROM public.att_leave_type'))).toBe(true);
+    expect(
+      sqls.every((q) => !q.includes('DELETE FROM public.att_leave_type')),
+    ).toBe(true);
   });
 });

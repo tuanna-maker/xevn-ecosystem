@@ -7,18 +7,26 @@ import {
 describe('expandWorkflowResolverCompanyIds', () => {
   it('maps main → holding + holding UUID', () => {
     const ids = expandWorkflowResolverCompanyIds('main');
-    expect(ids).toEqual(expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]));
+    expect(ids).toEqual(
+      expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]),
+    );
     expect(ids).not.toContain('main');
   });
 
   it('maps holding slug → slug + UUID', () => {
     const ids = expandWorkflowResolverCompanyIds('holding');
-    expect(ids).toEqual(expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]));
+    expect(ids).toEqual(
+      expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]),
+    );
   });
 
   it('maps pilot UUID → holding slug + UUID', () => {
-    const ids = expandWorkflowResolverCompanyIds(HRM_COMPANY_UUID_BY_SLUG.holding);
-    expect(ids).toEqual(expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]));
+    const ids = expandWorkflowResolverCompanyIds(
+      HRM_COMPANY_UUID_BY_SLUG.holding,
+    );
+    expect(ids).toEqual(
+      expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]),
+    );
   });
 });
 
@@ -45,8 +53,12 @@ describe('LeaveWorkflowBridge.ensureSchema G-DB-03', () => {
     });
     expect(out.applied).toBe(false);
     const ddl = queryMock.mock.calls.map((c) => String(c[0])).join('\n');
-    const createIdx = ddl.indexOf('CREATE TABLE IF NOT EXISTS public.leave_requests');
-    const alterIdx = ddl.indexOf('ADD COLUMN IF NOT EXISTS workflow_instance_id');
+    const createIdx = ddl.indexOf(
+      'CREATE TABLE IF NOT EXISTS public.leave_requests',
+    );
+    const alterIdx = ddl.indexOf(
+      'ADD COLUMN IF NOT EXISTS workflow_instance_id',
+    );
     expect(createIdx).toBeGreaterThanOrEqual(0);
     expect(alterIdx).toBeGreaterThan(createIdx);
     expect(ddl).toMatch(/company_id TEXT NOT NULL/);
@@ -106,10 +118,13 @@ describe('LeaveWorkflowBridge.startLeaveWorkflowIfConfigured', () => {
         authorization: 'Bearer portal',
       });
       expect(out).toEqual({ workflowInstanceId: instanceId });
-      expect(catalogSync.buildXbosUpstreamHeaders).toHaveBeenCalledWith('Bearer portal', {
-        tenantId: 'xevn',
-        companyId: 'holding',
-      });
+      expect(catalogSync.buildXbosUpstreamHeaders).toHaveBeenCalledWith(
+        'Bearer portal',
+        {
+          tenantId: 'xevn',
+          companyId: 'holding',
+        },
+      );
       const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
       const hdrs = init.headers as Record<string, string>;
       expect(hdrs['x-tenant-id']).toBe('xevn');
@@ -121,7 +136,9 @@ describe('LeaveWorkflowBridge.startLeaveWorkflowIfConfigured', () => {
         String(c[0]).includes('SET workflow_instance_id'),
       );
       expect(updateCall?.[1]).toEqual([leaveId, instanceId]);
-      expect(String(updateCall?.[0])).toContain('RETURNING workflow_instance_id');
+      expect(String(updateCall?.[0])).toContain(
+        'RETURNING workflow_instance_id',
+      );
     } finally {
       globalThis.fetch = prevFetch;
     }
@@ -175,11 +192,19 @@ describe('LeaveWorkflowBridge.resolveManagerForWorkflow', () => {
 
   it('CD-FB-07: company_id=holding (TEXT slug) uses ANY(text[]) — never ::uuid', async () => {
     const queryMock = jest.fn().mockResolvedValue({
-      rows: [{ manager_user_id: managerUserId, manager_employee_id: managerEmployeeId }],
+      rows: [
+        {
+          manager_user_id: managerUserId,
+          manager_employee_id: managerEmployeeId,
+        },
+      ],
     });
     const bridge = buildBridge(queryMock);
 
-    const result = await bridge.resolveManagerForWorkflow(employeeId, 'holding');
+    const result = await bridge.resolveManagerForWorkflow(
+      employeeId,
+      'holding',
+    );
 
     expect(result).toEqual({
       manager_user_id: managerUserId,
@@ -189,12 +214,19 @@ describe('LeaveWorkflowBridge.resolveManagerForWorkflow', () => {
     expect(sql).toMatch(/e\.company_id = ANY\(\$\d+::text\[\]\)/);
     expect(sql).not.toMatch(/e\.company_id\s*=\s*\$\d+::uuid/);
     expect(params[0]).toBe(employeeId);
-    expect(params[1]).toEqual(expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]));
+    expect(params[1]).toEqual(
+      expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]),
+    );
   });
 
   it('CD-FB-07: company_id=<holding UUID> expands to slug match → manager 200 payload', async () => {
     const queryMock = jest.fn().mockResolvedValue({
-      rows: [{ manager_user_id: managerUserId, manager_employee_id: managerEmployeeId }],
+      rows: [
+        {
+          manager_user_id: managerUserId,
+          manager_employee_id: managerEmployeeId,
+        },
+      ],
     });
     const bridge = buildBridge(queryMock);
 
@@ -207,12 +239,19 @@ describe('LeaveWorkflowBridge.resolveManagerForWorkflow', () => {
     const [sql, params] = queryMock.mock.calls[0] as [string, unknown[]];
     expect(sql).toMatch(/e\.company_id = ANY\(\$\d+::text\[\]\)/);
     expect(sql).not.toMatch(/e\.company_id\s*=\s*\$\d+::uuid/);
-    expect(params[1]).toEqual(expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]));
+    expect(params[1]).toEqual(
+      expect.arrayContaining(['holding', HRM_COMPANY_UUID_BY_SLUG.holding]),
+    );
   });
 
   it('omits company filter when company_id absent', async () => {
     const queryMock = jest.fn().mockResolvedValue({
-      rows: [{ manager_user_id: managerUserId, manager_employee_id: managerEmployeeId }],
+      rows: [
+        {
+          manager_user_id: managerUserId,
+          manager_employee_id: managerEmployeeId,
+        },
+      ],
     });
     const bridge = buildBridge(queryMock);
 

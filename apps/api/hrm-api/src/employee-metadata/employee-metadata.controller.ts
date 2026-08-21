@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Headers, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -10,11 +19,20 @@ import { EmployeeMetadataService } from './employee-metadata.service';
 
 @Controller('employee-metadata')
 export class EmployeeMetadataController {
-  constructor(private readonly employeeMetadataService: EmployeeMetadataService) {}
+  constructor(
+    private readonly employeeMetadataService: EmployeeMetadataService,
+  ) {}
 
-  private assertBusinessAccess(authorization?: string, internalApiKey?: string) {
+  private assertBusinessAccess(
+    authorization?: string,
+    internalApiKey?: string,
+  ) {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized employee metadata access', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized employee metadata access',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -27,10 +45,15 @@ export class EmployeeMetadataController {
     @Body() body: SubmitEmployeeMetadataChangeDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: body.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: body.company_id ?? headerCompanyId,
+    });
     return this.employeeMetadataService
       .submitChangeRequest(body)
-      .then((data) => ok(data, 'HRM-META-201', 'Metadata change request submitted'));
+      .then((data) =>
+        ok(data, 'HRM-META-201', 'Metadata change request submitted'),
+      );
   }
 
   @Get('change-requests')
@@ -42,10 +65,15 @@ export class EmployeeMetadataController {
     @Query() query: ListEmployeeMetadataChangeRequestsQueryDto,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    resolveScopeContext(authorization, { tenantId, companyId: query.company_id ?? headerCompanyId });
+    resolveScopeContext(authorization, {
+      tenantId,
+      companyId: query.company_id ?? headerCompanyId,
+    });
     return this.employeeMetadataService
       .listChangeRequests(query, authorization)
-      .then((data) => ok(data, 'HRM-META-200', 'Metadata change requests listed'));
+      .then((data) =>
+        ok(data, 'HRM-META-200', 'Metadata change requests listed'),
+      );
   }
 
   @Post('change-requests/:changeRequestId/approve')
@@ -60,8 +88,15 @@ export class EmployeeMetadataController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.employeeMetadataService
-      .approveChangeRequest(changeRequestId, body, scope.companyId, authorization)
-      .then((data) => ok(data, 'HRM-META-202', 'Metadata change request approved'));
+      .approveChangeRequest(
+        changeRequestId,
+        body,
+        scope.companyId,
+        authorization,
+      )
+      .then((data) =>
+        ok(data, 'HRM-META-202', 'Metadata change request approved'),
+      );
   }
 
   @Post('change-requests/:changeRequestId/reject')
@@ -76,8 +111,15 @@ export class EmployeeMetadataController {
     this.assertBusinessAccess(authorization, internalApiKey);
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     return this.employeeMetadataService
-      .rejectChangeRequest(changeRequestId, body, scope.companyId, authorization)
-      .then((data) => ok(data, 'HRM-META-203', 'Metadata change request rejected'));
+      .rejectChangeRequest(
+        changeRequestId,
+        body,
+        scope.companyId,
+        authorization,
+      )
+      .then((data) =>
+        ok(data, 'HRM-META-203', 'Metadata change request rejected'),
+      );
   }
 
   @Get('audit-logs')

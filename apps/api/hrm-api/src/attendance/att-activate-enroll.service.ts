@@ -149,7 +149,9 @@ export class AttActivateEnrollService {
   }
 
   /** R-ATT-12-CONSUMER entry — fire-and-forget safe; logs errors without failing CORE activate. */
-  async handleEmployeeActivated(payload: EmployeeActivatedRealtimePayload): Promise<void> {
+  async handleEmployeeActivated(
+    payload: EmployeeActivatedRealtimePayload,
+  ): Promise<void> {
     try {
       await this.enrollOnActivate({
         employeeId: payload.employee_id,
@@ -172,7 +174,9 @@ export class AttActivateEnrollService {
     tenantId?: string;
   }): Promise<ActivateEnrollResult> {
     await this.ensureSchema();
-    const effectiveDateIso = parseViEffectiveDateToIso(input.effectiveDateDisplay);
+    const effectiveDateIso = parseViEffectiveDateToIso(
+      input.effectiveDateDisplay,
+    );
     const idempotencyKey = buildActivateEnrollIdempotencyKey(
       input.companyId,
       input.employeeId,
@@ -243,7 +247,10 @@ export class AttActivateEnrollService {
           input.tenantId,
         );
         if (!eff.data) continue;
-        const entitled = computeActivateEnrollEntitledDays(eff.data.annualDays, effectiveDateIso);
+        const entitled = computeActivateEnrollEntitledDays(
+          eff.data.annualDays,
+          effectiveDateIso,
+        );
         if (entitled <= 0) continue;
         await this.upsertBalanceRow(query, {
           companyId: employee.company_id,
@@ -262,13 +269,16 @@ export class AttActivateEnrollService {
         input.authorization,
       );
       if (shiftId) {
-        defaultShiftAssignmentId = await this.insertActivateDefaultShift(query, {
-          companyId: persistCompanyId,
-          employeeId: employee.id,
-          shiftId,
-          departmentId: this.readEmployeeDepartment(employee),
-          effectiveFromIso: effectiveDateIso,
-        });
+        defaultShiftAssignmentId = await this.insertActivateDefaultShift(
+          query,
+          {
+            companyId: persistCompanyId,
+            employeeId: employee.id,
+            shiftId,
+            departmentId: this.readEmployeeDepartment(employee),
+            effectiveFromIso: effectiveDateIso,
+          },
+        );
       }
 
       if (defaultShiftAssignmentId) {
@@ -300,7 +310,11 @@ export class AttActivateEnrollService {
     departmentId?: string | null;
     authorization?: string;
     tenantId?: string;
-  }): Promise<{ assignmentId: string; shiftId: string; effectiveFrom: string }> {
+  }): Promise<{
+    assignmentId: string;
+    shiftId: string;
+    effectiveFrom: string;
+  }> {
     await this.ensureSchema();
     const employee = await this.loadActiveEmployee(input.employeeId);
     const persistCompanyId = resolveHrmPersistCompanyIdText(
@@ -313,13 +327,16 @@ export class AttActivateEnrollService {
       persistCompanyId,
       input.authorization,
     );
-    const effectiveFromIso = parseViEffectiveDateToIso(input.effectiveFromDisplay);
+    const effectiveFromIso = parseViEffectiveDateToIso(
+      input.effectiveFromDisplay,
+    );
     const assignmentId = await this.db.withTransaction((query) =>
       this.insertActivateDefaultShift(query, {
         companyId: persistCompanyId,
         employeeId: employee.id,
         shiftId: input.shiftId,
-        departmentId: input.departmentId ?? this.readEmployeeDepartment(employee),
+        departmentId:
+          input.departmentId ?? this.readEmployeeDepartment(employee),
         effectiveFromIso,
       }),
     );
@@ -337,7 +354,9 @@ export class AttActivateEnrollService {
     };
   }
 
-  private async loadActiveEmployee(employeeId: string): Promise<EmployeeActivateRow> {
+  private async loadActiveEmployee(
+    employeeId: string,
+  ): Promise<EmployeeActivateRow> {
     const res = await this.db.query<EmployeeActivateRow>(
       `
         SELECT id, company_id, status, custom_fields
@@ -349,9 +368,15 @@ export class AttActivateEnrollService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-ATT-ENROLL-404', 'Employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-ATT-ENROLL-404',
+        'Employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    const status = String(row.status ?? '').trim().toLowerCase();
+    const status = String(row.status ?? '')
+      .trim()
+      .toLowerCase();
     if (status !== 'active') {
       throw new ApiException(
         HRM_ATT_ENROLL_NOT_ACTIVE,
@@ -423,7 +448,11 @@ export class AttActivateEnrollService {
     });
     if (hit?.shift_id) {
       const shiftKey = String(hit.shift_id).trim();
-      const byRule = await this.tryResolveShiftId(shiftKey, persistCompanyId, authorization);
+      const byRule = await this.tryResolveShiftId(
+        shiftKey,
+        persistCompanyId,
+        authorization,
+      );
       if (byRule) return byRule;
     }
 
@@ -436,7 +465,9 @@ export class AttActivateEnrollService {
     if (departmentId) {
       const deptNorm = departmentId.toLowerCase();
       const deptMatch = effective.data.find(
-        (s) => s.department && String(s.department).trim().toLowerCase() === deptNorm,
+        (s) =>
+          s.department &&
+          String(s.department).trim().toLowerCase() === deptNorm,
       );
       if (deptMatch) return deptMatch.id;
     }
@@ -444,7 +475,9 @@ export class AttActivateEnrollService {
     return effective.data[0]?.id ?? null;
   }
 
-  private async loadSpecificityRows(companySlug: string): Promise<SpecificityRow[]> {
+  private async loadSpecificityRows(
+    companySlug: string,
+  ): Promise<SpecificityRow[]> {
     await this.attendanceConfig.ensureLatePenaltySpecificitySchema();
     const res = await this.db.query<SpecificityRow>(
       `
@@ -464,16 +497,24 @@ export class AttActivateEnrollService {
   ): Promise<string | null> {
     const key = shiftKey.trim();
     if (!key) return null;
-    const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const uuidRe =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (uuidRe.test(key)) {
       try {
-        const row = await this.attendanceCatalog.getWorkShiftById(key, companyId, authorization);
+        const row = await this.attendanceCatalog.getWorkShiftById(
+          key,
+          companyId,
+          authorization,
+        );
         return row.id;
       } catch {
         return null;
       }
     }
-    const list = await this.attendanceCatalog.listEffectiveWorkShifts(companyId, authorization);
+    const list = await this.attendanceCatalog.listEffectiveWorkShifts(
+      companyId,
+      authorization,
+    );
     const hit = list.data.find(
       (s) => s.code.trim().toLowerCase() === key.toLowerCase() || s.id === key,
     );
@@ -481,7 +522,10 @@ export class AttActivateEnrollService {
   }
 
   private async insertActivateDefaultShift(
-    query: (sql: string, params?: unknown[]) => Promise<{ rows: { id: string }[] }>,
+    query: (
+      sql: string,
+      params?: unknown[],
+    ) => Promise<{ rows: { id: string }[] }>,
     input: {
       companyId: string;
       employeeId: string;

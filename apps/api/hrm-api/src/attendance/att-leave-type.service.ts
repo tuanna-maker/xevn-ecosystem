@@ -152,6 +152,9 @@ export class AttLeaveTypeService {
         insurance_regime_flag BOOLEAN NOT NULL DEFAULT FALSE,
         company_topup_flag BOOLEAN NOT NULL DEFAULT FALSE,
         counts_toward_timesheet BOOLEAN NOT NULL DEFAULT TRUE,
+        max_days_per_year INT NULL,
+        allow_half_day BOOLEAN NOT NULL DEFAULT TRUE,
+        description TEXT NULL,
         metadata_json JSONB NULL,
         status TEXT NOT NULL DEFAULT 'active',
         archived_at TIMESTAMPTZ NULL,
@@ -218,15 +221,28 @@ export class AttLeaveTypeService {
       EXCEPTION WHEN duplicate_object THEN NULL;
       END $$;
     `);
+    await this.db.query(`
+      ALTER TABLE public.att_leave_type
+      ADD COLUMN IF NOT EXISTS max_days_per_year INT NULL,
+      ADD COLUMN IF NOT EXISTS allow_half_day BOOLEAN NOT NULL DEFAULT TRUE,
+      ADD COLUMN IF NOT EXISTS description TEXT NULL;
+    `);
     this.schemaReady = true;
   }
 
-  private resolveUnit(row: AttLeaveTypeRow, meta: Record<string, unknown> | null): 'day' | 'hour' {
-    const fromCol = String(row.unit ?? '').trim().toLowerCase();
+  private resolveUnit(
+    row: AttLeaveTypeRow,
+    meta: Record<string, unknown> | null,
+  ): 'day' | 'hour' {
+    const fromCol = String(row.unit ?? '')
+      .trim()
+      .toLowerCase();
     if (fromCol === 'hour' || fromCol === 'day') {
       return fromCol;
     }
-    const fromMeta = String(meta?.unit ?? '').trim().toLowerCase();
+    const fromMeta = String(meta?.unit ?? '')
+      .trim()
+      .toLowerCase();
     return fromMeta === 'hour' ? 'hour' : 'day';
   }
 
@@ -281,7 +297,10 @@ export class AttLeaveTypeService {
     return null;
   }
 
-  private display(row: AttLeaveTypeRow, source: AttLeaveTypeSource): AttLeaveTypeDisplay {
+  private display(
+    row: AttLeaveTypeRow,
+    source: AttLeaveTypeSource,
+  ): AttLeaveTypeDisplay {
     const metadata = this.parseMeta(row.metadata_json);
     return {
       id: row.id,
@@ -343,10 +362,23 @@ export class AttLeaveTypeService {
     return s;
   }
 
-  private resolveScope(authorization: string | undefined, requestedCompanyId: string, tenantId?: string) {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
-    const scope = resolveHrmListScope(authorization, scopeCompanyId, { tenantId });
-    const companyKeys = expandHrmTextCompanyIds(scope, authorization, requestedCompanyId);
+  private resolveScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    tenantId?: string,
+  ) {
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
+    const scope = resolveHrmListScope(authorization, scopeCompanyId, {
+      tenantId,
+    });
+    const companyKeys = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      requestedCompanyId,
+    );
     return { scope, companyKeys, scopeCompanyId };
   }
 
@@ -398,16 +430,21 @@ export class AttLeaveTypeService {
     item: GroupRefLeaveHint,
     companyId: string,
   ): AttLeaveTypeDisplay | null {
-    const code = String(item.code ?? '').trim().toLowerCase();
+    const code = String(item.code ?? '')
+      .trim()
+      .toLowerCase();
     if (!code || !ATT_LEAVE_TYPE_KEY_FORMAT.test(code)) {
       return null;
     }
     if (String(item.status ?? '').toLowerCase() !== 'active') {
       return null;
     }
-    const meta = item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
+    const meta =
+      item.metadata && typeof item.metadata === 'object' ? item.metadata : null;
     const categoryRaw = String(meta?.category ?? 'other').toLowerCase();
-    const category = (ATT_LEAVE_TYPE_CATEGORIES as readonly string[]).includes(categoryRaw)
+    const category = (ATT_LEAVE_TYPE_CATEGORIES as readonly string[]).includes(
+      categoryRaw,
+    )
       ? categoryRaw
       : 'other';
     const nameVi = String(item.label ?? item.name ?? code).trim() || code;
@@ -419,14 +456,23 @@ export class AttLeaveTypeService {
       nameVi,
       category,
       isPaid: meta?.is_paid !== false && meta?.isPaid !== false,
-      allowsCarryOver: Boolean(meta?.allows_carry_over ?? meta?.allowsCarryOver),
+      allowsCarryOver: Boolean(
+        meta?.allows_carry_over ?? meta?.allowsCarryOver,
+      ),
       allowsAdvance: Boolean(meta?.allows_advance ?? meta?.allowsAdvance),
       insuranceRegimeFlag: Boolean(
-        meta?.insurance_regime_flag ?? meta?.insuranceRegimeFlag ?? meta?.is_sick,
+        meta?.insurance_regime_flag ??
+        meta?.insuranceRegimeFlag ??
+        meta?.is_sick,
       ),
-      companyTopupFlag: Boolean(meta?.company_topup_flag ?? meta?.companyTopupFlag),
-      countsTowardTimesheet: meta?.counts_toward_timesheet !== false && meta?.countsTowardTimesheet !== false,
-      unit: String(meta?.unit ?? 'day').toLowerCase() === 'hour' ? 'hour' : 'day',
+      companyTopupFlag: Boolean(
+        meta?.company_topup_flag ?? meta?.companyTopupFlag,
+      ),
+      countsTowardTimesheet:
+        meta?.counts_toward_timesheet !== false &&
+        meta?.countsTowardTimesheet !== false,
+      unit:
+        String(meta?.unit ?? 'day').toLowerCase() === 'hour' ? 'hour' : 'day',
       metadata: meta,
       status: 'active',
       source: 'group_ref',
@@ -446,7 +492,11 @@ export class AttLeaveTypeService {
     options?: { tenantId?: string },
   ): Promise<{ total: number; data: AttLeaveTypeDisplay[] }> {
     await this.ensureSchema();
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, options?.tenantId);
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      options?.tenantId,
+    );
     const attRows = await this.loadAttNativeRows(companyKeys, {
       includeArchived: false,
       status: 'active',
@@ -454,12 +504,16 @@ export class AttLeaveTypeService {
     });
     const byKey = new Map<string, AttLeaveTypeDisplay>();
     for (const row of attRows) {
-      byKey.set(row.leave_type_key.toLowerCase(), this.display(row, 'att_native'));
+      byKey.set(
+        row.leave_type_key.toLowerCase(),
+        this.display(row, 'att_native'),
+      );
     }
 
     const settings = this.resolveSettingsCatalogs();
     if (settings) {
-      const tenantId = options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
+      const tenantId =
+        options?.tenantId?.trim() || masterTenantIdFromEnv() || 'xevn';
       const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
         authorization,
         tenantId,
@@ -485,7 +539,10 @@ export class AttLeaveTypeService {
           const existing = byKey.get(mapped.leaveTypeKey);
           if (existing) {
             // Collision: ATT wins — stamp override source for FE transparency.
-            byKey.set(mapped.leaveTypeKey, { ...existing, source: 'att_override' });
+            byKey.set(mapped.leaveTypeKey, {
+              ...existing,
+              source: 'att_override',
+            });
           } else {
             byKey.set(mapped.leaveTypeKey, mapped);
           }
@@ -545,7 +602,8 @@ export class AttLeaveTypeService {
     tenantId?: string,
   ): Promise<{ total: number; data: AttLeaveTypeDisplay[] }> {
     await this.ensureSchema();
-    const includeGroupRef = String(query.include_group_ref ?? '').toLowerCase() === 'true';
+    const includeGroupRef =
+      String(query.include_group_ref ?? '').toLowerCase() === 'true';
     if (includeGroupRef) {
       return this.listEffective(
         { company_id: query.company_id, q: query.q },
@@ -553,8 +611,13 @@ export class AttLeaveTypeService {
         { tenantId },
       );
     }
-    const { companyKeys } = this.resolveScope(authorization, query.company_id, tenantId);
-    const includeArchived = String(query.include_archived ?? '').toLowerCase() === 'true';
+    const { companyKeys } = this.resolveScope(
+      authorization,
+      query.company_id,
+      tenantId,
+    );
+    const includeArchived =
+      String(query.include_archived ?? '').toLowerCase() === 'true';
     const rows = await this.loadAttNativeRows(companyKeys, {
       includeArchived,
       status: query.status,
@@ -586,7 +649,11 @@ export class AttLeaveTypeService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_LVT_404, 'Leave type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_LVT_404,
+        'Leave type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_LVT_404,
@@ -602,7 +669,11 @@ export class AttLeaveTypeService {
     tenantId?: string,
   ): Promise<AttLeaveTypeDisplay> {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, body.companyId, { tenantId });
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      body.companyId,
+      { tenantId },
+    );
     const leaveTypeKey = this.assertKeyFormat(body.leaveTypeKey);
     const category = this.assertCategory(body.category);
     const nameVi = body.nameVi.trim();
@@ -730,7 +801,11 @@ export class AttLeaveTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_LVT_404, 'Leave type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_LVT_404,
+        'Leave type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_LVT_404,
@@ -751,14 +826,18 @@ export class AttLeaveTypeService {
       sets.push(`${col} = $${values.length}`);
     };
     if (body.nameVi !== undefined) assign('name_vi', body.nameVi.trim());
-    if (body.category !== undefined) assign('category', this.assertCategory(body.category));
+    if (body.category !== undefined)
+      assign('category', this.assertCategory(body.category));
     if (body.isPaid !== undefined) assign('is_paid', body.isPaid);
-    if (body.allowsCarryOver !== undefined) assign('allows_carry_over', body.allowsCarryOver);
-    if (body.allowsAdvance !== undefined) assign('allows_advance', body.allowsAdvance);
+    if (body.allowsCarryOver !== undefined)
+      assign('allows_carry_over', body.allowsCarryOver);
+    if (body.allowsAdvance !== undefined)
+      assign('allows_advance', body.allowsAdvance);
     if (body.insuranceRegimeFlag !== undefined) {
       assign('insurance_regime_flag', body.insuranceRegimeFlag);
     }
-    if (body.companyTopupFlag !== undefined) assign('company_topup_flag', body.companyTopupFlag);
+    if (body.companyTopupFlag !== undefined)
+      assign('company_topup_flag', body.companyTopupFlag);
     if (body.countsTowardTimesheet !== undefined) {
       assign('counts_toward_timesheet', body.countsTowardTimesheet);
     }
@@ -769,7 +848,8 @@ export class AttLeaveTypeService {
       values.push(body.metadata == null ? null : JSON.stringify(body.metadata));
       sets.push(`metadata_json = $${values.length}::jsonb`);
     }
-    if (body.status !== undefined) assign('status', this.assertStatus(body.status));
+    if (body.status !== undefined)
+      assign('status', this.assertStatus(body.status));
 
     if (!sets.length) {
       return this.display(row, 'att_native');
@@ -807,7 +887,11 @@ export class AttLeaveTypeService {
     );
     const row = existing.rows[0];
     if (!row) {
-      throw new ApiException(HRM_ATT_LVT_404, 'Leave type not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        HRM_ATT_LVT_404,
+        'Leave type not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: HRM_ATT_LVT_404,

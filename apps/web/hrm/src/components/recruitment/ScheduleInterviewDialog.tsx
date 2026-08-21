@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     /hr/recruitment — Lên lịch phỏng vấn (Candidates)
  * UC:         UF-HRM-REC interview schedule
@@ -326,7 +326,7 @@ export function ScheduleInterviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" data-testid="schedule-interview-dialog">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto" data-testid="schedule-interview-dialog">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CalendarIcon className="w-5 h-5 text-primary" />

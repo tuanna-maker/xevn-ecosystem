@@ -17,7 +17,9 @@ describe('PO-HRM-MVP-GD1-ATT-03B-CLUSTER-BE-01 holiday residual', () => {
   const year = 2026;
   const calId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 
-  function mkDb(handlers: Array<(sql: string, params?: unknown[]) => { rows: unknown[] }>) {
+  function mkDb(
+    handlers: Array<(sql: string, params?: unknown[]) => { rows: unknown[] }>,
+  ) {
     let i = 0;
     return {
       query: jest.fn(async (sql: string, params?: unknown[]) => {
@@ -52,7 +54,9 @@ describe('PO-HRM-MVP-GD1-ATT-03B-CLUSTER-BE-01 holiday residual', () => {
     expect(joined).toMatch(/ADD COLUMN IF NOT EXISTS day_type/i);
     expect(joined).toMatch(/ADD COLUMN IF NOT EXISTS calendar_type/i);
     expect(joined).not.toMatch(/att_leave_hold/i);
-    expect(joined).not.toMatch(/CREATE TABLE IF NOT EXISTS public\.att_holiday_calendar_v2/i);
+    expect(joined).not.toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.att_holiday_calendar_v2/i,
+    );
     expect(joined).not.toMatch(/Controller\('core'\)/);
   });
 
@@ -374,7 +378,12 @@ describe('PO-HRM-MVP-GD1-ATT-03B-CLUSTER-BE-01 holiday residual', () => {
     expect(mustKeep).toHaveLength(5);
     expect('attendance_uat_ready').not.toBe('true');
     // Explicit: residual BE alone ≠ ATT-03b module DONE
-    const claim = { att03bDone: false, catalogDone: false, liveDone: false, aggDone: false };
+    const claim = {
+      att03bDone: false,
+      catalogDone: false,
+      liveDone: false,
+      aggDone: false,
+    };
     expect(claim.att03bDone).toBe(false);
   });
 

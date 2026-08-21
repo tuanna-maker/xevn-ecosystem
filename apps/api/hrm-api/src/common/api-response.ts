@@ -6,7 +6,11 @@ export interface ApiSuccess<T> {
   timestamp: string;
 }
 
-export function ok<T>(data: T, code = 'OK', message = 'Success'): ApiSuccess<T> {
+export function ok<T>(
+  data: T,
+  code = 'OK',
+  message = 'Success',
+): ApiSuccess<T> {
   return {
     success: true,
     code,

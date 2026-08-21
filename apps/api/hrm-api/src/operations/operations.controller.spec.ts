@@ -4,10 +4,14 @@ import { OperationsController } from './operations.controller';
 import { OperationsService } from './operations.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
@@ -16,17 +20,32 @@ describe('OperationsController', () => {
 
   const serviceMock = {
     createTask: jest.fn().mockResolvedValue({ id: 'task-1' }),
-    listTasks: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'task-1' }] }),
-    updateTaskStatus: jest.fn().mockResolvedValue({ id: 'task-1', status: 'done' }),
-    getSummary: jest
+    listTasks: jest
       .fn()
-      .mockResolvedValue({ attendance_records: 1, payroll_periods: 2, job_requisitions: 3, tasks: 4 }),
+      .mockResolvedValue({ total: 1, data: [{ id: 'task-1' }] }),
+    updateTaskStatus: jest
+      .fn()
+      .mockResolvedValue({ id: 'task-1', status: 'done' }),
+    getSummary: jest.fn().mockResolvedValue({
+      attendance_records: 1,
+      payroll_periods: 2,
+      job_requisitions: 3,
+      tasks: 4,
+    }),
     createServiceRequest: jest.fn().mockResolvedValue({ id: 'svc-1' }),
-    listServiceRequests: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'svc-1' }] }),
-    updateServiceRequest: jest.fn().mockResolvedValue({ id: 'svc-1', status: 'approved' }),
+    listServiceRequests: jest
+      .fn()
+      .mockResolvedValue({ total: 1, data: [{ id: 'svc-1' }] }),
+    updateServiceRequest: jest
+      .fn()
+      .mockResolvedValue({ id: 'svc-1', status: 'approved' }),
     deleteServiceRequest: jest.fn().mockResolvedValue({ id: 'svc-1' }),
-    approveServiceRequest: jest.fn().mockResolvedValue({ id: 'svc-1', status: 'approved' }),
-    rejectServiceRequest: jest.fn().mockResolvedValue({ id: 'svc-1', status: 'rejected' }),
+    approveServiceRequest: jest
+      .fn()
+      .mockResolvedValue({ id: 'svc-1', status: 'approved' }),
+    rejectServiceRequest: jest
+      .fn()
+      .mockResolvedValue({ id: 'svc-1', status: 'rejected' }),
   };
 
   beforeEach(async () => {
@@ -41,16 +60,28 @@ describe('OperationsController', () => {
   });
 
   it('HRM-OP-01 create HRM-OP-02 list HRM-OP-03 update HRM-OP-04 summary operations codes', async () => {
-    const createRes = await controller.createTask(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      title: 'Follow up recruiting pipeline',
-      description: 'Review candidates',
-      priority: 'high',
-      due_date: '2026-04-28',
-    });
-    const listRes = await controller.listTasks(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-    });
+    const createRes = await controller.createTask(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        title: 'Follow up recruiting pipeline',
+        description: 'Review candidates',
+        priority: 'high',
+        due_date: '2026-04-28',
+      },
+    );
+    const listRes = await controller.listTasks(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      },
+    );
     const updateRes = await controller.updateTaskStatus(
       'f76f23f7-3683-4120-81b7-5126ee997b8e',
       undefined,
@@ -87,13 +118,45 @@ describe('OperationsController', () => {
     };
     const statusBody = { status: 'blocked' as const };
 
-    await controller.createTask(undefined, 'test-key', 'xevn', undefined, createBody);
-    await controller.listTasks(undefined, 'test-key', 'xevn', undefined, listQuery);
-    await controller.updateTaskStatus('task-1', undefined, 'test-key', 'xevn', createBody.company_id, statusBody);
-    await controller.getSummary(undefined, 'test-key', 'xevn', '78b8a663-f5e5-4f4d-a020-b8f950ec2037');
+    await controller.createTask(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      createBody,
+    );
+    await controller.listTasks(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      listQuery,
+    );
+    await controller.updateTaskStatus(
+      'task-1',
+      undefined,
+      'test-key',
+      'xevn',
+      createBody.company_id,
+      statusBody,
+    );
+    await controller.getSummary(
+      undefined,
+      'test-key',
+      'xevn',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+    );
 
-    expect(serviceMock.createTask).toHaveBeenCalledWith(createBody, undefined, 'xevn');
-    expect(serviceMock.listTasks).toHaveBeenCalledWith(listQuery, undefined, 'xevn');
+    expect(serviceMock.createTask).toHaveBeenCalledWith(
+      createBody,
+      undefined,
+      'xevn',
+    );
+    expect(serviceMock.listTasks).toHaveBeenCalledWith(
+      listQuery,
+      undefined,
+      'xevn',
+    );
     expect(serviceMock.updateTaskStatus).toHaveBeenCalledWith(
       'task-1',
       statusBody,
@@ -101,7 +164,11 @@ describe('OperationsController', () => {
       undefined,
       'xevn',
     );
-    expect(serviceMock.getSummary).toHaveBeenCalledWith('78b8a663-f5e5-4f4d-a020-b8f950ec2037', undefined, 'xevn');
+    expect(serviceMock.getSummary).toHaveBeenCalledWith(
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      undefined,
+      'xevn',
+    );
   });
 
   it('HRM-OP-02 accepts portal slug company_id=main for task list', async () => {
@@ -112,11 +179,21 @@ describe('OperationsController', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    const res = await controller.listTasks(`Bearer ${token}`, 'test-key', 'xevn', 'main', {
-      company_id: 'main',
-    });
+    const res = await controller.listTasks(
+      `Bearer ${token}`,
+      'test-key',
+      'xevn',
+      'main',
+      {
+        company_id: 'main',
+      },
+    );
     expect(res.code).toBe('HRM-OPS-200');
-    expect(serviceMock.listTasks).toHaveBeenCalledWith({ company_id: 'main' }, `Bearer ${token}`, 'xevn');
+    expect(serviceMock.listTasks).toHaveBeenCalledWith(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+      'xevn',
+    );
   });
 
   const svcBody = {
@@ -128,7 +205,13 @@ describe('OperationsController', () => {
   const svcId = 'f76f23f7-3683-4120-81b7-5126ee997b8e';
 
   it('HRM-SV-01: create service request returns HRM-SVC-201', async () => {
-    const createRes = await controller.createServiceRequest(undefined, 'test-key', 'xevn', undefined, svcBody);
+    const createRes = await controller.createServiceRequest(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      svcBody,
+    );
     expect(createRes.code).toBe('HRM-SVC-201');
   });
 
@@ -187,9 +270,15 @@ describe('OperationsController', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    const res = await controller.listServiceRequests(`Bearer ${token}`, 'test-key', 'xevn', 'main', {
-      company_id: 'main',
-    });
+    const res = await controller.listServiceRequests(
+      `Bearer ${token}`,
+      'test-key',
+      'xevn',
+      'main',
+      {
+        company_id: 'main',
+      },
+    );
     expect(res.code).toBe('HRM-SVC-200');
     expect(serviceMock.listServiceRequests).toHaveBeenCalledWith(
       { company_id: 'main' },
@@ -214,12 +303,22 @@ describe('OperationsController', () => {
       companyId: '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013',
       roleCode: 'employee',
     });
-    const res = await controller.listServiceRequests(`Bearer ${token}`, 'test-key', 'xevn', undefined, {
-      company_id: '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013',
-    });
+    const res = await controller.listServiceRequests(
+      `Bearer ${token}`,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013',
+      },
+    );
     expect(res.code).toBe('HRM-SVC-200');
     expect(Array.isArray(res.data)).toBe(true);
-    expect(res.data[0]).toMatchObject({ service_type: 'meal', request_type: 'meal', status: 'pending' });
+    expect(res.data[0]).toMatchObject({
+      service_type: 'meal',
+      request_type: 'meal',
+      status: 'pending',
+    });
   });
 
   it('HRM-SV-02 accepts page_size on service request list (P1-CLOSE-BE-W5)', async () => {
@@ -230,10 +329,16 @@ describe('OperationsController', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    const res = await controller.listServiceRequests(`Bearer ${token}`, 'test-key', 'xevn', 'main', {
-      company_id: 'main',
-      page_size: 10,
-    });
+    const res = await controller.listServiceRequests(
+      `Bearer ${token}`,
+      'test-key',
+      'xevn',
+      'main',
+      {
+        company_id: 'main',
+        page_size: 10,
+      },
+    );
     expect(res.code).toBe('HRM-SVC-200');
     expect(serviceMock.listServiceRequests).toHaveBeenCalledWith(
       { company_id: 'main', page_size: 10 },
@@ -250,13 +355,24 @@ describe('OperationsController', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    const res = await controller.getSummary(`Bearer ${token}`, 'test-key', 'xevn', 'main');
+    const res = await controller.getSummary(
+      `Bearer ${token}`,
+      'test-key',
+      'xevn',
+      'main',
+    );
     expect(res.code).toBe('HRM-OPS-200');
-    expect(serviceMock.getSummary).toHaveBeenCalledWith('main', `Bearer ${token}`, 'xevn');
+    expect(serviceMock.getSummary).toHaveBeenCalledWith(
+      'main',
+      `Bearer ${token}`,
+      'xevn',
+    );
   });
 
   it('validates required scope for summary', async () => {
-    expect(() => controller.getSummary(undefined, 'test-key', '', '')).toThrow('tenantId is required');
+    expect(() => controller.getSummary(undefined, 'test-key', '', '')).toThrow(
+      'tenantId is required',
+    );
   });
 
   it('blocks unauthorized operations access', async () => {
@@ -284,12 +400,18 @@ describe('OperationsController', () => {
 
   it('rejects missing tenant scope for service requests', async () => {
     expect(() =>
-      controller.createServiceRequest(undefined, 'test-key', undefined, undefined, {
-        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-        service_type: 'meal',
-        employee_name: 'Nguyen Van A',
-        request_date: '2026-04-28',
-      }),
+      controller.createServiceRequest(
+        undefined,
+        'test-key',
+        undefined,
+        undefined,
+        {
+          company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+          service_type: 'meal',
+          employee_name: 'Nguyen Van A',
+          request_date: '2026-04-28',
+        },
+      ),
     ).toThrow('tenantId is required');
     expect(serviceMock.createServiceRequest).not.toHaveBeenCalled();
   });
@@ -302,9 +424,15 @@ describe('OperationsController', () => {
       companyId: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
     });
     expect(() =>
-      controller.listServiceRequests(`Bearer ${token}`, undefined, 'xevn', undefined, {
-        company_id: 'a7d2dbec-75d7-4b2e-8c75-c53cd14f22aa',
-      }),
+      controller.listServiceRequests(
+        `Bearer ${token}`,
+        undefined,
+        'xevn',
+        undefined,
+        {
+          company_id: 'a7d2dbec-75d7-4b2e-8c75-c53cd14f22aa',
+        },
+      ),
     ).toThrow('companyId mismatches token scope');
     expect(serviceMock.listServiceRequests).not.toHaveBeenCalled();
   });

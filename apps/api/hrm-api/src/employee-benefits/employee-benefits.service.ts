@@ -102,14 +102,21 @@ export class EmployeeBenefitsService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-EBEN-404', 'Employee benefit not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-EBEN-404',
+        'Employee benefit not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return this.mapRow(row);
   }
 
   async create(payload: CreateEmployeeBenefitDto, authorization?: string) {
     await this.ensureSchema();
-    const companyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const id = randomUUID();
     const res = await this.db.query<EmployeeBenefitRow>(
       `INSERT INTO public.employee_benefits (
@@ -137,7 +144,11 @@ export class EmployeeBenefitsService {
     return this.mapRow(res.rows[0]);
   }
 
-  async update(id: string, payload: UpdateEmployeeBenefitDto, authorization?: string) {
+  async update(
+    id: string,
+    payload: UpdateEmployeeBenefitDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const existing = await this.getById(id, payload.company_id, authorization);
     const scope = resolveHrmListScope(authorization, payload.company_id);
@@ -159,7 +170,8 @@ export class EmployeeBenefitsService {
     if (payload.start_date !== undefined) set('start_date', payload.start_date);
     if (payload.end_date !== undefined) set('end_date', payload.end_date);
     if (payload.status != null) set('status', payload.status);
-    if (payload.description !== undefined) set('description', payload.description ?? null);
+    if (payload.description !== undefined)
+      set('description', payload.description ?? null);
     if (fields.length === 0) return existing;
     fields.push('updated_at = NOW()');
     values.push(id);
@@ -180,7 +192,10 @@ export class EmployeeBenefitsService {
       notFoundCode: 'HRM-EBEN-404',
       mismatchCode: 'HRM-EBEN-409',
     });
-    await this.db.query(`DELETE FROM public.employee_benefits WHERE id = $1::uuid;`, [id]);
+    await this.db.query(
+      `DELETE FROM public.employee_benefits WHERE id = $1::uuid;`,
+      [id],
+    );
     return { id };
   }
 }

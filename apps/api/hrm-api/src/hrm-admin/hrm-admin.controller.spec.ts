@@ -7,8 +7,12 @@ describe('HrmAdminController', () => {
 
   const serviceMock = {
     createPlatformAdmin: jest.fn().mockResolvedValue({ user_id: 'u1' }),
-    createCompanyAdmin: jest.fn().mockResolvedValue({ user_id: 'u2', is_existing_user: false }),
-    inviteEmployees: jest.fn().mockResolvedValue({ total: 1, invited: 1, failed: 0, results: [] }),
+    createCompanyAdmin: jest
+      .fn()
+      .mockResolvedValue({ user_id: 'u2', is_existing_user: false }),
+    inviteEmployees: jest
+      .fn()
+      .mockResolvedValue({ total: 1, invited: 1, failed: 0, results: [] }),
     resetUserPassword: jest.fn().mockResolvedValue({ success: true }),
   };
 

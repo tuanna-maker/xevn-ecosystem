@@ -9,7 +9,9 @@ export class EnrollOnActivateDto {
   @IsString()
   company_id!: string;
 
-  @Matches(/^\d{1,2}\/\d{1,2}\/\d{4}$/, { message: 'effective_date must be dd/MM/yyyy' })
+  @Matches(/^\d{1,2}\/\d{1,2}\/\d{4}$/, {
+    message: 'effective_date must be dd/MM/yyyy',
+  })
   effective_date!: string;
 
   @IsOptional()
@@ -27,7 +29,9 @@ export class UpsertShiftAssignmentDto {
   @IsUUID()
   shift_id!: string;
 
-  @Matches(/^\d{1,2}\/\d{1,2}\/\d{4}$/, { message: 'effective_from must be dd/MM/yyyy' })
+  @Matches(/^\d{1,2}\/\d{1,2}\/\d{4}$/, {
+    message: 'effective_from must be dd/MM/yyyy',
+  })
   effective_from!: string;
 
   @IsOptional()

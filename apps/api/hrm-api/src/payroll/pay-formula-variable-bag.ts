@@ -53,10 +53,16 @@
  */
 
 import { expandPayrollAttendanceSheetCompanyIds } from '../common/hrm-list-scope';
-import { injectPayGtgcIntoVariableBag, type PayGtgcResolveBlocked } from './pay-gtgc-resolver';
+import {
+  injectPayGtgcIntoVariableBag,
+  type PayGtgcResolveBlocked,
+} from './pay-gtgc-resolver';
 import { HrmDbService } from '../db/hrm-db.service';
 import { resolveBoundClosedSheetIds } from './pay-period-bind-resolver';
-import { isAttHoursVarKey, PAY_FORMULA_ATT_HOUR_VARS } from './pay-formula-evaluator';
+import {
+  isAttHoursVarKey,
+  PAY_FORMULA_ATT_HOUR_VARS,
+} from './pay-formula-evaluator';
 import { PAY_FORMULA_REQUIRED_VAR_ALLOWLIST } from './pay-formula.constants'; // W10 BA-HRM-PAYROLL-FORMULA-INPUT-PACK-BE-01
 
 export type AttHoursFidelityReason =
@@ -76,7 +82,9 @@ export type PayFormulaVarBagBuild = {
   attHoursReason: AttHoursFidelityReason;
   sheetId?: string;
   lineId?: string;
-  sourcePrecedence: Array<'override' | 'emp_cb' | 'att_line' | 'period' | 'template' | 'catalog'>;
+  sourcePrecedence: Array<
+    'override' | 'emp_cb' | 'att_line' | 'period' | 'template' | 'catalog'
+  >;
   /** F-PAY-GTCG-01 — missing statutory CFG at as_of (process → 412). */
   gtgcBlocked?: PayGtgcResolveBlocked;
   gtgcSnapshot?: {
@@ -89,7 +97,11 @@ export type PayFormulaVarBagBuild = {
 
 function toNumber(raw: unknown): number | null {
   if (typeof raw === 'number' && Number.isFinite(raw)) return raw;
-  if (typeof raw === 'string' && raw.trim() !== '' && Number.isFinite(Number(raw))) {
+  if (
+    typeof raw === 'string' &&
+    raw.trim() !== '' &&
+    Number.isFinite(Number(raw))
+  ) {
     return Number(raw);
   }
   return null;
@@ -236,7 +248,9 @@ export async function resolveEffectiveCompensationPackage(
       }
     } catch {
       try {
-        const contractPkg2 = await db.query<{ compensation_package_id: string }>(
+        const contractPkg2 = await db.query<{
+          compensation_package_id: string;
+        }>(
           `
             SELECT c.compensation_package_id::text AS compensation_package_id
             FROM public.employee_contracts c
@@ -289,7 +303,9 @@ export function expandCbReadCompanyIds(
   return [...out];
 }
 
-export async function probeAttTimesheetLinePresent(db: HrmDbService): Promise<boolean> {
+export async function probeAttTimesheetLinePresent(
+  db: HrmDbService,
+): Promise<boolean> {
   try {
     const res = await db.query<{ exists: boolean }>(
       `
@@ -308,7 +324,11 @@ export async function probeAttTimesheetLinePresent(db: HrmDbService): Promise<bo
 }
 
 function mapCompensationLinesToVars(
-  rows: Array<{ line_type: string; amount: string; allowance_code: string | null }>,
+  rows: Array<{
+    line_type: string;
+    amount: string;
+    allowance_code: string | null;
+  }>,
 ): { vars: Record<string, number>; warnings: string[] } {
   const warnings: string[] = [];
   const vars: Record<string, number> = {};
@@ -346,7 +366,9 @@ function mapCompensationLinesToVars(
 async function loadLinesForPackage(
   db: HrmDbService,
   packageId: string,
-): Promise<Array<{ line_type: string; amount: string; allowance_code: string | null }>> {
+): Promise<
+  Array<{ line_type: string; amount: string; allowance_code: string | null }>
+> {
   const linesRes = await db.query<{
     line_type: string;
     amount: string;
@@ -414,7 +436,9 @@ function mapLineRowToAttVars(row: {
   unpaid_leave_hours: string | null;
 }): Record<string, number> {
   const vars: Record<string, number> = {};
-  const pairs: Array<[keyof typeof row, (typeof PAY_FORMULA_ATT_HOUR_VARS)[number]]> = [
+  const pairs: Array<
+    [keyof typeof row, (typeof PAY_FORMULA_ATT_HOUR_VARS)[number]]
+  > = [
     ['payable_hours', 'payable_hours'],
     ['standard_hours', 'standard_hours'],
     ['ot_hours_weighted', 'ot_hours_weighted'],
@@ -446,7 +470,9 @@ export async function loadAttHoursFromClosedLine(
   },
 ): Promise<LoadAttHoursResult> {
   const warnings: string[] = [];
-  const neededAtt = (input.requiredKeys ?? [...PAY_FORMULA_ATT_HOUR_VARS]).filter(isAttHoursVarKey);
+  const neededAtt = (
+    input.requiredKeys ?? [...PAY_FORMULA_ATT_HOUR_VARS]
+  ).filter(isAttHoursVarKey);
 
   const attTimesheetLinePresent = await probeAttTimesheetLinePresent(db);
   if (!attTimesheetLinePresent) {
@@ -460,7 +486,8 @@ export async function loadAttHoursFromClosedLine(
       warnings,
       attTimesheetLinePresent: false,
       attHoursReady: neededAtt.length === 0,
-      attHoursReason: neededAtt.length === 0 ? null : 'ATT_TIMESHEET_LINE_ABSENT',
+      attHoursReason:
+        neededAtt.length === 0 ? null : 'ATT_TIMESHEET_LINE_ABSENT',
     };
   }
 
@@ -608,7 +635,9 @@ export async function loadAttHoursFromClosedLine(
   }
 
   const vars = mapLineRowToAttVars(line);
-  const missingNeeded = neededAtt.filter((k) => !(k in vars) || !Number.isFinite(vars[k]));
+  const missingNeeded = neededAtt.filter(
+    (k) => !(k in vars) || !Number.isFinite(vars[k]),
+  );
   if (missingNeeded.length > 0) {
     warnings.push('ATT_LINE_INCOMPLETE');
     warnings.push(`ATT_LINE_NULL_KEYS:${missingNeeded.join(',')}`);
@@ -657,7 +686,9 @@ export async function loadInputPackBag(
   employeeId: string,
   db: HrmDbService,
 ): Promise<Record<string, number>> {
-  const coreSet = new Set<string>(PAY_FORMULA_REQUIRED_VAR_ALLOWLIST as readonly string[]);
+  const coreSet = new Set<string>(
+    PAY_FORMULA_REQUIRED_VAR_ALLOWLIST as readonly string[],
+  );
   const res = await db.query<{ source_kind: string; total: string }>(
     `SELECT source_kind, SUM(amount)::text AS total
      FROM pay_period_input_lines
@@ -763,7 +794,10 @@ export async function buildPayFormulaVariableBag(
   }
 
   const periodFrom = (input.periodFrom ?? input.asOfDate ?? '').slice(0, 10);
-  const periodTo = (input.periodTo ?? input.asOfDate ?? periodFrom).slice(0, 10);
+  const periodTo = (input.periodTo ?? input.asOfDate ?? periodFrom).slice(
+    0,
+    10,
+  );
   const neededAtt = input.requiredKeys.filter(isAttHoursVarKey);
 
   if (input.employeeId && /^\d{4}-\d{2}-\d{2}$/.test(periodFrom)) {
@@ -790,7 +824,9 @@ export async function buildPayFormulaVariableBag(
     }
     attHoursReason = att.attHoursReason;
     if (neededAtt.length > 0) {
-      attHoursReady = neededAtt.every((k) => k in vars && Number.isFinite(vars[k]));
+      attHoursReady = neededAtt.every(
+        (k) => k in vars && Number.isFinite(vars[k]),
+      );
       if (!attHoursReady && att.attHoursReason == null) {
         attHoursReason = 'ATT_LINE_INCOMPLETE';
       }
@@ -800,7 +836,9 @@ export async function buildPayFormulaVariableBag(
     }
   } else if (neededAtt.length > 0) {
     attHoursReady = false;
-    attHoursReason = attTimesheetLinePresent ? 'NO_CLOSED_SHEET' : 'ATT_TIMESHEET_LINE_ABSENT';
+    attHoursReason = attTimesheetLinePresent
+      ? 'NO_CLOSED_SHEET'
+      : 'ATT_TIMESHEET_LINE_ABSENT';
     warnings.push('ATT_HOURS_VAR_BAG_INCOMPLETE');
     if (!attTimesheetLinePresent) {
       warnings.push('ATT_HOURS_BLOCKED_UNTIL_LINE');
@@ -820,7 +858,9 @@ export async function buildPayFormulaVariableBag(
 
   // Re-evaluate ATT readiness after overrides (admin smoke may supply hours).
   if (neededAtt.length > 0) {
-    attHoursReady = neededAtt.every((k) => k in vars && Number.isFinite(vars[k]));
+    attHoursReady = neededAtt.every(
+      (k) => k in vars && Number.isFinite(vars[k]),
+    );
     if (attHoursReady) {
       attHoursReason = 'ATT_HOURS_READY';
     } else if (!warnings.includes('ATT_HOURS_VAR_BAG_INCOMPLETE')) {
@@ -864,12 +904,13 @@ export async function loadInsuranceBag(
     `SELECT insurance_type, employer_rate_percent, employee_rate_percent, salary_cap_multiplier
      FROM hrm_insurance_rate
      WHERE tenant_id = $1 AND company_id = $2 AND effective_year = $3 AND status = 'active'`,
-    [tenantId, companyId, year]
+    [tenantId, companyId, year],
   );
 
   // Get company region for salary cap
   const company = await db.queryOne<{ region_code: string }>(
-    `SELECT region_code FROM company WHERE id = $1`, [companyId]
+    `SELECT region_code FROM company WHERE id = $1`,
+    [companyId],
   );
   const regionCode = company?.region_code ?? 'REGION_1';
   const minWage = await db.queryOne<{ monthly_min_wage: string }>(
@@ -877,24 +918,31 @@ export async function loadInsuranceBag(
      WHERE tenant_id = $1 AND company_id = $2 AND region_code = $3
      AND effective_from <= $4 AND (effective_to IS NULL OR effective_to >= $4)
      AND status = 'active' ORDER BY effective_from DESC LIMIT 1`,
-    [tenantId, companyId, regionCode, payPeriodStartDate]
+    [tenantId, companyId, regionCode, payPeriodStartDate],
   );
-  const monthlyMinWage = minWage ? parseFloat(minWage.monthly_min_wage) : 4680000;
+  const monthlyMinWage = minWage
+    ? parseFloat(minWage.monthly_min_wage)
+    : 4680000;
   // Use BHXH rate's salary_cap_multiplier if available, else default 20
-  const bhxhRate = rates.rows.find(r => r.insurance_type === 'BHXH');
-  const salaryCapMultiplier = bhxhRate ? parseFloat(bhxhRate.salary_cap_multiplier) : 20;
+  const bhxhRate = rates.rows.find((r) => r.insurance_type === 'BHXH');
+  const salaryCapMultiplier = bhxhRate
+    ? parseFloat(bhxhRate.salary_cap_multiplier)
+    : 20;
   const salaryCap = monthlyMinWage * salaryCapMultiplier;
 
   const bag: Record<string, number> = {};
   for (const r of rates.rows) {
     const type = r.insurance_type.toLowerCase();
-    bag[`insurance_${type}_employer_rate`] = parseFloat(r.employer_rate_percent);
-    bag[`insurance_${type}_employee_rate`] = parseFloat(r.employee_rate_percent);
+    bag[`insurance_${type}_employer_rate`] = parseFloat(
+      r.employer_rate_percent,
+    );
+    bag[`insurance_${type}_employee_rate`] = parseFloat(
+      r.employee_rate_percent,
+    );
   }
   bag['insurance_salary_cap'] = salaryCap;
   return bag;
 }
-
 
 /**
  * W12a: Load leave_type_pay_rate từ hrm_leave_type table.
@@ -910,7 +958,7 @@ export async function loadLeaveTypePayRate(
 ): Promise<number> {
   const row = await db.queryOne<{ pay_rate_percent: string }>(
     `SELECT pay_rate_percent FROM public.hrm_leave_type WHERE tenant_id = $1 AND company_id = $2 AND code = $3 AND status = 'active' AND deleted_at IS NULL`,
-    [tenantId, companyId, leaveTypeCode]
+    [tenantId, companyId, leaveTypeCode],
   );
   return row ? parseFloat(row.pay_rate_percent) : 100;
 }

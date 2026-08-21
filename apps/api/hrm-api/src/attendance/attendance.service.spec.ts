@@ -32,19 +32,28 @@ describe('AttendanceService', () => {
         employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
         attendance_date: '1970-01-01',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-DATE-001' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-DATE-001' });
     const insertCalls = db.query.mock.calls.filter(
-      ([sql]) => typeof sql === 'string' && sql.includes('INSERT INTO public.attendance_records'),
+      ([sql]) =>
+        typeof sql === 'string' &&
+        sql.includes('INSERT INTO public.attendance_records'),
     );
     expect(insertCalls).toHaveLength(0);
   });
 
   it('BR-ATT-DATE-01: omits invalid attendance_date from list response', async () => {
     db.query.mockImplementation((sql: string) => {
-      if (sql.includes('SELECT COUNT(*)::text AS total FROM public.attendance_records')) {
+      if (
+        sql.includes(
+          'SELECT COUNT(*)::text AS total FROM public.attendance_records',
+        )
+      ) {
         return Promise.resolve({ rows: [{ total: '1' }] } as never);
       }
-      if (sql.includes('FROM public.attendance_records') && sql.includes('LIMIT')) {
+      if (
+        sql.includes('FROM public.attendance_records') &&
+        sql.includes('LIMIT')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -78,7 +87,7 @@ describe('AttendanceService', () => {
   it('throws deterministic create error when insert fails', async () => {
     db.query.mockImplementation((sql: string) => {
       if (sql.includes('INSERT INTO public.attendance_records')) {
-        return Promise.reject(new Error('duplicate key') as never);
+        return Promise.reject(new Error('duplicate key'));
       }
       return Promise.resolve({ rows: [] } as never);
     });
@@ -89,7 +98,7 @@ describe('AttendanceService', () => {
         employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
         attendance_date: '2026-04-22',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-001' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-001' });
   });
 
   it('persists createRecord with UUID company_id for group scope company_id=main', async () => {
@@ -132,7 +141,9 @@ describe('AttendanceService', () => {
       'xevn',
     );
 
-    const insertCall = db.query.mock.calls.find((c) => String(c[0]).includes('INSERT INTO public.attendance_records'));
+    const insertCall = db.query.mock.calls.find((c) =>
+      String(c[0]).includes('INSERT INTO public.attendance_records'),
+    );
     expect(String(insertCall?.[0])).toContain('$2::uuid');
     expect(insertCall?.[1]?.[1]).toBe('10000000-0000-4000-8000-000000000001');
   });
@@ -151,15 +162,22 @@ describe('AttendanceService', () => {
         { status: 'present' },
         '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-404' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-404' });
   });
 
   it('HRM-AT-02: returns paginated records with deterministic filters', async () => {
     db.query.mockImplementation((sql: string) => {
-      if (sql.includes('SELECT COUNT(*)::text AS total FROM public.attendance_records')) {
+      if (
+        sql.includes(
+          'SELECT COUNT(*)::text AS total FROM public.attendance_records',
+        )
+      ) {
         return Promise.resolve({ rows: [{ total: '1' }] } as never);
       }
-      if (sql.includes('FROM public.attendance_records') && sql.includes('LIMIT')) {
+      if (
+        sql.includes('FROM public.attendance_records') &&
+        sql.includes('LIMIT')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -195,7 +213,10 @@ describe('AttendanceService', () => {
     expect(result.page).toBe(2);
     expect(result.page_size).toBe(10);
     expect(result.data[0]).toMatchObject({ id: 'r1', status: 'present' });
-    expect(db.query).toHaveBeenLastCalledWith(expect.stringContaining('LIMIT $6 OFFSET $7'), expect.any(Array));
+    expect(db.query).toHaveBeenLastCalledWith(
+      expect.stringContaining('LIMIT $6 OFFSET $7'),
+      expect.any(Array),
+    );
   });
 
   it('HRM-AT-05: listUpdateRequests uses workforce scope for internal key on company_id=main with tenant xevn', async () => {
@@ -205,8 +226,14 @@ describe('AttendanceService', () => {
       }
       return Promise.resolve({ rows: [] } as never);
     });
-    const out = await service.listUpdateRequests({ company_id: 'main' }, undefined, 'xevn');
-    const [sql] = db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ?? [];
+    const out = await service.listUpdateRequests(
+      { company_id: 'main' },
+      undefined,
+      'xevn',
+    );
+    const [sql] =
+      db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ??
+      [];
     expect(String(sql)).toContain('employee_id IN');
     expect(String(sql)).not.toContain('aur.company_id = $1::uuid');
     expect(out.total).toBe(1);
@@ -225,8 +252,14 @@ describe('AttendanceService', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    const out = await service.listUpdateRequests({ company_id: 'main' }, `Bearer ${token}`, 'xevn');
-    const [sql] = db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ?? [];
+    const out = await service.listUpdateRequests(
+      { company_id: 'main' },
+      `Bearer ${token}`,
+      'xevn',
+    );
+    const [sql] =
+      db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ??
+      [];
     expect(String(sql)).toContain('employee_id IN');
     expect(String(sql)).not.toContain('aur.company_id = $1::uuid');
     expect(out.total).toBe(1);
@@ -248,11 +281,17 @@ describe('AttendanceService', () => {
       roleCode: 'member_ceo',
     });
     const out = await service.listUpdateRequests(
-      { company_id: companyUuid, status: 'pending', manager_employee_id: managerId },
+      {
+        company_id: companyUuid,
+        status: 'pending',
+        manager_employee_id: managerId,
+      },
       `Bearer ${token}`,
       'xe-du-lich',
     );
-    const [sql, params] = db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ?? [];
+    const [sql, params] =
+      db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ??
+      [];
     expect(String(sql)).toContain('aur.company_id::text = $1');
     expect(String(sql)).not.toMatch(/aur\.company_id = \$\d+::uuid/);
     expect(String(sql)).toContain('e.manager_id');
@@ -277,13 +316,21 @@ describe('AttendanceService', () => {
       roleCode: 'employee',
     });
     const out = await service.listUpdateRequests(
-      { company_id: 'holding', status: 'pending', manager_employee_id: managerId },
+      {
+        company_id: 'holding',
+        status: 'pending',
+        manager_employee_id: managerId,
+      },
       `Bearer ${token}`,
       'xevn',
     );
-    const [sql, params] = db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ?? [];
+    const [sql, params] =
+      db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ??
+      [];
     expect(String(sql)).toContain('aur.company_id::text = ANY');
-    expect(params?.[0]).toEqual(expect.arrayContaining(['holding', holdingUuid]));
+    expect(params?.[0]).toEqual(
+      expect.arrayContaining(['holding', holdingUuid]),
+    );
     expect(out.total).toBe(1);
   });
 
@@ -308,9 +355,13 @@ describe('AttendanceService', () => {
       `Bearer ${token}`,
       'xevn',
     );
-    const [sql, params] = db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ?? [];
+    const [sql, params] =
+      db.query.mock.calls.find((c) => String(c[0]).includes('SELECT aur.*')) ??
+      [];
     expect(String(sql)).toContain('aur.company_id::text = ANY');
-    expect(params?.[0]).toEqual(expect.arrayContaining(['trsport', trsportUuid]));
+    expect(params?.[0]).toEqual(
+      expect.arrayContaining(['trsport', trsportUuid]),
+    );
     expect(out.total).toBe(1);
   });
 
@@ -372,10 +423,17 @@ describe('AttendanceService', () => {
 
   it('listRecords uses workforce scope for group CEO on company_id=main (P1-R1-BE-01)', async () => {
     db.query.mockImplementation((sql: string) => {
-      if (sql.includes('SELECT COUNT(*)::text AS total FROM public.attendance_records')) {
+      if (
+        sql.includes(
+          'SELECT COUNT(*)::text AS total FROM public.attendance_records',
+        )
+      ) {
         return Promise.resolve({ rows: [{ total: '0' }] } as never);
       }
-      if (sql.includes('FROM public.attendance_records') && sql.includes('LIMIT')) {
+      if (
+        sql.includes('FROM public.attendance_records') &&
+        sql.includes('LIMIT')
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
       return Promise.resolve({ rows: [] } as never);
@@ -386,12 +444,18 @@ describe('AttendanceService', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    await service.listRecords({ company_id: 'main', page: 1, page_size: 20 }, `Bearer ${token}`, {
-      tenantId: 'xevn',
-    });
+    await service.listRecords(
+      { company_id: 'main', page: 1, page_size: 20 },
+      `Bearer ${token}`,
+      {
+        tenantId: 'xevn',
+      },
+    );
     const listSql =
       db.query.mock.calls.find(
-        (c) => String(c[0]).includes('FROM public.attendance_records') && String(c[0]).includes('LIMIT'),
+        (c) =>
+          String(c[0]).includes('FROM public.attendance_records') &&
+          String(c[0]).includes('LIMIT'),
       )?.[0] ?? '';
     expect(String(listSql)).toContain('employee_id IN');
     expect(String(listSql)).not.toContain('company_id = $1::uuid');
@@ -400,10 +464,17 @@ describe('AttendanceService', () => {
   it('listRecords maps mobile company_uuid query to holding slug workforce scope (D-MOB-UX-10d)', async () => {
     const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
     db.query.mockImplementation((sql: string) => {
-      if (sql.includes('SELECT COUNT(*)::text AS total FROM public.attendance_records')) {
+      if (
+        sql.includes(
+          'SELECT COUNT(*)::text AS total FROM public.attendance_records',
+        )
+      ) {
         return Promise.resolve({ rows: [{ total: '3' }] } as never);
       }
-      if (sql.includes('FROM public.attendance_records') && sql.includes('LIMIT')) {
+      if (
+        sql.includes('FROM public.attendance_records') &&
+        sql.includes('LIMIT')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -437,21 +508,29 @@ describe('AttendanceService', () => {
       { tenantId: 'xevn' },
     );
     const listCall = db.query.mock.calls.find(
-      (c) => String(c[0]).includes('FROM public.attendance_records') && String(c[0]).includes('LIMIT'),
+      (c) =>
+        String(c[0]).includes('FROM public.attendance_records') &&
+        String(c[0]).includes('LIMIT'),
     );
     const [listSql, listParams] = listCall ?? [];
     expect(String(listSql)).toContain('employee_id IN');
     expect(String(listSql)).toContain('company_id = $1::text');
     expect(listParams?.[0]).toBe('holding');
     expect(result.total).toBe(3);
-    expect(result.data[0]).toMatchObject({ id: 'r-present', status: 'present' });
+    expect(result.data[0]).toMatchObject({
+      id: 'r-present',
+      status: 'present',
+    });
   });
 
   it('getRecordById maps mobile company_uuid query to holding slug workforce scope (D-MOB-UX-10d)', async () => {
     const holdingUuid = '6efaa5d6-a4a8-4bfd-805a-3c4f003e4013';
     const recordId = 'a1b2c3d4-e5f6-4789-a012-3456789abcde';
     db.query.mockImplementation((sql: string) => {
-      if (sql.includes('FROM public.attendance_records') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.attendance_records') &&
+        sql.includes('LIMIT 1')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -486,7 +565,9 @@ describe('AttendanceService', () => {
       { tenantId: 'xevn' },
     );
     const getCall = db.query.mock.calls.find(
-      (c) => String(c[0]).includes('FROM public.attendance_records') && String(c[0]).includes('LIMIT 1'),
+      (c) =>
+        String(c[0]).includes('FROM public.attendance_records') &&
+        String(c[0]).includes('LIMIT 1'),
     );
     const [getSql, getParams] = getCall ?? [];
     expect(String(getSql)).toContain('employee_id IN');
@@ -517,10 +598,12 @@ describe('AttendanceService', () => {
         `Bearer ${token}`,
         'xevn',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-409' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-409' });
 
     const mutateCalls = db.query.mock.calls.filter(
-      ([sql]) => typeof sql === 'string' && sql.includes('UPDATE public.attendance_records'),
+      ([sql]) =>
+        typeof sql === 'string' &&
+        sql.includes('UPDATE public.attendance_records'),
     );
     expect(mutateCalls).toHaveLength(0);
   });
@@ -547,10 +630,12 @@ describe('AttendanceService', () => {
         `Bearer ${token}`,
         'xevn',
       ),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-REQ-409' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-REQ-409' });
 
     const mutateCalls = db.query.mock.calls.filter(
-      ([sql]) => typeof sql === 'string' && sql.includes('UPDATE public.attendance_update_requests'),
+      ([sql]) =>
+        typeof sql === 'string' &&
+        sql.includes('UPDATE public.attendance_update_requests'),
     );
     expect(mutateCalls).toHaveLength(0);
   });
@@ -624,10 +709,14 @@ describe('AttendanceService', () => {
       isGpsGeofenceEnabled: jest.fn().mockResolvedValue(true),
       countActiveWorkSites: jest.fn().mockResolvedValue(1),
     };
-    service = new AttendanceService(db, {
-      onUpdateRequestCreated: jest.fn(),
-      onUpdateRequestDecided: jest.fn(),
-    } as never, config as never);
+    service = new AttendanceService(
+      db,
+      {
+        onUpdateRequestCreated: jest.fn(),
+        onUpdateRequestDecided: jest.fn(),
+      } as never,
+      config as never,
+    );
 
     db.query.mockImplementation((sql: string) => {
       if (sql.includes('FROM public.attendance_work_sites')) {
@@ -653,7 +742,7 @@ describe('AttendanceService', () => {
         latitude: 10,
         longitude: 10,
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-GEO-001' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-GEO-001' });
   });
 
   it('VAL-ATT-WS-CNS-04: soft-retired site excluded from geofence (empty active → skip)', async () => {
@@ -662,14 +751,21 @@ describe('AttendanceService', () => {
       isGpsGeofenceEnabled: jest.fn().mockResolvedValue(true),
       countActiveWorkSites: jest.fn().mockResolvedValue(0),
     };
-    service = new AttendanceService(db, {
-      onUpdateRequestCreated: jest.fn(),
-      onUpdateRequestDecided: jest.fn(),
-    } as never, config as never);
+    service = new AttendanceService(
+      db,
+      {
+        onUpdateRequestCreated: jest.fn(),
+        onUpdateRequestDecided: jest.fn(),
+      } as never,
+      config as never,
+    );
 
     db.query.mockImplementation((sql: string) => {
       // assertWithinWorkSite filters active=TRUE — retired site not returned
-      if (sql.includes('FROM public.attendance_work_sites') && sql.includes('active = TRUE')) {
+      if (
+        sql.includes('FROM public.attendance_work_sites') &&
+        sql.includes('active = TRUE')
+      ) {
         return Promise.resolve({ rows: [] } as never);
       }
       if (sql.includes('INSERT INTO public.attendance_records')) {
@@ -711,10 +807,14 @@ describe('AttendanceService', () => {
       isGpsGeofenceEnabled: jest.fn().mockResolvedValue(true),
       countActiveWorkSites: jest.fn().mockResolvedValue(1),
     };
-    service = new AttendanceService(db, {
-      onUpdateRequestCreated: jest.fn(),
-      onUpdateRequestDecided: jest.fn(),
-    } as never, config as never);
+    service = new AttendanceService(
+      db,
+      {
+        onUpdateRequestCreated: jest.fn(),
+        onUpdateRequestDecided: jest.fn(),
+      } as never,
+      config as never,
+    );
 
     await expect(
       service.createRecord({
@@ -723,7 +823,7 @@ describe('AttendanceService', () => {
         attendance_date: '2026-04-22',
         check_in_method: 'gps',
       }),
-    ).rejects.toMatchObject<ApiException>({ code: 'HRM-ATT-GEO-REQ' });
+    ).rejects.toMatchObject({ code: 'HRM-ATT-GEO-REQ' });
   });
 
   it('VAL-ATT-WS-CNS-05: manual omit lat/lon soft-skips (not GEO PASS invent)', async () => {
@@ -732,10 +832,14 @@ describe('AttendanceService', () => {
       isGpsGeofenceEnabled: jest.fn().mockResolvedValue(true),
       countActiveWorkSites: jest.fn().mockResolvedValue(1),
     };
-    service = new AttendanceService(db, {
-      onUpdateRequestCreated: jest.fn(),
-      onUpdateRequestDecided: jest.fn(),
-    } as never, config as never);
+    service = new AttendanceService(
+      db,
+      {
+        onUpdateRequestCreated: jest.fn(),
+        onUpdateRequestDecided: jest.fn(),
+      } as never,
+      config as never,
+    );
 
     db.query.mockImplementation((sql: string) => {
       if (sql.includes('INSERT INTO public.attendance_records')) {
@@ -777,10 +881,14 @@ describe('AttendanceService', () => {
       isGpsGeofenceEnabled: jest.fn().mockResolvedValue(false),
       countActiveWorkSites: jest.fn().mockResolvedValue(1),
     };
-    service = new AttendanceService(db, {
-      onUpdateRequestCreated: jest.fn(),
-      onUpdateRequestDecided: jest.fn(),
-    } as never, config as never);
+    service = new AttendanceService(
+      db,
+      {
+        onUpdateRequestCreated: jest.fn(),
+        onUpdateRequestDecided: jest.fn(),
+      } as never,
+      config as never,
+    );
 
     db.query.mockImplementation((sql: string) => {
       if (sql.includes('INSERT INTO public.attendance_records')) {
@@ -813,7 +921,9 @@ describe('AttendanceService', () => {
       longitude: 10,
     });
 
-    const siteQueries = db.query.mock.calls.filter((c) => String(c[0]).includes('attendance_work_sites'));
+    const siteQueries = db.query.mock.calls.filter((c) =>
+      String(c[0]).includes('attendance_work_sites'),
+    );
     expect(siteQueries).toHaveLength(0);
   });
 });

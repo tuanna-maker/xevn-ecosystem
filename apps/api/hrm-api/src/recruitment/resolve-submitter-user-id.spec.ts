@@ -24,9 +24,9 @@ describe('resolveSubmitterUserIdFromAuth (D-HRM-REC-WF-OPTION-B-SPAWN-FIX-01)', 
       tenantId: 'xevn',
       companyId: 'main',
     });
-    expect(resolveSubmitterUserIdFromAuth(`Bearer ${token}`, 'override@xe.vn')).toBe(
-      'override@xe.vn',
-    );
+    expect(
+      resolveSubmitterUserIdFromAuth(`Bearer ${token}`, 'override@xe.vn'),
+    ).toBe('override@xe.vn');
   });
 
   it('falls back to JWT email/sub when header missing (embed gap → SPAWN-MISSING)', () => {
@@ -36,11 +36,17 @@ describe('resolveSubmitterUserIdFromAuth (D-HRM-REC-WF-OPTION-B-SPAWN-FIX-01)', 
       tenantId: 'xevn',
       companyId: 'holding',
     });
-    expect(resolveSubmitterUserIdFromAuth(`Bearer ${token}`, undefined)).toBe('ceo@xe.vn');
-    expect(resolveSubmitterUserIdFromAuth(`Bearer ${token}`, '  ')).toBe('ceo@xe.vn');
+    expect(resolveSubmitterUserIdFromAuth(`Bearer ${token}`, undefined)).toBe(
+      'ceo@xe.vn',
+    );
+    expect(resolveSubmitterUserIdFromAuth(`Bearer ${token}`, '  ')).toBe(
+      'ceo@xe.vn',
+    );
   });
 
   it('returns undefined when neither header nor JWT identity present', () => {
-    expect(resolveSubmitterUserIdFromAuth(undefined, undefined)).toBeUndefined();
+    expect(
+      resolveSubmitterUserIdFromAuth(undefined, undefined),
+    ).toBeUndefined();
   });
 });

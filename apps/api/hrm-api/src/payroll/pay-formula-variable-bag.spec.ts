@@ -23,9 +23,13 @@ import {
 } from './pay-formula.constants'; // W10 BA-HRM-PAYROLL-FORMULA-INPUT-PACK-BE-01
 import { HrmDbService } from '../db/hrm-db.service';
 
-function mockDb(handler: (sql: string, params?: unknown[]) => { rows: unknown[] }): HrmDbService {
+function mockDb(
+  handler: (sql: string, params?: unknown[]) => { rows: unknown[] },
+): HrmDbService {
   return {
-    query: jest.fn(async (sql: string, params?: unknown[]) => handler(sql, params)),
+    query: jest.fn(async (sql: string, params?: unknown[]) =>
+      handler(sql, params),
+    ),
   } as unknown as HrmDbService;
 }
 
@@ -38,7 +42,10 @@ describe('expandCbReadCompanyIds', () => {
 
 describe('applyVariableOverrides', () => {
   it('applies finite numbers only', () => {
-    const r = applyVariableOverrides({ a: 1 }, { a: 2, b: '3', c: 'x', d: null });
+    const r = applyVariableOverrides(
+      { a: 1 },
+      { a: 2, b: '3', c: 'x', d: null },
+    );
     expect(r.vars).toEqual({ a: 2, b: 3 });
     expect(r.applied.sort()).toEqual(['a', 'b']);
   });
@@ -53,14 +60,21 @@ describe('loadCoreCbVariableBag', () => {
       if (sql.includes('FROM public.employees')) {
         return { rows: [{ company_id: 'trsport' }] };
       }
-      if (sql.includes('FROM public.employee_compensation_packages') && sql.includes('ANY($2::text[])')) {
+      if (
+        sql.includes('FROM public.employee_compensation_packages') &&
+        sql.includes('ANY($2::text[])')
+      ) {
         return { rows: [{ id: pkgId, company_id: 'trsport' }] };
       }
       if (sql.includes('FROM public.employee_compensation_lines')) {
         return {
           rows: [
             { line_type: 'base', amount: '12000000', allowance_code: null },
-            { line_type: 'allowance', amount: '500000', allowance_code: 'PHONE' },
+            {
+              line_type: 'allowance',
+              amount: '500000',
+              allowance_code: 'PHONE',
+            },
           ],
         };
       }
@@ -75,7 +89,10 @@ describe('loadCoreCbVariableBag', () => {
     expect(bag.vars.base_salary).toBe(12_000_000);
     expect(bag.vars.allowance_phone).toBe(500_000);
     expect(bag.warnings).toEqual(
-      expect.arrayContaining(['CB_PACKAGE_SOURCE:scoped_package', 'CB_PACKAGE_COMPANY_ALIAS_MATCH']),
+      expect.arrayContaining([
+        'CB_PACKAGE_SOURCE:scoped_package',
+        'CB_PACKAGE_COMPANY_ALIAS_MATCH',
+      ]),
     );
     expect(bag.warnings).not.toContain('CB_PACKAGE_ABSENT');
   });
@@ -85,7 +102,10 @@ describe('loadCoreCbVariableBag', () => {
       if (sql.includes('FROM public.employees')) {
         return { rows: [{ company_id: 'holding' }] };
       }
-      if (sql.includes('FROM public.employee_compensation_packages') && sql.includes('ANY($2::text[])')) {
+      if (
+        sql.includes('FROM public.employee_compensation_packages') &&
+        sql.includes('ANY($2::text[])')
+      ) {
         return { rows: [] };
       }
       if (
@@ -95,7 +115,11 @@ describe('loadCoreCbVariableBag', () => {
         return { rows: [{ id: pkgId, company_id: 'legacy-ou' }] };
       }
       if (sql.includes('FROM public.employee_compensation_lines')) {
-        return { rows: [{ line_type: 'base', amount: '9000000', allowance_code: null }] };
+        return {
+          rows: [
+            { line_type: 'base', amount: '9000000', allowance_code: null },
+          ],
+        };
       }
       return { rows: [] };
     });
@@ -107,7 +131,10 @@ describe('loadCoreCbVariableBag', () => {
     });
     expect(bag.vars.base_salary).toBe(9_000_000);
     expect(bag.warnings).toEqual(
-      expect.arrayContaining(['CB_PACKAGE_EMPLOYEE_FALLBACK', 'CB_PACKAGE_SOURCE:employee_fallback']),
+      expect.arrayContaining([
+        'CB_PACKAGE_EMPLOYEE_FALLBACK',
+        'CB_PACKAGE_SOURCE:employee_fallback',
+      ]),
     );
   });
 
@@ -123,7 +150,11 @@ describe('loadCoreCbVariableBag', () => {
         return { rows: [{ compensation_package_id: pkgId }] };
       }
       if (sql.includes('FROM public.employee_compensation_lines')) {
-        return { rows: [{ line_type: 'base', amount: '7500000', allowance_code: null }] };
+        return {
+          rows: [
+            { line_type: 'base', amount: '7500000', allowance_code: null },
+          ],
+        };
       }
       return { rows: [] };
     });
@@ -135,7 +166,10 @@ describe('loadCoreCbVariableBag', () => {
     });
     expect(bag.vars.base_salary).toBe(7_500_000);
     expect(bag.warnings).toEqual(
-      expect.arrayContaining(['CB_PACKAGE_FROM_CONTRACT_LINK', 'CB_PACKAGE_SOURCE:contract_link']),
+      expect.arrayContaining([
+        'CB_PACKAGE_FROM_CONTRACT_LINK',
+        'CB_PACKAGE_SOURCE:contract_link',
+      ]),
     );
   });
 
@@ -144,11 +178,18 @@ describe('loadCoreCbVariableBag', () => {
       if (sql.includes('FROM public.employees')) {
         return { rows: [{ company_id: 'holding' }] };
       }
-      if (sql.includes('FROM public.employee_compensation_packages') && sql.includes('ANY')) {
+      if (
+        sql.includes('FROM public.employee_compensation_packages') &&
+        sql.includes('ANY')
+      ) {
         return { rows: [{ id: pkgId, company_id: 'holding' }] };
       }
       if (sql.includes('FROM public.employee_compensation_lines')) {
-        return { rows: [{ line_type: 'probation', amount: '6000000', allowance_code: null }] };
+        return {
+          rows: [
+            { line_type: 'probation', amount: '6000000', allowance_code: null },
+          ],
+        };
       }
       return { rows: [] };
     });
@@ -203,7 +244,10 @@ describe('loadAttHoursFromClosedLine', () => {
     expect(r.attHoursReady).toBe(false);
     expect(r.attHoursReason).toBe('ATT_TIMESHEET_LINE_ABSENT');
     expect(r.warnings).toEqual(
-      expect.arrayContaining(['ATT_TIMESHEET_LINE_ABSENT', 'ATT_HOURS_BLOCKED_UNTIL_LINE']),
+      expect.arrayContaining([
+        'ATT_TIMESHEET_LINE_ABSENT',
+        'ATT_HOURS_BLOCKED_UNTIL_LINE',
+      ]),
     );
   });
 
@@ -212,7 +256,10 @@ describe('loadAttHoursFromClosedLine', () => {
       if (sql.includes("table_name = 'att_timesheet_line'")) {
         return { rows: [{ exists: true }] };
       }
-      if (sql.includes('FROM public.attendance_sheets') && sql.includes("status = 'closed'")) {
+      if (
+        sql.includes('FROM public.attendance_sheets') &&
+        sql.includes("status = 'closed'")
+      ) {
         return { rows: [{ id: sheetId }] };
       }
       if (sql.includes('FROM public.att_timesheet_line')) {
@@ -343,11 +390,18 @@ describe('buildPayFormulaVariableBag', () => {
       if (sql.includes('FROM public.employees')) {
         return { rows: [{ company_id: 'holding' }] };
       }
-      if (sql.includes('FROM public.employee_compensation_packages') && sql.includes('ANY')) {
+      if (
+        sql.includes('FROM public.employee_compensation_packages') &&
+        sql.includes('ANY')
+      ) {
         return { rows: [{ id: pkgId, company_id: 'holding' }] };
       }
       if (sql.includes('FROM public.employee_compensation_lines')) {
-        return { rows: [{ line_type: 'base', amount: '8000000', allowance_code: null }] };
+        return {
+          rows: [
+            { line_type: 'base', amount: '8000000', allowance_code: null },
+          ],
+        };
       }
       return { rows: [] };
     });
@@ -360,7 +414,9 @@ describe('buildPayFormulaVariableBag', () => {
     });
     expect(bag.vars.base_salary).toBe(8_000_000);
     expect(bag.sourcePrecedence).toContain('emp_cb');
-    expect(bag.warnings.some((w) => w.startsWith('OVERRIDES_APPLIED'))).toBe(false);
+    expect(bag.warnings.some((w) => w.startsWith('OVERRIDES_APPLIED'))).toBe(
+      false,
+    );
     expect(bag.attHoursReady).toBe(true);
   });
 
@@ -384,7 +440,10 @@ describe('buildPayFormulaVariableBag', () => {
     expect(bag.attHoursReady).toBe(false);
     expect(bag.attHoursReason).toBe('ATT_TIMESHEET_LINE_ABSENT');
     expect(bag.warnings).toEqual(
-      expect.arrayContaining(['ATT_HOURS_VAR_BAG_INCOMPLETE', 'ATT_HOURS_BLOCKED_UNTIL_LINE']),
+      expect.arrayContaining([
+        'ATT_HOURS_VAR_BAG_INCOMPLETE',
+        'ATT_HOURS_BLOCKED_UNTIL_LINE',
+      ]),
     );
     expect(bag.vars.payable_hours).toBeUndefined();
   });
@@ -400,16 +459,26 @@ describe('buildPayFormulaVariableBag', () => {
       if (sql.includes('FROM public.employees')) {
         return { rows: [{ company_id: 'holding' }] };
       }
-      if (sql.includes('FROM public.employee_compensation_packages') && sql.includes('ANY')) {
+      if (
+        sql.includes('FROM public.employee_compensation_packages') &&
+        sql.includes('ANY')
+      ) {
         return { rows: [{ id: pkgId, company_id: 'holding' }] };
       }
       if (sql.includes('FROM public.employee_compensation_lines')) {
-        return { rows: [{ line_type: 'base', amount: '8000000', allowance_code: null }] };
+        return {
+          rows: [
+            { line_type: 'base', amount: '8000000', allowance_code: null },
+          ],
+        };
       }
       if (sql.includes('FROM public.attendance_sheets')) {
         return { rows: [{ id: sheetId }] };
       }
-      if (sql.includes('FROM public.att_timesheet_line') && !sql.includes('information_schema')) {
+      if (
+        sql.includes('FROM public.att_timesheet_line') &&
+        !sql.includes('information_schema')
+      ) {
         return {
           rows: [
             {
@@ -438,18 +507,19 @@ describe('buildPayFormulaVariableBag', () => {
     expect(bag.vars.base_salary).toBe(8_000_000);
     expect(bag.vars.payable_hours).toBe(176);
     expect(bag.attHoursReady).toBe(true);
-    expect(bag.sourcePrecedence).toEqual(expect.arrayContaining(['emp_cb', 'att_line']));
+    expect(bag.sourcePrecedence).toEqual(
+      expect.arrayContaining(['emp_cb', 'att_line']),
+    );
     expect(bag.warnings).toContain('ATT_HOURS_FROM_CLOSED_LINE');
   });
 });
-
 
 // ═══════════════════════════════════════════════════════════════════════════
 // W10 BA-HRM-PAYROLL-FORMULA-INPUT-PACK-BE-01 — New tests
 // ═══════════════════════════════════════════════════════════════════════════
 
 const PERIOD_ID_W10 = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
-const EMP_ID_W10    = 'ffffffff-ffff-4fff-8fff-ffffffffffff';
+const EMP_ID_W10 = 'ffffffff-ffff-4fff-8fff-ffffffffffff';
 
 describe('isAllowedFormulaVarKey (W10)', () => {
   it('route_count (IP source_kind) → true', () => {

@@ -10,10 +10,14 @@ import { SiInsuranceTypeService } from './si-insurance-type.service';
 import { SiInsurerService } from './si-insurer.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
@@ -24,22 +28,40 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
   const serviceMock = {
     createContract: jest.fn().mockResolvedValue({ id: 'con-1' }),
     createInsuranceRecord: jest.fn().mockResolvedValue({ id: 'ins-1' }),
-    listContracts: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'con-1' }] }),
+    listContracts: jest
+      .fn()
+      .mockResolvedValue({ total: 1, data: [{ id: 'con-1' }] }),
     getContractById: jest.fn().mockResolvedValue({ id: 'con-1' }),
-    listExpiringContracts: jest.fn().mockResolvedValue({ total: 1, days: 30, data: [{ id: 'con-1' }] }),
-    updateContract: jest.fn().mockResolvedValue({ id: 'con-1', contract_type: 'permanent' }),
+    listExpiringContracts: jest
+      .fn()
+      .mockResolvedValue({ total: 1, days: 30, data: [{ id: 'con-1' }] }),
+    updateContract: jest
+      .fn()
+      .mockResolvedValue({ id: 'con-1', contract_type: 'permanent' }),
     deleteContract: jest.fn().mockResolvedValue({ id: 'con-1', deleted: true }),
-    listInsurance: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'ins-1' }] }),
-    listExpiringInsurance: jest.fn().mockResolvedValue({ total: 1, days: 30, data: [{ id: 'ins-1' }] }),
+    listInsurance: jest
+      .fn()
+      .mockResolvedValue({ total: 1, data: [{ id: 'ins-1' }] }),
+    listExpiringInsurance: jest
+      .fn()
+      .mockResolvedValue({ total: 1, days: 30, data: [{ id: 'ins-1' }] }),
   };
 
   const compensationMock = {
-    createPackage: jest.fn().mockResolvedValue({ id: 'pkg-1', version: 1, lines: [] }),
-    listPackages: jest.fn().mockResolvedValue({ total: 0, page: 1, page_size: 20, data: [] }),
+    createPackage: jest
+      .fn()
+      .mockResolvedValue({ id: 'pkg-1', version: 1, lines: [] }),
+    listPackages: jest
+      .fn()
+      .mockResolvedValue({ total: 0, page: 1, page_size: 20, data: [] }),
     getPackageById: jest.fn().mockResolvedValue({ id: 'pkg-1', lines: [] }),
     getActivePackage: jest.fn().mockResolvedValue(null),
-    revisePackage: jest.fn().mockResolvedValue({ id: 'pkg-2', version: 2, lines: [] }),
-    listHistory: jest.fn().mockResolvedValue({ total: 0, page: 1, page_size: 20, data: [] }),
+    revisePackage: jest
+      .fn()
+      .mockResolvedValue({ id: 'pkg-2', version: 2, lines: [] }),
+    listHistory: jest
+      .fn()
+      .mockResolvedValue({ total: 0, page: 1, page_size: 20, data: [] }),
   };
 
   const legalPrintMock = {
@@ -47,17 +69,29 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
     createTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
     getTemplateById: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
     updateTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
-    activateTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1', status: 'active' }),
-    putTemplateClauses: jest.fn().mockResolvedValue({ id: 'tpl-1', clauses: [] }),
+    activateTemplate: jest
+      .fn()
+      .mockResolvedValue({ id: 'tpl-1', status: 'active' }),
+    putTemplateClauses: jest
+      .fn()
+      .mockResolvedValue({ id: 'tpl-1', clauses: [] }),
     listClauses: jest.fn().mockResolvedValue({ total: 0, data: [] }),
     createClause: jest.fn().mockResolvedValue({ id: 'cl-1' }),
     getClauseById: jest.fn().mockResolvedValue({ id: 'cl-1' }),
     updateClause: jest.fn().mockResolvedValue({ id: 'cl-1' }),
-    activateClause: jest.fn().mockResolvedValue({ id: 'cl-1', status: 'active' }),
-    retireClause: jest.fn().mockResolvedValue({ id: 'cl-1', status: 'retired' }),
-    listPackRules: jest.fn().mockResolvedValue({ total: 0, data: [], allowed_packs: [] }),
+    activateClause: jest
+      .fn()
+      .mockResolvedValue({ id: 'cl-1', status: 'active' }),
+    retireClause: jest
+      .fn()
+      .mockResolvedValue({ id: 'cl-1', status: 'retired' }),
+    listPackRules: jest
+      .fn()
+      .mockResolvedValue({ total: 0, data: [], allowed_packs: [] }),
     putPackRules: jest.fn().mockResolvedValue({ total: 0, data: [] }),
-    resolvePackForEmployee: jest.fn().mockResolvedValue({ suggested_pack: 'GENERAL' }),
+    resolvePackForEmployee: jest
+      .fn()
+      .mockResolvedValue({ suggested_pack: 'GENERAL' }),
     previewContract: jest.fn().mockResolvedValue({ can_issue: false }),
     createPrintVersion: jest.fn().mockResolvedValue({ id: 'pv-1' }),
     listPrintVersions: jest.fn().mockResolvedValue({ total: 0, data: [] }),
@@ -72,29 +106,47 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
   };
 
   const libraryPublishMock = {
-    publishLibrary: jest.fn().mockResolvedValue({ publish_version: 1, checksum: 'abc' }),
+    publishLibrary: jest
+      .fn()
+      .mockResolvedValue({ publish_version: 1, checksum: 'abc' }),
     listPublishes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
     getPublishByVersion: jest.fn().mockResolvedValue({ publish_version: 1 }),
-    pullLibrary: jest.fn().mockResolvedValue({ publish_version: 1, upserted: [] }),
-    applyLibrary: jest.fn().mockResolvedValue({ publish_version: 1, print_versions_mutated: false }),
+    pullLibrary: jest
+      .fn()
+      .mockResolvedValue({ publish_version: 1, upserted: [] }),
+    applyLibrary: jest
+      .fn()
+      .mockResolvedValue({ publish_version: 1, print_versions_mutated: false }),
   };
 
   const siInsuranceTypeMock = {
     listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
     listInsuranceTypes: jest.fn().mockResolvedValue({ total: 0, data: [] }),
-    upsertInsuranceType: jest.fn().mockResolvedValue({ id: 'sit-1', insuranceTypeKey: 'BHXH' }),
-    getInsuranceTypeById: jest.fn().mockResolvedValue({ id: 'sit-1', insuranceTypeKey: 'BHXH' }),
+    upsertInsuranceType: jest
+      .fn()
+      .mockResolvedValue({ id: 'sit-1', insuranceTypeKey: 'BHXH' }),
+    getInsuranceTypeById: jest
+      .fn()
+      .mockResolvedValue({ id: 'sit-1', insuranceTypeKey: 'BHXH' }),
     patchInsuranceType: jest.fn().mockResolvedValue({ id: 'sit-1' }),
-    retireInsuranceType: jest.fn().mockResolvedValue({ id: 'sit-1', status: 'retired' }),
+    retireInsuranceType: jest
+      .fn()
+      .mockResolvedValue({ id: 'sit-1', status: 'retired' }),
   };
 
   const siInsurerMock = {
     listEffective: jest.fn().mockResolvedValue({ total: 0, data: [] }),
     listInsurers: jest.fn().mockResolvedValue({ total: 0, data: [] }),
-    upsertInsurer: jest.fn().mockResolvedValue({ id: 'sin-1', insurerKey: 'VSS' }),
-    getInsurerById: jest.fn().mockResolvedValue({ id: 'sin-1', insurerKey: 'VSS' }),
+    upsertInsurer: jest
+      .fn()
+      .mockResolvedValue({ id: 'sin-1', insurerKey: 'VSS' }),
+    getInsurerById: jest
+      .fn()
+      .mockResolvedValue({ id: 'sin-1', insurerKey: 'VSS' }),
     patchInsurer: jest.fn().mockResolvedValue({ id: 'sin-1' }),
-    retireInsurer: jest.fn().mockResolvedValue({ id: 'sin-1', status: 'retired' }),
+    retireInsurer: jest
+      .fn()
+      .mockResolvedValue({ id: 'sin-1', status: 'retired' }),
   };
 
   beforeEach(async () => {
@@ -106,39 +158,68 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
         { provide: ContractsInsuranceService, useValue: serviceMock },
         { provide: EmployeeCompensationService, useValue: compensationMock },
         { provide: ContractLegalPrintService, useValue: legalPrintMock },
-        { provide: ContractLibraryPublishService, useValue: libraryPublishMock },
+        {
+          provide: ContractLibraryPublishService,
+          useValue: libraryPublishMock,
+        },
         { provide: SiInsuranceTypeService, useValue: siInsuranceTypeMock },
         { provide: SiInsurerService, useValue: siInsurerMock },
       ],
     }).compile();
 
-    controller = module.get<ContractsInsuranceController>(ContractsInsuranceController);
+    controller = module.get<ContractsInsuranceController>(
+      ContractsInsuranceController,
+    );
   });
 
   it('HRM-CI-02 create insurance HRM-CI-04 HRM-CI-07 expiring alerts return deterministic codes', async () => {
-    const createContractRes = await controller.createContract(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
-      position_key: 'NV_KD',
-      contract_type: 'fixed_term',
-      start_date: '2026-04-01',
-      end_date: '2026-12-31',
-    });
-    const createInsuranceRes = await controller.createInsurance(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
-      provider: 'Bao Viet',
-      policy_number: 'BV-001',
-      expiry_date: '2026-12-31',
-    });
-    const expiringContractsRes = await controller.listExpiringContracts(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      days: 60,
-    });
-    const expiringInsuranceRes = await controller.listExpiringInsurance(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      days: 60,
-    });
+    const createContractRes = await controller.createContract(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        position_key: 'NV_KD',
+        contract_type: 'fixed_term',
+        start_date: '2026-04-01',
+        end_date: '2026-12-31',
+      },
+    );
+    const createInsuranceRes = await controller.createInsurance(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        provider: 'Bao Viet',
+        policy_number: 'BV-001',
+        expiry_date: '2026-12-31',
+      },
+    );
+    const expiringContractsRes = await controller.listExpiringContracts(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        days: 60,
+      },
+    );
+    const expiringInsuranceRes = await controller.listExpiringInsurance(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        days: 60,
+      },
+    );
 
     expect(createContractRes.code).toBe('HRM-CON-201');
     expect(createInsuranceRes.code).toBe('HRM-CON-202');
@@ -147,15 +228,24 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
   });
 
   it('keeps GET insurance route metadata registered', () => {
-    const routePath = Reflect.getMetadata(PATH_METADATA, controller.listInsurance);
+    const routePath = Reflect.getMetadata(
+      PATH_METADATA,
+      controller.listInsurance,
+    );
     expect(routePath).toBe('insurance');
   });
 
   it('HRM-CI-03 list HRM-CI-05 update HRM-CI-06 delete contract paths', async () => {
     const companyId = '78b8a663-f5e5-4f4d-a020-b8f950ec2037';
-    const listRes = await controller.listContracts(undefined, 'test-key', 'xevn', undefined, {
-      company_id: companyId,
-    });
+    const listRes = await controller.listContracts(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: companyId,
+      },
+    );
     const detailRes = await controller.getContractById(
       undefined,
       'test-key',
@@ -164,13 +254,32 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
       'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
       { company_id: companyId },
     );
-    const updateRes = await controller.updateContract(undefined, 'test-key', 'xevn', companyId, 'con-1', {
-      contract_type: 'permanent',
-    });
-    const deleteRes = await controller.deleteContract(undefined, 'test-key', 'xevn', companyId, 'con-1');
-    const listInsRes = await controller.listInsurance(undefined, 'test-key', 'xevn', undefined, {
-      company_id: companyId,
-    });
+    const updateRes = await controller.updateContract(
+      undefined,
+      'test-key',
+      'xevn',
+      companyId,
+      'con-1',
+      {
+        contract_type: 'permanent',
+      },
+    );
+    const deleteRes = await controller.deleteContract(
+      undefined,
+      'test-key',
+      'xevn',
+      companyId,
+      'con-1',
+    );
+    const listInsRes = await controller.listInsurance(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: companyId,
+      },
+    );
 
     expect(listRes.code).toBe('HRM-CON-200');
     expect(detailRes.code).toBe('HRM-CON-200');
@@ -184,8 +293,17 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
       undefined,
       { tenantId: 'xevn' },
     );
-    expect(serviceMock.updateContract).toHaveBeenCalledWith('con-1', { contract_type: 'permanent' }, companyId, undefined);
-    expect(serviceMock.deleteContract).toHaveBeenCalledWith('con-1', companyId, undefined);
+    expect(serviceMock.updateContract).toHaveBeenCalledWith(
+      'con-1',
+      { contract_type: 'permanent' },
+      companyId,
+      undefined,
+    );
+    expect(serviceMock.deleteContract).toHaveBeenCalledWith(
+      'con-1',
+      companyId,
+      undefined,
+    );
   });
 
   it('accepts internal API key and forwards contracts-insurance payloads', async () => {
@@ -209,32 +327,80 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
       days: 45,
     };
 
-    await controller.createContract(undefined, 'test-key', 'xevn', undefined, contractBody);
-    await controller.createInsurance(undefined, 'test-key', 'xevn', undefined, insuranceBody);
-    await controller.listExpiringContracts(undefined, 'test-key', 'xevn', undefined, expiringQuery);
-    await controller.listExpiringInsurance(undefined, 'test-key', 'xevn', undefined, expiringQuery);
+    await controller.createContract(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      contractBody,
+    );
+    await controller.createInsurance(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      insuranceBody,
+    );
+    await controller.listExpiringContracts(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      expiringQuery,
+    );
+    await controller.listExpiringInsurance(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      expiringQuery,
+    );
 
-    expect(serviceMock.createContract).toHaveBeenCalledWith(contractBody, undefined);
-    expect(serviceMock.createInsuranceRecord).toHaveBeenCalledWith(insuranceBody, undefined);
-    expect(serviceMock.listExpiringContracts).toHaveBeenCalledWith(expiringQuery, undefined);
-    expect(serviceMock.listExpiringInsurance).toHaveBeenCalledWith(expiringQuery, undefined);
+    expect(serviceMock.createContract).toHaveBeenCalledWith(
+      contractBody,
+      undefined,
+    );
+    expect(serviceMock.createInsuranceRecord).toHaveBeenCalledWith(
+      insuranceBody,
+      undefined,
+    );
+    expect(serviceMock.listExpiringContracts).toHaveBeenCalledWith(
+      expiringQuery,
+      undefined,
+    );
+    expect(serviceMock.listExpiringInsurance).toHaveBeenCalledWith(
+      expiringQuery,
+      undefined,
+    );
   });
 
   it('blocks unauthorized contracts-insurance access', async () => {
     expect(() =>
-      controller.listExpiringContracts(undefined, undefined, undefined, undefined, {
-        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      }),
+      controller.listExpiringContracts(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {
+          company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        },
+      ),
     ).toThrow('Unauthorized contracts/insurance access');
     expect(serviceMock.listExpiringContracts).not.toHaveBeenCalled();
   });
 
   it('rejects missing tenant scope deterministically', async () => {
     expect(() =>
-      controller.listExpiringContracts(undefined, 'test-key', undefined, undefined, {
-        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-        days: 30,
-      }),
+      controller.listExpiringContracts(
+        undefined,
+        'test-key',
+        undefined,
+        undefined,
+        {
+          company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+          days: 30,
+        },
+      ),
     ).toThrow('tenantId is required');
     expect(serviceMock.listExpiringContracts).not.toHaveBeenCalled();
   });
@@ -247,9 +413,15 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
       companyId: 'main',
       roleCode: 'group_ceo',
     });
-    const result = await controller.listInsurance(`Bearer ${token}`, undefined, 'xevn', 'main', {
-      company_id: 'main',
-    });
+    const result = await controller.listInsurance(
+      `Bearer ${token}`,
+      undefined,
+      'xevn',
+      'main',
+      {
+        company_id: 'main',
+      },
+    );
     expect(result.code).toBe('HRM-CON-200');
     expect(serviceMock.listInsurance).toHaveBeenCalledWith(
       { company_id: 'main' },
@@ -266,14 +438,20 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
       companyId: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
     });
     expect(() =>
-      controller.createContract(`Bearer ${token}`, undefined, 'xevn', undefined, {
-        company_id: 'a7d2dbec-75d7-4b2e-8c75-c53cd14f22aa',
-        employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
-        position_key: 'NV_KD',
-        contract_type: 'fixed_term',
-        start_date: '2026-04-01',
-        end_date: '2026-12-31',
-      }),
+      controller.createContract(
+        `Bearer ${token}`,
+        undefined,
+        'xevn',
+        undefined,
+        {
+          company_id: 'a7d2dbec-75d7-4b2e-8c75-c53cd14f22aa',
+          employee_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+          position_key: 'NV_KD',
+          contract_type: 'fixed_term',
+          start_date: '2026-04-01',
+          end_date: '2026-12-31',
+        },
+      ),
     ).toThrow('companyId mismatches token scope');
     expect(serviceMock.createContract).not.toHaveBeenCalled();
   });
@@ -317,21 +495,37 @@ describe('ContractsInsuranceController (HRM-CI-01..07)', () => {
   });
 
   it('F-SI-CAT-EFF-01 registers GET insurance-types/effective', async () => {
-    const routePath = Reflect.getMetadata(PATH_METADATA, controller.listEffectiveInsuranceTypes);
+    const routePath = Reflect.getMetadata(
+      PATH_METADATA,
+      controller.listEffectiveInsuranceTypes,
+    );
     expect(routePath).toBe('insurance-types/effective');
-    const res = await controller.listEffectiveInsuranceTypes(undefined, 'test-key', 'xevn', {
-      company_id: 'holding',
-    });
+    const res = await controller.listEffectiveInsuranceTypes(
+      undefined,
+      'test-key',
+      'xevn',
+      {
+        company_id: 'holding',
+      },
+    );
     expect(res.code).toBe('HRM-SI-INS-TYPE-200');
     expect(siInsuranceTypeMock.listEffective).toHaveBeenCalled();
   });
 
   it('F-SI-CAT-INS-EFF-01 registers GET insurers/effective', async () => {
-    const routePath = Reflect.getMetadata(PATH_METADATA, controller.listEffectiveInsurers);
+    const routePath = Reflect.getMetadata(
+      PATH_METADATA,
+      controller.listEffectiveInsurers,
+    );
     expect(routePath).toBe('insurers/effective');
-    const res = await controller.listEffectiveInsurers(undefined, 'test-key', 'xevn', {
-      company_id: 'holding',
-    });
+    const res = await controller.listEffectiveInsurers(
+      undefined,
+      'test-key',
+      'xevn',
+      {
+        company_id: 'holding',
+      },
+    );
     expect(res.code).toBe('HRM-SI-INSURER-200');
     expect(siInsurerMock.listEffective).toHaveBeenCalled();
   });

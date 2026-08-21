@@ -13,7 +13,12 @@ function pickScalar(value: unknown): string | undefined {
 /** ESS self-service list — company_id optional (defaults from JWT). */
 export class ListMyPayslipsQueryDto {
   @IsOptional()
-  @Transform(({ value, obj }) => pickScalar(value) ?? pickScalar(obj?.companyId) ?? pickScalar(obj?.company_id))
+  @Transform(
+    ({ value, obj }) =>
+      pickScalar(value) ??
+      pickScalar(obj?.companyId) ??
+      pickScalar(obj?.company_id),
+  )
   @IsString()
   @MaxLength(64)
   company_id?: string;

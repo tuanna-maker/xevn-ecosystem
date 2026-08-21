@@ -39,7 +39,10 @@ import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import { getVerifiedInternalJwtPayload } from '../common/internal-auth';
 import { HrmDbService } from '../db/hrm-db.service';
-import { assertAttendanceSheetHeaderInScope, AttendanceSheetHeaderRow } from './attendance-sheet-scope';
+import {
+  assertAttendanceSheetHeaderInScope,
+  AttendanceSheetHeaderRow,
+} from './attendance-sheet-scope';
 import { CreateAttendanceSheetSignatureDto } from './dto/create-attendance-sheet-signature.dto';
 import { ReopenAttendanceSheetDto } from './dto/reopen-attendance-sheet.dto';
 import { ensureAttendanceSheetSchema } from './attendance-sheet-schema.bootstrap';
@@ -90,7 +93,9 @@ export class AttendanceSheetSignService {
     `);
   }
 
-  private async loadHeaderRow(sheetId: string): Promise<AttendanceSheetHeaderRow | undefined> {
+  private async loadHeaderRow(
+    sheetId: string,
+  ): Promise<AttendanceSheetHeaderRow | undefined> {
     await this.ensureAttendanceSheetSchemaLocal();
     const peek = await this.db.query(
       `SELECT * FROM public.attendance_sheets WHERE id = $1::uuid LIMIT 1;`,
@@ -109,7 +114,11 @@ export class AttendanceSheetSignService {
     return row;
   }
 
-  async getAttendanceSheetById(sheetId: string, companyId: string, authorization?: string) {
+  async getAttendanceSheetById(
+    sheetId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     return this.assertHeaderInScope(sheetId, companyId, authorization);
   }
 
@@ -129,17 +138,35 @@ export class AttendanceSheetSignService {
     missing_mandatory_roles: string[];
   } {
     if (steps.some((s) => String(s.outcome) === 'rejected')) {
-      return { can_close: false, missing_mandatory_roles: [...MANDATORY_PERSONAS] };
+      return {
+        can_close: false,
+        missing_mandatory_roles: [...MANDATORY_PERSONAS],
+      };
     }
     const approvedRoles = new Set(
-      steps.filter((s) => String(s.outcome) === 'approved').map((s) => String(s.persona_role)),
+      steps
+        .filter((s) => String(s.outcome) === 'approved')
+        .map((s) => String(s.persona_role)),
     );
-    const missing = MANDATORY_PERSONAS.filter((role) => !approvedRoles.has(role));
-    return { can_close: missing.length === 0, missing_mandatory_roles: missing };
+    const missing = MANDATORY_PERSONAS.filter(
+      (role) => !approvedRoles.has(role),
+    );
+    return {
+      can_close: missing.length === 0,
+      missing_mandatory_roles: missing,
+    };
   }
 
-  async listSignatures(sheetId: string, companyId: string, authorization?: string) {
-    const header = await this.assertHeaderInScope(sheetId, companyId, authorization);
+  async listSignatures(
+    sheetId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
+    const header = await this.assertHeaderInScope(
+      sheetId,
+      companyId,
+      authorization,
+    );
     const steps = await this.listActiveSignSteps(sheetId);
     const { can_close, missing_mandatory_roles } = this.evaluateCanClose(steps);
     return {
@@ -164,9 +191,17 @@ export class AttendanceSheetSignService {
     companyId: string,
     authorization?: string,
   ) {
-    const header = await this.assertHeaderInScope(sheetId, companyId, authorization);
+    const header = await this.assertHeaderInScope(
+      sheetId,
+      companyId,
+      authorization,
+    );
     if (header.status === 'closed') {
-      throw new ApiException('HRM-ATT-SHEET-LOCKED', 'Sheet is closed', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-ATT-SHEET-LOCKED',
+        'Sheet is closed',
+        HttpStatus.CONFLICT,
+      );
     }
     if (header.status !== 'submitted') {
       throw new ApiException(
@@ -176,10 +211,16 @@ export class AttendanceSheetSignService {
       );
     }
     if (payload.outcome === 'rejected' && !payload.comment?.trim()) {
-      throw new ApiException('HRM-ATT-SIGN-422', 'Comment required when rejecting', HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new ApiException(
+        'HRM-ATT-SIGN-422',
+        'Comment required when rejecting',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
 
-    const jwt = authorization ? getVerifiedInternalJwtPayload(authorization) : null;
+    const jwt = authorization
+      ? getVerifiedInternalJwtPayload(authorization)
+      : null;
     const signerUserId = String(jwt?.sub ?? 'system');
 
     await this.ensureSignStepSchema();
@@ -226,13 +267,29 @@ export class AttendanceSheetSignService {
     }
   }
 
-  async closeAttendanceSheet(sheetId: string, companyId: string, authorization?: string) {
-    const header = await this.assertHeaderInScope(sheetId, companyId, authorization);
+  async closeAttendanceSheet(
+    sheetId: string,
+    companyId: string,
+    authorization?: string,
+  ) {
+    const header = await this.assertHeaderInScope(
+      sheetId,
+      companyId,
+      authorization,
+    );
     if (header.status === 'closed') {
-      throw new ApiException('HRM-ATT-SHEET-LOCKED', 'Sheet already closed', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-ATT-SHEET-LOCKED',
+        'Sheet already closed',
+        HttpStatus.CONFLICT,
+      );
     }
     if (header.status !== 'submitted') {
-      throw new ApiException('HRM-ATT-SHEET-STATE', 'Only submitted sheets can be closed', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-ATT-SHEET-STATE',
+        'Only submitted sheets can be closed',
+        HttpStatus.CONFLICT,
+      );
     }
     const steps = await this.listActiveSignSteps(sheetId);
     const { can_close } = this.evaluateCanClose(steps);
@@ -244,7 +301,9 @@ export class AttendanceSheetSignService {
       );
     }
 
-    const jwt = authorization ? getVerifiedInternalJwtPayload(authorization) : null;
+    const jwt = authorization
+      ? getVerifiedInternalJwtPayload(authorization)
+      : null;
     const closedBy = String(jwt?.sub ?? 'system');
 
     const res = await this.db.query(
@@ -253,7 +312,11 @@ export class AttendanceSheetSignService {
       [sheetId, closedBy],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-AS-404', 'Attendance sheet not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-AS-404',
+        'Attendance sheet not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     // F-ATT-SHEET-02 EXPAND — PAY only trusts closed + line_locked
     const lockedCount = await lockAttTimesheetLinesForSheet(this.db, sheetId);
@@ -273,7 +336,11 @@ export class AttendanceSheetSignService {
     companyId: string,
     authorization?: string,
   ): Promise<AggregateSheetResult> {
-    const header = await this.assertHeaderInScope(sheetId, companyId, authorization);
+    const header = await this.assertHeaderInScope(
+      sheetId,
+      companyId,
+      authorization,
+    );
     return aggregateAttendanceSheetLines(this.db, header);
   }
 
@@ -285,10 +352,23 @@ export class AttendanceSheetSignService {
     sheetId: string,
     companyId: string,
     authorization?: string,
-  ): Promise<{ sheet_id: string; status: string; line_count: number; warnings?: string[] }> {
-    const header = await this.assertHeaderInScope(sheetId, companyId, authorization);
+  ): Promise<{
+    sheet_id: string;
+    status: string;
+    line_count: number;
+    warnings?: string[];
+  }> {
+    const header = await this.assertHeaderInScope(
+      sheetId,
+      companyId,
+      authorization,
+    );
     if (header.status === 'closed') {
-      throw new ApiException('HRM-ATT-SHEET-LOCKED', 'Closed sheets cannot be submitted', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-ATT-SHEET-LOCKED',
+        'Closed sheets cannot be submitted',
+        HttpStatus.CONFLICT,
+      );
     }
     if (header.status === 'submitted') {
       // Idempotent re-AGG allowed while submitted (rebuild before close).
@@ -316,7 +396,11 @@ export class AttendanceSheetSignService {
       [sheetId],
     );
     if (!res.rows[0]) {
-      throw new ApiException('HRM-AS-404', 'Attendance sheet not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-AS-404',
+        'Attendance sheet not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return {
       sheet_id: sheetId,
@@ -332,9 +416,17 @@ export class AttendanceSheetSignService {
     companyId: string,
     authorization?: string,
   ) {
-    const header = await this.assertHeaderInScope(sheetId, companyId, authorization);
+    const header = await this.assertHeaderInScope(
+      sheetId,
+      companyId,
+      authorization,
+    );
     if (header.status !== 'closed') {
-      throw new ApiException('HRM-ATT-SHEET-STATE', 'Only closed sheets can be reopened', HttpStatus.CONFLICT);
+      throw new ApiException(
+        'HRM-ATT-SHEET-STATE',
+        'Only closed sheets can be reopened',
+        HttpStatus.CONFLICT,
+      );
     }
     await this.ensureSignStepSchema();
     await this.db.query(
@@ -343,7 +435,10 @@ export class AttendanceSheetSignService {
       [sheetId],
     );
     // F-ATT-SHEET-03 — archive lines; next AGG/submit regenerates
-    const archivedLines = await archiveAttTimesheetLinesForSheet(this.db, sheetId);
+    const archivedLines = await archiveAttTimesheetLinesForSheet(
+      this.db,
+      sheetId,
+    );
     const res = await this.db.query(
       `UPDATE public.attendance_sheets SET status = 'submitted', closed_at = NULL, closed_by = NULL, updated_at = NOW()
        WHERE id = $1::uuid RETURNING id, status;`,

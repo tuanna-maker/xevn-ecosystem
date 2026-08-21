@@ -58,14 +58,21 @@ function schemaPassthrough(sql: string): boolean {
 }
 
 function mockDb(
-  queryImpl: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
+  queryImpl: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
 ): HrmDbService {
-  const query = jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-    return queryImpl(sql, params);
-  });
+  const query = jest
+    .fn()
+    .mockImplementation(async (sql: string, params?: unknown[]) => {
+      return queryImpl(sql, params);
+    });
   return {
     query,
-    withTransaction: jest.fn(async (fn: (q: typeof query) => Promise<unknown>) => fn(query)),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof query) => Promise<unknown>) => fn(query),
+    ),
   } as unknown as HrmDbService;
 }
 
@@ -81,11 +88,17 @@ describe('EmpEmploymentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', 
     const svc = new EmpEmploymentTypeService(db);
     await svc.ensureSchema();
     expect(
-      sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.emp_employment_type')),
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.emp_employment_type'),
+      ),
     ).toBe(true);
-    expect(sqls.some((q) => q.includes('uq_emp_employment_type_company_key_active'))).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('uq_emp_employment_type_company_key_active')),
+    ).toBe(true);
     expect(sqls.some((q) => q.includes('chk_emp_et_key_format'))).toBe(true);
-    expect(sqls.every((q) => !q.includes("employment_type_key IN ("))).toBe(true);
+    expect(sqls.every((q) => !q.includes('employment_type_key IN ('))).toBe(
+      true,
+    );
     expect(sqls.every((q) => !q.includes("'full_time'"))).toBe(true);
   });
 
@@ -93,14 +106,18 @@ describe('EmpEmploymentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', 
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_employment_type') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.emp_employment_type') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.emp_employment_type')) {
         return { rows: [baseRow({ employment_type_key: 'full_time' })] };
       }
       if (s.includes('FROM public.hrm_merge_tokens')) return { rows: [] };
-      if (s.includes('INSERT INTO public.hrm_merge_tokens')) return { rows: [] };
+      if (s.includes('INSERT INTO public.hrm_merge_tokens'))
+        return { rows: [] };
       return { rows: [] };
     });
     const svc = new EmpEmploymentTypeService(db);
@@ -139,14 +156,18 @@ describe('EmpEmploymentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', 
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_employment_type') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.emp_employment_type') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.emp_employment_type')) {
         return { rows: [baseRow()] };
       }
       if (s.includes('FROM public.hrm_merge_tokens')) return { rows: [] };
-      if (s.includes('INSERT INTO public.hrm_merge_tokens')) return { rows: [] };
+      if (s.includes('INSERT INTO public.hrm_merge_tokens'))
+        return { rows: [] };
       return { rows: [] };
     });
     const svc = new EmpEmploymentTypeService(db);
@@ -164,18 +185,26 @@ describe('EmpEmploymentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', 
 
   it('scope_parity: list id → getById 200 (group CEO main→holding)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        if (schemaPassthrough(sql)) return { rows: [] };
-        const s = String(sql);
-        if (s.includes('FROM public.emp_employment_type') && s.includes('ORDER BY sort_order')) {
-          expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
-          return { rows: [baseRow()] };
-        }
-        if (s.includes('FROM public.emp_employment_type') && s.includes('id = $1')) {
-          return { rows: [baseRow()] };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          if (schemaPassthrough(sql)) return { rows: [] };
+          const s = String(sql);
+          if (
+            s.includes('FROM public.emp_employment_type') &&
+            s.includes('ORDER BY sort_order')
+          ) {
+            expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
+            return { rows: [baseRow()] };
+          }
+          if (
+            s.includes('FROM public.emp_employment_type') &&
+            s.includes('id = $1')
+          ) {
+            return { rows: [baseRow()] };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const svc = new EmpEmploymentTypeService(db);
     const auth = groupCeoToken();
@@ -222,7 +251,10 @@ describe('EmpEmploymentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', 
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
-        if (String(sql).includes('FROM public.emp_employment_type') && String(sql).includes('ORDER BY')) {
+        if (
+          String(sql).includes('FROM public.emp_employment_type') &&
+          String(sql).includes('ORDER BY')
+        ) {
           return {
             rows: [
               baseRow({
@@ -236,7 +268,10 @@ describe('EmpEmploymentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', 
       }),
     } as unknown as HrmDbService;
     const svc = new EmpEmploymentTypeService(db, settings);
-    const eff = await svc.listEffective({ company_id: 'holding' }, groupCeoToken());
+    const eff = await svc.listEffective(
+      { company_id: 'holding' },
+      groupCeoToken(),
+    );
     expect(eff.total).toBe(2);
     const full = eff.data.find((r) => r.employmentTypeKey === 'full_time');
     expect(full?.nameVi).toBe('EMP Full-time override');
@@ -249,7 +284,10 @@ describe('EmpEmploymentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', 
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
-        if (String(sql).includes('FROM public.emp_employment_type') && String(sql).includes('ORDER BY')) {
+        if (
+          String(sql).includes('FROM public.emp_employment_type') &&
+          String(sql).includes('ORDER BY')
+        ) {
           return { rows: [baseRow()] };
         }
         return { rows: [] };
@@ -273,10 +311,16 @@ describe('EmpEmploymentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', 
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_employment_type') && s.includes('id = $1')) {
+      if (
+        s.includes('FROM public.emp_employment_type') &&
+        s.includes('id = $1')
+      ) {
         return { rows: [baseRow()] };
       }
-      if (s.includes('UPDATE public.emp_employment_type') && s.includes("status = 'retired'")) {
+      if (
+        s.includes('UPDATE public.emp_employment_type') &&
+        s.includes("status = 'retired'")
+      ) {
         expect(s).not.toMatch(/DELETE/i);
         return { rows: [retired] };
       }

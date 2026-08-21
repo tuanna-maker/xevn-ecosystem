@@ -1,10 +1,18 @@
 import { useToast } from "@/hooks/use-toast";
 import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@/components/ui/toast";
+import { createPortal } from "react-dom";
+import { getRadixPortalContainer, isHrmDialogMountedToPortalParent, syncHrmStylesheetsToParentForPortalDialogs } from "@/lib/hrmDialogPortal";
 
 export function Toaster() {
   const { toasts } = useToast();
 
-  return (
+  const useParentPortal = isHrmDialogMountedToPortalParent('parent');
+  if (useParentPortal) {
+    syncHrmStylesheetsToParentForPortalDialogs();
+  }
+  const mount = getRadixPortalContainer('parent');
+
+  const content = (
     <ToastProvider>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
@@ -21,4 +29,6 @@ export function Toaster() {
       <ToastViewport />
     </ToastProvider>
   );
+
+  return mount ? createPortal(content, mount) : content;
 }

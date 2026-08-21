@@ -34,7 +34,9 @@ type ViewerRow = {
 };
 
 function todayIsoInHoChiMinh(): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: HCM_TIMEZONE }).format(new Date());
+  return new Intl.DateTimeFormat('en-CA', { timeZone: HCM_TIMEZONE }).format(
+    new Date(),
+  );
 }
 
 function monthDayFromIsoDate(value: string | undefined | null): string | null {
@@ -72,14 +74,15 @@ function normalizeTimestamp(value: string | Date | null | undefined): string {
   return String(value);
 }
 
-function compareTimestampsDesc(a: string | Date | null | undefined, b: string | Date | null | undefined): number {
+function compareTimestampsDesc(
+  a: string | Date | null | undefined,
+  b: string | Date | null | undefined,
+): number {
   return normalizeTimestamp(b).localeCompare(normalizeTimestamp(a));
 }
 
 function resolveEmployeeInitials(fullName: string | undefined | null): string {
-  const parts = (fullName?.trim() ?? '')
-    .split(/\s+/)
-    .filter(Boolean);
+  const parts = (fullName?.trim() ?? '').split(/\s+/).filter(Boolean);
   if (parts.length === 0) return '?';
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return `${parts[0][0] ?? ''}${parts[parts.length - 1][0] ?? ''}`.toUpperCase();
@@ -98,7 +101,7 @@ function parseInclude(raw: string | undefined): Set<string> {
 }
 
 function readJwtRoles(authorization: string | undefined): string[] {
-  const payload = getVerifiedInternalJwtPayload(authorization) as Record<string, unknown> | null;
+  const payload = getVerifiedInternalJwtPayload(authorization);
   const roles = payload?.roles;
   if (Array.isArray(roles)) {
     return roles.filter((r): r is string => typeof r === 'string');
@@ -110,9 +113,16 @@ function isManagerRole(roles: string[]): boolean {
   return roles.includes('manager') || roles.includes('hr_manager');
 }
 
-function inboxTitle(eventType: string | null | undefined, payload: unknown, isManager: boolean): string {
+function inboxTitle(
+  eventType: string | null | undefined,
+  payload: unknown,
+  isManager: boolean,
+): string {
   const type = eventType ?? '';
-  const envelope = payload as { type?: string; request?: Record<string, unknown> } | null;
+  const envelope = payload as {
+    type?: string;
+    request?: Record<string, unknown>;
+  } | null;
   const req = envelope?.request ?? {};
   const name = String(req.employee_name ?? 'Nhân viên');
   if (type === 'leave_request.created') {
@@ -133,7 +143,10 @@ function inboxTitle(eventType: string | null | undefined, payload: unknown, isMa
   return 'Thông báo';
 }
 
-function inboxDeepLink(eventType: string | null | undefined, isManager: boolean): string {
+function inboxDeepLink(
+  eventType: string | null | undefined,
+  isManager: boolean,
+): string {
   const type = eventType ?? '';
   if (type === 'leave_request.created' && isManager) {
     return 'ManagerApprovals';
@@ -162,13 +175,24 @@ export class HomeService {
     authorization?: string,
     tenantId?: string,
   ): Promise<HomeSummaryData> {
-    const companyId = normalizeHomeSummaryCompanyId(authorization, query.company_id);
-    const scopedQuery: GetHomeSummaryQueryDto = { ...query, company_id: companyId };
+    const companyId = normalizeHomeSummaryCompanyId(
+      authorization,
+      query.company_id,
+    );
+    const scopedQuery: GetHomeSummaryQueryDto = {
+      ...query,
+      company_id: companyId,
+    };
     resolveHrmListScope(authorization, companyId, { tenantId });
     const include = parseInclude(query.include);
     const roles = readJwtRoles(authorization);
     const isManager = isManagerRole(roles);
-    const viewer = await this.loadViewer(scopedQuery.employee_id, companyId, authorization, tenantId);
+    const viewer = await this.loadViewer(
+      scopedQuery.employee_id,
+      companyId,
+      authorization,
+      tenantId,
+    );
 
     let celebrations = { total_count: 0, items: [] as HomeCelebrationItem[] };
     let whosOut = { total_count: 0, items: [] as HomeWhosOutItem[] };
@@ -192,22 +216,39 @@ export class HomeService {
     };
 
     if (include.has('tasks')) {
-      tasks = await this.buildTasks(scopedQuery, authorization, tenantId, isManager);
+      tasks = await this.buildTasks(
+        scopedQuery,
+        authorization,
+        tenantId,
+        isManager,
+      );
     }
 
     if (include.has('manager_pending') && isManager) {
-      managerPending = await this.buildManagerPending(scopedQuery, authorization, tenantId);
+      managerPending = await this.buildManagerPending(
+        scopedQuery,
+        authorization,
+        tenantId,
+      );
     }
 
     if (include.has('celebrations')) {
-      celebrations = await this.buildCelebrations(scopedQuery, authorization, tenantId);
+      celebrations = await this.buildCelebrations(
+        scopedQuery,
+        authorization,
+        tenantId,
+      );
     }
 
     if (include.has('whos_out')) {
       whosOut = await this.buildWhosOut(scopedQuery, authorization, tenantId);
     }
 
-    attendanceToday = await this.buildAttendanceToday(scopedQuery, authorization, tenantId);
+    attendanceToday = await this.buildAttendanceToday(
+      scopedQuery,
+      authorization,
+      tenantId,
+    );
 
     return {
       viewer: {
@@ -250,12 +291,18 @@ export class HomeService {
       mismatchCode: 'HRM-ERR-SCOPE-INVALID',
     });
     if (!row) {
-      throw new ApiException('HRM-HOME-404', 'Viewer employee not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-HOME-404',
+        'Viewer employee not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return row;
   }
 
-  private isBirthdayToday(customFields: Record<string, string> | null): boolean {
+  private isBirthdayToday(
+    customFields: Record<string, string> | null,
+  ): boolean {
     const dob = customFields?.date_of_birth;
     const dobMonthDay = monthDayFromIsoDate(dob);
     if (!dobMonthDay) return false;
@@ -267,7 +314,9 @@ export class HomeService {
     authorization?: string,
     tenantId?: string,
   ): Promise<{ total_count: number; items: HomeCelebrationItem[] }> {
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    const scope = resolveHrmListScope(authorization, query.company_id, {
+      tenantId,
+    });
     const todayMonthDay = todayMonthDayInHoChiMinh();
     if (!todayMonthDay) {
       return { total_count: 0, items: [] };
@@ -281,7 +330,9 @@ export class HomeService {
     const values: unknown[] = [];
     pushWorkforceEmployeeScopeFilter(filters, values, scope, 'e.id');
     values.push(todayMonthDay);
-    filters.push(`substring(e.custom_fields->>'date_of_birth' from 6 for 5) = $${values.length}`);
+    filters.push(
+      `substring(e.custom_fields->>'date_of_birth' from 6 for 5) = $${values.length}`,
+    );
 
     type CelebrationRow = {
       id: string;
@@ -325,12 +376,16 @@ export class HomeService {
     authorization?: string,
     tenantId?: string,
   ): Promise<{ total_count: number; items: HomeWhosOutItem[] }> {
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    const scope = resolveHrmListScope(authorization, query.company_id, {
+      tenantId,
+    });
     const today = todayIsoInHoChiMinh();
     const filters: string[] = ["lr.status = 'approved'"];
     const values: unknown[] = [];
     values.push(today);
-    filters.push(`$${values.length}::date BETWEEN lr.start_date AND lr.end_date`);
+    filters.push(
+      `$${values.length}::date BETWEEN lr.start_date AND lr.end_date`,
+    );
 
     pushWorkforceEmployeeScopeFilter(filters, values, scope, 'lr.employee_id');
 
@@ -378,10 +433,16 @@ export class HomeService {
     tenantId: string | undefined,
     limit: number,
   ) {
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    const scope = resolveHrmListScope(authorization, query.company_id, {
+      tenantId,
+    });
     const filters: string[] = [];
     const values: unknown[] = [];
-    const companyIds = expandHrmTextCompanyIds(scope, authorization, query.company_id);
+    const companyIds = expandHrmTextCompanyIds(
+      scope,
+      authorization,
+      query.company_id,
+    );
     const companyFilters: string[] = [];
     pushCompanyIdUuidFilter(companyFilters, values, companyIds);
     values.push(query.employee_id);
@@ -423,7 +484,9 @@ export class HomeService {
       managerEmployeeId?: string;
     },
   ) {
-    const scope = resolveHrmListScope(authorization, query.company_id, { tenantId });
+    const scope = resolveHrmListScope(authorization, query.company_id, {
+      tenantId,
+    });
     const filters: string[] = [];
     const values: unknown[] = [];
     pushWorkforceEmployeeScopeFilter(filters, values, scope, 'lr.employee_id');
@@ -491,7 +554,9 @@ export class HomeService {
       ),
     ]);
 
-    const unreadInboxCount = inboxRows.filter((row) => row.read_at == null).length;
+    const unreadInboxCount = inboxRows.filter(
+      (row) => row.read_at == null,
+    ).length;
     const ownPendingCount = ownLeaveRows.length + ownUpdateRes.total;
     const items: HomeSummaryTaskItem[] = [];
 
@@ -537,7 +602,11 @@ export class HomeService {
       });
     }
 
-    items.sort((a, b) => a.priority - b.priority || compareTimestampsDesc(a.created_at, b.created_at));
+    items.sort(
+      (a, b) =>
+        a.priority - b.priority ||
+        compareTimestampsDesc(a.created_at, b.created_at),
+    );
 
     return {
       total_count: unreadInboxCount + ownPendingCount,
@@ -552,7 +621,10 @@ export class HomeService {
     authorization: string | undefined,
     tenantId: string | undefined,
   ) {
-    const managerFilter = { manager_employee_id: query.employee_id, status: 'pending' as const };
+    const managerFilter = {
+      manager_employee_id: query.employee_id,
+      status: 'pending' as const,
+    };
     const [leaveRows, updateRes] = await Promise.all([
       this.queryScopedLeaveRequests(query, authorization, tenantId, {
         managerEmployeeId: query.employee_id,

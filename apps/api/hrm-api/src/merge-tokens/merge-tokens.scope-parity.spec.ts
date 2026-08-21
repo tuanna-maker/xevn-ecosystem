@@ -31,72 +31,80 @@ describe('MergeTokens scope_parity + ensureSchema (PO-HRM-DYNAMIC-CONFIG-PLATFOR
   it('list id → getById 200 with same scope resolver (group CEO main→holding)', async () => {
     const sqls: string[] = [];
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        const s = String(sql);
-        sqls.push(s);
-        if (
-          s.includes('CREATE TABLE') ||
-          s.includes('CREATE INDEX') ||
-          s.includes('CREATE UNIQUE') ||
-          s.includes('ALTER TABLE') ||
-          s.includes('DO $$')
-        ) {
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          const s = String(sql);
+          sqls.push(s);
+          if (
+            s.includes('CREATE TABLE') ||
+            s.includes('CREATE INDEX') ||
+            s.includes('CREATE UNIQUE') ||
+            s.includes('ALTER TABLE') ||
+            s.includes('DO $$')
+          ) {
+            return { rows: [] };
+          }
+          if (
+            s.includes('FROM public.hrm_merge_tokens') &&
+            s.includes('ORDER BY token_key')
+          ) {
+            expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
+            return {
+              rows: [
+                {
+                  id: TOKEN_ID,
+                  company_id: 'holding',
+                  token_key: 'custom.emp.badge',
+                  source_path: 'custom.emp.badge',
+                  ring: 'custom',
+                  domain: 'EMP',
+                  label_vi: 'Mã thẻ',
+                  status: 'active',
+                  origin: 'extension_field',
+                  extension_field_ref: 'badge',
+                  meta_json: null,
+                  version: 1,
+                  archived_at: null,
+                  created_at: '2026-08-07T00:00:00Z',
+                  updated_at: '2026-08-07T00:00:00Z',
+                  created_by: null,
+                  updated_by: null,
+                },
+              ],
+            };
+          }
+          if (
+            s.includes('FROM public.hrm_merge_tokens') &&
+            s.includes('id = $1')
+          ) {
+            expect(s).toMatch(/company_id/);
+            return {
+              rows: [
+                {
+                  id: TOKEN_ID,
+                  company_id: 'holding',
+                  token_key: 'custom.emp.badge',
+                  source_path: 'custom.emp.badge',
+                  ring: 'custom',
+                  domain: 'EMP',
+                  label_vi: 'Mã thẻ',
+                  status: 'active',
+                  origin: 'extension_field',
+                  extension_field_ref: 'badge',
+                  meta_json: null,
+                  version: 1,
+                  archived_at: null,
+                  created_at: '2026-08-07T00:00:00Z',
+                  updated_at: '2026-08-07T00:00:00Z',
+                  created_by: null,
+                  updated_by: null,
+                },
+              ],
+            };
+          }
           return { rows: [] };
-        }
-        if (s.includes('FROM public.hrm_merge_tokens') && s.includes('ORDER BY token_key')) {
-          expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
-          return {
-            rows: [
-              {
-                id: TOKEN_ID,
-                company_id: 'holding',
-                token_key: 'custom.emp.badge',
-                source_path: 'custom.emp.badge',
-                ring: 'custom',
-                domain: 'EMP',
-                label_vi: 'Mã thẻ',
-                status: 'active',
-                origin: 'extension_field',
-                extension_field_ref: 'badge',
-                meta_json: null,
-                version: 1,
-                archived_at: null,
-                created_at: '2026-08-07T00:00:00Z',
-                updated_at: '2026-08-07T00:00:00Z',
-                created_by: null,
-                updated_by: null,
-              },
-            ],
-          };
-        }
-        if (s.includes('FROM public.hrm_merge_tokens') && s.includes('id = $1')) {
-          expect(s).toMatch(/company_id/);
-          return {
-            rows: [
-              {
-                id: TOKEN_ID,
-                company_id: 'holding',
-                token_key: 'custom.emp.badge',
-                source_path: 'custom.emp.badge',
-                ring: 'custom',
-                domain: 'EMP',
-                label_vi: 'Mã thẻ',
-                status: 'active',
-                origin: 'extension_field',
-                extension_field_ref: 'badge',
-                meta_json: null,
-                version: 1,
-                archived_at: null,
-                created_at: '2026-08-07T00:00:00Z',
-                updated_at: '2026-08-07T00:00:00Z',
-                created_by: null,
-                updated_by: null,
-              },
-            ],
-          };
-        }
-        return { rows: [] };
-      }),
+        }),
     } as unknown as HrmDbService;
 
     const svc = new MergeTokensService(db);
@@ -121,7 +129,10 @@ describe('MergeTokens scope_parity + ensureSchema (PO-HRM-DYNAMIC-CONFIG-PLATFOR
         ) {
           return { rows: [] };
         }
-        if (s.includes('FROM public.hrm_merge_tokens') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.hrm_merge_tokens') &&
+          s.includes('id = $1')
+        ) {
           // Out of member scope — empty (filter) OR return row then assert fails
           return { rows: [] };
         }
@@ -177,14 +188,24 @@ describe('MergeTokens scope_parity + ensureSchema (PO-HRM-DYNAMIC-CONFIG-PLATFOR
     } as unknown as HrmDbService;
     const svc = new MergeTokensService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.hrm_merge_tokens'))).toBe(
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.hrm_merge_tokens'),
+      ),
+    ).toBe(true);
+    expect(sqls.some((q) => q.includes('chk_hrm_merge_tok_key_format'))).toBe(
       true,
     );
-    expect(sqls.some((q) => q.includes('chk_hrm_merge_tok_key_format'))).toBe(true);
-    expect(sqls.some((q) => q.includes('uq_hrm_merge_tok_company_key_active'))).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('uq_hrm_merge_tok_company_key_active')),
+    ).toBe(true);
     expect(sqls.every((q) => !q.includes('token_key IN ('))).toBe(true);
-    expect(sqls.every((q) => !q.includes("code IN ('XEVN_PROBATION_OFFICE'"))).toBe(true);
-    expect(sqls.every((q) => !q.includes('chk_hrm_ctr_tpl_xevn_code'))).toBe(true);
+    expect(
+      sqls.every((q) => !q.includes("code IN ('XEVN_PROBATION_OFFICE'")),
+    ).toBe(true);
+    expect(sqls.every((q) => !q.includes('chk_hrm_ctr_tpl_xevn_code'))).toBe(
+      true,
+    );
   });
 
   it('resolvePreview empty registry + keyword_map still returns 200 path shape', async () => {

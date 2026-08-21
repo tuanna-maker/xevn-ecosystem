@@ -73,15 +73,23 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
     } as unknown as HrmDbService;
     const svc = new HrDecisionTypeService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.hr_decision_type'))).toBe(
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.hr_decision_type'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('uq_hr_decision_type_company_key_active')),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('chk_hr_decision_type_key_format')),
+    ).toBe(true);
+    expect(sqls.some((q) => q.includes('chk_hr_decision_type_wh_flags'))).toBe(
       true,
     );
-    expect(sqls.some((q) => q.includes('uq_hr_decision_type_company_key_active'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_hr_decision_type_key_format'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_hr_decision_type_wh_flags'))).toBe(true);
-    expect(sqls.every((q) => !q.includes("decision_type_key IN ("))).toBe(true);
+    expect(sqls.every((q) => !q.includes('decision_type_key IN ('))).toBe(true);
     expect(sqls.every((q) => !q.includes("'HRD_01'"))).toBe(true);
-    expect(sqls.every((q) => !q.includes("decision_type IN ("))).toBe(true);
+    expect(sqls.every((q) => !q.includes('decision_type IN ('))).toBe(true);
   });
 
   it('VAL-DEC-CAT-03: reject invalid slug format (spaces / leading digit)', async () => {
@@ -119,7 +127,10 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.hr_decision_type') && s.includes('archived_at IS NULL')) {
+        if (
+          s.includes('FROM public.hr_decision_type') &&
+          s.includes('archived_at IS NULL')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.hr_decision_type')) {
@@ -144,7 +155,10 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.hr_decision_type') && s.includes('archived_at IS NULL')) {
+        if (
+          s.includes('FROM public.hr_decision_type') &&
+          s.includes('archived_at IS NULL')
+        ) {
           return { rows: [] };
         }
         if (s.includes('INSERT INTO public.hr_decision_type')) {
@@ -217,18 +231,26 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
 
   it('scope_parity: list id → getById 200 (group CEO main→holding)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        if (schemaPassthrough(sql)) return { rows: [] };
-        const s = String(sql);
-        if (s.includes('FROM public.hr_decision_type') && s.includes('ORDER BY sort_order')) {
-          expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
-          return { rows: [baseRow()] };
-        }
-        if (s.includes('FROM public.hr_decision_type') && s.includes('id = $1')) {
-          return { rows: [baseRow()] };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          if (schemaPassthrough(sql)) return { rows: [] };
+          const s = String(sql);
+          if (
+            s.includes('FROM public.hr_decision_type') &&
+            s.includes('ORDER BY sort_order')
+          ) {
+            expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
+            return { rows: [baseRow()] };
+          }
+          if (
+            s.includes('FROM public.hr_decision_type') &&
+            s.includes('id = $1')
+          ) {
+            return { rows: [baseRow()] };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const svc = new HrDecisionTypeService(db);
     const auth = groupCeoToken();
@@ -243,7 +265,10 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
-        if (String(sql).includes('FROM public.hr_decision_type') && String(sql).includes('id = $1')) {
+        if (
+          String(sql).includes('FROM public.hr_decision_type') &&
+          String(sql).includes('id = $1')
+        ) {
           return { rows: [baseRow({ company_id: 'holding' })] };
         }
         return { rows: [] };
@@ -262,7 +287,11 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
           status: 'active',
           code: 'HRD_01',
           label: 'Bổ nhiệm REF',
-          metadata: { is_person_bound: true, writes_work_history: true, wh_event_type: 'appointment' },
+          metadata: {
+            is_person_bound: true,
+            writes_work_history: true,
+            wh_event_type: 'appointment',
+          },
         },
         {
           status: 'active',
@@ -293,14 +322,22 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
       }),
     } as unknown as HrmDbService;
     const svc = new HrDecisionTypeService(db, settings);
-    const effective = await svc.listEffective({ company_id: 'holding' }, groupCeoToken(), {
-      tenantId: 'xevn',
-    });
+    const effective = await svc.listEffective(
+      { company_id: 'holding' },
+      groupCeoToken(),
+      {
+        tenantId: 'xevn',
+      },
+    );
     expect(effective.total).toBe(2);
-    const hrd = effective.data.find((r) => r.decisionTypeKey.toLowerCase() === 'hrd_01');
+    const hrd = effective.data.find(
+      (r) => r.decisionTypeKey.toLowerCase() === 'hrd_01',
+    );
     expect(hrd?.nameVi).toBe('Bổ nhiệm DEC native');
     expect(hrd?.source).toBe('dec_override');
-    const refOnly = effective.data.find((r) => r.decisionTypeKey === 'ref_only');
+    const refOnly = effective.data.find(
+      (r) => r.decisionTypeKey === 'ref_only',
+    );
     expect(refOnly?.source).toBe('group_ref');
     expect(effective.personBoundKeys).toContain('hrd_01');
     expect(effective.workHistoryNeoKeys).toContain('hrd_01');
@@ -311,7 +348,11 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         if (String(sql).includes('FROM public.hr_decision_type')) {
-          return { rows: [baseRow({ decision_type_key: 'HRD_01', name_vi: 'Bổ nhiệm' })] };
+          return {
+            rows: [
+              baseRow({ decision_type_key: 'HRD_01', name_vi: 'Bổ nhiệm' }),
+            ],
+          };
         }
         return { rows: [] };
       }),
@@ -350,10 +391,16 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
         sqls.push(String(sql));
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.hr_decision_type') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.hr_decision_type') &&
+          s.includes('id = $1')
+        ) {
           return { rows: [baseRow()] };
         }
-        if (s.includes('UPDATE public.hr_decision_type') && s.includes("status = 'retired'")) {
+        if (
+          s.includes('UPDATE public.hr_decision_type') &&
+          s.includes("status = 'retired'")
+        ) {
           return {
             rows: [
               baseRow({
@@ -367,10 +414,16 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
       }),
     } as unknown as HrmDbService;
     const svc = new HrDecisionTypeService(db);
-    const row = await svc.retireDecisionType(TYP_ID, 'holding', groupCeoToken());
+    const row = await svc.retireDecisionType(
+      TYP_ID,
+      'holding',
+      groupCeoToken(),
+    );
     expect(row.status).toBe('retired');
     expect(row.archivedAt).toBeTruthy();
-    expect(sqls.every((q) => !q.includes('DELETE FROM public.hr_decision_type'))).toBe(true);
+    expect(
+      sqls.every((q) => !q.includes('DELETE FROM public.hr_decision_type')),
+    ).toBe(true);
   });
 
   it('VAL-DEC-CAT-10: retire last WH-producing type → HRM-DEC-TYP-WH-REQUIRED', async () => {
@@ -378,7 +431,10 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.hr_decision_type') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.hr_decision_type') &&
+          s.includes('id = $1')
+        ) {
           return {
             rows: [
               baseRow({
@@ -407,7 +463,10 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
         const s = String(sql);
-        if (s.includes('FROM public.hr_decision_type') && s.includes('id = $1')) {
+        if (
+          s.includes('FROM public.hr_decision_type') &&
+          s.includes('id = $1')
+        ) {
           return {
             rows: [
               baseRow({
@@ -422,7 +481,10 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
         if (s.includes('COUNT(*)') && s.includes('writes_work_history')) {
           return { rows: [{ c: '1' }] };
         }
-        if (s.includes('UPDATE public.hr_decision_type') && s.includes("status = 'retired'")) {
+        if (
+          s.includes('UPDATE public.hr_decision_type') &&
+          s.includes("status = 'retired'")
+        ) {
           return {
             rows: [
               baseRow({
@@ -438,7 +500,11 @@ describe('HrDecisionTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-DEC-BE-01)', () 
       }),
     } as unknown as HrmDbService;
     const svc = new HrDecisionTypeService(db);
-    const row = await svc.retireDecisionType(TYP_ID, 'holding', groupCeoToken());
+    const row = await svc.retireDecisionType(
+      TYP_ID,
+      'holding',
+      groupCeoToken(),
+    );
     expect(row.status).toBe('retired');
     expect(TYP_ID_2).toBeTruthy(); // peer id reserved for docs
   });
@@ -448,9 +514,12 @@ describe('DecisionsService consumer wire (VAL-DEC-CNS / R-PLT-DEC-01)', () => {
   it('VAL-DEC-CNS-01: create with catalog >0 unknown type → HRM-DEC-TYPE-UNKNOWN', async () => {
     const catalog = {
       assertDecisionTypeInEffectiveCatalog: jest.fn().mockRejectedValue(
-        Object.assign(new ApiException('HRM-DEC-TYPE-UNKNOWN', 'unknown', 400), {
-          code: 'HRM-DEC-TYPE-UNKNOWN',
-        }),
+        Object.assign(
+          new ApiException('HRM-DEC-TYPE-UNKNOWN', 'unknown', 400),
+          {
+            code: 'HRM-DEC-TYPE-UNKNOWN',
+          },
+        ),
       ),
     } as unknown as HrDecisionTypeService;
     const db = {

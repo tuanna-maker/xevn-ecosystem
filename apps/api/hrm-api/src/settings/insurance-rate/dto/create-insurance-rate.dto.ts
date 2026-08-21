@@ -1,4 +1,12 @@
-import { IsIn, IsInt, IsNumber, IsOptional, IsDateString, Min, Max } from 'class-validator';
+import {
+  IsIn,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsDateString,
+  Min,
+  Max,
+} from 'class-validator';
 
 export class CreateInsuranceRateDto {
   @IsIn(['BHXH', 'BHYT', 'BHTN'])

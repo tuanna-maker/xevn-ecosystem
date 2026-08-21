@@ -54,7 +54,7 @@ describe('dynamicProfileForm — PCOMP-W7-MOB-PROFILE-FULL', () => {
     expect(codes).toContain('phone_number');
     expect(codes).toContain('gender');
     expect(codes).toContain('permanent_address');
-    expect(fields.find((f) => f.code === 'phone_number')?.displayValue).toBe('â€”');
+    expect(fields.find((f) => f.code === 'phone_number')?.displayValue).toBe('—');
   });
 
   it('builds self editor for phone and read-only for email', () => {

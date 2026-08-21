@@ -25,14 +25,14 @@ describe('R-PAY-01-BOUNDARY — assertPayrollAttHourBoundaryLocked', () => {
   it('throws HRM-PAY-BOUNDARY-403 when env misconfig enables ATT HTTP cross-read', () => {
     process.env.HRM_PAY_ALLOW_ATT_HTTP_CROSSREAD = '1';
     expect(() => assertPayrollAttHourBoundaryLocked()).toThrow(
-      expect.objectContaining<ApiException>({ code: HRM_PAY_BOUNDARY_403 }),
+      expect.objectContaining({ code: HRM_PAY_BOUNDARY_403 }),
     );
   });
 
   it('throws HRM-PAY-BOUNDARY-403 when registerPayAttHourCrossreadAttempt marks violation', () => {
     registerPayAttHourCrossreadAttempt('leave-requests');
     expect(() => assertPayrollAttHourBoundaryLocked()).toThrow(
-      expect.objectContaining<ApiException>({ code: HRM_PAY_BOUNDARY_403 }),
+      expect.objectContaining({ code: HRM_PAY_BOUNDARY_403 }),
     );
   });
 });

@@ -26,7 +26,9 @@ describe('HrmRealtimeService', () => {
       at: '2026-04-22T00:00:00.000Z',
       request: sampleRequest,
     });
-    expect(to).toHaveBeenCalledWith('company:78b8a663-f5e5-4f4d-a020-b8f950ec2037');
+    expect(to).toHaveBeenCalledWith(
+      'company:78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+    );
     expect(emit).toHaveBeenCalledTimes(1);
     expect(emit.mock.calls[0][0]).toBe('hrm:event');
     expect(emit.mock.calls[0][1]).toMatchObject({
@@ -46,8 +48,12 @@ describe('HrmRealtimeService', () => {
       at: '2026-04-22T00:00:00.000Z',
       request: { ...sampleRequest, status: 'approved' },
     });
-    expect(to).toHaveBeenCalledWith('company:78b8a663-f5e5-4f4d-a020-b8f950ec2037');
-    expect(to).toHaveBeenCalledWith('employee:f76f23f7-3683-4120-81b7-5126ee997b8e');
+    expect(to).toHaveBeenCalledWith(
+      'company:78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+    );
+    expect(to).toHaveBeenCalledWith(
+      'employee:f76f23f7-3683-4120-81b7-5126ee997b8e',
+    );
     expect(emit).toHaveBeenCalledTimes(2);
   });
 });

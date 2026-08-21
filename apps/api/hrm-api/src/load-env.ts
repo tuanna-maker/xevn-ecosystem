@@ -20,7 +20,10 @@ export function findMonorepoRoot(): string {
   ];
   for (const root of candidates) {
     const deployDir = resolve(root, 'deploy', 'xevn-ecosystem');
-    if (existsSync(resolve(deployDir, '.env')) || existsSync(resolve(deployDir, '.env.example'))) {
+    if (
+      existsSync(resolve(deployDir, '.env')) ||
+      existsSync(resolve(deployDir, '.env.example'))
+    ) {
       return root;
     }
   }
@@ -49,7 +52,8 @@ function loadMonorepoEnv(): void {
   } else if (existsSync(deployExample)) {
     dotenv.config({ path: deployExample });
   }
-  if (existsSync(deployLocal)) dotenv.config({ path: deployLocal, override: true });
+  if (existsSync(deployLocal))
+    dotenv.config({ path: deployLocal, override: true });
 
   for (const apiRoot of apiRootCandidates) {
     const localEnv = resolve(apiRoot, '.env');

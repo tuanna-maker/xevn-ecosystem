@@ -6,7 +6,10 @@
 import { ApiException } from '../common/api.exception';
 import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
-import { JdDynamicService, type JdLayoutSnapshotV2 } from './jd-dynamic.service';
+import {
+  JdDynamicService,
+  type JdLayoutSnapshotV2,
+} from './jd-dynamic.service';
 import { RecruitmentCatalogService } from './recruitment-catalog.service';
 import {
   HRM_JD_YCTD_STATUS,
@@ -45,7 +48,13 @@ function layoutWithRequired(keys: string[]): JdLayoutSnapshotV2 {
         view_style: 'plain',
         source: 'manual',
         fields: [
-          { field_key: 'title', label: 'Tiêu đề', field_type: 'short_text', sort_order: 1, is_required: true },
+          {
+            field_key: 'title',
+            label: 'Tiêu đề',
+            field_type: 'short_text',
+            sort_order: 1,
+            is_required: true,
+          },
           ...keys.map((k, i) => ({
             field_key: k,
             label: k,
@@ -74,10 +83,18 @@ function isSchemaSql(s: string): boolean {
 describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
   describe('yctd-jd-bind dual-assert', () => {
     it('isYctdJdBindable requires status=active AND is_active when status present', () => {
-      expect(isYctdJdBindable({ status: 'active', is_active: true })).toBe(true);
-      expect(isYctdJdBindable({ status: 'draft', is_active: false })).toBe(false);
-      expect(isYctdJdBindable({ status: 'retired', is_active: false })).toBe(false);
-      expect(isYctdJdBindable({ status: 'active', is_active: false })).toBe(false);
+      expect(isYctdJdBindable({ status: 'active', is_active: true })).toBe(
+        true,
+      );
+      expect(isYctdJdBindable({ status: 'draft', is_active: false })).toBe(
+        false,
+      );
+      expect(isYctdJdBindable({ status: 'retired', is_active: false })).toBe(
+        false,
+      );
+      expect(isYctdJdBindable({ status: 'active', is_active: false })).toBe(
+        false,
+      );
       expect(isYctdJdBindable({ status: null, is_active: true })).toBe(true);
       expect(normalizeJdTemplateStatus({ is_active: true })).toBe('active');
       expect(normalizeJdTemplateStatus({ is_active: false })).toBe('draft');
@@ -88,39 +105,45 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
     it('create ignores is_active=true / status=active → draft + is_active=false', async () => {
       let insertParams: unknown[] = [];
       const db = {
-        query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-          const s = String(sql);
-          if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('SELECT id FROM public.job_description_templates WHERE company_id')) {
+        query: jest
+          .fn()
+          .mockImplementation(async (sql: string, params?: unknown[]) => {
+            const s = String(sql);
+            if (isSchemaSql(s)) return { rows: [] };
+            if (
+              s.includes(
+                'SELECT id FROM public.job_description_templates WHERE company_id',
+              )
+            ) {
+              return { rows: [] };
+            }
+            if (s.includes('INSERT INTO public.job_description_templates')) {
+              insertParams = params ?? [];
+              return {
+                rows: [
+                  {
+                    id: TPL_ID,
+                    company_id: 'holding',
+                    code: 'JD-NEW-01',
+                    title: 'Mẫu Nháp',
+                    position_name: 'Lái xe',
+                    position_code: 'DRIVER',
+                    job_description: null,
+                    requirements: null,
+                    notes: null,
+                    status: 'draft',
+                    is_active: false,
+                    values_json: null,
+                    layout_snapshot_json: null,
+                    layout_version: 1,
+                    created_at: '2026-08-09T00:00:00.000Z',
+                    updated_at: '2026-08-09T00:00:00.000Z',
+                  },
+                ],
+              };
+            }
             return { rows: [] };
-          }
-          if (s.includes('INSERT INTO public.job_description_templates')) {
-            insertParams = params ?? [];
-            return {
-              rows: [
-                {
-                  id: TPL_ID,
-                  company_id: 'holding',
-                  code: 'JD-NEW-01',
-                  title: 'Mẫu Nháp',
-                  position_name: 'Lái xe',
-                  position_code: 'DRIVER',
-                  job_description: null,
-                  requirements: null,
-                  notes: null,
-                  status: 'draft',
-                  is_active: false,
-                  values_json: null,
-                  layout_snapshot_json: null,
-                  layout_version: 1,
-                  created_at: '2026-08-09T00:00:00.000Z',
-                  updated_at: '2026-08-09T00:00:00.000Z',
-                },
-              ],
-            };
-          }
-          return { rows: [] };
-        }),
+          }),
       } as unknown as HrmDbService;
       const catalogs = {
         assertCodeInEffectiveCatalog: jest.fn().mockResolvedValue({
@@ -129,7 +152,11 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
           status: 'active',
         }),
       };
-      const svc = new RecruitmentCatalogService(db, mockBridge() as never, catalogs as never);
+      const svc = new RecruitmentCatalogService(
+        db,
+        mockBridge() as never,
+        catalogs as never,
+      );
       const row = await svc.createJobDescriptionTemplate(
         {
           company_id: 'holding',
@@ -154,7 +181,11 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('SELECT id FROM public.job_description_templates WHERE company_id')) {
+          if (
+            s.includes(
+              'SELECT id FROM public.job_description_templates WHERE company_id',
+            )
+          ) {
             return { rows: [{ id: TPL_ID }] };
           }
           return { rows: [] };
@@ -167,7 +198,11 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
           status: 'active',
         }),
       };
-      const svc = new RecruitmentCatalogService(db, mockBridge() as never, catalogs as never);
+      const svc = new RecruitmentCatalogService(
+        db,
+        mockBridge() as never,
+        catalogs as never,
+      );
       await expect(
         svc.createJobDescriptionTemplate(
           {
@@ -190,20 +225,31 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates WHERE id = $1::uuid') && s.includes('layout_snapshot')) {
+          if (
+            s.includes(
+              'FROM public.job_description_templates WHERE id = $1::uuid',
+            ) &&
+            s.includes('layout_snapshot')
+          ) {
             return {
               rows: [
                 {
                   company_id: 'holding',
                   status: 'draft',
                   is_active: false,
-                  values_json: { title: 'OK', responsibilities: 'Lái tuyến HN-SG' },
+                  values_json: {
+                    title: 'OK',
+                    responsibilities: 'Lái tuyến HN-SG',
+                  },
                   layout_snapshot_json: snap,
                 },
               ],
             };
           }
-          if (s.includes('UPDATE public.job_description_templates') && s.includes("status = 'active'")) {
+          if (
+            s.includes('UPDATE public.job_description_templates') &&
+            s.includes("status = 'active'")
+          ) {
             return {
               rows: [
                 {
@@ -218,7 +264,10 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
                   notes: null,
                   status: 'active',
                   is_active: true,
-                  values_json: { title: 'OK', responsibilities: 'Lái tuyến HN-SG' },
+                  values_json: {
+                    title: 'OK',
+                    responsibilities: 'Lái tuyến HN-SG',
+                  },
                   layout_snapshot_json: snap,
                   layout_version: 2,
                   created_at: '2026-08-09T00:00:00.000Z',
@@ -233,11 +282,13 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
       const jdDynamic = {
         ensureSchema: jest.fn().mockResolvedValue(undefined),
         collectMissingRequiredKeys: jest.fn().mockReturnValue([]),
-        validateSnapshotAndValues: jest.fn().mockImplementation((snapshot, values) => ({
-          layout_version: 2,
-          snapshot,
-          values,
-        })),
+        validateSnapshotAndValues: jest
+          .fn()
+          .mockImplementation((snapshot, values) => ({
+            layout_version: 2,
+            snapshot,
+            values,
+          })),
       };
       const svc = new RecruitmentCatalogService(
         db,
@@ -245,7 +296,11 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         undefined,
         jdDynamic as unknown as JdDynamicService,
       );
-      const row = await svc.publishJobDescriptionTemplate(TPL_ID, 'main', groupCeoAuth());
+      const row = await svc.publishJobDescriptionTemplate(
+        TPL_ID,
+        'main',
+        groupCeoAuth(),
+      );
       expect(row.status).toBe('active');
       expect(row.is_active).toBe(true);
     });
@@ -256,7 +311,11 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates WHERE id = $1::uuid')) {
+          if (
+            s.includes(
+              'FROM public.job_description_templates WHERE id = $1::uuid',
+            )
+          ) {
             return {
               rows: [
                 {
@@ -274,7 +333,9 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
       } as unknown as HrmDbService;
       const jdDynamic = {
         ensureSchema: jest.fn().mockResolvedValue(undefined),
-        collectMissingRequiredKeys: jest.fn().mockReturnValue(['responsibilities']),
+        collectMissingRequiredKeys: jest
+          .fn()
+          .mockReturnValue(['responsibilities']),
         validateSnapshotAndValues: jest.fn(),
       };
       const svc = new RecruitmentCatalogService(
@@ -301,7 +362,11 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates WHERE id = $1::uuid')) {
+          if (
+            s.includes(
+              'FROM public.job_description_templates WHERE id = $1::uuid',
+            )
+          ) {
             return {
               rows: [
                 {
@@ -328,7 +393,11 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates WHERE id = $1::uuid')) {
+          if (
+            s.includes(
+              'FROM public.job_description_templates WHERE id = $1::uuid',
+            )
+          ) {
             return {
               rows: [
                 {
@@ -355,7 +424,11 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates WHERE id = $1::uuid')) {
+          if (
+            s.includes(
+              'FROM public.job_description_templates WHERE id = $1::uuid',
+            )
+          ) {
             return {
               rows: [
                 {
@@ -384,7 +457,10 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates') && s.includes('ORDER BY')) {
+          if (
+            s.includes('FROM public.job_description_templates') &&
+            s.includes('ORDER BY')
+          ) {
             expect(s).toContain("status = 'active'");
             expect(s).toContain('is_active = TRUE');
             return {
@@ -408,9 +484,13 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         }),
       } as unknown as HrmDbService;
       const svc = new RecruitmentCatalogService(db, mockBridge() as never);
-      const result = await svc.listJobDescriptionTemplates('main', groupCeoAuth(), {
-        for: 'yctd',
-      });
+      const result = await svc.listJobDescriptionTemplates(
+        'main',
+        groupCeoAuth(),
+        {
+          for: 'yctd',
+        },
+      );
       expect(result.total).toBe(1);
       expect(result.items?.[0]?.status).toBe('active');
       expect(result.items?.[0]?.is_active).toBe(true);
@@ -421,7 +501,10 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates') && s.includes('id = $1')) {
+          if (
+            s.includes('FROM public.job_description_templates') &&
+            s.includes('id = $1')
+          ) {
             return {
               rows: [
                 {
@@ -440,7 +523,9 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         }),
       } as unknown as HrmDbService;
       const svc = new RecruitmentCatalogService(db, mockBridge() as never);
-      await expect(svc.getYctdJdPreview(TPL_ID, 'main', groupCeoAuth())).rejects.toMatchObject({
+      await expect(
+        svc.getYctdJdPreview(TPL_ID, 'main', groupCeoAuth()),
+      ).rejects.toMatchObject({
         code: HRM_JD_YCTD_STATUS,
       });
     });
@@ -453,15 +538,24 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('UPDATE public.job_description_templates') && s.includes('WHERE id')) {
+          if (
+            s.includes('UPDATE public.job_description_templates') &&
+            s.includes('WHERE id')
+          ) {
             updateSql = s;
-            return { rows: [{ id: TPL_ID, status: 'retired', is_active: false }] };
+            return {
+              rows: [{ id: TPL_ID, status: 'retired', is_active: false }],
+            };
           }
           return { rows: [] };
         }),
       } as unknown as HrmDbService;
       const svc = new RecruitmentCatalogService(db, mockBridge() as never);
-      const row = await svc.deleteJobDescriptionTemplate(TPL_ID, 'main', groupCeoAuth());
+      const row = await svc.deleteJobDescriptionTemplate(
+        TPL_ID,
+        'main',
+        groupCeoAuth(),
+      );
       expect(row).toEqual({ id: TPL_ID, status: 'retired', is_active: false });
       expect(updateSql).toContain("status = 'retired'");
       expect(updateSql).toContain('is_active = FALSE');
@@ -472,7 +566,10 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates') && s.includes('id = $1')) {
+          if (
+            s.includes('FROM public.job_description_templates') &&
+            s.includes('id = $1')
+          ) {
             expect(s).toMatch(/company_id/);
             return { rows: [] };
           }
@@ -490,7 +587,11 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
         query: jest.fn().mockImplementation(async (sql: string) => {
           const s = String(sql);
           if (isSchemaSql(s)) return { rows: [] };
-          if (s.includes('FROM public.job_description_templates WHERE id = $1::uuid')) {
+          if (
+            s.includes(
+              'FROM public.job_description_templates WHERE id = $1::uuid',
+            )
+          ) {
             return {
               rows: [
                 {
@@ -511,7 +612,12 @@ describe('PO-HRM-MVP-GD1-REC-00-CLUSTER-BE-01', () => {
       } as unknown as HrmDbService;
       const svc = new RecruitmentCatalogService(db, mockBridge() as never);
       await expect(
-        svc.updateJobDescriptionTemplate(TPL_ID, 'main', { title: 'Nope' }, groupCeoAuth()),
+        svc.updateJobDescriptionTemplate(
+          TPL_ID,
+          'main',
+          { title: 'Nope' },
+          groupCeoAuth(),
+        ),
       ).rejects.toMatchObject({ code: 'HRM-REC-JD-RETIRED-LOCKED' });
     });
   });

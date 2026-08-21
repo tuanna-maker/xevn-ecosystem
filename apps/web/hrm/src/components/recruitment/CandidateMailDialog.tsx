@@ -164,7 +164,7 @@ export function CandidateMailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" data-testid="rec-mail-dialog">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto" data-testid="rec-mail-dialog">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Mail className="w-5 h-5" />

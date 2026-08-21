@@ -8,10 +8,14 @@ import { RecruitmentDashboardService } from './recruitment-dashboard.service';
 import { RecruitmentService } from './recruitment.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
@@ -21,9 +25,17 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
 
   const serviceMock = {
     createJobRequisition: jest.fn().mockResolvedValue({ id: 'req-1' }),
-    listJobRequisitions: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'req-1' }] }),
-    getJobRequisitionById: jest.fn().mockResolvedValue({ id: 'req-1', company_id: 'holding' }),
-    updateJobRequisition: jest.fn().mockResolvedValue({ id: 'req-1', company_id: 'holding', status: 'on_hold' }),
+    listJobRequisitions: jest
+      .fn()
+      .mockResolvedValue({ total: 1, data: [{ id: 'req-1' }] }),
+    getJobRequisitionById: jest
+      .fn()
+      .mockResolvedValue({ id: 'req-1', company_id: 'holding' }),
+    updateJobRequisition: jest.fn().mockResolvedValue({
+      id: 'req-1',
+      company_id: 'holding',
+      status: 'on_hold',
+    }),
     submitJobRequisitionForApproval: jest.fn().mockResolvedValue({
       id: 'req-1',
       company_id: 'holding',
@@ -32,11 +44,19 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
       spawnMissing: true,
     }),
     createCandidate: jest.fn().mockResolvedValue({ id: 'cand-1' }),
-    listCandidates: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'cand-1' }] }),
-    getCandidateById: jest.fn().mockResolvedValue({ id: 'cand-1', company_id: 'holding' }),
+    listCandidates: jest
+      .fn()
+      .mockResolvedValue({ total: 1, data: [{ id: 'cand-1' }] }),
+    getCandidateById: jest
+      .fn()
+      .mockResolvedValue({ id: 'cand-1', company_id: 'holding' }),
     scheduleInterview: jest.fn().mockResolvedValue({ id: 'int-1' }),
-    updateInterviewStatus: jest.fn().mockResolvedValue({ id: 'int-1', status: 'passed' }),
-    rescheduleInterview: jest.fn().mockResolvedValue({ id: 'int-1', status: 'scheduled' }),
+    updateInterviewStatus: jest
+      .fn()
+      .mockResolvedValue({ id: 'int-1', status: 'passed' }),
+    rescheduleInterview: jest
+      .fn()
+      .mockResolvedValue({ id: 'int-1', status: 'scheduled' }),
   };
 
   const catalogMock = {
@@ -44,17 +64,25 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
     createJobPosting: jest.fn().mockResolvedValue({ id: 'jp-1' }),
     deleteJobPosting: jest.fn().mockResolvedValue({ id: 'jp-1' }),
     listCandidatesTable: jest.fn().mockResolvedValue({ total: 0, data: [] }),
-    getCandidatePoolById: jest.fn().mockResolvedValue({ id: 'cp-1', company_id: 'holding', stage: 'hired' }),
+    getCandidatePoolById: jest
+      .fn()
+      .mockResolvedValue({ id: 'cp-1', company_id: 'holding', stage: 'hired' }),
     createCandidatePool: jest.fn().mockResolvedValue({ id: 'cp-1' }),
     updateCandidatePool: jest.fn().mockResolvedValue({ id: 'cp-1' }),
     deleteCandidatePool: jest.fn().mockResolvedValue({ id: 'cp-1' }),
-    listCandidateApplications: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    listCandidateApplications: jest
+      .fn()
+      .mockResolvedValue({ total: 0, data: [] }),
     listRecruitmentPlans: jest.fn().mockResolvedValue({ total: 0, data: [] }),
-    getRecruitmentPlanById: jest.fn().mockResolvedValue({ id: 'plan-1', company_id: 'holding' }),
+    getRecruitmentPlanById: jest
+      .fn()
+      .mockResolvedValue({ id: 'plan-1', company_id: 'holding' }),
     createRecruitmentPlan: jest.fn().mockResolvedValue({ id: 'plan-1' }),
     upsertRecruitmentPlan: jest.fn().mockResolvedValue({ id: 'plan-1' }),
     deleteRecruitmentPlan: jest.fn().mockResolvedValue({ id: 'plan-1' }),
-    updateRecruitmentPlanStatus: jest.fn().mockResolvedValue({ id: 'plan-1', status: 'approved' }),
+    updateRecruitmentPlanStatus: jest
+      .fn()
+      .mockResolvedValue({ id: 'plan-1', status: 'approved' }),
     spawnRecruitmentPlanRequests: jest.fn().mockResolvedValue({
       created: [],
       skipped_duplicate: [],
@@ -80,24 +108,40 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
         { provide: RecruitmentService, useValue: serviceMock },
         { provide: RecruitmentCatalogService, useValue: catalogMock },
         { provide: JdDynamicService, useValue: {} },
-        { provide: RecPipelineStageService, useValue: {
-          listStages: jest.fn().mockResolvedValue({ total: 0, data: [] }),
-          listEffective: jest.fn().mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null }),
-          getStageById: jest.fn(),
-          upsertStage: jest.fn(),
-          patchStage: jest.fn(),
-          retireStage: jest.fn(),
-        } },
+        {
+          provide: RecPipelineStageService,
+          useValue: {
+            listStages: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+            listEffective: jest
+              .fn()
+              .mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null }),
+            getStageById: jest.fn(),
+            upsertStage: jest.fn(),
+            patchStage: jest.fn(),
+            retireStage: jest.fn(),
+          },
+        },
         {
           provide: RecruitmentDashboardService,
           useValue: {
             getDashboard: jest.fn().mockResolvedValue({
               planned_need: 0,
               filled_count: 0,
-              funnel: { cv: 0, screening: 0, interview: 0, offer: 0, onboard: 0 },
+              funnel: {
+                cv: 0,
+                screening: 0,
+                interview: 0,
+                offer: 0,
+                onboard: 0,
+              },
               empty_guide: { code: 'NO_APPROVED_HEADCOUNT' },
             }),
-            getDashboardYctd: jest.fn().mockResolvedValue({ items: [], total: 0, page: 1, page_size: 50 }),
+            getDashboardYctd: jest.fn().mockResolvedValue({
+              items: [],
+              total: 0,
+              page: 1,
+              page_size: 50,
+            }),
             denyMutate: jest.fn().mockImplementation(() => {
               throw new Error('METHOD-405');
             }),
@@ -110,26 +154,50 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
   });
 
   it('HRM-RC-02 list HRM-RC-03 create HRM-RC-04 list HRM-RC-05 schedule HRM-RC-06 update interview codes', async () => {
-    const createReqRes = await controller.createJobRequisition(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      title: 'Backend Engineer',
-      department: 'Engineering',
-      employment_type: 'full_time',
-      headcount: 2,
-    });
-    const listReqRes = await controller.listJobRequisitions(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-    });
-    const createCandidateRes = await controller.createCandidate(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      requisition_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
-      full_name: 'Nguyen Van A',
-      email: 'a@xe.vn',
-      source: 'linkedin',
-    });
-    const listCandidateRes = await controller.listCandidates(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-    });
+    const createReqRes = await controller.createJobRequisition(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        title: 'Backend Engineer',
+        department: 'Engineering',
+        employment_type: 'full_time',
+        headcount: 2,
+      },
+    );
+    const listReqRes = await controller.listJobRequisitions(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      },
+    );
+    const createCandidateRes = await controller.createCandidate(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        requisition_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        full_name: 'Nguyen Van A',
+        email: 'a@xe.vn',
+        source: 'linkedin',
+      },
+    );
+    const listCandidateRes = await controller.listCandidates(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      },
+    );
     const getCandidateRes = await controller.getCandidate(
       'f76f23f7-3683-4120-81b7-5126ee997b8e',
       undefined,
@@ -146,12 +214,18 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
       undefined,
       'main',
     );
-    const scheduleRes = await controller.scheduleInterview(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      candidate_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
-      scheduled_at: '2026-04-25T09:00:00.000Z',
-      interviewer: 'HR Lead',
-    });
+    const scheduleRes = await controller.scheduleInterview(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        candidate_id: 'f76f23f7-3683-4120-81b7-5126ee997b8e',
+        scheduled_at: '2026-04-25T09:00:00.000Z',
+        interviewer: 'HR Lead',
+      },
+    );
     const updateRes = await controller.updateInterviewStatus(
       'f76f23f7-3683-4120-81b7-5126ee997b8e',
       undefined,
@@ -211,18 +285,72 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
     };
     const statusBody = { status: 'failed' as const };
 
-    await controller.createJobRequisition(undefined, 'test-key', 'xevn', undefined, requisitionBody);
-    await controller.listJobRequisitions(undefined, 'test-key', 'xevn', undefined, requisitionQuery);
-    await controller.createCandidate(undefined, 'test-key', 'xevn', undefined, candidateBody);
-    await controller.listCandidates(undefined, 'test-key', 'xevn', undefined, candidateQuery);
-    await controller.scheduleInterview(undefined, 'test-key', 'xevn', undefined, interviewBody);
-    await controller.updateInterviewStatus('int-1', undefined, 'test-key', 'xevn', '78b8a663-f5e5-4f4d-a020-b8f950ec2037', statusBody);
+    await controller.createJobRequisition(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      requisitionBody,
+    );
+    await controller.listJobRequisitions(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      requisitionQuery,
+    );
+    await controller.createCandidate(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      candidateBody,
+    );
+    await controller.listCandidates(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      candidateQuery,
+    );
+    await controller.scheduleInterview(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      interviewBody,
+    );
+    await controller.updateInterviewStatus(
+      'int-1',
+      undefined,
+      'test-key',
+      'xevn',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      statusBody,
+    );
 
-    expect(serviceMock.createJobRequisition).toHaveBeenCalledWith(requisitionBody, undefined);
-    expect(serviceMock.listJobRequisitions).toHaveBeenCalledWith(requisitionQuery, undefined, { tenantId: 'xevn' });
-    expect(serviceMock.createCandidate).toHaveBeenCalledWith(candidateBody, undefined);
-    expect(serviceMock.listCandidates).toHaveBeenCalledWith(candidateQuery, undefined, { tenantId: 'xevn' });
-    expect(serviceMock.scheduleInterview).toHaveBeenCalledWith(interviewBody, undefined);
+    expect(serviceMock.createJobRequisition).toHaveBeenCalledWith(
+      requisitionBody,
+      undefined,
+    );
+    expect(serviceMock.listJobRequisitions).toHaveBeenCalledWith(
+      requisitionQuery,
+      undefined,
+      { tenantId: 'xevn' },
+    );
+    expect(serviceMock.createCandidate).toHaveBeenCalledWith(
+      candidateBody,
+      undefined,
+    );
+    expect(serviceMock.listCandidates).toHaveBeenCalledWith(
+      candidateQuery,
+      undefined,
+      { tenantId: 'xevn' },
+    );
+    expect(serviceMock.scheduleInterview).toHaveBeenCalledWith(
+      interviewBody,
+      undefined,
+    );
     expect(serviceMock.updateInterviewStatus).toHaveBeenCalledWith(
       'int-1',
       statusBody,
@@ -233,9 +361,15 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
 
   it('blocks unauthorized recruitment access', async () => {
     expect(() =>
-      controller.listJobRequisitions(undefined, undefined, undefined, undefined, {
-        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      }),
+      controller.listJobRequisitions(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {
+          company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        },
+      ),
     ).toThrow('Unauthorized recruitment access');
     expect(serviceMock.listJobRequisitions).not.toHaveBeenCalled();
   });
@@ -270,12 +404,18 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
   });
 
   it('POST /candidates-pool explicit Lane B still works', async () => {
-    const res = await controller.createCandidatePoolExplicit(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      full_name: 'Pool Candidate',
-      email: 'pool@xe.vn',
-      source: 'career_page',
-    });
+    const res = await controller.createCandidatePoolExplicit(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        full_name: 'Pool Candidate',
+        email: 'pool@xe.vn',
+        source: 'career_page',
+      },
+    );
     expect(res.code).toBe('HRM-REC-CP-201');
     expect(catalogMock.createCandidatePool).toHaveBeenCalled();
   });
@@ -298,7 +438,13 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
       notes: null as unknown as undefined,
     };
     try {
-      controller.createCandidate(undefined, 'test-key', 'xevn', undefined, feBody);
+      controller.createCandidate(
+        undefined,
+        'test-key',
+        'xevn',
+        undefined,
+        feBody,
+      );
       throw new Error('expected REQUIRED');
     } catch (err) {
       expect(err).toMatchObject({ code: 'HRM-REC-UV-YCTD-REQUIRED' });
@@ -407,9 +553,15 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
       tenantId: 'xevn',
       companyId: 'main',
     });
-    const res = await controller.listJobRequisitions(`Bearer ${token}`, undefined, 'xevn', undefined, {
-      company_id: 'main',
-    });
+    const res = await controller.listJobRequisitions(
+      `Bearer ${token}`,
+      undefined,
+      'xevn',
+      undefined,
+      {
+        company_id: 'main',
+      },
+    );
     expect(res.code).toBe('HRM-REC-200');
     expect(serviceMock.listJobRequisitions).toHaveBeenCalledWith(
       expect.objectContaining({ company_id: 'main' }),
@@ -426,9 +578,15 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
       companyId: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
     });
     expect(() =>
-      controller.listCandidates(`Bearer ${token}`, undefined, 'xevn-alt', undefined, {
-        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      }),
+      controller.listCandidates(
+        `Bearer ${token}`,
+        undefined,
+        'xevn-alt',
+        undefined,
+        {
+          company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        },
+      ),
     ).toThrow('tenantId mismatches token scope');
     expect(serviceMock.listCandidates).not.toHaveBeenCalled();
   });
@@ -481,9 +639,12 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
         workflow_instance_id: null,
       }),
     );
-    const scopeArg = serviceMock.submitJobRequisitionForApproval.mock.calls[0]?.[3];
+    const scopeArg =
+      serviceMock.submitJobRequisitionForApproval.mock.calls[0]?.[3];
     expect(scopeArg).toEqual({ tenantId: 'xevn' });
-    expect(typeof (scopeArg as { tenantId?: unknown })?.tenantId).toBe('string');
+    expect(typeof (scopeArg as { tenantId?: unknown })?.tenantId).toBe(
+      'string',
+    );
     expect(serviceMock.submitJobRequisitionForApproval).toHaveBeenCalledWith(
       requisitionId,
       query,
@@ -517,8 +678,12 @@ describe('RecruitmentController (HRM-RC-01..06)', () => {
       'ceo@xe.vn',
     );
     expect(planRes.code).toBe('HRM-REC-PLAN-WF-200');
-    expect(planRes.data).toEqual(expect.objectContaining({ spawnMissing: true }));
+    expect(planRes.data).toEqual(
+      expect.objectContaining({ spawnMissing: true }),
+    );
     expect(pipelineRes.code).toBe('HRM-REC-CP-WF-200');
-    expect(pipelineRes.data).toEqual(expect.objectContaining({ spawnMissing: true }));
+    expect(pipelineRes.data).toEqual(
+      expect.objectContaining({ spawnMissing: true }),
+    );
   });
 });

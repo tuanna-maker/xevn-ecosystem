@@ -24,6 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ViMonthPickerField } from '@/components/ui/ViMonthPickerField';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -1030,19 +1031,19 @@ export function EmployeeWorkHistory() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('workHistory.startDate')} <span className="text-destructive">*</span></Label>
-                <Input
-                  type="month"
+                <ViMonthPickerField
                   value={formData.startDate}
-                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                  onValueChange={(val) => setFormData({ ...formData, startDate: val })}
+                  portalScope="parent"
                 />
               </div>
               <div className="space-y-2">
                 <Label>{t('workHistory.endDate')}</Label>
-                <Input
-                  type="month"
+                <ViMonthPickerField
                   value={formData.endDate}
-                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                  onValueChange={(val) => setFormData({ ...formData, endDate: val })}
                   disabled={formData.isCurrent}
+                  portalScope="parent"
                 />
               </div>
             </div>

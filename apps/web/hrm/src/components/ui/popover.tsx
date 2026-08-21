@@ -31,10 +31,12 @@ const PopoverTrigger = PopoverPrimitive.Trigger;
 
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
->(({ className, align = "center", sideOffset = 4, ...props }, ref) => {
-  const mount = getRadixPortalContainer();
-  const useParent = isHrmDialogMountedToPortalParent();
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> & {
+    portalScope?: 'iframe' | 'parent';
+  }
+>(({ className, align = "center", sideOffset = 4, portalScope, ...props }, ref) => {
+  const mount = getRadixPortalContainer(portalScope);
+  const useParent = isHrmDialogMountedToPortalParent(portalScope);
   if (useParent) {
     syncHrmStylesheetsToParentForPortalDialogs();
   }

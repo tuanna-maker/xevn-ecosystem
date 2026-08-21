@@ -19,15 +19,25 @@ export type AttendanceOverviewPayload = {
 };
 
 const MONTH_LABELS = [
-  'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-  'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
+  'Tháng 1',
+  'Tháng 2',
+  'Tháng 3',
+  'Tháng 4',
+  'Tháng 5',
+  'Tháng 6',
+  'Tháng 7',
+  'Tháng 8',
+  'Tháng 9',
+  'Tháng 10',
+  'Tháng 11',
+  'Tháng 12',
 ];
 
 const LEAVE_TYPE_COLORS: Record<string, string> = {
   annual: '#3b82f6',
   'Nghỉ phép': '#3b82f6',
   other: '#a3a3a3',
-  'Khác': '#a3a3a3',
+  Khác: '#a3a3a3',
 };
 
 function leaveDays(totalDays: string | number | null | undefined): number {
@@ -58,7 +68,11 @@ export class AttendanceOverviewService {
     const todayStr = today.toISOString().slice(0, 10);
 
     const [leaveRes, lateRes] = await Promise.all([
-      this.leaveRequests.listLeaveRequests({ company_id: query.company_id }, authorization, tenantId),
+      this.leaveRequests.listLeaveRequests(
+        { company_id: query.company_id },
+        authorization,
+        tenantId,
+      ),
       this.attendanceRequests.listLateEarlyRequests(
         { company_id: query.company_id },
         authorization,
@@ -72,11 +86,18 @@ export class AttendanceOverviewService {
     });
 
     const lateEarlyAll = lateRes.data ?? [];
-    const lateEarlyToday = lateEarlyAll.filter((r) => r.request_date === todayStr).length;
+    const lateEarlyToday = lateEarlyAll.filter(
+      (r) => r.request_date === todayStr,
+    ).length;
 
     const monthlyLeaveData = MONTH_LABELS.map((month, idx) => {
-      const monthLeaves = leaves.filter((l) => monthIndex(l.start_date) === idx);
-      const value = monthLeaves.reduce((sum, l) => sum + leaveDays(l.total_days), 0);
+      const monthLeaves = leaves.filter(
+        (l) => monthIndex(l.start_date) === idx,
+      );
+      const value = monthLeaves.reduce(
+        (sum, l) => sum + leaveDays(l.total_days),
+        0,
+      );
       return { month, value };
     });
 
@@ -98,13 +119,18 @@ export class AttendanceOverviewService {
       const type = l.leave_type || 'Khác';
       typeMap.set(type, (typeMap.get(type) ?? 0) + 1);
     }
-    const leaveTypeData = Array.from(typeMap.entries()).map(([name, value]) => ({
-      name,
-      value,
-      color: LEAVE_TYPE_COLORS[name] ?? LEAVE_TYPE_COLORS.Khác,
-    }));
+    const leaveTypeData = Array.from(typeMap.entries()).map(
+      ([name, value]) => ({
+        name,
+        value,
+        color: LEAVE_TYPE_COLORS[name] ?? LEAVE_TYPE_COLORS.Khác,
+      }),
+    );
 
-    const lateEarlyMap = new Map<string, { name: string; dept: string; count: number }>();
+    const lateEarlyMap = new Map<
+      string,
+      { name: string; dept: string; count: number }
+    >();
     for (const r of lateEarlyAll) {
       const existing = lateEarlyMap.get(r.employee_id);
       if (existing) {
@@ -145,9 +171,15 @@ export class AttendanceOverviewService {
       stats: {
         lateEarlyToday,
         lateEarlyChange: 0,
-        actualLeaveThisWeek: thisWeekLeaves.reduce((sum, l) => sum + leaveDays(l.total_days), 0),
+        actualLeaveThisWeek: thisWeekLeaves.reduce(
+          (sum, l) => sum + leaveDays(l.total_days),
+          0,
+        ),
         actualLeaveChange: 0,
-        plannedLeaveNextWeek: nextWeekLeaves.reduce((sum, l) => sum + leaveDays(l.total_days), 0),
+        plannedLeaveNextWeek: nextWeekLeaves.reduce(
+          (sum, l) => sum + leaveDays(l.total_days),
+          0,
+        ),
         plannedLeaveChange: 0,
       },
       monthlyLeaveData,

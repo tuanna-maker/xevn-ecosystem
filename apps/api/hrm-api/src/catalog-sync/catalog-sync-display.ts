@@ -42,18 +42,27 @@ const ITEM_STATUS_TONES: Record<string, CatalogItemStatusTone> = {
   inactive: 'neutral',
 };
 
-export function catalogItemStatusLabelVi(status: string | null | undefined): string {
+export function catalogItemStatusLabelVi(
+  status: string | null | undefined,
+): string {
   const raw = String(status ?? '').trim();
   const key = raw.toLowerCase();
   return ITEM_STATUS_LABELS_VI[key] ?? (raw || '—');
 }
 
-export function catalogItemStatusTone(status: string | null | undefined): CatalogItemStatusTone {
-  const key = String(status ?? '').trim().toLowerCase();
+export function catalogItemStatusTone(
+  status: string | null | undefined,
+): CatalogItemStatusTone {
+  const key = String(status ?? '')
+    .trim()
+    .toLowerCase();
   return ITEM_STATUS_TONES[key] ?? 'neutral';
 }
 
-export function extractPublishedVersion(payload: unknown, fallbackVersion: number): number {
+export function extractPublishedVersion(
+  payload: unknown,
+  fallbackVersion: number,
+): number {
   if (!payload || typeof payload !== 'object') {
     return fallbackVersion > 0 ? fallbackVersion : 1;
   }
@@ -79,14 +88,28 @@ export function parseSyncedCatalogPayloadMeta(payload: unknown): {
   const p = payload as Record<string, unknown>;
   const rawItems = Array.isArray(p.items) ? p.items : [];
   const items = rawItems
-    .filter((row): row is Record<string, unknown> => !!row && typeof row === 'object')
+    .filter(
+      (row): row is Record<string, unknown> => !!row && typeof row === 'object',
+    )
     .map((row) => {
       const code = typeof row.code === 'string' ? row.code.trim() : '';
       const label = typeof row.label === 'string' ? row.label.trim() : '';
-      const statusRaw = typeof row.status === 'string' ? row.status.trim().toLowerCase() : 'active';
-      const status = statusRaw === 'draft' ? 'draft' : statusRaw === 'inactive' ? 'inactive' : 'active';
+      const statusRaw =
+        typeof row.status === 'string'
+          ? row.status.trim().toLowerCase()
+          : 'active';
+      const status =
+        statusRaw === 'draft'
+          ? 'draft'
+          : statusRaw === 'inactive'
+            ? 'inactive'
+            : 'active';
       const unit =
-        typeof row.unit === 'string' ? row.unit : row.unit === null ? null : null;
+        typeof row.unit === 'string'
+          ? row.unit
+          : row.unit === null
+            ? null
+            : null;
       return {
         code,
         label,

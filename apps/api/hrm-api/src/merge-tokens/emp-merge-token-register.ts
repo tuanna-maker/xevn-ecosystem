@@ -86,7 +86,9 @@ export function normalizeEmpExtensionFieldCode(code: string): string {
 }
 
 export function shouldSkipEmpExtensionCoreColumn(code: string): boolean {
-  return EMP_EXTENSION_CORE_COLUMN_CODES.has(normalizeEmpExtensionFieldCode(code));
+  return EMP_EXTENSION_CORE_COLUMN_CODES.has(
+    normalizeEmpExtensionFieldCode(code),
+  );
 }
 
 /** Format DOC key into merge token — `emp.doc.<document_type_key>`. */
@@ -113,7 +115,9 @@ export function mergeTokenSourcePathForEmpDoc(documentTypeKey: string): string {
   return `emp.document_types.${key}`;
 }
 
-export function mergeTokenSourcePathForEmpEt(employmentTypeKey: string): string {
+export function mergeTokenSourcePathForEmpEt(
+  employmentTypeKey: string,
+): string {
   const key = String(employmentTypeKey ?? '')
     .trim()
     .toLowerCase()
@@ -205,7 +209,9 @@ export async function upsertEmpCatalogMergeToken(
     .trim()
     .toLowerCase();
   if (!tokenKey || !MERGE_TOKEN_KEY_FORMAT.test(tokenKey)) {
-    const err = new Error('HRM-PLT-CAT-CODE-INVALID: tokenKey format invalid for EMP catalog register');
+    const err = new Error(
+      'HRM-PLT-CAT-CODE-INVALID: tokenKey format invalid for EMP catalog register',
+    );
     (err as { code?: string }).code = 'HRM-PLT-CAT-CODE-INVALID';
     throw err;
   }
@@ -399,21 +405,34 @@ export async function upsertEmpExtensionFieldMergeToken(
 export function enrichEmpCatalogLabelsIntoBag(input: {
   valueBag: Record<string, unknown>;
   /** document_type_key → name_vi (active or retired-for-history) */
-  documentTypeLabels?: ReadonlyMap<string, string> | Record<string, string> | null;
+  documentTypeLabels?:
+    | ReadonlyMap<string, string>
+    | Record<string, string>
+    | null;
   /** employment_type_key → name_vi */
-  employmentTypeLabels?: ReadonlyMap<string, string> | Record<string, string> | null;
+  employmentTypeLabels?:
+    | ReadonlyMap<string, string>
+    | Record<string, string>
+    | null;
   /** Employee denorm employment_type key for alias employee.employment_type_label */
   employeeEmploymentTypeKey?: string | null;
 }): Record<string, unknown> {
   const bag: Record<string, unknown> = { ...input.valueBag };
 
   const asMap = (
-    src: ReadonlyMap<string, string> | Record<string, string> | null | undefined,
+    src:
+      | ReadonlyMap<string, string>
+      | Record<string, string>
+      | null
+      | undefined,
   ): Map<string, string> => {
     if (!src) return new Map();
     if (src instanceof Map) return src;
     return new Map(
-      Object.entries(src).map(([k, v]) => [k.toLowerCase().replace(/-/g, '_'), v]),
+      Object.entries(src).map(([k, v]) => [
+        k.toLowerCase().replace(/-/g, '_'),
+        v,
+      ]),
     );
   };
 
@@ -435,7 +454,10 @@ export function enrichEmpCatalogLabelsIntoBag(input: {
   }
 
   const etKey = input.employeeEmploymentTypeKey
-    ? String(input.employeeEmploymentTypeKey).trim().toLowerCase().replace(/-/g, '_')
+    ? String(input.employeeEmploymentTypeKey)
+        .trim()
+        .toLowerCase()
+        .replace(/-/g, '_')
     : '';
   if (etKey) {
     const label = ets.get(etKey);

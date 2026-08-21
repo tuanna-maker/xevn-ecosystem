@@ -111,7 +111,9 @@ type TemplateResolveRow = {
 };
 
 /** Public for pay-sheet-template ensureSchema ordering. */
-export async function ensurePayCnttSetupSchema(db: HrmDbService): Promise<void> {
+export async function ensurePayCnttSetupSchema(
+  db: HrmDbService,
+): Promise<void> {
   await db.query(`
     CREATE TABLE IF NOT EXISTS public.pay_policy_pack (
       id UUID PRIMARY KEY,
@@ -240,7 +242,11 @@ export class PayCnttSetupService {
   private assertCode(code: string): string {
     const normalized = code.trim().toLowerCase();
     if (!PAY_CNTT_CODE_FORMAT.test(normalized)) {
-      throw new ApiException('HRM-VAL-400', 'code format invalid (open slug)', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'code format invalid (open slug)',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return normalized;
   }
@@ -248,7 +254,11 @@ export class PayCnttSetupService {
   private assertPolicyStatus(status: string): PayPolicyPackStatus {
     const s = status.trim().toLowerCase() as PayPolicyPackStatus;
     if (!(PAY_POLICY_PACK_STATUSES as readonly string[]).includes(s)) {
-      throw new ApiException('HRM-VAL-400', 'Invalid policy pack status', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'Invalid policy pack status',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return s;
   }
@@ -256,7 +266,11 @@ export class PayCnttSetupService {
   private assertProfileStatus(status: string): PayInputProfileStatus {
     const s = status.trim().toLowerCase() as PayInputProfileStatus;
     if (!(PAY_INPUT_PROFILE_STATUSES as readonly string[]).includes(s)) {
-      throw new ApiException('HRM-VAL-400', 'Invalid input profile status', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'Invalid input profile status',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return s;
   }
@@ -264,7 +278,11 @@ export class PayCnttSetupService {
   private assertScope(scope: string): PayPolicyPackScope {
     const s = scope.trim().toUpperCase() as PayPolicyPackScope;
     if (!(PAY_POLICY_PACK_SCOPES as readonly string[]).includes(s)) {
-      throw new ApiException('HRM-VAL-400', 'scope must be CHUNG or RIENG', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'scope must be CHUNG or RIENG',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return s;
   }
@@ -344,7 +362,10 @@ export class PayCnttSetupService {
     requestedCompanyId: string,
     authorization?: string,
   ): Promise<PolicyPackRow> {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [id];
@@ -355,7 +376,11 @@ export class PayCnttSetupService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-PAY-POL-404', 'Policy pack not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-POL-404',
+        'Policy pack not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: 'HRM-PAY-POL-404',
@@ -369,7 +394,10 @@ export class PayCnttSetupService {
     requestedCompanyId: string,
     authorization?: string,
   ): Promise<InputProfileRow> {
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, requestedCompanyId);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      requestedCompanyId,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [id];
@@ -380,7 +408,11 @@ export class PayCnttSetupService {
     );
     const row = res.rows[0];
     if (!row) {
-      throw new ApiException('HRM-PAY-INP-PROF-404', 'Input pack profile not found', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-INP-PROF-404',
+        'Input pack profile not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     assertResourceInHrmScope(row, scope, {
       notFoundCode: 'HRM-PAY-INP-PROF-404',
@@ -413,7 +445,11 @@ export class PayCnttSetupService {
     authorization?: string,
   ): Promise<InputProfileRow> {
     await this.ensureSchema();
-    const row = await this.loadProfileInScope(profileId, companyId, authorization);
+    const row = await this.loadProfileInScope(
+      profileId,
+      companyId,
+      authorization,
+    );
     if (row.archived_at) {
       throw new ApiException(
         HRM_PAY_SETUP_404_PACK,
@@ -433,10 +469,18 @@ export class PayCnttSetupService {
     let policy: PolicyPackRow | null = null;
     let profile: InputProfileRow | null = null;
     if (policyPackId) {
-      policy = await this.assertPolicyPackFk(policyPackId, companyId, authorization);
+      policy = await this.assertPolicyPackFk(
+        policyPackId,
+        companyId,
+        authorization,
+      );
     }
     if (inputPackProfileId) {
-      profile = await this.assertInputProfileFk(inputPackProfileId, companyId, authorization);
+      profile = await this.assertInputProfileFk(
+        inputPackProfileId,
+        companyId,
+        authorization,
+      );
     }
     return buildSetupContextFromPackRows(policy, profile);
   }
@@ -458,9 +502,15 @@ export class PayCnttSetupService {
 
   // --- Policy pack CRUD ---
 
-  async listPolicyPacks(query: ListPayPolicyPacksQueryDto, authorization?: string) {
+  async listPolicyPacks(
+    query: ListPayPolicyPacksQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = [];
     const values: unknown[] = [];
@@ -484,11 +534,15 @@ export class PayCnttSetupService {
     if (query.effective_on) {
       values.push(query.effective_on);
       filters.push(`effective_from <= $${values.length}::date`);
-      filters.push(`(effective_to IS NULL OR effective_to >= $${values.length}::date)`);
+      filters.push(
+        `(effective_to IS NULL OR effective_to >= $${values.length}::date)`,
+      );
     }
     if (query.q?.trim()) {
       values.push(`%${query.q.trim().toLowerCase()}%`);
-      filters.push(`(lower(code) LIKE $${values.length} OR lower(name_vi) LIKE $${values.length})`);
+      filters.push(
+        `(lower(code) LIKE $${values.length} OR lower(name_vi) LIKE $${values.length})`,
+      );
     }
 
     const where = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
@@ -497,7 +551,8 @@ export class PayCnttSetupService {
       values,
     );
 
-    const includeUsage = String(query.include_usage_count ?? '').toLowerCase() === 'true';
+    const includeUsage =
+      String(query.include_usage_count ?? '').toLowerCase() === 'true';
     const items = [];
     for (const row of res.rows) {
       let usageCount: number | undefined;
@@ -514,24 +569,42 @@ export class PayCnttSetupService {
     return { items };
   }
 
-  async getPolicyPackById(id: string, companyId: string, authorization?: string) {
+  async getPolicyPackById(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const row = await this.loadPolicyInScope(id, companyId, authorization);
     return this.mapPolicyPack(row);
   }
 
-  async createPolicyPack(payload: CreatePayPolicyPackDto, authorization?: string) {
+  async createPolicyPack(
+    payload: CreatePayPolicyPackDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const actor = this.resolveActorSub(authorization);
-    const persistCompanyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const code = this.assertCode(payload.code);
     const nameVi = (payload.nameVi ?? payload.name_vi ?? '').trim();
     if (!nameVi) {
-      throw new ApiException('HRM-VAL-400', 'nameVi required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'nameVi required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const effectiveFrom = payload.effectiveFrom ?? payload.effective_from;
     if (!effectiveFrom) {
-      throw new ApiException('HRM-VAL-400', 'effectiveFrom required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'effectiveFrom required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const effectiveTo = payload.effectiveTo ?? payload.effective_to ?? null;
     if (effectiveTo && effectiveTo < effectiveFrom) {
@@ -568,8 +641,12 @@ export class PayCnttSetupService {
           payload.businessLineTag ?? payload.business_line_tag ?? null,
           effectiveFrom,
           effectiveTo,
-          payload.policyDocRefs == null ? null : JSON.stringify(payload.policyDocRefs),
-          payload.rateParams == null ? null : JSON.stringify(payload.rateParams),
+          payload.policyDocRefs == null
+            ? null
+            : JSON.stringify(payload.policyDocRefs),
+          payload.rateParams == null
+            ? null
+            : JSON.stringify(payload.rateParams),
           actor,
         ],
       );
@@ -587,11 +664,23 @@ export class PayCnttSetupService {
     }
   }
 
-  async updatePolicyPack(id: string, payload: UpdatePayPolicyPackDto, authorization?: string) {
+  async updatePolicyPack(
+    id: string,
+    payload: UpdatePayPolicyPackDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const existing = await this.loadPolicyInScope(id, payload.company_id, authorization);
+    const existing = await this.loadPolicyInScope(
+      id,
+      payload.company_id,
+      authorization,
+    );
     if (existing.archived_at) {
-      throw new ApiException('HRM-PAY-POL-404', 'Archived policy pack cannot be patched', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-PAY-POL-404',
+        'Archived policy pack cannot be patched',
+        HttpStatus.NOT_FOUND,
+      );
     }
     const actor = this.resolveActorSub(authorization);
     const fields: string[] = [];
@@ -605,15 +694,26 @@ export class PayCnttSetupService {
     const nameVi = payload.nameVi ?? payload.name_vi;
     if (nameVi != null) {
       const trimmed = nameVi.trim();
-      if (!trimmed) throw new ApiException('HRM-VAL-400', 'nameVi required', HttpStatus.BAD_REQUEST);
+      if (!trimmed)
+        throw new ApiException(
+          'HRM-VAL-400',
+          'nameVi required',
+          HttpStatus.BAD_REQUEST,
+        );
       set('name_vi', trimmed);
     }
-    if (payload.status != null) set('status', this.assertPolicyStatus(payload.status));
+    if (payload.status != null)
+      set('status', this.assertPolicyStatus(payload.status));
     if (payload.scope != null) set('scope', this.assertScope(payload.scope));
-    if (payload.businessLineTag !== undefined) set('business_line_tag', payload.businessLineTag);
-    if (payload.business_line_tag !== undefined) set('business_line_tag', payload.business_line_tag);
+    if (payload.businessLineTag !== undefined)
+      set('business_line_tag', payload.businessLineTag);
+    if (payload.business_line_tag !== undefined)
+      set('business_line_tag', payload.business_line_tag);
     const effFrom = payload.effectiveFrom ?? payload.effective_from;
-    const effTo = payload.effectiveTo !== undefined ? payload.effectiveTo : payload.effective_to;
+    const effTo =
+      payload.effectiveTo !== undefined
+        ? payload.effectiveTo
+        : payload.effective_to;
     if (effFrom != null) set('effective_from', effFrom);
     if (effTo !== undefined) set('effective_to', effTo);
     if (payload.policyDocRefs !== undefined) {
@@ -628,7 +728,11 @@ export class PayCnttSetupService {
     const nextFrom = effFrom ?? existing.effective_from;
     const nextTo = effTo !== undefined ? effTo : existing.effective_to;
     if (nextTo && nextTo < nextFrom) {
-      throw new ApiException(HRM_PAY_POL_400_DATE, 'effective_to must be >= effective_from', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        HRM_PAY_POL_400_DATE,
+        'effective_to must be >= effective_from',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     if (fields.length === 0) return this.mapPolicyPack(existing);
@@ -645,13 +749,21 @@ export class PayCnttSetupService {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       if (/uq_pay_policy_pack_company_code_active|unique/i.test(msg)) {
-        throw new ApiException(HRM_PAY_POL_409_CODE, 'Duplicate policy pack code', HttpStatus.CONFLICT);
+        throw new ApiException(
+          HRM_PAY_POL_409_CODE,
+          'Duplicate policy pack code',
+          HttpStatus.CONFLICT,
+        );
       }
       throw err;
     }
   }
 
-  async archivePolicyPack(id: string, companyId: string, authorization?: string) {
+  async archivePolicyPack(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const existing = await this.loadPolicyInScope(id, companyId, authorization);
     if (existing.archived_at) return this.mapPolicyPack(existing);
@@ -670,9 +782,15 @@ export class PayCnttSetupService {
 
   // --- Input profile CRUD ---
 
-  async listInputProfiles(query: ListPayInputPackProfilesQueryDto, authorization?: string) {
+  async listInputProfiles(
+    query: ListPayInputPackProfilesQueryDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = [];
     const values: unknown[] = [];
@@ -687,7 +805,9 @@ export class PayCnttSetupService {
     }
     if (query.q?.trim()) {
       values.push(`%${query.q.trim().toLowerCase()}%`);
-      filters.push(`(lower(code) LIKE $${values.length} OR lower(name_vi) LIKE $${values.length})`);
+      filters.push(
+        `(lower(code) LIKE $${values.length} OR lower(name_vi) LIKE $${values.length})`,
+      );
     }
 
     const where = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
@@ -698,29 +818,51 @@ export class PayCnttSetupService {
     return { items: res.rows.map((r) => this.mapInputProfile(r)) };
   }
 
-  async getInputProfileById(id: string, companyId: string, authorization?: string) {
+  async getInputProfileById(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const row = await this.loadProfileInScope(id, companyId, authorization);
     return this.mapInputProfile(row);
   }
 
-  async createInputProfile(payload: CreatePayInputPackProfileDto, authorization?: string) {
+  async createInputProfile(
+    payload: CreatePayInputPackProfileDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
     const actor = this.resolveActorSub(authorization);
-    const persistCompanyId = resolveHrmPersistCompanyIdText(authorization, payload.company_id);
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
     const code = this.assertCode(payload.code);
     const nameVi = (payload.nameVi ?? payload.name_vi ?? '').trim();
     if (!nameVi) {
-      throw new ApiException('HRM-VAL-400', 'nameVi required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'nameVi required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const allowed = payload.allowedSourceKinds ?? [];
     if (!Array.isArray(allowed) || allowed.length === 0) {
-      throw new ApiException('HRM-VAL-400', 'allowedSourceKinds required (non-empty)', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-VAL-400',
+        'allowedSourceKinds required (non-empty)',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const status = this.assertProfileStatus(payload.status ?? 'draft');
     const required = payload.requiredComponentCodes ?? [];
     if (status === 'active' && required.length > 0) {
-      await this.assertRequiredComponentsOnActive(persistCompanyId, required, authorization);
+      await this.assertRequiredComponentsOnActive(
+        persistCompanyId,
+        required,
+        authorization,
+      );
     }
 
     const id = randomUUID();
@@ -745,7 +887,9 @@ export class PayCnttSetupService {
           status,
           JSON.stringify(allowed),
           required.length > 0 ? JSON.stringify(required) : null,
-          payload.columnHints == null ? null : JSON.stringify(payload.columnHints),
+          payload.columnHints == null
+            ? null
+            : JSON.stringify(payload.columnHints),
           actor,
         ],
       );
@@ -763,9 +907,17 @@ export class PayCnttSetupService {
     }
   }
 
-  async updateInputProfile(id: string, payload: UpdatePayInputPackProfileDto, authorization?: string) {
+  async updateInputProfile(
+    id: string,
+    payload: UpdatePayInputPackProfileDto,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const existing = await this.loadProfileInScope(id, payload.company_id, authorization);
+    const existing = await this.loadProfileInScope(
+      id,
+      payload.company_id,
+      authorization,
+    );
     if (existing.archived_at) {
       throw new ApiException(
         'HRM-PAY-INP-PROF-404',
@@ -785,7 +937,12 @@ export class PayCnttSetupService {
     const nameVi = payload.nameVi ?? payload.name_vi;
     if (nameVi != null) {
       const trimmed = nameVi.trim();
-      if (!trimmed) throw new ApiException('HRM-VAL-400', 'nameVi required', HttpStatus.BAD_REQUEST);
+      if (!trimmed)
+        throw new ApiException(
+          'HRM-VAL-400',
+          'nameVi required',
+          HttpStatus.BAD_REQUEST,
+        );
       set('name_vi', trimmed);
     }
     let nextStatus = existing.status;
@@ -795,9 +952,16 @@ export class PayCnttSetupService {
     }
     if (payload.allowedSourceKinds != null) {
       if (payload.allowedSourceKinds.length === 0) {
-        throw new ApiException('HRM-VAL-400', 'allowedSourceKinds cannot be empty', HttpStatus.BAD_REQUEST);
+        throw new ApiException(
+          'HRM-VAL-400',
+          'allowedSourceKinds cannot be empty',
+          HttpStatus.BAD_REQUEST,
+        );
       }
-      set('allowed_source_kinds_json', JSON.stringify(payload.allowedSourceKinds));
+      set(
+        'allowed_source_kinds_json',
+        JSON.stringify(payload.allowedSourceKinds),
+      );
     }
     if (payload.requiredComponentCodes !== undefined) {
       set(
@@ -808,7 +972,12 @@ export class PayCnttSetupService {
       );
     }
     if (payload.columnHints !== undefined) {
-      set('column_hints_json', payload.columnHints == null ? null : JSON.stringify(payload.columnHints));
+      set(
+        'column_hints_json',
+        payload.columnHints == null
+          ? null
+          : JSON.stringify(payload.columnHints),
+      );
     }
 
     const required =
@@ -817,7 +986,11 @@ export class PayCnttSetupService {
         ? (existing.required_component_codes_json as string[])
         : []);
     if (nextStatus === 'active' && required.length > 0) {
-      await this.assertRequiredComponentsOnActive(existing.company_id, required, authorization);
+      await this.assertRequiredComponentsOnActive(
+        existing.company_id,
+        required,
+        authorization,
+      );
     }
 
     if (fields.length === 0) return this.mapInputProfile(existing);
@@ -834,15 +1007,27 @@ export class PayCnttSetupService {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       if (/uq_pay_input_pack_profile_company_code_active|unique/i.test(msg)) {
-        throw new ApiException(HRM_PAY_INP_PROF_409_CODE, 'Duplicate input profile code', HttpStatus.CONFLICT);
+        throw new ApiException(
+          HRM_PAY_INP_PROF_409_CODE,
+          'Duplicate input profile code',
+          HttpStatus.CONFLICT,
+        );
       }
       throw err;
     }
   }
 
-  async archiveInputProfile(id: string, companyId: string, authorization?: string) {
+  async archiveInputProfile(
+    id: string,
+    companyId: string,
+    authorization?: string,
+  ) {
     await this.ensureSchema();
-    const existing = await this.loadProfileInScope(id, companyId, authorization);
+    const existing = await this.loadProfileInScope(
+      id,
+      companyId,
+      authorization,
+    );
     if (existing.archived_at) return this.mapInputProfile(existing);
     const actor = this.resolveActorSub(authorization);
     const res = await this.db.query<InputProfileRow>(
@@ -872,9 +1057,16 @@ export class PayCnttSetupService {
     }
   }
 
-  private templateMatchesQuery(row: TemplateResolveRow, query: ResolvePaySetupQueryDto): boolean {
+  private templateMatchesQuery(
+    row: TemplateResolveRow,
+    query: ResolvePaySetupQueryDto,
+  ): boolean {
     if (row.status !== 'active') return false;
-    if (query.ou_id?.trim() && row.applicability_scope === 'ou' && row.ou_id !== query.ou_id.trim()) {
+    if (
+      query.ou_id?.trim() &&
+      row.applicability_scope === 'ou' &&
+      row.ou_id !== query.ou_id.trim()
+    ) {
       return false;
     }
     if (
@@ -900,13 +1092,18 @@ export class PayCnttSetupService {
 
   async resolveSetup(query: ResolvePaySetupQueryDto, authorization?: string) {
     await this.ensureSchema();
-    const scopeCompanyId = normalizePayrollListCompanyId(authorization, query.company_id);
+    const scopeCompanyId = normalizePayrollListCompanyId(
+      authorization,
+      query.company_id,
+    );
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ["status = 'active'", 'archived_at IS NULL'];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, expandPayrollPeriodCompanyIds(scope));
 
-    const res = await this.db.query<TemplateResolveRow & { archived_at: string | null }>(
+    const res = await this.db.query<
+      TemplateResolveRow & { archived_at: string | null }
+    >(
       `
         SELECT
           id::text AS id, company_id, code, name, status, is_default,
@@ -943,15 +1140,28 @@ export class PayCnttSetupService {
       let profileSummary = null;
       if (tpl.policy_pack_id) {
         try {
-          const p = await this.loadPolicyInScope(tpl.policy_pack_id, query.company_id, authorization);
-          policySummary = { id: p.id, code: p.code, nameVi: p.name_vi, scope: p.scope };
+          const p = await this.loadPolicyInScope(
+            tpl.policy_pack_id,
+            query.company_id,
+            authorization,
+          );
+          policySummary = {
+            id: p.id,
+            code: p.code,
+            nameVi: p.name_vi,
+            scope: p.scope,
+          };
         } catch {
           policySummary = null;
         }
       }
       if (tpl.input_pack_profile_id) {
         try {
-          const pr = await this.loadProfileInScope(tpl.input_pack_profile_id, query.company_id, authorization);
+          const pr = await this.loadProfileInScope(
+            tpl.input_pack_profile_id,
+            query.company_id,
+            authorization,
+          );
           profileSummary = { id: pr.id, code: pr.code, nameVi: pr.name_vi };
         } catch {
           profileSummary = null;
@@ -971,7 +1181,9 @@ export class PayCnttSetupService {
       };
     };
 
-    const candidates = await Promise.all(ranked.map((row) => buildCandidate(row)));
+    const candidates = await Promise.all(
+      ranked.map((row) => buildCandidate(row)),
+    );
     return {
       recommended: candidates[0],
       candidates,

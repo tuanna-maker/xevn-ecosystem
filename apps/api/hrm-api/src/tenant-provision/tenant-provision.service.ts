@@ -11,9 +11,22 @@
  * Coded:      2026-08-15
  * must_keep:  no cross-DB query; tenant_id from payload only; BULLMQ_ENABLED gate
  */
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { Worker, type ConnectionOptions } from 'bullmq';
 import { HrmDbService, HrmDbQueryFn } from '../db/hrm-db.service';
+import {
+  MASTER_REC_SOURCES,
+  MASTER_REC_STAGES,
+  MASTER_REC_INTERVIEW_TYPES,
+  MASTER_REC_REJECT_REASONS,
+  MASTER_REC_HEALTH_REQS,
+} from './recruitment-provision.constants';
+
 
 export interface TenantProvisionedPayload {
   eventType: 'TENANT_PROVISIONED';
@@ -32,14 +45,62 @@ const LABOR_LAW_LEAVE_TYPES: ReadonlyArray<{
   isPaid: boolean;
   payRate: number;
 }> = [
-  { code: 'ANNUAL', name: 'Nghỉ phép năm', defaultDays: 12, isPaid: true, payRate: 100 },
-  { code: 'SICK', name: 'Nghỉ ốm đau', defaultDays: 30, isPaid: true, payRate: 75 },
-  { code: 'MATERNITY', name: 'Nghỉ thai sản', defaultDays: 180, isPaid: true, payRate: 100 },
-  { code: 'PATERNITY', name: 'Nghỉ thai sản cha', defaultDays: 5, isPaid: true, payRate: 100 },
-  { code: 'BEREAVEMENT', name: 'Nghỉ tang', defaultDays: 3, isPaid: true, payRate: 100 },
-  { code: 'MARRIAGE', name: 'Nghỉ kết hôn', defaultDays: 3, isPaid: true, payRate: 100 },
-  { code: 'ELECTION', name: 'Nghỉ bầu cử', defaultDays: 1, isPaid: true, payRate: 100 },
-  { code: 'NATIONAL_DISASTER', name: 'Nghỉ thiên tai quốc gia', defaultDays: 1, isPaid: false, payRate: 0 },
+  {
+    code: 'ANNUAL',
+    name: 'Nghỉ phép năm',
+    defaultDays: 12,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'SICK',
+    name: 'Nghỉ ốm đau',
+    defaultDays: 30,
+    isPaid: true,
+    payRate: 75,
+  },
+  {
+    code: 'MATERNITY',
+    name: 'Nghỉ thai sản',
+    defaultDays: 180,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'PATERNITY',
+    name: 'Nghỉ thai sản cha',
+    defaultDays: 5,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'BEREAVEMENT',
+    name: 'Nghỉ tang',
+    defaultDays: 3,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'MARRIAGE',
+    name: 'Nghỉ kết hôn',
+    defaultDays: 3,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'ELECTION',
+    name: 'Nghỉ bầu cử',
+    defaultDays: 1,
+    isPaid: true,
+    payRate: 100,
+  },
+  {
+    code: 'NATIONAL_DISASTER',
+    name: 'Nghỉ thiên tai quốc gia',
+    defaultDays: 1,
+    isPaid: false,
+    payRate: 0,
+  },
 ] as const;
 
 /** Mức đóng BH theo Nghị định 74/2024 (hiệu lực 01/07/2024) */
@@ -89,7 +150,9 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
       'xbos.tenant',
       async (job) => {
         if (job.name === 'TENANT_PROVISIONED') {
-          await this.handleTenantProvisioned(job.data as TenantProvisionedPayload);
+          await this.handleTenantProvisioned(
+            job.data as TenantProvisionedPayload,
+          );
         }
       },
       { connection },
@@ -99,7 +162,9 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
         `[HRM] xbos.tenant worker job failed: ${job?.name ?? 'unknown'} — ${err.message}`,
       );
     });
-    this.logger.log('[HRM] TenantProvisionWorker subscribed to BullMQ queue: xbos.tenant');
+    this.logger.log(
+      '[HRM] TenantProvisionWorker subscribed to BullMQ queue: xbos.tenant',
+    );
   }
 
   async onModuleDestroy(): Promise<void> {
@@ -110,7 +175,9 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
    * Public so REST controller can call this directly for integration tests
    * and manual XBOS→HRM HTTP fallback path.
    */
-  async handleTenantProvisioned(payload: TenantProvisionedPayload): Promise<void> {
+  async handleTenantProvisioned(
+    payload: TenantProvisionedPayload,
+  ): Promise<void> {
     const { tenantId, defaultCompanyId, modules } = payload;
 
     if (!modules.includes('hrm')) {
@@ -126,7 +193,9 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
       [tenantId],
     );
     if (existing.rows[0]?.exists) {
-      this.logger.log(`[HRM] Tenant ${tenantId} already provisioned — skipping seed.`);
+      this.logger.log(
+        `[HRM] Tenant ${tenantId} already provisioned — skipping seed.`,
+      );
       return;
     }
 
@@ -134,6 +203,8 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
       await this.seedLeaveTypes(query, tenantId, defaultCompanyId);
       await this.seedInsuranceRates(query, tenantId, defaultCompanyId);
       await this.seedMinimumWageRegions(query, tenantId, defaultCompanyId);
+      await this.seedRecruitmentMasterData(query, tenantId, defaultCompanyId);
+      await this.seedJobDescriptionTemplates(query, tenantId, defaultCompanyId);
     });
 
     this.logger.log(
@@ -155,7 +226,15 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
             is_paid, pay_rate_percent, leave_category)
          VALUES ($1, $2, $3, $4, $5, $6, $7, 'LABOR_LAW')
          ON CONFLICT ON CONSTRAINT uq_leave_type_tenant_code DO NOTHING`,
-        [tenantId, companyId, lt.code, lt.name, lt.defaultDays, lt.isPaid, lt.payRate],
+        [
+          tenantId,
+          companyId,
+          lt.code,
+          lt.name,
+          lt.defaultDays,
+          lt.isPaid,
+          lt.payRate,
+        ],
       );
     }
   }
@@ -196,7 +275,140 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
            (tenant_id, company_id, region_code, effective_from, monthly_min_wage)
          VALUES ($1, $2, $3, $4, $5)
          ON CONFLICT ON CONSTRAINT uq_min_wage_tenant_region_eff DO NOTHING`,
-        [tenantId, companyId, region.code, INSURANCE_EFFECTIVE_FROM, region.wage],
+        [
+          tenantId,
+          companyId,
+          region.code,
+          INSURANCE_EFFECTIVE_FROM,
+          region.wage,
+        ],
+      );
+    }
+  }
+
+  private async seedRecruitmentMasterData(
+    query: HrmDbQueryFn,
+    tenantId: string,
+    companyId: string,
+  ): Promise<void> {
+    // 1. Nguồn tuyển dụng
+    for (const src of MASTER_REC_SOURCES) {
+      await query(
+        `INSERT INTO public.hrm_catalog_extension_items
+           (tenant_id, company_id, catalog_key, code, label, status)
+         VALUES ($1, $2, $3, $4, $5, 'active')
+         ON CONFLICT ON CONSTRAINT uq_hrm_cat_ext_scope_key_code DO NOTHING`,
+        [tenantId, companyId, 'recruitment_channels', src.code, src.name_vi],
+      );
+    }
+    
+    // 2. Giai đoạn tuyển dụng -> rec_pipeline_stage
+    for (const stage of MASTER_REC_STAGES) {
+      const exists = await query(
+        `SELECT 1 FROM public.rec_pipeline_stage WHERE company_id = $1 AND lower(stage_key) = lower($2) AND archived_at IS NULL`,
+        [companyId, stage.code],
+      );
+      if (exists.rows.length === 0) {
+        await query(
+          `INSERT INTO public.rec_pipeline_stage
+             (company_id, stage_key, name_vi, sort_order, is_terminal, is_hired_outcome, is_reject_outcome)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [
+            companyId,
+            stage.code,
+            stage.name_vi,
+            stage.order * 10,
+            stage.is_terminal,
+            stage.code === 'HIRED',
+            stage.code === 'REJECTED' || stage.code === 'WITHDRAWN',
+          ],
+        );
+      }
+    }
+
+    // 3. Loại phỏng vấn
+    for (const type of MASTER_REC_INTERVIEW_TYPES) {
+      await query(
+        `INSERT INTO public.hrm_catalog_extension_items
+           (tenant_id, company_id, catalog_key, code, label, status)
+         VALUES ($1, $2, $3, $4, $5, 'active')
+         ON CONFLICT ON CONSTRAINT uq_hrm_cat_ext_scope_key_code DO NOTHING`,
+        [tenantId, companyId, 'interview_types', type.code, type.name_vi],
+      );
+    }
+
+    // 4. Lý do từ chối
+    for (const reason of MASTER_REC_REJECT_REASONS) {
+      await query(
+        `INSERT INTO public.hrm_catalog_extension_items
+           (tenant_id, company_id, catalog_key, code, label, status)
+         VALUES ($1, $2, $3, $4, $5, 'active')
+         ON CONFLICT ON CONSTRAINT uq_hrm_cat_ext_scope_key_code DO NOTHING`,
+        [tenantId, companyId, 'reject_reasons', reason.code, reason.name_vi],
+      );
+    }
+
+    // 5. Yêu cầu sức khỏe
+    for (const req of MASTER_REC_HEALTH_REQS) {
+      await query(
+        `INSERT INTO public.hrm_catalog_extension_items
+           (tenant_id, company_id, catalog_key, code, label, status)
+         VALUES ($1, $2, $3, $4, $5, 'active')
+         ON CONFLICT ON CONSTRAINT uq_hrm_cat_ext_scope_key_code DO NOTHING`,
+        [tenantId, companyId, 'health_requirements', req.code, req.name_vi],
+      );
+    }
+  }
+
+  private async seedJobDescriptionTemplates(
+    query: HrmDbQueryFn,
+    tenantId: string,
+    companyId: string,
+  ): Promise<void> {
+    const defaultTemplates = [
+      {
+        code: 'JD_LAI_XE',
+        title: 'Tuyển dụng Lái xe',
+        position_code: 'POS_LAI_XE',
+        position_name: 'Lái xe',
+        job_description: '- Bước 1: Tiếp nhận hồ sơ (Phòng HCNS)\n- Bước 2: Phỏng vấn sơ loại (Phòng HCNS)\n- Bước 3: Sát hạch tay lái (Đội trưởng Đội xe)\n- Bước 4: Ký hợp đồng thử việc',
+        requirements: '- Bằng lái xe hạng D trở lên\n- Sức khỏe tốt (Giấy khám sức khỏe loại I)\n- Hộ khẩu thường trú rõ ràng',
+      },
+      {
+        code: 'JD_QUAN_LY',
+        title: 'Tuyển dụng Quản lý',
+        position_code: 'POS_QUAN_LY',
+        position_name: 'Quản lý',
+        job_description: '- Bước 1: Tiếp nhận hồ sơ (Phòng HCNS)\n- Bước 2: Phỏng vấn vòng 1 (Phòng HCNS & Trưởng phòng chuyên môn)\n- Bước 3: Đánh giá năng lực (Làm bài Test)\n- Bước 4: Phỏng vấn vòng 2 (Giám đốc khối)\n- Bước 5: Thỏa thuận lương & Ký hợp đồng',
+        requirements: '- Tốt nghiệp Đại học trở lên\n- Có ít nhất 3 năm kinh nghiệm quản lý\n- Kỹ năng giao tiếp, giải quyết vấn đề và lập kế hoạch tốt',
+      }
+    ];
+
+    for (const tpl of defaultTemplates) {
+      // 1. Ensure position exists in job_titles catalog so assertCodeInEffectiveCatalog doesn't fail
+      await query(
+        `INSERT INTO public.hrm_catalog_extension_items
+           (tenant_id, company_id, catalog_key, code, label, status)
+         VALUES ($1, $2, $3, $4, $5, 'active')
+         ON CONFLICT ON CONSTRAINT uq_hrm_cat_ext_scope_key_code DO NOTHING`,
+        [tenantId, companyId, 'job_titles', tpl.position_code, tpl.position_name],
+      );
+
+      // 2. Insert JD Template
+      await query(
+        `INSERT INTO public.job_description_templates
+           (company_id, code, title, position_code, position_name, job_description, requirements)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         ON CONFLICT ON CONSTRAINT uq_job_description_templates_company_code DO NOTHING`,
+        [
+          companyId,
+          tpl.code,
+          tpl.title,
+          tpl.position_code,
+          tpl.position_name,
+          tpl.job_description,
+          tpl.requirements
+        ],
       );
     }
   }

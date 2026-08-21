@@ -57,7 +57,10 @@ export type FleetVehicleRow = {
 };
 
 /** Prefer `q` over `keyword` (employees directory parity). */
-export function resolveFleetSearchTerm(keyword?: string, q?: string): string | undefined {
+export function resolveFleetSearchTerm(
+  keyword?: string,
+  q?: string,
+): string | undefined {
   const term = (q ?? keyword)?.trim();
   if (!term) return undefined;
   return term.slice(0, 100);
@@ -147,7 +150,10 @@ export class FleetService implements OnModuleInit {
       `,
       values,
     );
-    return { total: res.rows.length, data: res.rows.map((r) => this.mapRow(r)) };
+    return {
+      total: res.rows.length,
+      data: res.rows.map((r) => this.mapRow(r)),
+    };
   }
 
   async upsertVehicle(input: {
@@ -160,7 +166,11 @@ export class FleetService implements OnModuleInit {
     await this.ensureSchema();
     const plate = input.licensePlate.trim().toUpperCase();
     if (!plate) {
-      throw new ApiException('HRM-FLEET-001', 'license_plate is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-FLEET-001',
+        'license_plate is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const existing = await this.db.query<{ id: string }>(
       `SELECT id FROM public.hrm_fleet_vehicles WHERE tenant_id = $1 AND company_id = $2 AND license_plate = $3 LIMIT 1`,
@@ -178,7 +188,14 @@ export class FleetService implements OnModuleInit {
           updated_at = NOW()
         RETURNING id, tenant_id, company_id, license_plate, fleet_fields, status, created_at, updated_at;
       `,
-      [id, input.tenantId, input.companyId, plate, JSON.stringify(input.fleetFields), input.status ?? 'active'],
+      [
+        id,
+        input.tenantId,
+        input.companyId,
+        plate,
+        JSON.stringify(input.fleetFields),
+        input.status ?? 'active',
+      ],
     );
     return this.mapRow(res.rows[0]);
   }

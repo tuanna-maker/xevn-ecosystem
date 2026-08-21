@@ -60,14 +60,21 @@ function schemaPassthrough(sql: string): boolean {
 }
 
 function mockDb(
-  queryImpl: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
+  queryImpl: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
 ): HrmDbService {
-  const query = jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-    return queryImpl(sql, params);
-  });
+  const query = jest
+    .fn()
+    .mockImplementation(async (sql: string, params?: unknown[]) => {
+      return queryImpl(sql, params);
+    });
   return {
     query,
-    withTransaction: jest.fn(async (fn: (q: typeof query) => Promise<unknown>) => fn(query)),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof query) => Promise<unknown>) => fn(query),
+    ),
   } as unknown as HrmDbService;
 }
 
@@ -82,12 +89,18 @@ describe('EmpDocumentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', ()
     } as unknown as HrmDbService;
     const svc = new EmpDocumentTypeService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.emp_document_type'))).toBe(
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.emp_document_type'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('uq_emp_document_type_company_key_active')),
+    ).toBe(true);
+    expect(sqls.some((q) => q.includes('chk_emp_doc_type_key_format'))).toBe(
       true,
     );
-    expect(sqls.some((q) => q.includes('uq_emp_document_type_company_key_active'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_emp_doc_type_key_format'))).toBe(true);
-    expect(sqls.every((q) => !q.includes("document_type_key IN ("))).toBe(true);
+    expect(sqls.every((q) => !q.includes('document_type_key IN ('))).toBe(true);
     expect(sqls.every((q) => !q.includes("'cccd'"))).toBe(true);
   });
 
@@ -115,14 +128,18 @@ describe('EmpDocumentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', ()
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_document_type') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.emp_document_type') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.emp_document_type')) {
         return { rows: [baseRow()] };
       }
       if (s.includes('FROM public.hrm_merge_tokens')) return { rows: [] };
-      if (s.includes('INSERT INTO public.hrm_merge_tokens')) return { rows: [] };
+      if (s.includes('INSERT INTO public.hrm_merge_tokens'))
+        return { rows: [] };
       return { rows: [] };
     });
     const svc = new EmpDocumentTypeService(db);
@@ -136,23 +153,33 @@ describe('EmpDocumentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', ()
     );
     expect(row.documentTypeKey).toBe('hr_doc_custom_09');
     expect(row.source).toBe('emp_native');
-    expect((db as { withTransaction: jest.Mock }).withTransaction).toHaveBeenCalled();
+    expect(
+      (db as { withTransaction: jest.Mock }).withTransaction,
+    ).toHaveBeenCalled();
   });
 
   it('scope_parity: list id → getById 200 (group CEO main→holding)', async () => {
     const db = {
-      query: jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-        if (schemaPassthrough(sql)) return { rows: [] };
-        const s = String(sql);
-        if (s.includes('FROM public.emp_document_type') && s.includes('ORDER BY sort_order')) {
-          expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
-          return { rows: [baseRow()] };
-        }
-        if (s.includes('FROM public.emp_document_type') && s.includes('id = $1')) {
-          return { rows: [baseRow()] };
-        }
-        return { rows: [] };
-      }),
+      query: jest
+        .fn()
+        .mockImplementation(async (sql: string, params?: unknown[]) => {
+          if (schemaPassthrough(sql)) return { rows: [] };
+          const s = String(sql);
+          if (
+            s.includes('FROM public.emp_document_type') &&
+            s.includes('ORDER BY sort_order')
+          ) {
+            expect(JSON.stringify(params ?? [])).toMatch(/holding|main/);
+            return { rows: [baseRow()] };
+          }
+          if (
+            s.includes('FROM public.emp_document_type') &&
+            s.includes('id = $1')
+          ) {
+            return { rows: [baseRow()] };
+          }
+          return { rows: [] };
+        }),
     } as unknown as HrmDbService;
     const svc = new EmpDocumentTypeService(db);
     const auth = groupCeoToken();
@@ -167,7 +194,10 @@ describe('EmpDocumentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', ()
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
-        if (String(sql).includes('FROM public.emp_document_type') && String(sql).includes('id = $1')) {
+        if (
+          String(sql).includes('FROM public.emp_document_type') &&
+          String(sql).includes('id = $1')
+        ) {
           return { rows: [baseRow({ company_id: 'holding' })] };
         }
         return { rows: [] };
@@ -187,10 +217,16 @@ describe('EmpDocumentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', ()
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.emp_document_type') && s.includes('id = $1')) {
+      if (
+        s.includes('FROM public.emp_document_type') &&
+        s.includes('id = $1')
+      ) {
         return { rows: [baseRow()] };
       }
-      if (s.includes('UPDATE public.emp_document_type') && s.includes("status = 'retired'")) {
+      if (
+        s.includes('UPDATE public.emp_document_type') &&
+        s.includes("status = 'retired'")
+      ) {
         expect(s).toMatch(/archived_at = NOW/);
         expect(s).not.toMatch(/DELETE/i);
         return { rows: [retired] };
@@ -212,7 +248,10 @@ describe('EmpDocumentTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-EMP-BE-01)', ()
     const db = {
       query: jest.fn().mockImplementation(async (sql: string) => {
         if (schemaPassthrough(sql)) return { rows: [] };
-        if (String(sql).includes('FROM public.emp_document_type') && String(sql).includes('ORDER BY')) {
+        if (
+          String(sql).includes('FROM public.emp_document_type') &&
+          String(sql).includes('ORDER BY')
+        ) {
           return { rows: [baseRow()] };
         }
         return { rows: [] };

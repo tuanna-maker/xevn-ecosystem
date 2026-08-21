@@ -21,13 +21,16 @@ export const PAY_SHEET_TPL_APPLICABILITY = [
   'employee',
   'province',
 ] as const;
-export type PaySheetApplicabilityScope = (typeof PAY_SHEET_TPL_APPLICABILITY)[number];
+export type PaySheetApplicabilityScope =
+  (typeof PAY_SHEET_TPL_APPLICABILITY)[number];
 
 /** PO-HRM-PAY-SHEET-TEMPLATE-SPEC-01 §6 — province EXPAND error taxonomy (4 code, ADD). */
 export const HRM_PAY_TPL_400_PROVINCE_SCOPE = 'HRM-PAY-TPL-400-PROVINCE-SCOPE';
 export const HRM_PAY_TPL_409_PROVINCE_DUP = 'HRM-PAY-TPL-409-PROVINCE-DUP';
 export const HRM_PAY_TPL_PROVINCE_MISMATCH = 'HRM-PAY-TPL-PROVINCE-MISMATCH';
-export const HRM_PAY_TPL_412_NO_PROVINCE_MATCH = 'HRM-PAY-TPL-412-NO-PROVINCE-MATCH';
+export const HRM_PAY_TPL_412_NO_PROVINCE_MATCH =
+  'HRM-PAY-TPL-412-NO-PROVINCE-MATCH';
 
 /** PO-HRM-PAY-TPL-RESOLVE-BIND-WIRE-BE-01 — thiếu employee_id khi autoResolve=true tại bind kỳ. */
-export const HRM_PAY_TPL_400_AUTO_RESOLVE_INPUT = 'HRM-PAY-TPL-400-AUTO-RESOLVE-INPUT';
+export const HRM_PAY_TPL_400_AUTO_RESOLVE_INPUT =
+  'HRM-PAY-TPL-400-AUTO-RESOLVE-INPUT';

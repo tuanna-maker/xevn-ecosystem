@@ -9,7 +9,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { HrmDbService } from '../db/hrm-db.service';
-import { ClauseOverrideRow, UpsertClauseOverrideDto, VALID_CLAUSE_SOURCES } from './dto/clause-override.dto';
+import {
+  ClauseOverrideRow,
+  UpsertClauseOverrideDto,
+  VALID_CLAUSE_SOURCES,
+} from './dto/clause-override.dto';
 
 /**
  * 6 bound template codes — config-driven via this constant.
@@ -25,7 +29,9 @@ export const BOUND_TEMPLATE_CODES: string[] = [
 ];
 
 /** Fixed-term template codes that require insurance_salary_vnd per BLLĐ 2019. */
-const FT_TEMPLATE_CODES = new Set(BOUND_TEMPLATE_CODES.filter((c) => c.includes('_FT_')));
+const FT_TEMPLATE_CODES = new Set(
+  BOUND_TEMPLATE_CODES.filter((c) => c.includes('_FT_')),
+);
 
 function assertBoundCode(templateCode: string): void {
   if (!BOUND_TEMPLATE_CODES.includes(templateCode)) {
@@ -37,10 +43,14 @@ function assertBoundCode(templateCode: string): void {
   }
 }
 
-const UUID_V4_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_V4_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function assertClauseIdFormat(clauseId: string): void {
-  if (!clauseId || (!clauseId.startsWith('CTR-CLAUSE-') && !UUID_V4_RE.test(clauseId))) {
+  if (
+    !clauseId ||
+    (!clauseId.startsWith('CTR-CLAUSE-') && !UUID_V4_RE.test(clauseId))
+  ) {
     throw new ApiException(
       'HRM-VAL-001',
       `clause_id '${clauseId}' must be a canonical clause id (CTR-CLAUSE-* or UUID v4)`,
@@ -140,7 +150,8 @@ export class ContractTemplatesService {
     assertSource(dto.source);
 
     const id = crypto.randomUUID();
-    const overrideText = dto.override_text !== undefined ? dto.override_text : null;
+    const overrideText =
+      dto.override_text !== undefined ? dto.override_text : null;
     const updatedBy = dto.updated_by ?? null;
 
     const row = await this.db.queryOne<ClauseOverrideRow>(
@@ -154,7 +165,15 @@ export class ContractTemplatesService {
              updated_at    = now(),
              deleted_at    = NULL
        RETURNING ${SELECT_COLS}`,
-      [id, tenantId, templateCode, clauseId, overrideText, dto.source, updatedBy],
+      [
+        id,
+        tenantId,
+        templateCode,
+        clauseId,
+        overrideText,
+        dto.source,
+        updatedBy,
+      ],
     );
 
     return { item: row, warnings: buildWarnings(templateCode) };
@@ -164,7 +183,11 @@ export class ContractTemplatesService {
    * Soft-delete clause override. Hard-delete is forbidden per platform rules.
    * Throws HRM-NF-001 if no active row found.
    */
-  async softDeleteClause(templateCode: string, clauseId: string, tenantId: string) {
+  async softDeleteClause(
+    templateCode: string,
+    clauseId: string,
+    tenantId: string,
+  ) {
     assertBoundCode(templateCode);
     assertClauseIdFormat(clauseId);
 

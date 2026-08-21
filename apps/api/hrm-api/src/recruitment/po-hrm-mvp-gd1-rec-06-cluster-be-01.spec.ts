@@ -53,8 +53,14 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
       query: jest.fn().mockResolvedValue({ rows: [] }),
       withTransaction: jest.fn(async (fn) => fn(db.query)),
     };
-    service = new RecruitmentService(db as unknown as HrmDbService, mockBridge() as never);
-    catalog = new RecruitmentCatalogService(db as unknown as HrmDbService, mockBridge() as never);
+    service = new RecruitmentService(
+      db as unknown as HrmDbService,
+      mockBridge() as never,
+    );
+    catalog = new RecruitmentCatalogService(
+      db as unknown as HrmDbService,
+      mockBridge() as never,
+    );
   });
 
   it('ensureSchema ADD rec_mail_outbox + rec_mail_log (DATA-01)', async () => {
@@ -63,14 +69,20 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
       sqlLog.push(sql);
       return { rows: [] } as never;
     });
-    await expect(service.getCandidateById(CAND_ID, HOLDING)).rejects.toMatchObject({
+    await expect(
+      service.getCandidateById(CAND_ID, HOLDING),
+    ).rejects.toMatchObject({
       code: 'HRM-REC-404',
     });
     const joined = sqlLog.join('\n');
-    expect(joined).toMatch(/CREATE TABLE IF NOT EXISTS public\.rec_mail_outbox/);
+    expect(joined).toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.rec_mail_outbox/,
+    );
     expect(joined).toMatch(/CREATE TABLE IF NOT EXISTS public\.rec_mail_log/);
     expect(joined).toMatch(/chk_rec_mail_outbox_neo/);
-    expect(joined).not.toMatch(/CREATE TABLE IF NOT EXISTS public\.mail_outbox\b/);
+    expect(joined).not.toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.mail_outbox\b/,
+    );
     expect(joined).not.toMatch(/\/rec\//);
   });
 
@@ -93,7 +105,10 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
     const sqlLog: string[] = [];
     db.query.mockImplementation(async (sql: string, params?: unknown[]) => {
       sqlLog.push(sql);
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [candidateRow] } as never;
       }
       if (sql.includes('INSERT INTO public.rec_mail_outbox')) {
@@ -144,18 +159,24 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
     expect(dto.status).toBe('sent');
     expect(dto.log.length).toBeGreaterThanOrEqual(1);
     expect(dto.recruitment_candidate_id).toBe(CAND_ID);
-    expect(sqlLog.some((s) => s.includes('INSERT INTO public.rec_mail_log'))).toBe(true);
+    expect(
+      sqlLog.some((s) => s.includes('INSERT INTO public.rec_mail_log')),
+    ).toBe(true);
     expect(
       sqlLog.some(
         (s) =>
-          s.includes('UPDATE public.recruitment_candidates') && s.includes('SET status'),
+          s.includes('UPDATE public.recruitment_candidates') &&
+          s.includes('SET status'),
       ),
     ).toBe(false);
   });
 
   it('interview_invite missing CC → HRM-REC-MAIL-CC-REQUIRED · no outbox INSERT', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [candidateRow] } as never;
       }
       return { rows: [] } as never;
@@ -163,18 +184,27 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
     await expect(
       service.enqueueCandidateMail(
         CAND_ID,
-        { template_code: 'interview_invite', to: ['a@xe.vn'], cc_interviewers: [] },
+        {
+          template_code: 'interview_invite',
+          to: ['a@xe.vn'],
+          cc_interviewers: [],
+        },
         HOLDING,
       ),
     ).rejects.toMatchObject({ code: HRM_REC_MAIL_CC_REQUIRED });
-    expect(db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.rec_mail_outbox'))).toBe(
-      false,
-    );
+    expect(
+      db.query.mock.calls.some(([sql]) =>
+        String(sql).includes('INSERT INTO public.rec_mail_outbox'),
+      ),
+    ).toBe(false);
   });
 
   it('unknown template → HRM-REC-MAIL-TEMPLATE-INACTIVE', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [candidateRow] } as never;
       }
       return { rows: [] } as never;
@@ -190,7 +220,10 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
 
   it('provider fail persists failed + log · throws PROVIDER-FAIL · stage unchanged', async () => {
     db.query.mockImplementation(async (sql: string, params?: unknown[]) => {
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [candidateRow] } as never;
       }
       if (sql.includes('INSERT INTO public.rec_mail_outbox')) {
@@ -236,32 +269,51 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
     await expect(
       service.enqueueCandidateMail(
         CAND_ID,
-        { template_code: 'fail_cv', to: ['a@xe.vn'], simulate_provider_fail: true },
+        {
+          template_code: 'fail_cv',
+          to: ['a@xe.vn'],
+          simulate_provider_fail: true,
+        },
         HOLDING,
       ),
     ).rejects.toMatchObject({ code: HRM_REC_MAIL_PROVIDER_FAIL });
-    expect(db.query.mock.calls.some(([sql]) => String(sql).includes('INSERT INTO public.rec_mail_log'))).toBe(
-      true,
-    );
+    expect(
+      db.query.mock.calls.some(([sql]) =>
+        String(sql).includes('INSERT INTO public.rec_mail_log'),
+      ),
+    ).toBe(true);
   });
 
   it('GET mail empty [] 200 display-ready', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         return { rows: [candidateRow] } as never;
       }
       return { rows: [] } as never;
     });
-    const listed = await service.listCandidateMail(CAND_ID, { company_id: HOLDING });
+    const listed = await service.listCandidateMail(CAND_ID, {
+      company_id: HOLDING,
+    });
     expect(listed).toEqual({ total: 0, data: [] });
   });
 
   it('eval create Pass + neo YCTD → HRM-REC-EVAL path OK', async () => {
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
-        return { rows: [{ id: CAND_ID, company_id: HOLDING, status: 'interview' }] } as never;
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
+        return {
+          rows: [{ id: CAND_ID, company_id: HOLDING, status: 'interview' }],
+        } as never;
       }
-      if (sql.includes('FROM public.recruitment_interviews') && sql.includes('status = ANY')) {
+      if (
+        sql.includes('FROM public.recruitment_interviews') &&
+        sql.includes('status = ANY')
+      ) {
         return { rows: [] } as never;
       }
       if (sql.includes('INSERT INTO public.candidate_evaluations')) {
@@ -322,7 +374,9 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
   it('eval chốt missing pass|fail → HRM-REC-EVAL-PASSFAIL-REQUIRED', async () => {
     db.query.mockImplementation(async (sql: string) => {
       if (sql.includes('FROM public.recruitment_candidates')) {
-        return { rows: [{ id: CAND_ID, company_id: HOLDING, status: 'interview' }] } as never;
+        return {
+          rows: [{ id: CAND_ID, company_id: HOLDING, status: 'interview' }],
+        } as never;
       }
       return { rows: [] } as never;
     });
@@ -338,9 +392,14 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
   it('eval ROUND-GATE when ACTIVE interview exists', async () => {
     db.query.mockImplementation(async (sql: string) => {
       if (sql.includes('FROM public.recruitment_candidates')) {
-        return { rows: [{ id: CAND_ID, company_id: HOLDING, status: 'interview' }] } as never;
+        return {
+          rows: [{ id: CAND_ID, company_id: HOLDING, status: 'interview' }],
+        } as never;
       }
-      if (sql.includes('FROM public.recruitment_interviews') && sql.includes('status = ANY')) {
+      if (
+        sql.includes('FROM public.recruitment_interviews') &&
+        sql.includes('status = ANY')
+      ) {
         return { rows: [{ id: IV_ID }] } as never;
       }
       return { rows: [] } as never;
@@ -372,7 +431,10 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
           ],
         } as never;
       }
-      if (sql.includes('UPDATE public.candidate_evaluations') && sql.includes('archived_at')) {
+      if (
+        sql.includes('UPDATE public.candidate_evaluations') &&
+        sql.includes('archived_at')
+      ) {
         return {
           rows: [{ id: EVAL_ID, archived_at: '2026-08-09T03:00:00.000Z' }],
         } as never;
@@ -381,20 +443,29 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
     });
     const out = await catalog.deleteCandidateEvaluation(EVAL_ID, HOLDING);
     expect(out.archived_at).toBeTruthy();
-    expect(sqlLog.some((s) => s.includes('DELETE FROM public.candidate_evaluations'))).toBe(false);
+    expect(
+      sqlLog.some((s) =>
+        s.includes('DELETE FROM public.candidate_evaluations'),
+      ),
+    ).toBe(false);
   });
 
   it('U19 list mail uses same resolveHrmListScope company filter as get-by-id', async () => {
     const memberCand = { ...candidateRow, company_id: MEMBER };
     let sawCompanyFilter = false;
     db.query.mockImplementation(async (sql: string) => {
-      if (sql.includes('FROM public.recruitment_candidates') && sql.includes('LIMIT 1')) {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
         if (sql.includes('company_id')) sawCompanyFilter = true;
         return { rows: [memberCand] } as never;
       }
       return { rows: [] } as never;
     });
-    const listed = await service.listCandidateMail(CAND_ID, { company_id: MEMBER });
+    const listed = await service.listCandidateMail(CAND_ID, {
+      company_id: MEMBER,
+    });
     expect(listed.total).toBe(0);
     expect(sawCompanyFilter).toBe(true);
   });
@@ -405,10 +476,14 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
       sqlLog.push(sql);
       return { rows: [] } as never;
     });
-    await expect(service.getCandidateById(CAND_ID, HOLDING)).rejects.toBeInstanceOf(ApiException);
+    await expect(
+      service.getCandidateById(CAND_ID, HOLDING),
+    ).rejects.toBeInstanceOf(ApiException);
     const joined = sqlLog.join('\n');
     expect(joined).toMatch(/rec_mail_outbox/);
-    expect(joined).not.toMatch(/CREATE TABLE IF NOT EXISTS public\.rec_interview_evaluation\b/);
+    expect(joined).not.toMatch(
+      /CREATE TABLE IF NOT EXISTS public\.rec_interview_evaluation\b/,
+    );
     expect(joined).not.toMatch(/Controller\('rec'\)/);
   });
 });

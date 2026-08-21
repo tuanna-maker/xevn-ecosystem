@@ -20,7 +20,14 @@
  * must_keep: FORBIDDEN @IsIn(['salary','compensatory_leave']) product ceiling; KEEP TEXT soft key.
  */
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class CreateOvertimeRequestDto {
   @IsString()

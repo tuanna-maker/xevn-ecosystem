@@ -10,11 +10,14 @@ import { PayPayrollGroupService } from './pay-payroll-group.service';
 import { PayCnttSetupService } from './pay-cntt-setup.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
-    .toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
@@ -25,20 +28,28 @@ describe('PayrollController (HRM-PR-01..06)', () => {
   const catalogMock = {
     listSalaryComponents: jest.fn().mockResolvedValue({ total: 0, data: [] }),
     getSalaryComponentById: jest.fn().mockResolvedValue({ id: 'sc-1' }),
-    listSalaryComponentCategories: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    listSalaryComponentCategories: jest
+      .fn()
+      .mockResolvedValue({ total: 0, data: [] }),
     createSalaryComponent: jest.fn().mockResolvedValue({ id: 'sc-1' }),
     updateSalaryComponent: jest.fn().mockResolvedValue({ id: 'sc-1' }),
     deleteSalaryComponent: jest.fn().mockResolvedValue({ id: 'sc-1' }),
     createSalaryComponentCategory: jest.fn().mockResolvedValue({ id: 'cat-1' }),
     deleteSalaryComponentCategory: jest.fn().mockResolvedValue({ id: 'cat-1' }),
     listPaymentBatches: jest.fn().mockResolvedValue({ total: 0, data: [] }),
-    listPaymentBatchRecords: jest.fn().mockResolvedValue({ total: 0, data: [] }),
+    listPaymentBatchRecords: jest
+      .fn()
+      .mockResolvedValue({ total: 0, data: [] }),
     createPaymentBatch: jest.fn().mockResolvedValue({ id: 'pb-1' }),
     updatePaymentBatch: jest.fn().mockResolvedValue({ id: 'pb-1' }),
     deletePaymentBatch: jest.fn().mockResolvedValue({ id: 'pb-1' }),
     addPaymentRecord: jest.fn().mockResolvedValue({ id: 'pr-1' }),
-    processPaymentRecord: jest.fn().mockResolvedValue({ id: 'pr-1', status: 'paid' }),
-    processAllPaymentsInBatch: jest.fn().mockResolvedValue({ batch: { id: 'pb-1' }, processed_records: 2 }),
+    processPaymentRecord: jest
+      .fn()
+      .mockResolvedValue({ id: 'pr-1', status: 'paid' }),
+    processAllPaymentsInBatch: jest
+      .fn()
+      .mockResolvedValue({ batch: { id: 'pb-1' }, processed_records: 2 }),
     wirePaymentBatchFromPeriod: jest.fn().mockResolvedValue({
       period_id: 'period-1',
       batch: { id: 'pb-1' },
@@ -55,7 +66,9 @@ describe('PayrollController (HRM-PR-01..06)', () => {
     getFormulaById: jest.fn().mockResolvedValue({ id: 'f1' }),
     updateFormula: jest.fn().mockResolvedValue({ id: 'f1' }),
     createNewVersion: jest.fn().mockResolvedValue({ id: 'f2', version: 2 }),
-    submitPublish: jest.fn().mockResolvedValue({ id: 'f1', status: 'pending_publish' }),
+    submitPublish: jest
+      .fn()
+      .mockResolvedValue({ id: 'f1', status: 'pending_publish' }),
     publish: jest.fn().mockResolvedValue({ id: 'f1', status: 'active' }),
     withdrawPublish: jest.fn().mockResolvedValue({ id: 'f1', status: 'draft' }),
     retireFormula: jest.fn().mockResolvedValue({ id: 'f1', status: 'retired' }),
@@ -68,8 +81,12 @@ describe('PayrollController (HRM-PR-01..06)', () => {
     getTemplateById: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
     updateTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1' }),
     getLines: jest.fn().mockResolvedValue({ templateId: 'tpl-1', lines: [] }),
-    replaceLines: jest.fn().mockResolvedValue({ templateId: 'tpl-1', lines: [] }),
-    archiveTemplate: jest.fn().mockResolvedValue({ id: 'tpl-1', archivedAt: '2026-08-07' }),
+    replaceLines: jest
+      .fn()
+      .mockResolvedValue({ templateId: 'tpl-1', lines: [] }),
+    archiveTemplate: jest
+      .fn()
+      .mockResolvedValue({ id: 'tpl-1', archivedAt: '2026-08-07' }),
     archiveLine: jest.fn().mockResolvedValue({ id: 'line-1' }),
     bindToPeriod: jest.fn().mockResolvedValue({
       id: 'p1',
@@ -81,12 +98,27 @@ describe('PayrollController (HRM-PR-01..06)', () => {
   const serviceMock = {
     createPayrollPeriod: jest.fn().mockResolvedValue({ id: 'p1' }),
     updatePayrollPeriod: jest.fn().mockResolvedValue({ id: 'p1' }),
-    listPayrollPeriods: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'p1' }] }),
-    processPayrollPeriod: jest.fn().mockResolvedValue({ id: 'p1', status: 'processed' }),
-    closePayrollPeriod: jest.fn().mockResolvedValue({ id: 'p1', status: 'closed' }),
-    getPayrollEligibility: jest.fn().mockResolvedValue({ period_id: 'p1', eligible_count: 1, ineligible_count: 0, items: [] }),
-    enrollPayrollPeriod: jest.fn().mockResolvedValue({ period_id: 'p1', employee_count: 1, enrolled: [] }),
-    listPayslips: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'ps-1' }] }),
+    listPayrollPeriods: jest
+      .fn()
+      .mockResolvedValue({ total: 1, data: [{ id: 'p1' }] }),
+    processPayrollPeriod: jest
+      .fn()
+      .mockResolvedValue({ id: 'p1', status: 'processed' }),
+    closePayrollPeriod: jest
+      .fn()
+      .mockResolvedValue({ id: 'p1', status: 'closed' }),
+    getPayrollEligibility: jest.fn().mockResolvedValue({
+      period_id: 'p1',
+      eligible_count: 1,
+      ineligible_count: 0,
+      items: [],
+    }),
+    enrollPayrollPeriod: jest
+      .fn()
+      .mockResolvedValue({ period_id: 'p1', employee_count: 1, enrolled: [] }),
+    listPayslips: jest
+      .fn()
+      .mockResolvedValue({ total: 1, data: [{ id: 'ps-1' }] }),
     getPayslipById: jest.fn().mockResolvedValue({
       id: 'ps-1',
       components: [{ component_code: 'BASE', amount: 1 }],
@@ -97,7 +129,9 @@ describe('PayrollController (HRM-PR-01..06)', () => {
       total: 1,
       data: [{ component_code: 'BASE', amount: 1 }],
     }),
-    listMyPayslips: jest.fn().mockResolvedValue({ total: 1, data: [{ id: 'ps-1' }] }),
+    listMyPayslips: jest
+      .fn()
+      .mockResolvedValue({ total: 1, data: [{ id: 'ps-1' }] }),
     getMyPayslipById: jest.fn().mockResolvedValue({
       id: 'ps-1',
       ess_confirmed: false,
@@ -110,7 +144,9 @@ describe('PayrollController (HRM-PR-01..06)', () => {
       components: [{ component_code: 'BASE', amount: 1 }],
       lines: [{ component_code: 'BASE', amount: 1 }],
     }),
-    getPayrollReconciliationSummary: jest.fn().mockResolvedValue({ periods: 1, payslips: 2 }),
+    getPayrollReconciliationSummary: jest
+      .fn()
+      .mockResolvedValue({ periods: 1, payslips: 2 }),
   };
 
   beforeEach(async () => {
@@ -144,7 +180,11 @@ describe('PayrollController (HRM-PR-01..06)', () => {
             getGroupById: jest.fn(),
             createGroup: jest.fn(),
             updateGroup: jest.fn(),
-            listGroupMembers: jest.fn().mockResolvedValue({ group_id: 'g1', period_id: 'p1', items: [] }),
+            listGroupMembers: jest.fn().mockResolvedValue({
+              group_id: 'g1',
+              period_id: 'p1',
+              items: [],
+            }),
           },
         },
         {
@@ -170,16 +210,28 @@ describe('PayrollController (HRM-PR-01..06)', () => {
   });
 
   it('HRM-PR-01 create HRM-PR-02 list HRM-PR-03 process HRM-PR-04 close payroll period codes', async () => {
-    const createRes = await controller.createPayrollPeriod(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      period_label: '2026-04',
-      start_date: '2026-04-01',
-      end_date: '2026-04-30',
-      created_by: 'system',
-    });
-    const listRes = await controller.listPayrollPeriods(undefined, 'test-key', 'xevn', undefined, {
-      company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-    });
+    const createRes = await controller.createPayrollPeriod(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        period_label: '2026-04',
+        start_date: '2026-04-01',
+        end_date: '2026-04-30',
+        created_by: 'system',
+      },
+    );
+    const listRes = await controller.listPayrollPeriods(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+      },
+    );
     const processRes = await controller.processPayrollPeriod(
       'f76f23f7-3683-4120-81b7-5126ee997b8e',
       undefined,
@@ -236,9 +288,15 @@ describe('PayrollController (HRM-PR-01..06)', () => {
 
   it('HRM-PR-05 list payslips HRM-PR-06 reconciliation summary', async () => {
     const companyId = '78b8a663-f5e5-4f4d-a020-b8f950ec2037';
-    const payslipsRes = await controller.listPayslips(undefined, 'test-key', 'xevn', undefined, {
-      company_id: companyId,
-    });
+    const payslipsRes = await controller.listPayslips(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      {
+        company_id: companyId,
+      },
+    );
     const reconRes = await controller.payrollReconciliationSummary(
       undefined,
       'test-key',
@@ -249,7 +307,10 @@ describe('PayrollController (HRM-PR-01..06)', () => {
     expect(payslipsRes.code).toBe('HRM-PAY-200');
     expect(reconRes.code).toBe('HRM-PAY-200');
     expect(serviceMock.listPayslips).toHaveBeenCalled();
-    expect(serviceMock.getPayrollReconciliationSummary).toHaveBeenCalledWith(companyId, undefined);
+    expect(serviceMock.getPayrollReconciliationSummary).toHaveBeenCalledWith(
+      companyId,
+      undefined,
+    );
   });
 
   it('F-PAY-PAYSLIP-01 get payslip by id and lines', async () => {
@@ -297,7 +358,14 @@ describe('PayrollController (HRM-PR-01..06)', () => {
       employee_id: '11111111-1111-4111-8111-111111111111',
     })}`;
 
-    const listRes = await controller.listMyPayslips(token, undefined, 'xevn', 'holding', {}, {});
+    const listRes = await controller.listMyPayslips(
+      token,
+      undefined,
+      'xevn',
+      'holding',
+      {},
+      {},
+    );
     const getRes = await controller.getMyPayslipById(
       payslipId,
       token,
@@ -348,13 +416,44 @@ describe('PayrollController (HRM-PR-01..06)', () => {
       status: 'processed' as const,
     };
 
-    await controller.createPayrollPeriod(undefined, 'test-key', 'xevn', undefined, body);
-    await controller.listPayrollPeriods(undefined, 'test-key', 'xevn', undefined, query);
-    await controller.processPayrollPeriod('p1', undefined, 'test-key', 'xevn', '78b8a663-f5e5-4f4d-a020-b8f950ec2037');
-    await controller.closePayrollPeriod('p1', undefined, 'test-key', 'xevn', '78b8a663-f5e5-4f4d-a020-b8f950ec2037');
+    await controller.createPayrollPeriod(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      body,
+    );
+    await controller.listPayrollPeriods(
+      undefined,
+      'test-key',
+      'xevn',
+      undefined,
+      query,
+    );
+    await controller.processPayrollPeriod(
+      'p1',
+      undefined,
+      'test-key',
+      'xevn',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+    );
+    await controller.closePayrollPeriod(
+      'p1',
+      undefined,
+      'test-key',
+      'xevn',
+      '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+    );
 
-    expect(serviceMock.createPayrollPeriod).toHaveBeenCalledWith(body, undefined, 'xevn');
-    expect(serviceMock.listPayrollPeriods).toHaveBeenCalledWith(query, undefined);
+    expect(serviceMock.createPayrollPeriod).toHaveBeenCalledWith(
+      body,
+      undefined,
+      'xevn',
+    );
+    expect(serviceMock.listPayrollPeriods).toHaveBeenCalledWith(
+      query,
+      undefined,
+    );
     expect(serviceMock.processPayrollPeriod).toHaveBeenCalledWith(
       'p1',
       '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
@@ -371,22 +470,34 @@ describe('PayrollController (HRM-PR-01..06)', () => {
 
   it('blocks unauthorized payroll access', async () => {
     expect(() =>
-      controller.listPayrollPeriods(undefined, undefined, undefined, undefined, {
-        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-      }),
+      controller.listPayrollPeriods(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {
+          company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+        },
+      ),
     ).toThrow('Unauthorized payroll access');
     expect(serviceMock.listPayrollPeriods).not.toHaveBeenCalled();
   });
 
   it('rejects missing tenant scope deterministically', async () => {
     expect(() =>
-      controller.createPayrollPeriod(undefined, 'test-key', undefined, undefined, {
-        company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
-        period_label: '2026-04',
-        start_date: '2026-04-01',
-        end_date: '2026-04-30',
-        created_by: 'qa',
-      }),
+      controller.createPayrollPeriod(
+        undefined,
+        'test-key',
+        undefined,
+        undefined,
+        {
+          company_id: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
+          period_label: '2026-04',
+          start_date: '2026-04-01',
+          end_date: '2026-04-30',
+          created_by: 'qa',
+        },
+      ),
     ).toThrow('tenantId is required');
     expect(serviceMock.createPayrollPeriod).not.toHaveBeenCalled();
   });
@@ -399,13 +510,19 @@ describe('PayrollController (HRM-PR-01..06)', () => {
       companyId: '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
     });
     expect(() =>
-      controller.createPayrollPeriod(`Bearer ${token}`, undefined, 'xevn', undefined, {
-        company_id: 'a7d2dbec-75d7-4b2e-8c75-c53cd14f22aa',
-        period_label: '2026-04',
-        start_date: '2026-04-01',
-        end_date: '2026-04-30',
-        created_by: 'qa',
-      }),
+      controller.createPayrollPeriod(
+        `Bearer ${token}`,
+        undefined,
+        'xevn',
+        undefined,
+        {
+          company_id: 'a7d2dbec-75d7-4b2e-8c75-c53cd14f22aa',
+          period_label: '2026-04',
+          start_date: '2026-04-01',
+          end_date: '2026-04-30',
+          created_by: 'qa',
+        },
+      ),
     ).toThrow('companyId mismatches token scope');
     expect(serviceMock.createPayrollPeriod).not.toHaveBeenCalled();
   });

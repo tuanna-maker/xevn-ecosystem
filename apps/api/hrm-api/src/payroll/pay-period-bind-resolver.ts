@@ -9,7 +9,9 @@
  */
 import { HrmDbService } from '../db/hrm-db.service';
 
-export async function probeTimesheetBindTable(db: HrmDbService): Promise<boolean> {
+export async function probeTimesheetBindTable(
+  db: HrmDbService,
+): Promise<boolean> {
   try {
     const res = await db.query<{ exists: boolean }>(
       `

@@ -152,7 +152,7 @@ export function CandidateStageTransitionDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="sm:max-w-md"
+        className="sm:max-w-2xl max-h-[90vh] overflow-y-auto"
         data-testid="rec-stage-transition-dialog"
       >
         <DialogHeader>

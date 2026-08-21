@@ -10,7 +10,10 @@
 import { signServiceJwt } from '../common/jwt-sign';
 import { ContractsInsuranceService } from '../contracts-insurance/contracts-insurance.service';
 import { HrmDbService } from '../db/hrm-db.service';
-import { EmployeeInsurancesService, HRM_SI_ACTION_400 } from '../employee-insurances/employee-insurances.service';
+import {
+  EmployeeInsurancesService,
+  HRM_SI_ACTION_400,
+} from '../employee-insurances/employee-insurances.service';
 import { bridgeLegacyInsuranceRecordsToEnrollments } from '../employee-insurances/insurance-enrollment-bridge';
 
 const EMP_ID = '22222222-2222-4222-8222-222222222222';
@@ -31,7 +34,10 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
       const inserted: unknown[][] = [];
       const db = {
         query: jest.fn(async (sql: string, params?: unknown[]) => {
-          if (sql.includes('INSERT INTO public.employee_insurances') && sql.includes('employee_insurance_records')) {
+          if (
+            sql.includes('INSERT INTO public.employee_insurances') &&
+            sql.includes('employee_insurance_records')
+          ) {
             inserted.push(params ?? []);
             return { rows: [{ id: REC_ID }] };
           }
@@ -39,12 +45,19 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
         }),
       } as unknown as HrmDbService;
 
-      const n = await bridgeLegacyInsuranceRecordsToEnrollments(db, ['holding', 'main']);
+      const n = await bridgeLegacyInsuranceRecordsToEnrollments(db, [
+        'holding',
+        'main',
+      ]);
       expect(n).toBe(1);
-      expect(inserted[0]?.[0]).toEqual(expect.arrayContaining(['holding', 'main']));
+      expect(inserted[0]?.[0]).toEqual(
+        expect.arrayContaining(['holding', 'main']),
+      );
       // Bridge SQL embeds literal 0 for amounts — assert in SQL text.
       const bridgeSql = (db.query as jest.Mock).mock.calls.find(
-        ([sql]) => String(sql).includes('INSERT INTO public.employee_insurances') && String(sql).includes('FROM public.employee_insurance_records'),
+        ([sql]) =>
+          String(sql).includes('INSERT INTO public.employee_insurances') &&
+          String(sql).includes('FROM public.employee_insurance_records'),
       )?.[0] as string;
       expect(bridgeSql).toContain('0');
       expect(bridgeSql).toContain('0');
@@ -57,7 +70,9 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
     let db: jest.Mocked<HrmDbService>;
 
     beforeEach(() => {
-      db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as jest.Mocked<HrmDbService>;
+      db = {
+        query: jest.fn().mockResolvedValue({ rows: [] }),
+      } as unknown as jest.Mocked<HrmDbService>;
       service = new ContractsInsuranceService(db);
     });
 
@@ -87,7 +102,10 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
         return { rows: [] } as never;
       });
 
-      const result = await service.listInsurance({ company_id: 'main' }, `Bearer ${token}`);
+      const result = await service.listInsurance(
+        { company_id: 'main' },
+        `Bearer ${token}`,
+      );
       expect(result.total).toBe(1);
       expect(result.data[0]).toMatchObject({
         id: REC_ID,
@@ -95,10 +113,16 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
         social_insurance_number: 'BHXH-NAT-1',
       });
       const listCall = db.query.mock.calls.find(
-        ([sql]) => typeof sql === 'string' && sql.includes('FROM public.employee_insurances ei'),
+        ([sql]) =>
+          typeof sql === 'string' &&
+          sql.includes('FROM public.employee_insurances ei'),
       );
-      expect(listCall?.[0]).toEqual(expect.stringContaining('ei.employee_id IN'));
-      expect(listCall?.[0]).toEqual(expect.stringContaining('company_id = ANY'));
+      expect(listCall?.[0]).toEqual(
+        expect.stringContaining('ei.employee_id IN'),
+      );
+      expect(listCall?.[0]).toEqual(
+        expect.stringContaining('company_id = ANY'),
+      );
       expect(
         db.query.mock.calls.some(
           ([sql]) =>
@@ -115,7 +139,9 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
     let db: jest.Mocked<HrmDbService>;
 
     beforeEach(() => {
-      db = { query: jest.fn().mockResolvedValue({ rows: [] }) } as unknown as jest.Mocked<HrmDbService>;
+      db = {
+        query: jest.fn().mockResolvedValue({ rows: [] }),
+      } as unknown as jest.Mocked<HrmDbService>;
       service = new EmployeeInsurancesService(db);
     });
 
@@ -123,11 +149,17 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
       const token = groupCeoToken();
       let bridged = false;
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('INSERT INTO public.employee_insurances') && sql.includes('employee_insurance_records')) {
+        if (
+          sql.includes('INSERT INTO public.employee_insurances') &&
+          sql.includes('employee_insurance_records')
+        ) {
           bridged = true;
           return { rows: [{ id: REC_ID }] } as never;
         }
-        if (sql.includes('FROM public.employee_insurances') && !sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.employee_insurances') &&
+          !sql.includes('LIMIT 1')
+        ) {
           expect(bridged).toBe(true);
           return {
             rows: [
@@ -165,10 +197,16 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
     it('applyAction close works on bridged enrollment id (POST …/actions path)', async () => {
       let enrollmentStatus = 'active';
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('INSERT INTO public.employee_insurances') && sql.includes('employee_insurance_records')) {
+        if (
+          sql.includes('INSERT INTO public.employee_insurances') &&
+          sql.includes('employee_insurance_records')
+        ) {
           return { rows: [{ id: REC_ID }] } as never;
         }
-        if (sql.includes('FROM public.employee_insurances') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.employee_insurances') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -193,11 +231,17 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
             ],
           } as never;
         }
-        if (sql.includes('UPDATE public.employee_insurances') && sql.includes('SET status')) {
+        if (
+          sql.includes('UPDATE public.employee_insurances') &&
+          sql.includes('SET status')
+        ) {
           enrollmentStatus = 'closed';
           return { rows: [] } as never;
         }
-        if (sql.includes('FROM public.hrm_insurance_rate_period') && sql.includes('ORDER BY')) {
+        if (
+          sql.includes('FROM public.hrm_insurance_rate_period') &&
+          sql.includes('ORDER BY')
+        ) {
           return {
             rows: [
               {
@@ -236,7 +280,10 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
 
     it('applyAction suspend without reason still HRM-SI-ACTION-400 (must_keep BE-01)', async () => {
       db.query.mockImplementation(async (sql: string) => {
-        if (sql.includes('FROM public.employee_insurances') && sql.includes('LIMIT 1')) {
+        if (
+          sql.includes('FROM public.employee_insurances') &&
+          sql.includes('LIMIT 1')
+        ) {
           return {
             rows: [
               {
@@ -267,7 +314,11 @@ describe('PO-HRM-E2E-LINK-EMP-BE-02 — SI dual-SoT close', () => {
       await expect(
         service.applyAction(
           REC_ID,
-          { company_id: 'holding', action: 'suspend', effective_from: '2026-08-01' },
+          {
+            company_id: 'holding',
+            action: 'suspend',
+            effective_from: '2026-08-01',
+          },
           `Bearer ${groupCeoToken()}`,
         ),
       ).rejects.toMatchObject({ code: HRM_SI_ACTION_400 });

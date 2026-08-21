@@ -94,7 +94,10 @@ describe('PO-HRM-MVP-GD1-ATT-06-CLUSTER-BE-01', () => {
           ],
         });
       }
-      if (s.includes('att_ot_comp_accrual_ledger') && s.includes('ledger_status')) {
+      if (
+        s.includes('att_ot_comp_accrual_ledger') &&
+        s.includes('ledger_status')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -180,45 +183,53 @@ describe('PO-HRM-MVP-GD1-ATT-06-CLUSTER-BE-01', () => {
       ledger_id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
       idempotent_replay: false,
     });
-    const policySvc = { accrueOnApprovedOvertime: accrueMock, ensureSchema: jest.fn() };
-    const queryMock = jest.fn().mockImplementation((sql: string, params?: unknown[]) => {
-      const s = String(sql);
-      if (s.includes('FROM public.overtime_requests') && s.includes('SELECT id')) {
-        return Promise.resolve({
-          rows: [
-            {
-              id: requestId,
-              company_id: 'holding',
-              employee_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
-              status: 'pending',
-              total_hours: 8,
-              compensation_type: 'compensatory_leave',
-              overtime_date: '2026-08-01',
-            },
-          ],
-        });
-      }
-      if (s.includes("SET status = $2") && s.includes('overtime_requests')) {
-        return Promise.resolve({
-          rows: [
-            {
-              id: requestId,
-              company_id: 'holding',
-              employee_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
-              status: 'approved',
-              total_hours: 8,
-              compensation_type: 'compensatory_leave',
-              overtime_date: '2026-08-01',
-            },
-          ],
-        });
-      }
-      if (s.includes('SELECT company_id FROM public.overtime_requests')) {
-        return Promise.resolve({ rows: [{ company_id: 'holding' }] });
-      }
-      if (s.includes('CREATE TABLE')) return Promise.resolve({ rows: [] });
-      return Promise.resolve({ rows: [] });
-    });
+    const policySvc = {
+      accrueOnApprovedOvertime: accrueMock,
+      ensureSchema: jest.fn(),
+    };
+    const queryMock = jest
+      .fn()
+      .mockImplementation((sql: string, params?: unknown[]) => {
+        const s = String(sql);
+        if (
+          s.includes('FROM public.overtime_requests') &&
+          s.includes('SELECT id')
+        ) {
+          return Promise.resolve({
+            rows: [
+              {
+                id: requestId,
+                company_id: 'holding',
+                employee_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+                status: 'pending',
+                total_hours: 8,
+                compensation_type: 'compensatory_leave',
+                overtime_date: '2026-08-01',
+              },
+            ],
+          });
+        }
+        if (s.includes('SET status = $2') && s.includes('overtime_requests')) {
+          return Promise.resolve({
+            rows: [
+              {
+                id: requestId,
+                company_id: 'holding',
+                employee_id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+                status: 'approved',
+                total_hours: 8,
+                compensation_type: 'compensatory_leave',
+                overtime_date: '2026-08-01',
+              },
+            ],
+          });
+        }
+        if (s.includes('SELECT company_id FROM public.overtime_requests')) {
+          return Promise.resolve({ rows: [{ company_id: 'holding' }] });
+        }
+        if (s.includes('CREATE TABLE')) return Promise.resolve({ rows: [] });
+        return Promise.resolve({ rows: [] });
+      });
     const svc = new AttendanceRequestsService(
       { query: queryMock } as never,
       undefined,
@@ -243,7 +254,9 @@ describe('PO-HRM-MVP-GD1-ATT-06-CLUSTER-BE-01', () => {
     expect(accrueMock).toHaveBeenCalledWith(
       expect.objectContaining({ company_id: 'holding', status: 'approved' }),
     );
-    expect((row as { accrual?: { credited_days: number } }).accrual?.credited_days).toBe(1);
+    expect(
+      (row as { accrual?: { credited_days: number } }).accrual?.credited_days,
+    ).toBe(1);
   });
 
   it('approveOvertimeRequest idempotent double-approve returns accrual replay', async () => {
@@ -256,7 +269,10 @@ describe('PO-HRM-MVP-GD1-ATT-06-CLUSTER-BE-01', () => {
     });
     const queryMock = jest.fn().mockImplementation((sql: string) => {
       const s = String(sql);
-      if (s.includes('FROM public.overtime_requests') && s.includes('SELECT id')) {
+      if (
+        s.includes('FROM public.overtime_requests') &&
+        s.includes('SELECT id')
+      ) {
         return Promise.resolve({
           rows: [
             {
@@ -294,11 +310,12 @@ describe('PO-HRM-MVP-GD1-ATT-06-CLUSTER-BE-01', () => {
       `Bearer ${token}`,
       'xevn',
     );
-    expect((row as { accrual?: { idempotent_replay: boolean } }).accrual?.idempotent_replay).toBe(
-      true,
-    );
+    expect(
+      (row as { accrual?: { idempotent_replay: boolean } }).accrual
+        ?.idempotent_replay,
+    ).toBe(true);
     const updateApprove = queryMock.mock.calls.find((c) =>
-      String(c[0]).includes("SET status = $2"),
+      String(c[0]).includes('SET status = $2'),
     );
     expect(updateApprove).toBeUndefined();
   });
@@ -318,14 +335,22 @@ describe('PO-HRM-MVP-GD1-ATT-06-CLUSTER-BE-01', () => {
     });
     await expect(
       svc.putPolicy(
-        { mode_enabled: true, hours_per_leave_day: 8, comp_balance_key: 'annual' },
+        {
+          mode_enabled: true,
+          hours_per_leave_day: 8,
+          comp_balance_key: 'annual',
+        },
         `Bearer ${token}`,
         'xevn',
       ),
     ).rejects.toBeInstanceOf(ApiException);
     await expect(
       svc.putPolicy(
-        { mode_enabled: true, hours_per_leave_day: 8, comp_balance_key: 'annual' },
+        {
+          mode_enabled: true,
+          hours_per_leave_day: 8,
+          comp_balance_key: 'annual',
+        },
         `Bearer ${token}`,
         'xevn',
       ),

@@ -65,14 +65,21 @@ function schemaPassthrough(sql: string): boolean {
 }
 
 function mockDb(
-  queryImpl: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
+  queryImpl: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ rows: unknown[] }> | { rows: unknown[] },
 ): HrmDbService {
-  const query = jest.fn().mockImplementation(async (sql: string, params?: unknown[]) => {
-    return queryImpl(sql, params);
-  });
+  const query = jest
+    .fn()
+    .mockImplementation(async (sql: string, params?: unknown[]) => {
+      return queryImpl(sql, params);
+    });
   return {
     query,
-    withTransaction: jest.fn(async (fn: (q: typeof query) => Promise<unknown>) => fn(query)),
+    withTransaction: jest.fn(
+      async (fn: (q: typeof query) => Promise<unknown>) => fn(query),
+    ),
   } as unknown as HrmDbService;
 }
 
@@ -87,14 +94,28 @@ describe('AttOtCompTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-COMP-TYPE-CAT
     } as unknown as HrmDbService;
     const svc = new AttOtCompTypeService(db);
     await svc.ensureSchema();
-    expect(sqls.some((q) => q.includes('CREATE TABLE IF NOT EXISTS public.att_ot_comp_type'))).toBe(true);
-    expect(sqls.some((q) => q.includes('uq_att_ot_comp_type_company_code_active'))).toBe(true);
-    expect(sqls.some((q) => q.includes('ix_att_ot_comp_type_effective'))).toBe(true);
-    expect(sqls.some((q) => q.includes('chk_att_ot_comp_type_code_format'))).toBe(true);
-    expect(sqls.some((q) => q.includes("status IN ('active','inactive')"))).toBe(true);
+    expect(
+      sqls.some((q) =>
+        q.includes('CREATE TABLE IF NOT EXISTS public.att_ot_comp_type'),
+      ),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes('uq_att_ot_comp_type_company_code_active')),
+    ).toBe(true);
+    expect(sqls.some((q) => q.includes('ix_att_ot_comp_type_effective'))).toBe(
+      true,
+    );
+    expect(
+      sqls.some((q) => q.includes('chk_att_ot_comp_type_code_format')),
+    ).toBe(true);
+    expect(
+      sqls.some((q) => q.includes("status IN ('active','inactive')")),
+    ).toBe(true);
     // open catalog - no closed enum, orthogonal to att_ot_type
     expect(sqls.every((q) => !q.includes('code IN ('))).toBe(true);
-    expect(sqls.every((q) => !q.includes("CHECK (code IN ('salary'"))).toBe(true);
+    expect(sqls.every((q) => !q.includes("CHECK (code IN ('salary'"))).toBe(
+      true,
+    );
     expect(sqls.every((q) => !q.includes('att_ot_type'))).toBe(true);
     // no payroll formula column (L-ATT-OTC-10 formula HOLD)
     expect(sqls.every((q) => !q.includes('default_coeff'))).toBe(true);
@@ -104,11 +125,16 @@ describe('AttOtCompTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-COMP-TYPE-CAT
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('FROM public.att_ot_comp_type') && s.includes('archived_at IS NULL')) {
+      if (
+        s.includes('FROM public.att_ot_comp_type') &&
+        s.includes('archived_at IS NULL')
+      ) {
         return { rows: [] };
       }
       if (s.includes('INSERT INTO public.att_ot_comp_type')) {
-        return { rows: [baseRow({ code: 'banked_hours', name_vi: 'Giờ tích luỹ' })] };
+        return {
+          rows: [baseRow({ code: 'banked_hours', name_vi: 'Giờ tích luỹ' })],
+        };
       }
       return { rows: [] };
     });
@@ -195,7 +221,9 @@ describe('AttOtCompTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-COMP-TYPE-CAT
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       if (String(sql).includes('FROM public.att_ot_comp_type')) {
-        return { rows: [baseRow({ code: 'compensatory_leave', name_vi: 'Nghỉ bù' })] };
+        return {
+          rows: [baseRow({ code: 'compensatory_leave', name_vi: 'Nghỉ bù' })],
+        };
       }
       return { rows: [] };
     });
@@ -213,22 +241,45 @@ describe('AttOtCompTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-COMP-TYPE-CAT
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       const s = String(sql);
-      if (s.includes('UPDATE public.att_ot_comp_type') && s.includes("status = 'inactive'")) {
-        return { rows: [baseRow({ status: 'inactive', archived_at: '2026-08-08T12:00:00Z' })] };
+      if (
+        s.includes('UPDATE public.att_ot_comp_type') &&
+        s.includes("status = 'inactive'")
+      ) {
+        return {
+          rows: [
+            baseRow({
+              status: 'inactive',
+              archived_at: '2026-08-08T12:00:00Z',
+            }),
+          ],
+        };
       }
-      if (s.includes('FROM public.att_ot_comp_type WHERE id') || (s.includes('SELECT') && s.includes('WHERE id = $1::uuid'))) {
+      if (
+        s.includes('FROM public.att_ot_comp_type WHERE id') ||
+        (s.includes('SELECT') && s.includes('WHERE id = $1::uuid'))
+      ) {
         return { rows: [baseRow()] };
       }
-      if (s.includes('FROM public.att_ot_comp_type') && s.includes("status = 'active'")) {
+      if (
+        s.includes('FROM public.att_ot_comp_type') &&
+        s.includes("status = 'active'")
+      ) {
         return { rows: [] };
       }
       return { rows: [] };
     });
     const svc = new AttOtCompTypeService(db);
-    const retired = await svc.retireOtCompType(OTC_ID, 'holding', groupCeoToken());
+    const retired = await svc.retireOtCompType(
+      OTC_ID,
+      'holding',
+      groupCeoToken(),
+    );
     expect(retired.status).toBe('inactive');
     expect(retired.archivedAt).toBeTruthy();
-    const eff = await svc.listEffective({ company_id: 'holding' }, groupCeoToken());
+    const eff = await svc.listEffective(
+      { company_id: 'holding' },
+      groupCeoToken(),
+    );
     expect(eff.total).toBe(0);
   });
 
@@ -245,10 +296,17 @@ describe('AttOtCompTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-COMP-TYPE-CAT
       svc.getOtCompTypeById(OTC_ID, 'main', memberCeoToken(), 'xe-du-lich'),
     ).rejects.toBeInstanceOf(ApiException);
     try {
-      await svc.getOtCompTypeById(OTC_ID, 'main', memberCeoToken(), 'xe-du-lich');
+      await svc.getOtCompTypeById(
+        OTC_ID,
+        'main',
+        memberCeoToken(),
+        'xe-du-lich',
+      );
     } catch (e) {
       const ex = e as ApiException;
-      expect([HRM_ATT_OTC_404, 'HRM-ATT-OTC-409', 'HRM-SCOPE-409']).toContain(ex.code);
+      expect([HRM_ATT_OTC_404, 'HRM-ATT-OTC-409', 'HRM-SCOPE-409']).toContain(
+        ex.code,
+      );
     }
   });
 
@@ -256,12 +314,22 @@ describe('AttOtCompTypeService (PO-HRM-DYNAMIC-CONFIG-PLATFORM-ATT-COMP-TYPE-CAT
     const db = mockDb(async (sql: string) => {
       if (schemaPassthrough(sql)) return { rows: [] };
       if (String(sql).includes('FROM public.att_ot_comp_type')) {
-        return { rows: [baseRow({ code: 'mixed_pay_leave', name_vi: 'Kết hợp lương + nghỉ' })] };
+        return {
+          rows: [
+            baseRow({
+              code: 'mixed_pay_leave',
+              name_vi: 'Kết hợp lương + nghỉ',
+            }),
+          ],
+        };
       }
       return { rows: [] };
     });
     const svc = new AttOtCompTypeService(db);
-    const list = await svc.listOtCompTypes({ company_id: 'holding' }, groupCeoToken());
+    const list = await svc.listOtCompTypes(
+      { company_id: 'holding' },
+      groupCeoToken(),
+    );
     expect(list.total).toBe(1);
     expect(list.data[0].nameVi).toBe('Kết hợp lương + nghỉ');
     expect(list.data[0].code).toBe('mixed_pay_leave');

@@ -146,7 +146,9 @@ export function filterPublicCustomFields(
  * Collect deny keys from body (top-level + nested custom_fields).
  * Empty → OK; non-empty → caller must throw HRM-CORE-CB-403 (no silent strip).
  */
-export function collectCorePublicCbDenyKeys(body: Record<string, unknown> | null | undefined): string[] {
+export function collectCorePublicCbDenyKeys(
+  body: Record<string, unknown> | null | undefined,
+): string[] {
   if (!body || typeof body !== 'object') {
     return [];
   }
@@ -159,7 +161,7 @@ export function collectCorePublicCbDenyKeys(body: Record<string, unknown> | null
   }
   const cf = body.custom_fields;
   if (cf && typeof cf === 'object' && !Array.isArray(cf)) {
-    for (const key of Object.keys(cf as Record<string, unknown>)) {
+    for (const key of Object.keys(cf)) {
       if (isCorePublicCbDenyKey(key)) {
         found.push(`custom_fields.${key}`);
       }
@@ -174,12 +176,19 @@ export function assertNoCorePublicCbDenyKeys(
 ): void {
   const denied = collectCorePublicCbDenyKeys(body);
   if (denied.length === 0) return;
-  throw new ApiException(HRM_CORE_CB_403, CB_403_MESSAGE_VI, HttpStatus.FORBIDDEN, {
-    denied_keys: denied,
-  });
+  throw new ApiException(
+    HRM_CORE_CB_403,
+    CB_403_MESSAGE_VI,
+    HttpStatus.FORBIDDEN,
+    {
+      denied_keys: denied,
+    },
+  );
 }
 
-export function resolveDependentRelationLabel(relationCode: string | null | undefined): string {
+export function resolveDependentRelationLabel(
+  relationCode: string | null | undefined,
+): string {
   const raw = String(relationCode ?? '').trim();
   if (!raw) return '—';
   const key = raw.toLowerCase().replace(/-/g, '_');

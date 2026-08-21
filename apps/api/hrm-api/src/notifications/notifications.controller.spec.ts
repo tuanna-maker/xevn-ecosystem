@@ -68,12 +68,20 @@ describe('NotificationsController (UC-HRM-12 / HRM-NT)', () => {
       token: 'expo-push-token',
     });
     expect(res.code).toBe('HRM-NOTIF-201');
-    expect(pushMock.upsertToken).toHaveBeenCalledWith('holding', 'emp-1', 'ios', 'expo-push-token');
+    expect(pushMock.upsertToken).toHaveBeenCalledWith(
+      'holding',
+      'emp-1',
+      'ios',
+      'expo-push-token',
+    );
   });
 
   it('blocks unauthorized notifications access', () => {
     expect(() =>
-      controller.listInbox(undefined, undefined, { company_id: 'holding', employee_id: 'e1' }),
+      controller.listInbox(undefined, undefined, {
+        company_id: 'holding',
+        employee_id: 'e1',
+      }),
     ).toThrow('Unauthorized notifications access');
     expect(inboxMock.listInbox).not.toHaveBeenCalled();
   });

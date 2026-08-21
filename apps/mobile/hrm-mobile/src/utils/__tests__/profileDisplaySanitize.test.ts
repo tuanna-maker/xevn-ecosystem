@@ -13,8 +13,8 @@ function sourceOf(name: string): string {
 describe('sanitizeProfileDisplay', () => {
   it('masks seed / UUID / HRM wire codes', () => {
     expect(sanitizeProfileDisplay('seed:p1-hrm-emp-001')).toBe('Dữ liệu mẫu UAT');
-    expect(sanitizeProfileDisplay('6c887177-0000-4000-8000-000000000001')).toBe('â€”');
-    expect(sanitizeProfileDisplay('HRM-EMP-200')).toBe('â€”');
+    expect(sanitizeProfileDisplay('6c887177-0000-4000-8000-000000000001')).toBe('—');
+    expect(sanitizeProfileDisplay('HRM-EMP-200')).toBe('—');
     expect(sanitizeProfileDisplay('Phòng Kỹ thuật')).toBe('Phòng Kỹ thuật');
   });
 });

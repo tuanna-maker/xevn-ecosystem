@@ -24,13 +24,20 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
       status = exception.getStatus();
       const payload = exception.getResponse() as
         | string
-        | { code?: string; message?: string | string[]; details?: unknown; error?: string };
+        | {
+            code?: string;
+            message?: string | string[];
+            details?: unknown;
+            error?: string;
+          };
       if (typeof payload === 'string') {
         message = payload;
       } else {
         if (payload.code) code = payload.code;
         if (payload.message) {
-          message = Array.isArray(payload.message) ? payload.message.join('; ') : payload.message;
+          message = Array.isArray(payload.message)
+            ? payload.message.join('; ')
+            : payload.message;
         } else if (payload.error) {
           message = payload.error;
         }

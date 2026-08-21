@@ -17,7 +17,8 @@
  */
 
 export const ATT_ATTENDANCE_CODE_STATUSES = ['active', 'retired'] as const;
-export type AttAttendanceCodeRowStatus = (typeof ATT_ATTENDANCE_CODE_STATUSES)[number];
+export type AttAttendanceCodeRowStatus =
+  (typeof ATT_ATTENDANCE_CODE_STATUSES)[number];
 
 /** Format-only — FORBIDDEN closed code enum (BR-PLT-05 · L-ATT-CODE-04). */
 export const ATT_ATTENDANCE_CODE_KEY_FORMAT = /^[a-z][a-z0-9_]*$/;
@@ -31,11 +32,15 @@ export const ATT_ATTENDANCE_CODE_COUNTS_AS = [
   'absent',
   'other',
 ] as const;
-export type AttAttendanceCodeCountsAs = (typeof ATT_ATTENDANCE_CODE_COUNTS_AS)[number];
+export type AttAttendanceCodeCountsAs =
+  (typeof ATT_ATTENDANCE_CODE_COUNTS_AS)[number];
 
 export const ATT_ATTENDANCE_CODE_CATALOG_KIND = 'att_attendance_code' as const;
 
-export type AttAttendanceCodeSource = 'att_native' | 'group_ref' | 'att_override';
+export type AttAttendanceCodeSource =
+  | 'att_native'
+  | 'group_ref'
+  | 'att_override';
 
 /** Platform taxonomy. */
 export const HRM_PLT_CAT_CODE_INVALID = 'HRM-PLT-CAT-CODE-INVALID';

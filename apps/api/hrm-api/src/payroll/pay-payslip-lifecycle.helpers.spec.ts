@@ -11,9 +11,15 @@ describe('pay-payslip-lifecycle.helpers', () => {
   });
 
   it('detects period lock via closed or payroll_locked', () => {
-    expect(isPeriodPayrollLocked({ status: 'draft', payroll_locked: false })).toBe(false);
-    expect(isPeriodPayrollLocked({ status: 'closed', payroll_locked: false })).toBe(true);
-    expect(isPeriodPayrollLocked({ status: 'processed', payroll_locked: true })).toBe(true);
+    expect(
+      isPeriodPayrollLocked({ status: 'draft', payroll_locked: false }),
+    ).toBe(false);
+    expect(
+      isPeriodPayrollLocked({ status: 'closed', payroll_locked: false }),
+    ).toBe(true);
+    expect(
+      isPeriodPayrollLocked({ status: 'processed', payroll_locked: true }),
+    ).toBe(true);
   });
 
   it('emits vi-VN payment status labels', () => {

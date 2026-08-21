@@ -7,7 +7,17 @@
  * Spec: docs/program/specs/BA-CTR-TPL-8-CLAUSE-MAP-01-S7-IMPL-01.md §2
  */
 
-import { Body, Controller, Delete, Get, HttpStatus, Param, Put, Headers, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Put,
+  Headers,
+  Query,
+} from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -20,7 +30,11 @@ export class ContractTemplatesController {
 
   private assertAccess(authorization?: string, internalApiKey?: string): void {
     if (!isAuthorizedInternalRequest(authorization, internalApiKey)) {
-      throw new ApiException('HRM-AUTH-001', 'Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new ApiException(
+        'HRM-AUTH-001',
+        'Unauthorized',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -31,7 +45,11 @@ export class ContractTemplatesController {
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    return ok(this.svc.getBoundCodes(), 'HRM-CTR-TPL-200', 'Bound template codes');
+    return ok(
+      this.svc.getBoundCodes(),
+      'HRM-CTR-TPL-200',
+      'Bound template codes',
+    );
   }
 
   /** GET /contract-templates/:template_code/clauses */
@@ -44,7 +62,10 @@ export class ContractTemplatesController {
     @Headers('x-tenant-id') tenantId: string | undefined,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const result = await this.svc.listClauses(templateCode, queryTenantId ?? tenantId ?? '');
+    const result = await this.svc.listClauses(
+      templateCode,
+      queryTenantId ?? tenantId ?? '',
+    );
     return ok(result, 'HRM-CTR-TPL-200', 'Clause overrides listed');
   }
 
@@ -59,7 +80,11 @@ export class ContractTemplatesController {
     @Headers('x-tenant-id') tenantId: string | undefined,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const result = await this.svc.getClause(templateCode, clauseId, queryTenantId ?? tenantId ?? '');
+    const result = await this.svc.getClause(
+      templateCode,
+      clauseId,
+      queryTenantId ?? tenantId ?? '',
+    );
     return ok(result, 'HRM-CTR-TPL-200', 'Clause override found');
   }
 
@@ -76,8 +101,16 @@ export class ContractTemplatesController {
     @Headers('x-user-id') userId: string | undefined,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const dto: UpsertClauseOverrideDto = { ...body, updated_by: userId ?? body.updated_by };
-    const result = await this.svc.upsertClause(templateCode, clauseId, queryTenantId ?? tenantId ?? '', dto);
+    const dto: UpsertClauseOverrideDto = {
+      ...body,
+      updated_by: userId ?? body.updated_by,
+    };
+    const result = await this.svc.upsertClause(
+      templateCode,
+      clauseId,
+      queryTenantId ?? tenantId ?? '',
+      dto,
+    );
     return ok(result, 'HRM-CTR-TPL-200', 'Clause override upserted');
   }
 
@@ -92,7 +125,11 @@ export class ContractTemplatesController {
     @Headers('x-tenant-id') tenantId: string | undefined,
   ) {
     this.assertAccess(authorization, internalApiKey);
-    const result = await this.svc.softDeleteClause(templateCode, clauseId, queryTenantId ?? tenantId ?? '');
+    const result = await this.svc.softDeleteClause(
+      templateCode,
+      clauseId,
+      queryTenantId ?? tenantId ?? '',
+    );
     return ok(result, 'HRM-CTR-TPL-200', 'Clause override soft-deleted');
   }
 }

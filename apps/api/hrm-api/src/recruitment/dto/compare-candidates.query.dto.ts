@@ -26,7 +26,12 @@ function pickScalar(value: unknown): string | undefined {
 
 export class CompareCandidatesQueryDto {
   @IsString()
-  @Transform(({ value, obj }) => pickScalar(value) ?? pickScalar(obj?.companyId) ?? pickScalar(obj?.company_id))
+  @Transform(
+    ({ value, obj }) =>
+      pickScalar(value) ??
+      pickScalar(obj?.companyId) ??
+      pickScalar(obj?.company_id),
+  )
   @MaxLength(64)
   company_id!: string;
 
@@ -45,7 +50,11 @@ export class CompareCandidatesQueryDto {
   @Transform(({ value, obj }) => {
     const raw = value ?? obj?.candidate_ids ?? obj?.candidateIds;
     if (raw == null) return undefined;
-    if (Array.isArray(raw)) return raw.map((v) => String(v).trim()).filter(Boolean).join(',');
+    if (Array.isArray(raw))
+      return raw
+        .map((v) => String(v).trim())
+        .filter(Boolean)
+        .join(',');
     return String(raw).trim();
   })
   @IsString()
@@ -55,7 +64,11 @@ export class CompareCandidatesQueryDto {
   @Transform(({ value, obj }) => {
     const raw = value ?? obj?.application_ids ?? obj?.applicationIds;
     if (raw == null) return undefined;
-    if (Array.isArray(raw)) return raw.map((v) => String(v).trim()).filter(Boolean).join(',');
+    if (Array.isArray(raw))
+      return raw
+        .map((v) => String(v).trim())
+        .filter(Boolean)
+        .join(',');
     return String(raw).trim();
   })
   @IsString()

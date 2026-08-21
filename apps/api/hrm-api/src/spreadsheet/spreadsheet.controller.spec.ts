@@ -6,10 +6,14 @@ import { SpreadsheetController } from './spreadsheet.controller';
 import { SpreadsheetService } from './spreadsheet.service';
 
 function createInternalJwt(payload: Record<string, unknown>) {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
-  const sig = createHmac('sha256', secret).update(`${header}.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
   return `${header}.${body}.${sig}`;
 }
 
@@ -28,10 +32,18 @@ describe('SpreadsheetController', () => {
       errors: [],
       dryRun: true,
     }),
-    commitEmployeeImport: jest.fn().mockResolvedValue({ importedCount: 1, ids: ['id-1'], errors: [] }),
-    exportEmployeesCsv: jest.fn().mockResolvedValue({ filename: 'employees_export.csv', body: 'h\n' }),
-    employeeImportCsvTemplate: jest.fn().mockReturnValue('employee_code,email\n'),
-    employeeImportXlsxTemplate: jest.fn().mockResolvedValue(Buffer.from('PK', 'utf8')),
+    commitEmployeeImport: jest
+      .fn()
+      .mockResolvedValue({ importedCount: 1, ids: ['id-1'], errors: [] }),
+    exportEmployeesCsv: jest
+      .fn()
+      .mockResolvedValue({ filename: 'employees_export.csv', body: 'h\n' }),
+    employeeImportCsvTemplate: jest
+      .fn()
+      .mockReturnValue('employee_code,email\n'),
+    employeeImportXlsxTemplate: jest
+      .fn()
+      .mockResolvedValue(Buffer.from('PK', 'utf8')),
   };
 
   beforeEach(async () => {
@@ -45,7 +57,9 @@ describe('SpreadsheetController', () => {
   });
 
   it('rejects unauthenticated limits', () => {
-    expect(() => controller.limits(undefined, undefined)).toThrow('Unauthorized spreadsheet access');
+    expect(() => controller.limits(undefined, undefined)).toThrow(
+      'Unauthorized spreadsheet access',
+    );
   });
 
   it('returns limits with internal key', () => {
@@ -56,14 +70,19 @@ describe('SpreadsheetController', () => {
   });
 
   it('HRM-IM-04 returns csv template as StreamableFile', async () => {
-    const file = await controller.downloadTemplate('employee_import', 'csv', undefined, 'test-key');
+    const file = await controller.downloadTemplate(
+      'employee_import',
+      'csv',
+      undefined,
+      'test-key',
+    );
     expect(file).toBeInstanceOf(StreamableFile);
   });
 
   it('rejects template for unknown kind', async () => {
-    await expect(controller.downloadTemplate('unknown', 'csv', undefined, 'test-key')).rejects.toThrow(
-      'No template available for kind',
-    );
+    await expect(
+      controller.downloadTemplate('unknown', 'csv', undefined, 'test-key'),
+    ).rejects.toThrow('No template available for kind');
   });
 
   it('HRM-IM-01 preview declares HTTP 200 (not Nest POST default 201)', async () => {
@@ -97,9 +116,11 @@ describe('SpreadsheetController', () => {
       tenantId: 'xevn',
       companyId: 'vtc',
     });
-    const file = { buffer: Buffer.from('a,b\n1,2'), mimetype: 'text/csv', originalname: 'x.csv' } as Parameters<
-      SpreadsheetController['importPreview']
-    >[0];
+    const file = {
+      buffer: Buffer.from('a,b\n1,2'),
+      mimetype: 'text/csv',
+      originalname: 'x.csv',
+    } as Parameters<SpreadsheetController['importPreview']>[0];
     await expect(
       controller.importPreview(
         file,
@@ -114,9 +135,11 @@ describe('SpreadsheetController', () => {
   });
 
   it('HRM-IM-02 commit returns SHEET-201', async () => {
-    const file = { buffer: Buffer.from('employee_code,email\nE1,a@xe.vn'), mimetype: 'text/csv', originalname: 'x.csv' } as Parameters<
-      SpreadsheetController['importCommit']
-    >[0];
+    const file = {
+      buffer: Buffer.from('employee_code,email\nE1,a@xe.vn'),
+      mimetype: 'text/csv',
+      originalname: 'x.csv',
+    } as Parameters<SpreadsheetController['importCommit']>[0];
     const token = createInternalJwt({
       iss: 'xevn-internal',
       aud: 'xevn-api',

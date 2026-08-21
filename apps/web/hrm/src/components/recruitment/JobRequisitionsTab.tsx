@@ -210,6 +210,14 @@ import {
   resolveWorkflowInstanceDisplay,
 } from '@/lib/labelMaps';
 
+const OUT_OF_PLAN_REASONS = [
+  'Phát sinh dự án mới',
+  'Mở rộng quy mô kinh doanh',
+  'Thay thế nhân sự đột xuất',
+  'Bổ sung định biên tạm thời',
+  'Khác'
+];
+
 const createSchema = z
   .object({
     title: z.string().min(1, 'Nhập tiêu đề yêu cầu').max(200),
@@ -1698,7 +1706,7 @@ export function JobRequisitionsTab({
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent
-          className="max-h-[90vh] max-w-lg overflow-y-auto"
+          className="max-h-[90vh] max-w-4xl overflow-y-auto"
           data-testid={HDSD_MUTATE_TEST_IDS.requisitionFormDialog}
         >
           <DialogHeader>
@@ -1708,7 +1716,7 @@ export function JobRequisitionsTab({
             </DialogDescription>
           </DialogHeader>
           <Form {...createForm}>
-            <form onSubmit={createForm.handleSubmit(onCreate)} className="space-y-4">
+            <form onSubmit={createForm.handleSubmit(onCreate)} className="grid grid-cols-3 gap-4">
               {isCreateFormReady ? (
                 <span
                   data-testid={HDSD_MUTATE_TEST_IDS.requisitionFormReady}
@@ -1718,101 +1726,126 @@ export function JobRequisitionsTab({
                   Form ready
                 </span>
               ) : null}
-              <FormField
-                control={createForm.control}
-                name="headcount_mode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Trong / ngoài định biên *</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={(v) => {
-                        field.onChange(v as HrmJobRequisitionHeadcountMode);
-                        if (v === 'in_plan') {
-                          createForm.setValue('out_of_plan_reason', '');
-                        }
-                      }}
-                    >
-                      <FormControl>
-                        <SelectTrigger data-testid="yctd-headcount-mode">
-                          <SelectValue placeholder="Chọn nhánh" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="in_plan">{YCTD_MODE_LABEL_VI.in_plan}</SelectItem>
-                        <SelectItem value="out_of_plan">{YCTD_MODE_LABEL_VI.out_of_plan}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    {watchedHeadcountMode === 'out_of_plan' ? (
-                      <p className="text-xs text-warning" data-testid="yctd-long-matrix-hint">
-                        {YCTD_LONG_MATRIX_HINT_VI}
-                      </p>
-                    ) : null}
-                  </FormItem>
-                )}
-              />
-              {watchedHeadcountMode === 'in_plan' ? (
+              <div className="col-span-3">
                 <FormField
                   control={createForm.control}
-                  name="headcount_cell_id"
+                  name="headcount_mode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{YCTD_CELL_PICKER_LABEL_VI}</FormLabel>
-                      <FormControl>
-                        <CatalogSearchPicker
-                          options={cellPickerOptions}
-                          value={field.value || ''}
-                          onValueChange={(v) => {
-                            field.onChange(v);
-                            const hit = cellPickerOptions.find((o) => o.value === v);
-                            if (hit && hit.need_hire >= 1) {
-                              createForm.setValue('headcount', hit.need_hire);
-                            }
-                          }}
-                          placeholder="Chọn ô Cần tuyển đã duyệt"
-                          searchPlaceholder="Tìm phòng ban / chức danh / tháng…"
-                          loading={approvedCellsLoading}
-                          errorText={approvedCellsError ?? undefined}
-                          emptyHint={
-                            <p className="text-xs font-medium text-muted-foreground">
-                              {YCTD_CELL_PICKER_EMPTY_VI}
-                            </p>
+                      <FormLabel>Trong / ngoài định biên *</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={(v) => {
+                          field.onChange(v as HrmJobRequisitionHeadcountMode);
+                          if (v === 'in_plan') {
+                            createForm.setValue('out_of_plan_reason', '');
                           }
-                          data-testid="yctd-headcount-cell-id"
-                        />
-                      </FormControl>
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger data-testid="yctd-headcount-mode">
+                            <SelectValue placeholder="Chọn nhánh" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="in_plan">{YCTD_MODE_LABEL_VI.in_plan}</SelectItem>
+                          <SelectItem value="out_of_plan">{YCTD_MODE_LABEL_VI.out_of_plan}</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
-                      {field.value ? (
-                        <p className="text-[11px] text-muted-foreground font-mono" data-testid="yctd-cell-id-value">
-                          {field.value}
+                      {watchedHeadcountMode === 'out_of_plan' ? (
+                        <p className="text-xs text-warning" data-testid="yctd-long-matrix-hint">
+                          {YCTD_LONG_MATRIX_HINT_VI}
                         </p>
                       ) : null}
                     </FormItem>
                   )}
                 />
+              </div>
+              {watchedHeadcountMode === 'in_plan' ? (
+                <div className="col-span-3">
+                  <FormField
+                    control={createForm.control}
+                    name="headcount_cell_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{YCTD_CELL_PICKER_LABEL_VI}</FormLabel>
+                        <FormControl>
+                          <CatalogSearchPicker
+                            options={cellPickerOptions}
+                            value={field.value || ''}
+                            onValueChange={(v) => {
+                              field.onChange(v);
+                              const hit = cellPickerOptions.find((o) => o.value === v);
+                              if (hit && hit.need_hire >= 1) {
+                                createForm.setValue('headcount', hit.need_hire);
+                              }
+                            }}
+                            placeholder="Chọn ô Cần tuyển đã duyệt"
+                            searchPlaceholder="Tìm phòng ban / chức danh / tháng…"
+                            loading={approvedCellsLoading}
+                            errorText={approvedCellsError ?? undefined}
+                            emptyHint={
+                              <p className="text-xs font-medium text-muted-foreground">
+                                {YCTD_CELL_PICKER_EMPTY_VI}
+                              </p>
+                            }
+                            data-testid="yctd-headcount-cell-id"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        {field.value ? (
+                          <p className="text-[11px] text-muted-foreground font-mono" data-testid="yctd-cell-id-value">
+                            {field.value}
+                          </p>
+                        ) : null}
+                      </FormItem>
+                    )}
+                  />
+                </div>
               ) : (
-                <FormField
-                  control={createForm.control}
-                  name="out_of_plan_reason"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Lý do ngoài định biên *</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          rows={2}
-                          placeholder="VD: Phát sinh dự án mới / vượt kế hoạch quý…"
-                          data-testid="yctd-out-of-plan-reason"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="col-span-3">
+                  <FormField
+                    control={createForm.control}
+                    name="out_of_plan_reason"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lý do ngoài định biên *</FormLabel>
+                        <Select
+                          value={OUT_OF_PLAN_REASONS.includes(field.value) ? field.value : field.value ? 'Khác' : ''}
+                          onValueChange={(v) => {
+                            field.onChange(v === 'Khác' ? '' : v);
+                          }}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="yctd-out-of-plan-reason-select">
+                              <SelectValue placeholder="Chọn lý do" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {OUT_OF_PLAN_REASONS.map((r) => (
+                              <SelectItem key={r} value={r}>{r}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {(!OUT_OF_PLAN_REASONS.includes(field.value) && field.value !== undefined) || field.value === '' ? (
+                          <FormControl>
+                            <Textarea
+                              rows={2}
+                              className="mt-2"
+                              placeholder="VD: Nhập lý do khác..."
+                              data-testid="yctd-out-of-plan-reason"
+                              {...field}
+                            />
+                          </FormControl>
+                        ) : null}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               )}
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
+              <FormField
                   control={createForm.control}
                   name="hire_reason"
                   render={({ field }) => (
@@ -1840,9 +1873,10 @@ export function JobRequisitionsTab({
                   )}
                 />
                 {watchedHireReason === 'replace' ? (
-                  <FormField
-                    control={createForm.control}
-                    name="replace_employee_id"
+                  <div className="col-span-2">
+                    <FormField
+                      control={createForm.control}
+                      name="replace_employee_id"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>NV thay thế *</FormLabel>
@@ -1859,11 +1893,12 @@ export function JobRequisitionsTab({
                       </FormItem>
                     )}
                   />
+                  </div>
                 ) : (
-                  <div />
+                  <div className="col-span-2" />
                 )}
-              </div>
-              <FormField
+              <div className="col-span-3">
+                <FormField
                 control={createForm.control}
                 name="title"
                 render={({ field }) => (
@@ -1881,9 +1916,11 @@ export function JobRequisitionsTab({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={createForm.control}
-                name="job_template_id"
+              </div>
+              <div className="col-span-3">
+                <FormField
+                  control={createForm.control}
+                  name="job_template_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>JD từ thư viện *</FormLabel>
@@ -1957,8 +1994,8 @@ export function JobRequisitionsTab({
                   </FormItem>
                 )}
               />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
+              </div>
+              <FormField
                   control={createForm.control}
                   name="department"
                   render={({ field }) => (
@@ -2016,7 +2053,6 @@ export function JobRequisitionsTab({
                     </FormItem>
                   )}
                 />
-              </div>
               <FormField
                 control={createForm.control}
                 name="employment_type"
@@ -2079,26 +2115,28 @@ export function JobRequisitionsTab({
                   </FormItem>
                 )}
               />
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
-                  Hủy
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={submitting || libraryEmpty}
-                  data-testid={HDSD_MUTATE_TEST_IDS.requisitionFormSubmit}
-                  aria-label="Lưu"
-                >
-                  Lưu yêu cầu
-                </Button>
-              </DialogFooter>
+              <div className="col-span-3">
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
+                    Hủy
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={submitting || libraryEmpty}
+                    data-testid={HDSD_MUTATE_TEST_IDS.requisitionFormSubmit}
+                    aria-label="Lưu"
+                  >
+                    Lưu yêu cầu
+                  </Button>
+                </DialogFooter>
+              </div>
             </form>
           </Form>
         </DialogContent>
       </Dialog>
 
       <Dialog open={editRow != null} onOpenChange={(open) => !open && setEditRow(null)}>
-        <DialogContent className="max-h-[90vh] max-w-md overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Sửa yêu cầu tuyển dụng</DialogTitle>
             <DialogDescription>
@@ -2106,16 +2144,16 @@ export function JobRequisitionsTab({
             </DialogDescription>
           </DialogHeader>
           {editRow ? (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
+            <div className="grid grid-cols-3 gap-4">
+              <p className="col-span-2 text-sm text-muted-foreground">
                 <span className="font-medium text-foreground">{editRow.title}</span>
               </p>
               {isYctdClassificationRequired(editRow) ? (
-                <div className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning">
+                <div className="col-span-2 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning">
                   {YCTD_CLASSIFY_BANNER_VI}
                 </div>
               ) : null}
-              <div className="space-y-2">
+              <div className="col-span-2 space-y-2">
                 <FormLabel>Trong / ngoài định biên *</FormLabel>
                 <Select
                   value={editMode || undefined}
@@ -2132,7 +2170,7 @@ export function JobRequisitionsTab({
                 </Select>
               </div>
               {editMode === 'in_plan' ? (
-                <div className="space-y-2">
+                <div className="col-span-3 space-y-2">
                   <FormLabel>{YCTD_CELL_PICKER_LABEL_VI}</FormLabel>
                   <CatalogSearchPicker
                     options={editCellPickerOptions}
@@ -2160,16 +2198,34 @@ export function JobRequisitionsTab({
                 </div>
               ) : null}
               {editMode === 'out_of_plan' ? (
-                <div className="space-y-2">
+                <div className="col-span-3 space-y-2">
                   <FormLabel htmlFor="edit-out-reason">Lý do ngoài ĐB *</FormLabel>
-                  <Textarea
-                    id="edit-out-reason"
-                    rows={2}
-                    value={editOutReason}
-                    onChange={(e) => setEditOutReason(e.target.value)}
+                  <Select
+                    value={OUT_OF_PLAN_REASONS.includes(editOutReason) ? editOutReason : editOutReason ? 'Khác' : ''}
+                    onValueChange={(v) => {
+                      setEditOutReason(v === 'Khác' ? '' : v);
+                    }}
                     disabled={requisitionLocked(editRow)}
-                    data-testid="yctd-edit-out-reason"
-                  />
+                  >
+                    <SelectTrigger data-testid="yctd-edit-out-reason-select">
+                      <SelectValue placeholder="Chọn lý do" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {OUT_OF_PLAN_REASONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  {(!OUT_OF_PLAN_REASONS.includes(editOutReason) && editOutReason !== undefined) || editOutReason === '' ? (
+                    <Textarea
+                      id="edit-out-reason"
+                      rows={2}
+                      className="mt-2"
+                      placeholder="Nhập lý do khác..."
+                      value={editOutReason}
+                      onChange={(e) => setEditOutReason(e.target.value)}
+                      disabled={requisitionLocked(editRow)}
+                      data-testid="yctd-edit-out-reason"
+                    />
+                  ) : null}
                 </div>
               ) : null}
               <div className="space-y-2">
@@ -2189,7 +2245,7 @@ export function JobRequisitionsTab({
                 </Select>
               </div>
               {editHireReason === 'replace' ? (
-                <div className="space-y-2">
+                <div className="col-span-2 space-y-2">
                   <FormLabel>NV thay thế *</FormLabel>
                   <CatalogSearchPicker
                     options={employeeOptions}
@@ -2242,7 +2298,9 @@ export function JobRequisitionsTab({
                   }}
                 />
               </div>
-              <Select
+              <div className="space-y-2">
+                <FormLabel>Trạng thái</FormLabel>
+                <Select
                 value={editStatus}
                 onValueChange={(v) => setEditStatus(v as HrmJobRequisition['status'])}
                 disabled={requisitionLocked(editRow)}
@@ -2258,28 +2316,31 @@ export function JobRequisitionsTab({
                   ))}
                 </SelectContent>
               </Select>
+              </div>
               {requisitionLocked(editRow) ? (
-                <p className="text-xs font-medium text-warning">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
+                <p className="col-span-3 text-xs font-medium text-warning">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
               ) : null}
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setEditRow(null)}>
-                  Hủy
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => void onUpdateStatus()}
-                  disabled={submitting || requisitionLocked(editRow)}
-                >
-                  Lưu thay đổi
-                </Button>
-              </DialogFooter>
+              <div className="col-span-3">
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setEditRow(null)}>
+                    Hủy
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => void onUpdateStatus()}
+                    disabled={submitting || requisitionLocked(editRow)}
+                  >
+                    Lưu thay đổi
+                  </Button>
+                </DialogFooter>
+              </div>
             </div>
           ) : null}
         </DialogContent>
       </Dialog>
 
       <Dialog open={detailRow != null} onOpenChange={(open) => !open && setDetailRow(null)}>
-        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Chi tiết yêu cầu tuyển dụng</DialogTitle>
             <DialogDescription>Chi tiết YCTD — mode / JD / cờ pipeline (F5 còn).</DialogDescription>
@@ -2296,17 +2357,17 @@ export function JobRequisitionsTab({
                   {YCTD_CLASSIFY_BANNER_VI}
                 </div>
               ) : null}
-              <div>
-                <p className="text-xs text-muted-foreground">Tiêu đề</p>
-                <p className="font-medium">{detailRow.title}</p>
-              </div>
-              <div data-testid="yctd-jd-ref-detail">
-                <p className="text-xs text-muted-foreground">JD gắn</p>
-                <p className="font-medium">
-                  {resolveRequisitionJdDisplay(detailRow, templates)}
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="col-span-1 md:col-span-2 lg:col-span-2">
+                  <p className="text-xs text-muted-foreground">Tiêu đề</p>
+                  <p className="font-medium">{detailRow.title}</p>
+                </div>
+                <div className="col-span-1" data-testid="yctd-jd-ref-detail">
+                  <p className="text-xs text-muted-foreground">JD gắn</p>
+                  <p className="font-medium">
+                    {resolveRequisitionJdDisplay(detailRow, templates)}
+                  </p>
+                </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Trong/Ngoài ĐB</p>
                   <Badge
@@ -2330,21 +2391,18 @@ export function JobRequisitionsTab({
                   </p>
                 </div>
                 {detailRow.headcount_cell_id ? (
-                  <div className="col-span-2">
+                  <div>
                     <p className="text-xs text-muted-foreground">Ô định biên</p>
-                    <p className="text-sm" data-testid="yctd-detail-cell-label">
+                    <p className="text-sm font-medium" data-testid="yctd-detail-cell-label">
                       {resolveYctdCellLabel(
                         detailRow.headcount_cell_id,
                         detailCellPickerOptions,
                       )}
                     </p>
-                    <p className="font-mono text-[11px] text-muted-foreground" data-testid="yctd-detail-cell-id">
-                      {detailRow.headcount_cell_id}
-                    </p>
                   </div>
                 ) : null}
                 {normalizeYctdHireReason(detailRow.hire_reason) === 'replace' ? (
-                  <div className="col-span-2">
+                  <div>
                     <p className="text-xs text-muted-foreground">NV thay thế</p>
                     <p data-testid="yctd-detail-replace-employee">
                       {resolveYctdReplaceEmployeeDisplay(
@@ -2355,7 +2413,7 @@ export function JobRequisitionsTab({
                   </div>
                 ) : null}
                 {detailRow.out_of_plan_reason ? (
-                  <div className="col-span-2">
+                  <div className="col-span-1 md:col-span-2">
                     <p className="text-xs text-muted-foreground">Lý do ngoài ĐB</p>
                     <p data-testid="yctd-detail-out-reason">{detailRow.out_of_plan_reason}</p>
                   </div>
@@ -2399,24 +2457,21 @@ export function JobRequisitionsTab({
                   <p className="text-sm">{resolveHrmCompanyIdDisplay(detailRow.company_id, operatingUnitLabelMap)}</p>
                 </div>
                 {detailRow.approval_matrix_key || detailApprovalChain ? (
-                  <div className="col-span-2">
+                  <div className="col-span-1 md:col-span-2 lg:col-span-3">
                     <p className="text-xs text-muted-foreground">Ma trận duyệt</p>
-                    <p className="text-sm" data-testid="yctd-detail-matrix-label">
+                    <p className="text-sm font-medium" data-testid="yctd-detail-matrix-label">
                       {detailApprovalChain?.matrixLabelVi ?? '—'}
-                    </p>
-                    <p className="font-mono text-[11px] text-muted-foreground" data-testid="yctd-detail-matrix-key">
-                      {detailApprovalChain?.matrixKeyDisplay ||
-                        detailRow.approval_matrix_key ||
-                        '—'}
                     </p>
                   </div>
                 ) : null}
               </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
               {detailApprovalChain &&
               (detailApprovalChain.chainSteps.length > 0 ||
                 detailApprovalChain.nextApproverHintVi) ? (
                 <div
-                  className="space-y-2 rounded-lg border border-xevn-border bg-muted/30 p-3"
+                  className="space-y-2 rounded-lg border border-xevn-border bg-muted/20 p-2"
                   data-testid="yctd-approval-chain"
                 >
                   <p className="text-xs font-medium text-xevn-text">Chuỗi duyệt (SHORT / LONG)</p>
@@ -2474,7 +2529,7 @@ export function JobRequisitionsTab({
               ) : null}
 
               {detailApprovalChain?.showTransitionActions ? (
-                <div className="space-y-2 rounded-lg border border-xevn-border p-3" data-testid="yctd-transitions">
+                <div className="space-y-2 rounded-lg border border-xevn-border p-2" data-testid="yctd-transitions">
                   <p className="text-xs font-medium text-xevn-text">Duyệt / từ chối (transitions)</p>
                   <Textarea
                     rows={2}
@@ -2509,7 +2564,7 @@ export function JobRequisitionsTab({
                 </div>
               ) : null}
 
-              <div className="space-y-2 rounded-lg border border-xevn-border p-3" data-testid="yctd-internal-cv-scan">
+              <div className="space-y-2 rounded-lg border border-xevn-border p-2" data-testid="yctd-internal-cv-scan">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-xs font-medium text-xevn-text">{YCTD_CV_SCAN_TITLE_VI}</p>
                   {(() => {
@@ -2569,7 +2624,7 @@ export function JobRequisitionsTab({
                 )}
               </div>
 
-              <div className="space-y-2 rounded-lg border border-xevn-border p-3" data-testid="yctd-pipeline-flags">
+              <div className="space-y-2 rounded-lg border border-xevn-border p-2" data-testid="yctd-pipeline-flags">
                 <p className="text-xs font-medium text-xevn-text">Cờ pipeline trên YCTD (không Campaign)</p>
                 {!canMutateYctdPipelineFlags(detailRow) ? (
                   <p className="text-xs text-warning" data-testid="yctd-pipeline-blocked-hint">
@@ -2631,8 +2686,9 @@ export function JobRequisitionsTab({
                   </>
                 )}
               </div>
+              </div>
 
-              <DialogFooter className="gap-2 sm:justify-end">
+              <DialogFooter className="gap-2 sm:justify-end mt-4">
                 <Button type="button" variant="outline" onClick={() => setDetailRow(null)}>
                   Đóng
                 </Button>

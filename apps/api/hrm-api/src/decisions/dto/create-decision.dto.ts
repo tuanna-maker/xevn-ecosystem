@@ -7,7 +7,9 @@ export class CreateDecisionDto {
   company_id!: string;
 
   @IsOptional()
-  @Transform(({ value, obj }) => value ?? obj?.decisionCode ?? obj?.decision_code)
+  @Transform(
+    ({ value, obj }) => value ?? obj?.decisionCode ?? obj?.decision_code,
+  )
   @IsString()
   @MaxLength(64)
   decision_code?: string;

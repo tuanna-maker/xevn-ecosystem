@@ -16,14 +16,19 @@
  */
 
 export const EMP_EMPLOYMENT_STATUS_STATUSES = ['active', 'retired'] as const;
-export type EmpEmploymentStatusRowStatus = (typeof EMP_EMPLOYMENT_STATUS_STATUSES)[number];
+export type EmpEmploymentStatusRowStatus =
+  (typeof EMP_EMPLOYMENT_STATUS_STATUSES)[number];
 
 /** Format-only — FORBIDDEN closed status_key enum (BR-PLT-05 · L-EMP-ST-04). */
 export const EMP_EMPLOYMENT_STATUS_KEY_FORMAT = /^[a-z][a-z0-9_]*$/;
 
-export const EMP_EMPLOYMENT_STATUS_CATALOG_KIND = 'emp_employment_status' as const;
+export const EMP_EMPLOYMENT_STATUS_CATALOG_KIND =
+  'emp_employment_status' as const;
 
-export type EmpEmploymentStatusSource = 'emp_native' | 'group_ref' | 'emp_override';
+export type EmpEmploymentStatusSource =
+  | 'emp_native'
+  | 'group_ref'
+  | 'emp_override';
 
 /** Platform taxonomy (VAL-EMP-ST-CAT-*). */
 export const HRM_PLT_CAT_CODE_INVALID = 'HRM-PLT-CAT-CODE-INVALID';

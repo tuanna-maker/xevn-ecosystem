@@ -82,7 +82,10 @@ const MULTIPART_FILE_MAX = () => getSpreadsheetLimits().maxUploadBytes;
 export class SpreadsheetController {
   constructor(private readonly spreadsheetService: SpreadsheetService) {}
 
-  private assertSpreadsheetAccess(authorization?: string, internalKey?: string) {
+  private assertSpreadsheetAccess(
+    authorization?: string,
+    internalKey?: string,
+  ) {
     if (!isAuthorizedInternalRequest(authorization, internalKey)) {
       throw new ApiException(
         'HRM-AUTH-001',
@@ -98,7 +101,11 @@ export class SpreadsheetController {
     @Headers('x-internal-api-key') internalApiKey?: string,
   ) {
     this.assertSpreadsheetAccess(authorization, internalApiKey);
-    return ok(this.spreadsheetService.getLimitsSnapshot(), 'SHEET-200', 'Spreadsheet limits');
+    return ok(
+      this.spreadsheetService.getLimitsSnapshot(),
+      'SHEET-200',
+      'Spreadsheet limits',
+    );
   }
 
   @Get('templates/:kind')
@@ -112,7 +119,12 @@ export class SpreadsheetController {
     assertTemplateKind(kind);
     const format = (formatRaw ?? 'csv').toLowerCase();
     if (format !== 'csv' && format !== 'xlsx') {
-      throw new ApiException('SHEET-400', 'Invalid format; use csv or xlsx', HttpStatus.BAD_REQUEST, { format });
+      throw new ApiException(
+        'SHEET-400',
+        'Invalid format; use csv or xlsx',
+        HttpStatus.BAD_REQUEST,
+        { format },
+      );
     }
     if (format === 'xlsx') {
       const buf = await this.spreadsheetService.employeeImportXlsxTemplate();
@@ -147,15 +159,22 @@ export class SpreadsheetController {
     resolveScopeContext(authorization, { tenantId, companyId });
     assertImportKind(body.kind);
     if (!file?.buffer?.length) {
-      throw new ApiException('SHEET-400', 'Multipart file field "file" is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'SHEET-400',
+        'Multipart file field "file" is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     assertImportUploadMime(file.mimetype, file.originalname);
     const dryRun = body.dryRun === undefined || body.dryRun === 'true';
-    const data = await this.spreadsheetService.previewEmployeeImport(file.buffer, {
-      mimetype: file.mimetype,
-      originalname: file.originalname,
-      dryRun,
-    });
+    const data = await this.spreadsheetService.previewEmployeeImport(
+      file.buffer,
+      {
+        mimetype: file.mimetype,
+        originalname: file.originalname,
+        dryRun,
+      },
+    );
     return ok(data, 'SHEET-200', 'Import preview');
   }
 
@@ -178,16 +197,23 @@ export class SpreadsheetController {
     const scope = resolveScopeContext(authorization, { tenantId, companyId });
     assertImportKind(body.kind);
     if (!file?.buffer?.length) {
-      throw new ApiException('SHEET-400', 'Multipart file field "file" is required', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'SHEET-400',
+        'Multipart file field "file" is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     assertImportUploadMime(file.mimetype, file.originalname);
-    const result = await this.spreadsheetService.commitEmployeeImport(file.buffer, {
-      mimetype: file.mimetype,
-      originalname: file.originalname,
-      companyId: scope.companyId,
-      authorization,
-      tenantId: scope.tenantId,
-    });
+    const result = await this.spreadsheetService.commitEmployeeImport(
+      file.buffer,
+      {
+        mimetype: file.mimetype,
+        originalname: file.originalname,
+        companyId: scope.companyId,
+        authorization,
+        tenantId: scope.tenantId,
+      },
+    );
     return ok(result, 'SHEET-201', 'Import committed');
   }
 
@@ -204,7 +230,8 @@ export class SpreadsheetController {
       tenantId,
       companyId: body.filter.company_id ?? headerCompanyId,
     });
-    const { filename, body: csv } = await this.spreadsheetService.exportEmployeesCsv(body.filter);
+    const { filename, body: csv } =
+      await this.spreadsheetService.exportEmployeesCsv(body.filter);
     return new StreamableFile(Buffer.from(csv, 'utf8'), {
       type: 'text/csv; charset=utf-8',
       disposition: `attachment; filename="${filename}"`,

@@ -1,5 +1,8 @@
 import { signServiceJwt } from '../common/jwt-sign';
-import { HRM_COMPANY_UUID_BY_SLUG, HRM_GROUP_MEMBER_COMPANY_SLUGS } from '../common/hrm-list-scope';
+import {
+  HRM_COMPANY_UUID_BY_SLUG,
+  HRM_GROUP_MEMBER_COMPANY_SLUGS,
+} from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import { buildEmployeeSummaryByCompany } from './employee-summary';
 import { EmployeesService } from './employees.service';
@@ -39,7 +42,9 @@ describe('D-HRM-CO-EMP-COUNT-BE-01 employees summary by_company', () => {
       );
 
       expect(rows).toHaveLength(5);
-      expect(rows.map((r) => r.company_id)).toEqual([...HRM_GROUP_MEMBER_COMPANY_SLUGS]);
+      expect(rows.map((r) => r.company_id)).toEqual([
+        ...HRM_GROUP_MEMBER_COMPANY_SLUGS,
+      ]);
       expect(rows.find((r) => r.company_id === 'holding')).toEqual({
         company_id: 'holding',
         total: 105,
@@ -49,7 +54,9 @@ describe('D-HRM-CO-EMP-COUNT-BE-01 employees summary by_company', () => {
       });
       expect(rows.find((r) => r.company_id === 'trsport')?.total).toBe(200);
       expect(rows.find((r) => r.company_id === 'logistics')?.total).toBe(0);
-      expect(rows.every((r) => !/^[0-9a-f-]{36}$/i.test(r.company_id))).toBe(true);
+      expect(rows.every((r) => !/^[0-9a-f-]{36}$/i.test(r.company_id))).toBe(
+        true,
+      );
     });
 
     it('drops unknown legal-entity UUID keys (CẤM count by XBOS LE UUID)', () => {
@@ -170,10 +177,14 @@ describe('D-HRM-CO-EMP-COUNT-BE-01 employees summary by_company', () => {
       );
 
       expect(result.by_company).toHaveLength(5);
-      expect(result.by_company.map((r) => r.company_id)).toEqual([...HRM_GROUP_MEMBER_COMPANY_SLUGS]);
+      expect(result.by_company.map((r) => r.company_id)).toEqual([
+        ...HRM_GROUP_MEMBER_COMPANY_SLUGS,
+      ]);
       expect(result.by_company.every((r) => r.total >= 0)).toBe(true);
       expect(result.by_company.some((r) => r.total > 0)).toBe(true);
-      expect(result.by_company.find((r) => r.company_id === 'trsport')).toMatchObject({
+      expect(
+        result.by_company.find((r) => r.company_id === 'trsport'),
+      ).toMatchObject({
         total: 400,
         active_count: 380,
       });
@@ -182,8 +193,10 @@ describe('D-HRM-CO-EMP-COUNT-BE-01 employees summary by_company', () => {
       expect(sql).toContain('by_company AS');
       expect(sql).toContain('GROUP BY company_id');
       expect(sql).toContain('company_id = ANY');
-      const values = db.query.mock.calls[0]?.[1] as unknown[] | undefined;
-      expect(values?.[0]).toEqual(expect.arrayContaining([...HRM_GROUP_MEMBER_COMPANY_SLUGS]));
+      const values = db.query.mock.calls[0]?.[1];
+      expect(values?.[0]).toEqual(
+        expect.arrayContaining([...HRM_GROUP_MEMBER_COMPANY_SLUGS]),
+      );
     });
 
     it('member slug scope returns single by_company row (scope_parity)', async () => {

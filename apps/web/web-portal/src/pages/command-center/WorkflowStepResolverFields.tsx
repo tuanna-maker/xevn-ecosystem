@@ -260,6 +260,72 @@ export const WorkflowStepResolverFields: React.FC<WorkflowStepResolverFieldsProp
           </p>
         </div>
       ) : null}
+      {resolverType === 'payload_reference' ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label className={`${SETTINGS_FIELD_SHELL} min-w-0 ${SETTINGS_FIELD_COMPACT}`}>
+            <span className={SETTINGS_LABEL_CLASS}>field_path</span>
+            <input
+              type="text"
+              value={configString(cfg, 'field_path')}
+              onChange={(e) =>
+                setConfig(withConfigKey(cfg, 'field_path', e.target.value))
+              }
+              className={inputClassName}
+              aria-label="field_path"
+              placeholder="payload.department.managerId"
+            />
+          </label>
+          <label className={`${SETTINGS_FIELD_SHELL} min-w-0 ${SETTINGS_FIELD_COMPACT}`}>
+            <span className={SETTINGS_LABEL_CLASS}>fallback_role_code</span>
+            <input
+              type="text"
+              value={configString(cfg, 'fallback_role_code')}
+              onChange={(e) =>
+                setConfig(withConfigKey(cfg, 'fallback_role_code', e.target.value))
+              }
+              className={inputClassName}
+              aria-label="fallback_role_code"
+              placeholder="admin"
+            />
+          </label>
+        </div>
+      ) : null}
+
+      {resolverType === 'matrix_lookup' ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label className={`${SETTINGS_FIELD_SHELL} min-w-0 ${SETTINGS_FIELD_COMPACT}`}>
+            <span className={SETTINGS_LABEL_CLASS}>matrix_code</span>
+            <input
+              type="text"
+              value={configString(cfg, 'matrix_code')}
+              onChange={(e) =>
+                setConfig(withConfigKey(cfg, 'matrix_code', e.target.value))
+              }
+              className={inputClassName}
+              aria-label="matrix_code"
+              placeholder="APPROVAL_MATRIX_1"
+            />
+          </label>
+          <label className={`${SETTINGS_FIELD_SHELL} min-w-0 ${SETTINGS_FIELD_COMPACT}`}>
+            <span className={SETTINGS_LABEL_CLASS}>context_fields</span>
+            <input
+              type="text"
+              value={
+                Array.isArray(cfg?.context_fields)
+                  ? cfg.context_fields.join(', ')
+                  : configString(cfg, 'context_fields')
+              }
+              onChange={(e) => {
+                const arr = e.target.value.split(',').map((s) => s.trim()).filter(Boolean);
+                setConfig({ ...cfg, context_fields: arr });
+              }}
+              className={inputClassName}
+              aria-label="context_fields"
+              placeholder="payload.position_code, payload.company_id"
+            />
+          </label>
+        </div>
+      ) : null}
     </div>
   );
 };

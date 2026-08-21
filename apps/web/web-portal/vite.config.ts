@@ -80,10 +80,26 @@ export default defineConfig(({ mode }) => {
         '/api/hrm': {
           target: proxyHrmApi,
           changeOrigin: true,
+          configure: (proxy) => {
+            proxy.on('proxyReq', (proxyReq) => {
+              const key = env.VITE_INTERNAL_API_KEY || 'xevn-dev-internal-key';
+              if (key) {
+                proxyReq.setHeader('x-internal-api-key', key);
+              }
+            });
+          },
         },
         '/api/xbos': {
           target: proxyXbosApi,
           changeOrigin: true,
+          configure: (proxy) => {
+            proxy.on('proxyReq', (proxyReq) => {
+              const key = env.VITE_INTERNAL_API_KEY || 'xevn-dev-internal-key';
+              if (key) {
+                proxyReq.setHeader('x-internal-api-key', key);
+              }
+            });
+          },
         },
       },
     },

@@ -32,7 +32,9 @@ describe('D-DASH-01 employees summary route order', () => {
 
   const serviceMock = {
     getEmployeesSummary: jest.fn().mockResolvedValue(summaryPayload),
-    getEmployeeById: jest.fn().mockResolvedValue({ id: validEmployeeId, company_id: 'holding' }),
+    getEmployeeById: jest
+      .fn()
+      .mockResolvedValue({ id: validEmployeeId, company_id: 'holding' }),
     listEmployees: jest.fn(),
     listEmployeeDirectory: jest.fn(),
     createEmployee: jest.fn(),

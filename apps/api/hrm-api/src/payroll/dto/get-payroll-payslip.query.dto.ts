@@ -26,7 +26,11 @@ export class GetPayrollPayslipQueryDto {
   companyId?: string;
 
   @Transform(({ value, obj }) => {
-    return pickScalar(value) ?? pickScalar(obj?.companyId) ?? pickScalar(obj?.company_id);
+    return (
+      pickScalar(value) ??
+      pickScalar(obj?.companyId) ??
+      pickScalar(obj?.company_id)
+    );
   })
   @IsString()
   @MaxLength(64)
@@ -34,7 +38,9 @@ export class GetPayrollPayslipQueryDto {
 
   @IsOptional()
   @Transform(({ value, obj }) =>
-    parseIncludeSegments(value ?? obj?.includeSegments ?? obj?.include_segments),
+    parseIncludeSegments(
+      value ?? obj?.includeSegments ?? obj?.include_segments,
+    ),
   )
   @IsBoolean()
   include_segments?: boolean;

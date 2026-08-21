@@ -16,7 +16,15 @@
  * What: Restore src from dist update-performance-evaluation.dto.js/.d.ts
  * Why: TS2307 R-HRM-DIST-MISSING
  */
-import { IsIn, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import {
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class UpdatePerformanceEvaluationDto {
   @IsOptional()
