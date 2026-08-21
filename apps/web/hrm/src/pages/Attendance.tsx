@@ -4081,9 +4081,9 @@ export default function Attendance() {
         );
       case 'settings':
         return (
-          <div className="flex min-h-[calc(100vh-180px)]" data-testid="att-settings-shell-precision">
-            {/* Left Sidebar */}
-            <div className="w-52 border-r border-xevn-border bg-xevn-background p-2">
+          <div className="flex min-h-[calc(100vh-180px)] bg-white text-slate-900" data-testid="att-settings-shell-precision">
+            {/* Left Sidebar — luôn nền sáng, đồng bộ SettingsNavLayout */}
+            <div className="w-52 shrink-0 border-r border-slate-200 bg-white p-2">
               <nav className="space-y-1">
                 {sidebarMenuItems.map(item => (
                   <button
@@ -4093,8 +4093,8 @@ export default function Attendance() {
                     className={cn(
                       "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-left",
                       activeSidebarItem === item.id
-                        ? "bg-xevn-primary text-white"
-                        : "text-xevn-textSecondary hover:bg-xevn-primary/10 hover:text-xevn-text"
+                        ? "bg-blue-50 font-semibold text-blue-800"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     )}
                   >
                     <item.icon className="w-4 h-4 flex-shrink-0" />
@@ -4105,7 +4105,7 @@ export default function Attendance() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 p-6 overflow-auto">
+            <div className="flex-1 overflow-auto bg-white p-6 text-slate-900">
               {renderSettingsContent()}
             </div>
           </div>

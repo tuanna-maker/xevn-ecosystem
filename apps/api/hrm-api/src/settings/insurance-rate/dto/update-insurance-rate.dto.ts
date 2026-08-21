@@ -2,6 +2,8 @@ import {
   IsOptional,
   IsNumber,
   IsIn,
+  IsString,
+  MaxLength,
   Min,
   Max,
   IsDateString,
@@ -31,5 +33,14 @@ export class UpdateInsuranceRateDto {
 
   @IsOptional()
   @IsDateString()
+  effectiveFrom?: string;
+
+  @IsOptional()
+  @IsDateString()
   effectiveTo?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  notes?: string;
 }

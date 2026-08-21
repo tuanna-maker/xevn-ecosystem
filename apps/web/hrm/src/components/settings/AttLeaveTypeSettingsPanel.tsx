@@ -288,8 +288,8 @@ export function AttLeaveTypeSettingsPanel() {
     <>
       <SettingsCatalogScreenShell
         compact
-        title="Loại phép (ATT catalog)"
-        description="Danh sách loại phép theo đơn vị — tìm mã hoặc nhãn; thêm/sửa qua hộp thoại; F5 sau lưu."
+        title="Loại nghỉ phép"
+        description="Danh sách loại phép theo đơn vị — thêm/sửa qua hộp thoại."
         testId="settings-att-leave-types"
         searchValue={q}
         onSearchChange={setQ}

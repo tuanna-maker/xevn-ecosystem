@@ -10704,6 +10704,113 @@ export async function putSettingsCompanySetting(payload: {
   });
 }
 
+/** BA-HRM-INSURANCE-RATE — catalog mức đóng BHXH/BHYT/BHTN + lương tối thiểu vùng. */
+export type HrmInsuranceRateRow = {
+  id: string;
+  tenant_id?: string;
+  company_id?: string;
+  insurance_type: "BHXH" | "BHYT" | "BHTN" | string;
+  effective_year: number;
+  employer_rate_percent: string;
+  employee_rate_percent: string;
+  salary_cap_multiplier: string;
+  status: string;
+  effective_from: string | null;
+  effective_to: string | null;
+  notes?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type HrmMinimumWageRegionRow = {
+  id: string;
+  tenant_id?: string;
+  company_id?: string;
+  region_code: string;
+  effective_from: string;
+  effective_to: string | null;
+  monthly_min_wage: string;
+  status: string;
+  salary_cap?: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+/** GET /api/hrm/settings/insurance-rates — rates grouped by year + regions. */
+export async function listInsuranceRates(companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  const res = await requestHrm<{
+    rates?: Record<number, HrmInsuranceRateRow[]>;
+    regions?: HrmMinimumWageRegionRow[];
+  }>(`/api/hrm/settings/insurance-rates?${search.toString()}`, { method: "GET" });
+  return {
+    rates: res?.rates ?? {},
+    regions: Array.isArray(res?.regions) ? res.regions : [],
+  };
+}
+
+export async function createInsuranceRate(payload: {
+  /** SI catalog key (F-SI-CAT-EFF) — không enum đóng BHXH/BHYT/BHTN. */
+  insuranceType: string;
+  effectiveYear: number;
+  employerRatePercent: number;
+  employeeRatePercent: number;
+  salaryCapMultiplier?: number;
+  effectiveFrom?: string;
+  effectiveTo?: string;
+  notes?: string;
+  companyId: string;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(payload.companyId));
+  const { companyId: _companyId, ...body } = payload;
+  return requestHrm<HrmInsuranceRateRow>(
+    `/api/hrm/settings/insurance-rates/rates?${search.toString()}`,
+    { method: "POST", body: JSON.stringify(body) },
+  );
+}
+
+export async function updateInsuranceRate(
+  id: string,
+  payload: {
+    employerRatePercent?: number;
+    employeeRatePercent?: number;
+    salaryCapMultiplier?: number;
+    status?: "active" | "inactive";
+    effectiveFrom?: string;
+    effectiveTo?: string;
+    notes?: string;
+    companyId: string;
+  },
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(payload.companyId));
+  const { companyId: _companyId, ...body } = payload;
+  return requestHrm<HrmInsuranceRateRow>(
+    `/api/hrm/settings/insurance-rates/rates/${encodeURIComponent(id)}?${search.toString()}`,
+    { method: "PUT", body: JSON.stringify(body) },
+  );
+}
+
+export async function updateMinimumWageRegion(
+  id: string,
+  payload: {
+    monthlyMinWage: number;
+    status?: "active" | "inactive";
+    effectiveTo?: string;
+    companyId: string;
+  },
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(payload.companyId));
+  const { companyId: _companyId, ...body } = payload;
+  return requestHrm<HrmMinimumWageRegionRow>(
+    `/api/hrm/settings/insurance-rates/minimum-wage-regions/${encodeURIComponent(id)}?${search.toString()}`,
+    { method: "PUT", body: JSON.stringify(body) },
+  );
+}
+
 /** F-SET-SI-01 — list insurance-rate-cfg. */
 export async function listInsuranceRateCfg(params: {
   company_id: string;
