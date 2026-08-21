@@ -1219,6 +1219,11 @@ export type HrmRecruitmentInterview = {
   cancel_reason?: string | null;
   created_at: string;
   updated_at: string;
+  /** Display-ready from Lane A list join (optional). */
+  candidate_name?: string | null;
+  candidate_email?: string | null;
+  position?: string | null;
+  scheduled_at_display_vi_vn?: string | null;
 };
 
 export async function listJobRequisitions(params: {
@@ -1988,6 +1993,19 @@ export async function createRecruitmentCandidate(payload: {
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+export async function listRecruitmentInterviews(params: {
+  company_id: string;
+  candidate_id?: string;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
+  if (params.candidate_id) search.set("candidate_id", params.candidate_id);
+  return requestHrm<{ total: number; data: HrmRecruitmentInterview[] }>(
+    `/api/hrm/recruitment/interviews?${search.toString()}`,
+    { method: "GET" },
+  );
 }
 
 export async function scheduleRecruitmentInterview(payload: {
@@ -10809,6 +10827,58 @@ export async function updateMinimumWageRegion(
     `/api/hrm/settings/insurance-rates/minimum-wage-regions/${encodeURIComponent(id)}?${search.toString()}`,
     { method: "PUT", body: JSON.stringify(body) },
   );
+}
+
+/** Tham số mặc định tính lương — KV `pay_system_params`. */
+export type HrmPaySystemTaxBracket = {
+  level: number;
+  upTo: number | null;
+  rate: number;
+};
+
+export type HrmPaySystemParams = {
+  MINIMUM_WAGE: number;
+  STANDARD_WORK_DAYS: number;
+  STANDARD_WORK_DAYS_CC_OFFSET: number;
+  STANDARD_WORK_DAYS_DRIVER_OFFSET: number;
+  STANDARD_WORK_HOURS: number;
+  BHXH_BASE: number;
+  BHXH_CAP: number;
+  BHXH_EMP_RATE: number;
+  BHXH_CMP_RATE: number;
+  TNLD_CMP_RATE: number;
+  TNCN_PERSONAL: number;
+  TNCN_DEPENDENT: number;
+  PAY_DAY: number;
+  ADVANCE_DAY: number;
+  CUTOFF_DAY: number;
+  CC_BASE_SALARY: number;
+  CC_CALL_FUND: number;
+  DRIVER_KPI_EXPRESS: number;
+  DRIVER_MEAL_ALLOWANCE: number;
+  TNCN_BRACKETS: HrmPaySystemTaxBracket[];
+};
+
+export async function getPayrollSystemParams(companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  return requestHrm<HrmPaySystemParams>(
+    `/api/hrm/settings/payroll-params?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
+export async function putPayrollSystemParams(
+  companyId: string,
+  params: Partial<HrmPaySystemParams>,
+) {
+  return requestHrm<HrmPaySystemParams>("/api/hrm/settings/payroll-params", {
+    method: "PUT",
+    body: JSON.stringify({
+      company_id: normalizeHrmApiListCompanyId(companyId),
+      ...params,
+    }),
+  });
 }
 
 /** F-SET-SI-01 — list insurance-rate-cfg. */

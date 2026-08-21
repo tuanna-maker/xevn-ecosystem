@@ -10,9 +10,15 @@
  * change_mode: FIX
  * What: Rating SelectItem dùng sentinel `__none__` (cấm value="") — map → API rating null
  * Why: Radix Uncaught «Select.Item must have a value prop that is not an empty string» (sponsor interview.log)
- * must_keep: updateInterviewCatalog contract · create API · không BR one-active · không remaster compare
+ * must_keep: Lane A list/mutate · one-active · không remaster compare
  * BA_HOLD: one-active interview / list badge — seat này chỉ C-CONSOLE-CRASH
  * LastVerified: docs/qa/evidence/po-hrm-rec-interview-select-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-21 PO-HRM-REC-IV-LIST-LANE-A-01
+ * change_mode: FIX
+ * What: Quản lý lịch PV đọc/ghi Lane A `listRecruitmentInterviews` + status PATCH — DENY interviews-catalog twin
+ * Why: Schedule từ Ứng viên ghi recruitment_interviews; tab catalog đọc public.interviews → empty sai SoT
+ * must_keep: ManageActiveInterviewDialog Lane A · one-active · U65 · honesty false
  */
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
@@ -107,20 +113,21 @@ import {
 } from '@/components/ui/alert-dialog';
 import { InterviewCalendarView } from './InterviewCalendarView';
 import { CandidateEvaluationDialog } from './CandidateEvaluationDialog';
+import { ManageActiveInterviewDialog } from './ManageActiveInterviewDialog';
 import { useToast } from '@/hooks/use-toast';
 import { toErrorMessage } from '@/lib/apiError';
 import {
-  createInterviewCatalog,
-  deleteInterviewCatalog,
-  listCandidatesPool,
-  listInterviewsCatalog,
-  listJobPostings,
-  updateInterviewCatalog,
+  listRecruitmentCandidates,
+  listRecruitmentInterviews,
+  scheduleRecruitmentInterview,
+  updateRecruitmentInterviewStatus,
+  type HrmRecruitmentInterview,
+  type HrmRecruitmentInterviewStatus,
 } from '@/integrations/hrmApi';
 import { useAuth } from '@/contexts/AuthContext';
+import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import {
   INTERVIEW_RATING_NONE_SENTINEL,
-  ratingApiValue,
   ratingFormValue,
 } from './interviewRatingSelect';
 
@@ -134,6 +141,7 @@ interface Interview {
   position: string | null;
   interview_date: string;
   interview_time: string;
+  scheduled_at: string;
   duration_minutes: number | null;
   interview_type: string | null;
   location: string | null;
@@ -150,12 +158,43 @@ interface Interview {
   interview_round: number | null;
   result: string | null;
   next_steps: string | null;
+  scheduled_at_display_vi_vn?: string | null;
 }
 
-interface JobPosting {
-  id: string;
-  title: string;
-  position: string;
+function mapLaneAInterview(row: HrmRecruitmentInterview): Interview {
+  const at = row.scheduled_at ? new Date(row.scheduled_at) : null;
+  const valid = at && !Number.isNaN(at.getTime());
+  const interview_date = valid ? format(at, 'yyyy-MM-dd') : '';
+  const interview_time = valid ? format(at, 'HH:mm') : '';
+  return {
+    id: row.id,
+    candidate_id: row.candidate_id,
+    candidate_name: row.candidate_name?.trim() || '—',
+    candidate_email: row.candidate_email ?? null,
+    candidate_phone: null,
+    job_posting_id: null,
+    position: row.position ?? null,
+    interview_date,
+    interview_time,
+    scheduled_at: row.scheduled_at,
+    duration_minutes: null,
+    interview_type: null,
+    location: null,
+    meeting_link: null,
+    interviewer_name: row.interviewer ?? null,
+    interviewer_email: null,
+    notes: row.cancel_reason ?? null,
+    status: row.status,
+    feedback: null,
+    rating: null,
+    company_id: row.company_id,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    interview_round: null,
+    result: null,
+    next_steps: null,
+    scheduled_at_display_vi_vn: row.scheduled_at_display_vi_vn ?? null,
+  };
 }
 
 interface Candidate {
@@ -203,8 +242,9 @@ export function InterviewsTab() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const { currentCompanyId } = useAuth();
+  const { listCompanyId } = useHrmOperatingUnitFilter();
+  const effectiveCompanyId = listCompanyId || currentCompanyId || '';
   const [interviews, setInterviews] = useState<Interview[]>([]);
-  const [jobPostings, setJobPostings] = useState<JobPosting[]>([]);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -221,6 +261,7 @@ export function InterviewsTab() {
   const [creatingNextRound, setCreatingNextRound] = useState(false);
   const [isEvaluationDialogOpen, setIsEvaluationDialogOpen] = useState(false);
   const [interviewForEvaluation, setInterviewForEvaluation] = useState<Interview | null>(null);
+  const [manageInterview, setManageInterview] = useState<Interview | null>(null);
 
   const statusConfig = getStatusConfig(t);
   const typeConfig = getTypeConfig(t);
@@ -239,19 +280,19 @@ export function InterviewsTab() {
   });
 
   const fetchInterviews = async () => {
-    if (!currentCompanyId) return;
+    if (!effectiveCompanyId) return;
 
     setLoading(true);
     try {
-      const [interviewsRes, jobsRes, candidatesRes] = await Promise.all([
-        listInterviewsCatalog(currentCompanyId),
-        listJobPostings({ company_id: currentCompanyId }),
-        listCandidatesPool({ company_id: currentCompanyId }),
+      const [interviewsRes, candidatesRes] = await Promise.all([
+        listRecruitmentInterviews({ company_id: effectiveCompanyId }),
+        listRecruitmentCandidates({
+          company_id: effectiveCompanyId,
+          page: 1,
+          page_size: 500,
+        }),
       ]);
-      setInterviews((interviewsRes.data ?? []) as Interview[]);
-      setJobPostings(
-        (jobsRes.data ?? []).map((j) => ({ id: j.id, title: j.title, position: j.position })),
-      );
+      setInterviews((interviewsRes.data ?? []).map(mapLaneAInterview));
       setCandidates(
         (candidatesRes.data ?? []).map((c) => ({
           id: c.id,
@@ -267,7 +308,6 @@ export function InterviewsTab() {
         variant: 'destructive',
       });
       setInterviews([]);
-      setJobPostings([]);
       setCandidates([]);
     } finally {
       setLoading(false);
@@ -275,8 +315,8 @@ export function InterviewsTab() {
   };
 
   useEffect(() => {
-    fetchInterviews();
-  }, [currentCompanyId]);
+    void fetchInterviews();
+  }, [effectiveCompanyId]);
 
   const filteredInterviews = interviews.filter(interview => {
     const matchesSearch = !searchQuery || 
@@ -285,8 +325,15 @@ export function InterviewsTab() {
       interview.interviewer_name?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || interview.status === statusFilter;
-    const matchesType = typeFilter === 'all' || interview.interview_type === typeFilter;
-    const matchesResult = resultFilter === 'all' || interview.result === resultFilter;
+    // Lane A SoT chưa có interview_type / result — filter type/result chỉ áp khi field có giá trị
+    const matchesType =
+      typeFilter === 'all' ||
+      !interview.interview_type ||
+      interview.interview_type === typeFilter;
+    const matchesResult =
+      resultFilter === 'all' ||
+      !interview.result ||
+      interview.result === resultFilter;
     
     return matchesSearch && matchesStatus && matchesType && matchesResult;
   });
@@ -304,6 +351,10 @@ export function InterviewsTab() {
   };
 
   const handleOpenUpdate = (interview: Interview) => {
+    if (interview.status === 'scheduled' || interview.status === 'confirmed') {
+      setManageInterview(interview);
+      return;
+    }
     setSelectedInterview(interview);
     form.reset({
       status: interview.status || 'scheduled',
@@ -322,19 +373,23 @@ export function InterviewsTab() {
   };
 
   const handleDelete = async () => {
-    if (!interviewToDelete || !currentCompanyId) return;
+    if (!interviewToDelete || !effectiveCompanyId) return;
 
     try {
-      await deleteInterviewCatalog(interviewToDelete.id, currentCompanyId);
+      await updateRecruitmentInterviewStatus(
+        interviewToDelete.id,
+        { status: 'cancelled', cancel_reason: 'Hủy từ Quản lý lịch phỏng vấn' },
+        effectiveCompanyId,
+      );
       toast({
         title: t('common.success'),
         description: t('recruitment.it.deleteSuccess'),
       });
       setIsDeleteDialogOpen(false);
       setInterviewToDelete(null);
-      fetchInterviews();
+      void fetchInterviews();
     } catch (error) {
-      console.error('Error deleting interview:', error);
+      console.error('Error cancelling interview:', error);
       toast({
         title: t('common.error'),
         description: toErrorMessage(error, t('recruitment.it.deleteError')),
@@ -343,11 +398,7 @@ export function InterviewsTab() {
     }
   };
 
-  const getJobPostingTitle = (jobPostingId: string | null) => {
-    if (!jobPostingId) return null;
-    const job = jobPostings.find(j => j.id === jobPostingId);
-    return job ? job.title : null;
-  };
+  const getJobPostingTitle = (_jobPostingId: string | null) => null;
 
   const getCandidateName = (candidateId: string | null) => {
     if (!candidateId) return null;
@@ -356,32 +407,19 @@ export function InterviewsTab() {
   };
 
   const createNextRoundInterview = async (interview: Interview) => {
-    if (!currentCompanyId) return;
+    if (!effectiveCompanyId || !interview.candidate_id) return;
 
     setCreatingNextRound(true);
     try {
       const nextRound = (interview.interview_round || 1) + 1;
-      
       const nextDate = new Date();
       nextDate.setDate(nextDate.getDate() + 7);
-      await createInterviewCatalog({
-        company_id: currentCompanyId,
+      nextDate.setHours(9, 0, 0, 0);
+      await scheduleRecruitmentInterview({
+        company_id: effectiveCompanyId,
         candidate_id: interview.candidate_id,
-        candidate_name: interview.candidate_name,
-        candidate_email: interview.candidate_email,
-        candidate_phone: interview.candidate_phone,
-        job_posting_id: interview.job_posting_id,
-        position: interview.position,
-        interview_date: nextDate.toISOString().slice(0, 10),
-        interview_time: interview.interview_time,
-        interview_type: interview.interview_type,
-        location: interview.location,
-        meeting_link: interview.meeting_link,
-        interviewer_name: interview.interviewer_name,
-        interviewer_email: interview.interviewer_email,
-        interview_round: nextRound,
-        status: 'scheduled',
-        result: 'pending',
+        scheduled_at: nextDate.toISOString(),
+        interviewer: interview.interviewer_name?.trim() || 'HR',
       });
       toast({
         title: t('common.success'),
@@ -389,12 +427,12 @@ export function InterviewsTab() {
       });
       setIsNextRoundDialogOpen(false);
       setInterviewForNextRound(null);
-      fetchInterviews();
+      void fetchInterviews();
     } catch (error) {
       console.error('Error creating next round interview:', error);
       toast({
         title: t('common.error'),
-        description: t('recruitment.it.nextRoundError'),
+        description: toErrorMessage(error, t('recruitment.it.nextRoundError')),
         variant: 'destructive',
       });
     } finally {
@@ -403,49 +441,51 @@ export function InterviewsTab() {
   };
 
   const onSubmitUpdate = async (data: UpdateInterviewFormValues) => {
-    if (!selectedInterview) return;
+    if (!selectedInterview || !effectiveCompanyId) return;
 
     const isCompletingInterview = data.status === 'completed' && selectedInterview.status !== 'completed';
-    const isPassingResult = data.result === 'pass' && selectedInterview.result !== 'pass';
+    const nextStatus = data.status as HrmRecruitmentInterviewStatus;
 
     try {
-      if (!currentCompanyId) throw new Error('Missing company');
-      await updateInterviewCatalog(selectedInterview.id, currentCompanyId, {
-        status: data.status,
-        rating: ratingApiValue(data.rating),
-        feedback: data.feedback,
-        result: data.result || 'pending',
-        next_steps: data.next_steps,
-        interview_round: data.interview_round || selectedInterview.interview_round || 1,
-      });
+      await updateRecruitmentInterviewStatus(
+        selectedInterview.id,
+        {
+          status: nextStatus,
+          ...(nextStatus === 'cancelled'
+            ? {
+                cancel_reason:
+                  data.next_steps?.trim() ||
+                  data.feedback?.trim() ||
+                  'Cập nhật từ Quản lý lịch',
+              }
+            : {}),
+        },
+        effectiveCompanyId,
+      );
       toast({
         title: t('common.success'),
         description: t('recruitment.it.updateSuccess'),
       });
       setIsUpdateDialogOpen(false);
-      
+
       const updatedInterview = {
         ...selectedInterview,
         status: data.status,
         result: data.result || 'pending',
         interview_round: data.interview_round || selectedInterview.interview_round || 1,
       };
-      
+
       if (isCompletingInterview && selectedInterview.candidate_id) {
         setInterviewForEvaluation(updatedInterview);
         setIsEvaluationDialogOpen(true);
       }
-      else if (isPassingResult) {
-        setInterviewForNextRound(updatedInterview);
-        setIsNextRoundDialogOpen(true);
-      }
-      
-      fetchInterviews();
+
+      void fetchInterviews();
     } catch (error) {
       console.error('Error updating interview:', error);
       toast({
         title: t('common.error'),
-        description: t('recruitment.it.updateError'),
+        description: toErrorMessage(error, t('recruitment.it.updateError')),
         variant: 'destructive',
       });
     }
@@ -1221,10 +1261,13 @@ export function InterviewsTab() {
       {interviewForEvaluation && interviewForEvaluation.candidate_id && (
         <CandidateEvaluationDialog
           candidate={{
+            // Lane A SoT: recruitment_interviews.candidate_id → recruitment_candidates.id
             id: interviewForEvaluation.candidate_id,
             full_name: interviewForEvaluation.candidate_name,
             email: interviewForEvaluation.candidate_email || '',
             position: interviewForEvaluation.position,
+            list_lane: 'spine',
+            recruitment_candidate_id: interviewForEvaluation.candidate_id,
           }}
           interviewId={interviewForEvaluation.id}
           open={isEvaluationDialogOpen}
@@ -1235,6 +1278,39 @@ export function InterviewsTab() {
           onSaved={fetchInterviews}
         />
       )}
+
+      {manageInterview?.candidate_id &&
+      (manageInterview.status === 'scheduled' || manageInterview.status === 'confirmed') ? (
+        <ManageActiveInterviewDialog
+          open={!!manageInterview}
+          onOpenChange={(open) => {
+            if (!open) setManageInterview(null);
+          }}
+          candidate={{
+            id: manageInterview.candidate_id,
+            fullName: manageInterview.candidate_name,
+            email: manageInterview.candidate_email || '',
+            position: manageInterview.position,
+          }}
+          interviewId={manageInterview.id}
+          badge={{
+            has_active_interview: true,
+            active_interview_id: manageInterview.id,
+            active_interview_status: manageInterview.status,
+            active_interview_at: manageInterview.scheduled_at,
+            active_interview_display_time_vi_vn:
+              manageInterview.scheduled_at_display_vi_vn ??
+              `${manageInterview.interview_date} ${manageInterview.interview_time}`,
+            active_interview_badge_label: 'Đã có lịch',
+          }}
+          scheduledAtIso={manageInterview.scheduled_at}
+          statusLabel={manageInterview.status}
+          onSuccess={() => {
+            setManageInterview(null);
+            void fetchInterviews();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

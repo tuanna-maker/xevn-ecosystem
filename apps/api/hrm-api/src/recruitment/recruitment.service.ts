@@ -4479,6 +4479,83 @@ export class RecruitmentService {
   }
 
   /**
+   * @CODE-MEMORY method · Lane A GET interviews list — FR-UC-BP-REC-06a §3.4
+   * HTTP: GET …/interviews · SoT public.recruitment_interviews (+ candidate display)
+   * DENY public.interviews catalog twin (Lane B) as list SoT for Quản lý lịch PV.
+   * WorkItem: PO-HRM-REC-IV-LIST-LANE-A-01
+   */
+  async listRecruitmentInterviews(
+    companyId: string,
+    authorization?: string,
+    options?: { candidateId?: string },
+  ): Promise<{
+    total: number;
+    data: Array<
+      InterviewRow & {
+        candidate_name: string | null;
+        candidate_email: string | null;
+        position: string | null;
+        scheduled_at_display_vi_vn: string | null;
+      }
+    >;
+  }> {
+    await this.ensureSchema();
+    const scope = resolveHrmListScope(authorization, companyId);
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    if (scope.companyIds.length === 1) {
+      values.push(scope.companyIds[0]);
+      filters.push(`i.company_id = $${values.length}::text`);
+    } else {
+      values.push(scope.companyIds);
+      filters.push(`i.company_id = ANY($${values.length}::text[])`);
+    }
+    if (options?.candidateId?.trim()) {
+      values.push(options.candidateId.trim());
+      filters.push(`i.candidate_id = $${values.length}::uuid`);
+    }
+    const where =
+      filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
+    const countRes = await this.db.query<{ total: string }>(
+      `SELECT COUNT(*)::text AS total
+       FROM public.recruitment_interviews i
+       ${where}`,
+      values,
+    );
+    const res = await this.db.query<
+      InterviewRow & {
+        candidate_name: string | null;
+        candidate_email: string | null;
+        position: string | null;
+      }
+    >(
+      `SELECT i.id, i.company_id, i.candidate_id::text AS candidate_id,
+              i.scheduled_at::text AS scheduled_at, i.interviewer, i.status,
+              i.cancel_reason, i.created_at::text AS created_at,
+              i.updated_at::text AS updated_at,
+              c.full_name AS candidate_name,
+              c.email AS candidate_email,
+              nullif(btrim(r.title), '') AS position
+       FROM public.recruitment_interviews i
+       LEFT JOIN public.recruitment_candidates c ON c.id = i.candidate_id
+       LEFT JOIN public.job_requisitions r ON r.id = c.requisition_id
+       ${where}
+       ORDER BY
+         CASE WHEN i.status IN ('scheduled','confirmed') THEN 0 ELSE 1 END,
+         i.scheduled_at DESC NULLS LAST`,
+      values,
+    );
+    const data = res.rows.map((row) => ({
+      ...row,
+      scheduled_at_display_vi_vn: this.toViVnDateTime(row.scheduled_at),
+    }));
+    return {
+      total: Number(countRes.rows[0]?.total ?? 0),
+      data,
+    };
+  }
+
+  /**
    * @CODE-MEMORY method · Lane A FR-HRM-RC-05 SoT — recruitment_interviews
    * candidate_id → recruitment_candidates only (F4) · không public.interviews
    * must_keep §17.6.4

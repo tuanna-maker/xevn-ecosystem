@@ -6,6 +6,13 @@
  * Why: UC-BP-REC-06 Diễn biến #2 · O2/O5/O6/O7 · DENY pool-only as FR-06 DONE · Nest /rec dual
  * must_keep: criteria template picker · radar · history tab · U65 · honesty false · C-SLICE
  * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-06-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-21 PO-HRM-REC-EVAL-FEEDBACK-NEO-FE-01
+ * change_mode: FIX
+ * What: (1) useEffect fetch neo theo candidate.id — cấm deps object candidate (reset Textarea 1 ký tự);
+ *       (2) call sites Lane A truyền list_lane=spine + recruitment_candidate_id + requisition_id
+ * Why: Sponsor — nhận xét/đề xuất mất focus/value; Chốt Pass báo thiếu neo dù UV đã gắn YCTD
+ * must_keep: validateRecEvalCommit · Pass|Fail only · no auto stage · U65
  */
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
@@ -187,6 +194,7 @@ export function CandidateEvaluationDialog({
 
   const resultConfig = getResultConfig(r);
   const commitResultConfig = getCommitResultConfig(r);
+  const candidateId = candidate?.id?.trim() || null;
   const laneAId = candidate
     ? resolveLaneACandidateIdForMailEval({
         id: candidate.id,
@@ -198,16 +206,92 @@ export function CandidateEvaluationDialog({
       })
     : null;
 
-  // Fetch templates and existing evaluations
+  // Fetch templates + history when dialog opens / UV id đổi — KHÔNG deps cả object candidate
+  // (parent inline `{ id, ... }` mỗi render → fetchData reset overallFeedback/recommendation).
   useEffect(() => {
-    if (open && currentCompanyId && candidate) {
-      fetchData();
-    }
-  }, [open, currentCompanyId, candidate]);
+    if (!open || !currentCompanyId || !candidateId || !candidate) return;
+    let cancelled = false;
+
+    const run = async () => {
+      setLoading(true);
+      try {
+        const evalQuery = laneAId
+          ? {
+              company_id: currentCompanyId,
+              recruitment_candidate_id: laneAId,
+              application_id: candidate.application_id ?? undefined,
+            }
+          : {
+              company_id: currentCompanyId,
+              candidate_id: candidate.id,
+              include_legacy: true,
+            };
+        const [templatesRes, evaluationsRes] = await Promise.all([
+          listEvaluationCriteriaTemplates(currentCompanyId),
+          listCandidateEvaluations(evalQuery),
+        ]);
+        if (cancelled) return;
+        const templatesData = (templatesRes.data ?? []) as EvaluationCriteriaTemplate[];
+        const evaluationsData = (evaluationsRes.data ?? []).map((row) => ({
+          id: String(row.id),
+          evaluator_name: row.evaluator_name ? String(row.evaluator_name) : null,
+          total_score: row.total_score != null ? Number(row.total_score) : null,
+          weighted_score: row.weighted_score != null ? Number(row.weighted_score) : null,
+          result: String(row.result ?? 'pending'),
+          overall_feedback: row.overall_feedback ? String(row.overall_feedback) : null,
+          recommendation: row.recommendation ? String(row.recommendation) : null,
+          created_at: String(row.created_at ?? row.evaluated_at ?? ''),
+        }));
+
+        setTemplates(templatesData);
+        setExistingEvaluations(evaluationsData);
+
+        if (templatesData.length > 0) {
+          setCriteria(
+            templatesData.map((t, idx) => ({
+              id: `temp-${idx}`,
+              criterion_id: t.id,
+              category: t.category,
+              name: t.name,
+              weight: Number(t.weight),
+              requiredScore: t.default_required_score,
+              actualScore: null,
+            })),
+          );
+        } else {
+          setCriteria(
+            getDefaultCriteria(r).map((c, idx) => ({
+              ...c,
+              id: `temp-${idx}`,
+            })),
+          );
+        }
+
+        setResult('');
+        setOverallFeedback('');
+        setRecommendation('');
+        setSalaryRecommendation('');
+        setLastCommitOk(false);
+        setEvaluatorName(user?.email || '');
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Error fetching evaluation data:', error);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void run();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: stable id only
+  }, [open, currentCompanyId, candidateId]);
 
   const fetchData = async () => {
     if (!currentCompanyId || !candidate) return;
-    
+
     setLoading(true);
     try {
       const evalQuery = laneAId
@@ -239,31 +323,6 @@ export function CandidateEvaluationDialog({
 
       setTemplates(templatesData);
       setExistingEvaluations(evaluationsData);
-
-      if (templatesData.length > 0) {
-        setCriteria(templatesData.map((t, idx) => ({
-          id: `temp-${idx}`,
-          criterion_id: t.id,
-          category: t.category,
-          name: t.name,
-          weight: Number(t.weight),
-          requiredScore: t.default_required_score,
-          actualScore: null,
-        })));
-      } else {
-        setCriteria(getDefaultCriteria(r).map((c, idx) => ({
-          ...c,
-          id: `temp-${idx}`,
-        })));
-      }
-
-      // Reset form — chốt FR-06 yêu cầu user chọn Pass|Fail
-      setResult('');
-      setOverallFeedback('');
-      setRecommendation('');
-      setSalaryRecommendation('');
-      setLastCommitOk(false);
-      setEvaluatorName(user?.email || '');
     } catch (error) {
       console.error('Error fetching evaluation data:', error);
     } finally {

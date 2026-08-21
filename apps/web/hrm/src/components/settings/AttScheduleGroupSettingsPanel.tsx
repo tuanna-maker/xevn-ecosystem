@@ -10,7 +10,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SettingsCatalogRowActions } from './SettingsCatalogRowActions';
 import { SettingsCatalogScreenShell } from './SettingsCatalogScreenShell';
-import { Plus } from 'lucide-react';
 import { hrmApi } from '@/integrations/hrmApi';
 import {
   listAttSchedules,
@@ -132,15 +131,13 @@ export function AttScheduleGroupSettingsPanel() {
     <SettingsCatalogScreenShell
       title="Nhóm lịch làm việc"
       description="Quản lý lịch trình làm việc và các ca mặc định cho nhân viên."
-      q={q}
-      setQ={setQ}
+      testId="settings-att-schedule-groups"
+      searchValue={q}
+      onSearchChange={setQ}
+      searchPlaceholder="Tìm theo mã hoặc tên…"
       onRefresh={invalidate}
-      renderActions={() => (
-        <Button onClick={openCreate} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Thêm lịch
-        </Button>
-      )}
+      onAdd={openCreate}
+      addLabel="Thêm lịch"
     >
       <div className="rounded-md border">
         <Table>

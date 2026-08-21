@@ -539,7 +539,8 @@ export function SettingsDefaultsPanel() {
           payroll_e2e_ready={String(SETTINGS_DEFAULTS_PAYROLL_E2E_READY)}
         </Badge>
         <p className="text-xs text-muted-foreground">
-          Display-ready · không công thức FE · resolve PC chỉ draft (SRC-02) · soft-delete.
+          Phần dưới: thuế KV <code className="text-xs">pay_tax_*</code> · tỷ lệ BH · PC theo vị trí
+          (bổ sung sau khối tham số hệ thống phía trên).
         </p>
       </div>
 

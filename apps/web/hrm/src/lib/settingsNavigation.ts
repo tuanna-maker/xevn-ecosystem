@@ -103,6 +103,7 @@ export type SettingsNavGroup = {
 /** Alias tab cũ → màn mới (bookmark / QA) */
 export const SETTINGS_TAB_ALIASES: Record<string, SettingsTabId> = {
   'contract-legal': 'contract-clauses',
+  'catalog-leave-types': 'att-leave-types',
 };
 
 export function resolveSettingsTab(raw: string | null | undefined): SettingsTabId {
@@ -231,7 +232,20 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
       { id: 'contract-termination-reasons', label: 'Lý do chấm dứt HĐ', icon: FileText, testId: 'settings-tab-contract-termination-reasons' },
     ],
   },
-
+  {
+    groupId: 'attendance',
+    title: 'Chấm công & Nghỉ phép',
+    // Web chỉ dùng để khai báo danh mục. Dữ liệu chấm công thực tế nhập qua máy chấm công tích hợp hoặc mobile app.
+    items: [
+      { id: 'att-leave-types', label: 'Loại nghỉ phép', icon: FileText, testId: 'settings-tab-att-leave-types' },
+      { id: 'att-attendance-codes', label: 'Mã chấm công', icon: ClipboardCheck, testId: 'settings-tab-att-attendance-codes' },
+      { id: 'att-ot-types', label: 'Loại tăng ca', icon: Clock, testId: 'settings-tab-att-ot-types' },
+      { id: 'att-ot-comp-types', label: 'Chi trả tăng ca', icon: Clock, testId: 'settings-tab-att-ot-comp-types' },
+      { id: 'att-shifts', label: 'Ca làm việc', icon: Clock, testId: 'settings-tab-att-shifts' },
+      { id: 'att-work-rules', label: 'Quy tắc tính công', icon: Calculator, testId: 'settings-tab-att-work-rules' },
+      { id: 'att-schedule-groups', label: 'Nhóm lịch làm việc', icon: Layers, testId: 'settings-tab-att-schedule-groups' },
+    ],
+  },
   {
     groupId: 'insurance',
     title: 'Bảo hiểm',

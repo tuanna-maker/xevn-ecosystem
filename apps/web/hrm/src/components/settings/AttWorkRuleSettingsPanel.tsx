@@ -11,7 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SettingsCatalogRowActions } from './SettingsCatalogRowActions';
 import { SettingsCatalogScreenShell } from './SettingsCatalogScreenShell';
-import { Plus } from 'lucide-react';
 import { hrmApi } from '@/integrations/hrmApi';
 import {
   listAttRules,
@@ -133,15 +132,13 @@ export function AttWorkRuleSettingsPanel() {
     <SettingsCatalogScreenShell
       title="Quy tắc tính công"
       description="Quản lý các quy tắc công chuẩn, tăng ca, phạt đi muộn/về sớm."
-      q={q}
-      setQ={setQ}
+      testId="settings-att-work-rules"
+      searchValue={q}
+      onSearchChange={setQ}
+      searchPlaceholder="Tìm theo mã hoặc tên…"
       onRefresh={invalidate}
-      renderActions={() => (
-        <Button onClick={openCreate} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Thêm quy tắc
-        </Button>
-      )}
+      onAdd={openCreate}
+      addLabel="Thêm quy tắc"
     >
       <div className="rounded-md border">
         <Table>
