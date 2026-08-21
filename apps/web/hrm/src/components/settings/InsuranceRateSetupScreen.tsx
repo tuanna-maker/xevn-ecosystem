@@ -16,6 +16,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import { toErrorMessage } from '@/lib/apiError';
 import { SettingsCatalogScreenShell } from '@/components/settings/SettingsCatalogScreenShell';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import { isCatalogPickerValueAllowed } from '@/lib/catalogSearchPicker';
+import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
+import { useSiInsuranceTypesEffective } from '@/hooks/useSiInsuranceTypesEffective';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -36,36 +40,33 @@ import {
 } from '@/integrations/hrmApi';
 
 // ─── Insurance Rate types ────────────────────────────────────────────────────
-type InsType = 'BHXH' | 'BHYT' | 'BHTN';
 type InsRateForm = {
-  insuranceType: InsType;
+  /** SI catalog key (F-SI-CAT-EFF) — không hardcode BHXH/BHYT/BHTN. */
+  insuranceType: string;
   effectiveYear: string;
   employerRatePercent: string;
   employeeRatePercent: string;
   salaryCapMultiplier: string;
   effectiveFrom: string;
   effectiveTo: string;
+  /** Excel `ghi_chu`. */
+  notes: string;
 };
-const emptyRateForm = (): InsRateForm => ({
-  insuranceType: 'BHXH',
+const emptyRateForm = (defaultType = ''): InsRateForm => ({
+  insuranceType: defaultType,
   effectiveYear: String(new Date().getFullYear()),
   employerRatePercent: '',
   employeeRatePercent: '',
   salaryCapMultiplier: '20',
   effectiveFrom: '',
   effectiveTo: '',
+  notes: '',
 });
 
 type MinWageForm = {
   monthlyMinWage: string;
   status: 'active' | 'inactive';
   effectiveTo: string;
-};
-
-const INSURANCE_TYPE_LABELS: Record<InsType, string> = {
-  BHXH: 'BHXH (Xã hội)',
-  BHYT: 'BHYT (Y tế)',
-  BHTN: 'BHTN (Thất nghiệp)',
 };
 
 const REGION_LABELS: Record<string, string> = {
@@ -81,11 +82,30 @@ function formatCurrency(val: string | number): string {
   return n.toLocaleString('vi-VN') + ' ₫';
 }
 
+function formatRatePct(val: string | number | null | undefined): string {
+  const n = typeof val === 'string' ? parseFloat(val) : Number(val);
+  if (!Number.isFinite(n)) return '—';
+  return `${n.toFixed(2)}%`;
+}
+
+function sumRatePct(employer: string, employee: string): string {
+  const a = parseFloat(employer);
+  const b = parseFloat(employee);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return '—';
+  return `${(a + b).toFixed(2)}%`;
+}
+
 // ─── InsuranceRateSetupScreen ────────────────────────────────────────────────
 export function InsuranceRateSetupScreen() {
   const { currentCompanyId } = useAuth();
   const { listCompanyId } = useHrmOperatingUnitFilter();
   const companyId = listCompanyId || currentCompanyId;
+  const {
+    rateCfgTypeOptions,
+    insuranceTypeDisplayLabel,
+    isLoading: siTypesLoading,
+  } = useSiInsuranceTypesEffective({ enabled: Boolean(companyId) });
+  const siTypeSettingsCta = hrmPathWithEmbedSearch('/settings?tab=si-insurance-types');
 
   // ─── state ─────────────────────────────────────────────────────────────────
   const [ratesByYear, setRatesByYear] = useState<Record<number, HrmInsuranceRateRow[]>>({});
@@ -96,7 +116,7 @@ export function InsuranceRateSetupScreen() {
   // Rate dialog
   const [rateDialogOpen, setRateDialogOpen] = useState(false);
   const [editingRateId, setEditingRateId] = useState<string | null>(null);
-  const [rateForm, setRateForm] = useState<InsRateForm>(emptyRateForm);
+  const [rateForm, setRateForm] = useState<InsRateForm>(() => emptyRateForm());
   const [savingRate, setSavingRate] = useState(false);
 
   // Min wage dialog
@@ -125,21 +145,30 @@ export function InsuranceRateSetupScreen() {
 
   // ─── Rate CRUD ─────────────────────────────────────────────────────────────
   const openCreateRate = () => {
+    if (rateCfgTypeOptions.length === 0) {
+      toast({
+        title: 'Chưa có loại BH hiệu lực',
+        description: 'Tạo mã trong Cài đặt → Loại bảo hiểm trước.',
+        variant: 'destructive',
+      });
+      return;
+    }
     setEditingRateId(null);
-    setRateForm(emptyRateForm());
+    setRateForm(emptyRateForm(rateCfgTypeOptions[0]?.value ?? ''));
     setRateDialogOpen(true);
   };
 
   const openEditRate = (row: HrmInsuranceRateRow) => {
     setEditingRateId(row.id);
     setRateForm({
-      insuranceType: row.insurance_type,
+      insuranceType: (row.insurance_type ?? '').trim(),
       effectiveYear: String(row.effective_year),
-      employerRatePercent: row.employer_rate_percent,
-      employeeRatePercent: row.employee_rate_percent,
-      salaryCapMultiplier: row.salary_cap_multiplier,
+      employerRatePercent: String(row.employer_rate_percent ?? ''),
+      employeeRatePercent: String(row.employee_rate_percent ?? ''),
+      salaryCapMultiplier: String(row.salary_cap_multiplier ?? ''),
       effectiveFrom: row.effective_from ?? '',
       effectiveTo: row.effective_to ?? '',
+      notes: row.notes ?? '',
     });
     setRateDialogOpen(true);
   };
@@ -147,15 +176,40 @@ export function InsuranceRateSetupScreen() {
   const closeRateDialog = () => {
     setRateDialogOpen(false);
     setEditingRateId(null);
-    setRateForm(emptyRateForm());
+    setRateForm(emptyRateForm(rateCfgTypeOptions[0]?.value ?? ''));
   };
 
   const onSaveRate = async () => {
     if (!companyId) return;
+    const typeKey = rateForm.insuranceType.trim();
     const year = parseInt(rateForm.effectiveYear, 10);
     const employer = parseFloat(rateForm.employerRatePercent);
     const employee = parseFloat(rateForm.employeeRatePercent);
     const cap = parseFloat(rateForm.salaryCapMultiplier);
+    if (!editingRateId) {
+      if (!typeKey) {
+        toast({ title: 'Chọn loại bảo hiểm', variant: 'destructive' }); return;
+      }
+      if (
+        rateCfgTypeOptions.length > 0 &&
+        !isCatalogPickerValueAllowed(rateCfgTypeOptions, typeKey, { allowEmpty: false })
+      ) {
+        toast({
+          title: 'Loại BH không thuộc catalog hiệu lực',
+          description: 'Chọn lại từ Cài đặt → Loại bảo hiểm.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      if (rateCfgTypeOptions.length === 0) {
+        toast({
+          title: 'Chưa có loại BH hiệu lực',
+          description: 'Tạo mã trong Cài đặt → Loại bảo hiểm trước.',
+          variant: 'destructive',
+        });
+        return;
+      }
+    }
     if (!Number.isFinite(year) || year < 2000 || year > 2100) {
       toast({ title: 'Năm áp dụng không hợp lệ (2000–2100)', variant: 'destructive' }); return;
     }
@@ -173,22 +227,27 @@ export function InsuranceRateSetupScreen() {
           employerRatePercent: employer,
           employeeRatePercent: employee,
           salaryCapMultiplier: Number.isFinite(cap) && cap > 0 ? cap : undefined,
+          effectiveFrom: rateForm.effectiveFrom || undefined,
           effectiveTo: rateForm.effectiveTo || undefined,
+          notes: rateForm.notes.trim(),
           companyId,
         });
         toast({ title: 'Đã cập nhật mức đóng bảo hiểm' });
       } else {
         await createInsuranceRate({
-          insuranceType: rateForm.insuranceType,
+          insuranceType: typeKey,
           effectiveYear: year,
           employerRatePercent: employer,
           employeeRatePercent: employee,
           salaryCapMultiplier: Number.isFinite(cap) && cap > 0 ? cap : 20,
           effectiveFrom: rateForm.effectiveFrom || undefined,
           effectiveTo: rateForm.effectiveTo || undefined,
+          notes: rateForm.notes.trim() || undefined,
           companyId,
         });
-        toast({ title: `Đã tạo mức đóng ${INSURANCE_TYPE_LABELS[rateForm.insuranceType]} năm ${year}` });
+        toast({
+          title: `Đã tạo mức đóng ${insuranceTypeDisplayLabel(typeKey)} năm ${year}`,
+        });
       }
       closeRateDialog();
       await loadData();
@@ -293,7 +352,9 @@ export function InsuranceRateSetupScreen() {
                         <TableHead className="min-w-[140px]">Loại BH</TableHead>
                         <TableHead className="text-right min-w-[100px]">NSD (%)</TableHead>
                         <TableHead className="text-right min-w-[100px]">NLĐ (%)</TableHead>
+                        <TableHead className="text-right min-w-[100px]">Tổng (%)</TableHead>
                         <TableHead className="text-right min-w-[120px]">Trần BH (×)</TableHead>
+                        <TableHead className="min-w-[160px]">Ghi chú</TableHead>
                         <TableHead className="min-w-[80px]">TT</TableHead>
                         <TableHead className="text-right min-w-[80px]">Sửa</TableHead>
                       </TableRow>
@@ -302,16 +363,22 @@ export function InsuranceRateSetupScreen() {
                       {(ratesByYear[year] ?? []).map((row) => (
                         <TableRow key={row.id} data-testid={`settings-ins-rate-row-${row.insurance_type}-${year}`}>
                           <TableCell className="font-medium">
-                            {INSURANCE_TYPE_LABELS[row.insurance_type as InsType] ?? row.insurance_type}
+                            {insuranceTypeDisplayLabel(row.insurance_type)}
                           </TableCell>
                           <TableCell className="text-right font-mono text-xs">
-                            {parseFloat(row.employer_rate_percent).toFixed(2)}%
+                            {formatRatePct(row.employer_rate_percent)}
                           </TableCell>
                           <TableCell className="text-right font-mono text-xs">
-                            {parseFloat(row.employee_rate_percent).toFixed(2)}%
+                            {formatRatePct(row.employee_rate_percent)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono text-xs font-semibold">
+                            {sumRatePct(row.employer_rate_percent, row.employee_rate_percent)}
                           </TableCell>
                           <TableCell className="text-right font-mono text-xs">
                             {parseFloat(row.salary_cap_multiplier).toFixed(1)}×
+                          </TableCell>
+                          <TableCell className="max-w-[220px] truncate text-xs text-muted-foreground" title={row.notes ?? undefined}>
+                            {(row.notes ?? '').trim() || '—'}
                           </TableCell>
                           <TableCell>
                             <Badge
@@ -429,20 +496,34 @@ export function InsuranceRateSetupScreen() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
                 <Label>Loại bảo hiểm *</Label>
-                <Select
-                  value={rateForm.insuranceType}
-                  onValueChange={(v) => setRateForm((f) => ({ ...f, insuranceType: v as InsType }))}
-                  disabled={Boolean(editingRateId)}
-                >
-                  <SelectTrigger className="h-9" data-testid="hdsd-ins-rate-type">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SettingsDialogSelectContent>
-                    {(Object.keys(INSURANCE_TYPE_LABELS) as InsType[]).map((t) => (
-                      <SelectItem key={t} value={t}>{INSURANCE_TYPE_LABELS[t]}</SelectItem>
-                    ))}
-                  </SettingsDialogSelectContent>
-                </Select>
+                {editingRateId ? (
+                  <Input
+                    value={insuranceTypeDisplayLabel(rateForm.insuranceType)}
+                    disabled
+                    data-testid="hdsd-ins-rate-type"
+                  />
+                ) : (
+                  <CatalogSearchPicker
+                    options={rateCfgTypeOptions}
+                    value={rateForm.insuranceType}
+                    onValueChange={(v) =>
+                      setRateForm((f) => ({ ...f, insuranceType: v }))
+                    }
+                    loading={siTypesLoading}
+                    placeholder="Chọn loại BH…"
+                    emptyHint={
+                      <a
+                        href={siTypeSettingsCta}
+                        className="text-primary underline text-xs font-medium"
+                        data-testid="hdsd-ins-rate-open-si-insurance-types"
+                      >
+                        Mở Cài đặt → Loại bảo hiểm
+                      </a>
+                    }
+                    aria-label="Loại bảo hiểm mức đóng"
+                    data-testid="hdsd-ins-rate-type"
+                  />
+                )}
               </div>
               <div className="space-y-1">
                 <Label>Năm áp dụng *</Label>
@@ -483,6 +564,14 @@ export function InsuranceRateSetupScreen() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
+                <Label>Tổng (%) — tự tính</Label>
+                <Input
+                  value={sumRatePct(rateForm.employerRatePercent, rateForm.employeeRatePercent)}
+                  disabled
+                  data-testid="hdsd-ins-rate-total"
+                />
+              </div>
+              <div className="space-y-1">
                 <Label>Trần BH (× lương tối thiểu)</Label>
                 <Input
                   type="text"
@@ -493,6 +582,16 @@ export function InsuranceRateSetupScreen() {
                   onChange={(e) => setRateForm((f) => ({ ...f, salaryCapMultiplier: e.target.value }))}
                 />
               </div>
+            </div>
+            <div className="space-y-1">
+              <Label>Ghi chú</Label>
+              <Input
+                type="text"
+                placeholder="VD: Tính trên quỹ lương đóng BH"
+                value={rateForm.notes}
+                data-testid="hdsd-ins-rate-notes"
+                onChange={(e) => setRateForm((f) => ({ ...f, notes: e.target.value }))}
+              />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">

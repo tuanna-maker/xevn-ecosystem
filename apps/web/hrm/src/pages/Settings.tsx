@@ -126,6 +126,7 @@ import { EmpEmploymentStatusSettingsPanel } from '@/components/settings/EmpEmplo
 import { DecDecisionTypeSettingsPanel } from '@/components/settings/DecDecisionTypeSettingsPanel';
 import { SiInsuranceTypeSettingsPanel } from '@/components/settings/SiInsuranceTypeSettingsPanel';
 import { SiInsurerSettingsPanel } from '@/components/settings/SiInsurerSettingsPanel';
+import { InsuranceRateSetupScreen } from '@/components/settings/InsuranceRateSetupScreen';
 import { RecPipelineStageSettingsPanel } from '@/components/settings/RecPipelineStageSettingsPanel';
 import { RecCandidateSourceSettingsPanel } from '@/components/settings/RecCandidateSourceSettingsPanel';
 import { RecInterviewTypeSettingsPanel } from '@/components/settings/RecInterviewTypeSettingsPanel';
@@ -541,6 +542,10 @@ export default function Settings() {
         {settingsTab === 'si-insurers' && (<div className="space-y-4">
           <SiInsurerSettingsPanel />
         </div>)}
+
+        {settingsTab === 'payroll-insurance-rates' && (
+          <InsuranceRateSetupScreen />
+        )}
 
         {settingsTab === 'rec-pipeline-stages' && (<div className="space-y-4">
           <RecPipelineStageSettingsPanel />

@@ -83,6 +83,8 @@ import { SettingsTaxParamsService } from './settings/settings-tax-params.service
 import { SettingsPayrollParamsService } from './settings/settings-payroll-params.service';
 import { InsuranceRateCfgController } from './settings/insurance-rate-cfg.controller';
 import { InsuranceRateCfgService } from './settings/insurance-rate-cfg.service';
+import { InsuranceRateController } from './settings/insurance-rate/insurance-rate.controller';
+import { InsuranceRateService } from './settings/insurance-rate/insurance-rate.service';
 import { PositionCompensationPolicyController } from './settings/position-compensation-policy.controller';
 import { PositionCompensationPolicyService } from './settings/position-compensation-policy.service';
 import { PerformanceController } from './performance/performance.controller';
@@ -122,6 +124,7 @@ import { ContractTemplatesModule } from './contract-templates/contract-templates
     AllowanceCatalogController,
     SettingsCompanySettingsController,
     InsuranceRateCfgController,
+    InsuranceRateController,
     PositionCompensationPolicyController,
     PayrollController,
     AttendanceController,
@@ -155,6 +158,7 @@ import { ContractTemplatesModule } from './contract-templates/contract-templates
     SettingsTaxParamsService,
     SettingsPayrollParamsService,
     InsuranceRateCfgService,
+    InsuranceRateService,
     PositionCompensationPolicyService,
     PayrollService,
     PayrollCatalogService,

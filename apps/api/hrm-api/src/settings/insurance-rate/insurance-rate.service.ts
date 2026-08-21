@@ -26,6 +26,7 @@ type InsuranceRateRow = {
   status: string;
   effective_from: string;
   effective_to: string | null;
+  notes: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -95,10 +96,11 @@ export class InsuranceRateService {
     const effectiveFrom = dto.effectiveFrom ?? `${dto.effectiveYear}-01-01`;
     const effectiveTo = dto.effectiveTo ?? `${dto.effectiveYear}-12-31`;
     const salaryCapMultiplier = dto.salaryCapMultiplier ?? 20.0;
+    const notes = dto.notes?.trim() ? dto.notes.trim() : null;
 
     const result = await this.db.queryOne<InsuranceRateRow>(
-      `INSERT INTO hrm_insurance_rate (tenant_id, company_id, insurance_type, effective_year, employer_rate_percent, employee_rate_percent, salary_cap_multiplier, effective_from, effective_to)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+      `INSERT INTO hrm_insurance_rate (tenant_id, company_id, insurance_type, effective_year, employer_rate_percent, employee_rate_percent, salary_cap_multiplier, effective_from, effective_to, notes)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
       [
         tenantId,
         companyId,
@@ -109,6 +111,7 @@ export class InsuranceRateService {
         salaryCapMultiplier,
         effectiveFrom,
         effectiveTo,
+        notes,
       ],
     );
     return result;
@@ -121,19 +124,28 @@ export class InsuranceRateService {
     dto: UpdateInsuranceRateDto,
   ) {
     const existing = await this.findRateById(tenantId, companyId, id);
-    // BR-IR-07: khong xoa/sua neu payroll da tinh -- check payroll_period co dung rate nay khong
-    const payrollUsed = await this.db.queryOne(
-      `SELECT 1 FROM payroll_period pp WHERE pp.tenant_id = $1 AND pp.company_id = $2 AND EXTRACT(YEAR FROM pp.start_date) = $3`,
-      [tenantId, companyId, existing.effective_year],
+    // BR-IR-07: không sửa % nếu kỳ lương năm đó đã chốt — bảng SoT = payroll_periods (không phải payroll_period).
+    const periodTable = await this.db.queryOne<{ reg: string | null }>(
+      `SELECT to_regclass('public.payroll_periods')::text AS reg`,
     );
-    if (
-      payrollUsed &&
-      (dto.employerRatePercent !== undefined ||
-        dto.employeeRatePercent !== undefined)
-    ) {
-      throw new BadRequestException(
-        'Cannot modify rates for year with existing payroll runs',
+    if (periodTable?.reg) {
+      const payrollUsed = await this.db.queryOne(
+        `SELECT 1 FROM public.payroll_periods pp
+         WHERE pp.company_id = $1
+           AND EXTRACT(YEAR FROM pp.start_date) = $2
+           AND pp.status IN ('processed', 'closed')
+         LIMIT 1`,
+        [companyId, existing.effective_year],
       );
+      if (
+        payrollUsed &&
+        (dto.employerRatePercent !== undefined ||
+          dto.employeeRatePercent !== undefined)
+      ) {
+        throw new BadRequestException(
+          'Cannot modify rates for year with existing payroll runs',
+        );
+      }
     }
 
     const fields: string[] = [];
@@ -155,9 +167,17 @@ export class InsuranceRateService {
       fields.push(`status = $${idx++}`);
       params.push(dto.status);
     }
+    if (dto.effectiveFrom !== undefined) {
+      fields.push(`effective_from = $${idx++}`);
+      params.push(dto.effectiveFrom);
+    }
     if (dto.effectiveTo !== undefined) {
       fields.push(`effective_to = $${idx++}`);
       params.push(dto.effectiveTo);
+    }
+    if (dto.notes !== undefined) {
+      fields.push(`notes = $${idx++}`);
+      params.push(dto.notes.trim() ? dto.notes.trim() : null);
     }
     fields.push(`updated_at = now()`);
 
