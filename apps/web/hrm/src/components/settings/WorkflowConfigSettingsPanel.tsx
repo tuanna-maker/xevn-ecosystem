@@ -42,6 +42,7 @@ import { toCatalogPickerOptions } from '@/lib/catalogSearchPicker';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import { useQuery } from '@tanstack/react-query';
 import { listJobDescriptionTemplates, type HrmSettingsCatalogOverviewRow } from '@/integrations/hrmApi';
+import { amountStringToNumber, ViMoneyInput } from '@/components/ui/ViMoneyInput';
 
 function findCatalog(
   catalogs: HrmSettingsCatalogOverviewRow[] | null | undefined,
@@ -68,6 +69,12 @@ type WorkflowPosition = {
   jdTemplateId?: string;
   employmentType?: string;
   deadlineDate?: string;
+  /** Định biên (within_budget) hoặc Ngoại biên (out_of_budget) */
+  staffingType?: string;
+  /** Lương tối thiểu (VNĐ) */
+  salaryMin?: string;
+  /** Lương tối đa (VNĐ) */
+  salaryMax?: string;
 };
 
 type WorkflowField = {
@@ -305,6 +312,32 @@ function resolveApproverRole(level: string) {
   return 'Trưởng phòng phụ trách';
 }
 
+/**
+ * Từ approverRole → từ khóa để lọc nhân viên phù hợp làm người chịu trách nhiệm.
+ * VD: cấp "Trưởng phòng" → approverRole = "Giám đốc / TGĐ" → lọc theo giám đốc + tổng giám đốc.
+ */
+function approverTitleKeywords(approverRole: string): string[] {
+  const r = approverRole.toLowerCase();
+  if (r.includes('chủ tịch') || r.includes('hội đồng')) return ['chủ tịch', 'hdqt', 'hội đồng'];
+  if (r.includes('tổng giám đốc')) return ['tổng giám đốc', 'ceo', 'tgđ'];
+  if (r.includes('giám đốc khối') || (r.includes('giám đốc') && r.includes('tổng'))) return ['giám đốc', 'cfo', 'coo', 'cto', 'tổng giám đốc'];
+  // Default: trưởng phòng phụ trách
+  return ['trưởng phòng', 'trưởng nhóm', 'manager', 'lead'];
+}
+
+function filterEmployeesByApproverRole(
+  employees: Array<{ id: string; full_name: string; job_title?: string }>,
+  approverRole: string,
+): Array<{ id: string; full_name: string; job_title?: string }> {
+  if (!approverRole) return employees;
+  const keywords = approverTitleKeywords(approverRole);
+  const matched = employees.filter((e) =>
+    e.job_title && keywords.some((kw) => e.job_title!.toLowerCase().includes(kw)),
+  );
+  // Fallback: nếu không khớp ai thì trả toàn bộ để admin vẫn chọn được
+  return matched.length > 0 ? matched : employees;
+}
+
 function emptyPosition(): WorkflowPosition {
   return {
     id: createId('pos'),
@@ -317,6 +350,9 @@ function emptyPosition(): WorkflowPosition {
     jdTemplateId: '',
     employmentType: 'full-time',
     deadlineDate: '',
+    staffingType: 'within_budget',
+    salaryMin: '',
+    salaryMax: '',
   };
 }
 
@@ -380,6 +416,11 @@ const EMPLOYMENT_TYPES = [
   { value: 'freelance', label: 'Freelance' },
 ];
 
+const STAFFING_TYPES = [
+  { value: 'within_budget', label: 'Định biên' },
+  { value: 'out_of_budget', label: 'Ngoại biên' },
+];
+
 export function WorkflowConfigSettingsPanel() {
   const initial = useMemo(() => readStoredState(), []);
   const [workflowTypes, setWorkflowTypes] = useState<WorkflowType[]>(initial.types);
@@ -392,6 +433,15 @@ export function WorkflowConfigSettingsPanel() {
   const selectedType = workflowTypes.find((type) => type.id === draft.typeId);
   const selectedTypeCode = selectedType?.code ?? '';
   const isRecruitment = selectedTypeCode === 'REC';
+
+  const { currentCompanyId } = useAuth();
+  const { employees: rawEmployees = [] } = useEmployeePickerSearch({ companyId: currentCompanyId, pageSize: 200 });
+  /** Chuẩn hoá: map job_title_label / job_title_key → job_title để hiển thị chức danh trong dropdown */
+  const employees = rawEmployees.map((e) => ({
+    id: e.id,
+    full_name: e.full_name,
+    job_title: (e.job_title_label || e.job_title_key || '') as string,
+  }));
 
   const saveAll = (nextTypes = workflowTypes, nextWorkflows = workflows) => {
     setWorkflowTypes(nextTypes);
@@ -451,15 +501,37 @@ export function WorkflowConfigSettingsPanel() {
   };
 
   const updatePosition = (id: string, patch: Partial<WorkflowPosition>) => {
-    setDraft((current) => ({
-      ...current,
-      positions: current.positions.map((item) => {
+    setDraft((current) => {
+      const updatedPositions = current.positions.map((item) => {
         if (item.id !== id) return item;
         const next = { ...item, ...patch };
         if (patch.level !== undefined) next.approverRole = resolveApproverRole(patch.level);
         return next;
-      }),
-    }));
+      });
+
+      // Auto-add/remove TGĐ approval step based on staffingType
+      const TGD_STEP_MARKER = '__TGD_APPROVAL__';
+      const allOutOfBudget =
+        updatedPositions.length > 0 &&
+        updatedPositions.every((p) => (p.staffingType || 'within_budget') === 'out_of_budget');
+
+      let nextSteps = current.steps.filter((s) => s.condition !== TGD_STEP_MARKER);
+      if (allOutOfBudget) {
+        nextSteps = [
+          ...nextSteps,
+          {
+            id: createId('step'),
+            name: 'Phê duyệt Tổng giám đốc (Ngoại biên)',
+            ownerPersonId: '',
+            condition: TGD_STEP_MARKER,
+            requiredInfo: 'Phê duyệt bổ sung biên chế + ngân sách lương ngoại biên.',
+            slaHours: '72',
+          },
+        ];
+      }
+
+      return { ...current, positions: updatedPositions, steps: nextSteps };
+    });
   };
 
   const updateField = (id: string, patch: Partial<WorkflowField>) => {
@@ -750,9 +822,10 @@ export function WorkflowConfigSettingsPanel() {
               positions={draft.positions}
               setDraft={setDraft}
               updatePosition={updatePosition}
+              employees={employees}
             />
           ) : null}
-          <WorkflowStepsCard draft={draft} setDraft={setDraft} updateStep={updateStep} />
+          <WorkflowStepsCard draft={draft} setDraft={setDraft} updateStep={updateStep} employees={employees} />
         </div>
       </div>
 
@@ -783,10 +856,12 @@ function RecruitmentPositionsCard({
   positions,
   setDraft,
   updatePosition,
+  employees,
 }: {
   positions: WorkflowPosition[];
   setDraft: DraftSetter;
   updatePosition: (id: string, patch: Partial<WorkflowPosition>) => void;
+  employees: Array<{ id: string; full_name: string; job_title?: string }>;
 }) {
   const { currentCompanyId } = useAuth();
   
@@ -825,8 +900,6 @@ function RecruitmentPositionsCard({
       code: tpl.code
     }));
   }, [jdTemplates]);
-
-  const { employees = [] } = useEmployeePickerSearch({ companyId: currentCompanyId });
 
   return (
     <div className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
@@ -914,48 +987,60 @@ function RecruitmentPositionsCard({
                   <SelectValue placeholder="Chọn cấp bậc" />
                 </SelectTrigger>
                 <SelectContent portalScope="iframe">
-                  {levelOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                  {levelOptions.length === 0 && (
-                    <SelectItem value="EMPTY_LEVEL" disabled>
-                      Không có dữ liệu
-                    </SelectItem>
-                  )}
-                  {/* Fallback for existing data */}
-                  {position.level && !levelOptions.some(o => o.value === position.level) && (
-                    <SelectItem value={position.level}>{LEVEL_OPTIONS.includes(position.level) ? position.level : position.level}</SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-              <Select
-                value={position.responsiblePersonId}
-                onValueChange={(value) => updatePosition(position.id, { responsiblePersonId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Người chịu trách nhiệm" />
-                </SelectTrigger>
-                <SelectContent portalScope="iframe">
-                  {employees.map((person) => (
-                    <SelectItem key={person.id} value={person.id}>
-                      {person.full_name} {person.job_title ? `- ${person.job_title}` : ''}
-                    </SelectItem>
-                  ))}
-                  {employees.length === 0 && (
-                    <SelectItem value="EMPTY_EMP" disabled>
-                      Không có dữ liệu
-                    </SelectItem>
-                  )}
-                  {/* Fallback for existing data */}
-                  {position.responsiblePersonId && !employees.some(e => e.id === position.responsiblePersonId) && (
-                    <SelectItem value={position.responsiblePersonId}>
-                      {PEOPLE_OPTIONS.find(p => p.id === position.responsiblePersonId)?.name || position.responsiblePersonId}
-                    </SelectItem>
+                  <SelectItem value="ALL_LEVEL" className="font-semibold text-blue-600">Tất cả cấp bậc</SelectItem>
+                  {levelOptions.length > 0
+                    ? levelOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))
+                    : LEVEL_OPTIONS.map((opt) => (
+                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                      ))
+                  }
+                  {/* Fallback for existing saved data not in any list */}
+                  {position.level && position.level !== 'ALL_LEVEL' &&
+                    !levelOptions.some(o => o.value === position.level) &&
+                    !LEVEL_OPTIONS.includes(position.level) && (
+                    <SelectItem value={position.level}>{position.level}</SelectItem>
                   )}
                 </SelectContent>
               </Select>
+              {/* Người chịu trách nhiệm — lọc theo chức danh đồng bộ với approverRole */}
+              {(() => {
+                const resolvedRole = position.approverRole || resolveApproverRole(position.level);
+                const filteredEmployees = filterEmployeesByApproverRole(employees, resolvedRole);
+                const isFiltered = filteredEmployees.length < employees.length;
+                return (
+                  <Select
+                    value={position.responsiblePersonId}
+                    onValueChange={(value) => updatePosition(position.id, { responsiblePersonId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={isFiltered ? `Người chịu trách nhiệm (${resolvedRole})` : 'Người chịu trách nhiệm'} />
+                    </SelectTrigger>
+                    <SelectContent portalScope="iframe">
+                      {filteredEmployees.map((person) => (
+                        <SelectItem key={person.id} value={person.id}>
+                          {person.full_name}{person.job_title ? ` (${person.job_title})` : ''}
+                        </SelectItem>
+                      ))}
+                      {filteredEmployees.length === 0 && (
+                        <SelectItem value="EMPTY_EMP" disabled>Không có dữ liệu</SelectItem>
+                      )}
+                      {/* Hiển thị người đã lưu nếu không còn trong danh sách lọc */}
+                      {position.responsiblePersonId &&
+                        !filteredEmployees.some(e => e.id === position.responsiblePersonId) && (
+                        <SelectItem value={position.responsiblePersonId}>
+                          {employees.find(e => e.id === position.responsiblePersonId)?.full_name ||
+                            PEOPLE_OPTIONS.find(p => p.id === position.responsiblePersonId)?.name ||
+                            position.responsiblePersonId}
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                );
+              })()}
               <Input value={position.approverRole || resolveApproverRole(position.level)} readOnly />
               <Select value={position.employmentType || 'full-time'} onValueChange={(val) => updatePosition(position.id, { employmentType: val })}>
                 <SelectTrigger>
@@ -963,6 +1048,16 @@ function RecruitmentPositionsCard({
                 </SelectTrigger>
                 <SelectContent portalScope="iframe">
                   {EMPLOYMENT_TYPES.map(type => (
+                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={position.staffingType || 'within_budget'} onValueChange={(val) => updatePosition(position.id, { staffingType: val })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Định biên / Ngoại biên" />
+                </SelectTrigger>
+                <SelectContent portalScope="iframe">
+                  {STAFFING_TYPES.map(type => (
                     <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
                   ))}
                 </SelectContent>
@@ -994,6 +1089,29 @@ function RecruitmentPositionsCard({
                   />
                 </PopoverContent>
               </Popover>
+              {/* Lương tối thiểu và tối đa */}
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium select-none">VNĐ</span>
+                <ViMoneyInput
+                  className="pl-10"
+                  value={Number(position.salaryMin) || 0}
+                  placeholder="Lương tối thiểu"
+                  onValueChange={(val) => {
+                    updatePosition(position.id, { salaryMin: val ? val.toString() : '' });
+                  }}
+                />
+              </div>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium select-none">VNĐ</span>
+                <ViMoneyInput
+                  className="pl-10"
+                  value={Number(position.salaryMax) || 0}
+                  placeholder="Lương tối đa"
+                  onValueChange={(val) => {
+                    updatePosition(position.id, { salaryMax: val ? val.toString() : '' });
+                  }}
+                />
+              </div>
             </div>
           </div>
         ))}
@@ -1058,11 +1176,14 @@ function WorkflowStepsCard({
   draft,
   setDraft,
   updateStep,
+  employees,
 }: {
   draft: WorkflowDraft;
   setDraft: DraftSetter;
   updateStep: (id: string, patch: Partial<WorkflowStep>) => void;
+  employees: Array<{ id: string; full_name: string; job_title?: string }>;
 }) {
+  const TGD_STEP_MARKER = '__TGD_APPROVAL__';
   return (
     <div className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -1097,22 +1218,36 @@ function WorkflowStepsCard({
             </div>
             <div className="grid gap-3 md:grid-cols-2">
               <Input value={step.name} placeholder="Tên bước" onChange={(event) => updateStep(step.id, { name: event.target.value })} />
-              <Select value={step.ownerPersonId} onValueChange={(value) => updateStep(step.id, { ownerPersonId: value })}>
+              <Select
+                value={step.ownerPersonId}
+                onValueChange={(value) => updateStep(step.id, { ownerPersonId: value })}
+                disabled={step.condition === TGD_STEP_MARKER}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn người phụ trách" />
                 </SelectTrigger>
                 <SelectContent portalScope="iframe">
-                  {PEOPLE_OPTIONS.map((person) => (
+                  {employees.map((person) => (
                     <SelectItem key={person.id} value={person.id}>
-                      {person.name} - {person.title}
+                      {person.full_name}{person.job_title ? ` (${person.job_title})` : ''}
                     </SelectItem>
                   ))}
+                  {employees.length === 0 && (
+                    <SelectItem value="EMPTY_EMP" disabled>Không có dữ liệu</SelectItem>
+                  )}
+                  {/* Fallback for existing saved person not in list */}
+                  {step.ownerPersonId && !employees.some(e => e.id === step.ownerPersonId) && (
+                    <SelectItem value={step.ownerPersonId}>
+                      {PEOPLE_OPTIONS.find(p => p.id === step.ownerPersonId)?.name || step.ownerPersonId}
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
               <Textarea
                 className="min-h-20"
-                value={step.condition}
+                value={step.condition === TGD_STEP_MARKER ? '' : step.condition}
                 placeholder="Điều kiện"
+                readOnly={step.condition === TGD_STEP_MARKER}
                 onChange={(event) => updateStep(step.id, { condition: event.target.value })}
               />
               <Textarea
@@ -1127,7 +1262,19 @@ function WorkflowStepsCard({
                 placeholder="SLA giờ"
                 onChange={(event) => updateStep(step.id, { slaHours: event.target.value.replace(/\D/g, '') })}
               />
-              <Input value={personLabel(step.ownerPersonId)} readOnly />
+              <Input
+                value={(() => {
+                  if (!step.ownerPersonId) {
+                    return step.condition === TGD_STEP_MARKER ? 'Tổng giám đốc (tự động)' : 'Chưa chọn';
+                  }
+                  const emp = employees.find(e => e.id === step.ownerPersonId);
+                  if (emp) return emp.job_title ? `${emp.full_name} (${emp.job_title})` : emp.full_name;
+                  const legacy = PEOPLE_OPTIONS.find(p => p.id === step.ownerPersonId);
+                  if (legacy) return `${legacy.name} (${legacy.title})`;
+                  return step.ownerPersonId;
+                })()}
+                readOnly
+              />
             </div>
           </div>
         ))}

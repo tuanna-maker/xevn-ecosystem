@@ -110,14 +110,31 @@ export const ViMoneyInput = React.forwardRef<HTMLInputElement, ViMoneyInputProps
   ) {
     const [text, setText] = React.useState(() => formatViMoneyGrouped(value));
     const focusedRef = React.useRef(false);
+    const isComposingRef = React.useRef(false);
 
     React.useEffect(() => {
-      if (focusedRef.current) return;
+      if (focusedRef.current || isComposingRef.current) return;
       setText(formatViMoneyGrouped(value));
     }, [value]);
 
+    const handleCompositionStart = () => {
+      isComposingRef.current = true;
+    };
+
+    const handleCompositionEnd = (e: React.CompositionEvent<HTMLInputElement>) => {
+      isComposingRef.current = false;
+      const raw = e.currentTarget.value;
+      const next = parseViMoneyDigits(raw);
+      setText(formatViMoneyGrouped(next));
+      onValueChange(next);
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value;
+      if (isComposingRef.current) {
+        setText(raw);
+        return;
+      }
       const next = parseViMoneyDigits(raw);
       setText(formatViMoneyGrouped(next));
       onValueChange(next);
@@ -154,6 +171,8 @@ export const ViMoneyInput = React.forwardRef<HTMLInputElement, ViMoneyInputProps
         onChange={handleChange}
         onBlur={handleBlur}
         onFocus={handleFocus}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
         data-vi-money="1"
         {...inputRest}
       />

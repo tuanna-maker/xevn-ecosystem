@@ -829,14 +829,32 @@ export class RecruitmentCatalogService {
     if (!this.settingsCatalogs) {
       return { code, label: code };
     }
-    const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
-      tenantId: this.resolveCatalogTenantId(opts.tenantId),
-      companyId: opts.companyId,
-      catalogKey: 'job_titles',
-      code,
-      errorCode: opts.errorCode,
-      errorMessage: `position_key '${code}' is not in job_titles catalog (free-text SoT forbidden)`,
-    });
+    const tenantId = this.resolveCatalogTenantId(opts.tenantId);
+    let hit: { code: string; label: string } | undefined;
+    let lastError: unknown;
+    for (const catalogKey of ['job_titles', 'positions', 'employee_positions']) {
+      try {
+        hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
+          tenantId,
+          companyId: opts.companyId,
+          catalogKey,
+          code,
+          errorCode: opts.errorCode,
+          errorMessage: `position_key '${code}' is not in ${catalogKey} catalog`,
+        });
+        break;
+      } catch (err) {
+        lastError = err;
+      }
+    }
+    
+    if (!hit) {
+      throw new ApiException(
+        opts.errorCode,
+        `position_key '${code}' is not in job_titles, positions, or employee_positions catalog (free-text SoT forbidden)`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     return { code: hit.code, label: hit.label };
   }
 
