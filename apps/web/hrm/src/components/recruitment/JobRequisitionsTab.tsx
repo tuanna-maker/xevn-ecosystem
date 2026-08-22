@@ -2154,7 +2154,7 @@ export function JobRequisitionsTab({
                 </div>
               ) : null}
               <div className="col-span-2 space-y-2">
-                <FormLabel>Trong / ngoài định biên *</FormLabel>
+                <label className="text-sm font-medium leading-none">Trong / ngoài định biên *</label>
                 <Select
                   value={editMode || undefined}
                   onValueChange={(v) => setEditMode(v as HrmJobRequisitionHeadcountMode)}
@@ -2171,7 +2171,7 @@ export function JobRequisitionsTab({
               </div>
               {editMode === 'in_plan' ? (
                 <div className="col-span-3 space-y-2">
-                  <FormLabel>{YCTD_CELL_PICKER_LABEL_VI}</FormLabel>
+                  <label className="text-sm font-medium leading-none">{YCTD_CELL_PICKER_LABEL_VI}</label>
                   <CatalogSearchPicker
                     options={editCellPickerOptions}
                     value={editCellId}
@@ -2199,7 +2199,7 @@ export function JobRequisitionsTab({
               ) : null}
               {editMode === 'out_of_plan' ? (
                 <div className="col-span-3 space-y-2">
-                  <FormLabel htmlFor="edit-out-reason">Lý do ngoài ĐB *</FormLabel>
+                  <label className="text-sm font-medium leading-none" htmlFor="edit-out-reason">Lý do ngoài ĐB *</label>
                   <Select
                     value={OUT_OF_PLAN_REASONS.includes(editOutReason) ? editOutReason : editOutReason ? 'Khác' : ''}
                     onValueChange={(v) => {
@@ -2229,7 +2229,7 @@ export function JobRequisitionsTab({
                 </div>
               ) : null}
               <div className="space-y-2">
-                <FormLabel>Lý do tuyển</FormLabel>
+                <label className="text-sm font-medium leading-none">Lý do tuyển</label>
                 <Select
                   value={editHireReason || 'new'}
                   onValueChange={(v) => setEditHireReason(v as HrmJobRequisitionHireReason)}
@@ -2246,7 +2246,7 @@ export function JobRequisitionsTab({
               </div>
               {editHireReason === 'replace' ? (
                 <div className="col-span-2 space-y-2">
-                  <FormLabel>NV thay thế *</FormLabel>
+                  <label className="text-sm font-medium leading-none">NV thay thế *</label>
                   <CatalogSearchPicker
                     options={employeeOptions}
                     value={editReplaceEmployeeId}
@@ -2257,7 +2257,7 @@ export function JobRequisitionsTab({
                 </div>
               ) : null}
               <div className="space-y-2">
-                <FormLabel>Ngạch/bậc</FormLabel>
+                <label className="text-sm font-medium leading-none">Ngạch/bậc</label>
                 <CatalogSearchPicker
                   options={jobGradeOptions}
                   value={editJobGradeKey}
@@ -2279,7 +2279,7 @@ export function JobRequisitionsTab({
                 />
               </div>
               <div className="space-y-2">
-                <FormLabel htmlFor="edit-requisition-headcount">Số lượng *</FormLabel>
+                <label className="text-sm font-medium leading-none" htmlFor="edit-requisition-headcount">Số lượng *</label>
                 <Input
                   id="edit-requisition-headcount"
                   type="number"
@@ -2299,7 +2299,7 @@ export function JobRequisitionsTab({
                 />
               </div>
               <div className="space-y-2">
-                <FormLabel>Trạng thái</FormLabel>
+                <label className="text-sm font-medium leading-none">Trạng thái</label>
                 <Select
                 value={editStatus}
                 onValueChange={(v) => setEditStatus(v as HrmJobRequisition['status'])}
