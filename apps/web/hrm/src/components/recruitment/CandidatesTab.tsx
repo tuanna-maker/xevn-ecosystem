@@ -162,6 +162,7 @@ import { CandidateStageTransitionDialog } from './CandidateStageTransitionDialog
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useCandidateEvaluations } from '@/hooks/useCandidateEvaluations';
+import { useJobRequisitions } from '@/hooks/useJobRequisitions';
 import { deleteCandidatePool, listCandidatesPool, listRecruitmentCandidates, startCandidatePipeline, updateCandidatePoolStage } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
 import {
@@ -385,6 +386,8 @@ export function CandidatesTab() {
   const [stageHistoryRefreshToken, setStageHistoryRefreshToken] = useState(0);
 
   const { evaluations } = useCandidateEvaluations(isComparisonDialogOpen);
+  const { requisitions: compareSeedRequisitions, refetch: refreshCompareRequisitions } =
+    useJobRequisitions();
 
   const fetchCandidates = useCallback(async () => {
     if (!currentCompanyId) return;
@@ -1467,6 +1470,8 @@ export function CandidatesTab() {
         initialRequisitionId={compareInitialRequisitionId}
         initialCandidateId={compareInitialCandidateId}
         seedEvaluations={evaluations}
+        seedRequisitions={compareSeedRequisitions}
+        refreshRequisitions={refreshCompareRequisitions}
         onEvaluateCandidate={(target) => {
           const mapped = compareTargetToCandidate(target);
           setEvaluatingCandidate(mapped);

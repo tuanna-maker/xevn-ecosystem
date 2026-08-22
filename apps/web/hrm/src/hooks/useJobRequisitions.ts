@@ -22,23 +22,26 @@ export function useJobRequisitions() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const useApi = shouldSkipSupabaseDataFetches();
 
-  const fetchRequisitions = useCallback(async () => {
+  const fetchRequisitions = useCallback(async (): Promise<HrmJobRequisition[]> => {
     if (!effectiveCompanyId || !useApi) {
       setRequisitions([]);
       setFetchError(null);
       setIsLoading(false);
-      return;
+      return [];
     }
 
     setIsLoading(true);
     setFetchError(null);
     try {
       const response = await listJobRequisitions(buildJobRequisitionsQuery(effectiveCompanyId));
-      setRequisitions(response.data ?? []);
+      const data = response.data ?? [];
+      setRequisitions(data);
+      return data;
     } catch (error: unknown) {
       console.error('Error fetching job requisitions:', error);
       setRequisitions([]);
       setFetchError(toErrorMessage(error, 'Không thể tải yêu cầu tuyển dụng'));
+      return [];
     } finally {
       setIsLoading(false);
     }

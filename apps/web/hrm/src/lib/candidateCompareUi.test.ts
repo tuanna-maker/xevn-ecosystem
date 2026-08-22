@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   REC_COMPARE_MAX_N,
   buildCompareApplicationsFromEvaluations,
+  buildCompareCriteriaTableRows,
   buildCompareYctdPickerFromCandidates,
   buildCompareYctdPickerFromEvaluations,
   buildRadarFromCompareMatrix,
+  compareMatrixHasScoredData,
   canAddCandidateToCompare,
   compareEvalBadgeLabel,
   dedupeCompareCandidatesById,
@@ -13,6 +15,8 @@ import {
   mapApplicationItemToCompareCandidate,
   mergeCompareMatrixIntoCandidates,
   normalizeCompareListRows,
+  resolveCompareMatrixCandidateIds,
+  resolveCompareSpineCandidateId,
 } from './candidateCompareUi';
 
 describe('candidateCompareUi (PO-HRM-REC-UV-YCTD-CMP-FE-01)', () => {
@@ -92,20 +96,46 @@ describe('candidateCompareUi (PO-HRM-REC-UV-YCTD-CMP-FE-01)', () => {
   });
 
   it('builds radar from BE matrix criteria only', () => {
-    const radar = buildRadarFromCompareMatrix(
-      {
-        requisition_id: 'y1',
-        criteria: [{ name: 'Giao tiếp' }, { name: 'Chuyên môn' }],
-        rows: [
-          { candidate_id: 'c1', full_name: 'A', scores: { 'Giao tiếp': 4, 'Chuyên môn': 3 } },
-          { candidate_id: 'c2', full_name: 'B', scores: { 'Giao tiếp': 2, 'Chuyên môn': null } },
-        ],
-      },
-      ['c1', 'c2'],
-    );
+    const matrix = {
+      requisition_id: 'y1',
+      criteria: [{ name: 'Giao tiếp' }, { name: 'Chuyên môn' }],
+      rows: [
+        { candidate_id: 'c1', full_name: 'A', scores: { 'Giao tiếp': 4, 'Chuyên môn': 3 } },
+        { candidate_id: 'c2', full_name: 'B', scores: { 'Giao tiếp': 2, 'Chuyên môn': null } },
+      ],
+    };
+    expect(compareMatrixHasScoredData(matrix, ['c1', 'c2'])).toBe(true);
+    const radar = buildRadarFromCompareMatrix(matrix, ['c1', 'c2']);
     expect(radar).toHaveLength(2);
     expect(radar[0].candidate0).toBe(4);
     expect(radar[1].candidate1).toBe(0);
+  });
+
+  it('returns empty radar for template-only matrix (AC-REC-CMP-05 «chưa đánh giá»)', () => {
+    const matrix = {
+      requisition_id: 'y1',
+      criteria: [{ id: 'tpl-1', name: 'Giao tiếp' }],
+      rows: [
+        {
+          candidate_id: 'c1',
+          full_name: 'A',
+          eval_status: 'none',
+          scores: { 'Giao tiếp': null, 'tpl-1': null },
+        },
+        {
+          candidate_id: 'c2',
+          full_name: 'B',
+          eval_status: 'none',
+          scores: { 'Giao tiếp': null, 'tpl-1': null },
+        },
+      ],
+    };
+    expect(compareMatrixHasScoredData(matrix, ['c1', 'c2'])).toBe(false);
+    expect(buildRadarFromCompareMatrix(matrix, ['c1', 'c2'])).toEqual([]);
+    const table = buildCompareCriteriaTableRows(matrix, ['c1', 'c2']);
+    expect(table).toHaveLength(1);
+    expect(table[0].candidate0).toBeNull();
+    expect(table[0].candidate1).toBeNull();
   });
 
   it('builds radar series index aligned to selectedCandidateIds order', () => {
@@ -174,6 +204,47 @@ describe('candidateCompareUi (PO-HRM-REC-UV-YCTD-CMP-FE-01)', () => {
     const apps = buildCompareApplicationsFromEvaluations(evalRows, 'req-1');
     expect(apps).toHaveLength(2);
     expect(apps[0].full_name).toBe('Nguyễn Văn A');
+  });
+
+  it('skips eval fallback rows without recruitment_candidate_id (pool-only neo)', () => {
+    const apps = buildCompareApplicationsFromEvaluations(
+      [
+        {
+          requisition_id: 'req-1',
+          candidate_id: 'pool-only-id',
+          candidate_name: 'Pool UV',
+        },
+        {
+          requisition_id: 'req-1',
+          recruitment_candidate_id: 'uv-spine',
+          candidate_name: 'Spine UV',
+        },
+      ],
+      'req-1',
+    );
+    expect(apps).toHaveLength(1);
+    expect(apps[0].candidate_id).toBe('uv-spine');
+  });
+
+  it('resolveCompareMatrixCandidateIds maps aliases to Lane A spine ids', () => {
+    expect(
+      resolveCompareMatrixCandidateIds(
+        [
+          { id: 'spine-1', application_id: 'app-1' },
+          { id: 'spine-2', application_id: 'spine-2' },
+        ],
+        ['app-1', 'spine-2'],
+      ),
+    ).toEqual(['spine-1', 'spine-2']);
+  });
+
+  it('resolveCompareSpineCandidateId prefers recruitment_candidate_id', () => {
+    expect(
+      resolveCompareSpineCandidateId({
+        candidate_id: 'pool-1',
+        recruitment_candidate_id: 'spine-1',
+      }),
+    ).toBe('spine-1');
   });
 
   it('builds YCTD picker from spine candidates grouped by requisition_id', () => {

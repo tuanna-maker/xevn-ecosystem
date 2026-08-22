@@ -238,7 +238,10 @@ import {
   type JdTemplateStatus,
   type YctdJdTemplateBindRow,
 } from './yctd-jd-bind';
-import { assertYctdOpenForInternalScanOrThrow } from './yctd-requisition-gates';
+import {
+  assertYctdOpenForInternalScanOrThrow,
+  backfillLegacyYctdHeadcountMode,
+} from './yctd-requisition-gates';
 import { ensureSpineRecruitmentCandidateFromPool } from './pool-spine-bridge';
 import {
   ACTIVE_IV_FOR_EVAL,
@@ -737,6 +740,8 @@ export class RecruitmentCatalogService {
       ALTER TABLE public.job_requisitions
         ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ NULL;
     `);
+    // PO-HRM-MVP-GD1-REC-02-CLUSTER-DATA-01 §7 — O4 legacy uplift (shared with RecruitmentService).
+    await backfillLegacyYctdHeadcountMode(this.db);
     // PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 — DATA-01 §5: YCTD neo + soft-delete on eval.
     await this.db.query(`
       ALTER TABLE public.candidate_evaluations

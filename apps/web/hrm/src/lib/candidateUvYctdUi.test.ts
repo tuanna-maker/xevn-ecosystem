@@ -41,7 +41,7 @@ describe('candidateUvYctdUi — PO-HRM-REC-UV-YCTD-FE-01', () => {
     expect(isReceivableRequisitionStatus('closed')).toBe(false);
   });
 
-  it('compare picker keeps YCTD with UV even when closed; plus receivable / pending empty UV', () => {
+  it('compare picker parity tab YCTD — exclude only rejected/cancelled', () => {
     const rows = [
       { id: '1', status: 'closed', candidate_count: 3 },
       { id: '2', status: 'draft', candidate_count: 0 },
@@ -49,8 +49,9 @@ describe('candidateUvYctdUi — PO-HRM-REC-UV-YCTD-FE-01', () => {
       { id: '4', status: 'open_for_hire', candidate_count: 2 },
       { id: '5', status: 'pending_approval', candidate_count: 0 },
       { id: '6', status: 'rejected', candidate_count: 1 },
+      { id: '7', status: 'cancelled', candidate_count: 0 },
     ];
-    expect(filterComparePickerYctds(rows).map((r) => r.id)).toEqual(['1', '3', '4', '5']);
+    expect(filterComparePickerYctds(rows).map((r) => r.id)).toEqual(['1', '2', '3', '4', '5']);
   });
 
   it('derives position from YCTD display-ready — never free_text source', () => {

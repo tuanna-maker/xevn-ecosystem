@@ -49,6 +49,7 @@ import { useTranslation } from 'react-i18next';
 import {
   BarChart3,
   Users,
+  Check,
   CheckCircle,
   XCircle,
   AlertCircle,
@@ -56,6 +57,7 @@ import {
   ClipboardCheck,
   ArrowRightLeft,
 } from 'lucide-react';
+import * as SelectPrimitive from '@radix-ui/react-select';
 import {
   Dialog,
   DialogContent,
@@ -63,7 +65,12 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -92,7 +99,9 @@ import {
 } from '@/lib/hrmListScope';
 import {
   REC_COMPARE_MAX_N,
+  buildCompareCriteriaTableRows,
   buildRadarFromCompareMatrix,
+  compareMatrixHasScoredData,
   buildCompareApplicationsFromEvaluations,
   buildCompareYctdPickerFromCandidates,
   buildCompareYctdPickerFromEvaluations,
@@ -102,6 +111,7 @@ import {
   mapApplicationItemToCompareCandidate,
   mergeCompareMatrixIntoCandidates,
   normalizeCompareListRows,
+  resolveCompareMatrixCandidateIds,
   formatCompareCandidateSubtitle,
   dedupeCompareCandidatesById,
   type CompareApplicationListItem,
@@ -111,7 +121,6 @@ import {
 import {
   dedupeRowsById,
   filterComparePickerYctds,
-  filterYctdPickerRowsByQuery,
   formatYctdOptionLabel,
   formatYctdOptionMetaLine,
   formatYctdOptionPrimaryLine,
@@ -151,9 +160,40 @@ interface CandidateComparisonDialogProps {
   onChangeStage?: (target: CompareEvaluateTarget) => void;
   /** Rows đã load ở tab Đánh giá — fast-path YCTD picker (parity nghiệp vụ REC-06b). */
   seedEvaluations?: readonly CompareEvalListRow[] | null;
+  /** Parity tab «Yêu cầu tuyển dụng» — SoT requisitions; tránh fallback eval/UV-only. */
+  seedRequisitions?: readonly HrmJobRequisition[] | null;
+  /** Refresh requisitions khi mở dialog (cùng hook useJobRequisitions ở Recruitment). */
+  refreshRequisitions?: () => Promise<HrmJobRequisition[]>;
 }
 
 type CompareCandidateRow = ReturnType<typeof mapApplicationItemToCompareCandidate>;
+
+/** Dropdown 2 dòng; ItemText chỉ primary để trigger không tràn (Radix mirror ItemText). */
+function CompareYctdSelectItem({ row }: { row: UvYctdPickerRow }) {
+  const primary = formatYctdOptionPrimaryLine(row);
+  const meta = formatYctdOptionMetaLine(row);
+  return (
+    <SelectPrimitive.Item
+      value={row.id}
+      title={formatYctdOptionLabel(row)}
+      className="relative flex w-full cursor-default select-none flex-col items-stretch rounded-input py-2 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-accent focus:text-accent-foreground"
+    >
+      <span className="absolute left-2 top-2.5 flex h-3.5 w-3.5 items-center justify-center">
+        <SelectPrimitive.ItemIndicator>
+          <Check className="h-4 w-4" />
+        </SelectPrimitive.ItemIndicator>
+      </span>
+      <SelectPrimitive.ItemText className="block min-w-0 truncate text-left font-medium">
+        {primary}
+      </SelectPrimitive.ItemText>
+      {meta ? (
+        <span className="mt-0.5 min-w-0 truncate text-left text-xs text-muted-foreground">
+          {meta}
+        </span>
+      ) : null}
+    </SelectPrimitive.Item>
+  );
+}
 
 const getResultConfig = (t: (k: string) => string) => ({
   pass: {
@@ -326,6 +366,38 @@ async function loadCompareYctdFromCandidates(
   return sortCompareYctdPickerRows(dedupeRowsById(merged));
 }
 
+function mapRequisitionsToComparePicker(rows: readonly HrmJobRequisition[]): UvYctdPickerRow[] {
+  return sortCompareYctdPickerRows(
+    dedupeRowsById(filterComparePickerYctds(rows.map(toPickerRow))),
+  );
+}
+
+function buildCompareYctdScopeCompanyIds(
+  companyId: string,
+  evalCompanyIds: readonly string[],
+): string[] {
+  const ids: string[] = [];
+  const push = (value: string | null | undefined) => {
+    const normalized = normalizeHrmApiListCompanyId(value);
+    if (normalized && !ids.includes(normalized)) ids.push(normalized);
+  };
+  push(companyId);
+  push(HRM_LIST_DEFAULT_COMPANY_ID);
+  for (const rawId of evalCompanyIds) push(rawId);
+  return ids;
+}
+
+async function loadCompareYctdPickerFromRequisitionsList(
+  companyId: string,
+): Promise<UvYctdPickerRow[]> {
+  const response = await listJobRequisitions({
+    company_id: companyId,
+    page: 1,
+    page_size: HRM_API_MAX_PAGE_SIZE,
+  });
+  return mapRequisitionsToComparePicker(jobRequisitionListRows(response));
+}
+
 async function loadRequisitionsAcrossCompanyScopes(
   companyIds: readonly string[],
 ): Promise<UvYctdPickerRow[]> {
@@ -340,22 +412,18 @@ async function loadRequisitionsAcrossCompanyScopes(
       page: 1,
       page_size: HRM_API_MAX_PAGE_SIZE,
     };
-    try {
-      const [receivableRes, scopeRes] = await Promise.all([
-        listJobRequisitions({ ...baseQuery, receivable: true }),
-        listJobRequisitions(baseQuery),
-      ]);
-      mergedRaw.push(
-        ...jobRequisitionListRows(scopeRes),
-        ...jobRequisitionListRows(receivableRes),
-      );
-    } catch {
-      /* thử scope kế tiếp — parity tab Đánh giá / CEO rollup */
+    const [receivableRes, scopeRes] = await Promise.allSettled([
+      listJobRequisitions({ ...baseQuery, receivable: true }),
+      listJobRequisitions(baseQuery),
+    ]);
+    if (receivableRes.status === 'fulfilled') {
+      mergedRaw.push(...jobRequisitionListRows(receivableRes.value));
+    }
+    if (scopeRes.status === 'fulfilled') {
+      mergedRaw.push(...jobRequisitionListRows(scopeRes.value));
     }
   }
-  return sortCompareYctdPickerRows(
-    dedupeRowsById(filterComparePickerYctds(mergedRaw).map(toPickerRow)),
-  );
+  return mapRequisitionsToComparePicker(mergedRaw);
 }
 
 function mergeSeedEvalIntoCompareYctdPicker(
@@ -366,7 +434,13 @@ function mergeSeedEvalIntoCompareYctdPicker(
   const fromSeed = filterComparePickerYctds(
     buildCompareYctdPickerFromEvaluations(seedEvalRows).map(evalRowToPickerRow),
   );
-  return sortCompareYctdPickerRows(dedupeRowsById([...fromSeed, ...rows]));
+  if (rows.length === 0) {
+    return sortCompareYctdPickerRows(dedupeRowsById(fromSeed));
+  }
+  const knownIds = new Set(rows.map((row) => row.id));
+  const supplemental = fromSeed.filter((row) => !knownIds.has(row.id));
+  if (supplemental.length === 0) return [...rows];
+  return sortCompareYctdPickerRows(dedupeRowsById([...rows, ...supplemental]));
 }
 
 async function loadCompareYctdPickerRows(
@@ -374,11 +448,31 @@ async function loadCompareYctdPickerRows(
   prefYctd: string,
   evalCompanyIds: readonly string[],
   seedEvalRows: readonly CompareEvalListRow[] = [],
+  preloadedRequisitions: readonly HrmJobRequisition[] = [],
 ): Promise<UvYctdPickerRow[]> {
-  const scopeIds = [...evalCompanyIds, companyId]
-    .map((id) => normalizeHrmApiListCompanyId(id))
-    .filter((id, index, all) => id && all.indexOf(id) === index);
-  let rows = await loadRequisitionsAcrossCompanyScopes(scopeIds);
+  const primaryCompanyId = normalizeHrmApiListCompanyId(companyId);
+  const scopeIds = buildCompareYctdScopeCompanyIds(companyId, evalCompanyIds);
+  const preloadedRows =
+    preloadedRequisitions.length > 0
+      ? mapRequisitionsToComparePicker(preloadedRequisitions)
+      : [];
+
+  let apiRows: UvYctdPickerRow[] = [];
+  try {
+    apiRows = await loadRequisitionsAcrossCompanyScopes(scopeIds);
+  } catch {
+    apiRows = [];
+  }
+  if (apiRows.length === 0) {
+    try {
+      apiRows = await loadCompareYctdPickerFromRequisitionsList(primaryCompanyId);
+    } catch {
+      apiRows = [];
+    }
+  }
+
+  /** API rollup first — preloaded tab seed bổ sung; không bỏ qua multi-scope khi seed đã có dòng. */
+  let rows = sortCompareYctdPickerRows(dedupeRowsById([...apiRows, ...preloadedRows]));
   rows = mergeSeedEvalIntoCompareYctdPicker(rows, seedEvalRows);
   if (rows.length === 0) {
     rows = await loadCompareYctdFromEvaluations(evalCompanyIds);
@@ -393,7 +487,9 @@ async function loadCompareYctdPickerRows(
       try {
         const pinned = await getJobRequisition(prefYctd, scopedCompanyId);
         if (pinned?.id) {
-          rows = sortCompareYctdPickerRows(dedupeRowsById([toPickerRow(pinned), ...rows]));
+          rows = sortCompareYctdPickerRows(
+            dedupeRowsById([toPickerRow(pinned), ...rows]),
+          );
           break;
         }
       } catch {
@@ -404,6 +500,43 @@ async function loadCompareYctdPickerRows(
   return rows;
 }
 
+const EMPTY_COMPARE_SEED_EVAL_ROWS: CompareEvalListRow[] = [];
+
+const COMPARE_YCTD_FETCH_MS = 8_000;
+
+async function loadCompareYctdPickerRowsWithTimeout(
+  companyId: string,
+  prefYctd: string,
+  evalCompanyIds: readonly string[],
+  seedEvalRows: readonly CompareEvalListRow[] = [],
+  preloadedRequisitions: readonly HrmJobRequisition[] = [],
+): Promise<UvYctdPickerRow[]> {
+  return Promise.race([
+    loadCompareYctdPickerRows(
+      companyId,
+      prefYctd,
+      evalCompanyIds,
+      seedEvalRows,
+      preloadedRequisitions,
+    ),
+    new Promise<UvYctdPickerRow[]>((resolve) => {
+      setTimeout(() => resolve([]), COMPARE_YCTD_FETCH_MS);
+    }),
+  ]);
+}
+
+function buildFastCompareYctdPickerRows(
+  preloadedRequisitions: readonly HrmJobRequisition[],
+  seedEvalRows: readonly CompareEvalListRow[],
+): UvYctdPickerRow[] {
+  const preloadedRows =
+    preloadedRequisitions.length > 0
+      ? mapRequisitionsToComparePicker(preloadedRequisitions)
+      : [];
+  if (preloadedRows.length === 0 && seedEvalRows.length === 0) return [];
+  return mergeSeedEvalIntoCompareYctdPicker(preloadedRows, seedEvalRows);
+}
+
 export function CandidateComparisonDialog({
   open,
   onOpenChange,
@@ -412,11 +545,13 @@ export function CandidateComparisonDialog({
   onEvaluateCandidate,
   onChangeStage,
   seedEvaluations = null,
+  seedRequisitions = null,
+  refreshRequisitions,
 }: CandidateComparisonDialogProps) {
   const { t } = useTranslation();
   const { currentCompanyId, loading: authLoading } = useAuth();
   const { listCompanyId } = useHrmOperatingUnitFilter();
-  /** Align với useJobRequisitions — OU filter first; never empty (rollup main). */
+  /** Parity useJobRequisitions + tab YCTD — OU filter first. */
   const effectiveCompanyId = coerceHrmListCompanyId(
     listCompanyId || currentCompanyId || HRM_LIST_DEFAULT_COMPANY_ID,
   );
@@ -435,7 +570,7 @@ export function CandidateComparisonDialog({
   }, [currentCompanyId, listCompanyId, effectiveCompanyId]);
 
   const seedEvalRows = useMemo((): CompareEvalListRow[] => {
-    if (!seedEvaluations?.length) return [];
+    if (!seedEvaluations?.length) return EMPTY_COMPARE_SEED_EVAL_ROWS;
     return seedEvaluations.map((row) => ({
       requisition_id: row.requisition_id,
       recruitment_candidate_id: row.recruitment_candidate_id,
@@ -460,9 +595,9 @@ export function CandidateComparisonDialog({
   const resultConfig = getResultConfig(t);
   const recommendationConfig = getRecommendationConfig(t);
   const wasOpenRef = useRef(false);
+  const matrixRequestRef = useRef(0);
 
   const [yctdList, setYctdList] = useState<UvYctdPickerRow[]>([]);
-  const [yctdQuery, setYctdQuery] = useState('');
   const [selectedYctdId, setSelectedYctdId] = useState<string>('');
   const [candidates, setCandidates] = useState<CompareCandidateRow[]>([]);
   const [selectedCandidateIds, setSelectedCandidateIds] = useState<string[]>([]);
@@ -523,6 +658,7 @@ export function CandidateComparisonDialog({
   useEffect(() => {
     if (!open) {
       wasOpenRef.current = false;
+      setLoadingYctd(false);
       return;
     }
     const justOpened = !wasOpenRef.current;
@@ -530,10 +666,12 @@ export function CandidateComparisonDialog({
     if (!justOpened) return;
 
     resetSelection();
-    setYctdQuery('');
     const prefYctd = (initialRequisitionId ?? '').trim();
     setSelectedYctdId(prefYctd);
   }, [open, initialRequisitionId, resetSelection]);
+
+  const seedRequisitionCount = seedRequisitions?.length ?? 0;
+  const seedEvalCount = seedEvalRows.length;
 
   useEffect(() => {
     if (!open || !effectiveCompanyId || authLoading) return;
@@ -542,18 +680,49 @@ export function CandidateComparisonDialog({
     const fetchYctd = async () => {
       setLoadingYctd(true);
       try {
-        const rows = await loadCompareYctdPickerRows(
+        let preloadedRequisitions: HrmJobRequisition[] = [...(seedRequisitions ?? [])];
+        const fastRows = buildFastCompareYctdPickerRows(
+          preloadedRequisitions,
+          seedEvalRows,
+        );
+        if (!cancelled && fastRows.length > 0) {
+          setYctdList(fastRows);
+          if (!prefYctd) {
+            setSelectedYctdId(fastRows[0].id);
+          }
+        }
+        if (refreshRequisitions && preloadedRequisitions.length === 0) {
+          try {
+            const fresh = await Promise.race([
+              refreshRequisitions(),
+              new Promise<HrmJobRequisition[]>((resolve) => {
+                setTimeout(() => resolve([]), COMPARE_YCTD_FETCH_MS);
+              }),
+            ]);
+            if (fresh.length > 0) preloadedRequisitions = fresh;
+          } catch {
+            /* giữ seedRequisitions từ tab YCTD nếu refresh lỗi (hrm-api/proxy) */
+          }
+        }
+        const rows = await loadCompareYctdPickerRowsWithTimeout(
           effectiveCompanyId,
           prefYctd,
           evalListCompanyIds,
           seedEvalRows,
+          preloadedRequisitions,
         );
+        const resolvedRows =
+          rows.length > 0
+            ? rows
+            : fastRows.length > 0
+              ? fastRows
+              : buildFastCompareYctdPickerRows(preloadedRequisitions, seedEvalRows);
         if (!cancelled) {
-          setYctdList(rows);
+          setYctdList(resolvedRows);
           if (prefYctd) {
             setSelectedYctdId(prefYctd);
-          } else if (rows.length > 0) {
-            setSelectedYctdId(rows[0].id);
+          } else if (resolvedRows.length > 0) {
+            setSelectedYctdId(resolvedRows[0].id);
           } else {
             setSelectedYctdId('');
           }
@@ -569,7 +738,7 @@ export function CandidateComparisonDialog({
           setSelectedYctdId('');
         }
       } finally {
-        if (!cancelled) setLoadingYctd(false);
+        setLoadingYctd(false);
       }
     };
     void fetchYctd();
@@ -577,7 +746,16 @@ export function CandidateComparisonDialog({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- toast/t unstable on re-render
-  }, [open, effectiveCompanyId, initialRequisitionId, evalListCompanyIds, seedEvalRows, authLoading]);
+  }, [
+    open,
+    effectiveCompanyId,
+    initialRequisitionId,
+    evalListCompanyIds,
+    seedEvalCount,
+    seedRequisitionCount,
+    refreshRequisitions,
+    authLoading,
+  ]);
 
   useEffect(() => {
     if (!selectedYctdId || !effectiveCompanyId) {
@@ -585,6 +763,7 @@ export function CandidateComparisonDialog({
       return;
     }
     // Tránh YCTD-MIX: xóa UV cũ ngay khi đổi YCTD — không chờ fetch async.
+    matrixRequestRef.current += 1;
     setCandidates([]);
     setSelectedCandidateIds([]);
     setMatrix(null);
@@ -690,12 +869,13 @@ export function CandidateComparisonDialog({
         setMatrix(null);
         return;
       }
-      const scopedIds = candidateIds.filter((id) => uvRows.some((row) => row.id === id));
+      const scopedIds = resolveCompareMatrixCandidateIds(uvRows, candidateIds);
       if (scopedIds.length === 0) {
         setMatrix(null);
         return;
       }
       const yctdCompanyId = resolveYctdCompanyId(selectedYctdId, yctdList, effectiveCompanyId);
+      const requestId = ++matrixRequestRef.current;
       setLoadingMatrix(true);
       try {
         const payload = await getRecruitmentCompareMatrix({
@@ -703,8 +883,10 @@ export function CandidateComparisonDialog({
           requisition_id: selectedYctdId,
           candidate_ids: scopedIds,
         });
+        if (requestId !== matrixRequestRef.current) return;
         setMatrix(payload);
       } catch (error) {
+        if (requestId !== matrixRequestRef.current) return;
         setMatrix(null);
         const code = error instanceof ApiClientError ? error.code : undefined;
         toast({
@@ -720,7 +902,9 @@ export function CandidateComparisonDialog({
           variant: 'destructive',
         });
       } finally {
-        setLoadingMatrix(false);
+        if (requestId === matrixRequestRef.current) {
+          setLoadingMatrix(false);
+        }
       }
     },
     [selectedYctdId, effectiveCompanyId, yctdList, t, toast],
@@ -734,13 +918,21 @@ export function CandidateComparisonDialog({
     void loadMatrix(selectedCandidateIds, candidates);
   }, [selectedCandidateIds, candidates, loadMatrix]);
 
-  const filteredYctdList = useMemo(
-    () => filterYctdPickerRowsByQuery(yctdList, yctdQuery),
-    [yctdList, yctdQuery],
-  );
+  const handleYctdChange = useCallback((value: string) => {
+    if (!value || selectedYctdId === value) return;
+    matrixRequestRef.current += 1;
+    setSelectedYctdId(value);
+    setSelectedCandidateIds([]);
+    setMatrix(null);
+  }, [selectedYctdId]);
 
-  /** REC-06b §2 — UV list theo YCTD đã chọn; ô search chỉ lọc YCTD picker (không ẩn UV). */
+  /** REC-06b §2 — UV list theo YCTD đã chọn (sidebar). */
   const filteredCandidatesForList = useMemo(() => [...candidates], [candidates]);
+
+  const selectedYctdRow = useMemo(
+    () => yctdList.find((row) => row.id === selectedYctdId) ?? null,
+    [yctdList, selectedYctdId],
+  );
 
   const mergedCandidates = useMemo(
     () => mergeCompareMatrixIntoCandidates(candidates, matrix),
@@ -763,11 +955,20 @@ export function CandidateComparisonDialog({
     });
   };
 
+  const hasChartScores = useMemo(() => {
+    if (matrix && compareMatrixHasScoredData(matrix, selectedCandidateIds)) return true;
+    return selectedCandidates.some((c) =>
+      (c.evaluation?.scores ?? []).some(
+        (s) => s.actual_score != null && Number.isFinite(Number(s.actual_score)),
+      ),
+    );
+  }, [matrix, selectedCandidateIds, selectedCandidates]);
+
   const radarData = useMemo(() => {
-    if (matrix && selectedCandidateIds.length > 0) {
+    if (matrix && selectedCandidateIds.length > 0 && hasChartScores) {
       return buildRadarFromCompareMatrix(matrix, selectedCandidateIds);
     }
-    if (selectedCandidates.length === 0) return [];
+    if (!hasChartScores || selectedCandidates.length === 0) return [];
     const allCriteria = new Set<string>();
     selectedCandidates.forEach((c) => {
       c.evaluation?.scores.forEach((s) => allCriteria.add(s.criterion_name));
@@ -781,7 +982,17 @@ export function CandidateComparisonDialog({
       });
       return dataPoint;
     });
-  }, [matrix, selectedCandidateIds, selectedCandidates]);
+  }, [matrix, selectedCandidateIds, selectedCandidates, hasChartScores]);
+
+  const criteriaTableRows = useMemo(() => {
+    if (matrix && selectedCandidateIds.length >= 2 && matrix.criteria.length > 0) {
+      return buildCompareCriteriaTableRows(matrix, selectedCandidateIds);
+    }
+    if (hasChartScores && radarData.length > 0) {
+      return radarData;
+    }
+    return [];
+  }, [matrix, selectedCandidateIds, hasChartScores, radarData]);
 
   const atMaxN = selectedCandidateIds.length >= REC_COMPARE_MAX_N;
   const showPostCompareActions = Boolean(onEvaluateCandidate || onChangeStage);
@@ -791,99 +1002,62 @@ export function CandidateComparisonDialog({
       ? tr('evaluateCandidate')
       : tr('compareReEvaluate');
 
-  const contentHeightClass =
-    showPostCompareActions && selectedCandidates.length > 0
-      ? 'flex h-[calc(90vh-168px)]'
-      : 'flex h-[calc(90vh-100px)]';
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-6xl max-h-[90vh] p-0"
+        className="max-w-6xl max-h-[90vh] p-0 flex flex-col overflow-hidden"
         data-testid={HDSD_MUTATE_TEST_IDS.recCompareDialog}
       >
-        <DialogHeader className="px-6 pt-6 pb-4 border-b">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-primary" />
             {r('compareTitle')}
           </DialogTitle>
         </DialogHeader>
-        <div className={contentHeightClass}>
-          <div className="w-80 border-r flex flex-col">
-            <div className="p-4 border-b space-y-2">
-              <label className="text-sm font-medium block" htmlFor="rec-compare-yctd">
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          <div className="w-80 shrink-0 min-w-0 border-r flex flex-col min-h-0 overflow-hidden">
+            <div className="p-4 border-b space-y-2 min-w-0">
+              <label className="text-sm font-medium block truncate" htmlFor="rec-compare-yctd">
                 {r('selectYctd')}
               </label>
-              {loadingYctd || authLoading ? (
+              {authLoading || loadingYctd ? (
                 <div className="flex items-center justify-center py-4">
                   <Loader2 className="w-5 h-5 animate-spin text-primary" />
                 </div>
+              ) : yctdList.length === 0 ? (
+                <div
+                  className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground"
+                  data-testid={HDSD_MUTATE_TEST_IDS.recCompareYctdEmpty}
+                >
+                  <p>{r('noYctdEmpty')}</p>
+                </div>
               ) : (
-                <>
-                  <Input
-                    value={yctdQuery}
-                    onChange={(e) => setYctdQuery(e.target.value)}
-                    placeholder={r('searchYctdPlaceholder')}
-                    aria-label={r('searchYctdPlaceholder')}
-                    data-testid={HDSD_MUTATE_TEST_IDS.recCompareYctdSearch}
-                  />
-                  {yctdList.length === 0 ? (
-                    <div
-                      className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground"
-                      data-testid={HDSD_MUTATE_TEST_IDS.recCompareYctdEmpty}
-                    >
-                      <p>{r('noYctdEmpty')}</p>
-                    </div>
-                  ) : filteredYctdList.length === 0 ? (
-                    <div className="rounded-lg border border-dashed p-3 text-sm text-muted-foreground">
-                      <p>{r('searchYctdEmpty')}</p>
-                    </div>
-                  ) : (
-                    <ScrollArea className="max-h-36 rounded-md border">
-                      <div
-                        className="p-1 space-y-1"
-                        role="listbox"
-                        aria-label={r('selectYctd')}
-                        id="rec-compare-yctd"
-                      >
-                        {filteredYctdList.map((yctd) => {
-                          const selected = selectedYctdId === yctd.id;
-                          return (
-                            <button
-                              key={yctd.id}
-                              type="button"
-                              role="option"
-                              aria-selected={selected}
-                              data-testid={HDSD_MUTATE_TEST_IDS.recCompareYctdPicker}
-                              className={`w-full rounded-md px-2 py-2 text-left text-sm transition-colors hover:bg-accent ${
-                                selected ? 'bg-accent text-accent-foreground' : ''
-                              }`}
-                              onClick={() => {
-                                if (selectedYctdId === yctd.id) return;
-                                setSelectedYctdId(yctd.id);
-                                setSelectedCandidateIds([]);
-                                setMatrix(null);
-                              }}
-                              title={formatYctdOptionLabel(yctd)}
-                            >
-                              <div className="flex flex-col">
-                                <span className="font-medium">{formatYctdOptionPrimaryLine(yctd)}</span>
-                                {formatYctdOptionMetaLine(yctd) ? (
-                                  <span className="text-xs text-muted-foreground">
-                                    {formatYctdOptionMetaLine(yctd)}
-                                  </span>
-                                ) : null}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </ScrollArea>
-                  )}
-                </>
+                <Select value={selectedYctdId || undefined} onValueChange={handleYctdChange}>
+                  <SelectTrigger
+                    id="rec-compare-yctd"
+                    className="min-w-0 [&>span:first-child]:min-w-0 [&>span:first-child]:truncate"
+                    data-testid={HDSD_MUTATE_TEST_IDS.recCompareYctdPicker}
+                  >
+                    <SelectValue placeholder={r('selectYctdPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent className="max-w-[min(24rem,calc(100vw-2rem))]">
+                    {yctdList.map((yctd) => (
+                      <CompareYctdSelectItem key={yctd.id} row={yctd} />
+                    ))}
+                  </SelectContent>
+                </Select>
               )}
+              {selectedYctdRow && formatYctdOptionMetaLine(selectedYctdRow) ? (
+                <p
+                  className="text-xs text-muted-foreground line-clamp-2 break-words"
+                  title={formatYctdOptionMetaLine(selectedYctdRow)}
+                  data-testid="rec-compare-yctd-meta"
+                >
+                  {formatYctdOptionMetaLine(selectedYctdRow)}
+                </p>
+              ) : null}
             </div>
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1 min-h-0">
               <div className="p-4 space-y-2">
                 {loadingCandidates ? (
                   <div className="flex items-center justify-center py-8">
@@ -966,36 +1140,6 @@ export function CandidateComparisonDialog({
                             <p className="text-xs text-muted-foreground truncate">
                               {formatCompareCandidateSubtitle(merged)}
                             </p>
-                            {showPostCompareActions ? (
-                              <div className="mt-1 flex flex-wrap gap-1">
-                                {onEvaluateCandidate ? (
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="secondary"
-                                    className="h-7"
-                                    data-testid="hdsd-rec-compare-evaluate-btn"
-                                    onClick={(e) => handleEvaluateClick(e, merged)}
-                                  >
-                                    <ClipboardCheck className="w-3 h-3 mr-1" />
-                                    {renderEvaluateLabel(merged)}
-                                  </Button>
-                                ) : null}
-                                {onChangeStage ? (
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-7"
-                                    data-testid="hdsd-rec-compare-stage-btn"
-                                    onClick={(e) => handleStageClick(e, merged)}
-                                  >
-                                    <ArrowRightLeft className="w-3 h-3 mr-1" />
-                                    {tr('compareChangeStage')}
-                                  </Button>
-                                ) : null}
-                              </div>
-                            ) : null}
                           </div>
                           {notEvalLabel || isCompareEvalMissing(merged.eval_status) ? (
                             <Badge
@@ -1060,13 +1204,16 @@ export function CandidateComparisonDialog({
             </div>
           </div>
 
-          <div className="flex-1 overflow-auto" data-testid={HDSD_MUTATE_TEST_IDS.recCompareMatrix}>
+          <div
+            className="flex-1 min-h-0 flex flex-col overflow-hidden"
+            data-testid={HDSD_MUTATE_TEST_IDS.recCompareMatrix}
+          >
             {loadingMatrix && selectedCandidates.length > 0 ? (
-              <div className="flex items-center justify-center h-full">
+              <div className="flex flex-1 items-center justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
             ) : selectedCandidates.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-muted-foreground">
+              <div className="flex flex-1 items-center justify-center text-muted-foreground">
                 <div className="text-center">
                   <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-30" />
                   <p className="text-lg font-medium">{r('selectToCompare')}</p>
@@ -1074,132 +1221,125 @@ export function CandidateComparisonDialog({
                 </div>
               </div>
             ) : (
-              <div className="p-6 space-y-6">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  {selectedCandidates.map((candidate, index) => (
-                    <Card key={candidate.id} className="relative overflow-hidden">
-                      <div
-                        className="absolute top-0 left-0 right-0 h-1"
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                      />
-                      <CardContent className="pt-4">
-                        <div className="flex items-center gap-3 mb-3">
-                          <Avatar>
-                            <AvatarImage src={candidate.avatar_url || ''} />
-                            <AvatarFallback
-                              style={{
-                                backgroundColor: COLORS[index % COLORS.length],
-                                color: 'white',
-                              }}
-                            >
-                              {candidate.full_name
-                                .split(' ')
-                                .map((n) => n[0])
-                                .join('')
-                                .slice(0, 2)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="min-w-0 flex-1">
-                            <p className="font-medium truncate">{candidate.full_name}</p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {candidate.position || '—'}
-                            </p>
-                          </div>
-                        </div>
-                        {candidate.evaluation && !isCompareEvalMissing(candidate.eval_status) ? (
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-muted-foreground">{r('totalScore')}</span>
-                              <span
-                                className="text-2xl font-bold"
-                                style={{ color: COLORS[index % COLORS.length] }}
+              <>
+                <div className="shrink-0 border-b bg-background p-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                    {selectedCandidates.map((candidate, index) => (
+                      <Card key={candidate.id} className="relative overflow-hidden">
+                        <div
+                          className="absolute top-0 left-0 right-0 h-1"
+                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                        />
+                        <CardContent className="p-3 pt-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Avatar className="h-9 w-9">
+                              <AvatarImage src={candidate.avatar_url || ''} />
+                              <AvatarFallback
+                                style={{
+                                  backgroundColor: COLORS[index % COLORS.length],
+                                  color: 'white',
+                                }}
                               >
-                                {candidate.evaluation.weighted_score?.toFixed(1) || '—'}
-                              </span>
+                                {candidate.full_name
+                                  .split(' ')
+                                  .map((n) => n[0])
+                                  .join('')
+                                  .slice(0, 2)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium truncate text-sm">{candidate.full_name}</p>
+                              <p className="text-xs text-muted-foreground truncate">
+                                {candidate.position || '—'}
+                              </p>
                             </div>
-                            {candidate.evaluation.recommendation &&
-                              recommendationConfig[
-                                candidate.evaluation
-                                  .recommendation as keyof typeof recommendationConfig
-                              ] && (
-                                <Badge
-                                  className={`w-full justify-center ${
-                                    recommendationConfig[
-                                      candidate.evaluation
-                                        .recommendation as keyof typeof recommendationConfig
-                                    ].color
-                                  }`}
+                          </div>
+                          {candidate.evaluation && !isCompareEvalMissing(candidate.eval_status) ? (
+                            <div className="space-y-1.5 mb-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-muted-foreground">{r('totalScore')}</span>
+                                <span
+                                  className="text-xl font-bold"
+                                  style={{ color: COLORS[index % COLORS.length] }}
                                 >
-                                  {
-                                    recommendationConfig[
-                                      candidate.evaluation
-                                        .recommendation as keyof typeof recommendationConfig
-                                    ].label
-                                  }
-                                </Badge>
-                              )}
-                          </div>
-                        ) : (
-                          <p
-                            className="text-sm text-muted-foreground text-center py-4"
-                            data-testid={HDSD_MUTATE_TEST_IDS.recCompareUvNotEval}
-                          >
-                            {r('notEvaluated')}
-                          </p>
-                        )}
-                        {showPostCompareActions ? (
-                          <div className="mt-3 flex flex-col gap-2">
-                            {onEvaluateCandidate ? (
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="secondary"
-                                className="w-full"
-                                data-testid="hdsd-rec-compare-evaluate-btn"
-                                onClick={(e) => handleEvaluateClick(e, candidate)}
-                              >
-                                <ClipboardCheck className="w-4 h-4 mr-2" />
-                                {renderEvaluateLabel(candidate)}
-                              </Button>
-                            ) : null}
-                            {onChangeStage ? (
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                className="w-full"
-                                data-testid="hdsd-rec-compare-stage-btn"
-                                onClick={(e) => handleStageClick(e, candidate)}
-                              >
-                                <ArrowRightLeft className="w-4 h-4 mr-2" />
-                                {tr('compareChangeStage')}
-                              </Button>
-                            ) : null}
-                          </div>
-                        ) : null}
-                      </CardContent>
-                    </Card>
-                  ))}
+                                  {candidate.evaluation.weighted_score?.toFixed(1) || '—'}
+                                </span>
+                              </div>
+                              {candidate.evaluation.recommendation &&
+                                recommendationConfig[
+                                  candidate.evaluation
+                                    .recommendation as keyof typeof recommendationConfig
+                                ] && (
+                                  <Badge
+                                    className={`w-full justify-center text-xs ${
+                                      recommendationConfig[
+                                        candidate.evaluation
+                                          .recommendation as keyof typeof recommendationConfig
+                                      ].color
+                                    }`}
+                                  >
+                                    {
+                                      recommendationConfig[
+                                        candidate.evaluation
+                                          .recommendation as keyof typeof recommendationConfig
+                                      ].label
+                                    }
+                                  </Badge>
+                                )}
+                            </div>
+                          ) : (
+                            <p
+                              className="text-sm text-muted-foreground text-center py-2 mb-2"
+                              data-testid={HDSD_MUTATE_TEST_IDS.recCompareUvNotEval}
+                            >
+                              {r('notEvaluated')}
+                            </p>
+                          )}
+                          {showPostCompareActions ? (
+                            <div className="flex flex-col gap-1.5">
+                              {onEvaluateCandidate ? (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="secondary"
+                                  className="w-full h-8 text-xs"
+                                  data-testid="hdsd-rec-compare-evaluate-btn"
+                                  onClick={(e) => handleEvaluateClick(e, candidate)}
+                                >
+                                  <ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />
+                                  {renderEvaluateLabel(candidate)}
+                                </Button>
+                              ) : null}
+                              {onChangeStage ? (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="w-full h-8 text-xs"
+                                  data-testid="hdsd-rec-compare-stage-btn"
+                                  onClick={(e) => handleStageClick(e, candidate)}
+                                >
+                                  <ArrowRightLeft className="w-3.5 h-3.5 mr-1.5" />
+                                  {tr('compareChangeStage')}
+                                </Button>
+                              ) : null}
+                            </div>
+                          ) : null}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
 
-                {selectedCandidates.length > 0 && radarData.length === 0 ? (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-base">{r('compareNoScoresTitle')}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">{r('compareNoScoresHint')}</p>
-                    </CardContent>
-                  </Card>
-                ) : null}
-
-                {radarData.length > 0 && (
+                <ScrollArea className="flex-1 min-h-0">
+                  <div className="p-4 space-y-4">
+                {hasChartScores && radarData.length > 0 && (
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-base">{r('criteriaChart')}</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="h-[350px]">
+                    <CardContent className="pt-2 pb-4">
+                      <div className="h-[280px] min-h-[220px]">
                         <ResponsiveContainer width="100%" height="100%">
                           <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
                             <PolarGrid stroke="hsl(var(--border))" />
@@ -1251,8 +1391,9 @@ export function CandidateComparisonDialog({
                   </Card>
                 )}
 
-                {selectedCandidates.filter((c) => c.evaluation).length >= 2 &&
-                  radarData.length > 0 && (
+                {selectedCandidates.length >= 2 &&
+                  hasChartScores &&
+                  criteriaTableRows.length > 0 && (
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-base">{r('criteriaDetail')}</CardTitle>
@@ -1262,7 +1403,9 @@ export function CandidateComparisonDialog({
                           <table className="w-full text-sm">
                             <thead>
                               <tr className="border-b">
-                                <th className="text-left py-2 px-3 font-medium">{r('criteria')}</th>
+                                <th className="text-left py-2 px-3 font-medium max-w-[9rem] w-[35%]">
+                                  {r('criteria')}
+                                </th>
                                 {selectedCandidates.map((candidate, index) => (
                                   <th
                                     key={candidate.id}
@@ -1284,17 +1427,28 @@ export function CandidateComparisonDialog({
                               </tr>
                             </thead>
                             <tbody>
-                              {radarData.map((row, rowIndex) => (
+                              {criteriaTableRows.map((row, rowIndex) => (
                                 <tr key={rowIndex} className="border-b last:border-0">
-                                  <td className="py-2 px-3">{row.criterion}</td>
+                                  <td className="py-2 px-3 max-w-[9rem]">
+                                    <span className="block truncate" title={String(row.criterion)}>
+                                      {row.criterion}
+                                    </span>
+                                  </td>
                                   {selectedCandidates.map((candidate, index) => {
-                                    const score = Number(row[`candidate${index}`] ?? 0);
-                                    const maxScore = Math.max(
-                                      ...selectedCandidates.map((_, i) =>
-                                        Number(row[`candidate${i}`] || 0),
-                                      ),
-                                    );
-                                    const isMax = score === maxScore && score > 0;
+                                    const raw = row[`candidate${index}`];
+                                    const score =
+                                      typeof raw === 'number' && Number.isFinite(raw) ? raw : null;
+                                    const numericScores = selectedCandidates
+                                      .map((_, i) => {
+                                        const cell = row[`candidate${i}`];
+                                        return typeof cell === 'number' && Number.isFinite(cell)
+                                          ? cell
+                                          : null;
+                                      })
+                                      .filter((v): v is number => v != null);
+                                    const maxScore =
+                                      numericScores.length > 0 ? Math.max(...numericScores) : 0;
+                                    const isMax = score != null && score === maxScore && score > 0;
                                     return (
                                       <td key={candidate.id} className="text-center py-2 px-3">
                                         <span
@@ -1304,7 +1458,7 @@ export function CandidateComparisonDialog({
                                               : ''
                                           }`}
                                         >
-                                          {score || '—'}
+                                          {score ?? '—'}
                                         </span>
                                       </td>
                                     );
@@ -1369,13 +1523,15 @@ export function CandidateComparisonDialog({
                     </CardContent>
                   </Card>
                 )}
-              </div>
+                  </div>
+                </ScrollArea>
+              </>
             )}
           </div>
         </div>
         {showPostCompareActions && selectedCandidates.length > 0 ? (
           <DialogFooter
-            className="px-6 py-3 border-t gap-3 sm:justify-between sm:space-x-0"
+            className="px-6 py-3 border-t gap-3 shrink-0 sm:justify-between sm:space-x-0"
             data-testid="hdsd-rec-compare-actions-footer"
           >
             <p className="text-sm text-muted-foreground text-left max-w-xl">

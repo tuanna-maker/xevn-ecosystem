@@ -118,9 +118,11 @@ import {
   type CompareEvaluateTarget,
 } from './CandidateComparisonDialog';
 import { ManageActiveInterviewDialog } from './ManageActiveInterviewDialog';
+import { getCandidateActiveInterviewBadge } from './candidateActiveInterview';
 import { useToast } from '@/hooks/use-toast';
 import { toErrorMessage } from '@/lib/apiError';
 import { useCandidateEvaluations } from '@/hooks/useCandidateEvaluations';
+import { useJobRequisitions } from '@/hooks/useJobRequisitions';
 import { normalizeRequisitionId } from '@/lib/candidateUvYctdUi';
 import {
   listRecruitmentCandidates,
@@ -275,6 +277,8 @@ export function InterviewsTab() {
   const [manageInterview, setManageInterview] = useState<Interview | null>(null);
 
   const { evaluations } = useCandidateEvaluations(isComparisonDialogOpen);
+  const { requisitions: compareSeedRequisitions, refetch: refreshCompareRequisitions } =
+    useJobRequisitions();
 
   const openCompareForYctd = useCallback(
     (requisitionId: string | null | undefined, candidateId?: string | null) => {
@@ -1352,6 +1356,8 @@ export function InterviewsTab() {
         initialRequisitionId={compareInitialRequisitionId}
         initialCandidateId={compareInitialCandidateId}
         seedEvaluations={evaluations}
+        seedRequisitions={compareSeedRequisitions}
+        refreshRequisitions={refreshCompareRequisitions}
         onEvaluateCandidate={(target) => {
           const mapped = compareTargetToInterviewEval(target);
           if (!mapped) return;
@@ -1374,7 +1380,7 @@ export function InterviewsTab() {
             position: manageInterview.position,
           }}
           interviewId={manageInterview.id}
-          badge={{
+          badge={getCandidateActiveInterviewBadge({
             has_active_interview: true,
             active_interview_id: manageInterview.id,
             active_interview_status: manageInterview.status,
@@ -1383,7 +1389,7 @@ export function InterviewsTab() {
               manageInterview.scheduled_at_display_vi_vn ??
               `${manageInterview.interview_date} ${manageInterview.interview_time}`,
             active_interview_badge_label: 'Đã có lịch',
-          }}
+          })}
           scheduledAtIso={manageInterview.scheduled_at}
           statusLabel={manageInterview.status}
           onSuccess={() => {

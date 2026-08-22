@@ -201,6 +201,7 @@ import { KanbanCandidate } from '@/hooks/useKanbanCandidates';
 import { useRecruitmentDashboard } from '@/hooks/useRecruitmentDashboard';
 import { useRecruitmentPlans, RecruitmentPlan } from '@/hooks/useRecruitmentPlans';
 import { useCandidateEvaluations, CandidateEvaluation } from '@/hooks/useCandidateEvaluations';
+import { useJobRequisitions } from '@/hooks/useJobRequisitions';
 import { normalizeRequisitionId } from '@/lib/candidateUvYctdUi';
 import type { CompareEvaluateTarget } from '@/components/recruitment/CandidateComparisonDialog';
 import { StatusBadge } from '@/components/common/StatusBadge';
@@ -663,6 +664,9 @@ export default function Recruitment() {
     stats: evaluationStats,
     refetch: refetchEvaluations,
   } = useCandidateEvaluations(evaluationsTabEnabled || isComparisonDialogOpen);
+
+  const { requisitions: compareSeedRequisitions, refetch: refreshCompareRequisitions } =
+    useJobRequisitions();
 
   const openCompareForYctd = useCallback(
     (requisitionId: string | null | undefined, candidateId?: string | null) => {
@@ -2330,6 +2334,8 @@ export default function Recruitment() {
           initialRequisitionId={compareInitialRequisitionId}
           initialCandidateId={compareInitialCandidateId}
           seedEvaluations={evaluations}
+          seedRequisitions={compareSeedRequisitions}
+          refreshRequisitions={refreshCompareRequisitions}
           onEvaluateCandidate={openEvaluationFromCompare}
           onChangeStage={(target) => {
             setStageFromCompare(target);

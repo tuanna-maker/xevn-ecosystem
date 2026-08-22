@@ -127,13 +127,9 @@ export function mapApplicationItemToCompareCandidate(item: CompareApplicationLis
     item.weighted_score ??
     (item as { total_score?: number | null }).total_score ??
     null;
-  const spineId = (
-    item.recruitment_candidate_id ??
-    item.candidate_id ??
-    ''
-  ).trim();
+  const spineId = resolveCompareSpineCandidateId(item);
   return {
-    id: spineId || item.candidate_id,
+    id: spineId,
     application_id: item.application_id ?? spineId ?? null,
     full_name: item.full_name || '—',
     email: item.email ?? '',
@@ -216,20 +212,64 @@ export function mergeCompareMatrixIntoCandidates(
   });
 }
 
+function readCompareMatrixScore(
+  row: CompareMatrixResponse['rows'][number] | undefined,
+  criterion: CompareMatrixResponse['criteria'][number],
+): number | null {
+  if (!row) return null;
+  const key = criterion.id ?? criterion.name;
+  const raw = row.scores?.[key] ?? row.scores?.[criterion.name];
+  if (typeof raw !== 'number' || !Number.isFinite(raw)) return null;
+  return raw;
+}
+
+/** True when at least one selected UV has a stored numeric score (not template-only nulls). */
+export function compareMatrixHasScoredData(
+  matrix: CompareMatrixResponse,
+  selectedCandidateIds: string[],
+): boolean {
+  if (!matrix.rows.length || !matrix.criteria.length || selectedCandidateIds.length === 0) {
+    return false;
+  }
+  const selectedRows = matrix.rows.filter((r) => selectedCandidateIds.includes(r.candidate_id));
+  for (const row of selectedRows) {
+    for (const criterion of matrix.criteria) {
+      if (readCompareMatrixScore(row, criterion) != null) return true;
+    }
+  }
+  return false;
+}
+
+/** Criteria table rows — keeps null for «chưa đánh giá» cells (AC-REC-CMP-05). */
+export function buildCompareCriteriaTableRows(
+  matrix: CompareMatrixResponse,
+  selectedCandidateIds: string[],
+): Array<Record<string, string | number | null>> {
+  if (matrix.criteria.length === 0 || selectedCandidateIds.length === 0) return [];
+  return matrix.criteria.map((criterion) => {
+    const point: Record<string, string | number | null> = { criterion: criterion.name };
+    selectedCandidateIds.forEach((candidateId, index) => {
+      const row = matrix.rows.find((r) => r.candidate_id === candidateId);
+      point[`candidate${index}`] = readCompareMatrixScore(row, criterion);
+      point[`candidateName${index}`] = row?.full_name ?? candidateId;
+    });
+    return point;
+  });
+}
+
 /** Radar rows from F-REC-CMP-02 matrix (preferred over FE-invented scores). */
 export function buildRadarFromCompareMatrix(
   matrix: CompareMatrixResponse,
   selectedCandidateIds: string[],
 ): Array<Record<string, string | number>> {
+  if (!compareMatrixHasScoredData(matrix, selectedCandidateIds)) return [];
   const selectedRows = matrix.rows.filter((r) => selectedCandidateIds.includes(r.candidate_id));
   if (selectedRows.length === 0 || matrix.criteria.length === 0) return [];
   return matrix.criteria.map((criterion) => {
     const point: Record<string, string | number> = { criterion: criterion.name };
     selectedCandidateIds.forEach((candidateId, index) => {
       const row = selectedRows.find((r) => r.candidate_id === candidateId);
-      const key = criterion.id ?? criterion.name;
-      const raw = row?.scores?.[key] ?? row?.scores?.[criterion.name];
-      point[`candidate${index}`] = typeof raw === 'number' ? raw : 0;
+      point[`candidate${index}`] = readCompareMatrixScore(row, criterion) ?? 0;
       point[`candidateName${index}`] = row?.full_name ?? candidateId;
     });
     return point;
@@ -263,6 +303,45 @@ export function dedupeCompareCandidatesById<T extends { id: string }>(rows: read
     out.push(row);
   }
   return out;
+}
+
+/** Lane A spine id for F-REC-CMP-02 — prefer recruitment_candidate_id over pool candidate_id. */
+export function resolveCompareSpineCandidateId(
+  item: Pick<CompareApplicationListItem, 'candidate_id' | 'recruitment_candidate_id'>,
+): string {
+  const spine = (item.recruitment_candidate_id ?? '').trim();
+  if (spine) return spine;
+  return (item.candidate_id ?? '').trim();
+}
+
+/**
+ * Map sidebar selection → spine ids accepted by GET /compare.
+ * Matches id or application_id aliases on loaded UV rows (same YCTD list).
+ */
+export function resolveCompareMatrixCandidateIds(
+  uvRows: readonly { id: string; application_id?: string | null }[],
+  selectedIds: readonly string[],
+): string[] {
+  const bySpineId = new Map<string, string>();
+  const byAlias = new Map<string, string>();
+  for (const row of uvRows) {
+    const spine = String(row.id ?? '').trim();
+    if (!spine) continue;
+    bySpineId.set(spine, spine);
+    const appId = String(row.application_id ?? '').trim();
+    if (appId) byAlias.set(appId, spine);
+  }
+  const resolved: string[] = [];
+  const seen = new Set<string>();
+  for (const raw of selectedIds) {
+    const key = String(raw ?? '').trim();
+    if (!key) continue;
+    const spine = bySpineId.get(key) ?? byAlias.get(key);
+    if (!spine || seen.has(spine)) continue;
+    seen.add(spine);
+    resolved.push(spine);
+  }
+  return resolved;
 }
 
 /** Row shape from GET /candidate-evaluations (group CEO scope parity). */
@@ -310,7 +389,7 @@ export function buildCompareYctdPickerFromEvaluations(
       entry = {
         id,
         company_id: (row.yctd_company_id ?? 'main').trim() || 'main',
-        title: (row.yctd_title ?? row.candidate_position ?? 'YCTD').trim() || 'YCTD',
+        title: (row.yctd_title ?? 'YCTD').trim() || 'YCTD',
         uvIds: new Set<string>(),
       };
       byReq.set(id, entry);
@@ -336,7 +415,7 @@ export function buildCompareApplicationsFromEvaluations(
   const byUv = new Map<string, CompareEvalListRow>();
   for (const row of evalRows) {
     if ((row.requisition_id ?? '').trim() !== req) continue;
-    const uvId = (row.recruitment_candidate_id ?? row.candidate_id ?? '').trim();
+    const uvId = (row.recruitment_candidate_id ?? '').trim();
     if (!uvId) continue;
     const prev = byUv.get(uvId);
     const prevTs = prev?.created_at ? Date.parse(String(prev.created_at)) : 0;
@@ -346,7 +425,7 @@ export function buildCompareApplicationsFromEvaluations(
     }
   }
   return [...byUv.values()].map((row) => {
-    const uvId = (row.recruitment_candidate_id ?? row.candidate_id ?? '').trim();
+    const uvId = (row.recruitment_candidate_id ?? '').trim();
     const scores = Array.isArray(row.scores) ? row.scores : null;
     const hasScores =
       (scores?.some((s) => s?.actual_score != null) ?? false) ||

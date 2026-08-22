@@ -6,6 +6,7 @@ import {
   HRM_GROUP_MEMBER_COMPANY_SLUGS,
   pushCompanyIdUuidFilter,
   pushEmployeeListScopeFilters,
+  pushHrmTableScopeFilters,
   pushWorkforceEmployeeScopeFilter,
   expandHrmTextCompanyIds,
   expandPayrollAttendanceSheetCompanyIds,
@@ -561,6 +562,24 @@ describe('employee restore scope parity (P1-PHASE1-BE-SCOPE-P0-S5-01)', () => {
         { mismatchCode: 'HRM-EMP-409' },
       ),
     ).toThrow(expect.objectContaining({ code: 'HRM-EMP-409' }));
+  });
+});
+
+describe('pushHrmTableScopeFilters tableAlias (REC-CMP JOIN scope)', () => {
+  it('qualifies company_id when legacy scope and tableAlias provided', () => {
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    pushHrmTableScopeFilters(
+      filters,
+      values,
+      {
+        companyIds: ['main'],
+        masterTenantPartition: true,
+      },
+      { tableAlias: 'r' },
+    );
+    expect(filters).toEqual(['r.company_id = $1::text']);
+    expect(values).toEqual(['main']);
   });
 });
 

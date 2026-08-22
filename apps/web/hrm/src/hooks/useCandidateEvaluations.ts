@@ -71,6 +71,8 @@ function mapEvaluation(row: Record<string, unknown>): CandidateEvaluation {
   };
 }
 
+const EMPTY_CANDIDATE_EVALUATIONS: CandidateEvaluation[] = [];
+
 export function useCandidateEvaluations(enabled = false) {
   const { currentCompanyId } = useAuth();
   const { toast } = useToast();
@@ -91,7 +93,7 @@ export function useCandidateEvaluations(enabled = false) {
     },
   });
 
-  const evaluations = query.data ?? [];
+  const evaluations = query.data ?? EMPTY_CANDIDATE_EVALUATIONS;
 
   const deleteEvaluation = async (evaluationId: string): Promise<boolean> => {
     if (!currentCompanyId) return false;

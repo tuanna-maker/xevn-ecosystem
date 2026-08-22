@@ -743,6 +743,11 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
         ) {
           return { rows: [] };
         }
+        if (s.includes('WITH requested AS')) {
+          return {
+            rows: [{ requested_id: CAND_1, spine_id: CAND_1 }],
+          };
+        }
         if (s.includes('FROM public.recruitment_candidates')) {
           return {
             rows: [

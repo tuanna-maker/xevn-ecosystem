@@ -6186,6 +6186,7 @@
     "noYctdEmpty": "No YCTD available to compare. Create or approve a recruitment request first.",
     "noCandidatesForYctd": "No candidates on this recruitment request yet",
     "selectYctdToView": "Select a YCTD to view candidates",
+    "compareCandidatesFor": "Candidates for:",
     "noCandidatesForJob": "No candidates on this recruitment request yet",
     "selectJobToView": "Select a YCTD to view candidates",
     "notEvaluated": "Not evaluated",

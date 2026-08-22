@@ -110,6 +110,18 @@ interface EvaluationCriteriaTemplate {
   is_active: boolean;
 }
 
+function mapEvaluationCriteriaTemplate(row: Record<string, unknown>): EvaluationCriteriaTemplate {
+  return {
+    id: String(row.id ?? ''),
+    category: String(row.category ?? ''),
+    name: String(row.name ?? ''),
+    weight: Number(row.weight ?? 0),
+    default_required_score: Number(row.default_required_score ?? 3),
+    sort_order: Number(row.sort_order ?? 0),
+    is_active: row.is_active !== false,
+  };
+}
+
 interface Candidate {
   id: string;
   full_name: string;
@@ -287,7 +299,7 @@ export function CandidateEvaluationDialog({
           listCandidateEvaluations(evalQuery),
         ]);
         if (cancelled) return;
-        const templatesData = (templatesRes.data ?? []) as EvaluationCriteriaTemplate[];
+        const templatesData = (templatesRes.data ?? []).map(mapEvaluationCriteriaTemplate);
         const evaluationsData = (evaluationsRes.data ?? []).map((row) => ({
           id: String(row.id),
           evaluator_name: row.evaluator_name ? String(row.evaluator_name) : null,
@@ -365,7 +377,7 @@ export function CandidateEvaluationDialog({
         listEvaluationCriteriaTemplates(currentCompanyId),
         listCandidateEvaluations(evalQuery),
       ]);
-      const templatesData = (templatesRes.data ?? []) as EvaluationCriteriaTemplate[];
+      const templatesData = (templatesRes.data ?? []).map(mapEvaluationCriteriaTemplate);
       const evaluationsData = (evaluationsRes.data ?? []).map((row) => ({
         id: String(row.id),
         evaluator_name: row.evaluator_name ? String(row.evaluator_name) : null,
@@ -487,7 +499,7 @@ export function CandidateEvaluationDialog({
       applicationId: candidate.application_id,
       result,
     });
-    if (!gate.ok) {
+    if ('message' in gate) {
       toast({
         title: 'Chưa chốt được đánh giá',
         description: gate.message,

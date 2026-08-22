@@ -168,6 +168,7 @@ import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
+  expandPayrollPeriodCompanyIds,
   HrmListScope,
   HrmListScopeContext,
   MASTER_TENANT_ID,
@@ -285,6 +286,7 @@ import {
   assertYctdReceivableForMutateOrThrow,
   applyInternalScanComplete,
   applyInternalScanSkip,
+  backfillLegacyYctdHeadcountMode,
   EMPTY_PIPELINE_FLAGS,
   HRM_YCTD_CELL_MISSING,
   HRM_YCTD_CELL_NOT_APPROVED,
@@ -752,6 +754,8 @@ export class RecruitmentService {
       ON public.job_requisitions (company_id, approval_matrix_key)
       WHERE approval_matrix_key IS NOT NULL;
     `);
+    // PO-HRM-MVP-GD1-REC-02-CLUSTER-DATA-01 §7 — O4 legacy uplift (cell → in_plan, else out_of_plan).
+    await backfillLegacyYctdHeadcountMode(this.db);
     // PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 — DATA-01 O4: DROP closed-six → open non-empty.
     await this.db.query(`
       DO $$
@@ -1646,6 +1650,59 @@ export class RecruitmentService {
     }
     values.push(companyIds);
     filters.push(`${alias}.company_id = ANY($${values.length}::text[])`);
+  }
+
+  /**
+   * F-REC-CMP-02 — map pool/eval neo ids → Lane A spine on one YCTD.
+   * Scope via job_requisitions (parity listApplicationsByYctd).
+   */
+  private async resolveCompareSpineCandidateIdsForYctd(
+    requisitionId: string,
+    rawIds: string[],
+    scope: import('../common/hrm-list-scope').HrmListScope,
+  ): Promise<string[]> {
+    if (rawIds.length === 0) return [];
+    const filters: string[] = [];
+    const values: unknown[] = [rawIds, requisitionId];
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'r');
+    const scopeClause = filters.length > 0 ? ` AND ${filters.join(' AND ')}` : '';
+    const mapRes = await this.db.query<{
+      requested_id: string;
+      spine_id: string | null;
+    }>(
+      `WITH requested AS (
+         SELECT id::uuid AS requested_id, ord
+         FROM unnest($1::uuid[]) WITH ORDINALITY AS t(id, ord)
+       )
+       SELECT req.requested_id::text AS requested_id,
+              COALESCE(c_direct.id, c_eval.id)::text AS spine_id
+       FROM requested req
+       INNER JOIN public.job_requisitions r ON r.id = $2::uuid${scopeClause}
+       LEFT JOIN public.recruitment_candidates c_direct
+         ON c_direct.id = req.requested_id AND c_direct.requisition_id = r.id
+       LEFT JOIN public.candidate_evaluations e
+         ON e.candidate_id = req.requested_id
+         OR e.recruitment_candidate_id = req.requested_id
+         OR e.application_id = req.requested_id
+       LEFT JOIN public.recruitment_candidates c_eval
+         ON c_eval.id = COALESCE(e.recruitment_candidate_id, e.application_id)
+         AND c_eval.requisition_id = r.id
+       ORDER BY req.ord ASC;`,
+      values,
+    );
+    const spineByRequested = new Map(
+      mapRes.rows.map((row) => [row.requested_id, row.spine_id]),
+    );
+    const resolved: string[] = [];
+    const mixRows: Array<{ id: string; requisition_id: string }> = [];
+    for (const requestedId of rawIds) {
+      const spineId = spineByRequested.get(requestedId);
+      if (!spineId) continue;
+      resolved.push(spineId);
+      mixRows.push({ id: spineId, requisition_id: requisitionId });
+    }
+    assertCompareSameYctdOrThrow(requisitionId, mixRows, rawIds);
+    return resolved;
   }
 
   async listJobRequisitions(
@@ -4284,7 +4341,7 @@ export class RecruitmentService {
     // while candidate_count on picker counts all Lane A rows on requisition_id.
     const filters: string[] = ['c.requisition_id = $1::uuid'];
     const values: unknown[] = [requisitionId];
-    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'r');
     const whereClause = filters.join(' AND ');
     const countRes = await this.db.query<{ total: string }>(
       `SELECT COUNT(*)::text AS total
@@ -4377,6 +4434,7 @@ export class RecruitmentService {
             : null;
       return {
         candidate_id: row.id,
+        recruitment_candidate_id: row.id,
         application_id: row.id,
         full_name: row.full_name,
         email: row.email ?? null,
@@ -4421,11 +4479,11 @@ export class RecruitmentService {
       scopeContext,
     );
     const requisitionId = requireUvYctdRequisitionId(query);
-    const candidateIds = parseCandidateIdList(
+    const rawCandidateIds = parseCandidateIdList(
       query.candidate_ids ?? query.application_ids,
     );
-    assertCompareMaxNOrThrow(candidateIds);
-    if (candidateIds.length === 0) {
+    assertCompareMaxNOrThrow(rawCandidateIds);
+    if (rawCandidateIds.length === 0) {
       return {
         requisition_id: requisitionId,
         recruitment_request_id: requisitionId,
@@ -4434,12 +4492,17 @@ export class RecruitmentService {
         items: [],
       };
     }
+    const candidateIds = await this.resolveCompareSpineCandidateIdsForYctd(
+      requisitionId,
+      rawCandidateIds,
+      scope,
+    );
     const filters: string[] = [
       'c.id = ANY($1::uuid[])',
       'c.requisition_id = $2::uuid',
     ];
     const values: unknown[] = [candidateIds, requisitionId];
-    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'r');
     const res = await this.db.query<{
       id: string;
       requisition_id: string;
@@ -4461,7 +4524,7 @@ export class RecruitmentService {
         anyFilters,
         anyValues,
         scope,
-        'c',
+        'r',
       );
       const anyRes = await this.db.query<{
         id: string;
@@ -4469,6 +4532,7 @@ export class RecruitmentService {
       }>(
         `SELECT c.id, c.requisition_id::text AS requisition_id
          FROM public.recruitment_candidates c
+         INNER JOIN public.job_requisitions r ON r.id = c.requisition_id
          WHERE ${anyFilters.join(' AND ')};`,
         anyValues,
       );
@@ -4512,18 +4576,29 @@ export class RecruitmentService {
     ].map((name) => ({ name }));
     // TECH-01 §3.2 — when no stored scores, fall back to active eval template axes.
     if (criteria.length === 0) {
-      const companyId =
-        scope.companyIds.length === 1
-          ? scope.companyIds[0]
-          : res.rows[0]
-            ? (
-                await this.db.query<{ company_id: string }>(
-                  `SELECT company_id FROM public.recruitment_candidates WHERE id = $1::uuid LIMIT 1;`,
-                  [res.rows[0].id],
-                )
-              ).rows[0]?.company_id
-            : null;
-      if (companyId) {
+      const reqCompanyRes = await this.db.query<{ company_id: string }>(
+        `SELECT company_id FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1;`,
+        [requisitionId],
+      );
+      const candidateCompanyId = res.rows[0]
+        ? (
+            await this.db.query<{ company_id: string }>(
+              `SELECT company_id FROM public.recruitment_candidates WHERE id = $1::uuid LIMIT 1;`,
+              [res.rows[0].id],
+            )
+          ).rows[0]?.company_id
+        : null;
+      const templateCompanyIds = [
+        reqCompanyRes.rows[0]?.company_id,
+        candidateCompanyId,
+        ...expandPayrollPeriodCompanyIds(scope),
+      ]
+        .map((id) => (id != null ? String(id).trim() : ''))
+        .filter((id) => id.length > 0);
+      const seenTemplateCompanies = new Set<string>();
+      for (const companyId of templateCompanyIds) {
+        if (seenTemplateCompanies.has(companyId)) continue;
+        seenTemplateCompanies.add(companyId);
         const tplRes = await this.db.query<{
           id: string;
           name: string;
@@ -4535,11 +4610,14 @@ export class RecruitmentService {
            ORDER BY sort_order ASC, name ASC;`,
           [companyId],
         );
-        criteria = tplRes.rows.map((t) => ({
-          id: t.id,
-          name: t.name,
-          weight: t.weight != null ? Number(t.weight) : undefined,
-        }));
+        if (tplRes.rows.length > 0) {
+          criteria = tplRes.rows.map((t) => ({
+            id: t.id,
+            name: t.name,
+            weight: t.weight != null ? Number(t.weight) : undefined,
+          }));
+          break;
+        }
       }
     }
     const byId = new Map(res.rows.map((r) => [r.id, r]));

@@ -637,7 +637,19 @@ export function pushHrmTableScopeFilters(
     pushTenantOnlyTableScopeFilters(filters, values, scope, options);
     return;
   }
-  pushCompanyIdFilter(filters, values, scope.companyIds);
+  const companyIds = expandPayrollPeriodCompanyIds(scope);
+  const alias = options?.tableAlias?.trim();
+  if (alias) {
+    if (companyIds.length === 1) {
+      values.push(companyIds[0]);
+      filters.push(`${alias}.company_id = $${values.length}::text`);
+      return;
+    }
+    values.push(companyIds);
+    filters.push(`${alias}.company_id = ANY($${values.length}::text[])`);
+    return;
+  }
+  pushCompanyIdFilter(filters, values, companyIds);
 }
 
 /**

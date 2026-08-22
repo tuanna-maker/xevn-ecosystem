@@ -6190,6 +6190,7 @@
     "noYctdEmpty": "Chưa có YCTD để so sánh. Tạo hoặc duyệt yêu cầu tuyển dụng trước.",
     "noCandidatesForYctd": "Chưa có ứng viên trên yêu cầu này",
     "selectYctdToView": "Chọn YCTD để xem ứng viên",
+    "compareCandidatesFor": "Ứng viên thuộc:",
     "noCandidatesForJob": "Chưa có ứng viên trên yêu cầu này",
     "selectJobToView": "Chọn YCTD để xem ứng viên",
     "notEvaluated": "Chưa đánh giá",

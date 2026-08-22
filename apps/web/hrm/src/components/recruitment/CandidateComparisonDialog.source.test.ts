@@ -29,12 +29,16 @@ describe('CandidateComparisonDialog YCTD SoT (PO-HRM-REC-UV-YCTD-CMP-FE-01)', ()
     expect(src).toContain("r('notEvaluated')");
     expect(src).toContain('HRM-REC-CMP-MAX-N');
     expect(src).toContain('HRM-REC-CMP-YCTD-MIX');
-    expect(src).toContain("r('compareNoScoresTitle')");
-    expect(src).toContain("r('compareNoScoresHint')");
+    expect(src).not.toContain("r('compareNoScoresTitle')");
+    expect(src).not.toContain("r('compareNoScoresHint')");
+    expect(src).toContain('compareMatrixHasScoredData');
+    expect(src).toContain('buildCompareCriteriaTableRows');
+    expect(src).toContain('criteriaTableRows');
+    expect(src).toContain('hasChartScores');
   });
 
   it('auto-selects first YCTD on open and first UV after load (R-REC-CMP-NET-CAPTURE)', () => {
-    expect(src).toContain('setSelectedYctdId(rows[0].id)');
+    expect(src).toMatch(/setSelectedYctdId\((rows|fastRows|resolvedRows)\[0\]\.id\)/);
     expect(src).toContain('getRecruitmentCompareMatrix');
     expect(src).toContain('rows.slice(0, 1)');
     expect(src).toContain('setSelectedCandidateIds(initialIds)');
@@ -66,10 +70,19 @@ describe('CandidateComparisonDialog YCTD SoT (PO-HRM-REC-UV-YCTD-CMP-FE-01)', ()
     expect(src).toContain('coerceHrmListCompanyId');
     expect(src).toContain('loadCompareYctdFromCandidates');
     expect(src).toContain('loadRequisitionsAcrossCompanyScopes');
+    expect(src).toContain('seedRequisitions');
+    expect(src).toContain('refreshRequisitions');
+    expect(src).toContain('preloadedRequisitions');
+    expect(src).toContain('mapRequisitionsToComparePicker');
     expect(src).toContain('mergeSeedEvalIntoCompareYctdPicker');
     expect(src).toContain('seedEvaluations');
     expect(src).toContain('buildCompareYctdPickerFromCandidates');
     expect(src).toContain('filterComparePickerYctds');
-    expect(src).toContain('recCompareYctdSearch');
+    expect(src).toContain('formatYctdOptionPrimaryLine');
+    expect(src).toContain('SelectTrigger');
+    expect(src).toContain('recCompareYctdPicker');
+    expect(src).toContain('resolveCompareMatrixCandidateIds');
+    expect(src).toContain('matrixRequestRef');
+    expect(src).not.toContain('recCompareYctdSearch');
   });
 });

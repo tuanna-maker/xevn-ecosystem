@@ -142,19 +142,12 @@ export function filterReceivableRequisitions<
   });
 }
 
-/** REC-06b — YCTD eligible for compare without UV count yet (sponsor: Chờ duyệt / tạm dừng / đóng). */
-const COMPARE_PICKER_STATUSES = new Set<string>([
-  'pending_approval',
-  'on_hold',
-  'closed',
-]);
-
-const COMPARE_PICKER_EXCLUDED_STATUSES = new Set<string>(['draft', 'rejected', 'cancelled']);
+const COMPARE_PICKER_EXCLUDED_STATUSES = new Set<string>(['rejected', 'cancelled']);
 
 /**
- * REC-06b compare picker — wider than bind/create (F-REC-UV-YCTD-01).
- * Show YCTD receivable OR any YCTD that already has UV (candidate_count > 0).
- * Do not strip legacy unclassified rows that already carry pipeline data — compare is read-only.
+ * REC-06b compare picker — parity tab «Yêu cầu tuyển dụng» (read-only).
+ * Include mọi YCTD in-scope trừ rejected/cancelled — gồm draft, pending_approval, open_for_hire, …
+ * FORBIDDEN: chỉ liệt kê YCTD đã có UV/eval (seed fallback) khi API requisitions còn dữ liệu.
  */
 export function filterComparePickerYctds<
   T extends {
@@ -166,11 +159,7 @@ export function filterComparePickerYctds<
     const status = String(row.status ?? '')
       .trim()
       .toLowerCase();
-    if (COMPARE_PICKER_EXCLUDED_STATUSES.has(status)) return false;
-    const count = Number(row.candidate_count ?? 0);
-    if (Number.isFinite(count) && count > 0) return true;
-    if (isReceivableRequisitionStatus(row.status)) return true;
-    return COMPARE_PICKER_STATUSES.has(status);
+    return !COMPARE_PICKER_EXCLUDED_STATUSES.has(status);
   });
 }
 
