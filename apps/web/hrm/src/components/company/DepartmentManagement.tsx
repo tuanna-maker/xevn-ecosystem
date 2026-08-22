@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -51,6 +51,16 @@ import {
 } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
+import { SETTINGS_CATALOGS_QUERY_KEY } from '@/hooks/useSettingsCatalogsOverview';
+import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
+import {
+  departmentMutateErrorMessage,
+  isDepartmentUuid,
+  persistCompanyDepartment,
+  removeCompanyDepartment,
+  suggestDepartmentCode,
+} from '@/lib/companyDepartmentMutate';
 import { DepartmentImportDialog } from './DepartmentImportDialog';
 import { HrmListLoadBanner } from '@/components/hrm/HrmListLoadBanner';
 import {
@@ -58,8 +68,10 @@ import {
 } from '@/lib/hrmListLoadFailure';
 import {
   loadCompanyDepartments,
+  isGroupCeoDepartmentRollupContext,
   type CatalogDepartmentRow,
 } from '@/lib/hrmDepartmentCatalog';
+import { resolveTenantDisplayLabelVi } from '@/lib/embedWorkingContext';
 
 type Department = CatalogDepartmentRow & {
   children?: Department[];
@@ -91,6 +103,8 @@ export const COMPANY_DEPARTMENTS_QUERY_KEY = 'company-departments';
 export function DepartmentManagement() {
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
+  const queryClient = useQueryClient();
+  const catalogScope = resolveHrmSettingsCatalogScope(currentCompanyId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
@@ -173,7 +187,10 @@ export function DepartmentManagement() {
   };
 
   const handleSubmit = async () => {
-    if (!currentCompanyId) return;
+    if (!currentCompanyId || !catalogScope) {
+      toast.error('Chưa chọn phạm vi công ty');
+      return;
+    }
     if (!formData.name.trim()) {
       toast.error(t('dept.pleaseEnterName'));
       return;
@@ -182,48 +199,63 @@ export function DepartmentManagement() {
     setSubmitting(true);
     try {
       const parentId = formData.parent_id === 'none' || formData.parent_id === '' ? null : formData.parent_id;
-      const parentDept = parentId 
-        ? departments.find(d => d.id === parentId) 
-        : null;
+      const parentDept = parentId ? departments.find((d) => d.id === parentId) : null;
       const level = parentDept ? parentDept.level + 1 : 1;
+      const code = formData.code.trim() || suggestDepartmentCode(formData.name);
 
-      const departmentData = {
-        company_id: currentCompanyId,
-        name: formData.name.trim(),
-        code: formData.code.trim() || null,
-        description: formData.description.trim() || null,
-        manager_name: formData.manager_name.trim() || null,
-        manager_email: formData.manager_email.trim() || null,
-        parent_id: parentId,
-        status: formData.status,
-        level,
-      };
+      await persistCompanyDepartment(
+        catalogScope,
+        {
+          name: formData.name.trim(),
+          code,
+          description: formData.description.trim() || null,
+          manager_name: formData.manager_name.trim() || null,
+          manager_email: formData.manager_email.trim() || null,
+          parent_id: parentId,
+          level,
+          status: formData.status === 'inactive' ? 'draft' : 'active',
+        },
+        {
+          departmentId: selectedDepartment && isDepartmentUuid(selectedDepartment.id)
+            ? selectedDepartment.id
+            : null,
+          catalogCode: selectedDepartment?.code ?? code,
+        },
+      );
 
-      if (selectedDepartment) {
-        toast.success(t('dept.updateSuccess'));
-      }
-
+      toast.success(
+        selectedDepartment ? t('dept.updateSuccess') : t('dept.createSuccess', 'Đã thêm phòng ban'),
+      );
       setIsDialogOpen(false);
+      await queryClient.invalidateQueries({ queryKey: [SETTINGS_CATALOGS_QUERY_KEY] });
+      await queryClient.invalidateQueries({ queryKey: [COMPANY_DEPARTMENTS_QUERY_KEY] });
       fetchDepartments();
     } catch (error) {
       console.error('Error saving department:', error);
-      toast.error(t('dept.saveError'));
+      toast.error(departmentMutateErrorMessage(error, t('dept.saveError')));
     } finally {
       setSubmitting(false);
     }
   };
 
   const confirmDelete = async () => {
-    if (!selectedDepartment) return;
+    if (!selectedDepartment || !catalogScope) return;
 
     setSubmitting(true);
     try {
+      await removeCompanyDepartment(catalogScope, {
+        id: selectedDepartment.id,
+        name: selectedDepartment.name,
+        code: selectedDepartment.code,
+      });
       toast.success(t('dept.deleteSuccess'));
       setIsDeleteDialogOpen(false);
+      await queryClient.invalidateQueries({ queryKey: [SETTINGS_CATALOGS_QUERY_KEY] });
+      await queryClient.invalidateQueries({ queryKey: [COMPANY_DEPARTMENTS_QUERY_KEY] });
       fetchDepartments();
     } catch (error) {
       console.error('Error deleting department:', error);
-      toast.error(t('dept.deleteError'));
+      toast.error(departmentMutateErrorMessage(error, t('dept.deleteError')));
     } finally {
       setSubmitting(false);
     }
@@ -244,6 +276,32 @@ export function DepartmentManagement() {
   const departmentTree = buildTree(departments);
   const flatDepartments = flattenForSelect(departmentTree);
   const loadFailedEmpty = isListFetchFailureEmpty(fetchError, departments.length);
+  const showCompanyScope = isGroupCeoDepartmentRollupContext();
+
+  const departmentsByCompany = useMemo(() => {
+    if (!showCompanyScope) return null;
+    const byTenant = new Map<string, Department[]>();
+    for (const row of departments) {
+      const key = row.tenant_id?.trim() || '_unknown';
+      const list = byTenant.get(key) ?? [];
+      list.push(row);
+      byTenant.set(key, list);
+    }
+    return [...byTenant.entries()]
+      .map(([tenantKey, rows]) => ({
+        tenantId: tenantKey === '_unknown' ? null : tenantKey,
+        label: resolveTenantDisplayLabelVi(tenantKey === '_unknown' ? null : tenantKey),
+        rows,
+        tree: buildTree(rows),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'vi', { sensitivity: 'base' }));
+  }, [departments, showCompanyScope]);
+
+  const handleImportSuccess = async () => {
+    await queryClient.invalidateQueries({ queryKey: [SETTINGS_CATALOGS_QUERY_KEY] });
+    await queryClient.invalidateQueries({ queryKey: [COMPANY_DEPARTMENTS_QUERY_KEY] });
+    fetchDepartments();
+  };
 
   const renderDepartmentItem = (dept: Department, depth = 0) => {
     const hasChildren = dept.children && dept.children.length > 0;
@@ -286,6 +344,15 @@ export function DepartmentManagement() {
                   {dept.code}
                 </Badge>
               )}
+              {showCompanyScope && dept.tenant_id ? (
+                <Badge
+                  variant="secondary"
+                  className="text-xs max-w-[220px] truncate"
+                  title={resolveTenantDisplayLabelVi(dept.tenant_id)}
+                >
+                  {resolveTenantDisplayLabelVi(dept.tenant_id)}
+                </Badge>
+              ) : null}
               <Badge variant={dept.status === 'active' ? 'default' : 'secondary'}>
                 {dept.status === 'active' ? t('status.active') : t('status.inactive')}
               </Badge>
@@ -337,7 +404,9 @@ export function DepartmentManagement() {
           <div>
             <CardTitle className="text-lg">{t('company.departments')}</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              {t('dept.subtitle')}
+              {showCompanyScope
+                ? 'Danh sách phòng ban theo từng đơn vị thành viên trong tập đoàn'
+                : t('dept.subtitle')}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -399,7 +468,20 @@ export function DepartmentManagement() {
 
               <TabsContent value="list" className="mt-0">
                 <div className="space-y-2">
-                  {departmentTree.map(dept => renderDepartmentItem(dept))}
+                  {showCompanyScope && departmentsByCompany
+                    ? departmentsByCompany.map((group) => (
+                        <div key={group.tenantId ?? 'unknown'} className="space-y-2">
+                          <div className="flex items-center gap-2 pt-4 first:pt-0 border-b pb-2">
+                            <Building2 className="w-4 h-4 text-primary" />
+                            <h3 className="text-sm font-semibold">{group.label}</h3>
+                            <Badge variant="outline" className="text-xs">
+                              {group.rows.length} phòng ban
+                            </Badge>
+                          </div>
+                          {group.tree.map((dept) => renderDepartmentItem(dept))}
+                        </div>
+                      ))
+                    : departmentTree.map((dept) => renderDepartmentItem(dept))}
                 </div>
               </TabsContent>
 
@@ -558,7 +640,7 @@ export function DepartmentManagement() {
       <DepartmentImportDialog
         open={isImportDialogOpen}
         onOpenChange={setIsImportDialogOpen}
-        onSuccess={fetchDepartments}
+        onSuccess={handleImportSuccess}
         existingDepartments={departments.map(d => ({ id: d.id, name: d.name, code: d.code }))}
       />
     </>

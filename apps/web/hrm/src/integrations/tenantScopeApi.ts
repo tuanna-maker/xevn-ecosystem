@@ -97,6 +97,8 @@ export type HrmCompanyRow = {
   status: string;
   created_at: string;
   updated_at: string;
+  /** Tenant partition (tenant-only scope). */
+  tenant_id?: string | null;
 };
 
 /** Org-foundation legal entity row (subset used for company profile bind). */
@@ -277,10 +279,18 @@ export function pickHoldingLegalEntity(
 }
 
 async function xbosHeaders(companyId: string = OPERATING_MAIN_COMPANY_ID): Promise<Record<string, string>> {
+  const tenantFromStorage =
+    typeof window !== 'undefined'
+      ? (
+          localStorage.getItem('hrm_current_tenant_id') ||
+          sessionStorage.getItem('hrm_current_tenant_id') ||
+          ''
+        ).trim()
+      : '';
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'x-request-id': safeRandomUuid(),
-    'x-tenant-id': MASTER_TENANT_ID,
+    'x-tenant-id': tenantFromStorage || MASTER_TENANT_ID,
     'x-company-id': companyId,
   };
   let token = getPortalAccessToken();
@@ -301,6 +311,7 @@ export function mapGroupMemberUnitsToHrmCompanies(data: GroupMemberUnitsPayload)
   if (data.holding) {
     list.push({
       id: GROUP_HOLDING_ROOT_ID,
+      tenant_id: data.holding.tenant_id,
       name: data.holding.name,
       code: data.holding.short_name?.trim() || data.holding.tenant_id,
       logo_url: null,
@@ -326,6 +337,7 @@ export function mapGroupMemberUnitsToHrmCompanies(data: GroupMemberUnitsPayload)
     const fromForm = mapCompanyFormPayloadToCompanyFields(member.payload);
     list.push({
       id: member.id,
+      tenant_id: member.tenant_id,
       name: member.name,
       code: member.code,
       logo_url: null,
@@ -437,9 +449,9 @@ async function fetchLegalEntitiesForHrm(
   return body.data?.items ?? [];
 }
 
-/** Group CEO — member units from XBOS tenant-scope + legal profile enrich (SoT). */
-export async function fetchGroupMemberUnitsForHrm(): Promise<HrmCompanyRow[]> {
-  const res = await fetch('/api/xbos/tenant-scope/group-member-units', {
+/** Group CEO + member CEO — unified company units (legal profile SoT). */
+export async function fetchCompanyUnitsForHrm(): Promise<HrmCompanyRow[]> {
+  const res = await fetch('/api/xbos/tenant-scope/company-units', {
     method: 'GET',
     headers: await xbosHeaders(OPERATING_MAIN_COMPANY_ID),
   });
@@ -452,7 +464,7 @@ export async function fetchGroupMemberUnitsForHrm(): Promise<HrmCompanyRow[]> {
     throw new ApiClientError({
       status: res.status,
       code: 'XBOS-TENANT-SCOPE',
-      message: body?.message ?? 'Không tải được danh sách công ty thành viên',
+      message: body?.message ?? 'Không tải được danh sách công ty',
     });
   }
 
@@ -460,13 +472,11 @@ export async function fetchGroupMemberUnitsForHrm(): Promise<HrmCompanyRow[]> {
   let holdingEntities: LegalEntityProfileRow[] = [];
   let memberEntities: LegalEntityProfileRow[] = [];
 
-  // Holding SoT — company_id=holding (không dùng tenant-scope mỏng).
   try {
     holdingEntities = await fetchLegalEntitiesForHrm(HOLDING_COMPANY_ID);
   } catch (err) {
     console.warn('[tenantScopeApi] holding legal-entities enrich skipped', err);
   }
-  // Member SoT flat — company_id=main trả listGroupMemberLegalEntitiesFlat (SELECT *).
   try {
     memberEntities = await fetchLegalEntitiesForHrm(OPERATING_MAIN_COMPANY_ID);
   } catch (err) {
@@ -478,4 +488,9 @@ export async function fetchGroupMemberUnitsForHrm(): Promise<HrmCompanyRow[]> {
     holdingEntities,
     memberEntities,
   });
+}
+
+/** @deprecated Prefer fetchCompanyUnitsForHrm — member CEO receives 403. */
+export async function fetchGroupMemberUnitsForHrm(): Promise<HrmCompanyRow[]> {
+  return fetchCompanyUnitsForHrm();
 }

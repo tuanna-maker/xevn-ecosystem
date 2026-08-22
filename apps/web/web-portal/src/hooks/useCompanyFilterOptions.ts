@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Company } from '../data/mockData';
 import type { Company as OrgCompany } from '../data/mock-data';
 import { useGlobalFilter, type TenantOption } from '../contexts/GlobalFilterContext';
-import { isGroupCeoOnMasterTenant } from '../integrations/commandCenterScope';
-import { fetchGroupMemberUnitsForCommandCenter } from '../integrations/tenantScopeApi';
+import { fetchCompanyUnitsForCommandCenter } from '../integrations/tenantScopeApi';
 import { logApiFailure, logApiStart } from '../utils/apiLogger';
 
 function fromOrgCompany(row: OrgCompany): Company {
@@ -32,7 +31,7 @@ function fromTenantOption(row: TenantOption): Company {
   };
 }
 
-/** Legal-entity options for Settings filters — API-only (group-member-units), no mockCompanies. */
+/** Legal-entity options for Settings filters — API-only (company-units), no mockCompanies. */
 export function useCompanyFilterOptions(): {
   companies: Company[];
   usingApi: boolean;
@@ -46,18 +45,10 @@ export function useCompanyFilterOptions(): {
   useEffect(() => {
     if (tenantScopeStatus === 'loading') return;
 
-    // Group-member-units requires master-tenant group CEO — member personas must not call it (403 → session churn).
-    if (!isGroupCeoOnMasterTenant()) {
-      setGroupMembers([]);
-      setGroupLoadFailed(false);
-      setGroupLoaded(true);
-      return;
-    }
-
     let cancelled = false;
-    const url = '/api/xbos/tenant-scope/group-member-units';
-    const startedAt = logApiStart('tenant-scope.group-member-units', 'GET', url);
-    void fetchGroupMemberUnitsForCommandCenter()
+    const url = '/api/xbos/tenant-scope/company-units';
+    const startedAt = logApiStart('tenant-scope.company-units', 'GET', url);
+    void fetchCompanyUnitsForCommandCenter()
       .then((rows) => {
         if (cancelled) return;
         setGroupMembers(rows.map(fromOrgCompany));
@@ -65,7 +56,7 @@ export function useCompanyFilterOptions(): {
         setGroupLoaded(true);
       })
       .catch((error) => {
-        logApiFailure('tenant-scope.group-member-units', 'GET', url, startedAt, error);
+        logApiFailure('tenant-scope.company-units', 'GET', url, startedAt, error);
         if (!cancelled) {
           setGroupMembers([]);
           setGroupLoadFailed(true);

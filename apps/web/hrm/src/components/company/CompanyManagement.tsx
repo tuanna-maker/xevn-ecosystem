@@ -82,7 +82,7 @@ import { formatIsoDateToViDisplay } from '@xevn/ui';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import {
-  fetchGroupMemberUnitsForHrm,
+  fetchCompanyUnitsForHrm,
   resolveIndustryDisplay,
 } from '@/integrations/tenantScopeApi';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
@@ -107,7 +107,7 @@ import {
  * WorkItem:   FID-P0-FE-DATE-01
  * Coded:      2026-07-22
  * Callers:    Settings / Companies route
- * Callees:    ViDatePickerField · fetchGroupMemberUnitsForHrm · enrichHrmCompaniesWithWorkforceCounts
+ * Callees:    ViDatePickerField · fetchCompanyUnitsForHrm · enrichHrmCompaniesWithWorkforceCounts
  * must_keep:  Form founded_date = ISO yyyy-MM-dd hoặc ''; không timezone shift new Date(iso);
  *             Persist legal PUT = FID-P0-FE-CO-BIND-01 — cấm toast giả «đã lưu» khi chưa API;
  *             CO-BIND tax/MST; OU filter JWT không mutate; dashboard summary path unchanged
@@ -221,7 +221,7 @@ export function CompanyManagement() {
         typeof window !== 'undefined' && getHrmPortalMode(window.location.search);
       if (portalEmbed) {
         // CO-BIND legal profile first; workforce counts by operating slug (not LE UUID).
-        const rows = await fetchGroupMemberUnitsForHrm();
+        const rows = await fetchCompanyUnitsForHrm();
         const { companies: withCounts, rollupTotal } =
           await enrichHrmCompaniesWithWorkforceCounts(rows);
         setCompanies(withCounts);

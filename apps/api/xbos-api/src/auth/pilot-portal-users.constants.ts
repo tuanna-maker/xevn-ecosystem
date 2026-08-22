@@ -19,6 +19,7 @@ export const PILOT_PORTAL_USERS: PilotPortalUser[] = [
   { userId: 'vietnam.ceo@xe.vn', displayName: 'CEO X.E Việt Nam', tenantId: 'xe-vietnam', roleCode: 'subsidiary_ceo', companyId: 'main' },
   { userId: 'tmdv.ceo@xe.vn', displayName: 'CEO TM-DV', tenantId: 'xe-tmdv', roleCode: 'subsidiary_ceo', companyId: 'main' },
   { userId: 'visun.ceo@xe.vn', displayName: 'CEO Visun', tenantId: 'visun', roleCode: 'subsidiary_ceo', companyId: 'main' },
+  { userId: 'ceo2@xe.vn', displayName: 'CEO Visun 2', tenantId: 'visun', roleCode: 'subsidiary_ceo', companyId: 'main' },
 ];
 
 /** Super-dev multi-tenant account — portal password only (memberships from org seed). */

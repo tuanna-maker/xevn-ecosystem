@@ -199,6 +199,70 @@ export function parseEmployeeSummaryByCompany(
   return map.size > 0 ? map : null;
 }
 
+export function parseEmployeeSummaryByTenant(
+  summary: HrmEmployeeSummary,
+): Map<string, number> | null {
+  const rows = summary.by_tenant;
+  if (!Array.isArray(rows) || rows.length === 0) return null;
+  const map = new Map<string, number>();
+  for (const row of rows) {
+    const tenantId = String(row.tenant_id ?? '').trim().toLowerCase();
+    if (!tenantId) continue;
+    const total = Number(row.total);
+    if (Number.isFinite(total)) map.set(tenantId, total);
+  }
+  return map.size > 0 ? map : null;
+}
+
+function isTenantOnlyScopeEnabled(): boolean {
+  const raw = import.meta.env.VITE_HRM_TENANT_ONLY_SCOPE;
+  return raw === '1' || raw === 'true' || raw === 'yes';
+}
+
+export function enrichHrmCompaniesWithTenantCounts(
+  companies: HrmCompanyRow[],
+  countsByTenant: ReadonlyMap<string, number | null>,
+): HrmCompanyRowWithWorkforce[] {
+  return companies.map((company) => {
+    const tenantId = company.tenant_id?.trim().toLowerCase();
+    if (!tenantId) {
+      return { ...company, employee_count: null, workforce_operating_slug: null };
+    }
+    const count = countsByTenant.get(tenantId);
+    return {
+      ...company,
+      employee_count: typeof count === 'number' && !Number.isNaN(count) ? count : null,
+      workforce_operating_slug: null,
+    };
+  });
+}
+
+async function fetchEmployeeCountsByTenant(
+  tenantIds: readonly string[],
+): Promise<HrmWorkforceCountFetchResult> {
+  const unique = [
+    ...new Set(tenantIds.map((id) => id.trim().toLowerCase()).filter(Boolean)),
+  ];
+  const result = new Map<string, number | null>();
+  if (unique.length === 0) {
+    return { countsBySlug: result, rollupTotal: null };
+  }
+  try {
+    const rollup = await getEmployeesSummary({ company_id: 'main' });
+    const rollupTotal = Number.isFinite(rollup.total) ? rollup.total : null;
+    const byTenant = parseEmployeeSummaryByTenant(rollup);
+    if (byTenant) {
+      for (const tenantId of unique) {
+        result.set(tenantId, byTenant.has(tenantId) ? (byTenant.get(tenantId) as number) : null);
+      }
+      return { countsBySlug: result, rollupTotal };
+    }
+  } catch {
+    // fall through — honest null counts
+  }
+  return { countsBySlug: result, rollupTotal: null };
+}
+
 export type HrmWorkforceCountFetchResult = {
   countsBySlug: Map<string, number | null>;
   /** AC-CO-EMP-01 — `data.total` from GET summary?company_id=main */
@@ -267,6 +331,18 @@ export async function enrichHrmCompaniesWithWorkforceCounts(
 ): Promise<HrmCompanyWorkforceEnrichResult> {
   if (companies.length === 0) {
     return { companies: [], rollupTotal: null };
+  }
+
+  if (isTenantOnlyScopeEnabled()) {
+    const tenantIds = companies
+      .map((c) => c.tenant_id?.trim().toLowerCase())
+      .filter((id): id is string => Boolean(id));
+    const { countsBySlug: countsByTenant, rollupTotal } =
+      await fetchEmployeeCountsByTenant(tenantIds);
+    return {
+      companies: enrichHrmCompaniesWithTenantCounts(companies, countsByTenant),
+      rollupTotal,
+    };
   }
 
   let units: HrmOperatingUnitRow[] = [];

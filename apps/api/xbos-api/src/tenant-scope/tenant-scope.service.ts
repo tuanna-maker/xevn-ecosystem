@@ -14,6 +14,8 @@ export type AccessibleTenant = {
   roleCode: string;
   companyId: string;
   isMaster: boolean;
+  /** Enabled modules from xbos_tenant_registry.modules */
+  modules: string[];
 };
 
 @Injectable()
@@ -39,7 +41,7 @@ export class TenantScopeService {
 
   async listAccessible(userId: string): Promise<AccessibleTenant[]> {
     const { rows } = await this.db.query(
-      `SELECT m.tenant_id, m.role_code, t.name, t.short_name, t.tenant_kind, t.default_company_id
+      `SELECT m.tenant_id, m.role_code, t.name, t.short_name, t.tenant_kind, t.default_company_id, t.modules
        FROM public.xbos_user_tenant_membership m
        JOIN public.xbos_tenant_registry t ON t.tenant_id = m.tenant_id
        WHERE m.user_id = $1 AND m.status = 'active' AND t.status = 'active'
@@ -48,6 +50,10 @@ export class TenantScopeService {
     );
     return rows.map((r) => {
       const tenantId = String((r as { tenant_id: string }).tenant_id);
+      const rawModules = (r as { modules: unknown }).modules;
+      const modules = Array.isArray(rawModules)
+        ? rawModules.map((m) => String(m).trim()).filter(Boolean)
+        : [];
       return {
         tenantId,
         name: String((r as { name: string }).name),
@@ -56,6 +62,7 @@ export class TenantScopeService {
         roleCode: String((r as { role_code: string }).role_code),
         companyId: String((r as { default_company_id: string }).default_company_id || MEMBER_DEFAULT_COMPANY_ID),
         isMaster: isMasterTenant(tenantId),
+        modules,
       };
     });
   }
@@ -108,6 +115,61 @@ export class TenantScopeService {
       );
     }
     return this.org.listGroupMemberUnits();
+  }
+
+  /**
+   * Unified company units for HRM embed — group CEO gets full rollup; member CEO gets
+   * only accessible member legal entities (AC-TOS-04 group-member-units 403 bypass).
+   */
+  async companyUnits(
+    userId: string,
+    jwtContext?: { tenantId?: string; roleCode?: string },
+  ) {
+    let accessible = await this.listAccessible(userId);
+    let masterMembership = accessible.find((t) => t.isMaster);
+    const roleCode = (jwtContext?.roleCode ?? '').trim().toLowerCase();
+    const jwtGroupCeo = isGroupCeoOnMasterTenant(jwtContext?.tenantId, roleCode);
+
+    if (!masterMembership && jwtGroupCeo) {
+      await ensurePilotMembershipForUser(this.db, userId);
+      accessible = await this.listAccessible(userId);
+      masterMembership = accessible.find((t) => t.isMaster);
+    }
+
+    if (masterMembership || jwtGroupCeo) {
+      return this.org.listGroupMemberUnits();
+    }
+
+    const memberTenants = accessible.filter((t) => !t.isMaster);
+    if (memberTenants.length === 0) {
+      throw new ApiException(
+        'XBOS-TENANT-403',
+        'No accessible company units for this user',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    const rows = await this.org.listMemberLegalEntitiesForTenants(
+      memberTenants.map((t) => t.tenantId),
+    );
+
+    return {
+      holding: null,
+      members: rows.map((row) => ({
+        tenant_id: String((row as { tenant_id: string }).tenant_id),
+        tenant_name: String((row as { tenant_name: string }).tenant_name),
+        tenant_short_name: String((row as { tenant_short_name: string }).tenant_short_name),
+        id: String((row as { id: string }).id),
+        code: String((row as { code: string }).code ?? ''),
+        name: String((row as { name: string }).name ?? ''),
+        entity_type: String((row as { entity_type: string }).entity_type ?? 'subsidiary'),
+        payload: ((row as { payload: unknown }).payload ?? null) as Record<string, unknown> | null,
+        tax_code: (row as { tax_code?: string | null }).tax_code ?? null,
+        established_at: (row as { established_at?: string | null }).established_at ?? null,
+        address: (row as { address?: string | null }).address ?? null,
+        business_lines: (row as { business_lines?: string | null }).business_lines ?? null,
+      })),
+    };
   }
 
   resolveCompanyIdForTenant(tenantId: string, companyHint?: string): string {

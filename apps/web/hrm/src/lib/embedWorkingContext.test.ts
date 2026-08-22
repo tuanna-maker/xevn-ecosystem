@@ -40,7 +40,7 @@ describe('embedWorkingContext (BM-FE-ROLE-SWITCH-01 / BM-AC-02-01)', () => {
       jwtTenantId: 'xe-du-lich',
       roleCode: 'subsidiary_ceo',
     });
-    expect(ctx.dvtvLabel).toBe('Công ty Du lịch XeVN');
+    expect(ctx.dvtvLabel).toBe('Công ty TNHH Du lịch X.E Việt Nam');
     expect(ctx.roleLabel).toBe('TGĐ công ty thành viên');
   });
 

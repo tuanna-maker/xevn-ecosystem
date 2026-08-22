@@ -30,7 +30,11 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { createDepartment } from '@/integrations/hrmApi';
+import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
+import {
+  persistCompanyDepartment,
+  suggestDepartmentCode,
+} from '@/lib/companyDepartmentMutate';
 import { toErrorMessage } from '@/lib/apiError';
 
 interface DepartmentImportDialogProps {
@@ -75,6 +79,7 @@ export function DepartmentImportDialog({
   existingDepartments,
 }: DepartmentImportDialogProps) {
   const { currentCompanyId } = useAuth();
+  const catalogScope = resolveHrmSettingsCatalogScope(currentCompanyId);
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -247,7 +252,7 @@ export function DepartmentImportDialog({
   };
 
   const handleImport = async () => {
-    if (!currentCompanyId) return;
+    if (!currentCompanyId || !catalogScope) return;
     
     setStep('importing');
     
@@ -276,15 +281,19 @@ export function DepartmentImportDialog({
           failedCount++;
           continue;
         }
-        const created = await createDepartment({
-          company_id: currentCompanyId,
-          name: row.data.name,
-          code: row.data.code,
-          description: row.data.description,
-          parent_id: parentId ?? undefined,
-        });
-        if (created?.id) {
-          createdDepartments.set(row.data.name.toUpperCase(), String(created.id));
+        const code = row.data.code?.trim() || suggestDepartmentCode(row.data.name);
+        const result = await persistCompanyDepartment(
+          catalogScope,
+          {
+            name: row.data.name,
+            code,
+            description: row.data.description ?? null,
+            parent_id: parentId,
+            status: row.data.status === 'inactive' ? 'draft' : 'active',
+          },
+        );
+        if (result.departmentId) {
+          createdDepartments.set(row.data.name.toUpperCase(), result.departmentId);
         }
         if (row.status === 'warning') {
           warningCount++;

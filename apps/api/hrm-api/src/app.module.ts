@@ -103,12 +103,14 @@ import { OperatingUnitsService } from './operating-units/operating-units.service
 import { HomeController } from './home/home.controller';
 import { HomeService } from './home/home.service';
 import { ContractTemplatesModule } from './contract-templates/contract-templates.module';
+import { CompanyScopeModule } from './company-scope/company-scope.module';
 
 @Module({
   imports: [
     CoreModule,
     SettingsCatalogsModule,
     EmployeesModule,
+    CompanyScopeModule,
     FleetModule,
     SpreadsheetModule,
     TenantProvisionModule,

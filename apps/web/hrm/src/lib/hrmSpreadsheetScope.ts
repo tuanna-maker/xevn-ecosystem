@@ -184,6 +184,13 @@ export function resolveHrmSettingsCatalogScope(
       companyId: normalizeHrmApiListCompanyId(catalogCompany),
     };
   }
+  // Member tenant CEO/HR (visun, xe-du-lich, …) — catalog partition = tenant + rollup `main`.
+  if (hasPortalSession() && jwtTenant && jwtTenant !== HRM_MASTER_TENANT_ID) {
+    return {
+      tenantId: jwtTenant,
+      companyId: HRM_LIST_DEFAULT_COMPANY_ID,
+    };
+  }
   return resolveHrmSpreadsheetScope(currentCompanyId, search);
 }
 

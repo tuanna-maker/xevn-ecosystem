@@ -1,7 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useCompanyFilterOptions } from './useCompanyFilterOptions';
-import * as commandCenterScope from '../integrations/commandCenterScope';
 import * as tenantScopeApi from '../integrations/tenantScopeApi';
 
 vi.mock('../contexts/GlobalFilterContext', () => ({
@@ -12,17 +11,12 @@ vi.mock('../contexts/GlobalFilterContext', () => ({
   }),
 }));
 
-vi.mock('../integrations/commandCenterScope', () => ({
-  isGroupCeoOnMasterTenant: vi.fn(() => true),
-}));
-
 vi.mock('../integrations/tenantScopeApi');
 
 describe('useCompanyFilterOptions', () => {
   beforeEach(() => {
     vi.stubEnv('DEV', 'true');
     vi.stubEnv('VITE_ALLOW_MOCK_FALLBACK', 'false');
-    vi.mocked(commandCenterScope.isGroupCeoOnMasterTenant).mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -30,8 +24,8 @@ describe('useCompanyFilterOptions', () => {
     vi.restoreAllMocks();
   });
 
-  it('M-CC-05: loads companies from group-member-units API (no mockCompanies)', async () => {
-    vi.mocked(tenantScopeApi.fetchGroupMemberUnitsForCommandCenter).mockResolvedValue([
+  it('M-CC-05: loads companies from company-units API (no mockCompanies)', async () => {
+    vi.mocked(tenantScopeApi.fetchCompanyUnitsForCommandCenter).mockResolvedValue([
       {
         id: 'le-du-lich',
         code: 'DL',
@@ -57,12 +51,11 @@ describe('useCompanyFilterOptions', () => {
     expect(result.current.companies).toHaveLength(1);
     expect(result.current.companies[0]?.name).toBe('Công ty Du lịch');
     expect(result.current.loadFailed).toBe(false);
-    expect(tenantScopeApi.fetchGroupMemberUnitsForCommandCenter).toHaveBeenCalled();
+    expect(tenantScopeApi.fetchCompanyUnitsForCommandCenter).toHaveBeenCalled();
   });
 
-  it('returns empty with loadFailed when group-member-units fails in strict mode', async () => {
-    vi.mocked(commandCenterScope.isGroupCeoOnMasterTenant).mockReturnValue(true);
-    vi.mocked(tenantScopeApi.fetchGroupMemberUnitsForCommandCenter).mockRejectedValue(
+  it('returns empty with loadFailed when company-units fails in strict mode', async () => {
+    vi.mocked(tenantScopeApi.fetchCompanyUnitsForCommandCenter).mockRejectedValue(
       new Error('403'),
     );
 
@@ -76,16 +69,32 @@ describe('useCompanyFilterOptions', () => {
     expect(result.current.usingApi).toBe(false);
   });
 
-  it('skips group-member-units fetch for non-group-CEO personas (member session)', async () => {
-    vi.mocked(commandCenterScope.isGroupCeoOnMasterTenant).mockReturnValue(false);
+  it('member CEO also loads company-units (scoped list, not 403 skip)', async () => {
+    vi.mocked(tenantScopeApi.fetchCompanyUnitsForCommandCenter).mockResolvedValue([
+      {
+        id: 'le-visun',
+        code: 'VISUN',
+        name: 'Công ty TNHH Du lịch Visun',
+        shortName: 'Visun',
+        employeeCount: 0,
+        revenue: 0,
+        status: 'active',
+        address: '',
+        establishedDate: '2020-01-01',
+        entityLevel: 'subsidiary',
+        parentEntityId: null,
+        tenantId: 'visun',
+      },
+    ]);
 
     const { result } = renderHook(() => useCompanyFilterOptions());
 
     await waitFor(() => {
-      expect(result.current.usingApi).toBe(false);
+      expect(result.current.usingApi).toBe(true);
     });
 
-    expect(tenantScopeApi.fetchGroupMemberUnitsForCommandCenter).not.toHaveBeenCalled();
+    expect(tenantScopeApi.fetchCompanyUnitsForCommandCenter).toHaveBeenCalled();
+    expect(result.current.companies[0]?.name).toContain('Visun');
     expect(result.current.loadFailed).toBe(false);
   });
 });

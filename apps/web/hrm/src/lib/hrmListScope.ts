@@ -19,8 +19,29 @@ export const HRM_GROUP_LIST_ALIASES = new Set(['holding', 'all']);
 /** Master tenant slug must never be used as operational company_id in embed queries. */
 export const HRM_MASTER_TENANT_ID = 'xevn';
 
+/** Rollup tenant ids — tenant-only scope (ADR-HRM-TENANT-ONLY-SCOPE). */
+export const HRM_ROLLUP_TENANT_IDS = new Set([
+  'xevn',
+  'visun',
+  'xe-tmdv',
+  'xe-du-lich',
+  'xe-vietnam',
+]);
+
+export function isHrmTenantOnlyScopeEnabled(): boolean {
+  return import.meta.env.VITE_HRM_TENANT_ONLY_SCOPE === 'true';
+}
+
+export function isHrmTenantFilterId(value: string | null | undefined): boolean {
+  if (!value) return false;
+  return HRM_ROLLUP_TENANT_IDS.has(value.trim().toLowerCase());
+}
+
 export function isHrmOperatingUnitSlug(value: string | null | undefined): boolean {
   if (!value) return false;
+  if (isHrmTenantOnlyScopeEnabled() && isHrmTenantFilterId(value)) {
+    return true;
+  }
   return HRM_OPERATING_UNIT_SLUGS.has(value.trim());
 }
 

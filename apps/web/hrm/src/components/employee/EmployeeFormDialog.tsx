@@ -67,15 +67,25 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/contexts/AuthContext';
 import { Employee, EmployeeFormData } from '@/hooks/useEmployees';
 import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import {
+  EMP_EMPLOYMENT_STATUS_BOOTSTRAP_FALLBACK,
+  useEmpEmploymentStatusesEffective,
+} from '@/hooks/useEmpEmploymentStatusesEffective';
+import { resolveEmpEmploymentStatusEditValue } from '@/lib/empEmploymentStatusCatalog';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import {
   departmentOptionsFromCatalog,
   toCatalogPickerOptions,
 } from '@/lib/catalogSearchPicker';
+import { HRM_EMP_DEPT_EMPTY_CATALOG_CODE, resolveEmpDeptEditValue } from '@/lib/empDeptCatalog';
+import { resolveEmployeeDepartmentLabel } from '@/lib/employeePickerLabel';
+import { HRM_LIST_DEFAULT_COMPANY_ID } from '@/lib/hrmListScope';
+import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
 import { EmployeeAvatarUpload } from './EmployeeAvatarUpload';
-import { type HrmSettingsCatalogOverviewRow } from '@/integrations/hrmApi';
+import { type HrmSettingsCatalogOverviewRow, type HrmSpreadsheetScope } from '@/integrations/hrmApi';
 import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
 
 const employeeFormSchema = z.object({
@@ -187,6 +197,15 @@ const DEFAULT_FINANCE_FIELDS: EmployeeFinanceFieldKey[] = [
   'health_insurance_number',
 ];
 
+/** Always mount spine fields even when hrm_employee_basic_fields catalog omits them. */
+const REQUIRED_BASIC_FIELDS: EmployeeBasicFieldKey[] = [
+  'employee_code',
+  'full_name',
+  'department',
+  'position',
+  'status',
+];
+
 function findCatalog(
   catalogs: HrmSettingsCatalogOverviewRow[] | null | undefined,
   keys: string[],
@@ -283,14 +302,35 @@ export function EmployeeFormDialog({
   isLoading,
 }: EmployeeFormDialogProps) {
   const { t } = useTranslation();
+  const { currentCompanyId } = useAuth();
   const isEditing = !!employee;
   const [avatarUrl, setAvatarUrl] = useState<string | null>(employee?.avatar_url || null);
   const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<string, string>>({});
+
+  const catalogScope = useMemo((): HrmSpreadsheetScope | null => {
+    const tenantFromEmployee =
+      typeof employee?.custom_fields?.tenant_id === 'string'
+        ? employee.custom_fields.tenant_id.trim()
+        : '';
+    if (tenantFromEmployee) {
+      return {
+        tenantId: tenantFromEmployee,
+        companyId: HRM_LIST_DEFAULT_COMPANY_ID,
+      };
+    }
+    return resolveHrmSettingsCatalogScope(currentCompanyId);
+  }, [employee, currentCompanyId]);
+
   const {
     catalogs,
     isLoading: catalogsLoading,
     isError: catalogsError,
-  } = useSettingsCatalogsOverview({ enabled: open });
+  } = useSettingsCatalogsOverview({ enabled: open, scope: catalogScope });
+  const {
+    nestOptions: nestStatusOptions,
+    effectiveCount: empStatusEffectiveCount,
+    isLoading: statusCatalogLoading,
+  } = useEmpEmploymentStatusesEffective({ enabled: open });
   const form = useForm<FormValues>({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: {
@@ -303,7 +343,7 @@ export function EmployeeFormDialog({
       position: '',
       start_date: '',
       salary: undefined,
-      status: 'active',
+      status: '',
       gender: '',
       birth_date: '',
       id_number: '',
@@ -335,7 +375,7 @@ export function EmployeeFormDialog({
         position: employee.position || '',
         start_date: employee.start_date || '',
         salary: employee.salary || undefined,
-        status: employee.status,
+        status: employee.status || '',
         gender: employee.gender || '',
         birth_date: employee.birth_date || '',
         id_number: employee.id_number || '',
@@ -366,7 +406,7 @@ export function EmployeeFormDialog({
         position: '',
         start_date: '',
         salary: undefined,
-        status: 'active',
+        status: '',
         gender: '',
         birth_date: '',
         id_number: '',
@@ -403,7 +443,12 @@ export function EmployeeFormDialog({
 
   const basicFieldsCatalog = findCatalog(catalogs, ['hrm_employee_basic_fields', 'employee_basic_fields']);
   const activeBasicFields = useMemo(
-    () => buildActiveFieldSet<EmployeeBasicFieldKey>(basicFieldsCatalog, DEFAULT_BASIC_FIELDS, ['employee_code', 'full_name']),
+    () =>
+      buildActiveFieldSet<EmployeeBasicFieldKey>(
+        basicFieldsCatalog,
+        DEFAULT_BASIC_FIELDS,
+        REQUIRED_BASIC_FIELDS,
+      ),
     [basicFieldsCatalog],
   );
   const basicFieldLabels = useMemo(
@@ -476,24 +521,46 @@ export function EmployeeFormDialog({
     [catalogs],
   );
 
+  useEffect(() => {
+    if (!open || !employee) return;
+    const stored = resolveEmployeeDepartmentLabel(employee);
+    if (!stored) return;
+    const resolved = resolveEmpDeptEditValue(
+      departmentOptions,
+      stored,
+      departmentOptions.length > 0,
+    );
+    if (resolved && form.getValues('department') !== resolved) {
+      form.setValue('department', resolved);
+    }
+  }, [open, employee, departmentOptions, form]);
+
+  const empStatusCatalogBound = empStatusEffectiveCount > 0;
+  const statusOptions = useMemo(() => {
+    if (empStatusCatalogBound) return nestStatusOptions;
+    return EMP_EMPLOYMENT_STATUS_BOOTSTRAP_FALLBACK.map((o) => ({
+      value: o.statusKey,
+      label: t(o.i18nKey, { defaultValue: o.defaultNameVi }),
+    }));
+  }, [empStatusCatalogBound, nestStatusOptions, t]);
+
+  useEffect(() => {
+    if (!open || statusOptions.length === 0) return;
+    const resolved = resolveEmpEmploymentStatusEditValue(
+      statusOptions,
+      employee?.status ?? form.getValues('status'),
+      empStatusCatalogBound,
+    );
+    if (resolved && form.getValues('status') !== resolved) {
+      form.setValue('status', resolved);
+    }
+  }, [open, employee, statusOptions, empStatusCatalogBound, form]);
+
   const positionCatalog = findCatalog(catalogs, ['job_titles', 'positions', 'employee_positions']);
   const positionOptions = useMemo(
     () => toCatalogPickerOptions(positionCatalog?.effectiveItems ?? []),
     [positionCatalog],
   );
-
-  const statusCatalog = findCatalog(catalogs, ['employee_statuses', 'employment_statuses']);
-  const statusOptions = useMemo(() => {
-    const options = (statusCatalog?.effectiveItems ?? [])
-      .filter((item) => item.status === 'active')
-      .map((item) => ({ value: item.code, label: item.label }));
-    if (options.length > 0) return options;
-    return [
-      { value: 'active', label: t('employees.active') },
-      { value: 'probation', label: t('employees.probation') },
-      { value: 'inactive', label: t('employees.inactive') },
-    ];
-  }, [statusCatalog, t]);
 
   const handleSubmit = async (values: FormValues) => {
     const customFields = Object.fromEntries(
@@ -686,12 +753,24 @@ export function EmployeeFormDialog({
                               catalogsError ? t('settings.catalogs.loadError') : undefined
                             }
                             emptyHint={
-                              <a
-                                href="/settings"
-                                className="text-primary underline text-xs font-medium"
-                              >
-                                Mở Cài đặt → Danh mục nghiệp vụ
-                              </a>
+                              departmentOptions.length === 0 ? (
+                                <span className="text-xs text-muted-foreground">
+                                  {HRM_EMP_DEPT_EMPTY_CATALOG_CODE} —{' '}
+                                  <a
+                                    href="/settings"
+                                    className="text-primary underline font-medium"
+                                  >
+                                    Mở Cài đặt → Danh mục nghiệp vụ
+                                  </a>
+                                </span>
+                              ) : (
+                                <a
+                                  href="/settings"
+                                  className="text-primary underline text-xs font-medium"
+                                >
+                                  Mở Cài đặt → Danh mục nghiệp vụ
+                                </a>
+                              )
                             }
                           />
                         </FormControl>
@@ -754,9 +833,13 @@ export function EmployeeFormDialog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{basicLabel('status', t('common.status.label'))}</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value || 'active'}>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value || statusOptions[0]?.value || ''}
+                          disabled={statusCatalogLoading && statusOptions.length === 0}
+                        >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger data-testid="emp-employment-status-select">
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>

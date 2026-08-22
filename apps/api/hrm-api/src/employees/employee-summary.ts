@@ -2,9 +2,14 @@ import {
   HRM_GROUP_MEMBER_COMPANY_SLUGS,
   resolveHrmCompanySlugForId,
 } from '../common/hrm-list-scope';
+import {
+  HRM_GROUP_ROLLUP_TENANT_IDS,
+  HRM_LEGACY_OU_TO_TENANT,
+} from '../common/hrm-tenant-scope';
 import type {
   EmployeeSummaryCompanyRow,
   EmployeeSummarySalaryRange,
+  EmployeeSummaryTenantRow,
 } from './employee-summary.types';
 
 /** SQL fragment: numeric salary from custom_fields.salary | base_salary. */
@@ -124,5 +129,77 @@ export function buildEmployeeSummaryByCompany(
       return ai - bi;
     }
     return a.company_id.localeCompare(b.company_id);
+  });
+}
+
+export type EmployeeSummaryByTenantRawRow = {
+  tenant_id: string;
+  total: string | number;
+  active_count: string | number;
+  inactive_count: string | number;
+  archived_count: string | number;
+};
+
+/** Resolve tenant_id from row — migrated partition or legacy OU slug on xevn. */
+export function resolveEmployeeRowTenantId(
+  tenantIdRaw: string | null | undefined,
+  companyId: string,
+): string {
+  const tenant = tenantIdRaw?.trim();
+  if (tenant) {
+    return tenant;
+  }
+  const slug = resolveHrmCompanySlugForId(companyId.trim());
+  if (slug in HRM_LEGACY_OU_TO_TENANT) {
+    return HRM_LEGACY_OU_TO_TENANT[slug as keyof typeof HRM_LEGACY_OU_TO_TENANT];
+  }
+  return 'xevn';
+}
+
+export function buildEmployeeSummaryByTenant(
+  rawRows: Array<
+    EmployeeSummaryByCompanyRawRow & { tenant_id?: string | null }
+  >,
+  scopeTenantIds: string[],
+): EmployeeSummaryTenantRow[] {
+  const merged = new Map<string, EmployeeSummaryTenantRow>();
+  const ensure = (tenantId: string): EmployeeSummaryTenantRow => {
+    const existing = merged.get(tenantId);
+    if (existing) return existing;
+    const empty: EmployeeSummaryTenantRow = {
+      tenant_id: tenantId,
+      total: 0,
+      active_count: 0,
+      inactive_count: 0,
+      archived_count: 0,
+    };
+    merged.set(tenantId, empty);
+    return empty;
+  };
+
+  for (const id of scopeTenantIds) {
+    ensure(id);
+  }
+
+  for (const row of rawRows) {
+    const tenantId = resolveEmployeeRowTenantId(
+      row.tenant_id ?? null,
+      String(row.company_id ?? ''),
+    );
+    const bucket = ensure(tenantId);
+    bucket.total += Number(row.total ?? 0);
+    bucket.active_count += Number(row.active_count ?? 0);
+    bucket.inactive_count += Number(row.inactive_count ?? 0);
+    bucket.archived_count += Number(row.archived_count ?? 0);
+  }
+
+  const orderIndex = new Map(
+    HRM_GROUP_ROLLUP_TENANT_IDS.map((id, index) => [id, index] as const),
+  );
+  return [...merged.values()].sort((a, b) => {
+    const ai = orderIndex.get(a.tenant_id as (typeof HRM_GROUP_ROLLUP_TENANT_IDS)[number]) ?? 99;
+    const bi = orderIndex.get(b.tenant_id as (typeof HRM_GROUP_ROLLUP_TENANT_IDS)[number]) ?? 99;
+    if (ai !== bi) return ai - bi;
+    return a.tenant_id.localeCompare(b.tenant_id);
   });
 }

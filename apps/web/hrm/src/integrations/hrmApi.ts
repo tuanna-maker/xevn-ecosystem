@@ -3507,6 +3507,14 @@ export type HrmEmployeeSummary = {
     total: number;
     active_count?: number;
   }>;
+  /** Tenant-only scope rollup (HRM-TENANT-ONLY-SCOPE). */
+  by_tenant?: Array<{
+    tenant_id: string;
+    total: number;
+    active_count?: number;
+    inactive_count?: number;
+    archived_count?: number;
+  }>;
 };
 
 /** P1-HRM-PERF-BE-01 — dashboard aggregates (HRM-EMP-SUMMARY-200). must_keep FE-04. */
@@ -8182,6 +8190,64 @@ export async function listAdminCompanies() {
   );
 }
 
+export type HrmScopedCompanyRow = {
+  id: string;
+  tenant_id: string;
+  company_id: string;
+  name: string;
+  code: string | null;
+  employee_count: number | null;
+};
+
+export async function listScopedCompanies() {
+  return requestHrm<{
+    total: number;
+    data: HrmScopedCompanyRow[];
+    rollup_total: number | null;
+  }>("/api/hrm/company-scope/companies", { method: "GET" });
+}
+
+export async function listScopedMemberships(companyId?: string) {
+  const search = new URLSearchParams();
+  if (companyId) setListCompanyId(search, companyId);
+  const qs = search.toString();
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/company-scope/memberships${qs ? `?${qs}` : ""}`,
+    { method: "GET" },
+  );
+}
+
+export async function upsertScopedMembership(payload: {
+  email: string;
+  full_name: string;
+  role: string;
+  company_id: string;
+  tenant_id?: string;
+  employee_id?: string | null;
+  status?: string;
+}) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/company-scope/memberships", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateScopedMembership(
+  membershipId: string,
+  payload: { role?: string; employee_id?: string | null; status?: string; full_name?: string; email?: string },
+) {
+  return requestHrm<Record<string, unknown>>(`/api/hrm/company-scope/memberships/${membershipId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteScopedMembership(membershipId: string) {
+  return requestHrm<{ id: string }>(`/api/hrm/company-scope/memberships/${membershipId}`, {
+    method: "DELETE",
+  });
+}
+
 export async function listCompanyMemberships(companyId?: string) {
   const search = new URLSearchParams();
   if (companyId) setListCompanyId(search, companyId);
@@ -8468,28 +8534,86 @@ export async function replaceEvaluationCriteriaTemplates(companyId: string, temp
   );
 }
 
-export async function listDepartments(params: { company_id: string }) {
+export async function listDepartments(
+  params: { company_id: string },
+  scope?: HrmSpreadsheetScope,
+) {
   const search = new URLSearchParams();
   setListCompanyId(search, params.company_id);
   return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
     `/api/hrm/departments?${search.toString()}`,
-    { method: "GET" },
+    { method: "GET", scope },
   );
 }
 
-export async function createDepartment(payload: {
-  company_id: string;
-  name: string;
-  code?: string;
-  description?: string;
-  parent_id?: string;
-  level?: number;
-  sort_order?: number;
-}) {
-  return requestHrm<Record<string, unknown>>("/api/hrm/departments", {
-    method: "POST",
-    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
-  });
+export async function createDepartment(
+  payload: {
+    company_id: string;
+    name: string;
+    code?: string;
+    description?: string;
+    parent_id?: string;
+    level?: number;
+    sort_order?: number;
+    manager_name?: string;
+    manager_email?: string;
+  },
+  scope?: HrmSpreadsheetScope,
+) {
+  return requestHrm<Record<string, unknown>>(
+    "/api/hrm/departments",
+    {
+      method: "POST",
+      body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
+    },
+    { scope },
+  );
+}
+
+export async function updateDepartment(
+  departmentId: string,
+  companyId: string,
+  payload: {
+    company_id: string;
+    name?: string;
+    code?: string | null;
+    description?: string | null;
+    parent_id?: string | null;
+    level?: number;
+    sort_order?: number;
+    manager_name?: string | null;
+    manager_email?: string | null;
+    status?: string;
+  },
+  scope?: HrmSpreadsheetScope,
+) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/departments/${departmentId}?${search}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({
+        ...payload,
+        company_id: normalizeHrmApiListCompanyId(payload.company_id),
+      }),
+    },
+    { scope },
+  );
+}
+
+export async function deleteDepartment(
+  departmentId: string,
+  companyId: string,
+  scope?: HrmSpreadsheetScope,
+) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ id: string }>(
+    `/api/hrm/departments/${departmentId}?${search}`,
+    { method: "DELETE" },
+    { scope },
+  );
 }
 
 // --- P1-QUAL-FE-W3 catalog extensions ---
