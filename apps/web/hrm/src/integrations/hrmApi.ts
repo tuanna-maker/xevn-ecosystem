@@ -7,7 +7,7 @@ import {
   buildContractLibraryPublishRequest,
   buildContractLibraryPullRequest,
 } from "@/lib/contractLibraryPublishRequest";
-import { ApiClientError } from "@/lib/apiError";
+import { ApiClientError, isAbortLikeError } from "@/lib/apiError";
 import {
   parseLeaveBalancePanelPayload,
   parseLeaveBalancePayload,
@@ -152,14 +152,29 @@ async function parseHrmJson<T>(res: Response): Promise<{ data: T; envelope: HrmE
   return { data: (body.data ?? ({} as T)) as T, envelope: body as HrmEnvelope<T> };
 }
 
-const DEFAULT_HRM_FETCH_MS = 30_000;
+const DEFAULT_HRM_FETCH_MS =
+  Number(import.meta.env.VITE_HRM_FETCH_TIMEOUT_MS) ||
+  (import.meta.env.DEV ? 120_000 : 60_000);
+
+/** Payroll schema/template bind can be slow on remote dev DB — allow longer than generic GET. */
+export const PAYROLL_HRM_TIMEOUT_MS =
+  Number(import.meta.env.VITE_HRM_PAYROLL_FETCH_TIMEOUT_MS) ||
+  (import.meta.env.DEV ? 180_000 : 90_000);
 
 type RequestHrmOptions = HrmHeaderOptions & { timeoutMs?: number };
 
-async function requestHrm<T>(path: string, init: RequestInit, opts?: RequestHrmOptions): Promise<T> {
-  const timeoutMs = opts?.timeoutMs ?? DEFAULT_HRM_FETCH_MS;
+async function requestHrmOnce<T>(
+  path: string,
+  init: RequestInit,
+  opts: RequestHrmOptions | undefined,
+  timeoutMs: number,
+): Promise<T> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
   const userSignal = init.signal;
   if (userSignal) {
     if (userSignal.aborted) controller.abort();
@@ -173,8 +188,38 @@ async function requestHrm<T>(path: string, init: RequestInit, opts?: RequestHrmO
     });
     const { data } = await parseHrmJson<T>(res);
     return data;
+  } catch (error) {
+    if (isAbortLikeError(error)) {
+      if (timedOut) {
+        throw new ApiClientError({
+          code: "HRM-TIMEOUT",
+          message: "Hết thời gian chờ phản hồi từ server.",
+          status: 408,
+        });
+      }
+      throw error;
+    }
+    throw error;
   } finally {
     clearTimeout(timer);
+  }
+}
+
+async function requestHrm<T>(path: string, init: RequestInit, opts?: RequestHrmOptions): Promise<T> {
+  const baseTimeout = opts?.timeoutMs ?? DEFAULT_HRM_FETCH_MS;
+  const method = (init.method ?? "GET").toUpperCase();
+  try {
+    return await requestHrmOnce<T>(path, init, opts, baseTimeout);
+  } catch (error) {
+    const canRetryGet =
+      method === "GET" &&
+      error instanceof ApiClientError &&
+      error.code === "HRM-TIMEOUT" &&
+      baseTimeout < PAYROLL_HRM_TIMEOUT_MS;
+    if (canRetryGet) {
+      return await requestHrmOnce<T>(path, init, opts, PAYROLL_HRM_TIMEOUT_MS);
+    }
+    throw error;
   }
 }
 
@@ -588,9 +633,11 @@ export async function listPayrollPeriods(params: {
   search.set("company_id", params.company_id);
   if (params.status) search.set("status", params.status);
   if (params.payroll_group_id) search.set("payroll_group_id", params.payroll_group_id);
-  return requestHrm<{ total: number; data: HrmPayrollPeriod[] }>(`/api/hrm/payroll/periods?${search.toString()}`, {
-    method: "GET",
-  });
+  return requestHrm<{ total: number; data: HrmPayrollPeriod[] }>(
+    `/api/hrm/payroll/periods?${search.toString()}`,
+    { method: "GET" },
+    { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
+  );
 }
 
 export async function createPayrollPeriod(payload: {
@@ -618,10 +665,14 @@ export async function createPayrollPeriod(payload: {
   if (payload.payroll_group_id) {
     body.payroll_group_id = payload.payroll_group_id;
   }
-  return requestHrm<HrmPayrollPeriod>("/api/hrm/payroll/periods", {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+  return requestHrm<HrmPayrollPeriod>(
+    "/api/hrm/payroll/periods",
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+    },
+    { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
+  );
 }
 
 export async function updatePayrollPeriod(
@@ -721,9 +772,11 @@ export async function getPayrollGroupMembers(groupId: string, periodId: string) 
 }
 
 export async function processPayrollPeriod(periodId: string) {
-  return requestHrm<HrmPayrollPeriod>(`/api/hrm/payroll/periods/${periodId}/process`, {
-    method: "POST",
-  });
+  return requestHrm<HrmPayrollPeriod>(
+    `/api/hrm/payroll/periods/${periodId}/process`,
+    { method: "POST" },
+    { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
+  );
 }
 
 export type PayrollEnrollMode = "explicit" | "auto_eligible";
@@ -754,10 +807,14 @@ export type HrmPayrollEnrollResponse = {
 };
 
 export async function enrollPayrollPeriod(periodId: string, payload: HrmPayrollEnrollRequest) {
-  return requestHrm<HrmPayrollEnrollResponse>(`/api/hrm/payroll/periods/${periodId}/enroll`, {
-    method: "POST",
-    body: serializePayrollEnrollBody(payload),
-  });
+  return requestHrm<HrmPayrollEnrollResponse>(
+    `/api/hrm/payroll/periods/${periodId}/enroll`,
+    {
+      method: "POST",
+      body: serializePayrollEnrollBody(payload),
+    },
+    { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
+  );
 }
 
 export type HrmPayrollEligibilityItem = {
@@ -830,9 +887,11 @@ export async function createPayrollPeriodTimesheetBind(
 }
 
 export async function closePayrollPeriod(periodId: string) {
-  return requestHrm<HrmPayrollPeriod>(`/api/hrm/payroll/periods/${periodId}/close`, {
-    method: "POST",
-  });
+  return requestHrm<HrmPayrollPeriod>(
+    `/api/hrm/payroll/periods/${periodId}/close`,
+    { method: "POST" },
+    { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
+  );
 }
 
 export type HrmPayslipRow = {
@@ -898,6 +957,7 @@ export async function listPayrollPayslips(params: {
   return requestHrm<{ total: number; data: HrmPayslipRow[] }>(
     `/api/hrm/payroll/payslips?${search.toString()}`,
     { method: "GET" },
+    { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
   );
 }
 
@@ -3466,6 +3526,14 @@ export type HrmEmployeeSummary = {
     company_id: string;
     total: number;
     active_count?: number;
+  }>;
+  /** Tenant-only scope rollup (HRM-TENANT-ONLY-SCOPE). */
+  by_tenant?: Array<{
+    tenant_id: string;
+    total: number;
+    active_count?: number;
+    inactive_count?: number;
+    archived_count?: number;
   }>;
 };
 
@@ -8142,6 +8210,64 @@ export async function listAdminCompanies() {
   );
 }
 
+export type HrmScopedCompanyRow = {
+  id: string;
+  tenant_id: string;
+  company_id: string;
+  name: string;
+  code: string | null;
+  employee_count: number | null;
+};
+
+export async function listScopedCompanies() {
+  return requestHrm<{
+    total: number;
+    data: HrmScopedCompanyRow[];
+    rollup_total: number | null;
+  }>("/api/hrm/company-scope/companies", { method: "GET" });
+}
+
+export async function listScopedMemberships(companyId?: string) {
+  const search = new URLSearchParams();
+  if (companyId) setListCompanyId(search, companyId);
+  const qs = search.toString();
+  return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
+    `/api/hrm/company-scope/memberships${qs ? `?${qs}` : ""}`,
+    { method: "GET" },
+  );
+}
+
+export async function upsertScopedMembership(payload: {
+  email: string;
+  full_name: string;
+  role: string;
+  company_id: string;
+  tenant_id?: string;
+  employee_id?: string | null;
+  status?: string;
+}) {
+  return requestHrm<Record<string, unknown>>("/api/hrm/company-scope/memberships", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateScopedMembership(
+  membershipId: string,
+  payload: { role?: string; employee_id?: string | null; status?: string; full_name?: string; email?: string },
+) {
+  return requestHrm<Record<string, unknown>>(`/api/hrm/company-scope/memberships/${membershipId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteScopedMembership(membershipId: string) {
+  return requestHrm<{ id: string }>(`/api/hrm/company-scope/memberships/${membershipId}`, {
+    method: "DELETE",
+  });
+}
+
 export async function listCompanyMemberships(companyId?: string) {
   const search = new URLSearchParams();
   if (companyId) setListCompanyId(search, companyId);
@@ -8428,28 +8554,86 @@ export async function replaceEvaluationCriteriaTemplates(companyId: string, temp
   );
 }
 
-export async function listDepartments(params: { company_id: string }) {
+export async function listDepartments(
+  params: { company_id: string },
+  scope?: HrmSpreadsheetScope,
+) {
   const search = new URLSearchParams();
   setListCompanyId(search, params.company_id);
   return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
     `/api/hrm/departments?${search.toString()}`,
-    { method: "GET" },
+    { method: "GET", scope },
   );
 }
 
-export async function createDepartment(payload: {
-  company_id: string;
-  name: string;
-  code?: string;
-  description?: string;
-  parent_id?: string;
-  level?: number;
-  sort_order?: number;
-}) {
-  return requestHrm<Record<string, unknown>>("/api/hrm/departments", {
-    method: "POST",
-    body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
-  });
+export async function createDepartment(
+  payload: {
+    company_id: string;
+    name: string;
+    code?: string;
+    description?: string;
+    parent_id?: string;
+    level?: number;
+    sort_order?: number;
+    manager_name?: string;
+    manager_email?: string;
+  },
+  scope?: HrmSpreadsheetScope,
+) {
+  return requestHrm<Record<string, unknown>>(
+    "/api/hrm/departments",
+    {
+      method: "POST",
+      body: JSON.stringify({ ...payload, company_id: normalizeHrmApiListCompanyId(payload.company_id) }),
+    },
+    { scope },
+  );
+}
+
+export async function updateDepartment(
+  departmentId: string,
+  companyId: string,
+  payload: {
+    company_id: string;
+    name?: string;
+    code?: string | null;
+    description?: string | null;
+    parent_id?: string | null;
+    level?: number;
+    sort_order?: number;
+    manager_name?: string | null;
+    manager_email?: string | null;
+    status?: string;
+  },
+  scope?: HrmSpreadsheetScope,
+) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/departments/${departmentId}?${search}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({
+        ...payload,
+        company_id: normalizeHrmApiListCompanyId(payload.company_id),
+      }),
+    },
+    { scope },
+  );
+}
+
+export async function deleteDepartment(
+  departmentId: string,
+  companyId: string,
+  scope?: HrmSpreadsheetScope,
+) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ id: string }>(
+    `/api/hrm/departments/${departmentId}?${search}`,
+    { method: "DELETE" },
+    { scope },
+  );
 }
 
 // --- P1-QUAL-FE-W3 catalog extensions ---
@@ -10432,14 +10616,17 @@ export type UpdatePayFormulaPayload = {
   effectiveTo?: string | null;
 };
 
-export async function listPayFormulas(params: {
-  company_id: string;
-  code?: string;
-  status?: string;
-  active_only?: boolean;
-  include_archived?: boolean;
-  q?: string;
-}) {
+export async function listPayFormulas(
+  params: {
+    company_id: string;
+    code?: string;
+    status?: string;
+    active_only?: boolean;
+    include_archived?: boolean;
+    q?: string;
+  },
+  opts?: { signal?: AbortSignal; timeoutMs?: number },
+) {
   const search = new URLSearchParams();
   search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.code?.trim()) search.set("code", params.code.trim());
@@ -10451,7 +10638,8 @@ export async function listPayFormulas(params: {
   if (params.q?.trim()) search.set("q", params.q.trim());
   const res = await requestHrm<{ items?: HrmPayFormulaRecord[] } | HrmPayFormulaRecord[]>(
     `/api/hrm/payroll/formulas?${search.toString()}`,
-    { method: "GET" },
+    { method: "GET", signal: opts?.signal },
+    { timeoutMs: opts?.timeoutMs },
   );
   return { items: unwrapItems<HrmPayFormulaRecord>(res) };
 }

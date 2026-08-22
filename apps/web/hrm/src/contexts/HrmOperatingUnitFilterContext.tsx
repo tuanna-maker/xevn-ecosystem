@@ -19,6 +19,24 @@
  * what: keepPreviousData, refetchOnWindowFocus false, portal session gate, scoped invalidate, coerce slug
  * why: CC embed — invalidateQueries() + fail-closed [] làm Select chỉ còn «Tất cả»
  * must_keep: member compact chip; OU không đụng JWT
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-22
+ * WorkItem: SA-HRM-TENANT-ONLY-SCOPE-01
+ * change_mode: SPEC_ACK · DEPRECATE scheduled Phase 3
+ * What: OU filter context superseded by portal GlobalFilterContext tenant switcher;
+ *       list scope will use tenant_id not company_id=trsport|logistics.
+ * Why:  ADR-HRM-TENANT-ONLY-SCOPE — bỏ OU; tenant_id partition + phân quyền.
+ * Ref:  docs/program/specs/SA-HRM-TENANT-ONLY-SCOPE-SPEC-01.md Phase 3 P3-1
+ * must_keep: Không mutate JWT companyId until FE WI HRM-TENANT-ONLY-SCOPE-FE-01
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-22
+ * WorkItem: HRM-TENANT-ONLY-SCOPE-FE-01
+ * change_mode: UPGRADE
+ * What: FE tenant-only — operating-units API returns tenant_id rows when BE flag ON;
+ *       hrmListScope accepts tenant ids in filter (VITE_HRM_TENANT_ONLY_SCOPE).
+ * Why:  Phase 3 — bỏ OU slug filter; dropdown shows công ty theo tenant_id.
+ * Ref:  SA-HRM-TENANT-ONLY-SCOPE-SPEC-01.md Phase 3
+ * must_keep: listCompanyId still via resolveHrmOperatingUnitQueryCompanyId; no JWT mutate
  */
 import React, {
   createContext,

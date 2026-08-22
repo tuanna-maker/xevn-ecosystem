@@ -116,6 +116,11 @@ export function normalizePortalMembership(raw: unknown): AccessibleTenant {
   const tenant_kind_label =
     asTrimmedString(row.tenant_kind_label) || MEMBERSHIP_LABEL_FALLBACK;
   const membershipId = asTrimmedString(row.membershipId) || undefined;
+  const modules = Array.isArray(row.modules)
+    ? row.modules
+        .map((m) => (typeof m === 'string' ? m.trim() : ''))
+        .filter(Boolean)
+    : undefined;
 
   return {
     tenantId,
@@ -126,6 +131,7 @@ export function normalizePortalMembership(raw: unknown): AccessibleTenant {
     companyId,
     isMaster,
     membershipId,
+    modules,
     tenant_label,
     company_label,
     role_label,

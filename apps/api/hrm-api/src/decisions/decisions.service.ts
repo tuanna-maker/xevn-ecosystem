@@ -6,9 +6,13 @@ import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
   pushCompanyIdFilter,
+  pushEmployeeListScopeFilters,
+  pushHrmTableScopeFilters,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
+  resolveHrmPersistTenantId,
 } from '../common/hrm-list-scope';
+import { ensureHrmTenantIdColumns } from '../common/hrm-tenant-scope-schema';
 import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
 import { HrmDbService } from '../db/hrm-db.service';
 import { HRM_SC_DEC_KEY } from '../settings-catalogs/hrm-settings-master-keys';
@@ -347,6 +351,7 @@ export class DecisionsService {
         ON public.employee_work_timeline (decision_id)
         WHERE decision_id IS NOT NULL AND archived_at IS NULL;
     `);
+    await ensureHrmTenantIdColumns((sql) => this.db.query(sql));
   }
 
   private isPersonBoundType(
@@ -390,7 +395,7 @@ export class DecisionsService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['id = $1::uuid', 'archived_at IS NULL'];
     const values: unknown[] = [employeeId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushEmployeeListScopeFilters(filters, values, scope);
     const res = await this.db.query<{
       id: string;
       full_name: string;
@@ -615,7 +620,7 @@ export class DecisionsService {
     const offset = (page - 1) * pageSize;
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushHrmTableScopeFilters(filters, values, scope);
     if (query.decision_type) {
       filters.push(`decision_type = $${values.length + 1}`);
       values.push(query.decision_type);
@@ -642,6 +647,10 @@ export class DecisionsService {
 
   async createDecision(payload: CreateDecisionDto, authorization?: string) {
     const companyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      payload.company_id,
+    );
+    const tenantId = resolveHrmPersistTenantId(
       authorization,
       payload.company_id,
     );
@@ -706,18 +715,19 @@ export class DecisionsService {
     const departmentKey = payload.department_key?.trim() || null;
     const res = await this.db.query<HrDecisionRow>(
       `INSERT INTO public.hr_decisions (
-        id, company_id, decision_code, decision_type, title, content,
+        id, company_id, tenant_id, decision_code, decision_type, title, content,
         employee_id, employee_name, employee_code, department, department_key, position, position_key,
         effective_date, expiry_date, signer_name, signer_position, signer_position_key, signing_date,
         file_url, status, notes
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
-        $14::date, $15::date, $16, $17, $18, $19::date, $20, $21, $22
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,
+        $15::date, $16::date, $17, $18, $19, $20::date, $21, $22, $23
       )
       RETURNING ${HR_DECISION_SELECT};`,
       [
         id,
         companyId,
+        tenantId,
         decisionCode,
         decisionType,
         title,
@@ -973,7 +983,7 @@ export class DecisionsService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [decisionId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushHrmTableScopeFilters(filters, values, scope);
     const res = await this.db.query<HrDecisionRow>(
       `SELECT ${HR_DECISION_SELECT}
        FROM public.hr_decisions WHERE ${filters.join(' AND ')} LIMIT 1;`,

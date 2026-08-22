@@ -160,6 +160,38 @@ export class OrgFoundationService {
     return rows;
   }
 
+  /** Member CEO — legal entities for accessible member tenants only (tenant-only company page). */
+  async listMemberLegalEntitiesForTenants(tenantIds: readonly string[]) {
+    const ids = [...new Set(tenantIds.map((id) => id.trim().toLowerCase()).filter(Boolean))];
+    if (ids.length === 0) {
+      return [];
+    }
+    const { rows } = await this.db.query(
+      `SELECT le.id::text AS id,
+              le.code,
+              le.name,
+              le.entity_type,
+              le.tax_code,
+              le.established_at,
+              le.address,
+              le.business_lines,
+              le.payload,
+              t.tenant_id,
+              t.name AS tenant_name,
+              t.short_name AS tenant_short_name
+       FROM public.xbos_tenant_registry t
+       JOIN public.xbos_legal_entity le
+         ON le.tenant_id = t.tenant_id AND le.company_id = t.default_company_id
+       WHERE t.tenant_kind = 'member'
+         AND t.status = 'active'
+         AND le.status IS DISTINCT FROM 'deleted'
+         AND LOWER(t.tenant_id) = ANY($1::text[])
+       ORDER BY t.name`,
+      [ids],
+    );
+    return rows;
+  }
+
   private normalizeLegalEntityBody(body: LegalEntityInput & Record<string, unknown>): LegalEntityInput {
     if (!body || typeof body !== 'object') {
       throw new ApiException('XBOS-ORG-400', 'Request body is required (HTTP 400)', HttpStatus.BAD_REQUEST);

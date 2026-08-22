@@ -4,9 +4,13 @@ import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
   pushCompanyIdFilter,
+  pushDepartmentTableScopeFilters,
+  pushHrmTableScopeFilters,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
+  resolveHrmPersistTenantId,
 } from '../common/hrm-list-scope';
+import { ensureHrmTenantIdColumns } from '../common/hrm-tenant-scope-schema';
 import { HrmDbService } from '../db/hrm-db.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { ListDepartmentsQueryDto } from './dto/list-departments.query.dto';
@@ -15,6 +19,7 @@ import { UpdateDepartmentDto } from './dto/update-department.dto';
 export type DepartmentRow = {
   id: string;
   company_id: string;
+  tenant_id?: string | null;
   parent_id: string | null;
   name: string;
   code: string | null;
@@ -56,6 +61,7 @@ export class DepartmentsService {
       CREATE INDEX IF NOT EXISTS idx_departments_company_status
       ON public.departments (company_id, status, sort_order);
     `);
+    await ensureHrmTenantIdColumns((sql) => this.db.query(sql));
   }
 
   private mapRow(row: DepartmentRow) {
@@ -68,7 +74,7 @@ export class DepartmentsService {
   }
 
   private selectColumns = `
-    id, company_id, parent_id, name, code, description, manager_name, manager_email,
+    id, company_id, tenant_id, parent_id, name, code, description, manager_name, manager_email,
     employee_count, level, sort_order, status, created_at, updated_at
   `;
 
@@ -80,7 +86,7 @@ export class DepartmentsService {
     const scope = resolveHrmListScope(authorization, query.company_id);
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushDepartmentTableScopeFilters(filters, values, scope);
     if (query.status) {
       values.push(query.status);
       filters.push(`status = $${values.length}`);
@@ -107,7 +113,7 @@ export class DepartmentsService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [departmentId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushDepartmentTableScopeFilters(filters, values, scope);
     const res = await this.db.query<DepartmentRow>(
       `SELECT ${this.selectColumns}
        FROM public.departments
@@ -132,18 +138,20 @@ export class DepartmentsService {
       authorization,
       payload.company_id,
     );
+    const tenantId = resolveHrmPersistTenantId(authorization, payload.company_id);
     const id = randomUUID();
     const res = await this.db.query<DepartmentRow>(
       `INSERT INTO public.departments (
-        id, company_id, parent_id, name, code, description, manager_name, manager_email,
+        id, company_id, tenant_id, parent_id, name, code, description, manager_name, manager_email,
         level, sort_order, status
       ) VALUES (
-        $1, $2, $3::uuid, $4, $5, $6, $7, $8, $9, $10, 'active'
+        $1, $2, $3, $4::uuid, $5, $6, $7, $8, $9, $10, $11, 'active'
       )
       RETURNING ${this.selectColumns};`,
       [
         id,
         companyId,
+        tenantId,
         payload.parent_id ?? null,
         payload.name.trim(),
         payload.code?.trim() ?? null,

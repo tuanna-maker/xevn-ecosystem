@@ -454,6 +454,298 @@ export function readOpaqueExpressionText(expressionJson: unknown): {
   }
 }
 
+/** Nest evaluator dialect — align pay-formula-evaluator.ts classify hyperformula_v1. */
+export const PAY_FORMULA_HYPER_FORM = 'hyperformula_v1' as const;
+
+export type HyperFormulaLineDraft = {
+  component_code: string;
+  sign: 'earning' | 'deduction';
+  formula: string;
+};
+
+export function readHyperFormulaV1Lines(expressionJson: unknown): HyperFormulaLineDraft[] {
+  if (!expressionJson || typeof expressionJson !== 'object' || Array.isArray(expressionJson)) {
+    return [];
+  }
+  const obj = expressionJson as Record<string, unknown>;
+  const form = typeof obj.form === 'string' ? obj.form.trim().toLowerCase() : '';
+  if (form !== PAY_FORMULA_HYPER_FORM) return [];
+  const rawLines = Array.isArray(obj.lines) ? obj.lines : [];
+  const lines: HyperFormulaLineDraft[] = [];
+  for (const raw of rawLines) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) continue;
+    const row = raw as Record<string, unknown>;
+    const component_code = String(row.component_code ?? row.componentCode ?? '').trim();
+    const signRaw = String(row.sign ?? 'earning').trim().toLowerCase();
+    const sign: HyperFormulaLineDraft['sign'] =
+      signRaw === 'deduction' ? 'deduction' : 'earning';
+    const formula = String(row.formula ?? '').trim();
+    if (!component_code || !formula.startsWith('=')) continue;
+    lines.push({ component_code, sign, formula });
+  }
+  return lines;
+}
+
+export function buildHyperFormulaV1ExpressionJson(
+  lines: HyperFormulaLineDraft[],
+): Record<string, unknown> {
+  const serialized = lines
+    .map((line) => {
+      const component_code = line.component_code.trim();
+      const rawFormula = line.formula.trim();
+      const formula = rawFormula.startsWith('=') ? rawFormula : `=${rawFormula}`;
+      return {
+        component_code,
+        sign: line.sign === 'deduction' ? 'deduction' : 'earning',
+        formula,
+      };
+    })
+    .filter((line) => line.component_code && line.formula.length > 1);
+  return { form: PAY_FORMULA_HYPER_FORM, lines: serialized };
+}
+
+/** Extract bag var keys from HF lines — skip UPPERCASE Excel function names. */
+export function extractVarKeysFromHyperFormulaLines(lines: HyperFormulaLineDraft[]): string[] {
+  const keys = new Set<string>();
+  for (const line of lines) {
+    const matches = line.formula.replace(/^=/, '').match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
+    for (const match of matches) {
+      if (match.toUpperCase() !== match) keys.add(match);
+    }
+  }
+  return [...keys];
+}
+
+/** Bag variable hints for Settings formula line editor (DV-18 starter). */
+export function payFormulaBagVariableHints(): { value: string; label: string }[] {
+  return PAY_FORMULA_REQUIRED_VAR_STARTER.map((value) => ({
+    value,
+    label: payFormulaRequiredVarLabel(value),
+  }));
+}
+
+export function validateHyperFormulaLines(lines: HyperFormulaLineDraft[]): string | null {
+  const valid = lines.filter(
+    (l) => l.component_code.trim() && l.formula.trim().startsWith('='),
+  );
+  if (valid.length === 0) {
+    return 'Cần ít nhất một dòng có thành phần lương và công thức (bắt đầu =).';
+  }
+  for (const line of valid) {
+    if (!line.formula.trim().startsWith('=')) {
+      return `Công thức ${line.component_code} phải bắt đầu bằng dấu =.`;
+    }
+  }
+  return null;
+}
+
+/** Token chip trên UI công thức lương — gộp từ mã thành phần + toán tử. */
+export type PayFormulaComponentToken = {
+  type: 'var' | 'op';
+  label: string;
+  value: string;
+};
+
+export type PayFormulaComponentCompositeUi = {
+  mode: 'component_composite';
+  expression: string;
+  tokens: PayFormulaComponentToken[];
+};
+
+const PAY_FORMULA_COMPOSITE_UI_KEY = 'ui';
+
+/** Đọc token UI đã lưu; fallback gợi ý từ lines HF (mỗi component_code = 1 chip). */
+export function readPayFormulaComponentTokens(
+  expressionJson: unknown,
+  componentLabels?: ReadonlyMap<string, string>,
+): PayFormulaComponentCompositeUi | null {
+  if (!expressionJson || typeof expressionJson !== 'object' || Array.isArray(expressionJson)) {
+    return null;
+  }
+  const obj = expressionJson as Record<string, unknown>;
+  const ui = obj[PAY_FORMULA_COMPOSITE_UI_KEY];
+  if (ui && typeof ui === 'object' && !Array.isArray(ui)) {
+    const uiObj = ui as Record<string, unknown>;
+    const expression = typeof uiObj.expression === 'string' ? uiObj.expression.trim() : '';
+    const rawTokens = Array.isArray(uiObj.tokens) ? uiObj.tokens : [];
+    const tokens: PayFormulaComponentToken[] = [];
+    for (const raw of rawTokens) {
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) continue;
+      const t = raw as Record<string, unknown>;
+      const type = t.type === 'op' ? 'op' : 'var';
+      const value = String(t.value ?? '').trim();
+      const label = String(t.label ?? value).trim();
+      if (!value) continue;
+      tokens.push({ type, label, value });
+    }
+    if (tokens.length > 0 || expression) {
+      return {
+        mode: 'component_composite',
+        expression: expression || tokensToComponentExpression(tokens),
+        tokens,
+      };
+    }
+  }
+
+  const lines = readHyperFormulaV1Lines(expressionJson);
+  if (lines.length === 0) return null;
+  const tokens = hyperFormulaLinesToComponentTokens(lines, componentLabels);
+  return {
+    mode: 'component_composite',
+    expression: tokensToComponentExpression(tokens),
+    tokens,
+  };
+}
+
+export function tokensToComponentExpression(tokens: PayFormulaComponentToken[]): string {
+  return tokens
+    .map((t) => t.value)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function hyperFormulaLinesToComponentTokens(
+  lines: HyperFormulaLineDraft[],
+  componentLabels?: ReadonlyMap<string, string>,
+): PayFormulaComponentToken[] {
+  const tokens: PayFormulaComponentToken[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (i > 0) {
+      tokens.push({ type: 'op', label: '+', value: '+' });
+    }
+    const code = line.component_code.trim();
+    const name = componentLabels?.get(code) ?? code;
+    tokens.push({ type: 'var', label: `[${name}]`, value: code });
+  }
+  return tokens;
+}
+
+/** Parse biểu thức gộp TP → các term có dấu (+/-) và hệ số tùy chọn. */
+export type ParsedComponentTerm = {
+  componentCode: string;
+  sign: 'earning' | 'deduction';
+  coefficient: number;
+};
+
+export function parseComponentCompositeExpression(expression: string): ParsedComponentTerm[] {
+  const normalized = expression.replace(/\s+/g, ' ').trim();
+  if (!normalized) return [];
+  const parts = normalized.split(/\s+/);
+  const terms: ParsedComponentTerm[] = [];
+  let pendingSign: 'earning' | 'deduction' = 'earning';
+  let pendingCoef = 1;
+
+  const flushComponent = (code: string) => {
+    const componentCode = code.trim().toUpperCase();
+    if (!componentCode) return;
+    terms.push({
+      componentCode,
+      sign: pendingSign,
+      coefficient: pendingCoef,
+    });
+    pendingCoef = 1;
+  };
+
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    if (part === '+' || part === '-') {
+      pendingSign = part === '-' ? 'deduction' : 'earning';
+      continue;
+    }
+    if (part === '*' || part === '/') {
+      const rhs = parts[i + 1];
+      const n = Number(rhs);
+      if (Number.isFinite(n) && part === '*') {
+        pendingCoef *= n;
+        i += 1;
+      }
+      continue;
+    }
+    if (/^[A-Z][A-Z0-9_]*$/i.test(part)) {
+      flushComponent(part);
+      continue;
+    }
+    const n = Number(part);
+    if (Number.isFinite(n)) {
+      pendingCoef *= n;
+    }
+  }
+  return terms;
+}
+
+function stripFormulaEquals(formula: string): string {
+  const t = formula.trim();
+  return t.startsWith('=') ? t.slice(1).trim() : t;
+}
+
+function wrapFormulaBody(body: string, coefficient: number): string {
+  const inner = body.trim();
+  if (!inner) return '=0';
+  if (coefficient === 1) return `=${inner}`;
+  return `=(${inner}) * ${coefficient}`;
+}
+
+/**
+ * Gộp biểu thức TP → hyperformula_v1 lines (mỗi TP lấy formula từ catalog).
+ * FE expand only — BE evaluate từng dòng trên bag vars.
+ */
+export function buildHyperFormulaFromComponentComposite(input: {
+  expression: string;
+  tokens?: PayFormulaComponentToken[];
+  componentFormulas: ReadonlyMap<string, string>;
+}): { expressionJson: Record<string, unknown>; lines: HyperFormulaLineDraft[] } {
+  const expression =
+    input.expression.trim() || (input.tokens ? tokensToComponentExpression(input.tokens) : '');
+  const terms = parseComponentCompositeExpression(expression);
+  const lines: HyperFormulaLineDraft[] = [];
+
+  for (const term of terms) {
+    const baseFormula = input.componentFormulas.get(term.componentCode) ?? '';
+    const body = baseFormula ? stripFormulaEquals(baseFormula) : term.componentCode.toLowerCase();
+    lines.push({
+      component_code: term.componentCode,
+      sign: term.sign,
+      formula: wrapFormulaBody(body, term.coefficient),
+    });
+  }
+
+  const hf = buildHyperFormulaV1ExpressionJson(lines);
+  const ui: PayFormulaComponentCompositeUi = {
+    mode: 'component_composite',
+    expression,
+    tokens:
+      input.tokens && input.tokens.length > 0
+        ? input.tokens
+        : hyperFormulaLinesToComponentTokens(lines),
+  };
+  return {
+    lines,
+    expressionJson: {
+      ...hf,
+      [PAY_FORMULA_COMPOSITE_UI_KEY]: ui,
+    },
+  };
+}
+
+export function validateComponentCompositeExpression(
+  expression: string,
+  knownComponentCodes: readonly string[],
+): string | null {
+  const expr = expression.trim();
+  if (!expr) return 'Vui lòng ghép ít nhất một thành phần lương.';
+  const terms = parseComponentCompositeExpression(expr);
+  if (terms.length === 0) return 'Biểu thức không hợp lệ — dùng mã thành phần và + - * /.';
+  const known = new Set(knownComponentCodes.map((c) => c.trim().toUpperCase()));
+  for (const term of terms) {
+    if (!known.has(term.componentCode)) {
+      return `Mã thành phần «${term.componentCode}» chưa có trong danh mục Nest.`;
+    }
+  }
+  return null;
+}
+
 /** Parse preview override inputs → numeric bag for Nest (FE không tính net). */
 export function parsePreviewVariableOverrides(
   raw: Record<string, string>,

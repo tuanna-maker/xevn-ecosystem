@@ -24,6 +24,10 @@
  */
 
 import { resolveHrmCompanySlugForDisplay } from './hrmMetadataCompany';
+import { resolveTenantDisplayLabelVi } from './embedWorkingContext';
+
+/** Operating bucket slug — not a legal entity label (tenant-only partition). */
+const OPERATING_BUCKET_SLUGS = new Set(['main']);
 
 /** Legacy Plane B chart interim labels — must not surface on company column. */
 export const HRM_LEGACY_KHOI_DISPLAY_NAMES: ReadonlySet<string> = new Set([
@@ -49,6 +53,8 @@ export function asLegalCompanyDisplayName(name: string | null | undefined): stri
 
 export type ResolveEmployeeCompanyColumnInput = {
   companyId: string | null | undefined;
+  /** Partition tenant after SA-HRM-TENANT-ONLY-SCOPE migrate. */
+  tenantId?: string | null;
   /** BE enrich field when ready (BE-HRM-EMP-COMPANY-COL-01). */
   companyDisplayName?: string | null;
   /** Alias some payloads may use. */
@@ -66,13 +72,22 @@ export type ResolveEmployeeCompanyColumnInput = {
 export function resolveEmployeeCompanyColumnLabel(
   input: ResolveEmployeeCompanyColumnInput,
 ): string {
+  if (input.tenantId?.trim()) {
+    const fromTenant = asLegalCompanyDisplayName(
+      resolveTenantDisplayLabelVi(input.tenantId),
+    );
+    if (fromTenant) return fromTenant;
+  }
+
   const fromApi =
     asLegalCompanyDisplayName(input.companyDisplayName) ??
     asLegalCompanyDisplayName(input.companyName);
-  if (fromApi) return fromApi;
+  if (fromApi && !OPERATING_BUCKET_SLUGS.has(fromApi.toLowerCase())) {
+    return fromApi;
+  }
 
   const slug = resolveHrmCompanySlugForDisplay(input.companyId);
-  if (slug && input.operatingUnitLabelMap?.size) {
+  if (slug && !OPERATING_BUCKET_SLUGS.has(slug) && input.operatingUnitLabelMap?.size) {
     const fromMap = asLegalCompanyDisplayName(input.operatingUnitLabelMap.get(slug));
     if (fromMap) return fromMap;
   }

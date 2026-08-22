@@ -643,7 +643,9 @@ export default function Attendance() {
   } = useEmployees(false, undefined, {
     enabled: needsEmployeeList,
   });
-  const { departments } = useDepartments({ enabled: activeTab === 'settings' });
+  const { departments } = useDepartments({
+    enabled: activeTab === 'settings' || activeTab === 'attendance',
+  });
   const [settingsEmployeeImportOpen, setSettingsEmployeeImportOpen] = useState(false);
   const [isRefreshingSettingsEmployees, setIsRefreshingSettingsEmployees] = useState(false);
   // Initialize translation-based menu items
@@ -1009,7 +1011,7 @@ export default function Attendance() {
   };
   const [addSheetModalOpen, setAddSheetModalOpen] = useState(false);
   const [newSheetForm, setNewSheetForm] = useState(() => ({
-    unit: '',
+    unit: 'all',
     positions: 'all',
     name: '',
     timePreset: 'this-month',
@@ -1077,7 +1079,8 @@ export default function Attendance() {
       end_date: endIso,
       attendance_type: newSheetForm.attendanceType,
       standard_type: newSheetForm.standardType,
-      department: newSheetForm.unit || undefined,
+      department:
+        newSheetForm.unit === 'all' || !newSheetForm.unit ? undefined : newSheetForm.unit,
       positions: newSheetForm.positions === 'all' ? undefined : newSheetForm.positions,
     });
 
@@ -4682,8 +4685,11 @@ export default function Attendance() {
                     <SelectValue placeholder={t('attPage.selectDepartment', 'Chọn phòng ban')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {departments.map(dept => (
-                      <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                    <SelectItem value="all">{t('attPage.allDepartments', 'Tất cả phòng ban')}</SelectItem>
+                    {departments.map((dept) => (
+                      <SelectItem key={dept.id} value={dept.name}>
+                        {dept.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

@@ -13,6 +13,15 @@ export type EmployeeSummaryCompanyRow = {
   archived_count: number;
 };
 
+/** Per tenant_id headcount (tenant-only scope). */
+export type EmployeeSummaryTenantRow = {
+  tenant_id: string;
+  total: number;
+  active_count: number;
+  inactive_count: number;
+  archived_count: number;
+};
+
 export type EmployeeSummarySalaryRange = {
   key: string;
   min: number;
@@ -44,6 +53,8 @@ export type EmployeeSummaryResult = {
   by_department: EmployeeSummaryDepartmentRow[];
   /** Operating-slug breakdown — same resolveHrmListScope as list (AC-CO-EMP / D-HRM-CO-EMP-COUNT-BE-01). */
   by_company: EmployeeSummaryCompanyRow[];
+  /** Tenant breakdown when HRM_TENANT_ONLY_SCOPE (ADR-HRM-TENANT-ONLY-SCOPE). */
+  by_tenant?: EmployeeSummaryTenantRow[];
   salary_ranges: EmployeeSummarySalaryRange[];
   new_hires: {
     last_30_days: number;

@@ -168,19 +168,20 @@ import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
-  expandPayrollPeriodCompanyIds,
   HrmListScope,
   HrmListScopeContext,
   MASTER_TENANT_ID,
   pushCompanyIdFilter,
+  pushHrmTableScopeFilters,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
   resolveHrmSettingsCatalogCompanyId,
 } from '../common/hrm-list-scope';
 import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
+import { ensureHrmTenantIdColumns } from '../common/hrm-tenant-scope-schema';
+import type { HrmDbQueryFn } from '../db/hrm-db.service';
 import { HrmDbService } from '../db/hrm-db.service';
 import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
-import type { HrmDbQueryFn } from '../db/hrm-db.service';
 import { CompareCandidatesQueryDto } from './dto/compare-candidates.query.dto';
 import { CreateCandidateDto } from './dto/create-candidate.dto';
 import { CreateJobRequisitionDto } from './dto/create-job-requisition.dto';
@@ -932,6 +933,7 @@ export class RecruitmentService {
       ON public.recruitment_candidates (company_id, created_at DESC);
     `);
     await this.recruitmentWorkflowBridge.ensureSchema();
+    await ensureHrmTenantIdColumns((sql) => this.db.query(sql));
   }
 
   private toViVnDateTime(value: string | null): string {
@@ -1176,7 +1178,7 @@ export class RecruitmentService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [templateId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query<YctdJdTemplateBindRow>(
       `SELECT id::text AS id, code, title, job_description, requirements, status, is_active,
               position_code, position_name
@@ -1627,9 +1629,16 @@ export class RecruitmentService {
   private pushRequisitionCompanyFilter(
     filters: string[],
     values: unknown[],
-    companyIds: string[],
+    companyIdsOrScope: string[] | import('../common/hrm-list-scope').HrmListScope,
     alias = 'r',
   ): void {
+    if (!Array.isArray(companyIdsOrScope)) {
+      pushHrmTableScopeFilters(filters, values, companyIdsOrScope, {
+        tableAlias: alias,
+      });
+      return;
+    }
+    const companyIds = companyIdsOrScope;
     if (companyIds.length === 1) {
       values.push(companyIds[0]);
       filters.push(`${alias}.company_id = $${values.length}::text`);
@@ -1663,12 +1672,7 @@ export class RecruitmentService {
     const offset = (page - 1) * pageSize;
     const filters: string[] = [];
     const values: unknown[] = [];
-    this.pushRequisitionCompanyFilter(
-      filters,
-      values,
-      this.requisitionReadCompanyIds(scope),
-      'r',
-    );
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'r');
     // F-REC-UV-YCTD-01 — receivable picker (AS-IS open); empty → 200 [] (not 404).
     if (isUvReceivableListQuery(query)) {
       filters.push(`lower(r.status) IN ('open', 'approved', 'open_for_hire')`);
@@ -1733,12 +1737,7 @@ export class RecruitmentService {
     );
     const filters: string[] = ['r.id = $1::uuid'];
     const values: unknown[] = [requisitionId];
-    this.pushRequisitionCompanyFilter(
-      filters,
-      values,
-      this.requisitionReadCompanyIds(scope),
-      'r',
-    );
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'r');
     const res = await this.db.query<JobRequisitionRow>(
       `${this.requisitionSelectSql()}
        WHERE ${filters.join(' AND ')}
@@ -2022,7 +2021,7 @@ export class RecruitmentService {
       requisitionId,
     ];
     const filters: string[] = ['id = $18::uuid'];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query<JobRequisitionRow>(
       `UPDATE public.job_requisitions
        SET status = $1,
@@ -2239,7 +2238,7 @@ export class RecruitmentService {
       );
       const filters: string[] = ['id = $2::uuid'];
       const values: unknown[] = [reason, requisitionId];
-      pushCompanyIdFilter(filters, values, scope.companyIds);
+      pushCompanyIdFilter(filters, values, scope);
       const res = await this.db.query<JobRequisitionRow>(
         `UPDATE public.job_requisitions
          SET status = 'rejected',
@@ -2315,7 +2314,7 @@ export class RecruitmentService {
       JSON.stringify(flags),
       requisitionId,
     ];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query<JobRequisitionRow>(
       `UPDATE public.job_requisitions
        SET status = $1,
@@ -2405,7 +2404,7 @@ export class RecruitmentService {
     }
     const filters: string[] = ['id = $2::uuid'];
     const values: unknown[] = [JSON.stringify(merged), requisitionId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query<JobRequisitionRow>(
       `UPDATE public.job_requisitions
        SET pipeline_flags_json = $1::jsonb, updated_at = NOW()
@@ -2486,7 +2485,7 @@ export class RecruitmentService {
     }
     const filters: string[] = ['id = $2::uuid'];
     const values: unknown[] = [JSON.stringify(jsonPayload), requisitionId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query<JobRequisitionRow>(
       `UPDATE public.job_requisitions
        SET pipeline_flags_json = $1::jsonb, updated_at = NOW()
@@ -2526,7 +2525,7 @@ export class RecruitmentService {
     this.pushRequisitionCompanyFilter(
       reqFilters,
       reqValues,
-      this.requisitionReadCompanyIds(scope),
+      scope,
       'r',
     );
     const reqRes = await this.db.query<JobRequisitionRow>(
@@ -2587,12 +2586,7 @@ export class RecruitmentService {
     const offset = (page - 1) * pageSize;
     const filters: string[] = [];
     const values: unknown[] = [];
-    this.pushRequisitionCompanyFilter(
-      filters,
-      values,
-      this.requisitionReadCompanyIds(scope),
-      'c',
-    );
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
     const reqId = resolveUvYctdRequisitionId(query);
     if (reqId) {
       values.push(reqId);
@@ -2703,12 +2697,7 @@ export class RecruitmentService {
     const scope = resolveHrmListScope(authorization, companyId, scopeContext);
     const filters: string[] = ['c.id = $1::uuid'];
     const values: unknown[] = [candidateId];
-    this.pushRequisitionCompanyFilter(
-      filters,
-      values,
-      this.requisitionReadCompanyIds(scope),
-      'c',
-    );
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
     const res = await this.db.query<
       CandidateListRow & {
         yctd_title: string | null;
@@ -2802,12 +2791,7 @@ export class RecruitmentService {
     const scope = resolveHrmListScope(authorization, companyId, scopeContext);
     const filters: string[] = ['c.id = $1::uuid'];
     const values: unknown[] = [candidateId];
-    this.pushRequisitionCompanyFilter(
-      filters,
-      values,
-      this.requisitionReadCompanyIds(scope),
-      'c',
-    );
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
     const existingRes = await this.db.query<CandidateRow>(
       `SELECT c.id, c.company_id, c.requisition_id, c.full_name, c.email, c.source, c.status,
               c.created_at, c.updated_at
@@ -3024,7 +3008,7 @@ export class RecruitmentService {
     this.pushRequisitionCompanyFilter(
       candFilters,
       candValues,
-      this.requisitionReadCompanyIds(scope),
+      scope,
       'c',
     );
     const candRes = await this.db.query<CandidateRow>(
@@ -3126,7 +3110,7 @@ export class RecruitmentService {
     this.pushRequisitionCompanyFilter(
       candFilters,
       candValues,
-      this.requisitionReadCompanyIds(scope),
+      scope,
       'c',
     );
     const candRes = await this.db.query<CandidateRow>(
@@ -3310,7 +3294,7 @@ export class RecruitmentService {
     this.pushRequisitionCompanyFilter(
       candFilters,
       candValues,
-      this.requisitionReadCompanyIds(scope),
+      scope,
       'c',
     );
     const candRes = await this.db.query<CandidateRow>(
@@ -3670,12 +3654,7 @@ export class RecruitmentService {
       'c.requisition_id IS NOT NULL',
     ];
     const values: unknown[] = [applicationId];
-    this.pushRequisitionCompanyFilter(
-      filters,
-      values,
-      this.requisitionReadCompanyIds(scope),
-      'c',
-    );
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
 
     type AcceptAppRow = {
       id: string;
@@ -3953,12 +3932,7 @@ export class RecruitmentService {
     );
     const filters: string[] = ['c.id = $1::uuid'];
     const values: unknown[] = [candidateId];
-    this.pushRequisitionCompanyFilter(
-      filters,
-      values,
-      this.requisitionReadCompanyIds(scope),
-      'c',
-    );
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
     const res = await this.db.query<{
       id: string;
       requisition_id: string | null;
@@ -4315,12 +4289,7 @@ export class RecruitmentService {
     // while candidate_count on picker counts all Lane A rows on requisition_id.
     const filters: string[] = ['c.requisition_id = $1::uuid'];
     const values: unknown[] = [requisitionId];
-    this.pushRequisitionCompanyFilter(
-      filters,
-      values,
-      this.requisitionReadCompanyIds(scope),
-      'r',
-    );
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
     const whereClause = filters.join(' AND ');
     const countRes = await this.db.query<{ total: string }>(
       `SELECT COUNT(*)::text AS total
@@ -4475,12 +4444,7 @@ export class RecruitmentService {
       'c.requisition_id = $2::uuid',
     ];
     const values: unknown[] = [candidateIds, requisitionId];
-    this.pushRequisitionCompanyFilter(
-      filters,
-      values,
-      this.requisitionReadCompanyIds(scope),
-      'r',
-    );
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
     const res = await this.db.query<{
       id: string;
       requisition_id: string;
@@ -4501,7 +4465,7 @@ export class RecruitmentService {
       this.pushRequisitionCompanyFilter(
         anyFilters,
         anyValues,
-        this.requisitionReadCompanyIds(scope),
+        scope,
         'c',
       );
       const anyRes = await this.db.query<{
@@ -4720,7 +4684,7 @@ export class RecruitmentService {
     const scope = resolveHrmListScope(authorization, payload.company_id);
     const candFilters: string[] = ['id = $1::uuid'];
     const candValues: unknown[] = [payload.candidate_id];
-    pushCompanyIdFilter(candFilters, candValues, scope.companyIds);
+    pushCompanyIdFilter(candFilters, candValues, scope);
     const candRes = await this.db.query<{
       id: string;
       company_id: string;
@@ -4878,7 +4842,7 @@ export class RecruitmentService {
       interviewId,
     ];
     const filters: string[] = ['id = $3::uuid'];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     let res;
     try {
       res = await this.db.query<InterviewRow>(
@@ -4967,7 +4931,7 @@ export class RecruitmentService {
         : row.interviewer;
     const values: unknown[] = [payload.scheduled_at, interviewer, interviewId];
     const filters: string[] = ['id = $3::uuid'];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query<InterviewRow>(
       `UPDATE public.recruitment_interviews
        SET scheduled_at = $1::timestamptz,

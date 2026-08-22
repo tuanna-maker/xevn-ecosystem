@@ -82,6 +82,8 @@ export type AccessibleTenant = {
   isMaster: boolean;
   /** xbos_user_tenant_membership.id — from login/me/select-membership + JWT claim */
   membershipId?: string;
+  /** Enabled modules from xbos_tenant_registry (BR-TOS-06 cockpit entitlement). */
+  modules?: string[];
   tenant_label?: string;
   company_label?: string;
   role_label?: string;
@@ -123,17 +125,22 @@ export async function fetchGroupOrgOverview() {
   return data;
 }
 
-/** Đơn vị thành viên / pháp nhân từ XBOS (seed JSON), cần quyền membership tenant master. */
-export async function fetchGroupMemberUnitsForCommandCenter(): Promise<Company[]> {
+/** Đơn vị thành viên / pháp nhân — group CEO rollup + member CEO scoped (AC-TOS-04). */
+export async function fetchCompanyUnitsForCommandCenter(): Promise<Company[]> {
   try {
-    const data = await xbosGetData<GroupMemberUnitsPayload>('/tenant-scope/group-member-units', {
-      scope: 'tenant-scope.group-member-units',
+    const data = await xbosGetData<GroupMemberUnitsPayload>('/tenant-scope/company-units', {
+      scope: 'tenant-scope.company-units',
       tenantId: MASTER_TENANT_ID,
       companyId: MEMBER_DEFAULT_COMPANY_ID,
     });
     if (!data) return [];
     return mapGroupMemberUnitsToCompanies(data);
   } catch (error) {
-    throw error instanceof Error ? error : new Error('group-member-units load failed');
+    throw error instanceof Error ? error : new Error('company-units load failed');
   }
+}
+
+/** @deprecated Prefer fetchCompanyUnitsForCommandCenter — member CEO receives 403. */
+export async function fetchGroupMemberUnitsForCommandCenter(): Promise<Company[]> {
+  return fetchCompanyUnitsForCommandCenter();
 }

@@ -17,6 +17,8 @@ interface FormulaInputProps {
   availableComponents: { code: string; name: string }[];
   placeholder?: string;
   className?: string;
+  /** Gán ref textarea bên ngoài (chèn token từ picker). */
+  textareaRef?: React.MutableRefObject<HTMLTextAreaElement | null>;
 }
 
 // Excel-like formula functions
@@ -116,7 +118,7 @@ const getCurrentWord = (value: string, cursorPos: number): { word: string; start
   const beforeCursor = value.slice(0, cursorPos);
   const match = beforeCursor.match(/[A-Z_][A-Z0-9_]*$/i);
   if (match) {
-    return { word: match[0].toUpperCase(), start: cursorPos - match[0].length };
+    return { word: match[0], start: cursorPos - match[0].length };
   }
   return { word: '', start: cursorPos };
 };
@@ -127,6 +129,7 @@ export const FormulaInput = ({
   availableComponents,
   placeholder,
   className,
+  textareaRef,
 }: FormulaInputProps) => {
   const { t } = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
@@ -153,8 +156,12 @@ export const FormulaInput = ({
     if (!currentWord || currentWord.length < 1) return [];
     
     const componentSuggestions = availableComponents
-      .filter(c => c.code.startsWith(currentWord))
-      .map(c => ({ type: 'component' as const, code: c.code, name: c.name }));
+      .filter(
+        (c) =>
+          c.code.toLowerCase().includes(currentWord.toLowerCase()) ||
+          c.name.toLowerCase().includes(currentWord.toLowerCase()),
+      )
+      .map((c) => ({ type: 'component' as const, code: c.code, name: c.name }));
     
     const functionSuggestions = EXCEL_FUNCTIONS
       .filter(f => f.startsWith(currentWord))
@@ -249,7 +256,10 @@ export const FormulaInput = ({
     <div className="relative">
       <div className="relative">
         <textarea
-          ref={inputRef}
+          ref={(el) => {
+            inputRef.current = el;
+            if (textareaRef) textareaRef.current = el;
+          }}
           value={value}
           onChange={handleChange}
           onSelect={handleSelect}
@@ -306,7 +316,7 @@ export const FormulaInput = ({
                 </span>
                 <span className="font-mono font-medium text-xevn-text">{suggestion.code}</span>
               </div>
-              <span className="text-xs text-xevn-textSecondary truncate ml-2 max-w-[200px]">
+              <span className="text-xs text-xevn-textSecondary truncate ml-2 max-w-[240px]">
                 {suggestion.name}
               </span>
             </div>

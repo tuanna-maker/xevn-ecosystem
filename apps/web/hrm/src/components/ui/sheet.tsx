@@ -22,6 +22,10 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { getDialogPortalContainer, syncHrmStylesheetsToParentForPortalDialogs } from "@/lib/hrmDialogPortal";
+import {
+  HrmOverlayPortalScopeContext,
+  type HrmOverlayPortalScope,
+} from "@/lib/hrmOverlayPortalScope";
 
 const Sheet = SheetPrimitive.Root;
 
@@ -84,7 +88,11 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
           className={cn(sheetVariants({ side }), useParentPortal && "z-[100000]", className)}
           {...props}
         >
-          {children}
+          <HrmOverlayPortalScopeContext.Provider
+            value={(useParentPortal ? 'parent' : 'iframe') satisfies HrmOverlayPortalScope}
+          >
+            {children}
+          </HrmOverlayPortalScopeContext.Provider>
           <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-secondary hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-xevn-accent focus:ring-offset-2 disabled:pointer-events-none">
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>

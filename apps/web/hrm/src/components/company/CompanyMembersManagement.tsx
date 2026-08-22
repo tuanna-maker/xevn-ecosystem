@@ -85,13 +85,13 @@ import {
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import {
-  deleteCompanyMembership,
+  deleteScopedMembership,
   inviteEmployees,
-  listAdminCompanies,
-  listCompanyMemberships,
+  listScopedCompanies,
+  listScopedMemberships,
   listEmployees,
-  updateCompanyMembership,
-  upsertCompanyMembership,
+  updateScopedMembership,
+  upsertScopedMembership,
 } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
 import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
@@ -210,8 +210,14 @@ export function CompanyMembersManagement() {
 
   const fetchCompanies = async () => {
     try {
-      const result = await listAdminCompanies();
-      setCompanies((result.data ?? []) as Company[]);
+      const result = await listScopedCompanies();
+      setCompanies(
+        (result.data ?? []).map((row) => ({
+          id: row.company_id,
+          name: row.name,
+          code: row.code,
+        })),
+      );
     } catch (error) {
       console.error('Error fetching companies:', error);
       setCompanies([]);
@@ -221,7 +227,7 @@ export function CompanyMembersManagement() {
   const fetchMembers = async () => {
     setLoading(true);
     try {
-      const result = await listCompanyMemberships();
+      const result = await listScopedMemberships();
       setMembers((result.data ?? []) as CompanyMember[]);
     } catch (error) {
       console.error('Error fetching members:', error);
@@ -350,7 +356,7 @@ export function CompanyMembersManagement() {
     if (!deletingMemberId) return;
 
     try {
-      await deleteCompanyMembership(deletingMemberId);
+      await deleteScopedMembership(deletingMemberId);
       setMembers(members.filter((m) => m.id !== deletingMemberId));
       toast({
         title: t('common.success'),
@@ -386,7 +392,7 @@ export function CompanyMembersManagement() {
     const empId = selectedEmployeeId && selectedEmployeeId !== 'none' ? selectedEmployeeId : null;
 
     try {
-      await updateCompanyMembership(linkingMember.id, { employee_id: empId });
+      await updateScopedMembership(linkingMember.id, { employee_id: empId });
       if (empId) {
         await syncMemberEmployee(linkingMember.id, empId);
       }
@@ -411,7 +417,7 @@ export function CompanyMembersManagement() {
   };
 
   const syncMemberEmployee = async (membershipId: string, employeeId: string) => {
-    await updateCompanyMembership(membershipId, { employee_id: employeeId });
+    await updateScopedMembership(membershipId, { employee_id: employeeId });
   };
 
   const handleSyncMember = async (member: CompanyMember) => {
@@ -519,7 +525,7 @@ export function CompanyMembersManagement() {
     if (!changingRoleMember || !newRole) return;
 
     try {
-      await updateCompanyMembership(changingRoleMember.id, { role: newRole });
+      await updateScopedMembership(changingRoleMember.id, { role: newRole });
       setMembers(members.map((m) => 
         m.id === changingRoleMember.id ? { ...m, role: newRole } : m
       ));
@@ -543,13 +549,13 @@ export function CompanyMembersManagement() {
   const onSubmit = async (values: MemberFormValues) => {
     try {
       if (editingMember) {
-        await updateCompanyMembership(editingMember.id, {
+        await updateScopedMembership(editingMember.id, {
           email: values.email,
           full_name: values.full_name,
           role: values.role,
         });
       } else {
-        await upsertCompanyMembership({
+        await upsertScopedMembership({
           email: values.email,
           full_name: values.full_name,
           role: values.role,

@@ -41,7 +41,7 @@ import {
   Bell,
 } from 'lucide-react';
 import { Container } from '@xevn/ui';
-import { mockModuleCards, type AlertItem } from '../../data/mockExecutiveDashboardData';
+import { mockModuleCards, type AlertItem, type ModuleCardData } from '../../data/mockExecutiveDashboardData';
 import { getPortalMockExecutiveDashboardStats } from '../../data/portal-dev-seed';
 import { PORTAL_UNLOCK_STORAGE_KEY } from '../../constants/portal-flow';
 import { listWorkflowInstances, listReportingRoutes, listWorkflowTasks } from '../../integrations/workflowEngineApi';
@@ -56,6 +56,11 @@ import { useCommandCenterKpiRail } from '../../hooks/useCommandCenterKpiRail';
 import { ApiLoadBanner } from '../../components/common/ApiLoadBanner';
 import { CapabilityActionButton } from '../../components/command-center/CapabilityActionButton';
 import { resolveExecModuleAccessRoute } from '../../integrations/capabilityActionRegistry';
+import {
+  collectMembershipModuleIds,
+  resolveExecModuleCards,
+} from '../../integrations/execModuleCatalog';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Sparkline component
 const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
@@ -83,6 +88,7 @@ const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color })
 
 const ExecutiveDashboardPage: React.FC = () => {
   const { tenantId, companyId } = useTenantScope();
+  const { memberships } = useAuth();
   const [rollupCount, setRollupCount] = useState<number | null>(null);
   const [pendingTasks, setPendingTasks] = useState<number | null>(null);
   const [cockpitAlerts, setCockpitAlerts] = useState<AlertItem[]>([]);
@@ -96,6 +102,12 @@ const ExecutiveDashboardPage: React.FC = () => {
   const executiveKpiRail = useCommandCenterKpiRail('bod', tenantId, companyId);
   const showDemoCockpitLayout = isExecutiveDashboardDemoLayoutEnabled();
   const demoStats = getPortalMockExecutiveDashboardStats();
+  const moduleCards = useMemo(() => {
+    const fromRegistry = resolveExecModuleCards(collectMembershipModuleIds(memberships));
+    if (fromRegistry.length) return fromRegistry;
+    if (showDemoCockpitLayout) return mockModuleCards;
+    return [];
+  }, [memberships, showDemoCockpitLayout]);
 
   const kpiCompliancePercent = useMemo(() => {
     if (!kpiRows.length) return null;
@@ -408,14 +420,19 @@ const ExecutiveDashboardPage: React.FC = () => {
           <div className="flex items-center justify-between mb-6 px-2">
             <h2 className="text-xl font-black text-xevn-text">Cổng Phân hệ Nghiệp vụ</h2>
             <span className="text-sm font-medium text-xevn-textSecondary bg-xevn-background px-3 py-1.5 rounded-lg">
-              10 modules đang hoạt động
+              {moduleCards.length} module{moduleCards.length === 1 ? '' : 's'} đang hoạt động
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            {mockModuleCards.map((card) => (
+            {moduleCards.map((card) => (
               <ModuleCard key={card.id} card={card} />
             ))}
           </div>
+          {!moduleCards.length && !showDemoCockpitLayout ? (
+            <p className="mt-3 text-sm text-xevn-textSecondary">
+              Chưa có module nào trong membership — kiểm tra `xbos_tenant_registry.modules`.
+            </p>
+          ) : null}
         </section>
 
         {/* ROW 4: Hot Alerts */}
@@ -433,7 +450,7 @@ const ExecutiveDashboardPage: React.FC = () => {
 };
 
 // ModuleCard Component
-const ModuleCard: React.FC<{ card: typeof mockModuleCards[0] }> = ({ card }) => {
+const ModuleCard: React.FC<{ card: ModuleCardData }> = ({ card }) => {
   const navigate = useNavigate();
 
   const handleAccessClick = () => {

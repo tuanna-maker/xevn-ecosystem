@@ -17,6 +17,7 @@ import {
   ensureCompanySlugMapLegalDisplayNames,
   isLegacyKhoiDisplayName,
   resolveCompanyDisplayNameVi,
+  resolveEmployeeCompanyDisplayNameVi,
 } from './hrm-company-display-name';
 import {
   HRM_LEGACY_KHOI_DISPLAY_NAMES,
@@ -78,6 +79,16 @@ describe('BE-HRM-EMP-COMPANY-COL-01', () => {
         resolveCompanyDisplayNameVi('unknown-slug', 'Khối Vận tải X.E'),
       ).toBeNull();
       expect(resolveCompanyDisplayNameVi('', null)).toBeNull();
+    });
+
+    it('tenant-only main partition resolves via tenant_id (SA-HRM-TENANT-ONLY-SCOPE)', () => {
+      expect(
+        resolveEmployeeCompanyDisplayNameVi('main', { tenantId: 'visun' }),
+      ).toBe('Công ty TNHH Du lịch Visun');
+      expect(
+        resolveEmployeeCompanyDisplayNameVi('main', { tenantId: 'xevn' }),
+      ).toBe('Tập đoàn XeVN');
+      expect(resolveEmployeeCompanyDisplayNameVi('main', {})).toBeNull();
     });
   });
 

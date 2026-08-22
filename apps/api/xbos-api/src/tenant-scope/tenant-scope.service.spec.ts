@@ -6,7 +6,12 @@ import { TenantScopeService } from './tenant-scope.service';
 
 describe('TenantScopeService (ADR group vs member)', () => {
   const dbMock = { query: jest.fn() };
-  const orgMock = { listOrgTree: jest.fn(), listGroupMemberUnits: jest.fn(), listGroupOrgTreesForUser: jest.fn() };
+  const orgMock = {
+    listOrgTree: jest.fn(),
+    listGroupMemberUnits: jest.fn(),
+    listGroupOrgTreesForUser: jest.fn(),
+    listMemberLegalEntitiesForTenants: jest.fn(),
+  };
   let service: TenantScopeService;
 
   beforeEach(() => {
@@ -153,5 +158,48 @@ describe('TenantScopeService (ADR group vs member)', () => {
 
     const result = await service.groupMemberUnits('ceo@xe.vn');
     expect(result).toEqual({ members: [{ tenantId: 'xe-du-lich' }] });
+  });
+
+  it('companyUnits returns member legal entities for subsidiary CEO (no master membership)', async () => {
+    dbMock.query.mockResolvedValueOnce({
+      rows: [
+        {
+          tenant_id: 'visun',
+          role_code: 'subsidiary_ceo',
+          name: 'Visun',
+          short_name: 'VS',
+          tenant_kind: 'member',
+          default_company_id: 'main',
+          modules: ['hrm'],
+        },
+      ],
+    });
+    orgMock.listMemberLegalEntitiesForTenants = jest.fn().mockResolvedValue([
+      {
+        tenant_id: 'visun',
+        tenant_name: 'Công ty TNHH Du lịch Visun',
+        tenant_short_name: 'VS',
+        id: 'le-visun-1',
+        code: 'VS',
+        name: 'Công ty TNHH Du lịch Visun',
+        entity_type: 'subsidiary',
+        payload: null,
+        tax_code: '0123456789',
+        established_at: '2020-01-01',
+        address: 'Hà Nội',
+        business_lines: 'Du lịch',
+      },
+    ]);
+
+    const result = await service.companyUnits('ceo2@xe.vn', {
+      tenantId: 'visun',
+      roleCode: 'subsidiary_ceo',
+    });
+
+    expect(result.holding).toBeNull();
+    expect(result.members).toHaveLength(1);
+    expect(result.members[0]?.tenant_id).toBe('visun');
+    expect(orgMock.listMemberLegalEntitiesForTenants).toHaveBeenCalledWith(['visun']);
+    expect(orgMock.listGroupMemberUnits).not.toHaveBeenCalled();
   });
 });

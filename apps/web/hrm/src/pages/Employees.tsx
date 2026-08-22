@@ -240,8 +240,13 @@ export default function Employees() {
     .map((m) => ({ id: m.company_id, name: m.company!.name }));
 
   const getCompanyName = (emp: Employee) => {
+    const tenantId =
+      typeof emp.custom_fields?.tenant_id === 'string'
+        ? emp.custom_fields.tenant_id
+        : undefined;
     return resolveEmployeeCompanyColumnLabel({
       companyId: emp.company_id,
+      tenantId,
       companyDisplayName: emp.company_display_name,
       operatingUnitLabelMap,
       membershipCompanyName: userCompanies.find((c) => c.id === emp.company_id)?.name,

@@ -563,3 +563,104 @@ describe('employee restore scope parity (P1-PHASE1-BE-SCOPE-P0-S5-01)', () => {
     ).toThrow(expect.objectContaining({ code: 'HRM-EMP-409' }));
   });
 });
+
+describe('resolveHrmListScope (HRM_TENANT_ONLY_SCOPE)', () => {
+  const prevScope = process.env.HRM_TENANT_ONLY_SCOPE;
+  const prevBridge = process.env.HRM_TENANT_ONLY_LEGACY_BRIDGE;
+
+  beforeEach(() => {
+    process.env.HRM_TENANT_ONLY_SCOPE = 'true';
+    process.env.HRM_TENANT_ONLY_LEGACY_BRIDGE = 'true';
+  });
+
+  afterEach(() => {
+    if (prevScope === undefined) {
+      delete process.env.HRM_TENANT_ONLY_SCOPE;
+    } else {
+      process.env.HRM_TENANT_ONLY_SCOPE = prevScope;
+    }
+    if (prevBridge === undefined) {
+      delete process.env.HRM_TENANT_ONLY_LEGACY_BRIDGE;
+    } else {
+      process.env.HRM_TENANT_ONLY_LEGACY_BRIDGE = prevBridge;
+    }
+  });
+
+  it('group CEO main rollup uses tenantIds not OU slugs', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'main');
+    expect(scope.tenantOnlyMode).toBe(true);
+    expect(scope.tenantIds).toEqual([
+      'xevn',
+      'visun',
+      'xe-tmdv',
+      'xe-du-lich',
+      'xe-vietnam',
+    ]);
+    expect(scope.companyIds).toEqual(['main']);
+    expect(scope.masterTenantPartition).toBe(true);
+  });
+
+  it('member CEO visun uses single tenantIds', () => {
+    const token = signServiceJwt({
+      sub: 'ceo2@xe.vn',
+      tenantId: 'visun',
+      companyId: 'main',
+      roleCode: 'subsidiary_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'main');
+    expect(scope.tenantOnlyMode).toBe(true);
+    expect(scope.tenantIds).toEqual(['visun']);
+    expect(scope.memberTenantId).toBe('visun');
+  });
+
+  it('group CEO narrow logistics → visun tenant', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'logistics');
+    expect(scope.tenantIds).toEqual(['visun']);
+    expect(scope.companyIds).toEqual(['main']);
+  });
+
+  it('pushEmployeeListScopeFilters includes legacy OU bridge SQL', () => {
+    const token = signServiceJwt({
+      sub: 'ceo2@xe.vn',
+      tenantId: 'visun',
+      companyId: 'main',
+      roleCode: 'subsidiary_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'main');
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    pushEmployeeListScopeFilters(filters, values, scope);
+    expect(filters.join(' ')).toContain('company_id = ANY');
+    expect(values[0]).toEqual(['visun']);
+  });
+
+  it('assertResourceInHrmScope allows legacy logistics row for visun CEO', () => {
+    const scope = resolveHrmListScope(
+      `Bearer ${signServiceJwt({
+        sub: 'ceo2@xe.vn',
+        tenantId: 'visun',
+        companyId: 'main',
+        roleCode: 'subsidiary_ceo',
+      })}`,
+      'main',
+    );
+    expect(() =>
+      assertResourceInHrmScope(
+        { company_id: 'logistics', custom_fields: { tenant_id: 'xevn' } },
+        scope,
+      ),
+    ).not.toThrow();
+  });
+});

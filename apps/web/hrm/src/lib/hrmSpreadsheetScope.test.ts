@@ -27,6 +27,10 @@ const JWT_TRSPORT =
 const JWT_HOLDING =
   'eyJhbGciOiJub25lIn0.eyJjb21wYW55SWQiOiJob2xkaW5nIiwidGVuYW50SWQiOiJ4ZXZuIn0.';
 
+/** JWT payload: { companyId: "main", tenantId: "visun", roleCode: "subsidiary_ceo" } */
+const JWT_VISUN =
+  'eyJhbGciOiJub25lIn0.eyJjb21wYW55SWQiOiJtYWluIiwidGVuYW50SWQiOiJ2aXN1biIsInJvbGVDb2RlIjoic3Vic2lkaWFyeV9jZW8ifQ.';
+
 describe('hrmSpreadsheetScope', () => {
   afterEach(() => {
     sessionStorage.clear();
@@ -101,6 +105,13 @@ describe('hrmSpreadsheetScope', () => {
       resolveHrmSettingsCatalogScope('trsport', '?portal=1&tenantId=xevn&companyId=trsport')
         ?.companyId,
     ).toBe('main');
+  });
+
+  it('member tenant Visun CEO — settings catalog scope is visun/main (not group rollup)', () => {
+    sessionStorage.setItem(STORAGE_TOKEN, JWT_VISUN);
+    expect(getPortalJwtRoleCode()).toBe('subsidiary_ceo');
+    const scope = resolveHrmSettingsCatalogScope(null, '?portal=1&tenantId=visun&companyId=main');
+    expect(scope).toEqual({ tenantId: 'visun', companyId: 'main' });
   });
 
   it('D-PAY-ESS-FE-SCOPE-COERCE: ESS JWT preserves holding (not null/main)', () => {
