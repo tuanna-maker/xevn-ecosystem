@@ -1648,11 +1648,6 @@ export class RecruitmentService {
     filters.push(`${alias}.company_id = ANY($${values.length}::text[])`);
   }
 
-  /** Group CEO rollup reads must include legacy `main` rows (parity payroll / eval list). */
-  private requisitionReadCompanyIds(scope: HrmListScope): string[] {
-    return expandPayrollPeriodCompanyIds(scope);
-  }
-
   async listJobRequisitions(
     query: ListJobRequisitionsQueryDto,
     authorization?: string,
