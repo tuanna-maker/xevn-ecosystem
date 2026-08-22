@@ -1076,6 +1076,8 @@ export type HrmJobRequisition = {
   jd_title?: string | null;
   /** Optional human code for picker label (F-REC-UV-YCTD-01). */
   code?: string | null;
+  /** Lane A UV count — compare/picker disambiguation under Group CEO rollup. */
+  candidate_count?: number | null;
   /** Position SoT derived for UV bind (F-REC-UV-YCTD-02) — never free-text. */
   position_key?: string | null;
   position_name?: string | null;

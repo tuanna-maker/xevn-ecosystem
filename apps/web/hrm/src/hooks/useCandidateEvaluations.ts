@@ -16,10 +16,15 @@ interface EvaluationScore {
 export interface CandidateEvaluation {
   id: string;
   candidate_id: string;
+  recruitment_candidate_id?: string | null;
+  requisition_id?: string | null;
   candidate_name: string;
   candidate_email: string;
   candidate_avatar: string | null;
   candidate_position: string | null;
+  yctd_title?: string | null;
+  yctd_company_id?: string | null;
+  candidate_stage?: string | null;
   evaluator_name: string | null;
   evaluator_email: string | null;
   total_score: number | null;
@@ -34,13 +39,25 @@ export interface CandidateEvaluation {
 
 function mapEvaluation(row: Record<string, unknown>): CandidateEvaluation {
   const scores = Array.isArray(row.scores) ? (row.scores as EvaluationScore[]) : [];
+  const recruitmentCandidateId = row.recruitment_candidate_id
+    ? String(row.recruitment_candidate_id)
+    : null;
+  const poolOrNeo =
+    (row.candidate_id ? String(row.candidate_id) : '') ||
+    recruitmentCandidateId ||
+    '';
   return {
     id: String(row.id),
-    candidate_id: String(row.candidate_id),
+    candidate_id: poolOrNeo,
+    recruitment_candidate_id: recruitmentCandidateId,
+    requisition_id: row.requisition_id ? String(row.requisition_id) : null,
     candidate_name: String(row.candidate_name ?? ''),
     candidate_email: String(row.candidate_email ?? ''),
     candidate_avatar: null,
     candidate_position: row.candidate_position ? String(row.candidate_position) : null,
+    yctd_title: row.yctd_title ? String(row.yctd_title) : null,
+    yctd_company_id: row.yctd_company_id ? String(row.yctd_company_id) : null,
+    candidate_stage: row.candidate_stage ? String(row.candidate_stage) : null,
     evaluator_name: row.evaluator_name ? String(row.evaluator_name) : null,
     evaluator_email: row.evaluator_email ? String(row.evaluator_email) : null,
     total_score: row.total_score != null ? Number(row.total_score) : null,

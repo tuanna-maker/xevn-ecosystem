@@ -773,14 +773,15 @@ export function JobRequisitionsTab({
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- cấm deps createForm / array templates (reset Textarea khi gõ)
   }, [
     createOpen,
     effectiveTemplatesLoading,
-    effectiveTemplates,
+    effectiveTemplates.length,
+    effectiveTemplates[0]?.id,
     departmentOptions,
     ouLabels,
     jobTitleOptions,
-    createForm,
   ]);
 
   /** D-HDSD-MUTATE-FE-08 — backfill dept when catalog/template hints arrive after open. */
@@ -801,7 +802,8 @@ export function JobRequisitionsTab({
     if (dept) {
       createForm.setValue('department', dept, { shouldValidate: true });
     }
-  }, [createOpen, effectiveTemplates, departmentOptions, ouLabels, jobTitleOptions, createForm]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- cấm deps createForm
+  }, [createOpen, effectiveTemplates.length, effectiveTemplates[0]?.id, departmentOptions, ouLabels, jobTitleOptions]);
 
   /** D-HDSD-MUTATE-FE-04 — department catalog may load after JD pick; backfill required field. */
   useEffect(() => {
@@ -811,7 +813,8 @@ export function JobRequisitionsTab({
     if (firstDept) {
       createForm.setValue('department', firstDept, { shouldValidate: true });
     }
-  }, [createOpen, departmentOptions, createForm]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- cấm deps createForm
+  }, [createOpen, departmentOptions]);
 
   useEffect(() => {
     if (!createOpen) {
@@ -1181,12 +1184,34 @@ export function JobRequisitionsTab({
     setSubmitting(true);
     try {
       const mode = normalizeYctdHeadcountMode(editMode || editRow.headcount_mode);
-      const updated = await updateJobRequisition(editRow.id, mutateCompanyId, {
-        ...(REQUISITION_LOCAL_STATUSES.includes(
-          editStatus as (typeof REQUISITION_LOCAL_STATUSES)[number],
-        )
+      const priorStatus = String(editRow.status ?? '')
+        .trim()
+        .toLowerCase();
+      const wantStatus = String(editStatus ?? '')
+        .trim()
+        .toLowerCase();
+      const statusIsLocal = REQUISITION_LOCAL_STATUSES.includes(
+        editStatus as (typeof REQUISITION_LOCAL_STATUSES)[number],
+      );
+      // BE forbids PATCH → open/open_for_hire (use transitions). Never send that jump from Sửa.
+      const statusJumpToReceivable =
+        (wantStatus === 'open' || wantStatus === 'open_for_hire') && wantStatus !== priorStatus;
+      const statusPayload =
+        statusIsLocal && !statusJumpToReceivable && wantStatus !== priorStatus
           ? { status: editStatus }
-          : {}),
+          : {};
+      if (statusJumpToReceivable) {
+        toast({
+          title: 'Không đổi trạng thái bằng Sửa',
+          description:
+            '«Đang tuyển / Mở nhận hồ sơ» chỉ sau Gửi duyệt → Duyệt (ngoài ĐB: + BOD). Form này chỉ lưu phân loại O4 + số lượng.',
+          variant: 'destructive',
+        });
+        setSubmitting(false);
+        return;
+      }
+      const updated = await updateJobRequisition(editRow.id, mutateCompanyId, {
+        ...statusPayload,
         headcount,
         ...(mode
           ? {
@@ -1206,7 +1231,7 @@ export function JobRequisitionsTab({
       });
       toast({
         title: 'Đã cập nhật yêu cầu',
-        description: 'Trạng thái / phân loại / số lượng đã lưu — F5 để xác nhận.',
+        description: 'Phân loại / số lượng đã lưu — F5 để xác nhận.',
       });
       setEditRow(null);
       await refetch();
@@ -1423,11 +1448,8 @@ export function JobRequisitionsTab({
       return;
     }
     setEditRow(row);
-    setEditStatus(
-      row.status === 'pending_approval' || row.status === 'open_for_hire' || row.status === 'draft'
-        ? 'open'
-        : row.status,
-    );
+    // Keep real status — never coerce draft/pending/open_for_hire → «open» (PATCH 409).
+    setEditStatus(row.status);
     setEditHeadcount(normalizeRequisitionHeadcount(row.headcount) ?? 1);
     setEditMode(normalizeYctdHeadcountMode(row.headcount_mode) ?? '');
     setEditCellId(row.headcount_cell_id?.trim() ?? '');
@@ -2300,22 +2322,34 @@ export function JobRequisitionsTab({
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium leading-none">Trạng thái</label>
-                <Select
-                value={editStatus}
-                onValueChange={(v) => setEditStatus(v as HrmJobRequisition['status'])}
-                disabled={requisitionLocked(editRow)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {REQUISITION_LOCAL_STATUSES.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {REQUISITION_STATUS_LABEL_VI[s]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {editRow &&
+                REQUISITION_LOCAL_STATUSES.includes(
+                  editRow.status as (typeof REQUISITION_LOCAL_STATUSES)[number],
+                ) ? (
+                  <Select
+                    value={editStatus}
+                    onValueChange={(v) => setEditStatus(v as HrmJobRequisition['status'])}
+                    disabled={requisitionLocked(editRow)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {REQUISITION_LOCAL_STATUSES.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {REQUISITION_STATUS_LABEL_VI[s]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="rounded-md border px-3 py-2 text-sm bg-muted/40">
+                    {REQUISITION_STATUS_LABEL_VI[editRow?.status ?? 'draft'] ?? editRow?.status}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Không đổi «Mở nhận hồ sơ / Đang tuyển» tại đây — dùng Gửi duyệt / Duyệt.
+                    </p>
+                  </div>
+                )}
               </div>
               {requisitionLocked(editRow) ? (
                 <p className="col-span-3 text-xs font-medium text-warning">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>

@@ -20,7 +20,7 @@
  * Why: Schedule từ Ứng viên ghi recruitment_interviews; tab catalog đọc public.interviews → empty sai SoT
  * must_keep: ManageActiveInterviewDialog Lane A · one-active · U65 · honesty false
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useForm } from 'react-hook-form';
@@ -113,9 +113,15 @@ import {
 } from '@/components/ui/alert-dialog';
 import { InterviewCalendarView } from './InterviewCalendarView';
 import { CandidateEvaluationDialog } from './CandidateEvaluationDialog';
+import {
+  CandidateComparisonDialog,
+  type CompareEvaluateTarget,
+} from './CandidateComparisonDialog';
 import { ManageActiveInterviewDialog } from './ManageActiveInterviewDialog';
 import { useToast } from '@/hooks/use-toast';
 import { toErrorMessage } from '@/lib/apiError';
+import { useCandidateEvaluations } from '@/hooks/useCandidateEvaluations';
+import { normalizeRequisitionId } from '@/lib/candidateUvYctdUi';
 import {
   listRecruitmentCandidates,
   listRecruitmentInterviews,
@@ -261,7 +267,59 @@ export function InterviewsTab() {
   const [creatingNextRound, setCreatingNextRound] = useState(false);
   const [isEvaluationDialogOpen, setIsEvaluationDialogOpen] = useState(false);
   const [interviewForEvaluation, setInterviewForEvaluation] = useState<Interview | null>(null);
+  const [isComparisonDialogOpen, setIsComparisonDialogOpen] = useState(false);
+  const [compareInitialRequisitionId, setCompareInitialRequisitionId] = useState<string | null>(
+    null,
+  );
+  const [compareInitialCandidateId, setCompareInitialCandidateId] = useState<string | null>(null);
   const [manageInterview, setManageInterview] = useState<Interview | null>(null);
+
+  const { evaluations } = useCandidateEvaluations(isComparisonDialogOpen);
+
+  const openCompareForYctd = useCallback(
+    (requisitionId: string | null | undefined, candidateId?: string | null) => {
+      setCompareInitialRequisitionId(normalizeRequisitionId(requisitionId) || null);
+      setCompareInitialCandidateId((candidateId ?? '').trim() || null);
+      setIsComparisonDialogOpen(true);
+    },
+    [],
+  );
+
+  const compareTargetToInterviewEval = useCallback(
+    (target: CompareEvaluateTarget): Interview | null => {
+      const candidateId = (target.recruitment_candidate_id ?? target.id ?? '').trim();
+      if (!candidateId) return null;
+      return {
+        id: '',
+        candidate_id: candidateId,
+        candidate_name: target.full_name,
+        candidate_email: target.email || null,
+        candidate_phone: null,
+        job_posting_id: null,
+        position: target.position ?? null,
+        interview_date: '',
+        interview_time: '',
+        scheduled_at: '',
+        duration_minutes: null,
+        interview_type: null,
+        location: null,
+        meeting_link: null,
+        interviewer_name: null,
+        interviewer_email: null,
+        notes: null,
+        status: null,
+        feedback: null,
+        rating: null,
+        company_id: effectiveCompanyId,
+        created_at: '',
+        updated_at: '',
+        interview_round: null,
+        result: null,
+        next_steps: null,
+      };
+    },
+    [effectiveCompanyId],
+  );
 
   const statusConfig = getStatusConfig(t);
   const typeConfig = getTypeConfig(t);
@@ -1276,8 +1334,31 @@ export function InterviewsTab() {
             if (!open) setInterviewForEvaluation(null);
           }}
           onSaved={fetchInterviews}
+          onCompareByYctd={(requisitionId, candidateId) => {
+            openCompareForYctd(requisitionId, candidateId);
+          }}
         />
       )}
+
+      <CandidateComparisonDialog
+        open={isComparisonDialogOpen}
+        onOpenChange={(open) => {
+          setIsComparisonDialogOpen(open);
+          if (!open) {
+            setCompareInitialRequisitionId(null);
+            setCompareInitialCandidateId(null);
+          }
+        }}
+        initialRequisitionId={compareInitialRequisitionId}
+        initialCandidateId={compareInitialCandidateId}
+        seedEvaluations={evaluations}
+        onEvaluateCandidate={(target) => {
+          const mapped = compareTargetToInterviewEval(target);
+          if (!mapped) return;
+          setInterviewForEvaluation(mapped);
+          setIsEvaluationDialogOpen(true);
+        }}
+      />
 
       {manageInterview?.candidate_id &&
       (manageInterview.status === 'scheduled' || manageInterview.status === 'confirmed') ? (

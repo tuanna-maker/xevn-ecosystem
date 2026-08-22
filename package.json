@@ -5,7 +5,7 @@
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev --filter=web-portal --filter=xbos-api --filter=vite_react_shadcn_ts --filter=x-bos",
+    "dev": "turbo run dev --filter=web-portal --filter=xbos-api --filter=hrm-api --filter=vite_react_shadcn_ts --filter=x-bos",
     "dev:web": "turbo run dev --filter=web-portal --filter=xbos-api --filter=vite_react_shadcn_ts --filter=x-bos",
     "dev:web-only": "turbo run dev --filter=web-portal --filter=vite_react_shadcn_ts --filter=x-bos",
     "dev:api": "turbo run dev --filter=./apps/api/*",

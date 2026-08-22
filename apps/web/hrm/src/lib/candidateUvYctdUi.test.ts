@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildCandidateCreateWithYctdPayload,
+  dedupeRowsById,
   deriveUvPositionFromYctd,
+  filterComparePickerYctds,
   filterReceivableRequisitions,
+  filterYctdPickerRowsByQuery,
   formatYctdOptionLabel,
+  formatYctdOptionMetaLine,
+  formatYctdOptionPrimaryLine,
   hasCandidateYctdLink,
   isReceivableRequisitionStatus,
   isUvCreateSubmitBlocked,
@@ -14,6 +19,8 @@ import {
   resolveCandidatePipelineStage,
   resolveCandidatePositionLabel,
   resolveCandidateYctdLabel,
+  sortCompareYctdPickerRows,
+  sortYctdPickerRows,
   unionSpineOnlyCandidatesIntoList,
   UV_YCTD_NONE_SENTINEL,
   UV_YCTD_REQUIRED_VI,
@@ -32,6 +39,18 @@ describe('candidateUvYctdUi — PO-HRM-REC-UV-YCTD-FE-01', () => {
     expect(filterReceivableRequisitions(rows).map((r) => r.id)).toEqual(['1', '4', '6']);
     expect(isReceivableRequisitionStatus('open')).toBe(true);
     expect(isReceivableRequisitionStatus('closed')).toBe(false);
+  });
+
+  it('compare picker keeps YCTD with UV even when closed; plus receivable / pending empty UV', () => {
+    const rows = [
+      { id: '1', status: 'closed', candidate_count: 3 },
+      { id: '2', status: 'draft', candidate_count: 0 },
+      { id: '3', status: 'open', candidate_count: 0, classification_required: true, headcount_mode: null },
+      { id: '4', status: 'open_for_hire', candidate_count: 2 },
+      { id: '5', status: 'pending_approval', candidate_count: 0 },
+      { id: '6', status: 'rejected', candidate_count: 1 },
+    ];
+    expect(filterComparePickerYctds(rows).map((r) => r.id)).toEqual(['1', '3', '4', '5']);
   });
 
   it('derives position from YCTD display-ready — never free_text source', () => {
@@ -132,13 +151,91 @@ describe('candidateUvYctdUi — PO-HRM-REC-UV-YCTD-FE-01', () => {
   it('formats picker label with code + position', () => {
     expect(
       formatYctdOptionLabel({
-        id: '1',
+        id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
         title: 'Tuyển lái xe',
         status: 'open',
         code: 'YCTD-01',
         position_name: 'Lái xe',
       }),
-    ).toBe('YCTD-01 — Tuyển lái xe · Lái xe');
+    ).toContain('YCTD-01 — Tuyển lái xe · Lái xe');
+  });
+
+  it('disambiguates same-title YCTD with company / department / SL / UV / #id', () => {
+    const holding = formatYctdOptionLabel({
+      id: '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+      company_id: 'holding',
+      title: 'Nhân viên vận hành',
+      status: 'open_for_hire',
+      department: 'Vận hành',
+      headcount: 2,
+      candidate_count: 3,
+      created_at: '2026-08-20T00:00:00.000Z',
+    });
+    const trsport = formatYctdOptionLabel({
+      id: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+      company_id: 'trsport',
+      title: 'Nhân viên vận hành',
+      status: 'open',
+      department: 'Vận hành',
+      headcount: 2,
+      candidate_count: 1,
+    });
+    expect(holding).toContain('holding');
+    expect(holding).toContain('Nhân viên vận hành');
+    expect(holding).toContain('UV 3');
+    expect(holding).toContain('#5f80');
+    expect(trsport).toContain('trsport');
+    expect(holding).not.toEqual(trsport);
+  });
+
+  it('splits primary vs meta so picker does not repeat company·title', () => {
+    const row = {
+      id: '633e95b7-cf1b-469f-a0f8-4c91f3f35f80',
+      company_id: 'finance',
+      title: 'Nhân viên vận hành',
+      status: 'open',
+      department: 'Vận hành',
+      headcount: 1,
+      candidate_count: 3,
+      created_at: '2026-08-21T00:00:00.000Z',
+    };
+    expect(formatYctdOptionPrimaryLine(row)).toBe('finance · Nhân viên vận hành');
+    expect(formatYctdOptionMetaLine(row)).toBe('Vận hành · SL 1 · UV 3 · open · 21/08/2026 · #5f80');
+    expect(formatYctdOptionMetaLine(row)).not.toContain('finance · Nhân viên');
+  });
+
+  it('sorts picker by company then title', () => {
+    const sorted = sortYctdPickerRows([
+      { id: '2', company_id: 'trsport', title: 'B' },
+      { id: '1', company_id: 'finance', title: 'A' },
+      { id: '3', company_id: 'finance', title: 'B' },
+    ]);
+    expect(sorted.map((r) => r.id)).toEqual(['1', '3', '2']);
+  });
+
+  it('compare sort prefers YCTD with more UV; filter by company/title', () => {
+    const sorted = sortCompareYctdPickerRows([
+      { id: 'a', company_id: 'finance', title: 'A', candidate_count: 0 },
+      { id: 'b', company_id: 'holding', title: 'Nhân viên vận hành', candidate_count: 3 },
+      { id: 'c', company_id: 'finance', title: 'B', candidate_count: 1 },
+    ]);
+    expect(sorted.map((r) => r.id)).toEqual(['b', 'c', 'a']);
+    expect(
+      filterYctdPickerRowsByQuery(sorted, 'holding vận hành').map((r) => r.id),
+    ).toEqual(['b']);
+  });
+
+  it('dedupes picker rows by id', () => {
+    expect(
+      dedupeRowsById([
+        { id: 'a', title: '1' },
+        { id: 'a', title: 'dup' },
+        { id: 'b', title: '2' },
+      ]),
+    ).toEqual([
+      { id: 'a', title: '1' },
+      { id: 'b', title: '2' },
+    ]);
   });
 });
 

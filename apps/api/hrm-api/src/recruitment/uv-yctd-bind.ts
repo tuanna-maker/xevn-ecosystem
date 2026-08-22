@@ -244,6 +244,70 @@ export function assertCompareSameYctdOrThrow(
   }
 }
 
+/**
+ * Score SoT shapes (F-REC-APP-03 / FE eval dialog):
+ * - FE write: `{ criterion_name, actual_score, weight? }`
+ * - legacy / alternate: `{ criterion|name, score|value }`
+ */
+export function extractCompareCriterionName(raw: unknown): string | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const s = raw as Record<string, unknown>;
+  for (const key of ['criterion_name', 'criterion', 'name'] as const) {
+    const v = s[key];
+    if (v != null && String(v).trim()) return String(v).trim();
+  }
+  return null;
+}
+
+export function extractCompareScoreValue(raw: unknown): number | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const s = raw as Record<string, unknown>;
+  for (const key of ['actual_score', 'score', 'value'] as const) {
+    if (s[key] == null || s[key] === '') continue;
+    const n = Number(s[key]);
+    if (Number.isFinite(n)) return n;
+  }
+  return null;
+}
+
+/** Display-ready score rows for F-REC-CMP-01 (FE expects criterion_name + actual_score). */
+export function normalizeCompareScoreItems(scores: unknown): Array<{
+  criterion_name: string;
+  category: string;
+  actual_score: number | null;
+  required_score: number;
+  weight: number;
+}> {
+  if (!Array.isArray(scores)) return [];
+  return scores
+    .map((item) => {
+      const criterion_name = extractCompareCriterionName(item);
+      if (!criterion_name) return null;
+      const row = item && typeof item === 'object' ? (item as Record<string, unknown>) : {};
+      return {
+        criterion_name,
+        category: row.category != null ? String(row.category) : '',
+        actual_score: extractCompareScoreValue(item),
+        required_score:
+          row.required_score != null && Number.isFinite(Number(row.required_score))
+            ? Number(row.required_score)
+            : 0,
+        weight:
+          row.weight != null && Number.isFinite(Number(row.weight))
+            ? Number(row.weight)
+            : 0,
+      };
+    })
+    .filter((x): x is NonNullable<typeof x> => x != null);
+}
+
+/**
+ * SQL predicate: eval neo = Lane A UV id (recruitment_candidate_id / application_id)
+ * with legacy fallback on pool candidate_id.
+ */
+export const COMPARE_EVAL_LANE_A_ID_SQL =
+  'COALESCE(e.recruitment_candidate_id, e.application_id, e.candidate_id)';
+
 export function toReceivableListItem(row: Record<string, unknown>) {
   const id = String(row.id);
   const positionKey =
@@ -253,14 +317,25 @@ export function toReceivableListItem(row: Record<string, unknown>) {
     String(row.title ?? '').trim() ||
     positionKey ||
     '—';
+  const candidateCountRaw = row.candidate_count;
+  const candidateCount =
+    candidateCountRaw != null && Number.isFinite(Number(candidateCountRaw))
+      ? Number(candidateCountRaw)
+      : undefined;
   return {
     id,
+    company_id: row.company_id != null ? String(row.company_id) : undefined,
     code: row.code != null ? String(row.code) : undefined,
+    jd_code: row.jd_code != null ? String(row.jd_code) : undefined,
+    jd_title: row.jd_title != null ? String(row.jd_title) : undefined,
     title: String(row.title ?? ''),
+    department: row.department != null ? String(row.department) : undefined,
     position_key: positionKey,
     position_name: positionName,
     status: String(row.status ?? ''),
     headcount: row.headcount != null ? Number(row.headcount) : undefined,
+    candidate_count: candidateCount,
+    created_at: row.created_at != null ? String(row.created_at) : undefined,
     recruitment_request_id: id,
     requisition_id: id,
   };

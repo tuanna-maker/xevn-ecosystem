@@ -165,6 +165,9 @@ describe('RecruitmentCatalogService', () => {
       String(sql).includes('FROM public.candidate_evaluations e'),
     );
     expect(listCall?.[0]).toMatch(/e\.company_id = ANY/);
+    expect(listCall?.[1]?.[0]).toEqual(
+      expect.arrayContaining(['holding', 'main']),
+    );
     expect(listCall?.[0]).toMatch(/e\.candidate_id = \$2::uuid/);
     expect(listCall?.[0]).not.toMatch(/WHERE company_id =/);
   });

@@ -3,6 +3,7 @@
  * ensureSchema mail outbox+log · POST/GET mail · eval YCTD neo · Pass/Fail · ROUND-GATE · soft archive · U19
  */
 import { ApiException } from '../common/api.exception';
+import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
 import {
   HRM_REC_EVAL_NEO_REQUIRED,
@@ -22,6 +23,16 @@ const EVAL_ID = 'd4e5f6a7-b8c9-4012-d345-6789abcdef01';
 const IV_ID = 'e5f6a7b8-c9d0-4123-e456-789abcdef012';
 const HOLDING = 'holding';
 const MEMBER = 'du-lich';
+const TRSPORT = 'trsport';
+
+function groupCeoToken() {
+  return `Bearer ${signServiceJwt({
+    sub: 'ceo@xe.vn',
+    tenantId: 'xevn',
+    companyId: 'main',
+    roleCode: 'group_ceo',
+  })}`;
+}
 
 function mockBridge() {
   return {
@@ -358,6 +369,69 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
     expect(row.row_class).toBe('FR06_YCTD');
     expect(row.recruitment_candidate_id).toBe(CAND_ID);
     expect(row.scores_json).toEqual(row.scores);
+  });
+
+  it('eval create group CEO company_id=main + UV trsport → OK (not HRM-REC-409 scope)', async () => {
+    let insertedCompanyId: string | null = null;
+    db.query.mockImplementation(async (sql: string, params?: unknown[]) => {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
+        return {
+          rows: [{ id: CAND_ID, company_id: TRSPORT, status: 'interview' }],
+        } as never;
+      }
+      if (
+        sql.includes('FROM public.recruitment_interviews') &&
+        sql.includes('status = ANY')
+      ) {
+        return { rows: [] } as never;
+      }
+      if (sql.includes('INSERT INTO public.candidate_evaluations')) {
+        insertedCompanyId = String(params?.[1] ?? '');
+        return {
+          rows: [
+            {
+              id: EVAL_ID,
+              company_id: TRSPORT,
+              candidate_id: null,
+              recruitment_candidate_id: CAND_ID,
+              application_id: null,
+              interview_id: null,
+              template_id: null,
+              result: 'pass',
+              scores: [],
+              salary_recommendation: null,
+              overall_feedback: null,
+              recommendation: 'hire',
+              evaluated_at: '2026-08-22T02:00:00.000Z',
+              evaluator_name: 'CEO',
+              evaluator_email: 'ceo@xe.vn',
+              total_score: 4,
+              weighted_score: 4.2,
+              archived_at: null,
+              created_at: '2026-08-22T02:00:00.000Z',
+              updated_at: '2026-08-22T02:00:00.000Z',
+            },
+          ],
+        } as never;
+      }
+      return { rows: [] } as never;
+    });
+
+    const row = await catalog.createCandidateEvaluation(
+      {
+        company_id: 'main',
+        recruitment_candidate_id: CAND_ID,
+        result: 'pass',
+        scores: [{ criterion_name: 'Giao tiếp', actual_score: 4 }],
+      },
+      groupCeoToken(),
+    );
+    expect(row.result).toBe('pass');
+    expect(insertedCompanyId).toBe(TRSPORT);
+    expect(row.recruitment_candidate_id).toBe(CAND_ID);
   });
 
   it('eval pool-only chốt → HRM-REC-EVAL-NEO-REQUIRED', async () => {

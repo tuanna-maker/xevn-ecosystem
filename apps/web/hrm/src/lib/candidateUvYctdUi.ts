@@ -71,10 +71,18 @@ export type UvYctdPickerRow = Pick<
   HrmJobRequisition,
   'id' | 'title' | 'status' | 'jd_code' | 'jd_title'
 > & {
+  /** OU slug — bắt buộc phân biệt cùng title khi Group CEO rollup nhiều công ty. */
+  company_id?: string | null;
   position_key?: string | null;
   position_name?: string | null;
   recruitment_request_id?: string | null;
   code?: string | null;
+  /** Phòng ban — phân biệt YCTD cùng title (compare / picker). */
+  department?: string | null;
+  headcount?: number | null;
+  created_at?: string | null;
+  /** Số UV Lane A gắn YCTD — giúp chọn đúng tin đang có hồ sơ. */
+  candidate_count?: number | null;
 };
 
 export type UvPositionDisplay = {
@@ -134,6 +142,38 @@ export function filterReceivableRequisitions<
   });
 }
 
+/** REC-06b — YCTD eligible for compare without UV count yet (sponsor: Chờ duyệt / tạm dừng / đóng). */
+const COMPARE_PICKER_STATUSES = new Set<string>([
+  'pending_approval',
+  'on_hold',
+  'closed',
+]);
+
+const COMPARE_PICKER_EXCLUDED_STATUSES = new Set<string>(['draft', 'rejected', 'cancelled']);
+
+/**
+ * REC-06b compare picker — wider than bind/create (F-REC-UV-YCTD-01).
+ * Show YCTD receivable OR any YCTD that already has UV (candidate_count > 0).
+ * Do not strip legacy unclassified rows that already carry pipeline data — compare is read-only.
+ */
+export function filterComparePickerYctds<
+  T extends {
+    status?: string | null;
+    candidate_count?: number | null;
+  },
+>(rows: readonly T[]): T[] {
+  return rows.filter((row) => {
+    const status = String(row.status ?? '')
+      .trim()
+      .toLowerCase();
+    if (COMPARE_PICKER_EXCLUDED_STATUSES.has(status)) return false;
+    const count = Number(row.candidate_count ?? 0);
+    if (Number.isFinite(count) && count > 0) return true;
+    if (isReceivableRequisitionStatus(row.status)) return true;
+    return COMPARE_PICKER_STATUSES.has(status);
+  });
+}
+
 export function normalizeRequisitionId(value: string | null | undefined): string {
   const id = typeof value === 'string' ? value.trim() : '';
   if (!id || id === UV_YCTD_NONE_SENTINEL) return '';
@@ -177,12 +217,139 @@ export function deriveUvPositionFromYctd(
   };
 }
 
-export function formatYctdOptionLabel(row: UvYctdPickerRow): string {
+export function formatYctdOptionPrimaryLine(row: UvYctdPickerRow): string {
+  const company = (row.company_id ?? '').trim();
   const code = (row.code ?? row.jd_code ?? '').trim();
   const title = (row.title ?? '').trim() || 'YCTD';
-  const pos = (row.position_name ?? row.jd_title ?? '').trim();
   const head = code ? `${code} — ${title}` : title;
-  return pos ? `${head} · ${pos}` : head;
+  return company ? `${company} · ${head}` : head;
+}
+
+/** Meta line for picker (no company/title repeat) — dept · SL · UV · status · date · #id. */
+export function formatYctdOptionMetaLine(row: UvYctdPickerRow): string {
+  const company = (row.company_id ?? '').trim();
+  const title = (row.title ?? '').trim() || 'YCTD';
+  const pos = (row.position_name ?? row.jd_title ?? '').trim();
+  const dept = (row.department ?? '').trim();
+  const status = String(row.status ?? '')
+    .trim()
+    .toLowerCase();
+  const headcount =
+    row.headcount != null && Number.isFinite(Number(row.headcount))
+      ? Number(row.headcount)
+      : null;
+  const uvCount =
+    row.candidate_count != null && Number.isFinite(Number(row.candidate_count))
+      ? Number(row.candidate_count)
+      : null;
+  const created = formatYctdCreatedShort(row.created_at);
+  const idHint = shortIdHint(row.id);
+
+  const parts: string[] = [];
+  if (pos && pos.toLowerCase() !== title.toLowerCase()) parts.push(pos);
+  if (
+    dept &&
+    dept.toLowerCase() !== pos.toLowerCase() &&
+    dept.toLowerCase() !== company.toLowerCase()
+  ) {
+    parts.push(dept);
+  }
+  if (headcount != null) parts.push(`SL ${headcount}`);
+  if (uvCount != null) parts.push(`UV ${uvCount}`);
+  if (status) parts.push(status);
+  if (created) parts.push(created);
+  if (idHint) parts.push(`#${idHint}`);
+  return parts.join(' · ');
+}
+
+export function formatYctdOptionLabel(row: UvYctdPickerRow): string {
+  const primary = formatYctdOptionPrimaryLine(row);
+  const meta = formatYctdOptionMetaLine(row);
+  return meta ? `${primary} · ${meta}` : primary;
+}
+
+/** Sort receivable picker: company → title → newest. */
+export function sortYctdPickerRows<T extends UvYctdPickerRow>(rows: readonly T[]): T[] {
+  return [...rows].sort((a, b) => {
+    const ca = (a.company_id ?? '').localeCompare(b.company_id ?? '', 'vi');
+    if (ca !== 0) return ca;
+    const ta = (a.title ?? '').localeCompare(b.title ?? '', 'vi');
+    if (ta !== 0) return ta;
+    return String(b.created_at ?? '').localeCompare(String(a.created_at ?? ''));
+  });
+}
+
+/** Sort compare picker: more UV first → company → title (find evaluated YCTD faster). */
+export function sortCompareYctdPickerRows<T extends UvYctdPickerRow>(rows: readonly T[]): T[] {
+  return [...rows].sort((a, b) => {
+    const ua = Number(a.candidate_count ?? 0);
+    const ub = Number(b.candidate_count ?? 0);
+    if (ub !== ua) return ub - ua;
+    const ca = (a.company_id ?? '').localeCompare(b.company_id ?? '', 'vi');
+    if (ca !== 0) return ca;
+    const ta = (a.title ?? '').localeCompare(b.title ?? '', 'vi');
+    if (ta !== 0) return ta;
+    return String(b.created_at ?? '').localeCompare(String(a.created_at ?? ''));
+  });
+}
+
+/** Client filter for compare YCTD search box. */
+export function filterYctdPickerRowsByQuery<T extends UvYctdPickerRow>(
+  rows: readonly T[],
+  query: string,
+): T[] {
+  const tokens = query
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (tokens.length === 0) return [...rows];
+  return rows.filter((row) => {
+    const hay = [
+      row.company_id,
+      row.title,
+      row.code,
+      row.jd_code,
+      row.jd_title,
+      row.position_name,
+      row.department,
+      row.status,
+      shortIdHint(row.id),
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    return tokens.every((token) => hay.includes(token));
+  });
+}
+
+function formatYctdCreatedShort(raw: string | null | undefined): string {
+  if (!raw) return '';
+  const d = new Date(raw);
+  if (Number.isNaN(d.getTime())) return '';
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+
+function shortIdHint(id: string | null | undefined): string {
+  const s = String(id ?? '').replace(/-/g, '');
+  if (s.length < 4) return '';
+  return s.slice(-4).toLowerCase();
+}
+
+/** Deduplicate list rows by id (defense if join/envelope ever duplicates). */
+export function dedupeRowsById<T extends { id: string }>(rows: readonly T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const row of rows) {
+    const id = String(row.id ?? '').trim();
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    out.push(row);
+  }
+  return out;
 }
 
 export function resolveCandidatePositionLabel(row: CandidateYctdDisplayFields): string {

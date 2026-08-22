@@ -42,6 +42,13 @@
  *   không giả FK cross-lane A↔B
  * cấm wave: schema merge · hard FK G-DB-02 · FE rewrite · logic/DTO change
  *
+ * @CODE-MEMORY-CHANGE 2026-08-22 FIX-REC-EVAL-SCOPE-MAIN-HOLDING
+ * change_mode: FIX
+ * What: createCandidateEvaluation — resolveHrmListScope from requested company_id (main),
+ *       not persist slug (holding); persist eval company_id = Lane A UV partition
+ * Why: Group CEO Chốt Pass/Fail → 409 «Resource company_id is outside token scope» when UV on trsport
+ * must_keep: neo recruitment_candidate_id · Pass/Fail · ROUND-GATE · U65
+ *
  * @CODE-MEMORY-CHANGE 2026-07-22 BM-BE-REC-CAND-GET-BY-ID-01
  * ADD GET candidates-pool/:id scope_parity — same resolveHrmListScope + pushCompanyIdFilter as list.
  * R-REC-WF-04-02: group CEO company_id=main must 200 for ids returned by list (holding/member rows).
@@ -174,6 +181,7 @@ import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
+  expandPayrollPeriodCompanyIds,
   MASTER_TENANT_ID,
   pushCompanyIdFilter,
   resolveHrmListScope,
@@ -2744,13 +2752,14 @@ export class RecruitmentCatalogService {
   ) {
     await this.ensureWave2Schema();
     const scope = resolveHrmListScope(authorization, companyId);
+    const readCompanyIds = expandPayrollPeriodCompanyIds(scope);
     const filters: string[] = ['e.archived_at IS NULL'];
     const values: unknown[] = [];
-    if (scope.companyIds.length === 1) {
-      values.push(scope.companyIds[0]);
+    if (readCompanyIds.length === 1) {
+      values.push(readCompanyIds[0]);
       filters.push(`e.company_id = $${values.length}::text`);
     } else {
-      values.push(scope.companyIds);
+      values.push(readCompanyIds);
       filters.push(`e.company_id = ANY($${values.length}::text[])`);
     }
     const recruitmentCandidateId = opts?.recruitmentCandidateId?.trim();
@@ -2780,11 +2789,19 @@ export class RecruitmentCatalogService {
               rc.full_name AS lane_a_full_name,
               rc.email AS lane_a_email,
               rc.status AS lane_a_status,
+              rc.requisition_id::text AS lane_a_requisition_id,
+              r.title AS yctd_title,
+              r.company_id AS yctd_company_id,
+              COALESCE(NULLIF(r.position_key, ''), t.position_code, '') AS yctd_position_key,
+              COALESCE(NULLIF(t.position_name, ''), NULLIF(r.title, ''), '') AS yctd_position_name,
               c.full_name AS candidate_name,
               c.email AS candidate_email,
-              c.stage AS candidate_position
+              c.stage AS pool_stage
        FROM public.candidate_evaluations e
-       LEFT JOIN public.recruitment_candidates rc ON rc.id = e.recruitment_candidate_id
+       LEFT JOIN public.recruitment_candidates rc
+         ON rc.id = COALESCE(e.recruitment_candidate_id, e.application_id)
+       LEFT JOIN public.job_requisitions r ON r.id = rc.requisition_id
+       LEFT JOIN public.job_description_templates t ON t.id::text = r.job_template_id
        LEFT JOIN public.candidates c ON c.id = e.candidate_id
        WHERE ${filters.join(' AND ')}
        ORDER BY e.created_at DESC;`,
@@ -2801,11 +2818,16 @@ export class RecruitmentCatalogService {
     authorization?: string,
   ) {
     await this.ensureWave2Schema();
-    const companyId = resolveHrmPersistCompanyIdText(
+    // Scope MUST use the portal-requested company_id (e.g. main), NOT the persisted
+    // partition slug (holding). Using holding here collapses group-CEO rollup →
+    // HRM-REC-409 «outside token scope» for UV on member OUs (trsport, …).
+    // Parity: createJobRequisition / jd-dynamic — persist vs list-scope split.
+    const requestedCompanyId = String(payload.company_id ?? '').trim();
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
       authorization,
-      String(payload.company_id ?? ''),
+      requestedCompanyId,
     );
-    const scope = resolveHrmListScope(authorization, companyId);
+    const scope = resolveHrmListScope(authorization, requestedCompanyId);
 
     const recruitmentCandidateId =
       typeof payload.recruitment_candidate_id === 'string'
@@ -2851,6 +2873,9 @@ export class RecruitmentCatalogService {
         mismatchCode: 'HRM-REC-409',
       });
     }
+
+    // Keep eval row in the same company partition as Lane A UV when neo is present.
+    const companyId = laneA?.company_id?.trim() || persistCompanyId;
 
     const interviewId =
       typeof payload.interview_id === 'string' && payload.interview_id.trim()
@@ -3092,10 +3117,24 @@ export class RecruitmentCatalogService {
         row.weighted_score != null ? Number(row.weighted_score) : null,
       archived_at: row.archived_at ? String(row.archived_at) : null,
       row_class: rowClass,
-      // display helpers (legacy JOIN retained when include_legacy)
+      // display helpers — Vị trí = YCTD position/title (NOT pipeline stage)
       candidate_name: row.lane_a_full_name ?? row.candidate_name ?? null,
       candidate_email: row.lane_a_email ?? row.candidate_email ?? null,
-      candidate_position: row.lane_a_status ?? row.candidate_position ?? null,
+      candidate_position:
+        (row.yctd_position_name != null && String(row.yctd_position_name).trim()) ||
+        (row.yctd_title != null && String(row.yctd_title).trim()) ||
+        null,
+      candidate_stage: row.lane_a_status ?? row.pool_stage ?? null,
+      yctd_title: row.yctd_title != null ? String(row.yctd_title) : null,
+      yctd_company_id:
+        row.yctd_company_id != null
+          ? String(row.yctd_company_id)
+          : row.company_id != null
+            ? String(row.company_id)
+            : null,
+      requisition_id: row.lane_a_requisition_id
+        ? String(row.lane_a_requisition_id)
+        : null,
       created_at: row.created_at ? String(row.created_at) : null,
       updated_at: row.updated_at ? String(row.updated_at) : null,
     };

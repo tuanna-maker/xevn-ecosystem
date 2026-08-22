@@ -10,12 +10,15 @@ import { RecruitmentService } from './recruitment.service';
 import {
   assertCompareMaxNOrThrow,
   assertCompareSameYctdOrThrow,
+  extractCompareCriterionName,
+  extractCompareScoreValue,
   HRM_REC_CMP_MAX_N,
   HRM_REC_CMP_YCTD_MIX,
   HRM_REC_UV_POSITION_MISMATCH,
   HRM_REC_UV_YCTD_ALIAS,
   HRM_REC_UV_YCTD_NOT_FOUND,
   HRM_REC_UV_YCTD_REQUIRED,
+  normalizeCompareScoreItems,
   resolveUvYctdRequisitionId,
 } from './uv-yctd-bind';
 import { HRM_YCTD_NOT_RECEIVABLE } from './yctd-requisition-gates';
@@ -129,7 +132,8 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
         ) {
           return { rows: [] };
         }
-        if (s.includes('COUNT(*)')) return { rows: [{ total: '1' }] };
+        if (s.includes('COUNT(*)') || s.includes('COUNT(DISTINCT'))
+          return { rows: [{ total: '1' }] };
         return { rows: [openRequisition()] };
       });
       const service = new RecruitmentService(db, mockBridge() as never);
@@ -692,6 +696,109 @@ describe('PO-HRM-REC-UV-YCTD-BE-01', () => {
           { tenantId: 'xevn' },
         ),
       ).rejects.toMatchObject({ code: HRM_REC_CMP_YCTD_MIX });
+    });
+
+    it('UT-REC-CMP-05 score shapes: criterion_name/actual_score + neo Lane A id', () => {
+      expect(extractCompareCriterionName({ criterion_name: 'Giao tiếp' })).toBe(
+        'Giao tiếp',
+      );
+      expect(extractCompareScoreValue({ actual_score: 4 })).toBe(4);
+      expect(extractCompareCriterionName({ criterion: 'Kỹ năng' })).toBe(
+        'Kỹ năng',
+      );
+      const normalized = normalizeCompareScoreItems([
+        { criterion_name: 'Giao tiếp', actual_score: 4, weight: 20 },
+        { name: 'Chuyên môn', score: 3 },
+      ]);
+      expect(normalized).toEqual([
+        {
+          criterion_name: 'Giao tiếp',
+          category: '',
+          actual_score: 4,
+          required_score: 0,
+          weight: 20,
+        },
+        {
+          criterion_name: 'Chuyên môn',
+          category: '',
+          actual_score: 3,
+          required_score: 0,
+          weight: 0,
+        },
+      ]);
+    });
+
+    it('UT-REC-CMP-neo: compare joins recruitment_candidate_id (not pool candidate_id only)', async () => {
+      const db = { query: jest.fn() } as unknown as jest.Mocked<HrmDbService>;
+      const sqlLog: string[] = [];
+      (db.query as jest.Mock).mockImplementation(async (sql: string) => {
+        const s = String(sql);
+        sqlLog.push(s);
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('DO $$') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('CREATE INDEX')
+        ) {
+          return { rows: [] };
+        }
+        if (s.includes('FROM public.recruitment_candidates')) {
+          return {
+            rows: [
+              {
+                id: CAND_1,
+                requisition_id: REQ_OPEN,
+                full_name: 'UV A',
+                status: 'interview',
+              },
+            ],
+          };
+        }
+        if (s.includes('candidate_evaluations')) {
+          return {
+            rows: [
+              {
+                lane_candidate_id: CAND_1,
+                scores: [
+                  { criterion_name: 'Giao tiếp', actual_score: 4 },
+                ],
+                result: 'pass',
+                total_score: 4,
+                weighted_score: 4,
+                overall_feedback: 'ok',
+                recommendation: 'hire',
+              },
+            ],
+          };
+        }
+        if (s.includes('evaluation_criteria_templates')) {
+          return { rows: [] };
+        }
+        return { rows: [] };
+      });
+      const service = new RecruitmentService(db, mockBridge() as never);
+      const matrix = await service.compareCandidatesByYctd(
+        {
+          company_id: 'main',
+          requisition_id: REQ_OPEN,
+          candidate_ids: CAND_1,
+        },
+        groupCeoToken(),
+        { tenantId: 'xevn' },
+      );
+      expect(
+        sqlLog.some(
+          (s) =>
+            s.includes('candidate_evaluations') &&
+            s.includes('recruitment_candidate_id') &&
+            s.includes('COALESCE'),
+        ),
+      ).toBe(true);
+      expect(matrix.criteria.map((c) => c.name)).toContain('Giao tiếp');
+      expect(matrix.rows[0]?.scores['Giao tiếp']).toBe(4);
+      expect(matrix.rows[0]?.weighted_score).toBe(4);
+      expect(matrix.rows[0]?.eval_status).toBe('scored');
     });
   });
 });

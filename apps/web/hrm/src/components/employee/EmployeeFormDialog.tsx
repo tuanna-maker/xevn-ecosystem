@@ -324,6 +324,7 @@ export function EmployeeFormDialog({
   });
 
   useEffect(() => {
+    if (!open) return;
     if (employee) {
       form.reset({
         employee_code: employee.employee_code,
@@ -387,7 +388,8 @@ export function EmployeeFormDialog({
       setAvatarUrl(null);
       setDynamicFieldValues({});
     }
-  }, [employee, form, companies]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open/id only; cấm deps `form` / object employee (input 1 ký tự)
+  }, [open, employee?.id, companies?.[0]?.id]);
 
   useEffect(() => {
     if (!open || employee) return;
@@ -399,7 +401,8 @@ export function EmployeeFormDialog({
     if (!form.getValues('start_date')?.trim()) {
       form.setValue('start_date', new Date().toISOString().slice(0, 10));
     }
-  }, [open, employee, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open/create only; cấm deps `form`
+  }, [open, employee?.id]);
 
   const basicFieldsCatalog = findCatalog(catalogs, ['hrm_employee_basic_fields', 'employee_basic_fields']);
   const activeBasicFields = useMemo(

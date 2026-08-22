@@ -185,7 +185,7 @@ const friendlyByCode: Record<string, string> = {
   "HRM-YCTD-BOD-REQUIRED":
     "Ngoài định biên cần duyệt BOD trước khi mở nhận hồ sơ / đăng tin.",
   "HRM-YCTD-NOT-RECEIVABLE":
-    "YCTD chưa mở nhận hồ sơ (open_for_hire). Hoàn tất duyệt rồi thử lại.",
+    "Không đổi sang «Đang tuyển / Mở nhận hồ sơ» bằng nút Sửa. Phân loại + Lưu, rồi Gửi duyệt / Duyệt (ngoài ĐB cần BOD) để mở nhận hồ sơ.",
   "HRM-YCTD-MODE-UNCLASSIFIED":
     "YCTD legacy chưa phân loại trong/ngoài định biên — chọn chế độ và lưu trước khi nhận hồ sơ.",
   "HRM-YCTD-SPAWN-DUP":
