@@ -33,6 +33,16 @@ import {
   PAYROLL_E2E_READY_HONESTY,
   readGd1EvalV1Expression,
   readOpaqueExpressionText,
+  readHyperFormulaV1Lines,
+  buildHyperFormulaV1ExpressionJson,
+  extractVarKeysFromHyperFormulaLines,
+  validateHyperFormulaLines,
+  buildHyperFormulaFromComponentComposite,
+  parseComponentCompositeExpression,
+  readPayFormulaComponentTokens,
+  tokensToComponentExpression,
+  validateComponentCompositeExpression,
+  PAY_FORMULA_HYPER_FORM,
   suggestComponentCodeFromVar,
   alignGd1EvalLinesToNestCatalog,
 } from './payFormulaCatalog';
@@ -201,5 +211,50 @@ describe('payFormulaCatalog', () => {
     expect(lines[0]?.component_code).toBe('BASE');
     const aligned = alignGd1EvalLinesToNestCatalog(lines, opts);
     expect(aligned[0]?.component_code).toBe('luong_cb');
+  });
+
+  it('hyperformula_v1 read/build/extract vars', () => {
+    const lines = [
+      {
+        component_code: 'LUONG_CHINH',
+        sign: 'earning' as const,
+        formula: '=base_salary * (payable_hours / 208)',
+      },
+      { component_code: 'PC_XE', sign: 'earning' as const, formula: '=allowance_meal' },
+    ];
+    const json = buildHyperFormulaV1ExpressionJson(lines);
+    expect(json.form).toBe(PAY_FORMULA_HYPER_FORM);
+    expect(readHyperFormulaV1Lines(json)).toHaveLength(2);
+    const keys = extractVarKeysFromHyperFormulaLines(lines);
+    expect(keys).toContain('base_salary');
+    expect(keys).toContain('payable_hours');
+    expect(keys).toContain('allowance_meal');
+  });
+
+  it('validateHyperFormulaLines rejects empty component', () => {
+    expect(validateHyperFormulaLines([{ component_code: '', sign: 'earning', formula: '=' }])).not.toBeNull();
+  });
+
+  it('component composite: parse, expand TP formulas → hyperformula_v1 + ui tokens', () => {
+    const formulas = new Map<string, string>([
+      ['LUONG_CHINH', '=base_salary * (payable_hours / 208)'],
+      ['PC_XE', '=allowance_meal'],
+    ]);
+    const { expressionJson, lines } = buildHyperFormulaFromComponentComposite({
+      expression: 'LUONG_CHINH + PC_XE',
+      componentFormulas: formulas,
+    });
+    expect(expressionJson.form).toBe(PAY_FORMULA_HYPER_FORM);
+    expect(lines).toHaveLength(2);
+    expect(lines[0]?.formula).toContain('base_salary');
+    const round = readPayFormulaComponentTokens(expressionJson);
+    expect(round?.tokens.some((t) => t.value === 'LUONG_CHINH')).toBe(true);
+    expect(tokensToComponentExpression(round!.tokens)).toContain('LUONG_CHINH');
+    expect(parseComponentCompositeExpression('A - B')).toEqual([
+      { componentCode: 'A', sign: 'earning', coefficient: 1 },
+      { componentCode: 'B', sign: 'deduction', coefficient: 1 },
+    ]);
+    expect(validateComponentCompositeExpression('LUONG_CHINH', ['LUONG_CHINH'])).toBeNull();
+    expect(validateComponentCompositeExpression('UNKNOWN', ['LUONG_CHINH'])).not.toBeNull();
   });
 });

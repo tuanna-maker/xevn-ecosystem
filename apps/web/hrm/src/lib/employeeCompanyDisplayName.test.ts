@@ -101,4 +101,20 @@ describe('employeeCompanyDisplayName (D-HRM-EMP-COMPANY-COL-FE-01)', () => {
       }),
     ).toBe('—');
   });
+
+  it('tenant-only partition: company_id=main + tenant_id → tenant display name', () => {
+    expect(
+      resolveEmployeeCompanyColumnLabel({
+        companyId: 'main',
+        tenantId: 'visun',
+        companyDisplayName: 'main',
+      }),
+    ).toBe('Công ty TNHH Du lịch Visun');
+    expect(
+      resolveEmployeeCompanyColumnLabel({
+        companyId: 'main',
+        tenantId: 'xe-tmdv',
+      }),
+    ).toBe('Công ty Cổ phần Thương mại và Dịch vụ X.E');
+  });
 });

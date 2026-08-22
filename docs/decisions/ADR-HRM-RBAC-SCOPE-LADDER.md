@@ -346,4 +346,19 @@ XBOS `resolveTenantOnlyContext`: catalog/alert endpoints — `companyId` optiona
 
 ---
 
+## 14. Tenant-only scope migration (2026-08-22)
+
+**work_item_id:** `SA-HRM-TENANT-ONLY-SCOPE-01` · **Status:** Accepted — implementation queued
+
+Sponsor decision: deprecate **OU slug** (`trsport`, `logistics`, …) as HRM data partition; **`tenant_id`** becomes sole operational partition key. Group CEO rollup moves from `company_id IN GROUP_MEMBER_SLUGS` to `tenant_id IN (member registry)`.
+
+| Topic | Document |
+|-------|----------|
+| ADR | [`ADR-HRM-TENANT-ONLY-SCOPE-20260822.md`](../architecture/ADR-HRM-TENANT-ONLY-SCOPE-20260822.md) |
+| SPEC | [`SA-HRM-TENANT-ONLY-SCOPE-SPEC-01.md`](../program/specs/SA-HRM-TENANT-ONLY-SCOPE-SPEC-01.md) |
+
+**Unchanged by this migration:** JWT `companyId=main`; member `company_id=main`; catalog/KPI `main`↔`holding` per [`ADR-GROUP-CEO-MAIN-HOLDING-SCOPE.md`](../architecture/ADR-GROUP-CEO-MAIN-HOLDING-SCOPE.md).
+
+---
+
 *End of ADR — no git commit per dispatch instruction.*

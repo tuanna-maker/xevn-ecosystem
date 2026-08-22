@@ -24,14 +24,14 @@
 import { formatRoleCodeVi } from '@/lib/scopeRoleLabels';
 import { HRM_MASTER_TENANT_ID } from '@/lib/hrmListScope';
 
-/** Pilot / known tenant → VI display (not UUID). Unknown slugs humanize; UUID → safe fallback. */
+/** Pilot / known tenant → VI display (align BE HRM_TENANT_DISPLAY_NAMES). */
 const TENANT_LABEL_VI: Record<string, string> = {
   [HRM_MASTER_TENANT_ID]: 'Tập đoàn XeVN',
   xevn: 'Tập đoàn XeVN',
-  'xe-du-lich': 'Công ty Du lịch XeVN',
-  'xe-vietnam': 'X.E Việt Nam',
-  'xe-tmdv': 'TM-DV XeVN',
-  visun: 'Visun',
+  visun: 'Công ty TNHH Du lịch Visun',
+  'xe-tmdv': 'Công ty Cổ phần Thương mại và Dịch vụ X.E',
+  'xe-du-lich': 'Công ty TNHH Du lịch X.E Việt Nam',
+  'xe-vietnam': 'Công ty TNHH X.E Việt Nam',
 };
 
 const UUID_RE =

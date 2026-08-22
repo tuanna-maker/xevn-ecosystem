@@ -56,7 +56,7 @@ import {
 } from 'lucide-react';
 import type { Company, Employee } from '../../data/mock-data';
 import { ENTITY_LEVEL_LABELS } from '../../data/mock-data';
-import { fetchGroupMemberUnitsForCommandCenter } from '../../integrations/tenantScopeApi';
+import { fetchCompanyUnitsForCommandCenter } from '../../integrations/tenantScopeApi';
 import {
   SETTINGS_CONTROL_TEXT,
   SETTINGS_PAGE_SUBTITLE_CLASS,
@@ -167,7 +167,7 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
       return;
     }
     let cancelled = false;
-    void fetchGroupMemberUnitsForCommandCenter()
+    void fetchCompanyUnitsForCommandCenter()
       .then((rows) => {
         if (!cancelled) {
           setHrmLegalEntities(rows);

@@ -643,7 +643,9 @@ export default function Attendance() {
   } = useEmployees(false, undefined, {
     enabled: needsEmployeeList,
   });
-  const { departments } = useDepartments({ enabled: activeTab === 'settings' });
+  const { departments } = useDepartments({
+    enabled: activeTab === 'settings' || activeTab === 'attendance',
+  });
   const [settingsEmployeeImportOpen, setSettingsEmployeeImportOpen] = useState(false);
   const [isRefreshingSettingsEmployees, setIsRefreshingSettingsEmployees] = useState(false);
   // Initialize translation-based menu items
@@ -1009,7 +1011,7 @@ export default function Attendance() {
   };
   const [addSheetModalOpen, setAddSheetModalOpen] = useState(false);
   const [newSheetForm, setNewSheetForm] = useState(() => ({
-    unit: '',
+    unit: 'all',
     positions: 'all',
     name: '',
     timePreset: 'this-month',
@@ -1077,7 +1079,8 @@ export default function Attendance() {
       end_date: endIso,
       attendance_type: newSheetForm.attendanceType,
       standard_type: newSheetForm.standardType,
-      department: newSheetForm.unit || undefined,
+      department:
+        newSheetForm.unit === 'all' || !newSheetForm.unit ? undefined : newSheetForm.unit,
       positions: newSheetForm.positions === 'all' ? undefined : newSheetForm.positions,
     });
 
@@ -1426,7 +1429,7 @@ export default function Attendance() {
                 <Calendar className="w-4 h-4 mr-2" />
                 <SelectValue placeholder={t('attendance.overview.selectYear', 'Chọn năm')} />
               </SelectTrigger>
-              <SelectContent portalScope="iframe">
+              <SelectContent>
                 <SelectItem value="this-year" data-testid="overview-year-this">
                   {t('attendance.overview.thisYear')} ({new Date().getFullYear()})
                 </SelectItem>
@@ -1769,7 +1772,7 @@ export default function Attendance() {
                   <SelectTrigger className="w-[150px] text-xevn-text">
                     <SelectValue placeholder={t('attPage.working')} />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     <SelectItem value="all">{t('attPage.all')}</SelectItem>
                     <SelectItem value="active">{t('attPage.working')}</SelectItem>
                     <SelectItem value="inactive">{t('attPage.resigned')}</SelectItem>
@@ -1780,7 +1783,7 @@ export default function Attendance() {
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder={t('attPage.allUnits')} />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     <SelectItem value="all">{t('attPage.allUnits')}</SelectItem>
                   </SelectContent>
                 </Select>
@@ -1890,7 +1893,7 @@ export default function Attendance() {
                   <SelectTrigger className="w-[80px]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     <SelectItem value="20">20</SelectItem>
                     <SelectItem value="50">50</SelectItem>
                     <SelectItem value="100">100</SelectItem>
@@ -2145,7 +2148,7 @@ export default function Attendance() {
                       <SelectTrigger>
                         <SelectValue placeholder={t('attPage.selectDay')} />
                       </SelectTrigger>
-                      <SelectContent portalScope="iframe">
+                      <SelectContent>
                         {Array.from({ length: 28 }, (_, i) => (
                           <SelectItem key={i + 1} value={String(i + 1)}>{t('attPage.dayN', { n: i + 1 })}</SelectItem>
                         ))}
@@ -2163,7 +2166,7 @@ export default function Attendance() {
                       <SelectTrigger>
                         <SelectValue placeholder={t('attPage.selectDay')} />
                       </SelectTrigger>
-                      <SelectContent portalScope="iframe">
+                      <SelectContent>
                         {Array.from({ length: 31 }, (_, i) => (
                           <SelectItem key={i + 1} value={String(i + 1)}>{t('attPage.dayN', { n: i + 1 })}</SelectItem>
                         ))}
@@ -2221,7 +2224,7 @@ export default function Attendance() {
                       <SelectTrigger>
                         <SelectValue placeholder={t('attPage.selectRounding')} />
                       </SelectTrigger>
-                      <SelectContent portalScope="iframe">
+                      <SelectContent>
                         <SelectItem value="none">{t('attPage.noRounding')}</SelectItem>
                         <SelectItem value="5">{t('attPage.round5')}</SelectItem>
                         <SelectItem value="10">{t('attPage.round10')}</SelectItem>
@@ -2243,7 +2246,7 @@ export default function Attendance() {
                       <SelectTrigger>
                         <SelectValue placeholder={t('attPage.selectRounding')} />
                       </SelectTrigger>
-                      <SelectContent portalScope="iframe">
+                      <SelectContent>
                         <SelectItem value="none">{t('attPage.noRounding')}</SelectItem>
                         <SelectItem value="5">{t('attPage.round5')}</SelectItem>
                         <SelectItem value="10">{t('attPage.round10')}</SelectItem>
@@ -3199,7 +3202,7 @@ export default function Attendance() {
               <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder={t('attPage.allUnits')} />
               </SelectTrigger>
-              <SelectContent portalScope="iframe">
+              <SelectContent>
                 <SelectItem value="all">{t('attPage.allUnits')}</SelectItem>
               </SelectContent>
             </Select>
@@ -3295,7 +3298,7 @@ export default function Attendance() {
                 <SelectTrigger className="w-[70px]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent portalScope="iframe">
+                <SelectContent>
                   <SelectItem value="10">10</SelectItem>
                   <SelectItem value="20">20</SelectItem>
                   <SelectItem value="50">50</SelectItem>
@@ -3412,7 +3415,7 @@ export default function Attendance() {
               <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder={t('attPage.allUnits')} />
               </SelectTrigger>
-              <SelectContent portalScope="iframe">
+              <SelectContent>
                 <SelectItem value="all">{t('attPage.allUnits')}</SelectItem>
                 {weeklyDepartmentOptions.map((dept) => (
                   <SelectItem key={dept} value={dept}>{dept}</SelectItem>
@@ -3542,7 +3545,7 @@ export default function Attendance() {
                 <SelectTrigger className="w-[70px]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent portalScope="iframe">
+                <SelectContent>
                   <SelectItem value="15">15</SelectItem>
                   <SelectItem value="30">30</SelectItem>
                   <SelectItem value="50">50</SelectItem>
@@ -3858,7 +3861,7 @@ export default function Attendance() {
                   <SelectTrigger className="w-[100px] border-0 bg-transparent font-medium text-xevn-text">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     <SelectItem value="all">{t('attPage.all')}</SelectItem>
                     <SelectItem value="active">{t('attPage.inUse')}</SelectItem>
                     <SelectItem value="inactive">{t('attPage.stopped')}</SelectItem>
@@ -3869,7 +3872,7 @@ export default function Attendance() {
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder={t('attPage.selectOffice')} />
                 </SelectTrigger>
-                <SelectContent portalScope="iframe">
+                <SelectContent>
                   <SelectItem value="hanoi">{t('attPage.officeHanoi', 'Văn phòng Hà Nội')}</SelectItem>
                   <SelectItem value="hcm">{t('attPage.officeHCM', 'Văn phòng TP.HCM')}</SelectItem>
                   <SelectItem value="all">{t('attPage.allOffices')}</SelectItem>
@@ -3992,7 +3995,7 @@ export default function Attendance() {
                   <SelectTrigger className="w-[70px]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     <SelectItem value="20">20</SelectItem>
                     <SelectItem value="50">50</SelectItem>
                     <SelectItem value="100">100</SelectItem>
@@ -4081,9 +4084,9 @@ export default function Attendance() {
         );
       case 'settings':
         return (
-          <div className="flex min-h-[calc(100vh-180px)] bg-white text-slate-900" data-testid="att-settings-shell-precision">
-            {/* Left Sidebar — luôn nền sáng, đồng bộ SettingsNavLayout */}
-            <div className="w-52 shrink-0 border-r border-slate-200 bg-white p-2">
+          <div className="flex min-h-[calc(100vh-180px)]" data-testid="att-settings-shell-precision">
+            {/* Left Sidebar */}
+            <div className="w-52 border-r border-xevn-border bg-xevn-background p-2">
               <nav className="space-y-1">
                 {sidebarMenuItems.map(item => (
                   <button
@@ -4093,8 +4096,8 @@ export default function Attendance() {
                     className={cn(
                       "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-left",
                       activeSidebarItem === item.id
-                        ? "bg-blue-50 font-semibold text-blue-800"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        ? "bg-xevn-primary text-white"
+                        : "text-xevn-textSecondary hover:bg-xevn-primary/10 hover:text-xevn-text"
                     )}
                   >
                     <item.icon className="w-4 h-4 flex-shrink-0" />
@@ -4105,7 +4108,7 @@ export default function Attendance() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 overflow-auto bg-white p-6 text-slate-900">
+            <div className="flex-1 p-6 overflow-auto">
               {renderSettingsContent()}
             </div>
           </div>
@@ -4133,7 +4136,7 @@ export default function Attendance() {
     <div className="space-y-0 animate-fade-in -mt-3 -mx-3 md:-mt-6 md:-mx-6">
       <h1 className="sr-only">Chấm công (Attendance)</h1>
       {/* Top Navigation Tabs - Pill Style */}
-      <div className="bg-xevn-surface border-b px-2 md:px-6 py-2 md:py-3">
+      <div className="bg-background border-b px-2 md:px-6 py-2 md:py-3">
         <div className="mobile-scroll-tabs">
           {topTabs.map(tab => {
             const TabIcon = tab.icon;
@@ -4185,7 +4188,7 @@ export default function Attendance() {
                         <ChevronDown className="w-3 h-3" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent portalScope="iframe" align="start" className="w-56 bg-xevn-surface">
+                    <DropdownMenuContent align="start" className="w-56 bg-popover">
                       {attendanceMenuItems.map((item) => {
                         const itemActive =
                           activeTab === 'attendance' &&
@@ -4235,7 +4238,7 @@ export default function Attendance() {
                       <ChevronDown className="w-3 h-3 hidden sm:block" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent portalScope="iframe" align="start" className="w-64 bg-xevn-surface">
+                  <DropdownMenuContent align="start" className="w-64 bg-popover">
                     {shiftsMenuItems.map((item) => {
                       const holdHint =
                         'holdHintKey' in item && item.holdHintKey
@@ -4292,7 +4295,7 @@ export default function Attendance() {
                       <ChevronDown className="w-3 h-3 hidden sm:block" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent portalScope="iframe" align="start" className="w-56 bg-xevn-surface">
+                  <DropdownMenuContent align="start" className="w-56 bg-popover">
                     {requestMenuItems.map((item) => {
                       const isAlias =
                         item.id === 'leave-summary' ||
@@ -4400,7 +4403,7 @@ export default function Attendance() {
                 <SelectTrigger className="xevn-field-select-md">
                   <SelectValue placeholder={t('attPage.selectUnit')} />
                 </SelectTrigger>
-                <SelectContent portalScope="iframe">
+                <SelectContent>
                   <SelectItem value="Công ty Cổ phần ABC">Công ty Cổ phần ABC</SelectItem>
                   <SelectItem value="Văn phòng Hà Nội">Văn phòng Hà Nội</SelectItem>
                   <SelectItem value="Chi nhánh TP.HCM">Chi nhánh TP.HCM</SelectItem>
@@ -4681,9 +4684,12 @@ export default function Attendance() {
                   <SelectTrigger className="xevn-field-select-md">
                     <SelectValue placeholder={t('attPage.selectDepartment', 'Chọn phòng ban')} />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
-                    {departments.map(dept => (
-                      <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                  <SelectContent>
+                    <SelectItem value="all">{t('attPage.allDepartments', 'Tất cả phòng ban')}</SelectItem>
+                    {departments.map((dept) => (
+                      <SelectItem key={dept.id} value={dept.name}>
+                        {dept.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -4701,7 +4707,7 @@ export default function Attendance() {
                   <SelectTrigger className="xevn-field-select-md">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     <SelectItem value="all">{t('attPage.allPositions', 'Tất cả vị trí')}</SelectItem>
                     {[...new Set(employees.map(e => e.position).filter(Boolean))].map(pos => (
                       <SelectItem key={pos!} value={pos!}>{pos}</SelectItem>
@@ -4735,7 +4741,7 @@ export default function Attendance() {
                   <SelectTrigger className="xevn-field-select-sm">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     <SelectItem value="this-month">{t('attPage.thisMonth')}</SelectItem>
                     <SelectItem value="last-month">{t('attPage.lastMonth')}</SelectItem>
                     <SelectItem value="custom">{t('attPage.custom')}</SelectItem>
@@ -4783,7 +4789,7 @@ export default function Attendance() {
                   <SelectTrigger className="xevn-field-select-sm">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     <SelectItem value="daily">{t('attPage.daily')}</SelectItem>
                     <SelectItem value="hourly">{t('attPage.hourly')}</SelectItem>
                   </SelectContent>
@@ -4933,7 +4939,7 @@ export default function Attendance() {
                 <SelectTrigger className="xevn-field-select-md">
                   <SelectValue placeholder={t('attPage.selectEmployee')} />
                 </SelectTrigger>
-                <SelectContent portalScope="iframe" className="bg-xevn-surface z-50">
+                <SelectContent className="bg-background z-50">
                   <SelectItem value="tran-dang-trung">Trần Đăng Trung</SelectItem>
                   <SelectItem value="dang-thi-phuong-loan">Đặng Thị Phương Loan</SelectItem>
                   <SelectItem value="nguyen-hoang-son">Nguyễn Hoàng Sơn</SelectItem>
@@ -4954,7 +4960,7 @@ export default function Attendance() {
                 <SelectTrigger className="xevn-field-select-md">
                   <SelectValue placeholder={t('attPage.selectLeaveType')} />
                 </SelectTrigger>
-                <SelectContent portalScope="iframe" className="bg-xevn-surface z-50">
+                <SelectContent className="bg-background z-50">
                   <SelectItem value="nghi-phep">{t('attPage.annualLeave')}</SelectItem>
                   <SelectItem value="nghi-khong-huong-luong">{t('attPage.unpaidLeave')}</SelectItem>
                   <SelectItem value="nghi-thai-san">{t('attPage.maternityLeave')}</SelectItem>
@@ -4984,7 +4990,7 @@ export default function Attendance() {
                       )}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-xevn-surface z-50" align="start">
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
                     <CalendarComponent
                       mode="single"
                       selected={leaveRequestForm.startDate}
@@ -5012,7 +5018,7 @@ export default function Attendance() {
                       )}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-xevn-surface z-50" align="start">
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
                     <CalendarComponent
                       mode="single"
                       selected={leaveRequestForm.endDate}
@@ -5113,7 +5119,7 @@ export default function Attendance() {
                       <SelectTrigger>
                         <SelectValue placeholder={t('attPage.selectLeaveType')} />
                       </SelectTrigger>
-                      <SelectContent portalScope="iframe" className="bg-xevn-surface z-50">
+                      <SelectContent className="bg-background z-50">
                         <SelectItem value="Nghỉ phép">{t('attPage.annualLeave')}</SelectItem>
                         <SelectItem value="Nghỉ không hưởng lương">{t('attPage.unpaidLeave')}</SelectItem>
                         <SelectItem value="Nghỉ thai sản">{t('attPage.maternityLeave')}</SelectItem>
@@ -5159,7 +5165,7 @@ export default function Attendance() {
                           )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 bg-xevn-surface z-50" align="start">
+                      <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
                         <CalendarComponent
                           mode="single"
                           selected={editLeaveForm.startDate}
@@ -5187,7 +5193,7 @@ export default function Attendance() {
                           )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 bg-xevn-surface z-50" align="start">
+                      <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
                         <CalendarComponent
                           mode="single"
                           selected={editLeaveForm.endDate}

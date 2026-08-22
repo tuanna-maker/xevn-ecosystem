@@ -93,6 +93,14 @@
  * What: PAY-02 cluster — PayFormulaAuthorPanel COMP-01 block + preview lines table; must_keep PAY01QC1
  * Why: API-01 §9 FE-01 · BA J-HRM-PAY-02-* · ≠ PAY-02 DONE · payroll_e2e_ready=false
  * must_keep: SalaryComponentsTab N+1 admin; cấm DnD · cấm FE net SoT
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-21
+ * WorkItem: PO-HRM-SETTINGS-PAY-LIVE-WIRE-01
+ * change_mode: FIX
+ * What: Tab components/formulas → PaySalaryComponentList / PayFormulaSettingsPanel (Settings Apple-style +
+ *       Nest CRUD) thay SalaryComponentsTab / PayFormulaAuthorPanel trực tiếp — cùng SoT dữ liệu Settings
+ * Why: User yêu cầu một implementation Settings UX + dữ liệu thật dùng chéo Payroll
+ * must_keep: taxSettlementFloatingUi C1; PayFormulaAuthorPanel vẫn tồn tại cho GĐ1 nâng cao nếu cần mount lại
  */
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -194,8 +202,8 @@ import { PayrollPayslipsApiTab } from '@/components/payroll/PayrollPayslipsApiTa
 import { PayrollGroupsCatalogTab } from '@/components/payroll/PayrollGroupsCatalogTab';
 import { usePayrollPayslips } from '@/hooks/usePayrollPayslips';
 import { PaymentBatchesTab } from '@/components/payroll/PaymentBatchesTab';
-import { SalaryComponentsTab } from '@/components/payroll/SalaryComponentsTab';
-import { PayFormulaAuthorPanel } from '@/components/payroll/PayFormulaAuthorPanel';
+import { PaySalaryComponentList } from '@/components/settings/payroll/PaySalaryComponentList';
+import { PayFormulaSettingsPanel } from '@/components/settings/payroll/PayFormulaSettingsPanel';
 import { EssPayslipsPanel } from '@/components/payroll/EssPayslipsPanel';
 import { PayrollAttendanceTab } from '@/components/payroll/PayrollAttendanceTab';
 import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
@@ -2783,9 +2791,9 @@ export default function Payroll() {
       case 'data':
         return renderDataContent();
       case 'components':
-        return <SalaryComponentsTab />;
+        return <PaySalaryComponentList />;
       case 'formulas':
-        return <PayFormulaAuthorPanel />;
+        return <PayFormulaSettingsPanel />;
       case 'calculate':
         return renderCalcContent();
       case 'policy':

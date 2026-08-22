@@ -25,6 +25,15 @@
  * what: Forward QueryResultRow generic into ensureCompanySlugMapLegalDisplayNames (TS2322)
  * why: nest --watch / start:dev failed assigning db.query wrapper to CompanyDisplayQueryFn
  * must_keep: LE display names; reject Khối* in company column; no runtime behavior change
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-22
+ * WorkItem: SA-HRM-TENANT-ONLY-SCOPE-01
+ * change_mode: SPEC_ACK · DEPRECATE scheduled Phase 5
+ * What: GET /operating-units lists legacy OU slugs for group CEO — superseded by tenant switcher
+ *       + group-member-units (tenant_id). Member CEO returns [] by design.
+ * Why:  ADR-HRM-TENANT-ONLY-SCOPE — OU not partition key after migrate.
+ * Ref:  docs/program/specs/SA-HRM-TENANT-ONLY-SCOPE-SPEC-01.md Phase 3–5
+ * must_keep: Unchanged behavior until HRM_TENANT_ONLY_SCOPE=true and Phase 5 deprecate
  */
 import { Injectable } from '@nestjs/common';
 import type { QueryResultRow } from 'pg';
@@ -35,6 +44,11 @@ import {
   resolveHrmListScope,
   type HrmListScopeContext,
 } from '../common/hrm-list-scope';
+import {
+  HRM_GROUP_ROLLUP_TENANT_IDS,
+  HRM_TENANT_DISPLAY_NAMES,
+  isHrmTenantOnlyScopeEnabled,
+} from '../common/hrm-tenant-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import {
   ensureCompanySlugMapLegalDisplayNames,
@@ -64,18 +78,39 @@ export class OperatingUnitsService {
     return HRM_GROUP_MEMBER_COMPANY_SLUGS.filter((slug) => allowed.has(slug));
   }
 
+  private listTenantFilterRows(
+    scope: ReturnType<typeof resolveHrmListScope>,
+  ): HrmOperatingUnitRow[] {
+    if (scope.memberTenantId) {
+      return [];
+    }
+    const tenantIds =
+      scope.tenantIds?.length && scope.tenantOnlyMode
+        ? scope.tenantIds
+        : [...HRM_GROUP_ROLLUP_TENANT_IDS];
+    return tenantIds.map((tenantId, index) => ({
+      operating_slug: tenantId as HrmOperatingUnitRow['operating_slug'],
+      display_name_vi: HRM_TENANT_DISPLAY_NAMES[tenantId] ?? tenantId,
+      rollup_order: index + 1,
+    }));
+  }
+
   async listOperatingUnits(
     authorization: string | undefined,
     context?: HrmListScopeContext,
   ): Promise<HrmOperatingUnitRow[]> {
-    await ensureCompanySlugMapLegalDisplayNames(
-      async <T extends QueryResultRow>(sql: string, params?: unknown[]) =>
-        this.db.query<T>(sql, params ?? []),
-    );
     const scope = resolveHrmListScope(
       authorization,
       HRM_PILOT_OPERATING_COMPANY_ID,
       context,
+    );
+    if (isHrmTenantOnlyScopeEnabled()) {
+      return this.listTenantFilterRows(scope);
+    }
+
+    await ensureCompanySlugMapLegalDisplayNames(
+      async <T extends QueryResultRow>(sql: string, params?: unknown[]) =>
+        this.db.query<T>(sql, params ?? []),
     );
     const visibleSlugs = this.resolveVisibleSlugs(scope);
     if (!visibleSlugs.length) {

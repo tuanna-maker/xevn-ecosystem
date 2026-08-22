@@ -158,7 +158,7 @@ import {
   resolveHrmCompanyUuidForSlug,
 } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
-import { resolveCompanyDisplayNameVi } from '../operating-units/hrm-company-display-name';
+import { resolveEmployeeCompanyDisplayNameVi } from '../operating-units/hrm-company-display-name';
 import { HrmRealtimeService } from '../realtime/hrm-realtime.service';
 import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
@@ -173,6 +173,7 @@ import {
 } from './employee-list-cursor';
 import {
   buildEmployeeSummaryByCompany,
+  buildEmployeeSummaryByTenant,
   buildSalaryRangesFromCounts,
   EMPLOYEE_SALARY_NUM_SQL,
 } from './employee-summary';
@@ -573,9 +574,13 @@ export class EmployeesService implements OnModuleInit {
     const companyUuid = resolveHrmCompanyUuidForSlug(row.company_id);
     // Plane A / ĐVTV LE SoT — never Khối* (AC-EMP-COL-01/03).
     // company_slug_map sync (upgrade Khối → LE) lives in OperatingUnitsService (AC-EMP-COL-04).
-    const company_display_name = resolveCompanyDisplayNameVi(
+    const tenantId =
+      typeof row.custom_fields?.tenant_id === 'string'
+        ? row.custom_fields.tenant_id.trim()
+        : '';
+    const company_display_name = resolveEmployeeCompanyDisplayNameVi(
       row.company_id,
-      null,
+      { tenantId: tenantId || undefined },
     );
     const statusKey = String(row.status ?? '')
       .trim()
@@ -1169,6 +1174,14 @@ export class EmployeesService implements OnModuleInit {
         : { total: 0, employees_with_salary: 0 },
       by_department: byDepartment,
       by_company: buildEmployeeSummaryByCompany(companyRows, scope.companyIds),
+      ...(scope.tenantOnlyMode && scope.tenantIds?.length
+        ? {
+            by_tenant: buildEmployeeSummaryByTenant(
+              companyRows,
+              scope.tenantIds,
+            ),
+          }
+        : {}),
       salary_ranges: includeCompensation
         ? buildSalaryRangesFromCounts(aggregate)
         : buildSalaryRangesFromCounts({

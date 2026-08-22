@@ -182,6 +182,7 @@ import {
 } from '../common/hrm-list-scope';
 import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
 import { HrmDbService, type HrmDbQueryFn } from '../db/hrm-db.service';
+import { ensureHrmTenantIdColumns } from '../common/hrm-tenant-scope-schema';
 import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
 import { CreateJobPostingDto } from './dto/create-job-posting.dto';
 import { ListCandidatesTableQueryDto } from './dto/list-candidates-table.query.dto';
@@ -804,6 +805,7 @@ export class RecruitmentCatalogService {
       ALTER TABLE public.evaluation_criteria_templates
         ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ NULL;
     `);
+    await ensureHrmTenantIdColumns((sql) => this.db.query(sql));
   }
 
   /**
@@ -1016,7 +1018,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [id];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `DELETE FROM public.job_postings WHERE ${filters.join(' AND ')} RETURNING id;`,
       values,
@@ -1050,7 +1052,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, query.company_id);
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
 
     const forInternalScan = query.for === 'internal_scan';
     const titleRaw =
@@ -1070,7 +1072,7 @@ export class RecruitmentCatalogService {
       if (query.requisition_id) {
         const reqFilters: string[] = ['id = $1::uuid'];
         const reqValues: unknown[] = [query.requisition_id];
-        pushCompanyIdFilter(reqFilters, reqValues, scope.companyIds);
+        pushCompanyIdFilter(reqFilters, reqValues, scope);
         const yctd = await this.db.query<{
           id: string;
           company_id: string;
@@ -1146,7 +1148,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [candidateId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `SELECT * FROM public.candidates WHERE ${filters.join(' AND ')} LIMIT 1;`,
       values,
@@ -1248,7 +1250,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [applicationId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `DELETE FROM public.candidate_applications WHERE ${filters.join(' AND ')} RETURNING id;`,
       values,
@@ -1274,7 +1276,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const peekFilters = ['ca.id = $1::uuid'];
     const peekValues: unknown[] = [applicationId];
-    pushCompanyIdFilter(peekFilters, peekValues, scope.companyIds);
+    pushCompanyIdFilter(peekFilters, peekValues, scope);
     // Qualify company on application alias — hire link needs parent candidate.
     const peekSql = peekFilters
       .map((f) => f.replace(/^company_id/, 'ca.company_id'))
@@ -1345,7 +1347,7 @@ export class RecruitmentCatalogService {
 
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [applicationId, stage];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `UPDATE public.candidate_applications SET stage = $2, updated_at = NOW() WHERE ${filters.join(' AND ')} RETURNING *;`,
       values,
@@ -1369,7 +1371,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const yearRaw =
       query?.year !== undefined && query?.year !== null && query?.year !== ''
         ? Number(query.year)
@@ -2404,7 +2406,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [candidateId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `DELETE FROM public.candidates WHERE ${filters.join(' AND ')} RETURNING id;`,
       values,
@@ -2463,7 +2465,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `SELECT * FROM public.interviews WHERE ${filters.join(' AND ')} ORDER BY interview_date DESC, interview_time DESC;`,
       values,
@@ -2598,7 +2600,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [id];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `DELETE FROM public.interviews WHERE ${filters.join(' AND ')} RETURNING id;`,
       values,
@@ -2622,7 +2624,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `SELECT * FROM public.headcount_proposals WHERE ${filters.join(' AND ')} ORDER BY created_at DESC;`,
       values,
@@ -3013,7 +3015,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = ['is_active = TRUE', 'archived_at IS NULL'];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `SELECT * FROM public.evaluation_criteria_templates WHERE ${filters.join(' AND ')} ORDER BY sort_order ASC, created_at ASC;`,
       values,
@@ -3710,7 +3712,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     if (query?.q?.trim()) {
       values.push(`%${query.q.trim().toLowerCase()}%`);
       filters.push(
@@ -3788,7 +3790,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [templateId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query<YctdJdTemplateBindRow>(
       `SELECT id::text AS id, code, title, job_description, requirements, status, is_active,
               position_code, position_name
@@ -3814,7 +3816,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [templateId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `SELECT id, company_id, code, title, position_name, position_code, job_description, requirements, notes,
               status, is_active, values_json, layout_snapshot_json, layout_version, created_at, updated_at
@@ -4219,7 +4221,7 @@ export class RecruitmentCatalogService {
     values.push(templateId);
     const idParam = `$${values.length}`;
     const filters = [`id = ${idParam}::uuid`];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
 
     const res = await this.db.query(
       `UPDATE public.job_description_templates SET ${setParts.join(', ')}
@@ -4317,7 +4319,7 @@ export class RecruitmentCatalogService {
 
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [templateId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query(
       `UPDATE public.job_description_templates
           SET status = 'active', is_active = TRUE, updated_at = NOW()
@@ -4345,7 +4347,7 @@ export class RecruitmentCatalogService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters = ['id = $1::uuid'];
     const values: unknown[] = [templateId];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushCompanyIdFilter(filters, values, scope);
     // Soft-retire — status=retired + is_active=false; keep history for YCTD soft FK (no CASCADE).
     const res = await this.db.query(
       `UPDATE public.job_description_templates

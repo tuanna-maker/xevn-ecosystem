@@ -1,3 +1,22 @@
+/**
+ * @CODE-MEMORY
+ * Screen:     N/A (BE) — HRM resolveScopeContext + group OU narrow filter
+ * UC:         ADR-HRM-RBAC-SCOPE-LADDER · ADR-GROUP-CEO-MAIN-HOLDING-SCOPE §4
+ * Purpose:    JWT vs query company_id parity; group CEO may narrow list to one OU slug (legacy).
+ * WorkItem:   SA-HRM-TENANT-ONLY-SCOPE-01 (SPEC ack 2026-08-22)
+ * Callees:    hrm-list-scope (GROUP_MEMBER_SLUGS) · internal-auth JWT
+ * Impact:     isGroupCeoMemberSlugNarrowFilter — OU trsport/logistics query while JWT main
+ * must_keep:  409 SCOPE_CONTEXT_MISMATCH default; member CEO no OU narrow
+ * LastVerified: scope-context.spec.ts
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-22
+ * WorkItem: SA-HRM-TENANT-ONLY-SCOPE-01
+ * change_mode: SPEC_ACK
+ * What: Phase 1 will replace OU narrow (company_id=trsport) with tenant_id narrow filter.
+ * Why:  ADR-HRM-TENANT-ONLY-SCOPE — bỏ OU partition; tenant_id SoT.
+ * Ref:  docs/program/specs/SA-HRM-TENANT-ONLY-SCOPE-SPEC-01.md §2.1 · Phase 1 P1-4
+ * must_keep: Legacy path when HRM_TENANT_ONLY_SCOPE=false
+ */
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from './api.exception';
 import {
@@ -7,6 +26,11 @@ import {
   isGroupCeoMasterOperatingBucket,
   MASTER_TENANT_ID,
 } from './hrm-list-scope';
+import {
+  HRM_GROUP_ROLLUP_TENANT_IDS,
+  isHrmTenantOnlyScopeEnabled,
+  resolveTenantIdFromLegacyOuOrTenant,
+} from './hrm-tenant-scope';
 import { getVerifiedInternalJwtPayload } from './internal-auth';
 
 type ScopeContext = {
@@ -184,6 +208,24 @@ function companyScopeMatches(
     )
   ) {
     return true;
+  }
+  if (
+    isHrmTenantOnlyScopeEnabled() &&
+    scopeGate?.claimTenantId === MASTER_TENANT_ID &&
+    isGroupCeoMasterOperatingBucket(
+      scopeGate?.jwtPayload ?? null,
+      scopeGate.claimTenantId,
+      claim,
+      scopeGate?.roleCode ?? '',
+    )
+  ) {
+    const narrowTenant = resolveTenantIdFromLegacyOuOrTenant(requested);
+    if (
+      narrowTenant &&
+      (HRM_GROUP_ROLLUP_TENANT_IDS as readonly string[]).includes(narrowTenant)
+    ) {
+      return true;
+    }
   }
   if (
     scopeGate &&

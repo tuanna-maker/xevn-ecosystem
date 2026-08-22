@@ -42,5 +42,14 @@ async function bootstrap() {
   app.use(xbosRateLimitMiddleware);
   const port = Number(process.env.XBOS_BE_PORT ?? process.env.PORT ?? 3002);
   await app.listen(port);
+  // Match hrm-api + nginx upstream keepalive (Node default 5s → RST on idle socket reuse).
+  const httpServer = app.getHttpServer();
+  const keepAliveMs = Number(process.env.HTTP_KEEPALIVE_TIMEOUT_MS ?? 65_000);
+  const headersMs = Number(
+    process.env.HTTP_HEADERS_TIMEOUT_MS ??
+      Math.max(keepAliveMs + 5_000, 70_000),
+  );
+  httpServer.keepAliveTimeout = keepAliveMs;
+  httpServer.headersTimeout = headersMs;
 }
 bootstrap();

@@ -121,6 +121,10 @@ import {
   syncHrmStylesheetsToParentForPortalDialogs,
 } from "@/lib/hrmDialogPortal";
 import { attachPortalDialogA11yMirror } from "@/lib/hrmDialogPortalA11y";
+import {
+  HrmOverlayPortalScopeContext,
+  type HrmOverlayPortalScope,
+} from "@/lib/hrmOverlayPortalScope";
 
 type DialogHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
   /** ADR §15.4 / B2 — logo + glass row (default on). Set false for sr-only shells. */
@@ -176,6 +180,7 @@ const DialogContent = React.forwardRef<
   ) => {
     const mount = getRadixPortalContainer(portalScope);
     const useParentPortal = isHrmDialogMountedToPortalParent(portalScope);
+    const overlayPortalScope: HrmOverlayPortalScope = portalScope === "iframe" ? "iframe" : useParentPortal ? "parent" : "iframe";
     if (useParentPortal) {
       syncHrmStylesheetsToParentForPortalDialogs();
     }
@@ -221,7 +226,9 @@ const DialogContent = React.forwardRef<
           aria-describedby={ariaDescribedBy}
           {...props}
         >
-          {children}
+          <HrmOverlayPortalScopeContext.Provider value={overlayPortalScope}>
+            {children}
+          </HrmOverlayPortalScopeContext.Provider>
           <DialogPrimitive.Close className="absolute right-4 top-5 z-20 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-xevn-accent focus:ring-offset-2 disabled:pointer-events-none">
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>

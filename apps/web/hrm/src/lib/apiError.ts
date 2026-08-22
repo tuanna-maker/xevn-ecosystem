@@ -6,6 +6,8 @@ type ApiErrorPayload = {
 };
 
 const friendlyByCode: Record<string, string> = {
+  "HRM-TIMEOUT":
+    "Hết thời gian chờ phản hồi từ server. Kiểm tra kết nối mạng hoặc thử tải lại trang.",
   "HRM-AUTH-001": "Phiên đăng nhập không hợp lệ hoặc đã hết hạn.",
   "HRM-AUTH-002": "Bạn không có quyền thực hiện thao tác này.",
   "HRM-VAL-001": "Dữ liệu gửi lên chưa hợp lệ.",
@@ -474,6 +476,10 @@ function leaveAlignInflateMessage(error: {
 }
 
 export function toErrorMessage(error: unknown, fallback: string) {
+  if (isAbortLikeError(error)) {
+    return friendlyByCode["HRM-TIMEOUT"];
+  }
+
   if (error instanceof ApiClientError) {
     if (error.code === "HRM-LEAVE-VAL-BALANCE") {
       const enriched = leaveBalanceMessage(error.details);

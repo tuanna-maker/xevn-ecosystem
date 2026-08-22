@@ -26,11 +26,8 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronRight, Circle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import {
-  getRadixPortalContainer,
-  isHrmDialogMountedToPortalParent,
-  syncHrmStylesheetsToParentForPortalDialogs,
-} from "@/lib/hrmDialogPortal";
+import { prepareHrmFloatingPortal } from "@/lib/hrmFloatingPortal";
+import { useHrmOverlayPortalScope } from "@/lib/hrmOverlayPortalScope";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
@@ -91,19 +88,16 @@ const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   DropdownMenuContentProps
 >(({ className, sideOffset = 4, portalScope, ...props }, ref) => {
-  const mount = getRadixPortalContainer(portalScope);
-  const useParent = isHrmDialogMountedToPortalParent(portalScope);
-  if (useParent) {
-    syncHrmStylesheetsToParentForPortalDialogs();
-  }
+  const overlayScope = useHrmOverlayPortalScope();
+  const { mount, floatingZClass } = prepareHrmFloatingPortal(portalScope, overlayScope);
   return (
   <DropdownMenuPrimitive.Portal container={mount}>
     <DropdownMenuPrimitive.Content
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-card border border-xevn-border bg-popover p-1 text-popover-foreground shadow-soft data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        useParent && "z-[100010]",
+        "min-w-[8rem] overflow-hidden rounded-card border border-xevn-border bg-popover p-1 text-popover-foreground shadow-soft data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        floatingZClass,
         className,
       )}
       {...props}
