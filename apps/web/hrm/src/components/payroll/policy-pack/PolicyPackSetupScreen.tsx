@@ -1,152 +1,415 @@
 /**
  * @CODE-MEMORY
- * Screen:     HRM Lương → Thiết lập lương → Gói chính sách CHUNG (STP-POLICY-PACK)
+ * Screen:     HRM Lương → Cài đặt → Chính sách lương (Policy Pack)
  * UC:         UC-BP-PAY-STP-01 (CHUNG) · UC-BP-PAY-STP-03 (KPI) · UC-BP-PAY-STP-04 (BCC_STD)
  * SRS:        docs/program/specs/PO-HRM-PAY-CNTT-FE-STP-01-SRS-01.md
- *             — AC-PAY-STP-01-01..05 · AC-PAY-STP-03-01 · AC-PAY-STP-04-01 · GLOBAL-01
  * TechSpec:   docs/program/specs/PO-HRM-PAY-CNTT-FE-STP-01-TECHSPEC-01.md §2.1
- * UI:         docs/hrm/ui-screens/UI-HRM-PAY-STP-POLICY-PACK.md §3 IA two-pane · §4.1–4.3
- * API:        usePolicyPackApi → /api/hrm/payroll/pay-policy-packs* (company_id snake)
- * Purpose:    CRUD gói chính sách lương CHUNG — danh sách trái, form phải (tạo mặc định,
- *             sửa khi chọn dòng); bind API LIVE; ngày dd/MM/yyyy (ViDateField); BCC_STD nhóm
- *             nghìn vi-VN (ViMoneyInput); KPI score 0–100 không nhóm nghìn; không eval formula.
+ * Purpose:    CRUD chính sách lương CHUNG — bảng danh sách, fullscreen overlay khi tạo/sửa.
+ *             Overlay 2 cột: trái = thông tin chung, phải = nhóm chính sách (PolicyGroupEditor).
  * WorkItem:   PO-HRM-PAY-CNTT-FE-STP-01-POLICY-PACK-01
- * Coded:      2026-08-12
- * Callers:    payroll/setup/PayrollSetupHub.tsx (mục «Gói chính sách»)
- * Callees:    usePolicyPackApi (list/create/update/archive) · payPolicyPackForm (validate/build)
+ * Coded:      2026-08-22
+ * Callers:    Settings.tsx (tab pay-policy-packs)
+ * Callees:    usePolicyPackApi · payPolicyPackForm · PolicyGroupEditor
  * must_keep:  testid pay-policy-pack-list · pay-policy-pack-save · pay-policy-pack-scope-chung ·
  *             pay-policy-pack-archive · pay-params-kpi-threshold · pay-params-bcc-std ·
- *             pay-policy-pack-row-{code}; form tạo hiển thị mặc định khi chưa chọn dòng;
- *             scope luôn CHUNG — cấm gộp CHUNG+RIÊNG 1 form; payroll_e2e_ready=false; U65
- * NOT scope:  RIÊNG tab / BP filter / geo picker / VP allowance (STP-02/05/06) — residual
- * LastVerified: PolicyPackSetupScreen.test.ts (8 case) · payPolicyPackForm.test.ts (7 case)
+ *             pay-policy-pack-row-{code}; scope CHUNG; payroll_e2e_ready=false; U65 zero-seed
+ * NOT scope:  RIÊNG tab / BP filter / geo picker (STP-02/05/06)
+ * LastVerified: PolicyPackSetupScreen.test.ts
  *
- * @CODE-MEMORY-CHANGE 2026-08-12 PO-HRM-PAY-CNTT-FE-STP-01-POLICY-PACK-01
- * change_mode: ADD
- * What: Two-pane IA; ViDateField; rate params KPI+BCC_STD; archive POST; 403 banner;
- *       helpers payPolicyPackForm; bỏ JSON textarea thô cho CHUNG.
- * Why: Exit criteria POLICY-PACK-01 — locale vi-VN + AC archive/KPI/BCC.
- * must_keep: Hub route wire PASS; không đụng apps/api/**; formula HOLD
- *
- * @CODE-MEMORY-CHANGE 2026-08-12 D-PAY-CNTT-FE-POLICY-PACK-RESTORE-01
- * change_mode: FIX (restore sau peer overwrite)
- * What: Khôi phục hành vi bản POLICY-PACK-01 sau khi Claude CLI ghi đè dở dang file này:
- *       (1) pane phải luôn có form — mặc định form TẠO, đổi sang form SỬA khi chọn dòng
- *           (bản đè chỉ render form khi editingId → nút «+ Thêm gói» ra empty state);
- *       (2) trả lại data-testid pay-params-bcc-std trên ViMoneyInput (AC-PAY-STP-04-01);
- *       (3) testid dòng theo mã gói `pay-policy-pack-row-{code}`;
- *       (4) empty copy «Chưa có gói — tạo từ nút Thêm gói.»;
- *       (5) đúng contract primitive: ViMoneyInput/ViDateField dùng onValueChange (bản đè dùng
- *           onChange + prop allowEmpty không tồn tại), statusLabelVi là hàm, kpiThreshold là string.
- * Why: Bản đè làm FAIL AC-PAY-STP-01-01 (không tạo được gói) + AC-PAY-STP-04-01 (thiếu testid).
- * must_keep: AC bản Cursor READY_FOR_QA; scope CHUNG-only; payroll_e2e_ready=false; U65 zero-seed;
- *            hub route /hr/payroll/setup; không mở RIÊNG/STP-02/05/06
- *
- * @CODE-MEMORY-CHANGE 2026-08-12 D-PAY-STP-SEARCH-ARIA-P2-01
- * change_mode: FIX (a11y hẹp — chỉ nhãn trợ năng ô tìm kiếm)
- * What: Đổi aria-label ô tìm kiếm danh sách gói từ «Tìm mã hoặc tên gói» →
- *       «Tìm kiếm trong danh sách gói».
- * Why: DEF-PAY-STP-SEARCH-ARIA-P2 (QC GWC PAYPPQC1-MSPXZL1GQC1): nhãn cũ chứa cụm
- *       «tên gói» nên khớp substring với Label form «Tên gói (VI)» → harness
- *       Playwright/Testing Library gõ nhầm vào ô tìm kiếm; trình đọc màn hình cũng
- *       dễ nhầm hai điều khiển. Nhãn mới không chứa cụm «Tên gói» / «Mã gói».
- * must_keep: Label form «Tên gói (VI)» + «Mã gói» giữ nguyên; không đụng luồng lưu/
- *            cập nhật/ngưng áp dụng, testid registry, honesty banner; CHUNG-only;
- *            payroll_e2e_ready=false; U65 zero-seed; stamp PAYPPQC1-MSPXZL1GQC1 và
- *            CNTTBEQC1-MSO8HVERQC1 không mở lại
+ * @CODE-MEMORY-CHANGE 2026-08-22 PO-HRM-PAY-CNTT-FE-STP-01-POLICY-PACK-REDESIGN
+ * change_mode: UPGRADE
+ * What: Thay Sheet/Dialog → custom fullscreen overlay (fixed inset-0 z-[200]) tránh brand
+ *       chrome bloat; 2 cột scroll độc lập; PolicyGroupEditor nhóm chính sách nhiều loại.
+ *       groups[] serialize vào rateParams.__groups JSON (FE-only; BE migration sau).
+ * Why: Dialog component có brand chrome XeVN không cho fullscreen thực sự.
+ * must_keep: testid registry; CHUNG-only; payroll_e2e_ready=false; U65 zero-seed;
+ *            stamp PAYPPQC1-MSPXZL1GQC1 và CNTTBEQC1-MSO8HVERQC1 không mở lại
  */
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import {
   useListPolicyPacks,
   useCreatePolicyPack,
   useUpdatePolicyPack,
   useArchivePolicyPack,
-  type PolicyPack,
 } from './usePolicyPackApi';
 import {
   EMPTY_POLICY_PACK_FORM,
-  MSG_KPI_RANGE,
   POLICY_PACK_STATUS_LABEL_VI,
+  POLICY_PACK_TYPE_LABELS,
+  type PolicyPackType,
   buildPolicyPackWritePayload,
   extractChungRateParams,
   statusLabelVi,
   validatePolicyPackForm,
-  type PolicyPackFormStatus,
   type PolicyPackFormValues,
 } from '@/lib/payPolicyPackForm';
+import { usePolicyTypes } from '@/lib/policyTypeConfigStore';
+import { PolicyTypeConfigPanel } from './PolicyTypeConfigPanel';
 import { formatHrmDateVi } from '@/lib/formatHrmDate';
-import { ViDateField } from '@/components/ui/ViDateField';
+import { ViDatePickerField } from '@/components/ui/ViDatePickerField';
 import { ViMoneyInput } from '@/components/ui/ViMoneyInput';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { PolicyGroupEditor } from './PolicyGroupEditor';
+import { Settings, Pencil, FileText, Archive, X, ChevronRight, Settings2 } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
+// ---------------------------------------------------------------------------
+// Helper — Badge trạng thái
+// ---------------------------------------------------------------------------
+function StatusBadge({ status }: { status: string }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold',
+        status === 'active'  ? 'bg-emerald-100 text-emerald-700'
+        : status === 'draft' ? 'bg-amber-100 text-amber-700'
+        :                      'bg-slate-100 text-slate-500',
+      )}
+    >
+      {statusLabelVi(status)}
+    </span>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Fullscreen Overlay — dùng Portal để thoát khỏi stacking context Settings
+// ---------------------------------------------------------------------------
+interface FullscreenPanelProps {
+  isEditing: boolean;
+  form: PolicyPackFormValues;
+  pending: boolean;
+  fieldError: string | null;
+  bannerError: string | null;
+  onClose: () => void;
+  onSubmit: (e: FormEvent) => void;
+  onArchive: () => void;
+  update: (field: keyof PolicyPackFormValues, value: unknown) => void;
+  policyTypes: any[];
+}
+
+function FullscreenPanel({
+  isEditing,
+  form,
+  pending,
+  fieldError,
+  bannerError,
+  onClose,
+  onSubmit,
+  onArchive,
+  update,
+  policyTypes,
+}: FullscreenPanelProps) {
+  // Khoá scroll body khi panel mở
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  // Đóng bằng Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  const panel = (
+    <div
+      className="fixed inset-0 z-[500] flex flex-col bg-slate-50"
+      role="dialog"
+      aria-modal="true"
+      data-testid="pay-policy-pack-dialog"
+    >
+      {/* ── Thanh tiêu đề ── */}
+      <header className="shrink-0 flex items-center gap-3 px-5 py-3 bg-white border-b shadow-sm">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-1.5 text-sm text-slate-500 min-w-0">
+          <Settings className="w-4 h-4 shrink-0 text-primary" />
+          <span className="hidden sm:block">Cài đặt</span>
+          <ChevronRight className="w-3.5 h-3.5 shrink-0" />
+          <span className="hidden sm:block text-slate-400">Gói chính sách</span>
+          <ChevronRight className="w-3.5 h-3.5 shrink-0" />
+          <span className="font-semibold text-slate-800 truncate max-w-[240px]">
+            {isEditing
+              ? (form.nameVi || form.code || 'Chính sách')
+              : 'Tạo mới chính sách'}
+          </span>
+        </div>
+
+        {/* Trạng thái */}
+        <StatusBadge status={form.status} />
+
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Actions */}
+        <div className="flex items-center gap-2 shrink-0">
+          {isEditing && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-slate-500 hover:text-red-600 hover:border-red-300"
+              onClick={onArchive}
+              disabled={pending}
+              data-testid="pay-policy-pack-archive"
+            >
+              <Archive className="w-3.5 h-3.5" />
+              <span className="hidden sm:block">Ngưng áp dụng</span>
+            </Button>
+          )}
+          <Button
+            type="submit"
+            form="policy-pack-form"
+            disabled={pending}
+            data-testid="pay-policy-pack-save"
+            className="gap-1.5 min-w-[120px]"
+          >
+            {pending
+              ? 'Đang lưu...'
+              : isEditing ? 'Lưu thay đổi' : 'Tạo chính sách'}
+          </Button>
+          <button
+            type="button"
+            className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            onClick={onClose}
+            aria-label="Đóng"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </header>
+
+      {/* ── Banner lỗi quyền ── */}
+      {bannerError && (
+        <div
+          role="alert"
+          className="shrink-0 mx-6 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-700"
+        >
+          {bannerError}
+        </div>
+      )}
+
+      {/* ── Body 2 cột ── */}
+      <form
+        id="policy-pack-form"
+        onSubmit={onSubmit}
+        className="flex-1 flex min-h-0 overflow-hidden"
+      >
+        {/* ── Cột trái: Thông tin chung ── */}
+        <aside className="w-[300px] xl:w-[340px] shrink-0 border-r bg-white overflow-y-auto">
+          <div className="p-6 space-y-5">
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
+                Thông tin chung
+              </h2>
+
+              {/* Field error */}
+              {fieldError && (
+                <div
+                  role="alert"
+                  className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700"
+                >
+                  {fieldError}
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {/* Mã */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="pol-code" className="text-xs font-semibold text-slate-600">
+                    Mã chính sách <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="pol-code"
+                    value={form.code}
+                    onChange={(e) => update('code', e.target.value)}
+                    placeholder="VD: POL_CHUNG_2A"
+                    className="h-9"
+                    disabled={isEditing}
+                  />
+                </div>
+
+                {/* Tên */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="pol-name" className="text-xs font-semibold text-slate-600">
+                    Tên chính sách <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="pol-name"
+                    value={form.nameVi}
+                    onChange={(e) => update('nameVi', e.target.value)}
+                    placeholder="VD: QĐ 2A/2026 — Thang bảng lương"
+                    className="h-9"
+                  />
+                </div>
+
+                {/* Loại chính sách */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-slate-600">Loại chính sách</Label>
+                  <Select
+                    value={form.packType}
+                    onValueChange={(v) => update('packType', v)}
+                    disabled={isEditing}
+                  >
+                    <SelectTrigger className="h-9 font-medium text-blue-700 bg-blue-50/50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="z-[300]">
+                      {policyTypes.map(t => (
+                        <SelectItem key={t.id} value={t.code}>
+                          {t.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-[11px] text-slate-500">Mẫu lưới dữ liệu (không đổi sau khi tạo).</p>
+                </div>
+
+                {/* Hiệu lực từ */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="pol-from" className="text-xs font-semibold text-slate-600">
+                    Hiệu lực từ <span className="text-red-500">*</span>
+                  </Label>
+                  <ViDatePickerField
+                    id="pol-from"
+                    value={form.effectiveFrom}
+                    onValueChange={(v) => update('effectiveFrom', v)}
+                  />
+                </div>
+
+                {/* Hiệu lực đến */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="pol-to" className="text-xs font-semibold text-slate-600">
+                    Hiệu lực đến
+                  </Label>
+                  <ViDatePickerField
+                    id="pol-to"
+                    value={form.effectiveTo}
+                    onValueChange={(v) => update('effectiveTo', v)}
+                  />
+                  <p className="text-xs text-slate-400">Để trống nếu áp dụng vô thời hạn.</p>
+                </div>
+
+                {/* Trạng thái */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-slate-600">Trạng thái</Label>
+                  <Select value={form.status} onValueChange={(v) => update('status', v)}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="z-[300]">
+                      <SelectItem value="draft">Nháp</SelectItem>
+                      <SelectItem value="active">Đang áp dụng</SelectItem>
+                      <SelectItem value="retired">Đã ngưng</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </aside>
+
+        {/* ── Cột phải: Nhóm chính sách ── */}
+        <main className="flex-1 min-w-0 overflow-y-auto p-6 bg-slate-50">
+          <PolicyGroupEditor
+            packType={form.packType}
+            groups={form.groups ?? []}
+            onChange={(next) => update('groups', next)}
+          />
+        </main>
+      </form>
+    </div>
+  );
+
+  return createPortal(panel, document.body);
+}
+
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
 export function PolicyPackSetupScreen() {
   const [form, setForm] = useState<PolicyPackFormValues>(EMPTY_POLICY_PACK_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [isConfigOpen, setConfigOpen] = useState(false);
+
+  const { types: policyTypes } = usePolicyTypes();
+  const [isOpen, setIsOpen] = useState(false);
 
   const list = useListPolicyPacks('CHUNG');
   const create = useCreatePolicyPack();
   const updatePack = useUpdatePolicyPack();
   const archive = useArchivePolicyPack();
 
-  /** Về form tạo mới (cũng là trạng thái mặc định của pane phải). */
   const startCreate = () => {
     setForm(EMPTY_POLICY_PACK_FORM);
     setEditingId(null);
     setFieldError(null);
     setBannerError(null);
+    setIsOpen(true);
   };
 
-  const startEdit = (item: PolicyPack) => {
-    const rates = extractChungRateParams(item.rateParams);
+  const startEdit = (item: NonNullable<ReturnType<typeof useListPolicyPacks>['data']>[0]) => {
+    const rates = extractChungRateParams(item.rateParams as Record<string, unknown> | null);
     setEditingId(item.id);
     setFieldError(null);
     setBannerError(null);
     setForm({
       code: item.code ?? '',
       nameVi: item.nameVi ?? '',
+      packType: rates.packType ?? 'salary_scale',
       effectiveFrom: item.effectiveFrom ?? '',
       effectiveTo: item.effectiveTo ?? '',
-      status: (item.status as PolicyPackFormStatus) ?? 'draft',
-      kpiThreshold: rates.kpiThreshold,
-      bccStd: rates.bccStd,
-      customRates: rates.customRates ?? [],
+      status: item.status ?? 'draft',
+      groups: rates.groups ?? [],
     });
+    setIsOpen(true);
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const closePanel = () => {
+    setIsOpen(false);
+    setEditingId(null);
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setFieldError(null);
     setBannerError(null);
-
     const error = validatePolicyPackForm(form);
-    if (error) {
-      setFieldError(error);
-      return;
-    }
-
+    if (error) { setFieldError(error); return; }
     const payload = buildPolicyPackWritePayload(form);
-
     try {
       if (editingId) {
         await updatePack.mutateAsync({ id: editingId, data: payload });
       } else {
         await create.mutateAsync(payload);
       }
-      startCreate();
+      closePanel();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Lưu thất bại.';
-      // 403 scope → banner giữ nguyên form để C&B sửa/nhờ cấp quyền (BR-PAY-STP-01).
-      if (message.includes('Không có quyền')) {
-        setBannerError(message);
-      } else {
-        setFieldError(message);
-      }
+      if (message.includes('Không có quyền')) setBannerError(message);
+      else setFieldError(message);
     }
   };
 
@@ -156,41 +419,16 @@ export function PolicyPackSetupScreen() {
     setBannerError(null);
     try {
       await archive.mutateAsync(editingId);
-      startCreate();
+      closePanel();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Ngưng thất bại.';
-      if (message.includes('Không có quyền')) {
-        setBannerError(message);
-      } else {
-        setFieldError(message);
-      }
+      if (message.includes('Không có quyền')) setBannerError(message);
+      else setFieldError(message);
     }
   };
 
-  const update = <K extends keyof PolicyPackFormValues>(field: K, value: PolicyPackFormValues[K]) =>
+  const update = (field: keyof PolicyPackFormValues, value: unknown) =>
     setForm((prev) => ({ ...prev, [field]: value }));
-
-  const addCustomRate = () => {
-    setForm(prev => ({
-      ...prev,
-      customRates: [...prev.customRates, { key: '', value: 0 }]
-    }));
-  };
-
-  const removeCustomRate = (index: number) => {
-    setForm(prev => ({
-      ...prev,
-      customRates: prev.customRates.filter((_, i) => i !== index)
-    }));
-  };
-
-  const updateCustomRate = (index: number, field: 'key' | 'value', value: string | number) => {
-    setForm(prev => {
-      const newRates = [...prev.customRates];
-      newRates[index] = { ...newRates[index], [field]: value };
-      return { ...prev, customRates: newRates };
-    });
-  };
 
   const filtered = (list.data ?? []).filter((item) => {
     if (!search.trim()) return true;
@@ -199,36 +437,51 @@ export function PolicyPackSetupScreen() {
   });
 
   const pending = create.isPending || updatePack.isPending || archive.isPending;
-  const kpiInvalid = fieldError === MSG_KPI_RANGE;
   const isEditing = editingId !== null;
 
   return (
     <div data-testid="pay-policy-pack-list" className="space-y-4">
+
+      {/* ── Toolbar ── */}
       <div
         className="flex flex-wrap items-center justify-between gap-3"
         data-testid="pay-policy-pack-scope-chung"
       >
         <div className="flex items-center gap-2">
-          <span className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground">
-            Chương trình chung
+          <span className="text-sm font-medium text-slate-700">
+            {filtered.length} chính sách
           </span>
-          <span className="text-sm text-muted-foreground">{filtered.length} gói</span>
         </div>
         <div className="flex items-center gap-2">
           <Input
-            className="h-10 w-48"
-            placeholder="Tìm mã/tên…"
+            className="h-9 w-60"
+            placeholder="Tìm mã hoặc tên chính sách..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            aria-label="Tìm kiếm trong danh sách gói"
+            aria-label="Tìm kiếm trong danh sách chính sách"
           />
-          <Button type="button" onClick={startCreate} data-testid="pay-policy-pack-add">
-            + Thêm gói
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setConfigOpen(true)}
+            className="gap-1.5"
+          >
+            <Settings2 className="w-4 h-4" />
+            <span className="hidden sm:inline">Loại chính sách</span>
+          </Button>
+          <Button
+            type="button"
+            onClick={startCreate}
+            data-testid="pay-policy-pack-add"
+            className="gap-1.5"
+          >
+            + Thêm chính sách
           </Button>
         </div>
       </div>
 
-      {bannerError && (
+      {/* ── Banner lỗi (ngoài panel) ── */}
+      {bannerError && !isOpen && (
         <div
           role="alert"
           className="rounded-card border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800"
@@ -238,194 +491,112 @@ export function PolicyPackSetupScreen() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
-        {/* Danh sách 1/4 */}
-        <div className="space-y-2 md:col-span-3">
-          {list.isLoading && <p className="text-sm text-muted-foreground">Đang tải danh sách…</p>}
-          {list.isError && <p className="text-sm text-red-600">Không tải được danh sách.</p>}
-          {!list.isLoading && !list.isError && filtered.length === 0 && (
-            <p className="text-sm text-muted-foreground">Chưa có gói — tạo từ nút Thêm gói.</p>
-          )}
-          <ul className="space-y-1">
-            {filtered.map((item) => (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  className={cn(
-                    'w-full rounded-input border px-3 py-2 text-left text-sm',
-                    editingId === item.id && 'border-primary bg-muted',
-                  )}
+      {/* ── Bảng danh sách ── */}
+      <div className="rounded-card border bg-card overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
+              <TableHead className="w-[160px]">Mã chính sách</TableHead>
+              <TableHead className="w-[280px]">Tên chính sách</TableHead>
+              <TableHead className="w-[180px]">Loại chính sách</TableHead>
+              <TableHead className="w-[80px] text-center">Nhóm</TableHead>
+              <TableHead className="w-[130px]">Trạng thái</TableHead>
+              <TableHead className="w-[120px]">Hiệu lực từ</TableHead>
+              <TableHead className="w-[90px]">Thao tác</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {list.isLoading && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
+                  Đang tải...
+                </TableCell>
+              </TableRow>
+            )}
+            {list.isError && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-10 text-red-500">
+                  Không tải được danh sách.
+                </TableCell>
+              </TableRow>
+            )}
+            {!list.isLoading && !list.isError && filtered.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-10 text-muted-foreground text-sm">
+                  Chưa có chính sách nào. Bấm &quot;+ Thêm chính sách&quot; để tạo mới.
+                </TableCell>
+              </TableRow>
+            )}
+            {filtered.map((item) => {
+              const rp = item.rateParams as Record<string, unknown> | null;
+              const groupCount = Array.isArray(rp?.__groups) ? (rp.__groups as unknown[]).length : 0;
+              return (
+                <TableRow
+                  key={item.id}
+                  className="cursor-pointer hover:bg-muted/30"
                   onClick={() => startEdit(item)}
                   data-testid={`pay-policy-pack-row-${item.code}`}
                 >
-                  <div className="font-medium">{item.code}</div>
-                  <div className="text-xs text-muted-foreground">{item.nameVi}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">
-                    {statusLabelVi(item.status)} · từ {formatHrmDateVi(item.effectiveFrom)}
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Chi tiết 3/4 — luôn có form: tạo mới mặc định, sửa khi chọn dòng */}
-        <div className="md:col-span-9">
-          <form onSubmit={handleSubmit} className="space-y-3 rounded-card border p-4">
-            <h3 className="font-medium">
-              {isEditing ? 'Cập nhật gói chính sách CHUNG' : 'Tạo gói chính sách CHUNG'}
-            </h3>
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <div className="space-y-1">
-                <Label htmlFor="code">Mã gói</Label>
-                <Input
-                  id="code"
-                  value={form.code}
-                  onChange={(e) => update('code', e.target.value)}
-                  placeholder="VD: POL_CHUNG_2A"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="nameVi">Tên gói (VI)</Label>
-                <Input
-                  id="nameVi"
-                  value={form.nameVi}
-                  onChange={(e) => update('nameVi', e.target.value)}
-                  placeholder="VD: Thang bậc QĐ 2A"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="effectiveFrom">Hiệu lực từ</Label>
-                <ViDateField
-                  id="effectiveFrom"
-                  value={form.effectiveFrom}
-                  onValueChange={(value) => update('effectiveFrom', value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="effectiveTo">Hiệu lực đến</Label>
-                <ViDateField
-                  id="effectiveTo"
-                  value={form.effectiveTo}
-                  onValueChange={(value) => update('effectiveTo', value)}
-                />
-                <p className="text-xs text-muted-foreground">Để trống nếu áp dụng vô thời hạn.</p>
-              </div>
-              <div className="space-y-1 md:col-span-2">
-                <Label htmlFor="status">Trạng thái</Label>
-                <select
-                  id="status"
-                  className="h-10 w-full rounded-input border border-input bg-background px-2 text-sm"
-                  value={form.status}
-                  onChange={(e) => update('status', e.target.value as PolicyPackFormStatus)}
-                >
-                  {(['draft', 'active', 'retired'] as const).map((s) => (
-                    <option key={s} value={s}>
-                      {POLICY_PACK_STATUS_LABEL_VI[s]}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="kpiThreshold">KPI ngưỡng (0–100)</Label>
-                {/* Score — không nhóm nghìn (UX_VI_DATE_NUMBER_FORMAT_AC exempt). */}
-                <Input
-                  id="kpiThreshold"
-                  inputMode="numeric"
-                  value={form.kpiThreshold}
-                  onChange={(e) => update('kpiThreshold', e.target.value)}
-                  className={cn(kpiInvalid && 'border-red-400')}
-                  data-testid="pay-params-kpi-threshold"
-                  placeholder="VD: 70"
-                />
-                {kpiInvalid && <p className="text-xs text-red-600">{MSG_KPI_RANGE}</p>}
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="bccStd">BCC_STD (VNĐ)</Label>
-                <ViMoneyInput
-                  id="bccStd"
-                  value={form.bccStd}
-                  onValueChange={(value) => update('bccStd', value)}
-                  data-testid="pay-params-bcc-std"
-                  placeholder="0"
-                />
-              </div>
-            </div>
-
-            {/* Cấu hình hạn mức mở rộng */}
-            <div className="space-y-3 pt-4 border-t mt-4">
-              <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium">Hạn mức / Tham số mở rộng</h4>
-                <Button type="button" variant="outline" size="sm" onClick={addCustomRate}>
-                  + Thêm tham số
-                </Button>
-              </div>
-              
-              {form.customRates.length === 0 ? (
-                <p className="text-xs text-muted-foreground">Chưa có tham số mở rộng. Bấm "Thêm tham số" để thêm.</p>
-              ) : (
-                <div className="space-y-2">
-                  {form.customRates.map((rate, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <div className="flex-1 space-y-1">
-                        <Input
-                          placeholder="Mã tham số (VD: KPI_MAX)"
-                          value={rate.key}
-                          onChange={(e) => updateCustomRate(index, 'key', e.target.value)}
-                        />
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <Input
-                          type="number"
-                          placeholder="Giá trị"
-                          value={rate.value}
-                          onChange={(e) => updateCustomRate(index, 'value', Number(e.target.value))}
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50 mt-0"
-                        onClick={() => removeCustomRate(index)}
-                      >
-                        <span className="sr-only">Xóa</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-                      </Button>
+                  <TableCell className="font-medium text-primary">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                      <span className="truncate">{item.code}</span>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* KPI đã báo ngay dưới ô — không lặp lại ở cuối form. */}
-            {fieldError && !kpiInvalid && <p className="text-sm text-red-600">{fieldError}</p>}
-
-            <div className="flex items-center gap-2">
-              <Button type="submit" disabled={pending} data-testid="pay-policy-pack-save">
-                {pending ? 'Đang lưu…' : isEditing ? 'Cập nhật' : 'Lưu gói chính sách'}
-              </Button>
-              {isEditing && (
-                <>
-                  <Button type="button" variant="outline" onClick={startCreate}>
-                    Hủy
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={handleArchive}
-                    disabled={pending}
-                    data-testid="pay-policy-pack-archive"
-                  >
-                    Ngưng áp dụng
-                  </Button>
-                </>
-              )}
-            </div>
-          </form>
-        </div>
+                  </TableCell>
+                  <TableCell className="text-sm truncate max-w-[260px]">{item.nameVi}</TableCell>
+                  <TableCell className="text-sm font-medium">
+                    {rp?.packType ? policyTypes.find(t => t.code === rp.packType)?.name || rp.packType : '—'}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {groupCount > 0 ? (
+                      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-xs font-bold text-primary">
+                        {groupCount}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground text-xs">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={item.status ?? ''} />
+                  </TableCell>
+                  <TableCell className="text-sm">{formatHrmDateVi(item.effectiveFrom)}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-1 text-primary hover:text-primary/80 hover:bg-primary/10"
+                      onClick={(e) => { e.stopPropagation(); startEdit(item); }}
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      Chi tiết
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
+
+      {/* ── Fullscreen overlay ── */}
+      {isOpen && (
+        <FullscreenPanel
+          isEditing={isEditing}
+          form={form}
+          pending={pending}
+          fieldError={fieldError}
+          bannerError={bannerError}
+          onClose={closePanel}
+          onSubmit={handleSubmit}
+          onArchive={handleArchive}
+          update={update}
+          policyTypes={policyTypes}
+        />
+      )}
+
+      {isConfigOpen && (
+        <PolicyTypeConfigPanel onClose={() => setConfigOpen(false)} />
+      )}
     </div>
   );
 }

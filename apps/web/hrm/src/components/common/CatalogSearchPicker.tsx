@@ -73,6 +73,7 @@ export type CatalogSearchPickerProps = {
   'data-testid'?: string;
   /** Inline search stays under picker root (CC parent-portal QA + HDSD). */
   searchPlacement?: 'popover' | 'inline';
+  hideEmptyStateBox?: boolean;
 };
 
 const UUID_LIKE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -106,6 +107,7 @@ export function CatalogSearchPicker({
   'aria-label': ariaLabel,
   'data-testid': dataTestId,
   searchPlacement = 'popover',
+  hideEmptyStateBox,
 }: CatalogSearchPickerProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -149,7 +151,7 @@ export function CatalogSearchPicker({
     );
   }
 
-  if (options.length === 0) {
+  if (options.length === 0 && !hideEmptyStateBox) {
     return (
       <div
         className={cn(

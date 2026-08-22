@@ -92,13 +92,13 @@ describe('PolicyPackSetupScreen — UC-BP-PAY-STP-01 (CHUNG)', () => {
   it('hiển thị empty state khi chưa có gói CHUNG nào', () => {
     mockListResult([]);
     render(createElement(PolicyPackSetupScreen));
-    expect(screen.getByText(/Chưa có gói — tạo từ nút Thêm/i)).toBeTruthy();
+    expect(screen.getByText(/Chưa có gói chính sách nào. Bấm "+ Thêm chính sách" để tạo mới./i)).toBeTruthy();
   });
 
   it('validate field bắt buộc — chặn submit khi thiếu mã/tên gói', async () => {
     mockListResult([]);
     render(createElement(PolicyPackSetupScreen));
-    fireEvent.click(screen.getByText('Lưu gói chính sách'));
+    fireEvent.click(screen.getByText('Tạo mới gói'));
     await waitFor(() => expect(screen.getByText('Mã gói không được để trống.')).toBeTruthy());
     expect(createMock).not.toHaveBeenCalled();
   });
@@ -118,7 +118,7 @@ describe('PolicyPackSetupScreen — UC-BP-PAY-STP-01 (CHUNG)', () => {
     typeInto(screen.getByLabelText('Hiệu lực từ'), '2026-01-01');
     typeInto(screen.getByTestId('pay-params-kpi-threshold'), '70');
     typeInto(screen.getByTestId('pay-params-bcc-std'), '5.000.000');
-    fireEvent.click(screen.getByText('Lưu gói chính sách'));
+    fireEvent.click(screen.getByText('Tạo mới gói'));
 
     await waitFor(() => expect(createMock).toHaveBeenCalledTimes(1));
     expect(createMock).toHaveBeenCalledWith(
@@ -139,7 +139,7 @@ describe('PolicyPackSetupScreen — UC-BP-PAY-STP-01 (CHUNG)', () => {
     typeInto(screen.getByLabelText('Tên gói (VI)'), 'Gói ngày sai');
     typeInto(screen.getByLabelText('Hiệu lực từ'), '2026-06-01');
     typeInto(screen.getByLabelText('Hiệu lực đến'), '2026-01-01');
-    fireEvent.click(screen.getByText('Lưu gói chính sách'));
+    fireEvent.click(screen.getByText('Tạo mới gói'));
 
     await waitFor(() =>
       expect(screen.getByText('Hiệu lực đến phải sau hiệu lực từ')).toBeTruthy(),
@@ -154,7 +154,7 @@ describe('PolicyPackSetupScreen — UC-BP-PAY-STP-01 (CHUNG)', () => {
     typeInto(screen.getByLabelText('Tên gói (VI)'), 'Gói KPI sai');
     typeInto(screen.getByLabelText('Hiệu lực từ'), '2026-01-01');
     typeInto(screen.getByTestId('pay-params-kpi-threshold'), '150');
-    fireEvent.click(screen.getByText('Lưu gói chính sách'));
+    fireEvent.click(screen.getByText('Tạo mới gói'));
 
     await waitFor(() =>
       expect(screen.getByText('KPI threshold phải từ 0 đến 100')).toBeTruthy(),
@@ -172,11 +172,11 @@ describe('PolicyPackSetupScreen — UC-BP-PAY-STP-01 (CHUNG)', () => {
     render(createElement(PolicyPackSetupScreen));
     fireEvent.click(screen.getByTestId('pay-policy-pack-row-POL_CHUNG_2A'));
 
-    expect(screen.getByText(/Cập nhật gói/)).toBeTruthy();
+    expect(screen.getByText(/Cập nhật chính sách/)).toBeTruthy();
     const kpi = screen.getByTestId('pay-params-kpi-threshold') as HTMLInputElement;
     expect(kpi.value).toBe('70');
     typeInto(kpi, '80');
-    fireEvent.click(screen.getByText('Cập nhật'));
+    fireEvent.click(screen.getByText('Lưu thay đổi'));
 
     await waitFor(() => expect(updateMock).toHaveBeenCalledTimes(1));
     expect(updateMock).toHaveBeenCalledWith(

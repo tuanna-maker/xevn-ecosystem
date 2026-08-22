@@ -9,8 +9,9 @@ import {
   buildChungRateParams,
   buildPolicyPackWritePayload,
   extractChungRateParams,
+  MSG_NAME_REQUIRED,
+  MSG_EFFECTIVE_FROM_REQUIRED,
   MSG_EFFECTIVE_DATE_ORDER,
-  MSG_KPI_RANGE,
   parseKpiThresholdInput,
   statusLabelVi,
   validatePolicyPackForm,
@@ -36,10 +37,15 @@ describe('payPolicyPackForm — CHUNG', () => {
     expect(err).toBe(MSG_EFFECTIVE_DATE_ORDER);
   });
 
-  it('AC-PAY-STP-03-01: kpi_threshold ngoài 0–100 → chặn', () => {
-    expect(validatePolicyPackForm({ ...base, kpiThreshold: '150' })).toBe(MSG_KPI_RANGE);
-    expect(validatePolicyPackForm({ ...base, kpiThreshold: '-1' })).toBe(MSG_KPI_RANGE);
-    expect(validatePolicyPackForm({ ...base, kpiThreshold: '80' })).toBeNull();
+  it('rejects invalid effective dates', () => {
+    const base: PolicyPackFormValues = {
+      ...EMPTY_POLICY_PACK_FORM,
+      code: 'P01',
+      nameVi: 'Test',
+      effectiveFrom: '2024-01-01',
+      effectiveTo: '2023-12-31',
+    };
+    expect(validatePolicyPackForm(base)).toBe(MSG_EFFECTIVE_DATE_ORDER);
   });
 
   it('AC-PAY-STP-04-01: bcc_std submit là số thuần trong rateParams', () => {

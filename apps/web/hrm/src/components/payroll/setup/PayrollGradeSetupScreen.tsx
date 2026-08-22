@@ -31,7 +31,7 @@ export type JobGradeItem = {
 };
 
 /** Seed data from Decision 2A (QĐ 2A) (11 grades D1 to E2) */
-const SAMPLE_GRADES: JobGradeItem[] = [
+export const SAMPLE_GRADES: JobGradeItem[] = [
   {
     id: 'g1',
     code: 'D1',

@@ -213,6 +213,31 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
     () => jobTitleOptionsFromCatalog(catalogs ?? []),
     [catalogs],
   );
+
+  const workflows = useMemo(() => {
+    try {
+      const saved = localStorage.getItem('hrm.workflow-configs.v3');
+      if (saved) {
+        const data = JSON.parse(saved);
+        const configs = Array.isArray(data) ? data : (data?.workflows || []);
+        return configs.filter((c: any) => c.typeId === 'type-recruitment' && c.status === 'active');
+      }
+    } catch (e) {
+      console.error('Failed to load workflow configs', e);
+    }
+    return [];
+  }, []);
+
+  const workflowOptions = useMemo(() => {
+    return workflows.map((w: any) => ({
+      value: w.id,
+      label: w.name,
+      code: w.code,
+    }));
+  }, [workflows]);
+
+
+
   const departmentOptions = useMemo(
     () => departmentOptionsFromCatalog(catalogs ?? []),
     [catalogs],
@@ -275,6 +300,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
     priority: z.string().default('medium'),
     status: z.string().default('draft'),
     jd_template_id: z.string().optional(),
+    workflow_id: z.string().optional(),
   });
 
   type JobPostingFormValues = z.infer<typeof jobPostingSchema>;
@@ -294,8 +320,22 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
       priority: 'medium',
       status: 'draft',
       jd_template_id: '',
+      workflow_id: '',
     },
   });
+
+  const selectedWorkflowId = form.watch('workflow_id');
+
+  const filteredPositionOptions = useMemo(() => {
+    if (!selectedWorkflowId) return positionOptions;
+    const workflow = workflows.find((w: any) => w.id === selectedWorkflowId);
+    if (!workflow) return positionOptions;
+    
+    // Filter positionOptions to only include those configured in the workflow
+    return positionOptions.filter(opt => 
+      workflow.positions?.some((p: any) => p.positionName === opt.value)
+    );
+  }, [selectedWorkflowId, workflows, positionOptions]);
 
   // Fetch job postings with candidate count
   const { data: jobPostings = [], isLoading } = useQuery({
@@ -505,6 +545,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
       priority: 'medium',
       status: 'draft',
       jd_template_id: '',
+      workflow_id: '',
     });
     setIsFormOpen(true);
   };
@@ -529,6 +570,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
       priority: job.priority || 'medium',
       status: job.status,
       jd_template_id: '',
+      workflow_id: '',
     });
     setIsFormOpen(true);
   };
@@ -953,15 +995,94 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
+                      name="workflow_id"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel>Quy trình tuyển dụng</FormLabel>
+                          <FormControl>
+                            <CatalogSearchPicker
+                              options={workflowOptions}
+                              value={field.value}
+                              onValueChange={(val) => {
+                                field.onChange(val);
+                                // Clear dependent fields
+                                form.setValue('position_key', '', { shouldValidate: true });
+                                form.setValue('department_key', '', { shouldValidate: true });
+                                form.setValue('headcount', '1', { shouldValidate: true });
+                                form.setValue('employment_type', 'full-time', { shouldValidate: true });
+                                form.setValue('deadline', undefined, { shouldValidate: true });
+                                form.setValue('jd_template_id', '', { shouldValidate: true });
+                                setSelectedJdRef(null);
+                                setSelectedJdFullRow(null);
+                              }}
+                              placeholder="Chọn quy trình để tự động điền thông tin..."
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
                       name="position_key"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>{t('recruitment.jt.positionLabel')} <span className="text-destructive">*</span></FormLabel>
                           <FormControl>
                             <CatalogSearchPicker
-                              options={positionOptions}
+                              options={filteredPositionOptions}
                               value={field.value}
-                              onValueChange={field.onChange}
+                              onValueChange={(val) => {
+                                field.onChange(val);
+                                // Auto-fill logic from Workflow configurations
+                                if (selectedWorkflowId) {
+                                  const workflow = workflows.find((w: any) => w.id === selectedWorkflowId);
+                                  if (workflow) {
+                                    const pos = workflow.positions?.find((p: any) => p.positionName === val);
+                                    if (pos) {
+                                      // Auto fill department
+                                      if (pos.department && pos.department !== 'ALL_COMPANY') {
+                                        form.setValue('department_key', pos.department, { shouldValidate: true });
+                                      }
+                                      // Auto fill headcount
+                                      if (pos.quantity) {
+                                        const qty = parseInt(pos.quantity, 10);
+                                        if (!isNaN(qty) && qty > 0) {
+                                          form.setValue('headcount', qty.toString(), { shouldValidate: true });
+                                        }
+                                      }
+                                      // Auto fill employmentType
+                                      if (pos.employmentType) {
+                                        form.setValue('employment_type', pos.employmentType, { shouldValidate: true });
+                                      }
+                                      // Auto fill deadline
+                                      if ((pos as any).deadlineDate) {
+                                        const d = new Date((pos as any).deadlineDate);
+                                        if (!isNaN(d.getTime())) {
+                                          form.setValue('deadline', d, { shouldValidate: true });
+                                        }
+                                      }
+                                      // Auto fill JD template
+                                      if (pos.jdTemplateId) {
+                                        const tpl = jdTemplates.find((t) => t.id === pos.jdTemplateId);
+                                        if (tpl) {
+                                          handleSelectJdTemplate(tpl);
+                                        } else {
+                                          form.setValue('jd_template_id', pos.jdTemplateId, { shouldValidate: true });
+                                        }
+                                      } else {
+                                        handleClearJd();
+                                      }
+                                      
+                                      // Auto fill title if empty
+                                      const opt = filteredPositionOptions.find(o => o.value === val);
+                                      if (opt && !form.getValues('title')) {
+                                        form.setValue('title', `Tuyển dụng ${opt.label}`, { shouldValidate: true });
+                                      }
+                                    }
+                                  }
+                                }
+                              }}
                               placeholder={t('recruitment.jt.positionPlaceholder')}
                               loading={catalogsLoading}
                               errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}

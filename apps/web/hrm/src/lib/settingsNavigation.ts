@@ -85,7 +85,9 @@ export type SettingsTabId =
   | 'pay-salary-formulas'
   | 'pay-salary-groups'
   | 'pay-payslip-tpl'
-  | 'pay-tax-tables';
+  | 'pay-tax-tables'
+  | 'pay-policy-packs'
+  | 'workflow-config';
 
 export type SettingsNavItem = {
   id: SettingsTabId;
@@ -176,6 +178,8 @@ const ALL_SETTINGS_TAB_IDS = new Set<SettingsTabId>([
   'pay-salary-groups',
   'pay-payslip-tpl',
   'pay-tax-tables',
+  'pay-policy-packs',
+  'workflow-config',
 ]);
 
 export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
@@ -252,6 +256,14 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
       { id: 'pay-payslip-tpl', label: 'Template phiếu lương', icon: FileText, testId: 'settings-tab-pay-payslip-tpl' },
       { id: 'pay-tax-tables', label: 'Bảng thuế TNCN', icon: Calculator, testId: 'settings-tab-pay-tax-tables' },
       { id: 'settings-defaults', label: 'Mặc định tính lương', icon: Calculator, testId: 'settings-tab-settings-defaults' },
+    ],
+  },
+  {
+    groupId: 'policy',
+    title: 'Quy trình & Chính sách',
+    items: [
+      { id: 'workflow-config', label: 'Cấu hình quy trình', icon: GitBranch, testId: 'settings-tab-workflow-config' },
+      { id: 'pay-policy-packs', label: 'Gói chính sách', icon: FileText, testId: 'settings-tab-pay-policy-packs' },
     ],
   },
 ];
