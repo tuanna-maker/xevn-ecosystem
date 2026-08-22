@@ -61,7 +61,7 @@ describe('payPolicyPackForm — CHUNG', () => {
   it('extractChungRateParams đọc kpi_threshold + bcc_std từ API', () => {
     expect(
       extractChungRateParams({ kpi_threshold: 65, bcc_std: 3_000_000 }),
-    ).toEqual({ kpiThreshold: '65', bccStd: 3_000_000 });
+    ).toEqual({ kpiThreshold: '65', bccStd: 3_000_000, customRates: [] });
   });
 
   it('buildChungRateParams bỏ trống khi không có giá trị', () => {

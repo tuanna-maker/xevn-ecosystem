@@ -33,6 +33,8 @@ export type PolicyPackFormValues = {
   kpiThreshold: string;
   /** VND plain number (from ViMoneyInput). */
   bccStd: number;
+  /** Dynamic list of other rate params */
+  customRates: { key: string; value: number }[];
 };
 
 export type PolicyPackWritePayload = {
@@ -67,6 +69,7 @@ export const EMPTY_POLICY_PACK_FORM: PolicyPackFormValues = {
   status: 'draft',
   kpiThreshold: '',
   bccStd: 0,
+  customRates: [],
 };
 
 /** Parse KPI score text — no thousand grouping; empty → null. */
@@ -101,7 +104,7 @@ export function validatePolicyPackForm(values: PolicyPackFormValues): string | n
 
 export function extractChungRateParams(
   rateParams: Record<string, unknown> | null | undefined,
-): Pick<PolicyPackFormValues, 'kpiThreshold' | 'bccStd'> {
+): Pick<PolicyPackFormValues, 'kpiThreshold' | 'bccStd' | 'customRates'> {
   const src = rateParams ?? {};
   const kpiRaw = src.kpi_threshold ?? src.kpi_threshold_score;
   let kpiThreshold = '';
@@ -118,7 +121,18 @@ export function extractChungRateParams(
     const n = Number(bccRaw.replace(/[^\d-]/g, ''));
     bccStd = Number.isFinite(n) ? Math.trunc(n) : 0;
   }
-  return { kpiThreshold, bccStd };
+  
+  const customRates: { key: string; value: number }[] = [];
+  for (const [k, v] of Object.entries(src)) {
+    if (k !== 'kpi_threshold' && k !== 'kpi_threshold_score' && k !== 'bcc_std') {
+      const num = Number(v);
+      if (Number.isFinite(num)) {
+        customRates.push({ key: k, value: num });
+      }
+    }
+  }
+
+  return { kpiThreshold, bccStd, customRates };
 }
 
 export function buildChungRateParams(values: PolicyPackFormValues): Record<string, number> | undefined {
@@ -129,6 +143,13 @@ export function buildChungRateParams(values: PolicyPackFormValues): Record<strin
   }
   if (values.bccStd > 0) {
     out.bcc_std = Math.trunc(values.bccStd);
+  }
+  if (values.customRates && values.customRates.length > 0) {
+    values.customRates.forEach(rate => {
+      if (rate.key.trim() && Number.isFinite(rate.value)) {
+        out[rate.key.trim()] = rate.value;
+      }
+    });
   }
   return Object.keys(out).length > 0 ? out : undefined;
 }

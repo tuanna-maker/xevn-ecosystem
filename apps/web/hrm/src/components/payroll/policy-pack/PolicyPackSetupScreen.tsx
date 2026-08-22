@@ -115,6 +115,7 @@ export function PolicyPackSetupScreen() {
       status: (item.status as PolicyPackFormStatus) ?? 'draft',
       kpiThreshold: rates.kpiThreshold,
       bccStd: rates.bccStd,
+      customRates: rates.customRates ?? [],
     });
   };
 
@@ -168,6 +169,28 @@ export function PolicyPackSetupScreen() {
 
   const update = <K extends keyof PolicyPackFormValues>(field: K, value: PolicyPackFormValues[K]) =>
     setForm((prev) => ({ ...prev, [field]: value }));
+
+  const addCustomRate = () => {
+    setForm(prev => ({
+      ...prev,
+      customRates: [...prev.customRates, { key: '', value: 0 }]
+    }));
+  };
+
+  const removeCustomRate = (index: number) => {
+    setForm(prev => ({
+      ...prev,
+      customRates: prev.customRates.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateCustomRate = (index: number, field: 'key' | 'value', value: string | number) => {
+    setForm(prev => {
+      const newRates = [...prev.customRates];
+      newRates[index] = { ...newRates[index], [field]: value };
+      return { ...prev, customRates: newRates };
+    });
+  };
 
   const filtered = (list.data ?? []).filter((item) => {
     if (!search.trim()) return true;
@@ -328,6 +351,52 @@ export function PolicyPackSetupScreen() {
                   placeholder="0"
                 />
               </div>
+            </div>
+
+            {/* Cấu hình hạn mức mở rộng */}
+            <div className="space-y-3 pt-4 border-t mt-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-medium">Hạn mức / Tham số mở rộng</h4>
+                <Button type="button" variant="outline" size="sm" onClick={addCustomRate}>
+                  + Thêm tham số
+                </Button>
+              </div>
+              
+              {form.customRates.length === 0 ? (
+                <p className="text-xs text-muted-foreground">Chưa có tham số mở rộng. Bấm "Thêm tham số" để thêm.</p>
+              ) : (
+                <div className="space-y-2">
+                  {form.customRates.map((rate, index) => (
+                    <div key={index} className="flex items-start gap-2">
+                      <div className="flex-1 space-y-1">
+                        <Input
+                          placeholder="Mã tham số (VD: KPI_MAX)"
+                          value={rate.key}
+                          onChange={(e) => updateCustomRate(index, 'key', e.target.value)}
+                        />
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <Input
+                          type="number"
+                          placeholder="Giá trị"
+                          value={rate.value}
+                          onChange={(e) => updateCustomRate(index, 'value', Number(e.target.value))}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50 mt-0"
+                        onClick={() => removeCustomRate(index)}
+                      >
+                        <span className="sr-only">Xóa</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* KPI đã báo ngay dưới ô — không lặp lại ở cuối form. */}
