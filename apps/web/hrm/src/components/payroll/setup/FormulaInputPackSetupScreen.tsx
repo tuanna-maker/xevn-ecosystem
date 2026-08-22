@@ -10,7 +10,7 @@
  * Layout:     3 section - Core (7 lowercase vars) / Phụ cấp / Input Pack (13 source_kinds)
  * SOLID:      SRP - component chỉ render; không chứa business logic
  * fe_boundary: không query DB trực tiếp, không import từ BE source
- * display_ready_ack: text user-facing dùng tiếng Việt, không lộ FR-*/AC-* ra UI
+ * display_ready_ack: text user-facing dùng tiếng Việt, không lộ FR-* hoặc AC-* ra UI
  * must_keep:  không DEFAULT_VARIABLES hardcoded (U65)
  *             không drag ordering buttons (không trong FR-W10-04)
  *             variable codes lowercase, không UPPERCASE

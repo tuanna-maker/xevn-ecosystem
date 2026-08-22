@@ -1,38 +1,67 @@
 /**
  * @CODE-MEMORY
- * Screen:     HRM Lương → Thiết lập lương → Gói chính sách CHUNG (STP-POLICY-PACK)
+ * Screen:     HRM Lương → Thiết lập lương → Chính sách lương (Policy Pack)
  * UC:         UC-BP-PAY-STP-01 · UC-BP-PAY-STP-03 · UC-BP-PAY-STP-04
- * BR:         BR-PAY-STP-02 · AC-PAY-STP-01-05 · AC-PAY-STP-03-01 · AC-PAY-STP-04-01
- * SRS:        docs/program/specs/PO-HRM-PAY-CNTT-FE-STP-01-SRS-01.md
- * TechSpec:   docs/program/specs/PO-HRM-PAY-CNTT-FE-STP-01-TECHSPEC-01.md §2.1
- * UI:         docs/hrm/ui-screens/UI-HRM-PAY-STP-POLICY-PACK.md §4.2–4.3
- * Purpose:    Pure helpers validate + build payload CHUNG policy pack — ngày hiệu lực,
- *             KPI threshold (0–100, không nhóm nghìn), BCC_STD (số thuần VND). FE không
- *             evaluate formula / không merge fragment (28-FE-BE-SEPARATION).
+ * Purpose:    Pure helpers validate + build payload CHUNG policy pack.
+ *             2026-08-22 ADD: Mô hình Data Grid động hoàn toàn.
+ *             Mỗi PolicyPack có 1 packType duy nhất. Mỗi PolicyGroup là 1 lưới dữ liệu (columns + rows).
  * WorkItem:   PO-HRM-PAY-CNTT-FE-STP-01-POLICY-PACK-01
- * Coded:      2026-08-12
+ * Coded:      2026-08-22
  * Callers:    PolicyPackSetupScreen.tsx
- * Callees:    (none — pure)
- * must_keep:  Message AC-PAY-STP-01-05 nguyên văn; KPI 0–100; bcc_std number thuần khi submit;
- *             scope CHUNG; payroll_e2e_ready=false; U65 zero-seed
  * SOLID:      SRP — chỉ form/rateParams helper, không gọi API
- * LastVerified: payPolicyPackForm.test.ts
  */
 
 export type PolicyPackFormStatus = 'draft' | 'active' | 'retired';
 
+// ---------------------------------------------------------------------------
+// Unified Dynamic Data Grid Model
+// ---------------------------------------------------------------------------
+
+export type PolicyPackType =
+  | 'salary_scale' // Thang/Bảng lương (Gợi ý cột Ngạch, Chức danh, Bậc)
+  | 'allowance'    // Phụ cấp (Gợi ý các cột phụ cấp)
+  | 'kpi_bonus'    // Thưởng KPI
+  | 'custom_grid'; // Bảng lưới tùy chỉnh
+
+export const POLICY_PACK_TYPE_LABELS: Record<PolicyPackType, string> = {
+  salary_scale: 'Thang lương / Bảng lương',
+  allowance:    'Phụ cấp',
+  kpi_bonus:    'Thưởng KPI',
+  custom_grid:  'Bảng tùy chỉnh',
+};
+
+export type DynamicColumn = {
+  id: string; // nanoid
+  name: string; // Tên hiển thị (VD: Bậc 1, Phụ cấp xăng xe)
+  mappedField?: string; // Biến hệ thống nếu có map (VD: base_salary, allowance_gas)
+  isGradePicker?: boolean; // Flag để render UI dạng chọn Ngạch (nếu cần)
+};
+
+export type DynamicRow = {
+  id: string; // nanoid
+  cells: Record<string, string | number>; // Map col.id -> giá trị nhập vào
+};
+
+export type PolicyGroup = {
+  clientId: string;
+  code: string; // Mã nhóm (VD: II)
+  name: string; // Tên nhóm (VD: Hệ thống thang, bảng lương)
+  columns: DynamicColumn[];
+  rows: DynamicRow[];
+};
+
+// ---------------------------------------------------------------------------
+// Form values
+// ---------------------------------------------------------------------------
+
 export type PolicyPackFormValues = {
   code: string;
   nameVi: string;
-  /** ISO yyyy-MM-dd (ViDateField store). */
+  packType: PolicyPackType;
   effectiveFrom: string;
-  /** ISO yyyy-MM-dd optional. */
   effectiveTo: string;
   status: PolicyPackFormStatus;
-  /** Score 0–100 — plain number string in UI; no thousand group. */
-  kpiThreshold: string;
-  /** VND plain number (from ViMoneyInput). */
-  bccStd: number;
+  groups: PolicyGroup[];
 };
 
 export type PolicyPackWritePayload = {
@@ -42,7 +71,7 @@ export type PolicyPackWritePayload = {
   effectiveFrom: string;
   effectiveTo?: string;
   status: PolicyPackFormStatus;
-  rateParams?: Record<string, number>;
+  rateParams?: Record<string, unknown>;
 };
 
 export const POLICY_PACK_STATUS_LABEL_VI: Record<PolicyPackFormStatus, string> = {
@@ -52,32 +81,28 @@ export const POLICY_PACK_STATUS_LABEL_VI: Record<PolicyPackFormStatus, string> =
 };
 
 export const MSG_EFFECTIVE_DATE_ORDER = 'Hiệu lực đến phải sau hiệu lực từ';
-export const MSG_KPI_RANGE = 'KPI threshold phải từ 0 đến 100';
-export const MSG_CODE_REQUIRED = 'Mã gói không được để trống.';
-export const MSG_NAME_REQUIRED = 'Tên gói chính sách không được để trống.';
+export const MSG_CODE_REQUIRED = 'Mã chính sách không được để trống.';
+export const MSG_NAME_REQUIRED = 'Tên chính sách không được để trống.';
 export const MSG_EFFECTIVE_FROM_REQUIRED = 'Hiệu lực từ là bắt buộc.';
-export const MSG_SCOPE_403 =
-  'Không có quyền thao tác scope này — liên hệ C&B tập đoàn';
+export const MSG_SCOPE_403 = 'Không có quyền thao tác scope này — liên hệ C&B tập đoàn';
+
+// ---------------------------------------------------------------------------
+// Helper Utils
+// ---------------------------------------------------------------------------
+
+export function genClientId(): string {
+  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+}
 
 export const EMPTY_POLICY_PACK_FORM: PolicyPackFormValues = {
   code: '',
   nameVi: '',
+  packType: 'salary_scale',
   effectiveFrom: '',
   effectiveTo: '',
   status: 'draft',
-  kpiThreshold: '',
-  bccStd: 0,
+  groups: [],
 };
-
-/** Parse KPI score text — no thousand grouping; empty → null. */
-export function parseKpiThresholdInput(raw: string): number | null {
-  const trimmed = raw.trim().replace(',', '.');
-  if (!trimmed) return null;
-  // Reject vi-VN thousand groups (1.000) — score only allows ≤2 decimal places.
-  if (/^\d{1,3}(\.\d{3})+$/.test(trimmed)) return Number.NaN;
-  if (!/^-?\d+(\.\d{1,2})?$/.test(trimmed)) return Number.NaN;
-  return Number(trimmed);
-}
 
 export function validatePolicyPackForm(values: PolicyPackFormValues): string | null {
   if (!values.code.trim()) return MSG_CODE_REQUIRED;
@@ -90,46 +115,35 @@ export function validatePolicyPackForm(values: PolicyPackFormValues): string | n
   ) {
     return MSG_EFFECTIVE_DATE_ORDER;
   }
-  const kpi = parseKpiThresholdInput(values.kpiThreshold);
-  if (kpi != null) {
-    if (!Number.isFinite(kpi) || kpi < 0 || kpi > 100) {
-      return MSG_KPI_RANGE;
-    }
-  }
   return null;
 }
 
 export function extractChungRateParams(
   rateParams: Record<string, unknown> | null | undefined,
-): Pick<PolicyPackFormValues, 'kpiThreshold' | 'bccStd'> {
+): Pick<PolicyPackFormValues, 'packType' | 'groups'> {
   const src = rateParams ?? {};
-  const kpiRaw = src.kpi_threshold ?? src.kpi_threshold_score;
-  let kpiThreshold = '';
-  if (typeof kpiRaw === 'number' && Number.isFinite(kpiRaw)) {
-    kpiThreshold = String(kpiRaw);
-  } else if (typeof kpiRaw === 'string' && kpiRaw.trim()) {
-    kpiThreshold = kpiRaw.trim();
+  
+  let packType: PolicyPackType = 'custom_grid';
+  if (typeof src.packType === 'string' && src.packType in POLICY_PACK_TYPE_LABELS) {
+    packType = src.packType as PolicyPackType;
   }
-  const bccRaw = src.bcc_std;
-  let bccStd = 0;
-  if (typeof bccRaw === 'number' && Number.isFinite(bccRaw)) {
-    bccStd = Math.trunc(bccRaw);
-  } else if (typeof bccRaw === 'string' && bccRaw.trim()) {
-    const n = Number(bccRaw.replace(/[^\d-]/g, ''));
-    bccStd = Number.isFinite(n) ? Math.trunc(n) : 0;
+
+  let groups: PolicyGroup[] = [];
+  if (Array.isArray(src.__groups)) {
+    groups = src.__groups as PolicyGroup[];
   }
-  return { kpiThreshold, bccStd };
+
+  return { packType, groups };
 }
 
-export function buildChungRateParams(values: PolicyPackFormValues): Record<string, number> | undefined {
-  const out: Record<string, number> = {};
-  const kpi = parseKpiThresholdInput(values.kpiThreshold);
-  if (kpi != null && Number.isFinite(kpi)) {
-    out.kpi_threshold = kpi;
+export function buildChungRateParams(values: PolicyPackFormValues): Record<string, unknown> | undefined {
+  const out: Record<string, unknown> = {};
+  out.packType = values.packType;
+  
+  if (values.groups && values.groups.length > 0) {
+    out.__groups = values.groups;
   }
-  if (values.bccStd > 0) {
-    out.bcc_std = Math.trunc(values.bccStd);
-  }
+  
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
@@ -157,4 +171,34 @@ export function statusLabelVi(status: string | null | undefined): string {
     return POLICY_PACK_STATUS_LABEL_VI[status as PolicyPackFormStatus];
   }
   return status;
+}
+
+/** Pre-populate columns based on packType */
+export function generateDefaultColumnsForType(type: PolicyPackType): DynamicColumn[] {
+  switch (type) {
+    case 'salary_scale':
+      return [
+        { id: genClientId(), name: 'Mã ngạch', isGradePicker: true, mappedField: 'grade_code' },
+        { id: genClientId(), name: 'Chức danh công việc', mappedField: 'position_hint' },
+        { id: genClientId(), name: 'Bậc I', mappedField: 'step_1' },
+      ];
+    case 'allowance':
+      return [
+        { id: genClientId(), name: 'Đối tượng áp dụng', mappedField: 'target_group' },
+        { id: genClientId(), name: 'Phân mức (%)', mappedField: 'allowance_tier' },
+        { id: genClientId(), name: 'Xăng xe', mappedField: 'allowance_gas' },
+        { id: genClientId(), name: 'Điện thoại', mappedField: 'allowance_phone' },
+      ];
+    case 'kpi_bonus':
+      return [
+        { id: genClientId(), name: 'Đối tượng áp dụng', mappedField: 'target_group' },
+        { id: genClientId(), name: 'Tỷ lệ tối đa (%)', mappedField: 'max_pct' },
+      ];
+    case 'custom_grid':
+    default:
+      return [
+        { id: genClientId(), name: 'Đối tượng áp dụng', mappedField: 'target_group' },
+        { id: genClientId(), name: 'Giá trị' },
+      ];
+  }
 }

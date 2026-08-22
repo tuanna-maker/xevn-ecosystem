@@ -104,6 +104,7 @@
  */
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Download,
@@ -253,6 +254,7 @@ const getTopTabs = (t: any) => [
     testId: 'hdsd-pay-ess-tab',
   },
   { id: 'reports', label: t('payroll.reports'), icon: BarChart3, color: 'bg-xevn-primary' },
+  { id: 'setup', label: 'Thiết lập', icon: Settings, color: 'bg-xevn-primary', isLink: true },
 ];
 
 // Step cards for overview — Precision Motion brand chrome (no AI rainbow)
@@ -530,6 +532,7 @@ const paymentBatchesData: PaymentBatch[] = [];
 
 export default function Payroll() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { payslips: livePayslips, isLoading: livePayslipsLoading } = usePayrollPayslips();
 
   /** P0-c: race-prone tab/modal/form ? domain useReducer (shell/advance/taxUi/salary/batch). */
@@ -877,7 +880,13 @@ export default function Payroll() {
     const button = (
       <button
         key={tab.id}
-        onClick={() => !tab.hasDropdown && setActiveTab(tab.id)}
+        onClick={() => {
+          if ('isLink' in tab && tab.isLink) {
+            navigate('/payroll/setup');
+          } else if (!tab.hasDropdown) {
+            setActiveTab(tab.id);
+          }
+        }}
         data-testid={'testId' in tab && tab.testId ? String(tab.testId) : `payroll-tab-${tab.id}`}
         className={cn(
           'flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap transition-all group touch-target',
