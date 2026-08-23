@@ -172,26 +172,26 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
         {
           component_code: 'LUONG_CHINH',
           sign: 'earning',
-          formula: '=base_salary * (payable_hours / 208)'
+          formula: '=base_salary * (payable_hours / 208)',
         },
         {
           component_code: 'PHU_CAP',
           sign: 'earning',
-          formula: '=allowance_p2'
+          formula: '=allowance_p2',
         },
         {
           component_code: 'BHXH',
           sign: 'deduction',
-          formula: '=base_salary * 0.1'
-        }
-      ]
+          formula: '=base_salary * 0.1',
+        },
+      ],
     };
     const vars = {
       base_salary: 20800000,
       payable_hours: 104, // Nửa tháng
-      allowance_p2: 500000
+      allowance_p2: 500000,
     };
-    
+
     const res = evaluatePayFormulaExpression(expr, vars);
     expect(res.ok).toBe(true);
     if (res.ok) {

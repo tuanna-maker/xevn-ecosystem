@@ -13,16 +13,17 @@ export class SettingsPayrollParamsService {
         WHERE company_id = $1 AND setting_key = 'pay_system_params'
           AND archived_at IS NULL
       `,
-      [companyId]
+      [companyId],
     );
 
     if (res.rows.length === 0) return this.getDefaults();
-    
+
     try {
-      const parsed = typeof res.rows[0].value_json === 'string' 
-        ? JSON.parse(res.rows[0].value_json) 
-        : res.rows[0].value_json;
-        
+      const parsed =
+        typeof res.rows[0].value_json === 'string'
+          ? JSON.parse(res.rows[0].value_json)
+          : res.rows[0].value_json;
+
       const out: Record<string, number> = {};
       for (const [k, v] of Object.entries(parsed)) {
         if (typeof v === 'number') out[k] = v;
@@ -50,7 +51,7 @@ export class SettingsPayrollParamsService {
       CC_BASE_SALARY: 5000000,
       CC_CALL_FUND: 500000,
       DRIVER_KPI_EXPRESS: 2000000,
-      DRIVER_MEAL_ALLOWANCE: 25000
+      DRIVER_MEAL_ALLOWANCE: 25000,
     };
   }
 }

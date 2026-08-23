@@ -52,17 +52,23 @@ export class AttShiftService {
     return res.rows as AttShiftRow[];
   }
 
-  async upsertShift(
-    payload: UpsertAttShiftPayload,
-  ): Promise<AttShiftRow> {
+  async upsertShift(payload: UpsertAttShiftPayload): Promise<AttShiftRow> {
     const code = payload.code.trim().toUpperCase();
     if (!code) {
-      throw new ApiException('HRM-SHIFT-400', 'Thiếu mã ca làm việc', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-SHIFT-400',
+        'Thiếu mã ca làm việc',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const name = payload.nameVi.trim();
     if (!name) {
-      throw new ApiException('HRM-SHIFT-400', 'Thiếu tên ca làm việc', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-SHIFT-400',
+        'Thiếu tên ca làm việc',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const existing = await this.db.query(
@@ -146,7 +152,11 @@ export class AttShiftService {
       [companyId, id],
     );
     if (res.rowCount === 0) {
-      throw new ApiException('HRM-SHIFT-404', 'Không tìm thấy ca làm việc hoặc đã bị xóa', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-SHIFT-404',
+        'Không tìm thấy ca làm việc hoặc đã bị xóa',
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 }

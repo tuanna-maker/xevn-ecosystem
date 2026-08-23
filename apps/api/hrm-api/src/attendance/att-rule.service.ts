@@ -45,22 +45,32 @@ export class AttRuleService {
     return res.rows as AttRuleRow[];
   }
 
-  async upsertRule(
-    payload: UpsertAttRulePayload,
-  ): Promise<AttRuleRow> {
+  async upsertRule(payload: UpsertAttRulePayload): Promise<AttRuleRow> {
     const code = payload.code.trim().toUpperCase();
     if (!code) {
-      throw new ApiException('HRM-RULE-400', 'Thiếu mã quy tắc', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-RULE-400',
+        'Thiếu mã quy tắc',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const name = payload.nameVi.trim();
     if (!name) {
-      throw new ApiException('HRM-RULE-400', 'Thiếu tên quy tắc', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-RULE-400',
+        'Thiếu tên quy tắc',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const ruleType = payload.ruleType.trim();
     if (!ruleType) {
-      throw new ApiException('HRM-RULE-400', 'Thiếu loại quy tắc', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-RULE-400',
+        'Thiếu loại quy tắc',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const existing = await this.db.query(
@@ -133,7 +143,11 @@ export class AttRuleService {
       [companyId, id],
     );
     if (res.rowCount === 0) {
-      throw new ApiException('HRM-RULE-404', 'Không tìm thấy quy tắc hoặc đã bị xóa', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-RULE-404',
+        'Không tìm thấy quy tắc hoặc đã bị xóa',
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 }

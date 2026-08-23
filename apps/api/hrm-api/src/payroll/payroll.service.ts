@@ -1134,7 +1134,9 @@ export class PayrollService {
     }> = [];
     let taxContext: PayTaxProcessContext | undefined;
     const splitSvc = this.payPayslipSplit();
-    const systemParams = await this.payrollParams.getPayrollParams(current.company_id);
+    const systemParams = await this.payrollParams.getPayrollParams(
+      current.company_id,
+    );
 
     for (const row of processPayslipRows) {
       const evaluated = await splitSvc.processEmployeeInPeriod({

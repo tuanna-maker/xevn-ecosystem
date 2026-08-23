@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @CODE-MEMORY
  * Screen:     HRM embed — global theme (Precision Motion foundation)
  * UC:         PO-HRM-UI-BRAND-REMASTER-01 W2
@@ -721,4 +721,38 @@
     );
     background-size: 20px 20px;
   }
+}
+
+/* ============================================================
+   xevn-policy-engine-scope — CSS isolation for Policy Engine screens
+   All screens use inline styles (Vanilla CSS), this scope prevents
+   Tailwind base styles from bleeding into the engine UI.
+   ============================================================ */
+.xevn-policy-engine-scope {
+  /* Reset Tailwind preflight interference */
+  box-sizing: border-box;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+.xevn-policy-engine-scope *,
+.xevn-policy-engine-scope *::before,
+.xevn-policy-engine-scope *::after {
+  box-sizing: border-box;
+}
+
+.xevn-policy-engine-scope button {
+  all: unset;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.xevn-policy-engine-scope input,
+.xevn-policy-engine-scope select,
+.xevn-policy-engine-scope textarea {
+  box-sizing: border-box;
+}
+
+.xevn-policy-engine-scope table {
+  border-collapse: collapse;
+  width: 100%;
 }

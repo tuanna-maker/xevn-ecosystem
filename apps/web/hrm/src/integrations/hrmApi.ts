@@ -105,6 +105,21 @@ async function headers(opts?: HrmHeaderOptions) {
     baseHeaders["x-tenant-id"] = effectiveScope.tenantId;
     baseHeaders["x-company-id"] = effectiveScope.companyId;
   }
+
+  if (!baseHeaders["x-tenant-id"]) {
+    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    const fallbackTenant = 
+      urlParams?.get('tenantId')?.trim() || 
+      getPortalJwtTenantId() || 
+      import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim() ||
+      (typeof localStorage !== 'undefined' ? localStorage.getItem('hrm_current_tenant_id') : null) ||
+      (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('hrm_current_tenant_id') : null) ||
+      HRM_MASTER_TENANT_ID;
+      
+    if (fallbackTenant) {
+      baseHeaders["x-tenant-id"] = fallbackTenant;
+    }
+  }
   return baseHeaders;
 }
 

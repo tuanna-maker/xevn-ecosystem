@@ -134,9 +134,7 @@ describe('LeaveAttendanceFunnelService', () => {
     });
 
     const funnel = createFunnel(queryMock);
-    await expect(
-      funnel.materializeApprovedLeave(leave),
-    ).rejects.toMatchObject({
+    await expect(funnel.materializeApprovedLeave(leave)).rejects.toMatchObject({
       code: HRM_ATT_LEAVE_FUNNEL_CONFLICT,
       status: 409,
     });
@@ -162,9 +160,7 @@ describe('LeaveAttendanceFunnelService', () => {
     });
 
     const funnel = createFunnel(queryMock);
-    await expect(
-      funnel.materializeApprovedLeave(leave),
-    ).rejects.toMatchObject({
+    await expect(funnel.materializeApprovedLeave(leave)).rejects.toMatchObject({
       code: HRM_ATT_SHEET_LOCKED,
       status: 409,
     });
@@ -282,9 +278,7 @@ describe('LeaveAttendanceFunnelService', () => {
     });
 
     const funnel = createFunnel(queryMock);
-    await expect(
-      funnel.reverseLeaveMarkers(leave.id),
-    ).rejects.toMatchObject({
+    await expect(funnel.reverseLeaveMarkers(leave.id)).rejects.toMatchObject({
       code: HRM_ATT_SHEET_LOCKED,
       status: 409,
     });

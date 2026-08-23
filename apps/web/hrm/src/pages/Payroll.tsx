@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @CODE-MEMORY
  * Screen:     /payroll ? B?ng l??ng (HR / payroll ops)
  * UC:         UC-HRM-PAY
@@ -201,8 +201,15 @@ import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
 import { TaxPolicyTab } from '@/components/payroll/TaxPolicyTab';
 import { InsurancePolicyTab } from '@/components/payroll/InsurancePolicyTab';
 import { SalaryTemplatesTab } from '@/components/payroll/SalaryTemplatesTab';
+import { AllowancePolicyTab } from '@/components/payroll/AllowancePolicyTab';
+import { KpiDataTab } from '@/components/payroll/KpiDataTab';
+import { OtherIncomeDataTab } from '@/components/payroll/OtherIncomeDataTab';
+import { DeductionDataTab } from '@/components/payroll/DeductionDataTab';
+import { ProductDataTab } from '@/components/payroll/ProductDataTab';
 import { usePayrollDomainUi } from '@/hooks/usePayrollDomainUi';
 import { resolveCalcListTabComponent } from '@/components/payroll/payrollDomainUi';
+import { BatchRunnerScreen } from '@/components/payroll/batch/BatchRunnerScreen';
+import { PayrollPolicyHub } from '@/components/payroll/PayrollPolicyHub';
 import {
   PieChart,
   Pie,
@@ -311,6 +318,7 @@ const getPolicyMenuItems = (t: any) => [
   { id: 'allowance', label: t('payroll.allowancePolicy') },
   { id: 'bonus', label: t('payroll.bonusPolicy') },
   { id: 'sales', label: t('payroll.salesSummary') },
+  { id: 'policy-engine', label: 'Engine chính sách lương' },
 ];
 
 // Data dropdown items - will use translations
@@ -1329,6 +1337,14 @@ export default function Payroll() {
         return <PayrollAttendanceTab />;
       case 'data-sales':
         return <SalesDataTab />;
+      case 'data-kpi':
+        return <KpiDataTab />;
+      case 'data-other-income':
+        return <OtherIncomeDataTab />;
+      case 'data-deduction':
+        return <DeductionDataTab />;
+      case 'data-product':
+        return <ProductDataTab />;
       default:
         return (
           <div className="p-6 xevn-safe-inline" data-testid="pay-data-stub-precision">
@@ -2697,10 +2713,18 @@ export default function Payroll() {
         return <InsurancePolicyTab />;
       case 'payroll-groups':
         return <PayrollGroupsCatalogTab />;
+      case 'policy-engine':
+        return (
+          <div className="xevn-policy-engine-scope">
+            <PayrollPolicyHub />
+          </div>
+        );
       case 'bonus':
         return <BonusPolicyTab />;
       case 'sales':
         return <SalesDataTab />;
+      case 'allowance':
+        return <AllowancePolicyTab />;
       default:
         return (
           <div
@@ -2747,6 +2771,12 @@ export default function Payroll() {
                 Khi có endpoint, sẽ mở lại form theo API_DESIGN (không invent).
               </p>
             </Card>
+          </div>
+        );
+      case 'calc-create':
+        return (
+          <div className="xevn-policy-engine-scope">
+            <BatchRunnerScreen />
           </div>
         );
       default:
