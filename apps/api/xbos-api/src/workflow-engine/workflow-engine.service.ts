@@ -665,6 +665,21 @@ export class WorkflowEngineService {
     if (!definitionId || !businessType || !businessId) {
       throw new ApiException('XBOS-WF-400', 'definitionId, businessType, businessId required', HttpStatus.BAD_REQUEST);
     }
+    // ADR §2.2 / OpenAPI wfStartInstance — idempotent active instance for same business key.
+    const { rows: existingActive } = await this.db.query(
+      `SELECT *
+       FROM public.xbos_workflow_instance
+       WHERE tenant_id = $1
+         AND business_type = $2
+         AND business_id = $3
+         AND lower(coalesce(status, '')) IN ('pending', 'running', 'in_progress', 'active')
+       ORDER BY created_at DESC NULLS LAST
+       LIMIT 1`,
+      [tenantId, businessType, businessId],
+    );
+    if (existingActive[0]) {
+      return existingActive[0];
+    }
     const { rows: instRows } = await this.db.query(
       `INSERT INTO public.xbos_workflow_instance (tenant_id, company_id, definition_id, business_type, business_id, context)
        VALUES ($1,$2,$3::uuid,$4,$5,$6::jsonb) RETURNING *`,

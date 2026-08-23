@@ -20,8 +20,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path aliases */
-    "baseUrl": ".",
+    /* Path aliases (TS 6+: no baseUrl — paths use explicit prefixes) */
     "paths": {
       "@/*": ["./src/*"],
       "@xevn/ui": ["../../../packages/ui/src/index.ts"]

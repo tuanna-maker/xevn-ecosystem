@@ -222,7 +222,7 @@
     --gradient-sidebar: linear-gradient(180deg, hsl(220 39% 11%), hsl(220 39% 6%));
   }
 
-  .dark {
+  .dark-disabled {
     --background: 222 47% 6%;
     --foreground: 210 40% 98%;
 

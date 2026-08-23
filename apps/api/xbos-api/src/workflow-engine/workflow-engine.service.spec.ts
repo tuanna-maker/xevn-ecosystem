@@ -469,6 +469,7 @@ describe('WorkflowEngineService (UC-XBOS-13 / W3-5)', () => {
       })
       .mockResolvedValueOnce({ rows: [{ tenant_id: 'visun', company_id: 'main' }] }) // Option B enrich
       .mockResolvedValueOnce({ rows: [{ tenant_id: 'visun', company_id: 'main' }] }) // apply-scope
+      .mockResolvedValueOnce({ rows: [] }) // idempotent active instance miss
       .mockResolvedValueOnce({ rows: [{ id: 'inst-visun-apply-1', status: 'running' }] })
       .mockResolvedValueOnce({ rows: [] });
 
@@ -529,6 +530,7 @@ describe('WorkflowEngineService (UC-XBOS-13 / W3-5)', () => {
       })
       .mockResolvedValueOnce({ rows: [{ tenant_id: 'visun', company_id: 'main' }] }) // partition enrich
       .mockResolvedValueOnce({ rows: [{ tenant_id: 'visun', company_id: 'main' }] }) // apply-scope resolve
+      .mockResolvedValueOnce({ rows: [] }) // idempotent active instance miss
       .mockResolvedValueOnce({ rows: [{ id: 'inst-fallback-1', status: 'running' }] })
       .mockResolvedValueOnce({ rows: [] });
 
@@ -588,6 +590,7 @@ describe('WorkflowEngineService (UC-XBOS-13 / W3-5)', () => {
       })
       .mockResolvedValueOnce({ rows: [{ tenant_id: 'visun', company_id: 'main' }] }) // enrich visun
       .mockResolvedValueOnce({ rows: [{ tenant_id: 'visun', company_id: 'main' }] }) // apply-scope
+      .mockResolvedValueOnce({ rows: [] }) // idempotent active instance miss
       .mockResolvedValueOnce({ rows: [{ id: 'inst-option-b-member', status: 'running' }] })
       .mockResolvedValueOnce({ rows: [] });
 
@@ -647,6 +650,7 @@ describe('WorkflowEngineService (UC-XBOS-13 / W3-5)', () => {
         ],
       })
       .mockResolvedValueOnce({ rows: [{ tenant_id: 'visun', company_id: 'main' }] }) // enrich member
+      .mockResolvedValueOnce({ rows: [] }) // idempotent active instance miss
       .mockResolvedValueOnce({ rows: [{ id: 'inst-option-b-group', status: 'running' }] })
       .mockResolvedValueOnce({ rows: [] });
 

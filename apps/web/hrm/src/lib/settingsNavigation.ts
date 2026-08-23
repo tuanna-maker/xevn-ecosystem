@@ -85,7 +85,9 @@ export type SettingsTabId =
   | 'pay-salary-formulas'
   | 'pay-salary-groups'
   | 'pay-payslip-tpl'
-  | 'pay-tax-tables';
+  | 'pay-tax-tables'
+  | 'pay-policy-packs'
+  | 'workflow-config';
 
 export type SettingsNavItem = {
   id: SettingsTabId;
@@ -103,6 +105,7 @@ export type SettingsNavGroup = {
 /** Alias tab cũ → màn mới (bookmark / QA) */
 export const SETTINGS_TAB_ALIASES: Record<string, SettingsTabId> = {
   'contract-legal': 'contract-clauses',
+  'catalog-leave-types': 'att-leave-types',
 };
 
 export function resolveSettingsTab(raw: string | null | undefined): SettingsTabId {
@@ -176,6 +179,8 @@ const ALL_SETTINGS_TAB_IDS = new Set<SettingsTabId>([
   'pay-salary-groups',
   'pay-payslip-tpl',
   'pay-tax-tables',
+  'pay-policy-packs',
+  'workflow-config',
 ]);
 
 export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
@@ -231,7 +236,20 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
       { id: 'contract-termination-reasons', label: 'Lý do chấm dứt HĐ', icon: FileText, testId: 'settings-tab-contract-termination-reasons' },
     ],
   },
-
+  {
+    groupId: 'attendance',
+    title: 'Chấm công & Nghỉ phép',
+    // Web chỉ dùng để khai báo danh mục. Dữ liệu chấm công thực tế nhập qua máy chấm công tích hợp hoặc mobile app.
+    items: [
+      { id: 'att-leave-types', label: 'Loại nghỉ phép', icon: FileText, testId: 'settings-tab-att-leave-types' },
+      { id: 'att-attendance-codes', label: 'Mã chấm công', icon: ClipboardCheck, testId: 'settings-tab-att-attendance-codes' },
+      { id: 'att-ot-types', label: 'Loại tăng ca', icon: Clock, testId: 'settings-tab-att-ot-types' },
+      { id: 'att-ot-comp-types', label: 'Chi trả tăng ca', icon: Clock, testId: 'settings-tab-att-ot-comp-types' },
+      { id: 'att-shifts', label: 'Ca làm việc', icon: Clock, testId: 'settings-tab-att-shifts' },
+      { id: 'att-work-rules', label: 'Quy tắc tính công', icon: Calculator, testId: 'settings-tab-att-work-rules' },
+      { id: 'att-schedule-groups', label: 'Nhóm lịch làm việc', icon: Layers, testId: 'settings-tab-att-schedule-groups' },
+    ],
+  },
   {
     groupId: 'insurance',
     title: 'Bảo hiểm',
@@ -252,6 +270,14 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
       { id: 'pay-payslip-tpl', label: 'Template phiếu lương', icon: FileText, testId: 'settings-tab-pay-payslip-tpl' },
       { id: 'pay-tax-tables', label: 'Bảng thuế TNCN', icon: Calculator, testId: 'settings-tab-pay-tax-tables' },
       { id: 'settings-defaults', label: 'Mặc định tính lương', icon: Calculator, testId: 'settings-tab-settings-defaults' },
+    ],
+  },
+  {
+    groupId: 'policy',
+    title: 'Quy trình & Chính sách',
+    items: [
+      { id: 'workflow-config', label: 'Cấu hình quy trình', icon: GitBranch, testId: 'settings-tab-workflow-config' },
+      { id: 'pay-policy-packs', label: 'Gói chính sách', icon: FileText, testId: 'settings-tab-pay-policy-packs' },
     ],
   },
 ];

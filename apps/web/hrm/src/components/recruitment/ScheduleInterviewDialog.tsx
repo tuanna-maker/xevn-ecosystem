@@ -45,7 +45,7 @@
  * must_keep: Lane A POST create · soft-gate ≠ 409 · U65 · honesty false · C-SLICE
  * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-06a-cluster-fe-01.md
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -247,11 +247,15 @@ export function ScheduleInterviewDialog({
     defaultValues: buildDefaultFormValues(),
   });
 
+  const wasOpenRef = useRef(false);
   useEffect(() => {
-    if (open) {
+    // Chỉ reset khi open: false → true. Cấm deps `form` / object candidate (Textarea mất focus sau 1 ký tự).
+    if (open && !wasOpenRef.current) {
       form.reset(buildDefaultFormValues());
     }
-  }, [open, form]);
+    wasOpenRef.current = open;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open-edge only
+  }, [open]);
 
   const interviewType = form.watch('interview_type');
 

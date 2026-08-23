@@ -71,6 +71,9 @@ const InternalServices = lazy(() => import("./pages/InternalServices"));
 const ToolsEquipment = lazy(() => import("./pages/ToolsEquipment"));
 const Fleet = lazy(() => import("./pages/Fleet"));
 const InboxNotifications = lazy(() => import("./pages/InboxNotifications"));
+const PayrollSetupHub = lazy(() =>
+  import("./components/payroll/setup/PayrollSetupHub").then((m) => ({ default: m.PayrollSetupHub })),
+);
 const HRMChatWidget = lazy(() =>
   import("./components/ai/HRMChatWidget").then((module) => ({ default: module.HRMChatWidget })),
 );
@@ -178,6 +181,7 @@ const App = () => {
                   <Route path="/recruitment" element={<PermissionRoute module="recruitment">{withSuspense(<Recruitment />)}</PermissionRoute>} />
                   <Route path="/attendance" element={<PermissionRoute module="attendance">{withSuspense(<Attendance />)}</PermissionRoute>} />
                   <Route path="/payroll" element={<PermissionRoute module="payroll">{withSuspense(<Payroll />)}</PermissionRoute>} />
+                  <Route path="/payroll/setup" element={<PermissionRoute module="payroll">{withSuspense(<PayrollSetupHub />)}</PermissionRoute>} />
                   <Route path="/performance" element={withSuspense(<Performance />)} />
                   <Route path="/company" element={<PermissionRoute module="company">{withSuspense(<Company />)}</PermissionRoute>} />
                   <Route path="/reports" element={<PermissionRoute module="reports">{withSuspense(<Reports />)}</PermissionRoute>} />

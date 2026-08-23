@@ -38,6 +38,8 @@ export type ViDatePickerFieldProps = ViDateFieldProps & {
   disableFuture?: boolean;
   /** Optional aria label for calendar trigger. */
   calendarAriaLabel?: string;
+  /** Optional className for PopoverContent (e.g. z-index) */
+  contentClassName?: string;
 };
 
 function isoToCalendarDate(iso: string | undefined): Date | undefined {
@@ -55,6 +57,7 @@ export function ViDatePickerField({
   className,
   disableFuture = false,
   calendarAriaLabel = 'Chọn ngày trên lịch',
+  contentClassName,
   disabled,
   ...props
 }: ViDatePickerFieldProps) {
@@ -82,7 +85,7 @@ export function ViDatePickerField({
             <CalendarIcon className="h-4 w-4 opacity-70" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 bg-background" align="end">
+        <PopoverContent className={cn("w-auto p-0 bg-background z-[300]", contentClassName)} align="end">
           <Calendar
             mode="single"
             selected={selected}

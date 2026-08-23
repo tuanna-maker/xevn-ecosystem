@@ -75,10 +75,43 @@
  *       403/409 for own main conflicts ADR-GROUP-CEO-MAIN-HOLDING-SCOPE §5 + RBAC ladder.
  * SRS:  ADR-GROUP-CEO-MAIN-HOLDING-SCOPE §5 · ADR-HRM-RBAC-SCOPE-LADDER § member main
  * must_keep: Group CEO main→five-slug rollup; member own main 200; holding/xevn 409
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-22
+ * WorkItem: SA-HRM-TENANT-ONLY-SCOPE-01
+ * change_mode: SPEC_ACK (no runtime change until HRM-TENANT-ONLY-SCOPE-BE-01)
+ * What: Sponsor lock — deprecate OU slug partition; target scope = tenantIds[] + company_id=main.
+ *       Group CEO rollup → tenant_id IN (registry members), not company_id IN GROUP_MEMBER_SLUGS.
+ * Why:  CEO Visun 0 rows (data xevn/logistics vs JWT visun/main); OU ≠ menu RBAC.
+ * Ref:  docs/architecture/ADR-HRM-TENANT-ONLY-SCOPE-20260822.md
+ *       docs/program/specs/SA-HRM-TENANT-ONLY-SCOPE-SPEC-01.md §2–§4
+ * must_keep: HRM_TENANT_ONLY_SCOPE=false → legacy OU rollup unchanged until Phase 1 merge;
+ *       resolveHrmSettingsCatalogCompanyId main→holding; JWT companyId=main; 409 default
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-22
+ * WorkItem: HRM-TENANT-ONLY-SCOPE-BE-01
+ * change_mode: IMPLEMENT
+ * What: resolveHrmListScope tenantOnlyMode + tenantIds; pushEmployeeListScopeFilters bridge SQL;
+ *       assertResourceInHrmScope tenant guard; export isHrmTenantOnlyScopeEnabled.
+ * Why:  Phases 1–5 SA-HRM-TENANT-ONLY-SCOPE — partition by tenant_id not OU slug.
+ * Ref:  docs/program/specs/SA-HRM-TENANT-ONLY-SCOPE-SPEC-01.md
+ * must_keep: Flag OFF = legacy GROUP_MEMBER_SLUGS; settings catalog main→holding unchanged
  */
 import { HttpStatus } from '@nestjs/common';
 import { ApiException } from './api.exception';
 import { getVerifiedInternalJwtPayload } from './internal-auth';
+import {
+  HRM_GROUP_ROLLUP_TENANT_IDS,
+  HRM_TENANT_DISPLAY_NAMES,
+  isHrmTenantLegacyBridgeEnabled,
+  isHrmTenantOnlyScopeEnabled,
+  legacyOuSlugsForTenantIds,
+  resolveTenantIdFromLegacyOuOrTenant,
+} from './hrm-tenant-scope';
+
+export {
+  isHrmTenantLegacyBridgeEnabled,
+  isHrmTenantOnlyScopeEnabled,
+} from './hrm-tenant-scope';
 
 /** Operating unit slugs for master UAT workforce — ADR-HRM-RBAC-SCOPE-LADDER §3. */
 export const HRM_GROUP_MEMBER_COMPANY_SLUGS = [
@@ -187,6 +220,10 @@ export type HrmListScope = {
   masterTenantPartition: boolean;
   /** Member subsidiary CEO: filter employees by custom_fields tenant. */
   memberTenantId?: string;
+  /** Tenant-only partition (ADR-HRM-TENANT-ONLY-SCOPE). */
+  tenantOnlyMode?: boolean;
+  /** Resolved tenant_id list for SQL filters when tenantOnlyMode. */
+  tenantIds?: string[];
 };
 
 /** Optional request context when JWT is absent (internal API key + portal proxy). */
@@ -387,6 +424,7 @@ export function expandHrmTextCompanyIds(
 /**
  * Resolves SQL list filters for HRM operational APIs when JWT uses companyId=main.
  * Group CEO (master + group_ceo + main) rolls up GROUP_MEMBER_SLUGS per ADR / BA CARD rules.
+ * When HRM_TENANT_ONLY_SCOPE: rollup via tenant_id IN (member registry) + company_id=main.
  */
 export function resolveHrmListScope(
   authorization: string | undefined,
@@ -410,9 +448,12 @@ export function resolveHrmListScope(
       requestedCompanyId)
     : requestedCompanyId;
 
+  const requested = requestedCompanyId.trim().toLowerCase();
+  const tenantOnly = isHrmTenantOnlyScopeEnabled();
+
   const isGroupRollup =
     tenantId === MASTER_TENANT_ID &&
-    requestedCompanyId === HRM_PILOT_OPERATING_COMPANY_ID &&
+    requested === HRM_PILOT_OPERATING_COMPANY_ID &&
     isGroupCeoMasterOperatingBucket(
       jwtPayload,
       tenantId,
@@ -423,7 +464,68 @@ export function resolveHrmListScope(
   const serviceGroupMain =
     !jwtPayload &&
     tenantId === MASTER_TENANT_ID &&
-    requestedCompanyId === HRM_PILOT_OPERATING_COMPANY_ID;
+    requested === HRM_PILOT_OPERATING_COMPANY_ID;
+
+  if (tenantOnly) {
+    if (isGroupRollup || serviceGroupMain) {
+      return {
+        companyIds: [HRM_PILOT_OPERATING_COMPANY_ID],
+        masterTenantPartition: true,
+        tenantOnlyMode: true,
+        tenantIds: [...HRM_GROUP_ROLLUP_TENANT_IDS],
+      };
+    }
+
+    if (
+      tenantId &&
+      tenantId !== MASTER_TENANT_ID &&
+      requested === HRM_PILOT_OPERATING_COMPANY_ID
+    ) {
+      return {
+        companyIds: [HRM_PILOT_OPERATING_COMPANY_ID],
+        masterTenantPartition: false,
+        memberTenantId: tenantId,
+        tenantOnlyMode: true,
+        tenantIds: [tenantId],
+      };
+    }
+
+    const narrowTenant = resolveTenantIdFromLegacyOuOrTenant(requested);
+    if (
+      narrowTenant &&
+      tenantId === MASTER_TENANT_ID &&
+      isGroupCeoMasterOperatingBucket(
+        jwtPayload,
+        tenantId,
+        claimCompany,
+        roleCode,
+      )
+    ) {
+      return {
+        companyIds: [HRM_PILOT_OPERATING_COMPANY_ID],
+        masterTenantPartition: false,
+        tenantOnlyMode: true,
+        tenantIds: [narrowTenant],
+      };
+    }
+
+    if (tenantId && tenantId !== MASTER_TENANT_ID) {
+      return {
+        companyIds: [HRM_PILOT_OPERATING_COMPANY_ID],
+        masterTenantPartition: false,
+        memberTenantId: tenantId,
+        tenantOnlyMode: true,
+        tenantIds: [tenantId],
+      };
+    }
+
+    return {
+      companyIds: [requestedCompanyId],
+      masterTenantPartition: false,
+      tenantOnlyMode: true,
+      tenantIds: tenantId ? [tenantId] : [],
+    };
+  }
 
   if (isGroupRollup || serviceGroupMain) {
     return {
@@ -504,12 +606,17 @@ export function expandPayrollAttendanceSheetCompanyIds(
   return [...out];
 }
 
-/** Append `company_id` predicate; supports single slug or group rollup IN list. */
+/** Append `company_id` predicate; supports single slug, group rollup IN list, or HrmListScope (tenant-only tables). */
 export function pushCompanyIdFilter(
   filters: string[],
   values: unknown[],
-  companyIds: string[],
+  companyIdsOrScope: string[] | HrmListScope,
 ): void {
+  if (!Array.isArray(companyIdsOrScope)) {
+    pushHrmTableScopeFilters(filters, values, companyIdsOrScope);
+    return;
+  }
+  const companyIds = companyIdsOrScope;
   if (companyIds.length === 1) {
     values.push(companyIds[0]);
     filters.push(`company_id = $${values.length}::text`);
@@ -517,6 +624,147 @@ export function pushCompanyIdFilter(
   }
   values.push(companyIds);
   filters.push(`company_id = ANY($${values.length}::text[])`);
+}
+
+/** Tenant-only scope for tables with explicit `tenant_id` column (departments, payroll_periods, recruitment, …). */
+export function pushHrmTableScopeFilters(
+  filters: string[],
+  values: unknown[],
+  scope: HrmListScope,
+  options?: { tableAlias?: string },
+): void {
+  if (scope.tenantOnlyMode && scope.tenantIds?.length) {
+    pushTenantOnlyTableScopeFilters(filters, values, scope, options);
+    return;
+  }
+  const companyIds = expandPayrollPeriodCompanyIds(scope);
+  const alias = options?.tableAlias?.trim();
+  if (alias) {
+    if (companyIds.length === 1) {
+      values.push(companyIds[0]);
+      filters.push(`${alias}.company_id = $${values.length}::text`);
+      return;
+    }
+    values.push(companyIds);
+    filters.push(`${alias}.company_id = ANY($${values.length}::text[])`);
+    return;
+  }
+  pushCompanyIdFilter(filters, values, companyIds);
+}
+
+/**
+ * Departments list — tenant-only plus legacy OU rows (company_id=logistics, tenant_id null)
+ * until backfill completes. Avoids hiding pre-migrate department rows for member CEOs.
+ */
+export function pushDepartmentTableScopeFilters(
+  filters: string[],
+  values: unknown[],
+  scope: HrmListScope,
+): void {
+  if (!scope.tenantOnlyMode || !scope.tenantIds?.length) {
+    pushCompanyIdFilter(filters, values, scope.companyIds);
+    return;
+  }
+  const tenantIds = scope.tenantIds;
+  const legacyOus = legacyOuSlugsForTenantIds(tenantIds);
+  values.push(tenantIds);
+  const tenantParam = values.length;
+  values.push(HRM_PILOT_OPERATING_COMPANY_ID);
+  const mainParam = values.length;
+
+  if (legacyOus.length > 0) {
+    values.push(legacyOus);
+    const ouParam = values.length;
+    filters.push(`(
+      (NULLIF(TRIM(tenant_id), '') = ANY($${tenantParam}::text[])
+        AND company_id = $${mainParam}::text)
+      OR (
+        (tenant_id IS NULL OR TRIM(tenant_id) = '')
+        AND company_id = ANY($${ouParam}::text[])
+      )
+    )`);
+    return;
+  }
+
+  filters.push(
+    `NULLIF(TRIM(tenant_id), '') = ANY($${tenantParam}::text[]) AND company_id = $${mainParam}::text`,
+  );
+}
+
+/** Payroll period list — tenant-only uses tenant_id column; legacy uses OU slug expansion. */
+export function pushPayrollPeriodScopeFilters(
+  filters: string[],
+  values: unknown[],
+  scope: HrmListScope,
+): void {
+  if (scope.tenantOnlyMode && scope.tenantIds?.length) {
+    pushHrmTableScopeFilters(filters, values, scope);
+    return;
+  }
+  pushCompanyIdFilter(filters, values, expandPayrollPeriodCompanyIds(scope));
+}
+
+function pushTenantOnlyTableScopeFilters(
+  filters: string[],
+  values: unknown[],
+  scope: HrmListScope,
+  options?: { tableAlias?: string },
+): void {
+  const col = (name: string) =>
+    options?.tableAlias ? `${options.tableAlias}.${name}` : name;
+  const tenantIds = scope.tenantIds ?? [];
+  if (!tenantIds.length) {
+    filters.push('FALSE');
+    return;
+  }
+  const legacyOus = isHrmTenantLegacyBridgeEnabled()
+    ? legacyOuSlugsForTenantIds(tenantIds)
+    : [];
+  values.push(tenantIds);
+  const tenantParam = values.length;
+  values.push(HRM_PILOT_OPERATING_COMPANY_ID);
+  const mainParam = values.length;
+
+  if (legacyOus.length > 0) {
+    values.push(legacyOus);
+    const ouParam = values.length;
+    filters.push(`(
+      (NULLIF(TRIM(${col('tenant_id')}), '') = ANY($${tenantParam}::text[])
+        AND ${col('company_id')} = $${mainParam}::text)
+      OR (
+        COALESCE(NULLIF(TRIM(${col('tenant_id')}), ''), '${MASTER_TENANT_ID}') = '${MASTER_TENANT_ID}'
+        AND ${col('company_id')} = ANY($${ouParam}::text[])
+      )
+    )`);
+    return;
+  }
+
+  filters.push(
+    `NULLIF(TRIM(${col('tenant_id')}), '') = ANY($${tenantParam}::text[]) AND ${col('company_id')} = $${mainParam}::text`,
+  );
+}
+
+/** Resolved tenant_id for INSERT on tenant-scoped tables when HRM_TENANT_ONLY_SCOPE is ON. */
+export function resolveHrmPersistTenantId(
+  authorization: string | undefined,
+  requestedCompanyId: string,
+  context?: HrmListScopeContext,
+): string | null {
+  const scope = resolveHrmListScope(authorization, requestedCompanyId, context);
+  if (!scope.tenantOnlyMode) {
+    return null;
+  }
+  if (scope.memberTenantId) {
+    return scope.memberTenantId;
+  }
+  const narrow = resolveTenantIdFromLegacyOuOrTenant(requestedCompanyId);
+  if (narrow && scope.tenantIds?.includes(narrow)) {
+    return narrow;
+  }
+  if (scope.tenantIds?.length === 1) {
+    return scope.tenantIds[0];
+  }
+  return scope.tenantIds?.[0] ?? MASTER_TENANT_ID;
 }
 
 function companyIdsToUuidList(companyIds: string[]): string[] {
@@ -589,6 +837,21 @@ export function resolveHrmPersistCompanyIdText(
   // Pilot UUID → slug before TEXT persist (G-AT10-01); FE may send employee.company_id UUID.
   const raw = resolveHrmCompanySlugForId(requestedCompanyId);
   const scope = resolveHrmListScope(authorization, raw, context);
+  if (scope.tenantOnlyMode) {
+    const persisted = HRM_PILOT_OPERATING_COMPANY_ID;
+    const allowedTenants = new Set(
+      (scope.tenantIds ?? []).map((id) => id.trim().toLowerCase()),
+    );
+    const tenantId = resolveHrmPersistTenantId(authorization, raw, context);
+    if (tenantId && !allowedTenants.has(tenantId.trim().toLowerCase())) {
+      throw new ApiException(
+        'HRM-SCOPE-409',
+        'Resource tenant_id is outside token scope',
+        HttpStatus.CONFLICT,
+      );
+    }
+    return persisted;
+  }
   const persisted =
     raw === HRM_PILOT_OPERATING_COMPANY_ID && scope.masterTenantPartition
       ? 'holding'
@@ -628,6 +891,10 @@ export function pushEmployeeListScopeFilters(
   scope: HrmListScope,
   options?: { skipTenantPartition?: boolean },
 ): void {
+  if (scope.tenantOnlyMode && scope.tenantIds?.length) {
+    pushTenantOnlyEmployeeScopeFilters(filters, values, scope, options);
+    return;
+  }
   pushCompanyIdFilter(filters, values, scope.companyIds);
   if (options?.skipTenantPartition) {
     return;
@@ -646,6 +913,51 @@ export function pushEmployeeListScopeFilters(
   }
 }
 
+/** Tenant-only SQL: migrated rows (tenant_id + main) OR legacy OU bridge on xevn partition. */
+function pushTenantOnlyEmployeeScopeFilters(
+  filters: string[],
+  values: unknown[],
+  scope: HrmListScope,
+  options?: { skipTenantPartition?: boolean },
+): void {
+  if (options?.skipTenantPartition) {
+    values.push(HRM_PILOT_OPERATING_COMPANY_ID);
+    filters.push(`company_id = $${values.length}::text`);
+    return;
+  }
+  const tenantIds = scope.tenantIds ?? [];
+  if (!tenantIds.length) {
+    filters.push('FALSE');
+    return;
+  }
+  const legacyOus = legacyOuSlugsForTenantIds(tenantIds);
+  values.push(tenantIds);
+  const tenantParam = values.length;
+  values.push(HRM_PILOT_OPERATING_COMPANY_ID);
+  const mainParam = values.length;
+
+  const useLegacyBridge =
+    isHrmTenantLegacyBridgeEnabled() && legacyOus.length > 0;
+
+  if (useLegacyBridge) {
+    values.push(legacyOus);
+    const ouParam = values.length;
+    filters.push(`(
+      (NULLIF(TRIM(custom_fields->>'tenant_id'), '') = ANY($${tenantParam}::text[])
+        AND company_id = $${mainParam}::text)
+      OR (
+        COALESCE(NULLIF(TRIM(custom_fields->>'tenant_id'), ''), '${MASTER_TENANT_ID}') = '${MASTER_TENANT_ID}'
+        AND company_id = ANY($${ouParam}::text[])
+      )
+    )`);
+    return;
+  }
+
+  filters.push(
+    `NULLIF(TRIM(custom_fields->>'tenant_id'), '') = ANY($${tenantParam}::text[]) AND company_id = $${mainParam}::text`,
+  );
+}
+
 /** Attendance / leave rows may use UUID company_id; scope via workforce employee_ids. */
 export function pushWorkforceEmployeeScopeFilter(
   filters: string[],
@@ -653,6 +965,46 @@ export function pushWorkforceEmployeeScopeFilter(
   scope: HrmListScope,
   employeeIdColumn = 'employee_id',
 ): void {
+  if (scope.tenantOnlyMode && scope.tenantIds?.length) {
+    const tenantIds = scope.tenantIds;
+    const legacyOus = isHrmTenantLegacyBridgeEnabled()
+      ? legacyOuSlugsForTenantIds(tenantIds)
+      : [];
+    values.push(tenantIds);
+    const tenantParam = values.length;
+    values.push(HRM_PILOT_OPERATING_COMPANY_ID);
+    const mainParam = values.length;
+
+    if (isHrmTenantLegacyBridgeEnabled() && legacyOus.length > 0) {
+      values.push(legacyOus);
+      const ouParam = values.length;
+      filters.push(
+        `${employeeIdColumn} IN (
+          SELECT id FROM public.employees
+          WHERE (
+            (NULLIF(TRIM(custom_fields->>'tenant_id'), '') = ANY($${tenantParam}::text[])
+              AND company_id = $${mainParam}::text)
+            OR (
+              COALESCE(NULLIF(TRIM(custom_fields->>'tenant_id'), ''), '${MASTER_TENANT_ID}') = '${MASTER_TENANT_ID}'
+              AND company_id = ANY($${ouParam}::text[])
+            )
+          ) AND archived_at IS NULL
+        )`,
+      );
+      return;
+    }
+
+    filters.push(
+      `${employeeIdColumn} IN (
+        SELECT id FROM public.employees
+        WHERE NULLIF(TRIM(custom_fields->>'tenant_id'), '') = ANY($${tenantParam}::text[])
+          AND company_id = $${mainParam}::text
+          AND archived_at IS NULL
+      )`,
+    );
+    return;
+  }
+
   if (scope.masterTenantPartition) {
     values.push(MASTER_TENANT_ID);
     const tenantParam = values.length;
@@ -791,6 +1143,7 @@ export function assertResourceInHrmScope(
     | {
         company_id?: string | null;
         custom_fields?: Record<string, unknown> | null;
+        tenant_id?: string | null;
       }
     | null
     | undefined,
@@ -807,6 +1160,36 @@ export function assertResourceInHrmScope(
       HttpStatus.NOT_FOUND,
     );
   }
+
+  const rowTenant =
+    readResourceTenantId(resource) ||
+    (typeof resource?.tenant_id === 'string' ? resource.tenant_id.trim() : '');
+
+  if (scope.tenantOnlyMode && scope.tenantIds?.length) {
+    const allowedTenants = new Set(
+      scope.tenantIds.map((id) => id.trim().toLowerCase()),
+    );
+    const legacyOus = isHrmTenantLegacyBridgeEnabled()
+      ? new Set(
+          legacyOuSlugsForTenantIds(scope.tenantIds).map((s) => s.toLowerCase()),
+        )
+      : new Set<string>();
+    const effectiveTenant = rowTenant || MASTER_TENANT_ID;
+    const migratedMatch =
+      allowedTenants.has(effectiveTenant) &&
+      companyId === HRM_PILOT_OPERATING_COMPANY_ID;
+    const legacyMatch =
+      effectiveTenant === MASTER_TENANT_ID && legacyOus.has(companyId);
+    if (!migratedMatch && !legacyMatch) {
+      throw new ApiException(
+        mismatchCode,
+        'Resource tenant_id is outside token scope',
+        HttpStatus.CONFLICT,
+      );
+    }
+    return;
+  }
+
   const { slugs: allowedSlugs, uuids: allowedUuids } =
     buildAllowedCompanyKeys(scope);
   const companyAllowed =
@@ -819,7 +1202,6 @@ export function assertResourceInHrmScope(
     );
   }
 
-  const rowTenant = readResourceTenantId(resource);
   if (scope.memberTenantId) {
     if (!rowTenant || rowTenant !== scope.memberTenantId) {
       throw new ApiException(

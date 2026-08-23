@@ -139,6 +139,8 @@ import { PayTaxTableSettingsPanel } from '@/components/settings/payroll/PayTaxTa
 import { PayPaySlipTemplateSettingsPanel } from '@/components/settings/payroll/PayPayslipTemplateSettingsPanel';
 import { ContractTypeSettingsPanel } from '@/components/settings/ContractTypeSettingsPanel';
 import { ContractTerminationReasonSettingsPanel } from '@/components/settings/ContractTerminationReasonSettingsPanel';
+import { WorkflowConfigSettingsPanel } from '@/components/settings/WorkflowConfigSettingsPanel';
+import { PolicyPackSetupScreen } from '@/components/payroll/policy-pack/PolicyPackSetupScreen';
 
 
 
@@ -612,6 +614,12 @@ export default function Settings() {
         )}
         {settingsTab === 'pay-tax-tables' && (
           <PayTaxTableSettingsPanel />
+        )}
+        {settingsTab === 'workflow-config' && (
+          <WorkflowConfigSettingsPanel />
+        )}
+        {settingsTab === 'pay-policy-packs' && (
+          <PolicyPackSetupScreen />
         )}
       </SettingsNavLayout>
     </div>

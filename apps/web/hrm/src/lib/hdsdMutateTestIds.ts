@@ -227,6 +227,7 @@ export const HDSD_MUTATE_TEST_IDS = {
   recCompareOpenBtn: 'hdsd-rec-compare-open-btn',
   recCompareDialog: 'hdsd-rec-compare-dialog',
   recCompareYctdPicker: 'hdsd-rec-compare-yctd-picker',
+  recCompareYctdSearch: 'hdsd-rec-compare-yctd-search',
   recCompareYctdEmpty: 'hdsd-rec-compare-yctd-empty',
   recCompareUvEmpty: 'hdsd-rec-compare-uv-empty',
   recCompareUvRow: 'hdsd-rec-compare-uv-row',

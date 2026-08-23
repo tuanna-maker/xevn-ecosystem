@@ -322,7 +322,8 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
         });
       }
     }
-  }, [open, editingInsurance, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open/id only; cấm deps `form` (notes Textarea 1 ký tự)
+  }, [open, editingInsurance?.id]);
 
   // Auto-select when exactly 1 active policy in picker scope
   useEffect(() => {
@@ -338,7 +339,8 @@ export function AddInsuranceDialog({ open, onOpenChange, editingInsurance }: Add
     if (current && !policyPickerOptions.some((p) => p.id === current)) {
       form.setValue('policy_id', '', { shouldValidate: true });
     }
-  }, [open, isEditing, policyPickerOptions, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- policy list only; cấm deps `form`
+  }, [open, isEditing, policyPickerOptions]);
 
   const invalidateInsuranceQueries = () => {
     queryClient.invalidateQueries({ queryKey: ['insurance'] });

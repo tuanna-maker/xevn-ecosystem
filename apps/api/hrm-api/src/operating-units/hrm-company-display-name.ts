@@ -24,8 +24,10 @@
 import type { QueryResultRow } from 'pg';
 import {
   HRM_GROUP_MEMBER_COMPANY_SLUGS,
+  HRM_PILOT_OPERATING_COMPANY_ID,
   MASTER_TENANT_ID,
 } from '../common/hrm-list-scope';
+import { resolveHrmTenantDisplayNameVi } from '../common/hrm-tenant-scope';
 import {
   buildOperatingUnitSeedRows,
   HRM_LEGACY_KHOI_DISPLAY_NAMES,
@@ -66,6 +68,25 @@ export function resolveCompanyDisplayNameVi(
   const key = slug as keyof typeof HRM_OPERATING_UNIT_DEFAULT_DISPLAY_NAMES;
   const fromRegistry = HRM_OPERATING_UNIT_DEFAULT_DISPLAY_NAMES[key];
   return fromRegistry?.trim() || null;
+}
+
+/**
+ * Employees list «Thông tin công ty» — tenant-only rows use tenant_id label;
+ * legacy rows still resolve OU slug → LE name.
+ */
+export function resolveEmployeeCompanyDisplayNameVi(
+  companySlug: string | null | undefined,
+  options?: { tenantId?: string | null; fromDb?: string | null },
+): string | null {
+  const tenantLabel = resolveHrmTenantDisplayNameVi(options?.tenantId);
+  if (tenantLabel) {
+    return tenantLabel;
+  }
+  const slug = companySlug?.trim().toLowerCase() ?? '';
+  if (!slug || slug === HRM_PILOT_OPERATING_COMPANY_ID) {
+    return null;
+  }
+  return resolveCompanyDisplayNameVi(companySlug, options?.fromDb ?? null);
 }
 
 /** Upsert slug map rows; upgrade blank or legacy Khối display_name to LE SoT (AC-EMP-COL-04). */

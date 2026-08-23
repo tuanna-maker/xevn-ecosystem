@@ -643,7 +643,9 @@ export default function Attendance() {
   } = useEmployees(false, undefined, {
     enabled: needsEmployeeList,
   });
-  const { departments } = useDepartments({ enabled: activeTab === 'settings' });
+  const { departments } = useDepartments({
+    enabled: activeTab === 'settings' || activeTab === 'attendance',
+  });
   const [settingsEmployeeImportOpen, setSettingsEmployeeImportOpen] = useState(false);
   const [isRefreshingSettingsEmployees, setIsRefreshingSettingsEmployees] = useState(false);
   // Initialize translation-based menu items
@@ -1009,7 +1011,7 @@ export default function Attendance() {
   };
   const [addSheetModalOpen, setAddSheetModalOpen] = useState(false);
   const [newSheetForm, setNewSheetForm] = useState(() => ({
-    unit: '',
+    unit: 'all',
     positions: 'all',
     name: '',
     timePreset: 'this-month',
@@ -1077,7 +1079,8 @@ export default function Attendance() {
       end_date: endIso,
       attendance_type: newSheetForm.attendanceType,
       standard_type: newSheetForm.standardType,
-      department: newSheetForm.unit || undefined,
+      department:
+        newSheetForm.unit === 'all' || !newSheetForm.unit ? undefined : newSheetForm.unit,
       positions: newSheetForm.positions === 'all' ? undefined : newSheetForm.positions,
     });
 
@@ -4081,9 +4084,9 @@ export default function Attendance() {
         );
       case 'settings':
         return (
-          <div className="flex min-h-[calc(100vh-180px)] bg-white text-slate-900" data-testid="att-settings-shell-precision">
-            {/* Left Sidebar — luôn nền sáng, đồng bộ SettingsNavLayout */}
-            <div className="w-52 shrink-0 border-r border-slate-200 bg-white p-2">
+          <div className="flex min-h-[calc(100vh-180px)]" data-testid="att-settings-shell-precision">
+            {/* Left Sidebar */}
+            <div className="w-52 border-r border-xevn-border bg-xevn-background p-2">
               <nav className="space-y-1">
                 {sidebarMenuItems.map(item => (
                   <button
@@ -4093,8 +4096,8 @@ export default function Attendance() {
                     className={cn(
                       "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-left",
                       activeSidebarItem === item.id
-                        ? "bg-blue-50 font-semibold text-blue-800"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        ? "bg-xevn-primary text-white"
+                        : "text-xevn-textSecondary hover:bg-xevn-primary/10 hover:text-xevn-text"
                     )}
                   >
                     <item.icon className="w-4 h-4 flex-shrink-0" />
@@ -4105,7 +4108,7 @@ export default function Attendance() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 overflow-auto bg-white p-6 text-slate-900">
+            <div className="flex-1 p-6 overflow-auto">
               {renderSettingsContent()}
             </div>
           </div>
@@ -4682,8 +4685,11 @@ export default function Attendance() {
                     <SelectValue placeholder={t('attPage.selectDepartment', 'Chọn phòng ban')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {departments.map(dept => (
-                      <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
+                    <SelectItem value="all">{t('attPage.allDepartments', 'Tất cả phòng ban')}</SelectItem>
+                    {departments.map((dept) => (
+                      <SelectItem key={dept.id} value={dept.name}>
+                        {dept.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

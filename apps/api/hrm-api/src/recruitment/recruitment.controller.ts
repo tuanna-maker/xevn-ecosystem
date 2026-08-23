@@ -2192,6 +2192,30 @@ export class RecruitmentController {
   }
 
   /**
+   * @CODE-MEMORY method · Lane A GET interviews — FR-UC-BP-REC-06a §3.4 list SoT
+   * table public.recruitment_interviews · DENY Lane B interviews-catalog as primary list
+   * WorkItem: PO-HRM-REC-IV-LIST-LANE-A-01
+   */
+  @Get('interviews')
+  listRecruitmentInterviews(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query('company_id') companyId: string | undefined,
+    @Query('candidate_id') candidateId: string | undefined,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    const scopeCompany = companyId ?? headerCompanyId ?? 'main';
+    resolveScopeContext(authorization, { tenantId, companyId: scopeCompany });
+    return this.recruitmentService
+      .listRecruitmentInterviews(scopeCompany, authorization, {
+        candidateId,
+      })
+      .then((data) => ok(data, 'HRM-REC-INT-A-200', 'Lane A interviews listed'));
+  }
+
+  /**
    * @CODE-MEMORY method · Lane A POST interviews — FR-HRM-RC-05 SoT (recruitment_interviews)
    * candidate_id → recruitment_candidates only (F4) · không catalog interviews
    * must_keep §17.6.4

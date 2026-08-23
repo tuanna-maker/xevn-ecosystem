@@ -19,9 +19,12 @@ import {
   YCTD_MATRIX_SHORT,
   assertCellQtyOrThrow,
   assertYctdReceivableForMutateOrThrow,
+  inferLegacyYctdHeadcountModeBackfill,
+  isLegacyUnclassifiedMode,
   normalizeTargetMonthOrThrow,
   requireModeOrThrow,
   resolveApprovalMatrixKey,
+  YCTD_LEGACY_BACKFILL_OUT_REASON_VI,
 } from './yctd-requisition-gates';
 
 const REQ_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee0001';
@@ -80,6 +83,37 @@ describe('yctd-requisition-gates helpers (Y-S*)', () => {
   it('Y-S8: matrix SHORT in_plan / LONG out_of_plan', () => {
     expect(resolveApprovalMatrixKey('in_plan')).toBe(YCTD_MATRIX_SHORT);
     expect(resolveApprovalMatrixKey('out_of_plan')).toBe(YCTD_MATRIX_LONG_BOD);
+  });
+
+  it('O4 DATA-01: infer legacy headcount_mode backfill', () => {
+    expect(
+      inferLegacyYctdHeadcountModeBackfill({
+        headcount_mode: null,
+        headcount_cell_id: CELL_ID,
+      }),
+    ).toEqual({
+      headcount_mode: 'in_plan',
+      hire_reason: 'new',
+      approval_matrix_key: YCTD_MATRIX_SHORT,
+    });
+    expect(
+      inferLegacyYctdHeadcountModeBackfill({
+        headcount_mode: '',
+        headcount_cell_id: null,
+      }),
+    ).toEqual({
+      headcount_mode: 'out_of_plan',
+      hire_reason: 'new',
+      approval_matrix_key: YCTD_MATRIX_LONG_BOD,
+      out_of_plan_reason: YCTD_LEGACY_BACKFILL_OUT_REASON_VI,
+    });
+    expect(
+      inferLegacyYctdHeadcountModeBackfill({
+        headcount_mode: 'in_plan',
+        headcount_cell_id: null,
+      }),
+    ).toBeNull();
+    expect(isLegacyUnclassifiedMode('in_plan')).toBe(false);
   });
 
   it('Y-S9/O4: unclassified + approved out_of_plan gates', () => {

@@ -199,7 +199,7 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
               <SelectTrigger>
                 <SelectValue placeholder={t('checkinout.selectEmployeePlaceholder')} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent portalScope="iframe">
                 {employees.map((emp) => (
                   <SelectItem key={emp.id} value={emp.id}>
                     <div className="flex items-center gap-2">
@@ -391,7 +391,7 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
                   <SelectTrigger className="xevn-field-select-md">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent portalScope="iframe">
                     <SelectItem value="normal">{t('attendanceType.normal')}</SelectItem>
                     <SelectItem value="remote">{t('attendanceType.remote')}</SelectItem>
                     <SelectItem value="field_work">{t('attendanceType.fieldWork')}</SelectItem>

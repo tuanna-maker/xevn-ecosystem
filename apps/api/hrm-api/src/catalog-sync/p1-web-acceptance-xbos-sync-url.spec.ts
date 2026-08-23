@@ -13,9 +13,18 @@ describe('P1-WEB-ACCEPTANCE-FIX-WAVE-02 UF-HRM-10 resolveXbosApiBaseUrl', () => 
     expect(resolveXbosApiBaseUrl()).toBe('http://custom-xbos:2999');
   });
 
+  it('honors localhost XBOS_API_URL on host (not Docker) — SPAWN must not use deploy XBOS_BE_PORT=3002', () => {
+    delete process.env.DOCKER;
+    delete process.env.KUBERNETES_SERVICE_HOST;
+    process.env.XBOS_API_URL = 'http://127.0.0.1:28002';
+    process.env.XBOS_BE_PORT = '3002';
+    expect(resolveXbosApiBaseUrl()).toBe('http://127.0.0.1:28002');
+  });
+
   it('defaults to local 28002 when no override', () => {
     delete process.env.XBOS_API_URL;
     delete process.env.XEVN_XBOS_API_URL;
+    delete process.env.XBOS_BE_PORT;
     expect(resolveXbosApiBaseUrl()).toBe('http://127.0.0.1:28002');
   });
 

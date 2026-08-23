@@ -61,7 +61,7 @@ interface UseKanbanCandidatesReturn {
   error: Error | null;
   updateCandidateStage: (
     candidateId: string,
-    newStage: KanbanCandidate['stage'],
+    newStage: string,
     opts?: UpdateCandidateStageOpts,
   ) => Promise<void>;
   refetch: () => Promise<void>;
@@ -141,7 +141,7 @@ export function useKanbanCandidates(): UseKanbanCandidatesReturn {
   const updateCandidateStage = useCallback(
     async (
       candidateId: string,
-      newStage: KanbanCandidate['stage'],
+      newStage: string,
       opts?: UpdateCandidateStageOpts,
     ) => {
       if (!currentCompanyId) return;
@@ -169,7 +169,7 @@ export function useKanbanCandidates(): UseKanbanCandidatesReturn {
           candidate.id === candidateId
             ? {
                 ...candidate,
-                stage: newStage,
+                stage: newStage as KanbanCandidate['stage'],
                 employeeId: isHiredStage(newStage) && employeeId ? employeeId : candidate.employeeId,
               }
             : candidate,
@@ -177,7 +177,7 @@ export function useKanbanCandidates(): UseKanbanCandidatesReturn {
       );
 
       try {
-        const apiStage = newStage === 'applied' ? 'applied' : newStage;
+        const apiStage = newStage === 'applied' || newStage === 'new' ? 'applied' : newStage;
         await updateCandidatePoolStage(candidateId, currentCompanyId, apiStage, employeeId);
 
         const stageLabels: Record<string, string> = {
@@ -193,7 +193,7 @@ export function useKanbanCandidates(): UseKanbanCandidatesReturn {
         if (movedCandidate) {
           toast({
             title: 'Cập nhật trạng thái',
-            description: `${movedCandidate.fullName} đã được chuyển sang "${stageLabels[newStage]}"`,
+            description: `${movedCandidate.fullName} đã được chuyển sang "${stageLabels[newStage] ?? newStage}"`,
           });
         }
       } catch (err) {

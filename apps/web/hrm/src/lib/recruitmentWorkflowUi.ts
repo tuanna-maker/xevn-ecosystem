@@ -58,6 +58,7 @@ export const HRM_REC_WF_REQUIRED_CODES = [
 
 const PLAN_TERMINAL = new Set(['approved', 'rejected', 'cancelled']);
 const REQUISITION_TERMINAL = new Set([
+  'draft',
   'open',
   'approved',
   'rejected',

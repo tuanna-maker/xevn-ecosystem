@@ -93,9 +93,18 @@
  * What: PAY-02 cluster — PayFormulaAuthorPanel COMP-01 block + preview lines table; must_keep PAY01QC1
  * Why: API-01 §9 FE-01 · BA J-HRM-PAY-02-* · ≠ PAY-02 DONE · payroll_e2e_ready=false
  * must_keep: SalaryComponentsTab N+1 admin; cấm DnD · cấm FE net SoT
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-21
+ * WorkItem: PO-HRM-SETTINGS-PAY-LIVE-WIRE-01
+ * change_mode: FIX
+ * What: Tab components/formulas → PaySalaryComponentList / PayFormulaSettingsPanel (Settings Apple-style +
+ *       Nest CRUD) thay SalaryComponentsTab / PayFormulaAuthorPanel trực tiếp — cùng SoT dữ liệu Settings
+ * Why: User yêu cầu một implementation Settings UX + dữ liệu thật dùng chéo Payroll
+ * must_keep: taxSettlementFloatingUi C1; PayFormulaAuthorPanel vẫn tồn tại cho GĐ1 nâng cao nếu cần mount lại
  */
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Download,
@@ -193,8 +202,8 @@ import { PayrollPayslipsApiTab } from '@/components/payroll/PayrollPayslipsApiTa
 import { PayrollGroupsCatalogTab } from '@/components/payroll/PayrollGroupsCatalogTab';
 import { usePayrollPayslips } from '@/hooks/usePayrollPayslips';
 import { PaymentBatchesTab } from '@/components/payroll/PaymentBatchesTab';
-import { SalaryComponentsTab } from '@/components/payroll/SalaryComponentsTab';
-import { PayFormulaAuthorPanel } from '@/components/payroll/PayFormulaAuthorPanel';
+import { PaySalaryComponentList } from '@/components/settings/payroll/PaySalaryComponentList';
+import { PayFormulaSettingsPanel } from '@/components/settings/payroll/PayFormulaSettingsPanel';
 import { EssPayslipsPanel } from '@/components/payroll/EssPayslipsPanel';
 import { PayrollAttendanceTab } from '@/components/payroll/PayrollAttendanceTab';
 import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
@@ -252,6 +261,7 @@ const getTopTabs = (t: any) => [
     testId: 'hdsd-pay-ess-tab',
   },
   { id: 'reports', label: t('payroll.reports'), icon: BarChart3, color: 'bg-xevn-primary' },
+  { id: 'setup', label: 'Thiết lập', icon: Settings, color: 'bg-xevn-primary', isLink: true },
 ];
 
 // Step cards for overview — Precision Motion brand chrome (no AI rainbow)
@@ -530,6 +540,7 @@ const paymentBatchesData: PaymentBatch[] = [];
 
 export default function Payroll() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { payslips: livePayslips, isLoading: livePayslipsLoading } = usePayrollPayslips();
 
   /** P0-c: race-prone tab/modal/form ? domain useReducer (shell/advance/taxUi/salary/batch). */
@@ -877,7 +888,13 @@ export default function Payroll() {
     const button = (
       <button
         key={tab.id}
-        onClick={() => !tab.hasDropdown && setActiveTab(tab.id)}
+        onClick={() => {
+          if ('isLink' in tab && tab.isLink) {
+            navigate('/payroll/setup');
+          } else if (!tab.hasDropdown) {
+            setActiveTab(tab.id);
+          }
+        }}
         data-testid={'testId' in tab && tab.testId ? String(tab.testId) : `payroll-tab-${tab.id}`}
         className={cn(
           'flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap transition-all group touch-target',
@@ -2804,9 +2821,9 @@ export default function Payroll() {
       case 'data':
         return renderDataContent();
       case 'components':
-        return <SalaryComponentsTab />;
+        return <PaySalaryComponentList />;
       case 'formulas':
-        return <PayFormulaAuthorPanel />;
+        return <PayFormulaSettingsPanel />;
       case 'calculate':
         return renderCalcContent();
       case 'policy':

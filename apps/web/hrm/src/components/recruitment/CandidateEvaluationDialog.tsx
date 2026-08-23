@@ -6,8 +6,15 @@
  * Why: UC-BP-REC-06 Diễn biến #2 · O2/O5/O6/O7 · DENY pool-only as FR-06 DONE · Nest /rec dual
  * must_keep: criteria template picker · radar · history tab · U65 · honesty false · C-SLICE
  * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-06-cluster-fe-01.md
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-21 PO-HRM-REC-EVAL-FEEDBACK-NEO-FE-01
+ * change_mode: FIX
+ * What: (1) useEffect fetch neo theo candidate.id — cấm deps object candidate (reset Textarea 1 ký tự);
+ *       (2) call sites Lane A truyền list_lane=spine + recruitment_candidate_id + requisition_id
+ * Why: Sponsor — nhận xét/đề xuất mất focus/value; Chốt Pass báo thiếu neo dù UV đã gắn YCTD
+ * must_keep: validateRecEvalCommit · Pass|Fail only · no auto stage · U65
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
@@ -48,6 +55,7 @@ import {
   Star,
   ClipboardList,
   Settings,
+  BarChart3,
 } from 'lucide-react';
 import { CandidateEvaluationRadarChart } from './CandidateEvaluationRadarChart';
 import { useToast } from '@/hooks/use-toast';
@@ -55,8 +63,10 @@ import {
   createCandidateEvaluation,
   listCandidateEvaluations,
   listEvaluationCriteriaTemplates,
+  listRecruitmentCandidates,
   replaceEvaluationCriteriaTemplates,
 } from '@/integrations/hrmApi';
+import { normalizeRequisitionId } from '@/lib/candidateUvYctdUi';
 import { toErrorMessage } from '@/lib/apiError';
 import {
   REC_EVAL_SUCCESS_TOAST_VI,
@@ -100,6 +110,18 @@ interface EvaluationCriteriaTemplate {
   is_active: boolean;
 }
 
+function mapEvaluationCriteriaTemplate(row: Record<string, unknown>): EvaluationCriteriaTemplate {
+  return {
+    id: String(row.id ?? ''),
+    category: String(row.category ?? ''),
+    name: String(row.name ?? ''),
+    weight: Number(row.weight ?? 0),
+    default_required_score: Number(row.default_required_score ?? 3),
+    sort_order: Number(row.sort_order ?? 0),
+    is_active: row.is_active !== false,
+  };
+}
+
 interface Candidate {
   id: string;
   full_name: string;
@@ -121,6 +143,8 @@ interface CandidateEvaluationDialogProps {
   onSaved?: () => void;
   /** After Pass/Fail 2xx — parent may open APP-02 transition (separate Network). */
   onSuggestStageTransition?: () => void;
+  /** REC-06 → REC-06b — mở so sánh theo YCTD của UV đang đánh giá. */
+  onCompareByYctd?: (requisitionId: string, candidateId?: string) => void;
 }
 
 const scoreOptions = [1, 2, 3, 4, 5];
@@ -160,6 +184,7 @@ export function CandidateEvaluationDialog({
   onOpenChange,
   onSaved,
   onSuggestStageTransition,
+  onCompareByYctd,
 }: CandidateEvaluationDialogProps) {
   const { t } = useTranslation();
   const r = (key: string) => t(`rc.${key}`);
@@ -178,6 +203,7 @@ export function CandidateEvaluationDialog({
   const [evaluatorName, setEvaluatorName] = useState('');
   const [activeTab, setActiveTab] = useState('evaluate');
   const [lastCommitOk, setLastCommitOk] = useState(false);
+  const [compareNavigating, setCompareNavigating] = useState(false);
   
   // New criterion form
   const [newCriterionCategory, setNewCriterionCategory] = useState('');
@@ -187,6 +213,7 @@ export function CandidateEvaluationDialog({
 
   const resultConfig = getResultConfig(r);
   const commitResultConfig = getCommitResultConfig(r);
+  const candidateId = candidate?.id?.trim() || null;
   const laneAId = candidate
     ? resolveLaneACandidateIdForMailEval({
         id: candidate.id,
@@ -198,16 +225,141 @@ export function CandidateEvaluationDialog({
       })
     : null;
 
-  // Fetch templates and existing evaluations
-  useEffect(() => {
-    if (open && currentCompanyId && candidate) {
-      fetchData();
+  const compareRequisitionId = useMemo(() => {
+    if (!candidate) return '';
+    return (
+      normalizeRequisitionId(candidate.requisition_id) ||
+      normalizeRequisitionId(candidate.recruitment_request_id)
+    );
+  }, [candidate]);
+
+  const handleCompareByYctd = async () => {
+    if (!onCompareByYctd) return;
+    setCompareNavigating(true);
+    try {
+      let reqId = compareRequisitionId;
+      if (!reqId && currentCompanyId && (laneAId || candidateId)) {
+        try {
+          const spine = await listRecruitmentCandidates({
+            company_id: currentCompanyId,
+            page: 1,
+            page_size: 500,
+          });
+          const neo = (laneAId || candidateId || '').trim();
+          const row = (spine.data ?? []).find((c) => c.id === neo);
+          reqId =
+            normalizeRequisitionId(row?.requisition_id) ||
+            normalizeRequisitionId(
+              (row as { recruitment_request_id?: string | null } | undefined)?.recruitment_request_id,
+            );
+        } catch {
+          /* toast below if still empty */
+        }
+      }
+      if (!reqId) {
+        toast({
+          title: t('common.error'),
+          description: t(
+            'recruitment.compareNeedYctd',
+            'Ứng viên chưa gắn YCTD — không thể mở so sánh. Gắn UV vào yêu cầu tuyển trước.',
+          ),
+          variant: 'destructive',
+        });
+        return;
+      }
+      onOpenChange(false);
+      onCompareByYctd(reqId, candidateId ?? laneAId ?? undefined);
+    } finally {
+      setCompareNavigating(false);
     }
-  }, [open, currentCompanyId, candidate]);
+  };
+
+  // Fetch templates + history when dialog opens / UV id đổi — KHÔNG deps cả object candidate
+  // (parent inline `{ id, ... }` mỗi render → fetchData reset overallFeedback/recommendation).
+  useEffect(() => {
+    if (!open || !currentCompanyId || !candidateId || !candidate) return;
+    let cancelled = false;
+
+    const run = async () => {
+      setLoading(true);
+      try {
+        const evalQuery = laneAId
+          ? {
+              company_id: currentCompanyId,
+              recruitment_candidate_id: laneAId,
+              application_id: candidate.application_id ?? undefined,
+            }
+          : {
+              company_id: currentCompanyId,
+              candidate_id: candidate.id,
+              include_legacy: true,
+            };
+        const [templatesRes, evaluationsRes] = await Promise.all([
+          listEvaluationCriteriaTemplates(currentCompanyId),
+          listCandidateEvaluations(evalQuery),
+        ]);
+        if (cancelled) return;
+        const templatesData = (templatesRes.data ?? []).map(mapEvaluationCriteriaTemplate);
+        const evaluationsData = (evaluationsRes.data ?? []).map((row) => ({
+          id: String(row.id),
+          evaluator_name: row.evaluator_name ? String(row.evaluator_name) : null,
+          total_score: row.total_score != null ? Number(row.total_score) : null,
+          weighted_score: row.weighted_score != null ? Number(row.weighted_score) : null,
+          result: String(row.result ?? 'pending'),
+          overall_feedback: row.overall_feedback ? String(row.overall_feedback) : null,
+          recommendation: row.recommendation ? String(row.recommendation) : null,
+          created_at: String(row.created_at ?? row.evaluated_at ?? ''),
+        }));
+
+        setTemplates(templatesData);
+        setExistingEvaluations(evaluationsData);
+
+        if (templatesData.length > 0) {
+          setCriteria(
+            templatesData.map((t, idx) => ({
+              id: `temp-${idx}`,
+              criterion_id: t.id,
+              category: t.category,
+              name: t.name,
+              weight: Number(t.weight),
+              requiredScore: t.default_required_score,
+              actualScore: null,
+            })),
+          );
+        } else {
+          setCriteria(
+            getDefaultCriteria(r).map((c, idx) => ({
+              ...c,
+              id: `temp-${idx}`,
+            })),
+          );
+        }
+
+        setResult('');
+        setOverallFeedback('');
+        setRecommendation('');
+        setSalaryRecommendation('');
+        setLastCommitOk(false);
+        setEvaluatorName(user?.email || '');
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Error fetching evaluation data:', error);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void run();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: stable id only
+  }, [open, currentCompanyId, candidateId]);
 
   const fetchData = async () => {
     if (!currentCompanyId || !candidate) return;
-    
+
     setLoading(true);
     try {
       const evalQuery = laneAId
@@ -225,7 +377,7 @@ export function CandidateEvaluationDialog({
         listEvaluationCriteriaTemplates(currentCompanyId),
         listCandidateEvaluations(evalQuery),
       ]);
-      const templatesData = (templatesRes.data ?? []) as EvaluationCriteriaTemplate[];
+      const templatesData = (templatesRes.data ?? []).map(mapEvaluationCriteriaTemplate);
       const evaluationsData = (evaluationsRes.data ?? []).map((row) => ({
         id: String(row.id),
         evaluator_name: row.evaluator_name ? String(row.evaluator_name) : null,
@@ -239,31 +391,6 @@ export function CandidateEvaluationDialog({
 
       setTemplates(templatesData);
       setExistingEvaluations(evaluationsData);
-
-      if (templatesData.length > 0) {
-        setCriteria(templatesData.map((t, idx) => ({
-          id: `temp-${idx}`,
-          criterion_id: t.id,
-          category: t.category,
-          name: t.name,
-          weight: Number(t.weight),
-          requiredScore: t.default_required_score,
-          actualScore: null,
-        })));
-      } else {
-        setCriteria(getDefaultCriteria(r).map((c, idx) => ({
-          ...c,
-          id: `temp-${idx}`,
-        })));
-      }
-
-      // Reset form — chốt FR-06 yêu cầu user chọn Pass|Fail
-      setResult('');
-      setOverallFeedback('');
-      setRecommendation('');
-      setSalaryRecommendation('');
-      setLastCommitOk(false);
-      setEvaluatorName(user?.email || '');
     } catch (error) {
       console.error('Error fetching evaluation data:', error);
     } finally {
@@ -372,7 +499,7 @@ export function CandidateEvaluationDialog({
       applicationId: candidate.application_id,
       result,
     });
-    if (!gate.ok) {
+    if ('message' in gate) {
       toast({
         title: 'Chưa chốt được đánh giá',
         description: gate.message,
@@ -742,6 +869,24 @@ export function CandidateEvaluationDialog({
                         }}
                       >
                         Đổi trạng thái (APP-02)
+                      </Button>
+                    ) : null}
+                    {onCompareByYctd ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        data-testid="rec-eval-compare-yctd"
+                        disabled={compareNavigating}
+                        onClick={() => {
+                          void handleCompareByYctd();
+                        }}
+                      >
+                        {compareNavigating ? (
+                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <BarChart3 className="w-4 h-4 mr-2" />
+                        )}
+                        {t('recruitment.compareOnYctd', 'So sánh theo YCTD này')}
                       </Button>
                     ) : null}
                   </div>

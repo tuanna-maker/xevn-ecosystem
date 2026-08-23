@@ -177,15 +177,31 @@ export function mapXbosUpstreamException(error: unknown): ApiException {
   );
 }
 
-/** UF-HRM-10 — docker/VPS must reach xbos-be (28002), not localhost:3002. */
+/**
+ * UF-HRM-10 — docker/VPS must reach xbos-be (28002), not localhost:3002.
+ * Local: honor explicit XBOS_API_URL even on 127.0.0.1 (hrm-api/.env SoT).
+ * Docker: ignore loopback XBOS_API_URL — deploy XBOS_BE_PORT often still 3002 and
+ * would send S2S (recruitment/leave spawn) to a closed port → SPAWN-MISSING fetch failed.
+ */
 export function resolveXbosApiBaseUrl(): string {
+  let inDocker = false;
+  try {
+    inDocker = existsSync('/.dockerenv');
+  } catch {
+    inDocker = false;
+  }
+  const dockerRuntime =
+    inDocker ||
+    process.env.DOCKER === '1' ||
+    Boolean(process.env.KUBERNETES_SERVICE_HOST);
+
   const explicit = process.env.XBOS_API_URL?.trim();
   if (explicit) {
     const normalized = explicit.replace(/\/+$/, '');
-    if (
-      !normalized.includes('localhost') &&
-      !normalized.includes('127.0.0.1')
-    ) {
+    const isLoopback =
+      normalized.includes('localhost') || normalized.includes('127.0.0.1');
+    // Loopback is valid on host; only discard inside container/k8s.
+    if (!isLoopback || !dockerRuntime) {
       return normalized;
     }
   }
@@ -194,17 +210,7 @@ export function resolveXbosApiBaseUrl(): string {
     return composeDefault.replace(/\/+$/, '');
   }
   const port = process.env.XBOS_BE_PORT?.trim() || '28002';
-  let inDocker = false;
-  try {
-    inDocker = existsSync('/.dockerenv');
-  } catch {
-    inDocker = false;
-  }
-  if (
-    inDocker ||
-    process.env.DOCKER === '1' ||
-    process.env.KUBERNETES_SERVICE_HOST
-  ) {
+  if (dockerRuntime) {
     return `http://${XBOS_DOCKER_HOSTS[0]}:${port}`;
   }
   return `http://127.0.0.1:${port}`;

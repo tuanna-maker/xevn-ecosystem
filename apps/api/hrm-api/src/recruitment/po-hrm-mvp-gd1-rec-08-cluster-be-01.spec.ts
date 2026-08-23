@@ -5,6 +5,7 @@
  * DENY: seed · honesty flip · Option B rollup
  */
 import { ApiException } from '../common/api.exception';
+import { signServiceJwt } from '../common/jwt-sign';
 import {
   FUNNEL_KEYS,
   HRM_REC_DASH_METHOD_405,
@@ -430,6 +431,67 @@ describe('PO-HRM-MVP-GD1-REC-08-CLUSTER-BE-01 service', () => {
     // Both paths filter company_id
     expect(planSqls.every((s) => s.includes('company_id'))).toBe(true);
     expect(yctdSqls.every((s) => s.includes('company_id'))).toBe(true);
+  });
+
+  it('group CEO main rollup includes legacy main YCTD rows (expandPayrollPeriodCompanyIds)', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const yctdRows = [
+      {
+        id: 'y-main',
+        company_id: 'main',
+        title: 'Legacy main YCTD',
+        status: 'open',
+        headcount: 2,
+        headcount_mode: 'in_plan',
+        headcount_cell_id: null,
+        target_month: '2026-08-01',
+        department_key: 'ops',
+        position_key: 'drv',
+      },
+    ];
+    const candRows = [
+      {
+        id: 'c-main',
+        company_id: 'main',
+        requisition_id: 'y-main',
+        status: 'interview',
+      },
+    ];
+    let yctdParams: unknown[] | undefined;
+    const db = {
+      query: jest.fn(async (sql: string, params: unknown[] = []) => {
+        if (sql.includes('recruitment_plans')) return { rows: [] };
+        if (sql.includes('FROM public.job_requisitions')) {
+          yctdParams = params;
+          return { rows: yctdRows };
+        }
+        if (sql.includes('recruitment_candidates')) return { rows: candRows };
+        return { rows: [] };
+      }),
+    };
+    const pipeline = {
+      listEffective: jest
+        .fn()
+        .mockResolvedValue({ total: 0, data: [], hiredOutcomeKey: null }),
+      ensureSchema: jest.fn().mockResolvedValue(undefined),
+    };
+    const svc = new RecruitmentDashboardService(db as never, pipeline as never);
+    const dto = await svc.getDashboard(
+      { company_id: 'main', year: '2026', include: 'yctd' },
+      `Bearer ${token}`,
+    );
+    expect(yctdParams).toEqual(
+      expect.arrayContaining([expect.arrayContaining(['main'])]),
+    );
+    expect(dto.open_yctd_count).toBe(1);
+    expect(dto.in_pipeline_count).toBe(1);
+    expect(dto.funnel.interview).toBe(1);
+    expect(dto.scope.company_ids).toEqual(expect.arrayContaining(['main']));
   });
 
   it('METHOD-405 deny mutate', () => {

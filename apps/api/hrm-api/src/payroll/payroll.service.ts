@@ -159,14 +159,19 @@ import {
   assertResourceInHrmScope,
   expandPayrollAttendanceSheetCompanyIds,
   expandPayrollPeriodCompanyIds,
+  HrmListScope,
   HrmListScopeContext,
   normalizePayrollListCompanyId,
   pushCompanyIdFilter,
   pushEmployeeListScopeFilters,
+  pushHrmTableScopeFilters,
+  pushPayrollPeriodScopeFilters,
   pushWorkforceEmployeeScopeFilter,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
+  resolveHrmPersistTenantId,
 } from '../common/hrm-list-scope';
+import { ensureHrmTenantIdColumns } from '../common/hrm-tenant-scope-schema';
 import { HrmDbService } from '../db/hrm-db.service';
 import { ensureAttendanceSheetSchema } from '../attendance/attendance-sheet-schema.bootstrap';
 import { assertPayrollAttHourBoundaryLocked } from './pay-att-hour-boundary';
@@ -586,6 +591,7 @@ export class PayrollService {
     await ensurePayPayslipLifecycleSchema(this.db);
     await this.payPayrollGroups.ensureSchema();
     await this.settingsTaxParams.ensureSchema();
+    await ensureHrmTenantIdColumns((sql) => this.db.query(sql));
   }
 
   private periodGroupJoinSql = `
@@ -593,6 +599,24 @@ export class PayrollService {
   `;
 
   /** Qualify predicates when {@link periodGroupJoinSql} joins pay_payroll_group (also has id/company_id). */
+  private pushPayrollPeriodScopeFilter(
+    filters: string[],
+    values: unknown[],
+    scope: HrmListScope,
+  ): void {
+    if (scope.tenantOnlyMode && scope.tenantIds?.length) {
+      pushHrmTableScopeFilters(filters, values, scope, {
+        tableAlias: 'payroll_periods',
+      });
+      return;
+    }
+    this.pushPayrollPeriodScopeFilter(
+      filters,
+      values,
+      scope,
+    );
+  }
+
   private pushPayrollPeriodCompanyIdFilter(
     filters: string[],
     values: unknown[],
@@ -661,10 +685,10 @@ export class PayrollService {
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['payroll_periods.id = $1::uuid'];
     const values: unknown[] = [periodId];
-    this.pushPayrollPeriodCompanyIdFilter(
+    this.pushPayrollPeriodScopeFilter(
       filters,
       values,
-      expandPayrollPeriodCompanyIds(scope),
+      scope,
     );
     const res = await this.db.query<PayrollPeriodRow>(
       `
@@ -897,10 +921,10 @@ export class PayrollService {
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = [];
     const values: unknown[] = [];
-    this.pushPayrollPeriodCompanyIdFilter(
+    this.pushPayrollPeriodScopeFilter(
       filters,
       values,
-      expandPayrollPeriodCompanyIds(scope),
+      scope,
     );
     if (query.status) {
       values.push(query.status);
@@ -1881,7 +1905,7 @@ export class PayrollService {
     const scope = resolveHrmListScope(authorization, companyId);
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, expandPayrollPeriodCompanyIds(scope));
+    pushPayrollPeriodScopeFilters(filters, values, scope);
     const where = filters.join(' AND ');
     const res = await this.db.query<{
       status: 'draft' | 'processed' | 'closed';
