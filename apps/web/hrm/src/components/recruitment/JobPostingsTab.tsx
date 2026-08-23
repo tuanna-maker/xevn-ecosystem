@@ -424,6 +424,70 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
     };
   };
 
+  const autoFillPositionData = async (workflow: any, positionName: string) => {
+    const pos = workflow.positions?.find((p: any) => p.positionName === positionName);
+    if (!pos) return;
+
+    // Auto fill department
+    if (pos.department && pos.department !== 'ALL_COMPANY') {
+      form.setValue('department_key', pos.department, { shouldValidate: true });
+    }
+    // Auto fill headcount
+    if (pos.quantity) {
+      const qty = parseInt(pos.quantity, 10);
+      if (!isNaN(qty) && qty > 0) {
+        form.setValue('headcount', qty.toString(), { shouldValidate: true });
+      }
+    }
+    // Auto fill employmentType
+    if (pos.employmentType) {
+      form.setValue('employment_type', pos.employmentType, { shouldValidate: true });
+    }
+    // Auto fill deadline
+    if (pos.deadlineDate) {
+      const d = new Date(pos.deadlineDate);
+      if (!isNaN(d.getTime())) {
+        form.setValue('deadline', d, { shouldValidate: true });
+      }
+    }
+    // Auto fill salary from workflow position config
+    if (pos.salaryMin) {
+      form.setValue('salary_min', pos.salaryMin, { shouldValidate: true });
+    }
+    if (pos.salaryMax) {
+      form.setValue('salary_max', pos.salaryMax, { shouldValidate: true });
+    }
+
+    // Auto fill title if empty
+    const opt = positionOptions.find(o => o.value === positionName);
+    if (opt && !form.getValues('title')) {
+      form.setValue('title', `Tuyển dụng ${opt.label}`, { shouldValidate: true });
+    }
+
+    // Auto fill JD template
+    if (pos.jdTemplateId) {
+      const tpl = jdTemplates.find((t) => t.id === pos.jdTemplateId);
+      if (tpl) {
+        handleSelectJdTemplate(tpl);
+      } else {
+        // Fallback fetch if not in the cached list
+        try {
+          const { getJobDescriptionTemplate } = await import('@/integrations/hrmApi');
+          const res = await getJobDescriptionTemplate(pos.jdTemplateId, currentCompanyId!);
+          if (res.data) {
+            handleSelectJdTemplate(res.data);
+          } else {
+            form.setValue('jd_template_id', pos.jdTemplateId, { shouldValidate: true });
+          }
+        } catch (e) {
+          form.setValue('jd_template_id', pos.jdTemplateId, { shouldValidate: true });
+        }
+      }
+    } else {
+      handleClearJd();
+    }
+  };
+
   // Create mutation
   const createMutation = useMutation({
     mutationFn: async (values: JobPostingFormValues) => {
@@ -1012,8 +1076,20 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
                                 form.setValue('employment_type', 'full-time', { shouldValidate: true });
                                 form.setValue('deadline', undefined, { shouldValidate: true });
                                 form.setValue('jd_template_id', '', { shouldValidate: true });
+                                form.setValue('salary_min', '', { shouldValidate: true });
+                                form.setValue('salary_max', '', { shouldValidate: true });
                                 setSelectedJdRef(null);
                                 setSelectedJdFullRow(null);
+
+                                // Auto-select position if the workflow has exactly 1 position
+                                const workflow = workflows.find((w: any) => w.id === val);
+                                if (workflow && workflow.positions?.length === 1) {
+                                  const autoPos = workflow.positions[0].positionName;
+                                  setTimeout(() => {
+                                    form.setValue('position_key', autoPos, { shouldValidate: true });
+                                    autoFillPositionData(workflow, autoPos);
+                                  }, 0);
+                                }
                               }}
                               placeholder="Chọn quy trình để tự động điền thông tin..."
                             />
@@ -1038,48 +1114,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
                                 if (selectedWorkflowId) {
                                   const workflow = workflows.find((w: any) => w.id === selectedWorkflowId);
                                   if (workflow) {
-                                    const pos = workflow.positions?.find((p: any) => p.positionName === val);
-                                    if (pos) {
-                                      // Auto fill department
-                                      if (pos.department && pos.department !== 'ALL_COMPANY') {
-                                        form.setValue('department_key', pos.department, { shouldValidate: true });
-                                      }
-                                      // Auto fill headcount
-                                      if (pos.quantity) {
-                                        const qty = parseInt(pos.quantity, 10);
-                                        if (!isNaN(qty) && qty > 0) {
-                                          form.setValue('headcount', qty.toString(), { shouldValidate: true });
-                                        }
-                                      }
-                                      // Auto fill employmentType
-                                      if (pos.employmentType) {
-                                        form.setValue('employment_type', pos.employmentType, { shouldValidate: true });
-                                      }
-                                      // Auto fill deadline
-                                      if ((pos as any).deadlineDate) {
-                                        const d = new Date((pos as any).deadlineDate);
-                                        if (!isNaN(d.getTime())) {
-                                          form.setValue('deadline', d, { shouldValidate: true });
-                                        }
-                                      }
-                                      // Auto fill JD template
-                                      if (pos.jdTemplateId) {
-                                        const tpl = jdTemplates.find((t) => t.id === pos.jdTemplateId);
-                                        if (tpl) {
-                                          handleSelectJdTemplate(tpl);
-                                        } else {
-                                          form.setValue('jd_template_id', pos.jdTemplateId, { shouldValidate: true });
-                                        }
-                                      } else {
-                                        handleClearJd();
-                                      }
-                                      
-                                      // Auto fill title if empty
-                                      const opt = filteredPositionOptions.find(o => o.value === val);
-                                      if (opt && !form.getValues('title')) {
-                                        form.setValue('title', `Tuyển dụng ${opt.label}`, { shouldValidate: true });
-                                      }
-                                    }
+                                    autoFillPositionData(workflow, val);
                                   }
                                 }
                               }}

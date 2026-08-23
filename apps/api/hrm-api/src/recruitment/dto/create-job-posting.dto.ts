@@ -89,4 +89,9 @@ export class CreateJobPostingDto {
   @IsOptional()
   @IsString()
   status?: string;
+
+  /** REC-JP-JD-LINK-BE-01 — optional JD template UUID to link to this posting. */
+  @IsOptional()
+  @IsString()
+  jd_template_id?: string;
 }
