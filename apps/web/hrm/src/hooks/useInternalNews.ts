@@ -38,7 +38,7 @@ export const initialFormData: InternalNewsFormData = {
   summary: '',
   content: '',
   category: 'general',
-  status: 'draft',
+  status: 'published',
   pinned: false,
   visibility: 'all',
   featured_image_url: '',
