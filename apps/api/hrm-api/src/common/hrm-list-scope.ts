@@ -1123,6 +1123,7 @@ function buildAllowedCompanyKeys(scope: HrmListScope): {
   const slugs = new Set(scope.companyIds.map((id) => id.trim().toLowerCase()));
   if (scope.masterTenantPartition) {
     slugs.add(HRM_PILOT_OPERATING_COMPANY_ID);
+    slugs.add('holding');
   }
   if (scope.memberTenantId) {
     const uuids = new Set<string>();
@@ -1179,7 +1180,8 @@ export function assertResourceInHrmScope(
     const effectiveTenant = rowTenant || MASTER_TENANT_ID;
     const migratedMatch =
       allowedTenants.has(effectiveTenant) &&
-      companyId === HRM_PILOT_OPERATING_COMPANY_ID;
+      (companyId === HRM_PILOT_OPERATING_COMPANY_ID ||
+        (scope.masterTenantPartition && companyId === 'holding'));
     const legacyMatch =
       effectiveTenant === MASTER_TENANT_ID && legacyOus.has(companyId);
     if (!migratedMatch && !legacyMatch) {

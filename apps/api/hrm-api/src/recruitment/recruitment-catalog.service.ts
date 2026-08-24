@@ -829,6 +829,7 @@ export class RecruitmentCatalogService {
     positionKey: unknown;
     errorCode: string;
     tenantId?: string;
+    authorization?: string;
   }): Promise<{ code: string; label: string }> {
     const code =
       typeof opts.positionKey === 'string' ? opts.positionKey.trim() : '';
@@ -843,6 +844,11 @@ export class RecruitmentCatalogService {
       return { code, label: code };
     }
     const tenantId = this.resolveCatalogTenantId(opts.tenantId);
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      opts.authorization,
+      tenantId,
+      opts.companyId,
+    );
     let hit: { code: string; label: string } | undefined;
     let lastError: unknown;
     for (const catalogKey of [
@@ -853,7 +859,7 @@ export class RecruitmentCatalogService {
       try {
         hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
           tenantId,
-          companyId: opts.companyId,
+          companyId: catalogCompanyId,
           catalogKey,
           code,
           errorCode: opts.errorCode,
@@ -966,13 +972,20 @@ export class RecruitmentCatalogService {
       companyId,
       positionKey: payload.position_key,
       errorCode: HRM_JP_POS_KEY,
+      authorization,
     });
     const positionSnapshot = payload.position?.trim() || pos.label;
     const departmentKey = payload.department_key?.trim() || null;
     if (departmentKey && this.settingsCatalogs) {
-      await this.settingsCatalogs.assertCodeInEffectiveCatalog({
-        tenantId: this.resolveCatalogTenantId(),
+      const tenantId = this.resolveCatalogTenantId();
+      const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+        authorization,
+        tenantId,
         companyId,
+      );
+      await this.settingsCatalogs.assertCodeInEffectiveCatalog({
+        tenantId,
+        companyId: catalogCompanyId,
         catalogKey: 'departments',
         code: departmentKey,
         errorCode: HRM_JP_POS_KEY,
@@ -2006,6 +2019,7 @@ export class RecruitmentCatalogService {
         companyId: existing.company_id,
         positionKey: payload.position_key,
         errorCode: HRM_JP_POS_KEY,
+        authorization,
       });
       nextPositionKey = pos.code;
       nextPosition =
@@ -2020,9 +2034,15 @@ export class RecruitmentCatalogService {
           : null
         : undefined;
     if (nextDepartmentKey && this.settingsCatalogs) {
+      const tenantId = this.resolveCatalogTenantId();
+      const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+        authorization,
+        tenantId,
+        existing.company_id,
+      );
       await this.settingsCatalogs.assertCodeInEffectiveCatalog({
-        tenantId: this.resolveCatalogTenantId(),
-        companyId: existing.company_id,
+        tenantId,
+        companyId: catalogCompanyId,
         catalogKey: 'departments',
         code: nextDepartmentKey,
         errorCode: HRM_JP_POS_KEY,
@@ -2680,6 +2700,7 @@ export class RecruitmentCatalogService {
       companyId,
       positionKey: payload.position_key,
       errorCode: HRM_HCP_POS_KEY,
+      authorization,
     });
     const positionName =
       typeof payload.position_name === 'string' && payload.position_name.trim()
@@ -2690,9 +2711,15 @@ export class RecruitmentCatalogService {
         ? payload.department_key.trim() || null
         : null;
     if (departmentKey && this.settingsCatalogs) {
-      await this.settingsCatalogs.assertCodeInEffectiveCatalog({
-        tenantId: this.resolveCatalogTenantId(),
+      const tenantId = this.resolveCatalogTenantId();
+      const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+        authorization,
+        tenantId,
         companyId,
+      );
+      await this.settingsCatalogs.assertCodeInEffectiveCatalog({
+        tenantId,
+        companyId: catalogCompanyId,
         catalogKey: 'departments',
         code: departmentKey,
         errorCode: HRM_HCP_POS_KEY,
