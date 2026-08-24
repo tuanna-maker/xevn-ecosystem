@@ -610,7 +610,9 @@ export class PayrollService {
       });
       return;
     }
-    this.pushPayrollPeriodScopeFilter(filters, values, scope);
+    pushHrmTableScopeFilters(filters, values, scope, {
+      tableAlias: 'payroll_periods',
+    });
   }
 
   private pushPayrollPeriodCompanyIdFilter(
