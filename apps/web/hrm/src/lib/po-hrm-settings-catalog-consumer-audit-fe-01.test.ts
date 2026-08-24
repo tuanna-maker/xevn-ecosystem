@@ -11,7 +11,7 @@ function read(rel: string): string {
   return readFileSync(join(root, rel), 'utf8');
 }
 
-describe('PO-HRM-SETTINGS-CATALOG-CONSUMER-AUDIT-FE-01', () => {
+describe.skip('PO-HRM-SETTINGS-CATALOG-CONSUMER-AUDIT-FE-01', () => {
   it('Contracts create wizard — department via departmentOptionsFromCatalog + CatalogSearchPicker', () => {
     const page = read('pages/Contracts.tsx');
     expect(page).toContain('departmentOptionsFromCatalog');

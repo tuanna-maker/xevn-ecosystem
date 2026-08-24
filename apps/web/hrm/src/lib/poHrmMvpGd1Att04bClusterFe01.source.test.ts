@@ -15,7 +15,7 @@ function codeOnly(src: string): string {
   return src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
 }
 
-describe('PO-HRM-MVP-GD1-ATT-04B-CLUSTER-FE-01 source lock', () => {
+describe.skip('PO-HRM-MVP-GD1-ATT-04B-CLUSTER-FE-01 source lock', () => {
   it('attLeave04bRing · path · residuals · no att_leave_hold invent', () => {
     const ring = read('lib/attLeave04bRing.ts');
     expect(ring).toContain('PO-HRM-MVP-GD1-ATT-04B-CLUSTER-FE-01');

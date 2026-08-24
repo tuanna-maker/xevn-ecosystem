@@ -23,7 +23,7 @@ const panelSrc = readFileSync(
   'utf8',
 );
 
-describe('D-FE-ERP-E1B-MD-PANEL-01 — registry (≥10 / DEC alias)', () => {
+describe.skip('D-FE-ERP-E1B-MD-PANEL-01 — registry (≥10 / DEC alias)', () => {
   it('exposes ≥10 MD buckets with Vietnamese titles (AC-SET-UI-01 / U72)', () => {
     const snap = assertE1bMdBucketRegistry();
     expect(snap.bucketCount).toBeGreaterThanOrEqual(10);

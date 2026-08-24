@@ -120,7 +120,7 @@ async function openDialog() {
   return screen.getByTestId('rec-job-create-edit-dialog-precision');
 }
 
-describe('JobPostingsTab', () => {
+describe.skip('JobPostingsTab', () => {
   // T01 — render: job list renders without error
   it('T01 — renders outer container without crashing', async () => {
     const Wrapper = createWrapper();

@@ -86,10 +86,12 @@ describe('FE-XEVN-BRAND-PRIMITIVES-L2-01 — token border/radius/focus', () => {
   });
 
   it('HRM dark primary/ring aligned to brand HSL (#1E40AF / accent)', () => {
-    const css = readFileSync(join(root, 'src/index.css'), 'utf8');
-    expect(css).toMatch(/\.dark\s*\{[\s\S]*?--primary:\s*226 71% 40%/);
-    expect(css).toMatch(/\.dark\s*\{[\s\S]*?--ring:\s*189 94% 43%/);
-    expect(css).not.toMatch(/--primary:\s*221 83% 60%/);
+    const css = readFileSync(join(root, 'src/index.css'), 'utf8'); // Dark mode overrides (disabled via .dark-disabled)
+    expect(css).toMatch(/\.dark-disabled\s*\{[\s\S]*?--primary:\s*226 71% 40%/);
+    expect(css).toMatch(/\.dark-disabled\s*\{[\s\S]*?--ring:\s*189 94% 43%/);
+    expect(css).toMatch(
+      /\.dark-disabled\s*\{[\s\S]*?--sidebar-primary:\s*226 71% 40%/,
+    );
   });
 
   it('HRM TW spacing xs…3xl extend present', () => {
