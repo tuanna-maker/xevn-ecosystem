@@ -68,7 +68,7 @@ function pickClaim(claims: Record<string, unknown>, keys: string[]): string | nu
   return null;
 }
 
-function usePortalIdentityDefaults(): boolean {
+function shouldUsePortalIdentityDefaults(): boolean {
   if (import.meta.env.VITE_STRICT_IDENTITY === 'true') return false;
   return import.meta.env.DEV || import.meta.env.VITE_DEV_SYSTEM_ADMIN === 'true';
 }
@@ -143,7 +143,7 @@ export function resolveIdentityScope(
   let tenantId =
     tenantIdHint ?? runtime?.tenantId ?? claimTenantId;
 
-  if (usePortalIdentityDefaults()) {
+  if (shouldUsePortalIdentityDefaults()) {
     if (!tenantId) tenantId = defaultTenant;
   }
 

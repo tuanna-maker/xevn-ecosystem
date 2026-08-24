@@ -610,11 +610,9 @@ export class PayrollService {
       });
       return;
     }
-    this.pushPayrollPeriodScopeFilter(
-      filters,
-      values,
-      scope,
-    );
+    pushHrmTableScopeFilters(filters, values, scope, {
+      tableAlias: 'payroll_periods',
+    });
   }
 
   private pushPayrollPeriodCompanyIdFilter(
@@ -685,11 +683,7 @@ export class PayrollService {
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = ['payroll_periods.id = $1::uuid'];
     const values: unknown[] = [periodId];
-    this.pushPayrollPeriodScopeFilter(
-      filters,
-      values,
-      scope,
-    );
+    this.pushPayrollPeriodScopeFilter(filters, values, scope);
     const res = await this.db.query<PayrollPeriodRow>(
       `
         SELECT
@@ -921,11 +915,7 @@ export class PayrollService {
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = [];
     const values: unknown[] = [];
-    this.pushPayrollPeriodScopeFilter(
-      filters,
-      values,
-      scope,
-    );
+    this.pushPayrollPeriodScopeFilter(filters, values, scope);
     if (query.status) {
       values.push(query.status);
       filters.push(`payroll_periods.status = $${values.length}`);

@@ -353,9 +353,8 @@ describe('D-BE-ERP-E2-01 ContractsInsuranceService contract_types', () => {
 
 describe('D-BE-ERP-E2-01 non-goals', () => {
   it('payroll controller has no tax-settlement invent routes', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fs = require('node:fs') as typeof import('node:fs');
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+
     const path = require('node:path') as typeof import('node:path');
     const ctrl = fs.readFileSync(
       path.join(__dirname, 'payroll', 'payroll.controller.ts'),

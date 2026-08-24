@@ -9,9 +9,9 @@ import { EmployeesService } from '../employees/employees.service';
 import { HrmDbService } from '../db/hrm-db.service';
 
 function createInternalJwt(payload: Record<string, unknown>): string {
-  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString(
-    'base64url',
-  );
+  const header = Buffer.from(
+    JSON.stringify({ alg: 'HS256', typ: 'JWT' }),
+  ).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const secret = process.env.SERVICE_JWT_SECRET ?? 'xevn-dev-jwt-secret';
   const sig = createHmac('sha256', secret)
@@ -38,7 +38,9 @@ describe('CompanyScopeService', () => {
   });
 
   it('membershipResolvedTenantSql maps legacy OU slug logistics → visun', () => {
-    expect(membershipResolvedTenantSql('m')).toContain("WHEN 'logistics' THEN 'visun'");
+    expect(membershipResolvedTenantSql('m')).toContain(
+      "WHEN 'logistics' THEN 'visun'",
+    );
   });
 
   it('listScopedCompanies returns visun row for subsidiary CEO', async () => {
@@ -49,10 +51,20 @@ describe('CompanyScopeService', () => {
     });
     employeesMock.getEmployeesSummary.mockResolvedValue({
       total: 220,
-      by_tenant: [{ tenant_id: 'visun', total: 220, active_count: 200, inactive_count: 20, archived_count: 0 }],
+      by_tenant: [
+        {
+          tenant_id: 'visun',
+          total: 220,
+          active_count: 200,
+          inactive_count: 20,
+          archived_count: 0,
+        },
+      ],
     });
 
-    const result = await service.listScopedCompanies(auth, { tenantId: 'visun' });
+    const result = await service.listScopedCompanies(auth, {
+      tenantId: 'visun',
+    });
     expect(result.total).toBe(1);
     expect(result.data[0]).toMatchObject({
       tenant_id: 'visun',
@@ -89,7 +101,14 @@ describe('CompanyScopeService', () => {
     dbMock.query.mockImplementation(async (sql: string) => {
       if (String(sql).includes('FROM public.user_company_memberships m')) {
         return {
-          rows: [{ id: 'm1', email: 'u@xe.vn', company_id: 'main', tenant_id: 'visun' }],
+          rows: [
+            {
+              id: 'm1',
+              email: 'u@xe.vn',
+              company_id: 'main',
+              tenant_id: 'visun',
+            },
+          ],
         };
       }
       return { rows: [] };

@@ -1171,7 +1171,9 @@ export function assertResourceInHrmScope(
     );
     const legacyOus = isHrmTenantLegacyBridgeEnabled()
       ? new Set(
-          legacyOuSlugsForTenantIds(scope.tenantIds).map((s) => s.toLowerCase()),
+          legacyOuSlugsForTenantIds(scope.tenantIds).map((s) =>
+            s.toLowerCase(),
+          ),
         )
       : new Set<string>();
     const effectiveTenant = rowTenant || MASTER_TENANT_ID;

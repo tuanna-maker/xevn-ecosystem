@@ -222,7 +222,6 @@ export class HrDecisionTypeService {
       return undefined;
     }
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mod = require('../settings-catalogs/settings-catalogs.service') as {
         SettingsCatalogsService: new (...args: never[]) => SettingsCatalogPort;
       };

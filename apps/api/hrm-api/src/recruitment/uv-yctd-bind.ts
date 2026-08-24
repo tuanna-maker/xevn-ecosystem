@@ -283,13 +283,17 @@ export function normalizeCompareScoreItems(scores: unknown): Array<{
     .map((item) => {
       const criterion_name = extractCompareCriterionName(item);
       if (!criterion_name) return null;
-      const row = item && typeof item === 'object' ? (item as Record<string, unknown>) : {};
+      const row =
+        item && typeof item === 'object'
+          ? (item as Record<string, unknown>)
+          : {};
       return {
         criterion_name,
         category: row.category != null ? String(row.category) : '',
         actual_score: extractCompareScoreValue(item),
         required_score:
-          row.required_score != null && Number.isFinite(Number(row.required_score))
+          row.required_score != null &&
+          Number.isFinite(Number(row.required_score))
             ? Number(row.required_score)
             : 0,
         weight:

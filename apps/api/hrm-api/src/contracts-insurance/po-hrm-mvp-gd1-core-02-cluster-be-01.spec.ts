@@ -411,7 +411,6 @@ describe('PO-HRM-MVP-GD1-CORE-02-CLUSTER-BE-01', () => {
     });
 
     it('DENY Nest /core dual invent in compensation service source', () => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const fs = require('node:fs') as typeof import('node:fs');
       const path = require('node:path') as typeof import('node:path');
       const src = fs.readFileSync(

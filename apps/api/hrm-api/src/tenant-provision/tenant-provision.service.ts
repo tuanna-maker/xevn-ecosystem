@@ -205,7 +205,12 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
       await this.seedMinimumWageRegions(query, tenantId, defaultCompanyId);
       await this.seedRecruitmentMasterData(query, tenantId, defaultCompanyId);
       await this.seedJobDescriptionTemplates(query, tenantId, defaultCompanyId);
-      await this.seedAdminEmployee(query, tenantId, defaultCompanyId, payload.adminEmail || payload.issuedBy);
+      await this.seedAdminEmployee(
+        query,
+        tenantId,
+        defaultCompanyId,
+        payload.adminEmail || payload.issuedBy,
+      );
     });
 
     this.logger.log(

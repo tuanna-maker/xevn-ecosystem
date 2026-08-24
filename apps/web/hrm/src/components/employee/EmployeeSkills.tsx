@@ -17,7 +17,7 @@
  * must_keep: SoftDel; navigate(/employees/:id); stub honesty; no OCR/QR invent; no Nest/seed; no Employees CLOSED
  */
 
-﻿import { useState, useEffect } from 'react';
+   import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

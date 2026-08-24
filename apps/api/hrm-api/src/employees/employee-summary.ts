@@ -151,7 +151,9 @@ export function resolveEmployeeRowTenantId(
   }
   const slug = resolveHrmCompanySlugForId(companyId.trim());
   if (slug in HRM_LEGACY_OU_TO_TENANT) {
-    return HRM_LEGACY_OU_TO_TENANT[slug as keyof typeof HRM_LEGACY_OU_TO_TENANT];
+    return HRM_LEGACY_OU_TO_TENANT[
+      slug as keyof typeof HRM_LEGACY_OU_TO_TENANT
+    ];
   }
   return 'xevn';
 }
@@ -197,8 +199,14 @@ export function buildEmployeeSummaryByTenant(
     HRM_GROUP_ROLLUP_TENANT_IDS.map((id, index) => [id, index] as const),
   );
   return [...merged.values()].sort((a, b) => {
-    const ai = orderIndex.get(a.tenant_id as (typeof HRM_GROUP_ROLLUP_TENANT_IDS)[number]) ?? 99;
-    const bi = orderIndex.get(b.tenant_id as (typeof HRM_GROUP_ROLLUP_TENANT_IDS)[number]) ?? 99;
+    const ai =
+      orderIndex.get(
+        a.tenant_id as (typeof HRM_GROUP_ROLLUP_TENANT_IDS)[number],
+      ) ?? 99;
+    const bi =
+      orderIndex.get(
+        b.tenant_id as (typeof HRM_GROUP_ROLLUP_TENANT_IDS)[number],
+      ) ?? 99;
     if (ai !== bi) return ai - bi;
     return a.tenant_id.localeCompare(b.tenant_id);
   });

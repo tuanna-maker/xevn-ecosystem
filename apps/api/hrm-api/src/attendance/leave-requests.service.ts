@@ -567,7 +567,7 @@ export class LeaveRequestsService {
     }
     try {
       // Lazy require — keeps leave service loadable when settings master-keys file is absent.
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+
       const mod = require('../settings-catalogs/settings-catalogs.service') as {
         SettingsCatalogsService: new (
           ...args: never[]
@@ -587,7 +587,6 @@ export class LeaveRequestsService {
       return undefined;
     }
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mod = require('../catalog-sync/catalog-sync.service') as {
         CatalogSyncService: new (...args: never[]) => LeaveCatalogSyncPort;
       };

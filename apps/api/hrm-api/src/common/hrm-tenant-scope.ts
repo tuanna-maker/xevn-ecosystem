@@ -30,10 +30,14 @@ export const HRM_GROUP_ROLLUP_TENANT_IDS = [
   'xe-vietnam',
 ] as const;
 
-export type HrmGroupRollupTenantId = (typeof HRM_GROUP_ROLLUP_TENANT_IDS)[number];
+export type HrmGroupRollupTenantId =
+  (typeof HRM_GROUP_ROLLUP_TENANT_IDS)[number];
 
 /** Legacy OU slug → target tenant_id (migrate + bridge only). */
-export const HRM_LEGACY_OU_TO_TENANT: Record<HrmLegacyOuSlug, HrmGroupRollupTenantId> = {
+export const HRM_LEGACY_OU_TO_TENANT: Record<
+  HrmLegacyOuSlug,
+  HrmGroupRollupTenantId
+> = {
   holding: 'xevn',
   trsport: 'xe-tmdv',
   logistics: 'visun',
@@ -41,9 +45,10 @@ export const HRM_LEGACY_OU_TO_TENANT: Record<HrmLegacyOuSlug, HrmGroupRollupTena
   services: 'xe-vietnam',
 };
 
-export const HRM_TENANT_TO_LEGACY_OU: Record<string, string> = Object.fromEntries(
-  Object.entries(HRM_LEGACY_OU_TO_TENANT).map(([ou, tenant]) => [tenant, ou]),
-);
+export const HRM_TENANT_TO_LEGACY_OU: Record<string, string> =
+  Object.fromEntries(
+    Object.entries(HRM_LEGACY_OU_TO_TENANT).map(([ou, tenant]) => [tenant, ou]),
+  );
 
 /** Display labels for tenant filter dropdown (portal / operating-units bridge). */
 export const HRM_TENANT_DISPLAY_NAMES: Record<string, string> = {
@@ -55,7 +60,9 @@ export const HRM_TENANT_DISPLAY_NAMES: Record<string, string> = {
 };
 
 export function isHrmTenantOnlyScopeEnabled(): boolean {
-  const raw = (process.env.HRM_TENANT_ONLY_SCOPE ?? 'false').trim().toLowerCase();
+  const raw = (process.env.HRM_TENANT_ONLY_SCOPE ?? 'false')
+    .trim()
+    .toLowerCase();
   return raw === '1' || raw === 'true' || raw === 'yes';
 }
 
@@ -81,7 +88,9 @@ export function resolveTenantIdFromLegacyOuOrTenant(
     return null;
   }
   if (isLegacyOperatingUnitSlug(normalized)) {
-    return HRM_LEGACY_OU_TO_TENANT[normalized as keyof typeof HRM_LEGACY_OU_TO_TENANT];
+    return HRM_LEGACY_OU_TO_TENANT[
+      normalized as keyof typeof HRM_LEGACY_OU_TO_TENANT
+    ];
   }
   if ((HRM_GROUP_ROLLUP_TENANT_IDS as readonly string[]).includes(normalized)) {
     return normalized;
@@ -89,7 +98,9 @@ export function resolveTenantIdFromLegacyOuOrTenant(
   return null;
 }
 
-export function legacyOuSlugsForTenantIds(tenantIds: readonly string[]): string[] {
+export function legacyOuSlugsForTenantIds(
+  tenantIds: readonly string[],
+): string[] {
   const out: string[] = [];
   for (const tenantId of tenantIds) {
     const ou = HRM_TENANT_TO_LEGACY_OU[tenantId.trim().toLowerCase()];

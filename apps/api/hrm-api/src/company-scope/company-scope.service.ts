@@ -15,9 +15,7 @@ import {
 import { HrmDbService } from '../db/hrm-db.service';
 import { EmployeesService } from '../employees/employees.service';
 import { EmployeeSummaryQueryDto } from '../employees/dto/employee-summary.query.dto';
-import {
-  generateInviteTempPassword,
-} from '../hrm-admin/hrm-admin.service';
+import { generateInviteTempPassword } from '../hrm-admin/hrm-admin.service';
 import { createHash, randomUUID } from 'node:crypto';
 
 const COMPANY_SCOPE_ADMIN_ROLES = new Set([
@@ -111,7 +109,9 @@ export class CompanyScopeService {
     `);
   }
 
-  private async assertCompanyScopeAccess(authorization: string): Promise<string> {
+  private async assertCompanyScopeAccess(
+    authorization: string,
+  ): Promise<string> {
     if (!authorization?.startsWith('Bearer ')) {
       throw new ApiException(
         'HRM-AUTH-001',
@@ -241,8 +241,14 @@ export class CompanyScopeService {
       companyId?.trim() || HRM_PILOT_OPERATING_COMPANY_ID,
       scopeContext,
     );
-    const scope = this.resolveScope(authorization, resolvedCompanyId, scopeContext);
-    const tenantIds = (scope.tenantIds ?? []).map((id) => id.trim().toLowerCase());
+    const scope = this.resolveScope(
+      authorization,
+      resolvedCompanyId,
+      scopeContext,
+    );
+    const tenantIds = (scope.tenantIds ?? []).map((id) =>
+      id.trim().toLowerCase(),
+    );
     if (tenantIds.length === 0) {
       return { total: 0, data: [] };
     }

@@ -321,4 +321,4 @@ export async function fetchCatalogGovernancePendingCount(): Promise<number> {
   } catch {
     return 0;
   }
-};
+}

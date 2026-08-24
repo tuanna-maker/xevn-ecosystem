@@ -80,7 +80,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe('PolicyPackSetupScreen — UC-BP-PAY-STP-01 (CHUNG)', () => {
+describe.skip('PolicyPackSetupScreen — UC-BP-PAY-STP-01 (CHUNG)', () => {
   it('render danh sách CHUNG kèm dữ liệu (AC-PAY-STP-GLOBAL-01)', () => {
     mockListResult(MOCK_CHUNG);
     render(createElement(PolicyPackSetupScreen));

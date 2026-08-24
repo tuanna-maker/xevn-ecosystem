@@ -845,7 +845,11 @@ export class RecruitmentCatalogService {
     const tenantId = this.resolveCatalogTenantId(opts.tenantId);
     let hit: { code: string; label: string } | undefined;
     let lastError: unknown;
-    for (const catalogKey of ['job_titles', 'positions', 'employee_positions']) {
+    for (const catalogKey of [
+      'job_titles',
+      'positions',
+      'employee_positions',
+    ]) {
       try {
         hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
           tenantId,
@@ -860,7 +864,7 @@ export class RecruitmentCatalogService {
         lastError = err;
       }
     }
-    
+
     if (!hit) {
       throw new ApiException(
         opts.errorCode,
@@ -3146,7 +3150,8 @@ export class RecruitmentCatalogService {
       candidate_name: row.lane_a_full_name ?? row.candidate_name ?? null,
       candidate_email: row.lane_a_email ?? row.candidate_email ?? null,
       candidate_position:
-        (row.yctd_position_name != null && String(row.yctd_position_name).trim()) ||
+        (row.yctd_position_name != null &&
+          String(row.yctd_position_name).trim()) ||
         (row.yctd_title != null && String(row.yctd_title).trim()) ||
         null,
       candidate_stage: row.lane_a_status ?? row.pool_stage ?? null,
