@@ -1022,6 +1022,7 @@ export class RecruitmentCatalogService {
       };
     }
     const id = randomUUID();
+    const workflowCode = payload.workflow_id;
     const res = await this.db.query(
       `INSERT INTO public.job_postings (
         id, company_id, title, department, department_key, position, position_key, employment_type, work_location,
@@ -1053,8 +1054,24 @@ export class RecruitmentCatalogService {
         jdTemplateId,
         jdSnapshot !== null ? JSON.stringify(jdSnapshot) : null,
       ],
+      ],
     );
-    return res.rows[0];
+
+    const newJobPosting = res.rows[0];
+
+    if (workflowCode) {
+      const wfCtx = {
+        businessType: 'hrm_job_posting' as const,
+        businessId: id,
+        companyId,
+        submitterUserId: payload.created_by,
+      };
+      await this.recruitmentWorkflowBridge.startRecruitmentWorkflowIfConfigured(
+        wfCtx,
+      );
+    }
+
+    return newJobPosting;
   }
 
   async deleteJobPosting(
