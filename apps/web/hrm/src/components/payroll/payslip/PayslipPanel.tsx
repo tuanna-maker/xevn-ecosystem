@@ -72,7 +72,7 @@ export function PayslipPanel({ payslip }: { payslip: Payslip }) {
             <div style={{ fontSize: 26, fontWeight: 800, color: "#4ade80" }}>{fmtVND(payslip.gross_vnd)}</div>
           </div>
           <div style={{ background: "#ffffff0d", borderRadius: 10, padding: 16 }}>
-            <div style={{ fontSize: 12, color: "#64748b", marginBottom: 4 }}>THỰC LÃNH</div>
+            <div style={{ fontSize: 12, color: "#64748b", marginBottom: 4 }}>THỰC LĨNH</div>
             <div style={{ fontSize: 26, fontWeight: 800, color: "#a5b4fc" }}>{fmtVND(payslip.net_vnd)}</div>
           </div>
         </div>
@@ -121,7 +121,7 @@ export function PayslipPanel({ payslip }: { payslip: Payslip }) {
           <strong style={{ color: "#f87171" }}>− {fmtVND(deductions.reduce((s, c) => s + parseInt(c.amount_vnd), 0))}</strong>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 20, fontWeight: 800, marginTop: 16, borderTop: "1px solid #1e2540", paddingTop: 16 }}>
-          <span style={{ color: "#e8eaf0" }}>THỰC LÃNH</span>
+          <span style={{ color: "#e8eaf0" }}>THỰC LĨNH</span>
           <strong style={{ color: "#a5b4fc" }}>{fmtVND(payslip.net_vnd)}</strong>
         </div>
       </div>

@@ -6,7 +6,7 @@
  * must_keep: module routing / disabled reasons; no Nest
  */
 import React, { type Dispatch, type SetStateAction } from 'react';
-import { matchPath, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useTenantNavigate } from '../../hooks/useTenantNavigate';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -29,7 +29,7 @@ import {
 } from './settings-form-pattern';
 import { useWorkspaceRail } from './workspace-rail-context';
 import { hrmPortalPath } from '../../modules/hrm/paths';
-import { commandCenterModuleUrl } from '../../modules/hrm/commandCenterUrl';
+import { commandCenterModuleUrl, isCommandCenterHrmPath } from '../../modules/hrm/commandCenterUrl';
 
 const RAIL_STROKE = 1.5;
 const SYSTEM_SETTINGS = 'SYSTEM_SETTINGS';
@@ -74,8 +74,7 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
         <div className={`flex w-full flex-col items-center ${contentExpanded ? 'space-y-3' : 'space-y-2'}`}>
           {railItems.map((m) => {
             const Icon = moduleIcons[m.moduleCode] ?? LayoutDashboard;
-            const onHrmRoute =
-              matchPath({ path: '/command-center/hrm/*', end: false }, location.pathname) != null;
+            const onHrmRoute = isCommandCenterHrmPath(location.pathname);
             const isActive =
               (m.moduleCode === 'group' && selectedModule === 'all' && !onHrmRoute) ||
               (m.moduleCode === 'system' && selectedModule === SYSTEM_SETTINGS) ||

@@ -478,8 +478,8 @@ export function CompanyMembersManagement() {
 
       if (empsWithoutEmail.length > 0) {
         toast({
-          title: t('common.warning') || 'Cáº£nh bĂ¡o',
-          description: `${empsWithoutEmail.length} nhĂ¢n viĂªn khĂ´ng cĂ³ email sáº½ bá»‹ bá» qua`,
+          title: t('common.warning') || 'Cảnh báo',
+          description: `${empsWithoutEmail.length} nhân viên không có email sẽ bị bỏ qua`,
           variant: 'destructive',
         });
       }
@@ -487,7 +487,7 @@ export function CompanyMembersManagement() {
       if (empsWithEmail.length === 0) {
         toast({
           title: t('common.error'),
-          description: 'KhĂ´ng cĂ³ nhĂ¢n viĂªn nĂ o cĂ³ email Ä‘á»ƒ má»i',
+          description: 'Không có nhân viên nào có email để mời',
           variant: 'destructive',
         });
         return;
@@ -1214,7 +1214,7 @@ export function CompanyMembersManagement() {
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm truncate">{emp.full_name}</p>
                             <p className="text-xs text-muted-foreground">
-                              {emp.employee_code} {emp.department ? `â€¢ ${emp.department}` : ''} {emp.position ? `â€¢ ${emp.position}` : ''}
+                              {emp.employee_code} {emp.department ? `• ${emp.department}` : ''} {emp.position ? `• ${emp.position}` : ''}
                             </p>
                           </div>
                         </div>

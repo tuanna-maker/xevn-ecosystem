@@ -6,6 +6,11 @@ import {
   hrmProxyPath,
   hrmProxyPathFromSuffix,
   hrmPortalSuffixFromPathname,
+  tenantHrmPortalPath,
+  tenantScopedPortalPath,
+  stripTenantPrefixFromPathname,
+  withTenantQueryParam,
+  TENANT_QUERY_PARAM,
   HRM_PORTAL_BASE,
 } from './paths';
 
@@ -134,5 +139,28 @@ describe('hrmProxyPath (Command Center embed)', () => {
     expect(hrmPortalSuffixFromPathname(`${HRM_PORTAL_BASE}/employees/emp-uuid-1`)).toBe(
       'employees/emp-uuid-1',
     );
+    expect(
+      hrmPortalSuffixFromPathname(`/visun${HRM_PORTAL_BASE}/employees/emp-uuid-1`),
+    ).toBe('employees/emp-uuid-1');
+  });
+
+  it('tenantHrmPortalPath keeps tenant in ?tenantId= query param', () => {
+    expect(tenantHrmPortalPath('visun', 'settings')).toBe(
+      '/command-center/hrm/settings?tenantId=visun',
+    );
+    expect(tenantHrmPortalPath('visun', 'dashboard')).toBe(
+      '/command-center/hrm/dashboard?tenantId=visun',
+    );
+    expect(tenantScopedPortalPath('visun', '/command-center')).toBe(
+      '/command-center?tenantId=visun',
+    );
+    expect(withTenantQueryParam('/command-center/hrm/settings?foo=1', 'visun')).toBe(
+      '/command-center/hrm/settings?foo=1&tenantId=visun',
+    );
+    expect(stripTenantPrefixFromPathname('/visun/command-center/hrm/settings')).toBe(
+      '/command-center/hrm/settings',
+    );
+    expect(stripTenantPrefixFromPathname('/visun/cockpit')).toBe('/cockpit');
+    expect(TENANT_QUERY_PARAM).toBe('tenantId');
   });
 });

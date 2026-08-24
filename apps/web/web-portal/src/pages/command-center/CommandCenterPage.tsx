@@ -148,6 +148,7 @@ import { HrmApiHealthBanner } from '../../components/common/HrmApiHealthBanner';
 import { hrmPortalPath } from '../../modules/hrm/paths';
 import {
   commandCenterInboxInstanceDeepLink,
+  isCommandCenterHrmPath,
   parseCommandCenterSettingsDeepLink,
 } from '../../modules/hrm/commandCenterUrl';
 import {
@@ -1438,7 +1439,7 @@ const CommandCenterPage: React.FC = () => {
 
   /** Đồng bộ rail với URL HRM — nghiệp vụ HRM mount qua `/command-center/hrm/:view`, không nhúng trong state một chỗ. */
   useEffect(() => {
-    if (matchPath({ path: '/command-center/hrm/*', end: false }, location.pathname)) {
+    if (isCommandCenterHrmPath(location.pathname)) {
       setSelectedModule('hrm');
     }
   }, [location.pathname]);
@@ -10504,7 +10505,8 @@ const CommandCenterPage: React.FC = () => {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden bg-xevn-background text-xevn-text">
-      {/* Brand chrome = TopHeader only (W1 remaster). This bar = persona filter — not a second logo/title header. */}
+      {/* Persona bar hidden on HRM embed — maximize iframe viewport; tenant stays in ?tenantId= */}
+      {!isCommandCenterHrmPath(location.pathname) ? (
       <header
         className="shrink-0 z-20 border-b border-xevn-border bg-xevn-surface/80 shadow-soft backdrop-blur-md"
         data-testid="cc-persona-bar"
@@ -10552,6 +10554,7 @@ const CommandCenterPage: React.FC = () => {
           />
         ) : null}
       </header>
+      ) : null}
 
       <WorkspaceLayout
         className="min-h-0 flex-1"
