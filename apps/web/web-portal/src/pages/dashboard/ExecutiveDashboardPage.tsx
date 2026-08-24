@@ -71,6 +71,7 @@ import {
   membershipRoleDisplay,
 } from '../../integrations/authSession';
 import { useTenantNavigate } from '../../hooks/useTenantNavigate';
+import { useNavigate } from 'react-router-dom';
 
 // Sparkline component
 const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
@@ -100,7 +101,8 @@ const ExecutiveDashboardPage: React.FC = () => {
   const { tenantId, companyId } = useTenantScope();
   const { selectedTenant, tenants, setSelectedTenant } = useGlobalFilter();
   const { memberships, selectMembership, membershipSwitching, user, logout } = useAuth();
-  const navigate = useTenantNavigate();
+  const tenantNavigate = useTenantNavigate();
+  const rawNavigate = useNavigate();
   const [isTenantDropdownOpen, setIsTenantDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const tenantDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -178,14 +180,28 @@ const ExecutiveDashboardPage: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const getTenantDefaultRoute = (tenant: (typeof tenants)[number]) => {
+    if (tenant.modules && tenant.modules.length > 0) {
+      // Prioritize business modules over 'core'
+      const activeModule = tenant.modules.find(m => m !== 'core') || tenant.modules[0];
+      return resolveExecModuleAccessRoute(activeModule);
+    }
+    return '/dashboard/organization';
+  };
+
   const handleMembershipSelect = async (tenant: (typeof tenants)[number]) => {
+    const route = getTenantDefaultRoute(tenant);
+    // Strip leading slash to make it relative to the domain root, and prepend tenantId
+    const absoluteRoute = `/${tenant.tenantId}${route.startsWith('/') ? route : `/${route}`}`;
+
     if (tenant.tenantId === selectedTenant.tenantId || membershipSwitching) {
       setIsTenantDropdownOpen(false);
+      rawNavigate(absoluteRoute);
       return;
     }
     try {
       await selectMembership(tenant.tenantId);
-      navigate('/cockpit');
+      rawNavigate(absoluteRoute);
       setSelectedTenant(tenant);
       setIsTenantDropdownOpen(false);
     } catch (error) {
@@ -326,7 +342,7 @@ const ExecutiveDashboardPage: React.FC = () => {
                           type="button"
                           onClick={() => {
                             setIsProfileDropdownOpen(false);
-                            navigate('/login');
+                            rawNavigate('/login');
                           }}
                           className="flex w-full items-center gap-3 rounded-input p-2.5 text-sm text-xevn-textSecondary hover:bg-xevn-background hover:text-xevn-text"
                         >
@@ -347,7 +363,7 @@ const ExecutiveDashboardPage: React.FC = () => {
                           onClick={() => {
                             setIsProfileDropdownOpen(false);
                             logout();
-                            navigate('/login');
+                            rawNavigate('/login');
                           }}
                           className="flex w-full items-center gap-3 rounded-input p-2.5 text-sm text-xevn-danger hover:bg-red-50"
                         >
@@ -568,7 +584,9 @@ const ExecutiveDashboardPage: React.FC = () => {
               {tenants.filter(t => !t.isMaster).map(t => (
                 <div 
                   key={t.tenantId} 
-                  onClick={() => handleMembershipSelect(t)}
+                  onClick={() => {
+                    void handleMembershipSelect(t);
+                  }}
                   className="group cursor-pointer rounded-2xl border border-xevn-border bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-xevn-primary/30 relative overflow-hidden"
                 >
                   <div className={`absolute top-0 right-0 w-2 h-full ${selectedTenant.tenantId === t.tenantId ? 'bg-xevn-primary' : 'bg-transparent'}`} />
@@ -641,7 +659,7 @@ const ModuleCard: React.FC<{ card: ModuleCardData }> = ({ card }) => {
   const navigate = useTenantNavigate();
 
   const handleAccessClick = () => {
-    navigate(resolveExecModuleAccessRoute(card.id));
+    tenantNavigate(resolveExecModuleAccessRoute(card.id));
   };
 
   const getIconComponent = (iconName: string) => {

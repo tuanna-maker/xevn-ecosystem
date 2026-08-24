@@ -33,10 +33,11 @@ function embedCompanyQueryParam(
   return resolveHrmOperationalCompanyId(tenantId, companyId);
 }
 
-export function hrmPortalPath(view: string): string {
+export function hrmPortalPath(view: string, tenantId?: string | null): string {
   const trimmed = view.replace(/^\/+/, '').replace(/\/+$/, '');
-  if (!trimmed || trimmed === 'dashboard') return `${HRM_PORTAL_BASE}/dashboard`;
-  return `${HRM_PORTAL_BASE}/${trimmed}`;
+  const prefix = tenantId ? `/${tenantId}` : '';
+  if (!trimmed || trimmed === 'dashboard') return `${prefix}${HRM_PORTAL_BASE}/dashboard`;
+  return `${prefix}${HRM_PORTAL_BASE}/${trimmed}`;
 }
 
 /** Lấy suffix sau `/command-center/hrm/` (vd. `contracts`, `employees/uuid`). */

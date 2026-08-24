@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import {
   LayoutDashboard,
@@ -69,6 +69,7 @@ const ICON_ONLY_ITEMS: NavItem[] = [
 ];
 
 export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = false }) => {
+  const { tenantId } = useParams<{ tenantId: string }>();
   const sectionLabelClass = 'px-1 text-xs font-semibold uppercase tracking-wider text-xevn-textSecondary';
 
   const linkClass = (isActive: boolean, iconOnly?: boolean) => {
@@ -82,7 +83,7 @@ export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = fals
   const renderLink = (item: NavItem, opts?: { compact?: boolean; iconOnly?: boolean }) => (
     <NavLink
       key={item.key}
-      to={hrmPortalPath(item.key)}
+      to={hrmPortalPath(item.key, tenantId)}
       end={false}
       title={item.label}
       className={({ isActive }) => linkClass(isActive, opts?.iconOnly)}

@@ -12,8 +12,13 @@ export function useTenantNavigate() {
 
   const tenantNavigate = (to: string, options?: NavigateOptions) => {
     if (to.startsWith('/')) {
-      const resolvedPath = `${tenantPrefix}${to}`.replace(/\/+/g, '/');
-      navigate(resolvedPath, options);
+      // Prevent double prefixing if it already starts with the tenant prefix
+      if (selectedTenant?.tenantId && (to === tenantPrefix || to.startsWith(`${tenantPrefix}/`))) {
+        navigate(to, options);
+      } else {
+        const resolvedPath = `${tenantPrefix}${to}`.replace(/\/+/g, '/');
+        navigate(resolvedPath, options);
+      }
     } else {
       navigate(to, options);
     }
