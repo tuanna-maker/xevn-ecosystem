@@ -138,7 +138,10 @@ export class DepartmentsService {
       authorization,
       payload.company_id,
     );
-    const tenantId = resolveHrmPersistTenantId(authorization, payload.company_id);
+    const tenantId = resolveHrmPersistTenantId(
+      authorization,
+      payload.company_id,
+    );
     const id = randomUUID();
     const res = await this.db.query<DepartmentRow>(
       `INSERT INTO public.departments (

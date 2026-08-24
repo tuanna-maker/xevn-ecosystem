@@ -146,7 +146,10 @@ export class SettingsPayrollParamsService {
     });
 
     return {
-      MINIMUM_WAGE: this.asFiniteNumber(src.MINIMUM_WAGE, defaults.MINIMUM_WAGE),
+      MINIMUM_WAGE: this.asFiniteNumber(
+        src.MINIMUM_WAGE,
+        defaults.MINIMUM_WAGE,
+      ),
       STANDARD_WORK_DAYS: this.asFiniteNumber(
         src.STANDARD_WORK_DAYS,
         defaults.STANDARD_WORK_DAYS,
@@ -165,10 +168,22 @@ export class SettingsPayrollParamsService {
       ),
       BHXH_BASE: this.asFiniteNumber(src.BHXH_BASE, defaults.BHXH_BASE),
       BHXH_CAP: this.asFiniteNumber(src.BHXH_CAP, defaults.BHXH_CAP),
-      BHXH_EMP_RATE: this.asFiniteNumber(src.BHXH_EMP_RATE, defaults.BHXH_EMP_RATE),
-      BHXH_CMP_RATE: this.asFiniteNumber(src.BHXH_CMP_RATE, defaults.BHXH_CMP_RATE),
-      TNLD_CMP_RATE: this.asFiniteNumber(src.TNLD_CMP_RATE, defaults.TNLD_CMP_RATE),
-      TNCN_PERSONAL: this.asFiniteNumber(src.TNCN_PERSONAL, defaults.TNCN_PERSONAL),
+      BHXH_EMP_RATE: this.asFiniteNumber(
+        src.BHXH_EMP_RATE,
+        defaults.BHXH_EMP_RATE,
+      ),
+      BHXH_CMP_RATE: this.asFiniteNumber(
+        src.BHXH_CMP_RATE,
+        defaults.BHXH_CMP_RATE,
+      ),
+      TNLD_CMP_RATE: this.asFiniteNumber(
+        src.TNLD_CMP_RATE,
+        defaults.TNLD_CMP_RATE,
+      ),
+      TNCN_PERSONAL: this.asFiniteNumber(
+        src.TNCN_PERSONAL,
+        defaults.TNCN_PERSONAL,
+      ),
       TNCN_DEPENDENT: this.asFiniteNumber(
         src.TNCN_DEPENDENT,
         defaults.TNCN_DEPENDENT,
@@ -180,7 +195,10 @@ export class SettingsPayrollParamsService {
         src.CC_BASE_SALARY,
         defaults.CC_BASE_SALARY,
       ),
-      CC_CALL_FUND: this.asFiniteNumber(src.CC_CALL_FUND, defaults.CC_CALL_FUND),
+      CC_CALL_FUND: this.asFiniteNumber(
+        src.CC_CALL_FUND,
+        defaults.CC_CALL_FUND,
+      ),
       DRIVER_KPI_EXPRESS: this.asFiniteNumber(
         src.DRIVER_KPI_EXPRESS,
         defaults.DRIVER_KPI_EXPRESS,
@@ -295,7 +313,10 @@ export class SettingsPayrollParamsService {
       tenant,
       companyId,
     );
-    const current = await this.getPayrollParamsDocument(companyId, authorization);
+    const current = await this.getPayrollParamsDocument(
+      companyId,
+      authorization,
+    );
     const merged = this.mergeDocument({ ...current, ...payload });
     this.assertDocument(merged);
 

@@ -25,7 +25,9 @@ describe('hrm-tenant-scope', () => {
       'logistics',
       'trsport',
     ]);
-    expect(legacyOuSlugsForTenantIds([...HRM_GROUP_ROLLUP_TENANT_IDS]).length).toBe(5);
+    expect(
+      legacyOuSlugsForTenantIds([...HRM_GROUP_ROLLUP_TENANT_IDS]).length,
+    ).toBe(5);
   });
 
   it('resolveHrmTenantDisplayNameVi maps registry tenants', () => {

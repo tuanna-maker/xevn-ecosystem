@@ -71,6 +71,8 @@ export class SettingsPayrollParamsController {
     const { company_id: _a, companyId: _b, ...rest } = body;
     return this.params
       .upsertPayrollParams(companyId, rest, authorization)
-      .then((data) => ok(data, 'HRM-PAY-PARAMS-200', 'Payroll system params saved'));
+      .then((data) =>
+        ok(data, 'HRM-PAY-PARAMS-200', 'Payroll system params saved'),
+      );
   }
 }

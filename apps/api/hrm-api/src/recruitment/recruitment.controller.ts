@@ -2212,7 +2212,9 @@ export class RecruitmentController {
       .listRecruitmentInterviews(scopeCompany, authorization, {
         candidateId,
       })
-      .then((data) => ok(data, 'HRM-REC-INT-A-200', 'Lane A interviews listed'));
+      .then((data) =>
+        ok(data, 'HRM-REC-INT-A-200', 'Lane A interviews listed'),
+      );
   }
 
   /**

@@ -58,7 +58,11 @@ export class CompanyScopeController {
     },
   ) {
     return this.companyScopeService
-      .upsertScopedMembership(authorization, body, toHrmListScopeContext(tenantId))
+      .upsertScopedMembership(
+        authorization,
+        body,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-COS-203', 'Scoped membership saved'));
   }
 

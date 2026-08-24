@@ -366,7 +366,9 @@ export class EmployeesService implements OnModuleInit {
   }
 
   private async ensureSeedData() {
-    await this.db.query(`DELETE FROM public.employees WHERE email IN ('ceo@xe.vn', 'hr.manager@xe.vn', 'ops.manager@xe.vn')`);
+    await this.db.query(
+      `DELETE FROM public.employees WHERE email IN ('ceo@xe.vn', 'hr.manager@xe.vn', 'ops.manager@xe.vn')`,
+    );
   }
 
   /**

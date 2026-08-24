@@ -1241,7 +1241,8 @@ export class RecruitmentService {
       recruitment_request_id: row.id,
       requisition_id: row.id,
       candidate_count:
-        row.candidate_count != null && Number.isFinite(Number(row.candidate_count))
+        row.candidate_count != null &&
+        Number.isFinite(Number(row.candidate_count))
           ? Number(row.candidate_count)
           : 0,
     };
@@ -1633,7 +1634,9 @@ export class RecruitmentService {
   private pushRequisitionCompanyFilter(
     filters: string[],
     values: unknown[],
-    companyIdsOrScope: string[] | import('../common/hrm-list-scope').HrmListScope,
+    companyIdsOrScope:
+      | string[]
+      | import('../common/hrm-list-scope').HrmListScope,
     alias = 'r',
   ): void {
     if (!Array.isArray(companyIdsOrScope)) {
@@ -1665,7 +1668,8 @@ export class RecruitmentService {
     const filters: string[] = [];
     const values: unknown[] = [rawIds, requisitionId];
     this.pushRequisitionCompanyFilter(filters, values, scope, 'r');
-    const scopeClause = filters.length > 0 ? ` AND ${filters.join(' AND ')}` : '';
+    const scopeClause =
+      filters.length > 0 ? ` AND ${filters.join(' AND ')}` : '';
     const mapRes = await this.db.query<{
       requested_id: string;
       spine_id: string | null;
@@ -2574,12 +2578,7 @@ export class RecruitmentService {
     const requisitionId = requireUvYctdRequisitionId(payload);
     const reqFilters: string[] = ['r.id = $1::uuid'];
     const reqValues: unknown[] = [requisitionId];
-    this.pushRequisitionCompanyFilter(
-      reqFilters,
-      reqValues,
-      scope,
-      'r',
-    );
+    this.pushRequisitionCompanyFilter(reqFilters, reqValues, scope, 'r');
     const reqRes = await this.db.query<JobRequisitionRow>(
       `${this.requisitionSelectSql()}
        WHERE ${reqFilters.join(' AND ')}
@@ -3057,12 +3056,7 @@ export class RecruitmentService {
     );
     const candFilters: string[] = ['c.id = $1::uuid'];
     const candValues: unknown[] = [candidateId];
-    this.pushRequisitionCompanyFilter(
-      candFilters,
-      candValues,
-      scope,
-      'c',
-    );
+    this.pushRequisitionCompanyFilter(candFilters, candValues, scope, 'c');
     const candRes = await this.db.query<CandidateRow>(
       `SELECT c.id, c.company_id, c.requisition_id, c.full_name, c.email, c.source, c.status,
               c.created_at, c.updated_at
@@ -3159,12 +3153,7 @@ export class RecruitmentService {
     );
     const candFilters: string[] = ['c.id = $1::uuid'];
     const candValues: unknown[] = [candidateId];
-    this.pushRequisitionCompanyFilter(
-      candFilters,
-      candValues,
-      scope,
-      'c',
-    );
+    this.pushRequisitionCompanyFilter(candFilters, candValues, scope, 'c');
     const candRes = await this.db.query<CandidateRow>(
       `SELECT c.id, c.company_id, c.requisition_id, c.full_name, c.email, c.source, c.status,
               c.created_at, c.updated_at
@@ -3343,12 +3332,7 @@ export class RecruitmentService {
     );
     const candFilters: string[] = ['c.id = $1::uuid'];
     const candValues: unknown[] = [candidateId];
-    this.pushRequisitionCompanyFilter(
-      candFilters,
-      candValues,
-      scope,
-      'c',
-    );
+    this.pushRequisitionCompanyFilter(candFilters, candValues, scope, 'c');
     const candRes = await this.db.query<CandidateRow>(
       `SELECT c.id, c.company_id, c.requisition_id, c.full_name, c.email, c.source, c.status,
               c.created_at, c.updated_at
@@ -4520,12 +4504,7 @@ export class RecruitmentService {
       // Distinguish mix vs not-found: load without YCTD filter for mix detection.
       const anyFilters: string[] = ['c.id = ANY($1::uuid[])'];
       const anyValues: unknown[] = [candidateIds];
-      this.pushRequisitionCompanyFilter(
-        anyFilters,
-        anyValues,
-        scope,
-        'r',
-      );
+      this.pushRequisitionCompanyFilter(anyFilters, anyValues, scope, 'r');
       const anyRes = await this.db.query<{
         id: string;
         requisition_id: string;
@@ -4700,8 +4679,7 @@ export class RecruitmentService {
       values.push(options.candidateId.trim());
       filters.push(`i.candidate_id = $${values.length}::uuid`);
     }
-    const where =
-      filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
+    const where = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
     const countRes = await this.db.query<{ total: string }>(
       `SELECT COUNT(*)::text AS total
        FROM public.recruitment_interviews i
