@@ -63,13 +63,13 @@ interface ImportRow {
 }
 
 const TEMPLATE_COLUMNS = [
-  { key: 'name', label: 'TĂªn phĂ²ng ban', required: true },
-  { key: 'code', label: 'MĂ£ phĂ²ng ban', required: false },
-  { key: 'description', label: 'MĂ´ táº£', required: false },
-  { key: 'manager_name', label: 'TĂªn trÆ°á»Ÿng phĂ²ng', required: false },
-  { key: 'manager_email', label: 'Email trÆ°á»Ÿng phĂ²ng', required: false },
-  { key: 'parent_name', label: 'TĂªn phĂ²ng ban cha', required: false },
-  { key: 'status', label: 'Tráº¡ng thĂ¡i (active/inactive)', required: false },
+  { key: 'name', label: 'Tên phòng ban', required: true },
+  { key: 'code', label: 'Mã phòng ban', required: false },
+  { key: 'description', label: 'Mô tả', required: false },
+  { key: 'manager_name', label: 'Tên trưởng phòng', required: false },
+  { key: 'manager_email', label: 'Email trưởng phòng', required: false },
+  { key: 'parent_name', label: 'Tên phòng ban cha', required: false },
+  { key: 'status', label: 'Trạng thái (active/inactive)', required: false },
 ];
 
 export function DepartmentImportDialog({
@@ -105,16 +105,16 @@ export function DepartmentImportDialog({
   const downloadTemplate = () => {
     const templateData = [
       TEMPLATE_COLUMNS.map(col => col.label),
-      ['PhĂ²ng NhĂ¢n sá»±', 'HR', 'Quáº£n lĂ½ nhĂ¢n sá»± vĂ  tuyá»ƒn dá»¥ng', 'Nguyá»…n VÄƒn A', 'a@company.com', '', 'active'],
-      ['PhĂ²ng Ká»¹ thuáº­t', 'IT', 'PhĂ¡t triá»ƒn vĂ  váº­n hĂ nh há»‡ thá»‘ng', 'Tráº§n VÄƒn B', 'b@company.com', '', 'active'],
-      ['NhĂ³m Frontend', 'IT-FE', 'PhĂ¡t triá»ƒn giao diá»‡n', 'LĂª VÄƒn C', 'c@company.com', 'PhĂ²ng Ká»¹ thuáº­t', 'active'],
+      ['Phòng Nhân sự', 'HR', 'Quản lý nhân sự và tuyển dụng', 'Nguyễn Văn A', 'a@company.com', '', 'active'],
+      ['Phòng Kỹ thuật', 'IT', 'Phát triển và vận hành hệ thống', 'Trần Văn B', 'b@company.com', '', 'active'],
+      ['Nhóm Frontend', 'IT-FE', 'Phát triển giao diện', 'Lê Văn C', 'c@company.com', 'Phòng Kỹ thuật', 'active'],
     ];
 
     const ws = XLSX.utils.aoa_to_sheet(templateData);
     ws['!cols'] = TEMPLATE_COLUMNS.map(() => ({ wch: 25 }));
     
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Máº«u nháº­p phĂ²ng ban');
+    XLSX.utils.book_append_sheet(wb, ws, 'Mẫu nhập phòng ban');
     
     XLSX.writeFile(wb, 'mau_import_phong_ban.xlsx');
     toast.success(t('deptImport.templateDownloaded'));
@@ -131,13 +131,13 @@ export function DepartmentImportDialog({
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    const name = row['TĂªn phĂ²ng ban']?.toString().trim();
-    const code = row['MĂ£ phĂ²ng ban']?.toString().trim();
-    const description = row['MĂ´ táº£']?.toString().trim();
-    const managerName = row['TĂªn trÆ°á»Ÿng phĂ²ng']?.toString().trim();
-    const managerEmail = row['Email trÆ°á»Ÿng phĂ²ng']?.toString().trim();
-    const parentName = row['TĂªn phĂ²ng ban cha']?.toString().trim();
-    const statusStr = row['Tráº¡ng thĂ¡i (active/inactive)']?.toString().trim().toLowerCase();
+    const name = row['Tên phòng ban']?.toString().trim();
+    const code = row['Mã phòng ban']?.toString().trim();
+    const description = row['Mô tả']?.toString().trim();
+    const managerName = row['Tên trưởng phòng']?.toString().trim();
+    const managerEmail = row['Email trưởng phòng']?.toString().trim();
+    const parentName = row['Tên phòng ban cha']?.toString().trim();
+    const statusStr = row['Trạng thái (active/inactive)']?.toString().trim().toLowerCase();
 
     // Required fields
     if (!name) errors.push(t('deptImport.nameRequired'));
@@ -234,8 +234,8 @@ export function DepartmentImportDialog({
         const fileCodesSoFar = new Set<string>();
         const parsedData = jsonData.map((row, index) => {
           const result = validateRow(row, index + 2, existingNames, existingCodes, fileNamesSoFar, fileCodesSoFar);
-          const name = row['TĂªn phĂ²ng ban']?.toString().trim();
-          const code = row['MĂ£ phĂ²ng ban']?.toString().trim();
+          const name = row['Tên phòng ban']?.toString().trim();
+          const code = row['Mã phòng ban']?.toString().trim();
           if (name) fileNamesSoFar.add(name.toUpperCase());
           if (code) fileCodesSoFar.add(code.toUpperCase());
           return result;
@@ -388,10 +388,10 @@ export function DepartmentImportDialog({
             <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4">
               <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">{t('deptImport.instructions')}:</h4>
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                <li>â€¢ {t('deptImport.inst1')}</li>
-                <li>â€¢ {t('deptImport.inst2')}</li>
-                <li>â€¢ {t('deptImport.inst3')}</li>
-                <li>â€¢ {t('deptImport.inst4')}</li>
+                <li>• {t('deptImport.inst1')}</li>
+                <li>• {t('deptImport.inst2')}</li>
+                <li>• {t('deptImport.inst3')}</li>
+                <li>• {t('deptImport.inst4')}</li>
               </ul>
             </div>
           </div>

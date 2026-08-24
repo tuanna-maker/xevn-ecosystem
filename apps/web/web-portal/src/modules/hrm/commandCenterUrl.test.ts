@@ -5,6 +5,7 @@ import {
   commandCenterInboxPath,
   commandCenterInboxInstanceDeepLink,
   commandCenterSettingsDeepLink,
+  isCommandCenterHrmPath,
   isCommandCenterInboxPath,
   normalizeSettingsMenuKey,
   parseCommandCenterSettingsDeepLink,
@@ -15,7 +16,16 @@ describe('commandCenterInboxPath (D-HDSD-WF-INBOX-FE-01)', () => {
     expect(commandCenterInboxPath()).toBe('/command-center/inbox');
     expect(CC_INBOX_PATH).toBe('/command-center/inbox');
     expect(isCommandCenterInboxPath('/command-center/inbox')).toBe(true);
+    expect(isCommandCenterInboxPath('/visun/command-center/inbox')).toBe(true);
     expect(isCommandCenterInboxPath('/command-center')).toBe(false);
+  });
+});
+
+describe('isCommandCenterHrmPath (tenant-scoped routes)', () => {
+  it('matches HRM paths with or without tenant prefix', () => {
+    expect(isCommandCenterHrmPath('/command-center/hrm/dashboard')).toBe(true);
+    expect(isCommandCenterHrmPath('/visun/command-center/hrm/settings')).toBe(true);
+    expect(isCommandCenterHrmPath('/command-center')).toBe(false);
   });
 });
 

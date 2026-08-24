@@ -137,7 +137,7 @@ const InfoRow = ({ icon: Icon, label, value }: { icon: any; label: string; value
     </div>
     <div className="flex-1 min-w-0">
       <p className="text-xs text-xevn-textSecondary">{label}</p>
-      <p className="text-sm font-medium truncate">{value || 'â€”'}</p>
+      <p className="text-sm font-medium truncate">{value || '—'}</p>
     </div>
   </div>
 );
@@ -371,7 +371,7 @@ export function EmployeeResume({ employeeId, employeeName }: EmployeeResumeProps
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{file.name}</p>
                       <p className="text-xs text-xevn-textSecondary">
-                        {file.file_size} â€¢ {format(new Date(file.created_at), 'dd/MM/yyyy', { locale: vi })}
+                        {file.file_size} • {format(new Date(file.created_at), 'dd/MM/yyyy', { locale: vi })}
                       </p>
                     </div>
                     <DropdownMenu>

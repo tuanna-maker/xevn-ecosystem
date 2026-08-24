@@ -156,7 +156,7 @@ export const PayPaySlipTemplateSettingsPanel = () => {
             </div>
 
             <div className="mt-4 pt-3 border-t flex justify-between items-center">
-              <span className="font-bold text-sm text-gray-900">THỰC LÃNH</span>
+              <span className="font-bold text-sm text-gray-900">THỰC LĨNH</span>
               <span className="font-bold text-lg text-blue-600">10,800,000</span>
             </div>
 

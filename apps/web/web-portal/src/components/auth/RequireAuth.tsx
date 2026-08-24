@@ -1,17 +1,20 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { stripTenantPrefixFromPathname } from '../../modules/hrm/paths';
 
 export function isCommandCenterPath(pathname: string): boolean {
-  return pathname === '/command-center' || pathname.startsWith('/command-center/');
+  const stripped = stripTenantPrefixFromPathname(pathname);
+  return stripped === '/command-center' || stripped.startsWith('/command-center/');
 }
 
 /** UC-ECO-SCOPE-01 — every portal route behind RequireAuth must redirect unauthenticated users. */
 export function isProtectedPortalPath(pathname: string): boolean {
-  if (pathname === '/' || pathname === '/cockpit') return true;
-  if (pathname.startsWith('/catalog-governance')) return true;
+  const stripped = stripTenantPrefixFromPathname(pathname);
+  if (stripped === '/' || stripped === '/cockpit') return true;
+  if (stripped.startsWith('/catalog-governance')) return true;
   if (isCommandCenterPath(pathname)) return true;
-  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) return true;
+  if (stripped === '/dashboard' || stripped.startsWith('/dashboard/')) return true;
   return false;
 }
 

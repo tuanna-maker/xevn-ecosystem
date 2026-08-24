@@ -30,7 +30,7 @@
  * must_keep: existing aliases; DM-09 hrm_catalog_clone separate; U65 no seed
  */
 import { matchPath } from 'react-router-dom';
-import { hrmPortalPath, HRM_PORTAL_BASE } from './paths';
+import { hrmPortalPath, HRM_PORTAL_BASE, stripTenantPrefixFromPathname } from './paths';
 
 export const SYSTEM_SETTINGS = 'SYSTEM_SETTINGS';
 
@@ -38,7 +38,8 @@ export const SYSTEM_SETTINGS = 'SYSTEM_SETTINGS';
 export const CC_INBOX_PATH = '/command-center/inbox';
 
 export function isCommandCenterInboxPath(pathname: string): boolean {
-  return matchPath({ path: CC_INBOX_PATH, end: false }, pathname) != null;
+  const stripped = stripTenantPrefixFromPathname(pathname);
+  return matchPath({ path: CC_INBOX_PATH, end: false }, stripped) != null;
 }
 
 export function commandCenterInboxPath(): string {
@@ -56,7 +57,11 @@ const CC_MODULE_CODES = new Set([
 ]);
 
 export function isCommandCenterHrmPath(pathname: string): boolean {
-  return matchPath({ path: `${HRM_PORTAL_BASE}/*`, end: false }, pathname) != null;
+  const stripped = stripTenantPrefixFromPathname(pathname);
+  return (
+    stripped === HRM_PORTAL_BASE ||
+    matchPath({ path: `${HRM_PORTAL_BASE}/*`, end: false }, stripped) != null
+  );
 }
 
 /**

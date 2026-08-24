@@ -31,9 +31,10 @@
  */
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { isCommandCenterHrmPath } from '../../modules/hrm/commandCenterUrl';
 import TopHeader from './TopHeader';
 
-/** Membership chrome required on CC shell (not UnifiedShell / cockpit). */
+/** Membership chrome required on CC shell (not UnifiedShell / cockpit / HRM embed). */
 export function isCommandCenterShellPath(pathname: string): boolean {
   return pathname.includes('/command-center');
 }
@@ -44,7 +45,8 @@ export function isCommandCenterShellPath(pathname: string): boolean {
  */
 const ExecutiveDashboardLayout: React.FC = () => {
   const { pathname } = useLocation();
-  const showMembershipChrome = isCommandCenterShellPath(pathname);
+  const showMembershipChrome =
+    isCommandCenterShellPath(pathname) && !isCommandCenterHrmPath(pathname);
 
   return (
     <div className="flex h-dvh w-full flex-col overflow-hidden bg-xevn-background text-xevn-text">

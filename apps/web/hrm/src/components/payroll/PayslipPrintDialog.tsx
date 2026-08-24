@@ -280,7 +280,7 @@ function buildPayslipHtml(
         </div>
       </div>
       <div class="net-salary-section">
-        <h3>THỰC LÃNH</h3>
+        <h3>THỰC LĨNH</h3>
         <div class="net-salary-amount">${formatNumber(emp.netSalary)} ₫</div>
       </div>
       <div class="footer">
@@ -527,7 +527,7 @@ export function PayslipPrintDialog({
             </div>
 
             <div className="bg-xevn-primary text-white p-6 text-center">
-              <h3 className="text-sm font-semibold text-white/90 mb-2">THỰC LÃNH</h3>
+              <h3 className="text-sm font-semibold text-white/90 mb-2">THỰC LĨNH</h3>
               <div className="text-3xl font-bold font-display">
                 {formatNumber(employee.netSalary)} ₫
               </div>

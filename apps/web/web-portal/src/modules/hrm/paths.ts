@@ -40,16 +40,69 @@ export function hrmPortalPath(view: string, tenantId?: string | null): string {
   return `${prefix}${HRM_PORTAL_BASE}/${trimmed}`;
 }
 
+const PORTAL_ROOT_SEGMENTS = new Set([
+  'command-center',
+  'cockpit',
+  'catalog-governance',
+  'dashboard',
+]);
+
+/** Query param carrying active tenant on canonical (non-prefixed) portal URLs. */
+export const TENANT_QUERY_PARAM = 'tenantId';
+
+export function extractTenantIdFromSearch(search: string): string | null {
+  const value = new URLSearchParams(search).get(TENANT_QUERY_PARAM)?.trim();
+  return value || null;
+}
+
+/** Append or replace `?tenantId=` on an absolute portal path (pathname + optional search + hash). */
+export function withTenantQueryParam(
+  pathWithOptionalSearch: string,
+  tenantId: string | null | undefined,
+): string {
+  const tid = tenantId?.trim();
+  if (!tid || tid === '__loading__') return pathWithOptionalSearch;
+
+  const hashIdx = pathWithOptionalSearch.indexOf('#');
+  const hash = hashIdx >= 0 ? pathWithOptionalSearch.slice(hashIdx) : '';
+  const beforeHash = hashIdx >= 0 ? pathWithOptionalSearch.slice(0, hashIdx) : pathWithOptionalSearch;
+  const qIdx = beforeHash.indexOf('?');
+  const pathname = qIdx >= 0 ? beforeHash.slice(0, qIdx) : beforeHash;
+  const params = new URLSearchParams(qIdx >= 0 ? beforeHash.slice(qIdx + 1) : '');
+  params.set(TENANT_QUERY_PARAM, tid);
+  const qs = params.toString();
+  return `${pathname}?${qs}${hash}`;
+}
+
+/** Strip `/:tenantId` when pathname is `/{tenant}/(command-center|cockpit|...)/...` */
+export function stripTenantPrefixFromPathname(pathname: string): string {
+  const normalized = pathname.replace(/\/+$/, '') || '/';
+  const parts = normalized.split('/');
+  if (parts.length >= 3 && parts[1] && parts[2] && PORTAL_ROOT_SEGMENTS.has(parts[2])) {
+    return '/' + parts.slice(2).join('/');
+  }
+  return normalized;
+}
+
+/** Keep tenant in `?tenantId=` — hide `/:tenantId` path prefix in the address bar. */
+export function tenantScopedPortalPath(
+  tenantId: string | null | undefined,
+  absolutePath: string,
+): string {
+  const path = absolutePath.startsWith('/') ? absolutePath : `/${absolutePath}`;
+  return withTenantQueryParam(path, tenantId);
+}
+
+export function tenantHrmPortalPath(
+  tenantId: string | null | undefined,
+  view: string,
+): string {
+  return tenantScopedPortalPath(tenantId, hrmPortalPath(view));
+}
+
 /** Lấy suffix sau `/command-center/hrm/` (vd. `contracts`, `employees/uuid`). */
 export function hrmPortalSuffixFromPathname(pathname: string): string {
-  const normalized = pathname.replace(/\/+$/, '');
-  
-  // Xóa bỏ phần /:tenantId ở đầu nếu có (vd: /xbos-master/command-center/hrm -> /command-center/hrm)
-  let strippedPathname = normalized;
-  const parts = normalized.split('/');
-  if (parts.length > 2 && parts[2] === 'command-center') {
-    strippedPathname = '/' + parts.slice(2).join('/');
-  }
+  const strippedPathname = stripTenantPrefixFromPathname(pathname);
   
   if (strippedPathname === HRM_PORTAL_BASE) return HRM_PORTAL_DEFAULT;
   if (!strippedPathname.startsWith(`${HRM_PORTAL_BASE}/`)) return HRM_PORTAL_DEFAULT;
