@@ -659,7 +659,7 @@ const ModuleCard: React.FC<{ card: ModuleCardData }> = ({ card }) => {
   const navigate = useTenantNavigate();
 
   const handleAccessClick = () => {
-    tenantNavigate(resolveExecModuleAccessRoute(card.id));
+    navigate(resolveExecModuleAccessRoute(card.id));
   };
 
   const getIconComponent = (iconName: string) => {

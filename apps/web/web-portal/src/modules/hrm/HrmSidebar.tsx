@@ -86,7 +86,6 @@ export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = fals
   const renderLink = (item: NavItem, opts?: { compact?: boolean; iconOnly?: boolean }) => (
     <NavLink
       key={item.key}
-<<<<<<< HEAD
       to={tenantHrmPortalPath(tenantId, item.key)}
       end={false}
       title={item.label}
