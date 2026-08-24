@@ -258,7 +258,7 @@ export function CheckInScreen() {
             <PrimaryButton
               key={shift}
               label={shift}
-              variant={selectedShift === shift ? 'solid' : 'outline'}
+              variant={selectedShift === shift ? 'primary' : 'secondary'}
               onPress={() => setSelectedShift(shift)}
               style={styles.shiftButton as any}
             />
