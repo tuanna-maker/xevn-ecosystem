@@ -278,15 +278,50 @@ export function pickHoldingLegalEntity(
   return entities[0] ?? null;
 }
 
+export function resolveCurrentTenantId(): string {
+  if (typeof window === 'undefined') return '';
+
+  // 1. Primary: if embedded in portal, portal passes ?tenantId=... in iframe URL
+  try {
+    const searchParams = new URLSearchParams(window.location.search);
+    const urlTenant = searchParams.get('tenantId');
+    if (urlTenant) return urlTenant.trim();
+  } catch {}
+
+  // 2. Secondary: check generic storage key first
+  let val = localStorage.getItem('current_tenant_id') || sessionStorage.getItem('current_tenant_id');
+  if (val) return val.trim();
+
+  // 3. Dynamic search: look for any module's tenant key (e.g., hrm_current_tenant_id, logistic_current_tenant_id)
+  // This ensures we don't hardcode future module names.
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.endsWith('_current_tenant_id')) {
+        const dynamicVal = localStorage.getItem(key);
+        if (dynamicVal) return dynamicVal.trim();
+      }
+    }
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (key && key.endsWith('_current_tenant_id')) {
+        const dynamicVal = sessionStorage.getItem(key);
+        if (dynamicVal) return dynamicVal.trim();
+      }
+    }
+  } catch {}
+
+  // 4. Fallback: Parse from pathname if structured as /:tenantId/module/...
+  const pathParts = window.location.pathname.split('/').filter(Boolean);
+  if (pathParts.length > 0 && !['login', 'hr', 'command-center', 'settings'].includes(pathParts[0])) {
+    return pathParts[0].trim();
+  }
+
+  return '';
+}
+
 async function xbosHeaders(companyId: string = OPERATING_MAIN_COMPANY_ID): Promise<Record<string, string>> {
-  const tenantFromStorage =
-    typeof window !== 'undefined'
-      ? (
-          localStorage.getItem('hrm_current_tenant_id') ||
-          sessionStorage.getItem('hrm_current_tenant_id') ||
-          ''
-        ).trim()
-      : '';
+  const tenantFromStorage = resolveCurrentTenantId();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'x-request-id': safeRandomUuid(),
@@ -446,9 +481,6 @@ async function fetchLegalEntitiesForHrm(
       message: body?.message ?? 'Không tải được hồ sơ pháp nhân',
     });
   }
-  return body.data?.items ?? [];
-}
-
 /** Group CEO + member CEO — unified company units (legal profile SoT). */
 export async function fetchCompanyUnitsForHrm(): Promise<HrmCompanyRow[]> {
   const res = await fetch('/api/xbos/tenant-scope/company-units', {
@@ -472,11 +504,17 @@ export async function fetchCompanyUnitsForHrm(): Promise<HrmCompanyRow[]> {
   let holdingEntities: LegalEntityProfileRow[] = [];
   let memberEntities: LegalEntityProfileRow[] = [];
 
-  try {
-    holdingEntities = await fetchLegalEntitiesForHrm(HOLDING_COMPANY_ID);
-  } catch (err) {
-    console.warn('[tenantScopeApi] holding legal-entities enrich skipped', err);
+  const currentTenant = resolveCurrentTenantId();
+
+  // Prevent 409 Conflict: Only master tenant has access to holding legal-entities
+  if (currentTenant === MASTER_TENANT_ID || !currentTenant) {
+    try {
+      holdingEntities = await fetchLegalEntitiesForHrm(HOLDING_COMPANY_ID);
+    } catch (err) {
+      console.warn('[tenantScopeApi] holding legal-entities enrich skipped', err);
+    }
   }
+  
   try {
     memberEntities = await fetchLegalEntitiesForHrm(OPERATING_MAIN_COMPANY_ID);
   } catch (err) {
