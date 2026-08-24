@@ -33,7 +33,7 @@
  * must_keep: payroll_e2e_ready=false · hdsd-pay-sheet-tpl-* · U65
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Plus, Save, Trash2 } from 'lucide-react';
+import { Plus, Save, Trash2, LayoutTemplate } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import {
@@ -67,6 +67,10 @@ import {
   paySheetTemplateStatusLabel,
   type PaySheetLineDraft,
 } from '@/lib/paySheetTemplateCatalog';
+import {
+  buildVpHanoiPaySheetLineDrafts,
+  missingVpHanoiComponentCodes,
+} from '@/lib/payrollBatchSheetColumns';
 import {
   filterCatalogByCodeOrName,
   paginateCatalogRows,
@@ -397,6 +401,25 @@ export function PaySheetTemplateSettingsPanel() {
     });
   };
 
+  const applyVpHanoiPreset = () => {
+    if (
+      !window.confirm(
+        'Thay thế các cột hiện tại bằng bộ 21 cột VP Hà Nội (theo Excel bảng lương)?',
+      )
+    ) {
+      return;
+    }
+    const missing = missingVpHanoiComponentCodes(components);
+    if (missing.length > 0) {
+      toast({
+        title: 'Thiếu thành phần lương trong catalog',
+        description: `Chưa có mã: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '…' : ''}. Cột vẫn được thêm — chọn TP sau khi seed catalog.`,
+        variant: 'destructive',
+      });
+    }
+    setLineDrafts(buildVpHanoiPaySheetLineDrafts(components));
+  };
+
   const honestySlot = (
     <>
       <Badge
@@ -507,6 +530,16 @@ export function PaySheetTemplateSettingsPanel() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-sm font-semibold text-xevn-text">Cột mẫu (GĐ1 form)</h3>
           <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={applyVpHanoiPreset}
+              data-testid="hdsd-pay-sheet-tpl-apply-vp-hn"
+            >
+              <LayoutTemplate className="mr-1 h-4 w-4" />
+              Cột VP Hà Nội
+            </Button>
             <Button
               type="button"
               variant="outline"

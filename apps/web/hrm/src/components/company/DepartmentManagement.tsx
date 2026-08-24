@@ -52,7 +52,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import { SETTINGS_CATALOGS_QUERY_KEY } from '@/hooks/useSettingsCatalogsOverview';
+import { SETTINGS_CATALOGS_QUERY_KEY, COMPANY_DEPARTMENTS_QUERY_KEY } from '@/hooks/useSettingsCatalogsOverview';
 import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
 import {
   departmentMutateErrorMessage,
@@ -96,9 +96,6 @@ const initialFormData: DepartmentFormData = {
   parent_id: '',
   status: 'active',
 };
-
-/** Shared RQ key — R-DEPT-FETCH-X2: one GET per scope (StrictMode-safe via loader coalesce + RQ). */
-export const COMPANY_DEPARTMENTS_QUERY_KEY = 'company-departments';
 
 export function DepartmentManagement() {
   const { t } = useTranslation();

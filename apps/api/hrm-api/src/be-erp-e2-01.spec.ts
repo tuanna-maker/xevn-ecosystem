@@ -1,6 +1,11 @@
 /**
  * D-BE-ERP-E2-01 — pay_types / contract_types assert + salary component unique.
  * U65: no seed — catalog assert mocked.
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-24 PO-HRM-CTR-CREATE-CATALOG-PARITY-01
+ * What: tests — holding catalog partition for contract_types; department_key HRM fallback
+ * Spec: docs/program/specs/PO-HRM-CTR-CREATE-CATALOG-PARITY-01.md
+ * Evidence: docs/qa/evidence/po-hrm-ctr-create-catalog-parity-01.md
  */
 import 'reflect-metadata';
 import { ApiException } from './common/api.exception';
@@ -318,6 +323,145 @@ describe('D-BE-ERP-E2-01 ContractsInsuranceService contract_types', () => {
         catalogKey: 'job_titles',
         errorCode: HRM_CON_POS_KEY,
       }),
+    );
+  });
+
+  it('create maps group CEO main persist → holding catalog partition for contract_types', async () => {
+    const db = {
+      query: ddlAwareQuery((sql, params) => {
+        if (sql.includes('INSERT INTO public.employee_contracts')) {
+          return {
+            rows: [
+              {
+                id: params?.[0],
+                contract_type: 'HDLD_XDHN_12',
+                position_key: 'NV_KD',
+                end_date: '2027-01-01',
+              },
+            ],
+          };
+        }
+        return null;
+      }),
+      onModuleDestroy: jest.fn(),
+    };
+    const catalogs = {
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockImplementation(
+          async (opts: { code: string; catalogKey: string; companyId: string }) => ({
+            code: opts.code,
+            label: opts.code,
+            status: 'active',
+          }),
+        ),
+      getEffectiveItemsForKey: jest
+        .fn()
+        .mockResolvedValue([{ code: 'NV_KD', label: 'NV', status: 'active' }]),
+    };
+    const svc = new ContractsInsuranceService(db as never, catalogs as never);
+    const auth = `Bearer ${signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    })}`;
+    await svc.createContract(
+      {
+        company_id: 'main',
+        employee_id: '11111111-1111-4111-8111-111111111111',
+        contract_type: 'HDLD_XDHN_12',
+        start_date: '2026-01-01',
+        end_date: '2027-01-01',
+        position_key: 'NV_KD',
+      },
+      auth,
+    );
+    expect(catalogs.assertCodeInEffectiveCatalog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        catalogKey: 'contract_types',
+        companyId: 'holding',
+        code: 'HDLD_XDHN_12',
+      }),
+    );
+  });
+
+  it('create accepts department_key from HRM departments when absent from catalog', async () => {
+    const db = {
+      query: jest.fn().mockImplementation((sql: string, params?: unknown[]) => {
+        const s = String(sql);
+        if (
+          s.includes('CREATE TABLE') ||
+          s.includes('ALTER TABLE') ||
+          s.includes('CREATE INDEX') ||
+          s.includes('CREATE UNIQUE') ||
+          s.includes('DROP DEFAULT')
+        ) {
+          return Promise.resolve({ rows: [] });
+        }
+        if (s.includes('FROM public.departments')) {
+          return Promise.resolve({
+            rows: [{ id: 'dept-1', code: 'PHONG_QLPT' }],
+          });
+        }
+        if (s.includes('INSERT INTO public.employee_contracts')) {
+          return Promise.resolve({
+            rows: [{ id: params?.[0], department_key: 'PHONG_QLPT' }],
+          });
+        }
+        if (s.includes('FROM public.employees')) {
+          return Promise.resolve({ rows: [{ job_title_key: 'ACCOUNTANT' }] });
+        }
+        return Promise.resolve({ rows: [] });
+      }),
+      onModuleDestroy: jest.fn(),
+    };
+    const catalogs = {
+      assertCodeInEffectiveCatalog: jest
+        .fn()
+        .mockImplementation(
+          async (opts: { code: string; catalogKey: string }) => ({
+            code: opts.code,
+            label: opts.code,
+            status: 'active',
+          }),
+        ),
+      getEffectiveItemsForKey: jest.fn().mockImplementation(async (_t, _c, key) => {
+        if (key === 'departments') return [];
+        if (key === 'contract_types') {
+          return [{ code: 'HDLD_XDHN_12', label: '12m', status: 'active' }];
+        }
+        if (key === 'job_titles') {
+          return [{ code: 'ACCOUNTANT', label: 'KT', status: 'active' }];
+        }
+        return [];
+      }),
+    };
+    const svc = new ContractsInsuranceService(db as never, catalogs as never);
+    const auth = `Bearer ${signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    })}`;
+    await svc.createContract(
+      {
+        company_id: 'main',
+        employee_id: '11111111-1111-4111-8111-111111111111',
+        contract_type: 'HDLD_XDHN_12',
+        start_date: '2026-04-01',
+        end_date: '2027-04-01',
+        position_key: 'ACCOUNTANT',
+        department_key: 'PHONG_QLPT',
+        signed_at: '2026-04-01',
+        work_arrangement: 'chinh_thuc',
+        salary_ratio_percent: 100,
+      },
+      auth,
+    );
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('FROM public.departments'),
+      expect.any(Array),
     );
   });
 

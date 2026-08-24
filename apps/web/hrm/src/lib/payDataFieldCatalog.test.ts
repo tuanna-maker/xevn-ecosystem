@@ -4,6 +4,7 @@ import {
   payDataFieldLabel,
   PAY_DATA_FIELD_CATALOG,
   searchPayDataFields,
+  searchPayFormulaPickerFields,
   searchPayFormulaQuickInserts,
   suggestPayFormulaQuickInserts,
 } from './payDataFieldCatalog';
@@ -43,5 +44,32 @@ describe('payDataFieldCatalog', () => {
 
   it('catalog has core + input pack fields', () => {
     expect(PAY_DATA_FIELD_CATALOG.length).toBeGreaterThanOrEqual(20);
+  });
+
+  it('searchPayFormulaPickerFields finds salary components by Vietnamese name and code', () => {
+    const hits = searchPayFormulaPickerFields('lương theo công', 20, {
+      salaryComponents: [
+        {
+          componentCode: 'LUONG_THEO_CONG',
+          insertToken: 'base_salary',
+          name: 'Lương theo công',
+          formula: '=base_salary*payable_hours/standard_hours',
+        },
+      ],
+    });
+    expect(hits.some((h) => h.group === 'salary_component' && h.label === 'Lương theo công')).toBe(
+      true,
+    );
+
+    const byCode = searchPayFormulaPickerFields('luong_theo_cong', 20, {
+      salaryComponents: [
+        {
+          componentCode: 'LUONG_THEO_CONG',
+          insertToken: 'base_salary',
+          name: 'Lương theo công',
+        },
+      ],
+    });
+    expect(byCode.some((h) => h.key === 'base_salary')).toBe(true);
   });
 });

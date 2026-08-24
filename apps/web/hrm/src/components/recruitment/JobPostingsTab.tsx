@@ -53,7 +53,6 @@ import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview
 import {
   buildDepartmentKeyFields,
   buildPositionKeyFields,
-  departmentOptionsFromCatalog,
   jobTitleOptionsFromCatalog,
   resolveDepartmentLabel,
   resolvePositionDisplayLabel,
@@ -206,6 +205,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
 
   const {
     catalogs,
+    departmentPickerOptions: departmentOptions,
     isLoading: catalogsLoading,
     isError: catalogsError,
   } = useSettingsCatalogsOverview();
@@ -235,13 +235,6 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
       code: w.code,
     }));
   }, [workflows]);
-
-
-
-  const departmentOptions = useMemo(
-    () => departmentOptionsFromCatalog(catalogs ?? []),
-    [catalogs],
-  );
 
   const statusOptions = [
     { value: 'all', label: t('recruitment.jt.statuses.all') },

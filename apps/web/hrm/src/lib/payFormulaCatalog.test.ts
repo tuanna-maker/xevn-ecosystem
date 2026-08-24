@@ -45,6 +45,9 @@ import {
   PAY_FORMULA_HYPER_FORM,
   suggestComponentCodeFromVar,
   alignGd1EvalLinesToNestCatalog,
+  buildPayFormulaDisplayLabelMap,
+  formatSalaryFormulaDisplayText,
+  parseSalaryFormulaDisplayText,
 } from './payFormulaCatalog';
 
 describe('payFormulaCatalog', () => {
@@ -256,5 +259,36 @@ describe('payFormulaCatalog', () => {
     ]);
     expect(validateComponentCompositeExpression('LUONG_CHINH', ['LUONG_CHINH'])).toBeNull();
     expect(validateComponentCompositeExpression('UNKNOWN', ['LUONG_CHINH'])).not.toBeNull();
+  });
+
+  it('formatSalaryFormulaDisplayText shows bracketed Vietnamese labels', () => {
+    const labelMap = buildPayFormulaDisplayLabelMap();
+    const display = formatSalaryFormulaDisplayText('=base_salary+allowance_p2', labelMap);
+    expect(display).toContain('[Lương cơ bản');
+    expect(display).toContain('+');
+  });
+
+  it('parseSalaryFormulaDisplayText round-trips bracket labels to source keys', () => {
+    const labelMap = buildPayFormulaDisplayLabelMap();
+    const source = '=base_salary+allowance_p2';
+    const display = formatSalaryFormulaDisplayText(source, labelMap);
+    expect(parseSalaryFormulaDisplayText(display, labelMap)).toBe(source);
+  });
+
+  it('parseSalaryFormulaDisplayText keeps formula when label is custom component name', () => {
+    const labelMap = buildPayFormulaDisplayLabelMap();
+    const opts = {
+      salaryComponents: [
+        {
+          componentCode: 'LUONG_NGAY_PHEP',
+          insertToken: 'paid_leave_hours',
+          name: 'Lương ngày phép',
+        },
+      ],
+    };
+    const display = '=[Lương ngày phép] + [Lương cơ bản (hợp đồng)]';
+    const source = parseSalaryFormulaDisplayText(display, labelMap, opts);
+    expect(source).toBe('=paid_leave_hours+base_salary');
+    expect(formatSalaryFormulaDisplayText(source, labelMap)).toContain('[Lương cơ bản');
   });
 });

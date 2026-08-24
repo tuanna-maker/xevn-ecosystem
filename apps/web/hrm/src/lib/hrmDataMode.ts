@@ -2,7 +2,7 @@ import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 import { hasPortalSession } from '@/lib/portalAuthBridge';
 
 /** Nest list endpoints cap page_size at 100 (List*QueryDto @Max(100)). */
-export const HRM_API_MAX_PAGE_SIZE = 1000;
+export const HRM_API_MAX_PAGE_SIZE = 100;
 
 function envFlag(name: string): string | undefined {
   const v = import.meta.env[name];

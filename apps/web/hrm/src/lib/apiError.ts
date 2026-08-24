@@ -1,3 +1,8 @@
+/**
+ * @CODE-MEMORY-CHANGE 2026-08-24 PO-HRM-CTR-CREATE-CATALOG-PARITY-01
+ * What: friendlyByCode HRM-CON-TYPE-KEY · HRM-CON-DEPT-KEY · HRM-CTR-* for contract create wizard
+ * Spec: docs/program/specs/PO-HRM-CTR-CREATE-CATALOG-PARITY-01.md
+ */
 type ApiErrorPayload = {
   code?: string;
   message?: string;
@@ -406,6 +411,18 @@ const friendlyByCode: Record<string, string> = {
   "HRM-PAY-FORMULA-404": "Không tìm thấy công thức lương trong phạm vi đơn vị hiện tại.",
   "HRM-SC-COMP-KEY":
     "Mã thành phần lương không có trong danh mục Nest hiệu lực — chọn lại từ picker (AC-PAY-COMP-01).",
+  /** FR-HRM-CI-TYPE-E2-01 — contract_types catalog assert */
+  "HRM-CON-TYPE-KEY":
+    "Loại hợp đồng không có trong danh mục (Cài đặt → Danh mục nghiệp vụ → Loại HĐ). Đồng bộ XBOS hoặc chọn mã từ picker.",
+  "HRM-CON-POS-KEY":
+    "Vị trí/chức danh không có trong danh mục job_titles — chọn từ Cài đặt → Danh mục nghiệp vụ.",
+  "HRM-CON-DEPT-KEY":
+    "Phòng ban không có trong danh mục hoặc danh sách phòng ban công ty — chọn lại từ picker Phòng ban.",
+  "HRM-CTR-WORK-FORM-400":
+    "Hình thức làm việc không hợp lệ — chọn từ Cài đặt → Loại hình thức lao động (employment types).",
+  "HRM-CTR-SIGN-REQ-400": "Chọn ngày ký trước khi lưu hợp đồng.",
+  "HRM-CTR-SALARY-RATIO-400": "Nhập tỉ lệ hưởng lương % (0–100) trước khi lưu.",
+  "HRM-CON-002": "Ngày kết thúc không hợp lệ với loại hợp đồng đã chọn.",
 };
 
 export class ApiClientError extends Error {
@@ -475,6 +492,21 @@ function leaveAlignInflateMessage(error: {
   return "Số ngày nộp không khớp ngày trừ quỹ engine — không dùng calendar làm trừ quỹ (BR-BP-LV-05 · ALIGN).";
 }
 
+/** HRM-PAY-FORMULA-412 — bind/precondition only; other 412s should show BE message (SRC/ATT/vars). */
+function isPayFormula412BindMessage(message: string): boolean {
+  const m = message.toLowerCase();
+  return (
+    m.includes("formula_definition_id is missing") ||
+    m.includes("no active published formula bound") ||
+    m.includes("not active, or out of scope")
+  );
+}
+
+function formatApiErrorWithCode(code: string, message: string): string {
+  if (message.includes(code)) return message;
+  return `[${code}] ${message}`;
+}
+
 export function toErrorMessage(error: unknown, fallback: string) {
   if (isAbortLikeError(error)) {
     return friendlyByCode["HRM-TIMEOUT"];
@@ -487,9 +519,20 @@ export function toErrorMessage(error: unknown, fallback: string) {
     }
     const alignMsg = leaveAlignInflateMessage(error);
     if (alignMsg) return alignMsg;
+    if (
+      error.code === "HRM-PAY-FORMULA-412" &&
+      error.message?.trim() &&
+      !isPayFormula412BindMessage(error.message)
+    ) {
+      return formatApiErrorWithCode(error.code, error.message.trim());
+    }
     if (error.code && friendlyByCode[error.code]) return friendlyByCode[error.code];
     if (error.status === 429) return friendlyByCode["RATE-429"];
-    return error.message || fallback;
+    const base = error.message || fallback;
+    if (error.code && !base.includes(error.code)) {
+      return `[${error.code}] ${base}`;
+    }
+    return base;
   }
 
   if (typeof error === "object" && error !== null) {
@@ -505,9 +548,22 @@ export function toErrorMessage(error: unknown, fallback: string) {
     }
     const alignMsg = leaveAlignInflateMessage(candidate);
     if (alignMsg) return alignMsg;
+    if (
+      candidate.code === "HRM-PAY-FORMULA-412" &&
+      candidate.message?.trim() &&
+      !isPayFormula412BindMessage(candidate.message)
+    ) {
+      return formatApiErrorWithCode(candidate.code, candidate.message.trim());
+    }
     if (candidate.code && friendlyByCode[candidate.code]) return friendlyByCode[candidate.code];
     if (candidate.status === 429) return friendlyByCode["RATE-429"];
-    if (candidate.message) return candidate.message;
+    if (candidate.message) {
+      const code = candidate.code;
+      if (code && !candidate.message.includes(code)) {
+        return `[${code}] ${candidate.message}`;
+      }
+      return candidate.message;
+    }
   }
 
   if (error instanceof Error && error.message) return error.message;

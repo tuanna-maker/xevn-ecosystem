@@ -208,7 +208,6 @@ import { StatusBadge } from '@/components/common/StatusBadge';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
 import {
-  departmentOptionsFromCatalog,
   jobTitleOptionsFromCatalog,
 } from '@/lib/catalogSearchPicker';
 import {
@@ -622,15 +621,12 @@ export default function Recruitment() {
 
   const {
     catalogs: planCatalogs,
+    departmentPickerOptions: planDepartmentOptions,
     isLoading: planCatalogsLoading,
     isError: planCatalogsError,
   } = useSettingsCatalogsOverview({ enabled: activeTab === 'plans' || isPlanDialogOpen });
   const planPositionOptions = useMemo(
     () => jobTitleOptionsFromCatalog(planCatalogs ?? []),
-    [planCatalogs],
-  );
-  const planDepartmentOptions = useMemo(
-    () => departmentOptionsFromCatalog(planCatalogs ?? []),
     [planCatalogs],
   );
   const planCatalogEff =

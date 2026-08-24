@@ -7,7 +7,8 @@ export type PayDataFieldGroupId =
   | 'compensation'
   | 'input_pack'
   | 'allowance'
-  | 'deduction';
+  | 'deduction'
+  | 'salary_component';
 
 export type PayDataFieldItem = {
   id: string;
@@ -85,6 +86,21 @@ export const PAY_DATA_FIELD_GROUP_LABELS: Record<PayDataFieldGroupId, string> = 
   input_pack: 'Số liệu kỳ lương (nhập / tích hợp)',
   allowance: 'Phụ cấp',
   deduction: 'Khấu trừ & bảo hiểm',
+  salary_component: 'Thành phần lương',
+};
+
+export type PayFormulaPickerSalaryComponentHint = {
+  /** Mã catalog Nest (LUONG_CO_BAN) — hiển thị & tìm kiếm. */
+  componentCode: string;
+  /** Token chèn vào công thức (= biến snake_case). */
+  insertToken: string;
+  name: string;
+  formula?: string;
+};
+
+export type PayFormulaPickerSearchOpts = {
+  extraVarHints?: readonly { code: string; name: string }[];
+  salaryComponents?: readonly PayFormulaPickerSalaryComponentHint[];
 };
 
 const CORE_FIELDS: PayDataFieldItem[] = [
@@ -178,6 +194,19 @@ const ALLOWANCE_FIELDS: PayDataFieldItem[] = [
   { id: 'al6', key: 'allowance_bonus', label: 'Phụ cấp / thưởng an toàn', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Theo chính sách' },
   { id: 'al7', key: 'allowance_kpi', label: 'Phụ cấp KPI', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Gói C&B' },
   { id: 'al8', key: 'allowance_shift', label: 'Phụ cấp ca / trực', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Ca / trực' },
+  { id: 'al9', key: 'performance_bonus_p4', label: 'Thưởng hiệu quả (P4)', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Input kỳ / C&B' },
+];
+
+/** Biến semantic trong công thức TP — thường map từ input kỳ (khác source_kind Input Pack). */
+const PERIOD_SEMANTIC_FIELDS: PayDataFieldItem[] = [
+  { id: 'ps1', key: 'ot_150_hours', label: 'Giờ OT 150%', group: 'attendance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.attendance, sourceHint: 'Chấm công / input kỳ', keywords: ['ot', 'tăng ca'] },
+  { id: 'ps2', key: 'ot_200_hours', label: 'Giờ OT 200%', group: 'attendance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.attendance, sourceHint: 'Chấm công / input kỳ', keywords: ['ot', 'tăng ca'] },
+  { id: 'ps3', key: 'revenue_salary', label: 'Lương doanh số', group: 'input_pack', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.input_pack, sourceHint: 'Input kỳ lương' },
+  { id: 'ps4', key: 'online_pay', label: 'Lương online', group: 'input_pack', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.input_pack, sourceHint: 'Input kỳ lương' },
+  { id: 'ps5', key: 'holiday_pay', label: 'Lương nghỉ lễ', group: 'input_pack', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.input_pack, sourceHint: 'Input kỳ lương' },
+  { id: 'ps6', key: 'other_salary', label: 'Lương khác', group: 'input_pack', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.input_pack, sourceHint: 'Input kỳ lương' },
+  { id: 'ps7', key: 'fuel_allowance', label: 'Phụ cấp xăng xe', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Input kỳ / C&B' },
+  { id: 'ps8', key: 'retro_pay', label: 'Truy lĩnh', group: 'input_pack', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.input_pack, sourceHint: 'Điều chỉnh kỳ trước' },
 ];
 
 const DEDUCTION_FIELDS: PayDataFieldItem[] = [
@@ -189,14 +218,117 @@ const DEDUCTION_FIELDS: PayDataFieldItem[] = [
     groupLabel: PAY_DATA_FIELD_GROUP_LABELS.deduction,
     sourceHint: 'Khấu trừ bảo hiểm',
   },
+  { id: 'dd2', key: 'social_insurance', label: 'BHXH/BHYT/BHTN NLĐ', group: 'deduction', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.deduction, sourceHint: 'Input kỳ lương' },
+  { id: 'dd3', key: 'union_fee', label: 'Công đoàn', group: 'deduction', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.deduction, sourceHint: 'Input kỳ lương' },
+  { id: 'dd4', key: 'discipline', label: 'Vi phạm kỷ luật', group: 'deduction', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.deduction, sourceHint: 'Input kỳ lương' },
+  { id: 'dd5', key: 'accounting_deduction', label: 'Bảng trừ kế toán', group: 'deduction', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.deduction, sourceHint: 'Input kỳ lương' },
+  { id: 'dd6', key: 'salary_advance_1', label: 'Ứng lương lần 1', group: 'deduction', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.deduction, sourceHint: 'Input kỳ lương' },
+  { id: 'dd7', key: 'other_advance', label: 'Tạm ứng khác', group: 'deduction', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.deduction, sourceHint: 'Input kỳ lương' },
+  { id: 'dd8', key: 'pit', label: 'Thuế TNCN', group: 'deduction', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.deduction, sourceHint: 'Input kỳ / engine thuế' },
+  { id: 'dd9', key: 'recovery', label: 'Truy thu', group: 'deduction', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.deduction, sourceHint: 'Input kỳ lương' },
 ];
 
 export const PAY_DATA_FIELD_CATALOG: PayDataFieldItem[] = [
   ...CORE_FIELDS,
   ...INPUT_PACK_FIELDS,
   ...ALLOWANCE_FIELDS,
+  ...PERIOD_SEMANTIC_FIELDS,
   ...DEDUCTION_FIELDS,
 ];
+
+function scorePayDataFieldItem(f: PayDataFieldItem, q: string): number {
+  let score = 0;
+  const label = f.label.toLowerCase();
+  const key = f.key.toLowerCase();
+  if (label === q) score += 100;
+  else if (label.startsWith(q)) score += 80;
+  else if (label.includes(q)) score += 60;
+  if (key.includes(q)) score += 40;
+  if (f.sourceHint.toLowerCase().includes(q)) score += 20;
+  for (const kw of f.keywords ?? []) {
+    const k = kw.toLowerCase();
+    if (k === q) score += 95;
+    else if (k.startsWith(q)) score += 85;
+    else if (k.includes(q) || q.includes(k)) score += 50;
+  }
+  for (const part of q.split(/\s+/).filter((p) => p.length > 1)) {
+    if (label.includes(part)) score += 25;
+    if (key.includes(part)) score += 15;
+    for (const kw of f.keywords ?? []) {
+      if (kw.toLowerCase().includes(part)) score += 35;
+    }
+  }
+  return score;
+}
+
+function salaryComponentHintToField(hint: PayFormulaPickerSalaryComponentHint): PayDataFieldItem {
+  const code = hint.componentCode.trim();
+  const name = hint.name.trim() || code;
+  const token = hint.insertToken.trim() || code.toLowerCase();
+  return {
+    id: `sc-${code}`,
+    key: token,
+    label: name,
+    group: 'salary_component',
+    groupLabel: PAY_DATA_FIELD_GROUP_LABELS.salary_component,
+    sourceHint: `Thành phần lương · mã: ${code}`,
+    keywords: [code, code.replace(/_/g, ' '), name],
+  };
+}
+
+function extraVarHintsToFields(
+  hints: readonly { code: string; name: string }[],
+  seenKeys: Set<string>,
+): PayDataFieldItem[] {
+  const out: PayDataFieldItem[] = [];
+  for (const row of hints) {
+    const key = row.code.trim();
+    if (!key || seenKeys.has(key)) continue;
+    seenKeys.add(key);
+    out.push({
+      id: `extra-${key}`,
+      key,
+      label: row.name.trim() || key,
+      group: 'salary_component',
+      groupLabel: PAY_DATA_FIELD_GROUP_LABELS.salary_component,
+      sourceHint: 'Biến từ thành phần lương',
+      keywords: [key, key.replace(/_/g, ' ')],
+    });
+  }
+  return out;
+}
+
+/** Tìm trường dữ liệu + thành phần lương (theo tên/mã TP) cho picker công thức. */
+export function searchPayFormulaPickerFields(
+  query: string,
+  limit = 999,
+  opts?: PayFormulaPickerSearchOpts,
+): PayDataFieldItem[] {
+  const q = query.trim().toLowerCase();
+  const seenKeys = new Set(PAY_DATA_FIELD_CATALOG.map((f) => f.key));
+  const salaryFields = (opts?.salaryComponents ?? []).map(salaryComponentHintToField);
+  const extraFields = extraVarHintsToFields(opts?.extraVarHints ?? [], seenKeys);
+  const mergedCatalog = [...PAY_DATA_FIELD_CATALOG, ...salaryFields, ...extraFields];
+
+  const popular = PAY_DATA_FIELD_POPULAR_KEYS.map((key) =>
+    mergedCatalog.find((f) => f.key === key),
+  ).filter((f): f is PayDataFieldItem => Boolean(f));
+
+  if (!q) {
+    return popular.slice(0, limit);
+  }
+
+  if (q.length < 2) {
+    return popular.slice(0, limit);
+  }
+
+  const scored = mergedCatalog
+    .map((f) => ({ f, score: scorePayDataFieldItem(f, q) }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, limit).map(({ f }) => f);
+}
 
 export function searchPayDataFields(query: string, limit = 999): PayDataFieldItem[] {
   const q = query.trim().toLowerCase();
@@ -213,33 +345,7 @@ export function searchPayDataFields(query: string, limit = 999): PayDataFieldIte
     return popular.slice(0, limit);
   }
 
-  const scored = PAY_DATA_FIELD_CATALOG.map((f) => {
-    let score = 0;
-    const label = f.label.toLowerCase();
-    const key = f.key.toLowerCase();
-    if (label === q) score += 100;
-    else if (label.startsWith(q)) score += 80;
-    else if (label.includes(q)) score += 60;
-    if (key.includes(q)) score += 40;
-    if (f.sourceHint.toLowerCase().includes(q)) score += 20;
-    for (const kw of f.keywords ?? []) {
-      const k = kw.toLowerCase();
-      if (k === q) score += 90;
-      else if (k.includes(q) || q.includes(k)) score += 50;
-    }
-    for (const part of q.split(/\s+/).filter((p) => p.length > 1)) {
-      if (label.includes(part)) score += 25;
-      if (key.includes(part)) score += 15;
-      for (const kw of f.keywords ?? []) {
-        if (kw.toLowerCase().includes(part)) score += 35;
-      }
-    }
-    return { f, score };
-  })
-    .filter(({ score }) => score > 0)
-    .sort((a, b) => b.score - a.score);
-
-  return scored.slice(0, limit).map(({ f }) => f);
+  return searchPayFormulaPickerFields(query, limit);
 }
 
 export function searchPayFormulaQuickInserts(
@@ -284,8 +390,29 @@ export function groupPayDataFields(items: PayDataFieldItem[]): Map<PayDataFieldG
 }
 
 /** Cho FormulaInput autocomplete — code = key, name = label tiếng Việt. */
-export function payDataFieldsForFormulaInput(): { code: string; name: string }[] {
-  return PAY_DATA_FIELD_CATALOG.map((f) => ({ code: f.key, name: f.label }));
+export function payDataFieldsForFormulaInput(
+  opts?: PayFormulaPickerSearchOpts,
+): { code: string; name: string }[] {
+  const base = PAY_DATA_FIELD_CATALOG.map((f) => ({ code: f.key, name: f.label }));
+  const seen = new Set(base.map((b) => b.code));
+  const merged = [...base];
+
+  for (const row of opts?.extraVarHints ?? []) {
+    const code = row.code.trim();
+    if (!code || seen.has(code)) continue;
+    seen.add(code);
+    merged.push({ code, name: row.name.trim() || code });
+  }
+
+  for (const row of opts?.salaryComponents ?? []) {
+    const code = row.insertToken.trim();
+    const name = row.name.trim() || row.componentCode.trim();
+    if (!code || !name || seen.has(code)) continue;
+    seen.add(code);
+    merged.push({ code, name: `${name} (${row.componentCode.trim()})` });
+  }
+
+  return merged;
 }
 
 export function payDataFieldLabel(key: string): string {

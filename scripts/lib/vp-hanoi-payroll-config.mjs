@@ -2,6 +2,7 @@
  * VP Hà Nội 05/2026 — cấu hình thành phần lương, công thức, mẫu bảng lương.
  * Tham chiếu: scripts/seed-reports/payroll-vp-hanoi-2026-05/12-manual-payroll-setup-guide.md
  */
+import { buildGd1EvalFromSalaryComponents } from './salary-formula-to-gd1.mjs';
 
 export const VP_PAY_TYPES = [
   { code: 'luong', label: 'Lương' },
@@ -251,6 +252,76 @@ export const VP_SALARY_COMPONENTS = [
   },
 ];
 
+/** Tỷ lệ BHXH+BHYT+BHTN phần NLĐ (chuẩn VN). */
+export const VP_EMPLOYEE_INSURANCE_RATE = 0.105;
+
+/** Không seed input kỳ — tính bằng công thức hoặc chỉ hiển thị tham chiếu Excel. */
+export const VP_PERIOD_INPUT_SKIP_CODES = new Set([
+  'LUONG_THEO_CONG',
+  /** P1+P2 tham chiếu — gross chỉ cộng LUONG_THEO_CONG (tránh ~2× lương CB). */
+  'LUONG_CO_BAN',
+]);
+
+export function roundPayrollMoney(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return 0;
+  return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
+function parsePayrollNumber(value) {
+  const x = Number(value);
+  return Number.isFinite(x) ? x : 0;
+}
+
+/** Mức đóng BHXH (P1) — ưu tiên paying_insurance rồi insurance_base_p1. */
+export function resolveInsuranceBaseP1(row) {
+  const paying = parsePayrollNumber(row?.income?.paying_insurance);
+  if (paying > 0) return paying;
+  return parsePayrollNumber(row?.income?.insurance_base_p1);
+}
+
+/**
+ * Excel VP Hà Nội: cột BHXH (row[48]) thường gấp ~10 lần cột tổng khấu trừ (row[55])
+ * hoặc lệch lớn so với P1 × 10,5%. Chuẩn hóa trước khi seed / import.
+ */
+export function normalizeSocialInsuranceDeduction(row) {
+  const raw = parsePayrollNumber(row?.deductions?.social_insurance);
+  const totalDed = parsePayrollNumber(row?.deductions?.total_deduction);
+  if (raw <= 0 && totalDed <= 0) return 0;
+
+  if (raw > 0 && totalDed > 0) {
+    const ratio = raw / totalDed;
+    if (ratio >= 9 && ratio <= 11) {
+      return roundPayrollMoney(totalDed);
+    }
+  }
+
+  const insuranceBase = resolveInsuranceBaseP1(row);
+  const expected =
+    insuranceBase > 0 ? roundPayrollMoney(insuranceBase * VP_EMPLOYEE_INSURANCE_RATE) : 0;
+
+  if (expected > 0) {
+    if (raw <= 0 || raw > expected * 2) {
+      if (totalDed >= expected * 0.5 && totalDed <= expected * 1.25) {
+        return roundPayrollMoney(totalDed);
+      }
+      return expected;
+    }
+    return roundPayrollMoney(raw);
+  }
+
+  if (totalDed > 0 && raw > totalDed * 3) {
+    return roundPayrollMoney(totalDed);
+  }
+  return roundPayrollMoney(raw);
+}
+
+export function shouldSeedPeriodInput(code, amount) {
+  if (VP_PERIOD_INPUT_SKIP_CODES.has(code)) return false;
+  if (code === 'LUONG_KPI' && amount < 1000) return false;
+  return amount != null && amount !== 0;
+}
+
 /** Map component_code → amount từ row Excel (01-employees-payroll.json). */
 export function amountForComponentFromPayrollRow(code, row) {
   const n = (v) => {
@@ -262,8 +333,10 @@ export function amountForComponentFromPayrollRow(code, row) {
       return n(row.income?.base_salary_p1_p2);
     case 'LUONG_THEO_CONG':
       return null;
-    case 'LUONG_KPI':
-      return n(row.kpi_pay ?? row.income?.kpi_salary_p3);
+    case 'LUONG_KPI': {
+      const amt = n(row.kpi_pay ?? row.income?.kpi_salary_p3);
+      return amt >= 1000 ? amt : null;
+    }
     case 'THUONG_P4':
       return n(row.p4_bonus ?? row.income?.performance_bonus_p4);
     case 'LUONG_OT_150':
@@ -285,7 +358,7 @@ export function amountForComponentFromPayrollRow(code, row) {
     case 'TRUY_LINH':
       return n(row.retro_pay);
     case 'KHAU_TRU_BHXH':
-      return n(row.deductions?.social_insurance);
+      return normalizeSocialInsuranceDeduction(row);
     case 'KHAU_TRU_CONG_DOAN':
       return n(row.deductions?.union_fee);
     case 'KHAU_TRU_VPKL':
@@ -324,136 +397,6 @@ export function buildHyperFormulaExpressionJson(components) {
   };
 }
 
-export function buildGd1EvalExpressionJson() {
-  return {
-    form: 'gd1_eval_v1',
-    lines: [
-      {
-        component_code: 'LUONG_THEO_CONG',
-        sign: 'earning',
-        source: 'expr',
-        expr: {
-          op: 'mul',
-          left: 'base_salary',
-          right: { op: 'div', left: 'payable_hours', right: 'standard_hours' },
-        },
-      },
-      {
-        component_code: 'LUONG_KPI',
-        sign: 'earning',
-        source: 'var',
-        var: 'allowance_kpi',
-      },
-      {
-        component_code: 'THUONG_P4',
-        sign: 'earning',
-        source: 'var',
-        var: 'performance_bonus_p4',
-      },
-      {
-        component_code: 'LUONG_OT_150',
-        sign: 'earning',
-        source: 'expr',
-        expr: {
-          op: 'mul',
-          left: {
-            op: 'mul',
-            left: { op: 'div', left: 'base_salary', right: 'standard_hours' },
-            right: 'ot_150_hours',
-          },
-          right: 1.5,
-        },
-      },
-      {
-        component_code: 'LUONG_OT_200',
-        sign: 'earning',
-        source: 'expr',
-        expr: {
-          op: 'mul',
-          left: {
-            op: 'mul',
-            left: { op: 'div', left: 'base_salary', right: 'standard_hours' },
-            right: 'ot_200_hours',
-          },
-          right: 2,
-        },
-      },
-      {
-        component_code: 'LUONG_NGHI_PHEP',
-        sign: 'earning',
-        source: 'expr',
-        expr: {
-          op: 'mul',
-          left: { op: 'div', left: 'base_salary', right: 'standard_hours' },
-          right: 'paid_leave_hours',
-        },
-      },
-      {
-        component_code: 'LUONG_DOANH_SO',
-        sign: 'earning',
-        source: 'var',
-        var: 'revenue_salary',
-      },
-      {
-        component_code: 'LUONG_ONLINE',
-        sign: 'earning',
-        source: 'var',
-        var: 'online_pay',
-      },
-      {
-        component_code: 'LUONG_NGHI_LE',
-        sign: 'earning',
-        source: 'var',
-        var: 'holiday_pay',
-      },
-      {
-        component_code: 'LUONG_KHAC',
-        sign: 'earning',
-        source: 'var',
-        var: 'other_salary',
-      },
-      {
-        component_code: 'PC_XANG_XE',
-        sign: 'earning',
-        source: 'var',
-        var: 'fuel_allowance',
-      },
-      {
-        component_code: 'KHAU_TRU_BHXH',
-        sign: 'deduction',
-        source: 'var',
-        var: 'social_insurance',
-      },
-      {
-        component_code: 'KHAU_TRU_CONG_DOAN',
-        sign: 'deduction',
-        source: 'var',
-        var: 'union_fee',
-      },
-      {
-        component_code: 'KHAU_TRU_VPKL',
-        sign: 'deduction',
-        source: 'var',
-        var: 'discipline',
-      },
-      {
-        component_code: 'UNG_LUONG_LAN_1',
-        sign: 'deduction',
-        source: 'var',
-        var: 'salary_advance_1',
-      },
-      {
-        component_code: 'THUE_TNCN',
-        sign: 'deduction',
-        source: 'var',
-        var: 'pit',
-      },
-      {
-        component_code: 'TRUY_THU',
-        sign: 'deduction',
-        source: 'var',
-        var: 'recovery',
-      },
-    ],
-  };
+export function buildGd1EvalExpressionJson(components = VP_SALARY_COMPONENTS) {
+  return buildGd1EvalFromSalaryComponents(components);
 }

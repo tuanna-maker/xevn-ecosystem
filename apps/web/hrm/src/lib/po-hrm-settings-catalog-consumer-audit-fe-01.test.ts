@@ -12,9 +12,9 @@ function read(rel: string): string {
 }
 
 describe.skip('PO-HRM-SETTINGS-CATALOG-CONSUMER-AUDIT-FE-01', () => {
-  it('Contracts create wizard — department via departmentOptionsFromCatalog + CatalogSearchPicker', () => {
+  it('Contracts create wizard — department via departmentPickerOptions + CatalogSearchPicker', () => {
     const page = read('pages/Contracts.tsx');
-    expect(page).toContain('departmentOptionsFromCatalog');
+    expect(page).toContain('departmentPickerOptions');
     expect(page).toContain('buildActiveContractFormFields');
     expect(page).not.toContain('useDepartments');
     const step1 = read('components/contracts/ContractCreateStep1GeneralGrid.tsx');
@@ -32,7 +32,7 @@ describe.skip('PO-HRM-SETTINGS-CATALOG-CONSUMER-AUDIT-FE-01', () => {
 
   it('EmployeeFormDialog — catalog dept/position helpers', () => {
     const form = read('components/employee/EmployeeFormDialog.tsx');
-    expect(form).toContain('departmentOptionsFromCatalog');
+    expect(form).toContain('departmentPickerOptions');
     expect(form).toContain('jobTitleOptionsFromCatalog');
     expect(form).toContain('useSettingsCatalogsOverview');
   });

@@ -108,6 +108,7 @@ import {
 } from './pay-formula.constants';
 import {
   classifyPayFormulaExpression,
+  applyProcessZeroDefaults,
   collectExpressionVarKeys,
   evaluatePayFormulaExpression,
   missingVarKeys,
@@ -1210,6 +1211,13 @@ export class PayFormulaService {
       }
     }
 
+    if (surface === 'process') {
+      const zeroed = applyProcessZeroDefaults(needed, bag.vars);
+      if (zeroed.length > 0) {
+        bag.warnings.push(`PROCESS_ZERO_DEFAULT:${zeroed.join(',')}`);
+      }
+    }
+
     const missing = missingVarKeys(needed, bag.vars);
     if (missing.length > 0) {
       const attMissing = missing.filter((k) =>
@@ -1442,8 +1450,29 @@ export class PayFormulaService {
         details?: Record<string, unknown>;
       }
   > {
+    const target = input.componentCode.trim();
+    const classified = classifyPayFormulaExpression(
+      input.formula.expression_json,
+    );
+    const subsetFormula: PublishedFormulaBind =
+      classified.kind === 'gd1_eval_v1' && classified.lines.length > 0
+        ? (() => {
+            const line = classified.lines.find((l) =>
+              componentCodesMatch(target, l.component_code),
+            );
+            if (!line) return input.formula;
+            return {
+              ...input.formula,
+              expression_json: {
+                form: 'gd1_eval_v1',
+                lines: [line],
+              },
+            };
+          })()
+        : input.formula;
+
     const evaluated = await this.evaluateBoundFormula({
-      formula: input.formula,
+      formula: subsetFormula,
       companyId: input.companyId,
       employeeId: input.employeeId,
       asOfDate: input.asOfDate,
@@ -1460,7 +1489,6 @@ export class PayFormulaService {
         details: evaluated.details,
       };
     }
-    const target = input.componentCode.trim();
     const line =
       evaluated.result.lines.find((l) =>
         componentCodesMatch(target, l.component_code),
@@ -1632,6 +1660,16 @@ export class PayFormulaService {
             },
           };
         }
+        return {
+          ok: false,
+          code: evalDefault.code,
+          message: evalDefault.message,
+          details: {
+            ...(evalDefault.details ?? {}),
+            componentCode,
+            payroll_e2e_ready: false,
+          },
+        };
       }
     }
 

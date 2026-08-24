@@ -600,6 +600,7 @@ export type HrmPaySheetTemplatePeriodSnapshot = {
     sort_order?: number;
     formula_definition_id?: string | null;
     override_applied?: boolean;
+    sign?: 'earning' | 'deduction' | string | null;
   }>;
   bound_at?: string;
 };
@@ -858,6 +859,55 @@ export async function getPayrollEligibility(periodId: string) {
   );
 }
 
+/** F-PAY-PERIOD-INP — GET /payroll/periods/:id/input-lines (display-ready draft amounts).
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-24
+ * WorkItem: PO-HRM-PAY-VP-HANOI-BATCH-DETAIL-COLUMNS-01
+ * change_mode: FIX
+ * What: Consumer must pass employee_id filter when loading batch detail — BE caps limit at 500/order updated_at DESC
+ * Why: VP HN seed 85×~8=700 lines — global list omits late-sort employees (XE00236/XE00250)
+ * must_keep: camelCase response (employeeId/componentCode) · PAYROLL_HRM_TIMEOUT_MS · payroll_e2e_ready=false
+ */
+export type HrmPayPeriodInputLineRow = {
+  id: string;
+  companyId: string;
+  periodId: string;
+  employeeId: string;
+  employeeDisplayName?: string;
+  componentCode: string;
+  componentDisplayLabel?: string;
+  amount: number;
+  quantity?: number | null;
+  sourceKind?: string;
+  sourceRef?: string | null;
+  effectiveDate?: string | null;
+  note?: string | null;
+  archivedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export async function listPayrollPeriodInputLines(
+  periodId: string,
+  params: {
+    company_id: string;
+    employee_id?: string;
+    component_code?: string;
+    limit?: number;
+  },
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
+  if (params.employee_id) search.set("employee_id", params.employee_id);
+  if (params.component_code) search.set("component_code", params.component_code);
+  if (params.limit != null) search.set("limit", String(params.limit));
+  return requestHrm<{ items: HrmPayPeriodInputLineRow[] }>(
+    `/api/hrm/payroll/periods/${encodeURIComponent(periodId)}/input-lines?${search.toString()}`,
+    { method: "GET" },
+    { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
+  );
+}
+
 /**
  * @CODE-MEMORY-CHANGE 2026-08-10 PO-HRM-MVP-GD1-PAY-01-CLUSTER-FE-01
  * change_mode: ADD
@@ -972,6 +1022,34 @@ export async function listPayrollPayslips(params: {
   if (params.payroll_group_id) search.set("payroll_group_id", params.payroll_group_id);
   return requestHrm<{ total: number; data: HrmPayslipRow[] }>(
     `/api/hrm/payroll/payslips?${search.toString()}`,
+    { method: "GET" },
+    { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
+  );
+}
+
+export type HrmPayslipLineRow = {
+  id: string;
+  payslip_id: string;
+  company_id: string;
+  component_code: string;
+  amount: number | string;
+  sign: 'earning' | 'deduction' | string;
+  source_ref?: string | null;
+  formula_definition_id?: string | null;
+  sort_order: number;
+  source_tier?: string | null;
+  created_at?: string;
+};
+
+/** F-PAY-PAYSLIP-01 — GET /payroll/payslips/:id/lines */
+export async function listPayrollPayslipLines(
+  payslipId: string,
+  params: { company_id: string },
+) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
+  return requestHrm<{ payslip_id: string; company_id: string; total: number; data: HrmPayslipLineRow[] }>(
+    `/api/hrm/payroll/payslips/${encodeURIComponent(payslipId)}/lines?${search.toString()}`,
     { method: "GET" },
     { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
   );

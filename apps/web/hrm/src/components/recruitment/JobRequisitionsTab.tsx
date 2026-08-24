@@ -466,6 +466,7 @@ export function JobRequisitionsTab({
   const [jdPreviewLoading, setJdPreviewLoading] = useState(false);
   const {
     catalogs,
+    departmentPickerOptions,
     isLoading: catalogsLoading,
     isError: catalogsError,
   } = useSettingsCatalogsOverview({ enabled: true });
@@ -579,12 +580,12 @@ export function JobRequisitionsTab({
   const departmentOptions = useMemo(
     () =>
       requisitionDepartmentPickerOptions(
-        catalogs ?? [],
+        departmentPickerOptions,
         requisitions.map((r) => r.department),
         ouLabels,
         templateDeptHints,
       ),
-    [catalogs, requisitions, ouLabels, templateDeptHints],
+    [departmentPickerOptions, requisitions, ouLabels, templateDeptHints],
   );
 
   const applyTemplate = useCallback(
