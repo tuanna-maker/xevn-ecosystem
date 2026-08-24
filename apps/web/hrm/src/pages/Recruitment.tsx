@@ -1067,7 +1067,7 @@ export default function Recruitment() {
           : 'h-[calc(100vh-120px)]',
       )}
     >
-      <h1 className="sr-only">Tuyển dụng (Recruitment)</h1>
+      <h1 className="text-xl md:text-2xl font-bold text-xevn-text px-4 md:px-6 pt-4 pb-2">Tuyển dụng (Recruitment)</h1>
       {/* Top Navigation — L-OPS neutral (no rainbow pills) */}
       <div className="flex-shrink-0 border-b bg-background px-3 py-2 md:px-6 md:py-3">
         <div className="flex items-center gap-1.5 md:gap-2 overflow-x-auto scrollbar-hide pb-1">

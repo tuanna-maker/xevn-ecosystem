@@ -428,7 +428,7 @@ describe('MobileAuthService', () => {
       };
       const svc = new MobileAuthService(db as never);
       const res = await svc.login({
-        email: ceoEmail,
+        identifier: ceoEmail,
         password: portalPassword,
       });
       expect(res.access_token).toBeTruthy();
@@ -448,7 +448,7 @@ describe('MobileAuthService', () => {
       };
       const svc = new MobileAuthService(db as never);
       await expect(
-        svc.login({ email: ceoEmail, password: 'wrong-password' }),
+        svc.login({ identifier: ceoEmail, password: 'wrong-password' }),
       ).rejects.toMatchObject({
         code: 'HRM-AUTH-401',
       });
@@ -528,7 +528,7 @@ describe('MobileAuthService', () => {
         }),
       };
       const svc = new MobileAuthService(db as never);
-      const res = await svc.login({ email: uatEmail, password: uatPassword });
+      const res = await svc.login({ identifier: uatEmail, password: uatPassword });
       expect(res.access_token).toBeTruthy();
       expect(res.employee.email).toBe(uatEmail);
       expect(res.employee.employee_code).toBe('HLD-0001');
@@ -543,7 +543,7 @@ describe('MobileAuthService', () => {
       };
       const svc = new MobileAuthService(db as never);
       await expect(
-        svc.login({ email: uatEmail, password: 'wrong-password' }),
+        svc.login({ identifier: uatEmail, password: 'wrong-password' }),
       ).rejects.toMatchObject({
         code: 'HRM-AUTH-401',
       });
@@ -619,7 +619,7 @@ describe('MobileAuthService', () => {
       };
       const svc = new MobileAuthService(db as never);
       const res = await svc.login({
-        email: legacyEmail,
+        identifier: legacyEmail,
         password: uatPassword,
       });
       expect(res.access_token).toBeTruthy();

@@ -4,10 +4,11 @@ import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 export const PORTAL_HRM_BASE = '/command-center/hrm';
 
 /** Map pathname HRM app (basename /hr) → URL portal parent. */
-export function hrmAppPathnameToPortalPath(pathname: string, basename = '/hr'): string {
+export function hrmAppPathnameToPortalPath(pathname: string, basename = '/hr', tenantId?: string | null): string {
   const rel = hrmRelativePathname(pathname, basename);
-  if (rel === '/' || rel === '/dashboard') return `${PORTAL_HRM_BASE}/dashboard`;
-  return `${PORTAL_HRM_BASE}${rel}`;
+  const prefix = tenantId ? `/${tenantId}` : '';
+  if (rel === '/' || rel === '/dashboard') return `${prefix}${PORTAL_HRM_BASE}/dashboard`;
+  return `${prefix}${PORTAL_HRM_BASE}${rel}`;
 }
 
 /**
@@ -29,7 +30,9 @@ export function syncSettingsCatalogFocusToPortalParent(
 
   try {
     const parent = window.parent;
-    const portalPath = hrmAppPathnameToPortalPath('/settings', basename);
+    const iframeParams = new URLSearchParams(window.location.search);
+    const tenantId = iframeParams.get('tenantId');
+    const portalPath = hrmAppPathnameToPortalPath('/settings', basename, tenantId);
     const params = new URLSearchParams(parent.location.search);
     params.set('tab', tab);
     params.set('focus', slug);
@@ -66,7 +69,9 @@ export function syncHrmLocationToPortalParent(
 
   try {
     const parent = window.parent;
-    const portalPath = hrmAppPathnameToPortalPath(pathname, basename);
+    const iframeParams = new URLSearchParams(window.location.search);
+    const tenantId = iframeParams.get('tenantId');
+    const portalPath = hrmAppPathnameToPortalPath(pathname, basename, tenantId);
     const preserveSearch = new URLSearchParams(parent.location.search);
     // Không copy query portal/tenant từ iframe — parent giữ search hiện tại (settings, module, …)
     preserveSearch.delete('portal');

@@ -42,6 +42,13 @@ Every persistent entity carries `tenant_id` at the database row level. Tenant is
 
 ## 3. XBOS Requirements
 
+### 3.0 Web Portal Multi-Tenant Routing & Deep Links (UC-W01)
+- **Strict Tenant Context Enforcement:** Any access to the system MUST include a valid `tenantId` in the URL (e.g., `/:tenantId/...`).
+- **Missing or Invalid Tenant ID:** If a user attempts to access any route without a valid `tenantId` (e.g., directly accessing `/command-center/...` or `/dashboard/...`):
+  - The system MUST immediately delete the current `accessToken` (force logout).
+  - The user MUST be redirected to the login page.
+  - The system MAY preserve the original deep link in the `redirect` query parameter to route them back after a successful login.
+
 ### 3.1 Tenant Lifecycle (UC-B01)
 - Tenant auto-provisioning with adminEmail and adminPassword fields from UI, optionally sending an activation email with a secure token.
 - Tenant status lifecycle: PROVISIONING -> ACTIVE -> SUSPENDED -> ARCHIVED.
@@ -151,6 +158,7 @@ Placeholder structure provided; report types, export formats, and scheduling to 
 
 ### 5.1 Multi-Tenant Login (UC-M01)
 
+- Credentials: Authentication via Email OR Phone Number (synced from Employee profile).
 - Sequence: authenticate → list memberships → select company → issue scoped token.
 - Biometric unlock enabled after first successful password login.
 - Lockout policy: five failed attempts triggers thirty-minute cooldown.

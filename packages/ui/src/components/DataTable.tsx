@@ -60,20 +60,20 @@ export const DataTable: React.FC<DataTableProps<any>> = ({
   }
 
   return (
-    <div className={cn('overflow-x-auto', className)}>
+    <div className={cn('rounded-xl border border-xevn-border bg-white shadow-sm overflow-x-auto', className)}>
       {actions ? (
-        <div className="mb-4 flex items-center justify-end">
+        <div className="p-4 border-b border-xevn-border flex items-center justify-end bg-slate-50/50">
           {actions}
         </div>
       ) : null}
       <table className="min-w-full divide-y divide-xevn-border">
         <thead>
-          <tr>
+          <tr className="bg-slate-50/80 border-b border-xevn-border">
             {columns.map((column) => (
               <th
                 key={column.key}
                 style={column.width ? { width: column.width } : undefined}
-                className="px-6 py-3 text-left text-xs font-medium text-xevn-textSecondary uppercase tracking-wider"
+                className="px-6 py-4 text-left text-xs font-bold text-xevn-textSecondary uppercase tracking-wider"
               >
                 {column.header ?? column.label ?? column.key}
               </th>
