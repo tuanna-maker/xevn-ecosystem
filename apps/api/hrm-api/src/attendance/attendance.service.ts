@@ -112,6 +112,9 @@ type AttendanceRecordRow = {
   updated_at: string;
   leave_request_id?: string | null;
   leave_type_key?: string | null;
+  employee_code?: string | null;
+  employee_name?: string | null;
+  department?: string | null;
 };
 
 const ATTENDANCE_STATUS_LABELS_VI: Record<string, string> = {
@@ -126,6 +129,7 @@ const ATTENDANCE_LEAVE_TYPE_LABELS_VI: Record<string, string> = {
   sick: 'Nghỉ ốm',
   maternity: 'Thai sản',
   unpaid: 'Không lương',
+  holiday: 'Nghỉ lễ',
   compensatory: 'Nghỉ bù',
   annual_leave: 'Phép năm',
   sick_leave: 'Nghỉ ốm',
@@ -450,6 +454,43 @@ export class AttendanceService {
     }
   }
 
+  private async attachEmployeeDisplay(
+    row: AttendanceRecordRow,
+  ): Promise<AttendanceRecordRow> {
+    if (row.employee_name?.trim()) {
+      return row;
+    }
+    const res = await this.db.query<{
+      employee_code: string | null;
+      employee_name: string | null;
+      department: string | null;
+    }>(
+      `
+        SELECT
+          employee_code,
+          full_name AS employee_name,
+          COALESCE(
+            NULLIF(TRIM(custom_fields->>'department_label'), ''),
+            NULLIF(TRIM(custom_fields->>'department'), '')
+          ) AS department
+        FROM public.employees
+        WHERE id = $1::uuid AND archived_at IS NULL
+        LIMIT 1;
+      `,
+      [row.employee_id],
+    );
+    const emp = res.rows[0];
+    if (!emp) {
+      return row;
+    }
+    return {
+      ...row,
+      employee_code: emp.employee_code,
+      employee_name: emp.employee_name,
+      department: emp.department,
+    };
+  }
+
   private mapRecord(
     row: AttendanceRecordRow,
     codeHints?: Map<string, AttAttendanceCodeDisplayHints>,
@@ -474,6 +515,9 @@ export class AttendanceService {
       id: row.id,
       company_id: row.company_id,
       employee_id: row.employee_id,
+      employee_code: row.employee_code?.trim() || null,
+      employee_name: row.employee_name?.trim() || null,
+      department: row.department?.trim() || null,
       attendance_date: this.normalizeAttendanceDateForApi(row.attendance_date),
       check_in_at: row.check_in_at,
       check_out_at: row.check_out_at,
@@ -666,7 +710,7 @@ export class AttendanceService {
         ],
       );
 
-      const created = res.rows[0];
+      const created = await this.attachEmployeeDisplay(res.rows[0]);
       await this.db.query(
         `
           INSERT INTO public.attendance_events (id, attendance_record_id, event_type, source, payload)
@@ -721,44 +765,52 @@ export class AttendanceService {
     );
     const filters: string[] = [];
     const values: unknown[] = [];
-    pushWorkforceEmployeeScopeFilter(filters, values, scope);
+    pushWorkforceEmployeeScopeFilter(filters, values, scope, 'ar.employee_id');
     let idx = values.length + 1;
 
     if (query.employee_id) {
-      filters.push(`employee_id = $${idx}::uuid`);
+      filters.push(`ar.employee_id = $${idx}::uuid`);
       values.push(query.employee_id);
       idx += 1;
     }
     if (query.status) {
-      filters.push(`status = $${idx}`);
+      filters.push(`ar.status = $${idx}`);
       values.push(query.status);
       idx += 1;
     }
     if (query.from_date) {
-      filters.push(`attendance_date >= $${idx}::date`);
+      filters.push(`ar.attendance_date >= $${idx}::date`);
       values.push(query.from_date);
       idx += 1;
     }
     if (query.to_date) {
-      filters.push(`attendance_date <= $${idx}::date`);
+      filters.push(`ar.attendance_date <= $${idx}::date`);
       values.push(query.to_date);
       idx += 1;
     }
 
     const whereClause = filters.join(' AND ');
     const countRes = await this.db.query<{ total: string }>(
-      `SELECT COUNT(*)::text AS total FROM public.attendance_records WHERE ${whereClause};`,
+      `SELECT COUNT(*)::text AS total FROM public.attendance_records ar WHERE ${whereClause};`,
       values,
     );
     const dataRes = await this.db.query<AttendanceRecordRow>(
       `
         SELECT
-          id, company_id, employee_id, attendance_date, check_in_at, check_out_at,
-          status, note, created_by, created_at, updated_at,
-          leave_request_id::text AS leave_request_id, leave_type_key
-        FROM public.attendance_records
+          ar.id, ar.company_id, ar.employee_id, ar.attendance_date, ar.check_in_at, ar.check_out_at,
+          ar.status, ar.note, ar.created_by, ar.created_at, ar.updated_at,
+          ar.leave_request_id::text AS leave_request_id, ar.leave_type_key,
+          e.employee_code,
+          e.full_name AS employee_name,
+          COALESCE(
+            NULLIF(TRIM(e.custom_fields->>'department_label'), ''),
+            NULLIF(TRIM(e.custom_fields->>'department'), '')
+          ) AS department
+        FROM public.attendance_records ar
+        LEFT JOIN public.employees e
+          ON e.id = ar.employee_id AND e.archived_at IS NULL
         WHERE ${whereClause}
-        ORDER BY attendance_date DESC, created_at DESC
+        ORDER BY ar.attendance_date DESC, ar.created_at DESC
         LIMIT $${idx} OFFSET $${idx + 1};
       `,
       [...values, pageSize, offset],
@@ -793,16 +845,24 @@ export class AttendanceService {
       scopeCompanyId,
       scopeContext,
     );
-    const filters: string[] = ['id = $1::uuid'];
+    const filters: string[] = ['ar.id = $1::uuid'];
     const values: unknown[] = [recordId];
-    pushWorkforceEmployeeScopeFilter(filters, values, scope);
+    pushWorkforceEmployeeScopeFilter(filters, values, scope, 'ar.employee_id');
     const res = await this.db.query<AttendanceRecordRow>(
       `
         SELECT
-          id, company_id, employee_id, attendance_date, check_in_at, check_out_at,
-          status, note, created_by, created_at, updated_at,
-          leave_request_id::text AS leave_request_id, leave_type_key
-        FROM public.attendance_records
+          ar.id, ar.company_id, ar.employee_id, ar.attendance_date, ar.check_in_at, ar.check_out_at,
+          ar.status, ar.note, ar.created_by, ar.created_at, ar.updated_at,
+          ar.leave_request_id::text AS leave_request_id, ar.leave_type_key,
+          e.employee_code,
+          e.full_name AS employee_name,
+          COALESCE(
+            NULLIF(TRIM(e.custom_fields->>'department_label'), ''),
+            NULLIF(TRIM(e.custom_fields->>'department'), '')
+          ) AS department
+        FROM public.attendance_records ar
+        LEFT JOIN public.employees e
+          ON e.id = ar.employee_id AND e.archived_at IS NULL
         WHERE ${filters.join(' AND ')}
         LIMIT 1;
       `,
@@ -860,8 +920,8 @@ export class AttendanceService {
       `,
       [status, payload.note?.trim() ?? null, recordId],
     );
-    const updated = res.rows[0];
-    if (!updated) {
+    const updated = await this.attachEmployeeDisplay(res.rows[0]!);
+    if (!updated?.id) {
       throw new ApiException(
         'HRM-ATT-404',
         'Attendance record not found',

@@ -2,19 +2,20 @@ import {
   getSettingsCatalogsOverview,
   listDepartments,
   type HrmSettingsCatalogOverviewRow,
+  type HrmSpreadsheetScope,
 } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
 import {
   getPortalJwtRoleCode,
   getPortalJwtTenantId,
   resolveHrmSettingsCatalogScope,
+  resolveHrmSpreadsheetScope,
 } from '@/lib/hrmSpreadsheetScope';
 import {
   HRM_LIST_DEFAULT_COMPANY_ID,
   HRM_MASTER_TENANT_ID,
   HRM_ROLLUP_TENANT_IDS,
 } from '@/lib/hrmListScope';
-import type { HrmSpreadsheetScope } from '@/integrations/hrmApi';
 const DEPARTMENT_CATALOG_KEYS = ['departments', 'department_catalog', 'org_departments'] as const;
 
 export function findDepartmentCatalog(
@@ -150,9 +151,10 @@ async function loadCompanyDepartmentsOnce(companyId: string): Promise<LoadCompan
   let hrmError: string | null = null;
   let catalogRows: CatalogDepartmentRow[] = [];
   let catalogError: string | null = null;
+  const scope = resolveHrmSpreadsheetScope(companyId);
 
   try {
-    const response = await listDepartments({ company_id: companyId });
+    const response = await listDepartments({ company_id: companyId }, scope ?? undefined);
     hrmRows = (response.data ?? [])
       .map((row) => mapHrmDepartmentRow(row))
       .filter((row) => row.id && row.name);
@@ -161,9 +163,13 @@ async function loadCompanyDepartmentsOnce(companyId: string): Promise<LoadCompan
   }
 
   try {
-    catalogRows = isGroupCeoDepartmentRollupContext()
-      ? await listDepartmentsFromSettingsCatalogRollup()
-      : await listDepartmentsFromSettingsCatalog(companyId);
+    if (isGroupCeoDepartmentRollupContext()) {
+      catalogRows = await listDepartmentsFromSettingsCatalogRollup();
+    } else if (scope) {
+      catalogRows = await listDepartmentsFromSettingsCatalogForScope(scope);
+    } else {
+      catalogRows = await listDepartmentsFromSettingsCatalog(companyId);
+    }
   } catch (error) {
     catalogError = toErrorMessage(
       error,
@@ -206,10 +212,13 @@ export async function listDepartmentsFromSettingsCatalogForScope(
   }));
 }
 
-/** Group CEO — load department catalog from every rollup tenant partition. */
+/** Group CEO — load department catalog from rollup tenants (skip 409 partitions). */
 export async function listDepartmentsFromSettingsCatalogRollup(): Promise<CatalogDepartmentRow[]> {
   const rows: CatalogDepartmentRow[] = [];
-  for (const tenantId of HRM_ROLLUP_TENANT_IDS) {
+  const jwtTenant = getPortalJwtTenantId()?.trim().toLowerCase();
+  // Only request catalog for JWT tenant — cross-tenant headers cause 409 SCOPE_CONTEXT_MISMATCH.
+  const tenants = jwtTenant ? [jwtTenant] : [...HRM_ROLLUP_TENANT_IDS];
+  for (const tenantId of tenants) {
     try {
       const batch = await listDepartmentsFromSettingsCatalogForScope({
         tenantId,

@@ -199,7 +199,7 @@ describe('resolveHrmListScope (ADR-HRM-RBAC-SCOPE-LADDER)', () => {
     expect(values).toEqual(['holding']);
   });
 
-  it('does not expand when company query is a member operating slug', () => {
+  it('group CEO holding query expands to group rollup (catalog persist slug)', () => {
     const token = signServiceJwt({
       sub: 'ceo@xe.vn',
       tenantId: 'xevn',
@@ -207,8 +207,8 @@ describe('resolveHrmListScope (ADR-HRM-RBAC-SCOPE-LADDER)', () => {
       roleCode: 'group_ceo',
     });
     const scope = resolveHrmListScope(`Bearer ${token}`, 'holding');
-    expect(scope.companyIds).toEqual(['holding']);
-    expect(scope.masterTenantPartition).toBe(false);
+    expect(scope.companyIds).toEqual([...HRM_GROUP_MEMBER_COMPANY_SLUGS]);
+    expect(scope.masterTenantPartition).toBe(true);
   });
 
   it('narrows to trsport when group CEO filters operating unit (AC-INT-SW-02)', () => {
@@ -680,6 +680,45 @@ describe('resolveHrmListScope (HRM_TENANT_ONLY_SCOPE)', () => {
         { company_id: 'logistics', custom_fields: { tenant_id: 'xevn' } },
         scope,
       ),
+    ).not.toThrow();
+  });
+
+  it('assertResourceInHrmScope allows holding contract-template row for group CEO without legacy bridge', () => {
+    process.env.HRM_TENANT_ONLY_LEGACY_BRIDGE = 'false';
+    const scope = resolveHrmListScope(
+      `Bearer ${signServiceJwt({
+        sub: 'ceo@xe.vn',
+        tenantId: 'xevn',
+        companyId: 'main',
+        roleCode: 'group_ceo',
+      })}`,
+      'main',
+    );
+    expect(() =>
+      assertResourceInHrmScope({ company_id: 'holding' }, scope),
+    ).not.toThrow();
+  });
+
+  it('group CEO holding query uses full rollup scope (not xevn-only narrow)', () => {
+    process.env.HRM_TENANT_ONLY_LEGACY_BRIDGE = 'false';
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'holding');
+    expect(scope.tenantOnlyMode).toBe(true);
+    expect(scope.masterTenantPartition).toBe(true);
+    expect(scope.tenantIds).toEqual([
+      'xevn',
+      'visun',
+      'xe-tmdv',
+      'xe-du-lich',
+      'xe-vietnam',
+    ]);
+    expect(() =>
+      assertResourceInHrmScope({ company_id: 'holding' }, scope),
     ).not.toThrow();
   });
 });

@@ -763,6 +763,11 @@ export class PayrollService {
       payload.company_id,
       { tenantId },
     );
+    const persistTenantId = resolveHrmPersistTenantId(
+      authorization,
+      payload.company_id,
+      tenantId ? { tenantId } : undefined,
+    );
 
     let payrollGroupId: string | null = null;
     if (payload.payroll_group_id) {
@@ -775,14 +780,25 @@ export class PayrollService {
     }
 
     const overlapRes = await this.db.query<{ id: string }>(
+      persistTenantId
+        ? `
+        SELECT id
+        FROM public.payroll_periods
+        WHERE company_id = $1
+          AND COALESCE(NULLIF(TRIM(tenant_id), ''), $4::text) = $4::text
+          AND daterange(start_date, end_date, '[]') && daterange($2::date, $3::date, '[]')
+        LIMIT 1;
       `
+        : `
         SELECT id
         FROM public.payroll_periods
         WHERE company_id = $1
           AND daterange(start_date, end_date, '[]') && daterange($2::date, $3::date, '[]')
         LIMIT 1;
       `,
-      [companyId, payload.start_date, payload.end_date],
+      persistTenantId
+        ? [companyId, payload.start_date, payload.end_date, persistTenantId]
+        : [companyId, payload.start_date, payload.end_date],
     );
     if (overlapRes.rows[0]) {
       throw new ApiException(
@@ -795,8 +811,8 @@ export class PayrollService {
     const res = await this.db.query<PayrollPeriodRow>(
       `
         INSERT INTO public.payroll_periods (
-          id, company_id, period_label, start_date, end_date, status, created_by, payroll_group_id
-        ) VALUES ($1, $2, $3, $4::date, $5::date, 'draft', $6, $7::uuid)
+          id, company_id, tenant_id, period_label, start_date, end_date, status, created_by, payroll_group_id
+        ) VALUES ($1, $2, $3, $4, $5::date, $6::date, 'draft', $7, $8::uuid)
         RETURNING
           id, company_id, period_label, start_date, end_date, status, created_by,
           processed_at, closed_at, created_at, updated_at;
@@ -804,6 +820,7 @@ export class PayrollService {
       [
         randomUUID(),
         companyId,
+        persistTenantId,
         payload.period_label.trim(),
         payload.start_date,
         payload.end_date,

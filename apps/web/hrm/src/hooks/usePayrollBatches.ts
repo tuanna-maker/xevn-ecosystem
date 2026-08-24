@@ -326,8 +326,21 @@ export const usePayrollBatches = (options?: { periodMonth?: number; periodYear?:
       queryClient.invalidateQueries({ queryKey: ['payroll-batches', currentCompanyId] });
       toast.success('Đã tạo bảng lương');
     },
-    onError: () => {
-      toast.error('Lỗi khi tạo bảng lương');
+    onError: (error: unknown) => {
+      const message = toErrorMessage(error);
+      if (error instanceof ApiClientError && error.code === 'HRM-PAY-002') {
+        toast.error(
+          `${message} Mở kỳ lương đã có trong danh sách (vd. Kỳ lương VP Hà Nội 05/2026) thay vì tạo mới.`,
+        );
+        return;
+      }
+      if (error instanceof ApiClientError && error.code === 'SCOPE_CONTEXT_MISMATCH') {
+        toast.error(
+          `${message} Đăng nhập user cùng tenant với URL (?tenantId=xevn cần tài khoản tenant xevn).`,
+        );
+        return;
+      }
+      toast.error(message || 'Lỗi khi tạo bảng lương');
     },
   });
 

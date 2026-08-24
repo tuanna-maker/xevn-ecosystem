@@ -20,7 +20,10 @@ export function useDepartments(opts?: { enabled?: boolean }) {
     const fetchDepartments = async () => {
       setIsLoading(true);
       try {
-        const { rows } = await loadCompanyDepartments(currentCompanyId);
+        const { rows, fetchError } = await loadCompanyDepartments(currentCompanyId);
+        if (fetchError) {
+          console.error('Error fetching departments:', fetchError);
+        }
         setDepartments(rows);
       } catch (error) {
         console.error('Error fetching departments:', error);

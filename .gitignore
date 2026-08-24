@@ -89,3 +89,6 @@ delete*.sql
 !commitlint.config.js
 !babel.config.js
 !metro.config.js
+
+# Payroll seed reports (chứa lương thực tế — không commit)
+scripts/seed-reports/

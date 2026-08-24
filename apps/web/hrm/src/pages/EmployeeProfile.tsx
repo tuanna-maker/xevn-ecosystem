@@ -1124,6 +1124,7 @@ export default function EmployeeProfile() {
         employee={employee}
         onSubmit={handleEditSubmit}
         isLoading={isEditLoading}
+        onOpenCompensationTab={() => selectGroupedTab('contract')}
       />
     </div>
   );
