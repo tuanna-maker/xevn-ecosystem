@@ -901,7 +901,7 @@ export class EmployeesService implements OnModuleInit {
       },
     );
 
-    const whereClause = filters.join(' AND ');
+    const whereClause = filters.length ? filters.join(' AND ') : 'TRUE';
     // P1-HRM-SCALE-BE-W2 — single round-trip: window COUNT + page rows (ADR §5.4 COUNT strategy)
     const dataRes = await this.db.query<EmployeeRow & { list_total: string }>(
       `
@@ -982,7 +982,7 @@ export class EmployeesService implements OnModuleInit {
       authorization,
       scopeContext,
     );
-    const whereClause = filters.join(' AND ');
+    const whereClause = filters.length ? filters.join(' AND ') : 'TRUE';
     // P1-HRM-SCALE-BE-W2 — one CTE scan for agg + dept + by_company + recent
     type SummaryAggregateRow = {
       total: string;
@@ -1206,7 +1206,7 @@ export class EmployeesService implements OnModuleInit {
       authorization,
       scopeContext,
     );
-    const whereClause = filters.join(' AND ');
+    const whereClause = filters.length ? filters.join(' AND ') : 'TRUE';
     const labelLookup = await this.resolveStatusLabelLookup(
       query.company_id,
       authorization,

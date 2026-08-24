@@ -789,7 +789,7 @@ export class AttendanceService {
       idx += 1;
     }
 
-    const whereClause = filters.join(' AND ');
+    const whereClause = filters.length ? filters.join(' AND ') : 'TRUE';
     const countRes = await this.db.query<{ total: string }>(
       `SELECT COUNT(*)::text AS total FROM public.attendance_records ar WHERE ${whereClause};`,
       values,

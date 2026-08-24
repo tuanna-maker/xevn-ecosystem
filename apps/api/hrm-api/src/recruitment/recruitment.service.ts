@@ -2655,7 +2655,7 @@ export class RecruitmentService {
       values.push(reqId);
       filters.push(`c.requisition_id = $${values.length}::uuid`);
     }
-    const whereClause = filters.join(' AND ');
+    const whereClause = filters.length ? filters.join(' AND ') : 'TRUE';
     const countRes = await this.db.query<{ total: string }>(
       `SELECT COUNT(*)::text AS total FROM public.recruitment_candidates c WHERE ${whereClause};`,
       values,
@@ -4338,7 +4338,7 @@ export class RecruitmentService {
     const filters: string[] = ['c.requisition_id = $1::uuid'];
     const values: unknown[] = [requisitionId];
     this.pushRequisitionCompanyFilter(filters, values, scope, 'r');
-    const whereClause = filters.join(' AND ');
+    const whereClause = filters.length ? filters.join(' AND ') : 'TRUE';
     const countRes = await this.db.query<{ total: string }>(
       `SELECT COUNT(*)::text AS total
        FROM public.recruitment_candidates c
