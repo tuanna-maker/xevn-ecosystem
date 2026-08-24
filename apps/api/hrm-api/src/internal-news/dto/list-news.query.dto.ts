@@ -9,7 +9,7 @@ export class ListInternalNewsQueryDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^[0-9a-f-]{1,32}$/i)
+  @Matches(/^[0-9a-z-]{1,32}$/i)
   category?: string;
 
   @IsOptional()

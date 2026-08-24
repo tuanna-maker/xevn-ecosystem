@@ -2474,7 +2474,7 @@ export async function listCandidateApplications(params: {
   const search = new URLSearchParams();
   search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.job_posting_id) search.set("job_posting_id", params.job_posting_id);
-  return requestHrm<{ total: number; data: HrmCandidateApplicationRow[] }>(
+  return requestHrm<{ total: number; data: HrmCandidateApplicationEnriched[] }>(
     `/api/hrm/recruitment/candidate-applications?${search.toString()}`,
     { method: "GET" },
   );
