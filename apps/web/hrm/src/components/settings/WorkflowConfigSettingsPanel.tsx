@@ -103,6 +103,8 @@ type WorkflowConfig = {
   positions: WorkflowPosition[];
   fields: WorkflowField[];
   steps: WorkflowStep[];
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 type WorkflowDraft = Omit<WorkflowConfig, 'id'> & { id?: string };
@@ -435,13 +437,13 @@ export function WorkflowConfigSettingsPanel() {
   const isRecruitment = selectedTypeCode === 'REC';
 
   const { currentCompanyId } = useAuth();
-  const { employees: rawEmployees = [] } = useEmployeePickerSearch({ companyId: currentCompanyId, pageSize: 200 });
+  const { employees: rawEmployees = [] } = useEmployeePickerSearch({ companyId: currentCompanyId, pageSize: 100 });
   /** Chuẩn hoá: map job_title_label / job_title_key → job_title để hiển thị chức danh trong dropdown */
-  const employees = rawEmployees.map((e) => ({
+  const employees = useMemo(() => rawEmployees.map((e) => ({
     id: e.id,
     full_name: e.full_name,
     job_title: (e.job_title_label || e.job_title_key || '') as string,
-  }));
+  })), [rawEmployees]);
 
   const saveAll = (nextTypes = workflowTypes, nextWorkflows = workflows) => {
     setWorkflowTypes(nextTypes);
@@ -606,11 +608,19 @@ export function WorkflowConfigSettingsPanel() {
       fields,
       steps,
     };
-    const nextWorkflows = workflows.some((workflow) => workflow.id === saved.id)
-      ? workflows.map((workflow) => (workflow.id === saved.id ? saved : workflow))
-      : [saved, ...workflows];
+    const now = new Date().toISOString();
+    const existing = workflows.find((workflow) => workflow.id === saved.id);
+    const workflowToSave = {
+      ...saved,
+      createdAt: existing?.createdAt || now,
+      updatedAt: now,
+    };
+    
+    const nextWorkflows = existing
+      ? workflows.map((workflow) => (workflow.id === saved.id ? workflowToSave : workflow))
+      : [workflowToSave, ...workflows];
     saveAll(workflowTypes, nextWorkflows);
-    setDraft(saved);
+    setDraft(workflowToSave);
     setView('list');
     toast({ title: draft.id ? 'Đã cập nhật quy trình' : 'Đã tạo quy trình', description: saved.name });
   };
@@ -982,30 +992,7 @@ function RecruitmentPositionsCard({
                 placeholder="Chọn JD mô tả công việc..."
                 hideEmptyStateBox
               />
-              <Select value={position.level} onValueChange={(value) => updatePosition(position.id, { level: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn cấp bậc" />
-                </SelectTrigger>
-                <SelectContent portalScope="iframe">
-                  <SelectItem value="ALL_LEVEL" className="font-semibold text-blue-600">Tất cả cấp bậc</SelectItem>
-                  {levelOptions.length > 0
-                    ? levelOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))
-                    : LEVEL_OPTIONS.map((opt) => (
-                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                      ))
-                  }
-                  {/* Fallback for existing saved data not in any list */}
-                  {position.level && position.level !== 'ALL_LEVEL' &&
-                    !levelOptions.some(o => o.value === position.level) &&
-                    !LEVEL_OPTIONS.includes(position.level) && (
-                    <SelectItem value={position.level}>{position.level}</SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
+
               {/* Người chịu trách nhiệm — lọc theo chức danh đồng bộ với approverRole */}
               {(() => {
                 const resolvedRole = position.approverRole || resolveApproverRole(position.level);
