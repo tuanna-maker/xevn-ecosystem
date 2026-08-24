@@ -125,11 +125,14 @@ import { EmpEmploymentTypeSettingsPanel } from '@/components/settings/EmpEmploym
 import { EmpEmploymentStatusSettingsPanel } from '@/components/settings/EmpEmploymentStatusSettingsPanel';
 import { DecDecisionTypeSettingsPanel } from '@/components/settings/DecDecisionTypeSettingsPanel';
 import { SiInsuranceTypeSettingsPanel } from '@/components/settings/SiInsuranceTypeSettingsPanel';
+import { CatalogJobTitlesSettingsPanel } from '@/components/settings/CatalogJobTitlesSettingsPanel';
 import { SiInsurerSettingsPanel } from '@/components/settings/SiInsurerSettingsPanel';
 import { InsuranceRateSetupScreen } from '@/components/settings/InsuranceRateSetupScreen';
 import { RecPipelineStageSettingsPanel } from '@/components/settings/RecPipelineStageSettingsPanel';
 import { RecCandidateSourceSettingsPanel } from '@/components/settings/RecCandidateSourceSettingsPanel';
 import { RecInterviewTypeSettingsPanel } from '@/components/settings/RecInterviewTypeSettingsPanel';
+import { AttLeaveTypeSettingsPanel } from '@/components/settings/AttLeaveTypeSettingsPanel';
+import { AttAttendanceCodeSettingsPanel } from '@/components/settings/AttAttendanceCodeSettingsPanel';
 import { SettingsDefaultsPanel } from '@/components/settings/SettingsDefaultsPanel';
 import { PaySalaryComponentList } from '@/components/settings/payroll/PaySalaryComponentList';
 import { PayFormulaSettingsPanel } from '@/components/settings/payroll/PayFormulaSettingsPanel';
@@ -141,6 +144,11 @@ import { ContractTypeSettingsPanel } from '@/components/settings/ContractTypeSet
 import { ContractTerminationReasonSettingsPanel } from '@/components/settings/ContractTerminationReasonSettingsPanel';
 import { WorkflowConfigSettingsPanel } from '@/components/settings/WorkflowConfigSettingsPanel';
 import { PolicyPackSetupScreen } from '@/components/payroll/policy-pack/PolicyPackSetupScreen';
+import { AttOtTypeSettingsPanel } from '@/components/settings/AttOtTypeSettingsPanel';
+import { AttOtCompTypeSettingsPanel } from '@/components/settings/AttOtCompTypeSettingsPanel';
+import { AttShiftSettingsPanel } from '@/components/settings/AttShiftSettingsPanel';
+import { AttWorkRuleSettingsPanel } from '@/components/settings/AttWorkRuleSettingsPanel';
+import { AttScheduleGroupSettingsPanel } from '@/components/settings/AttScheduleGroupSettingsPanel';
 
 
 
@@ -521,6 +529,14 @@ export default function Settings() {
 
 
 
+        {settingsTab === 'att-leave-types' && (<div className="space-y-4">
+          <AttLeaveTypeSettingsPanel />
+        </div>)}
+
+        {settingsTab === 'att-attendance-codes' && (<div className="space-y-4">
+          <AttAttendanceCodeSettingsPanel />
+        </div>)}
+
         {settingsTab === 'emp-document-types' && (<div className="space-y-4">
           <EmpDocumentTypeSettingsPanel />
         </div>)}
@@ -545,6 +561,26 @@ export default function Settings() {
           <SiInsurerSettingsPanel />
         </div>)}
 
+        {settingsTab === 'att-ot-types' && (<div className="space-y-4">
+          <AttOtTypeSettingsPanel />
+        </div>)}
+
+        {settingsTab === 'att-ot-comp-types' && (<div className="space-y-4">
+          <AttOtCompTypeSettingsPanel />
+        </div>)}
+
+        {settingsTab === 'att-shifts' && (<div className="space-y-4">
+          <AttShiftSettingsPanel />
+        </div>)}
+
+        {settingsTab === 'att-work-rules' && (<div className="space-y-4">
+          <AttWorkRuleSettingsPanel />
+        </div>)}
+
+        {settingsTab === 'att-schedule-groups' && (<div className="space-y-4">
+          <AttScheduleGroupSettingsPanel />
+        </div>)}
+
         {settingsTab === 'payroll-insurance-rates' && (
           <InsuranceRateSetupScreen />
         )}
@@ -557,12 +593,10 @@ export default function Settings() {
           <SettingsDefaultsPanel />
         </div>)}
 
-        {/* --- Tab mới 2026-08-19 (PO-HRM-SETTINGS-IA-UX-REMasters-SPONSOR-01) --- */}
-        {/* Các tab dưới đây chưa có panel thật; render stub tiếng Việt, không jargon dev. */}
+        {/* --- Tab catalog-job-titles 2026-08-24 (PO-HRM-SETTINGS-JOB-TITLES-FE-01) --- */}
         {settingsTab === 'catalog-job-titles' && (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-            <p className="text-sm font-medium">Tính năng đang được phát triển</p>
-            <p className="text-xs">Sẽ có trong bản cập nhật tiếp theo</p>
+          <div className="space-y-4">
+            <CatalogJobTitlesSettingsPanel />
           </div>
         )}
         {settingsTab === 'rec-sources' && (

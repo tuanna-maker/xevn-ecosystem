@@ -1,4 +1,4 @@
-﻿import { useState, useCallback } from 'react';
+﻿import { useState, useCallback, useRef } from 'react';
 
 import * as faceapi from 'face-api.js';
 
@@ -90,47 +90,40 @@ export function useFaceRecognition() {
 
   const [faceDataList, setFaceDataList] = useState<FaceData[]>([]);
 
+  // Use refs to prevent infinite loops - refs don't trigger re-render
+  const loadAttemptedRef = useRef(false);
+  const loadFailedRef = useRef(false);
+
 
 
   const loadModels = useCallback(async () => {
+    // Prevent multiple simultaneous load attempts
+    if (loadAttemptedRef.current) return modelsLoaded;
+    if (modelsLoaded) return true;
+    if (isLoadingModels) return false;
 
-    if (modelsLoaded || isLoadingModels) return modelsLoaded;
-
-
-
+    loadAttemptedRef.current = true;
     setIsLoadingModels(true);
 
     try {
-
       await Promise.all([
-
         faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-
         faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-
         faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-
       ]);
-
       setModelsLoaded(true);
-
       return true;
-
     } catch (error) {
-
       console.error('Error loading face recognition models:', error);
-
-      toast.error('Không thể tải mô hình nhận diện khuôn mặt');
-
+      if (!loadFailedRef.current) {
+        loadFailedRef.current = true;
+        toast.error('Không thể tải mô hình nhận diện khuôn mặt');
+      }
       return false;
-
     } finally {
-
       setIsLoadingModels(false);
-
     }
-
-  }, [modelsLoaded, isLoadingModels]);
+  }, []); // No dependencies - stable reference
 
 
 

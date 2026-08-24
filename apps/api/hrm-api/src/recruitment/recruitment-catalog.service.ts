@@ -1054,7 +1054,6 @@ export class RecruitmentCatalogService {
         jdTemplateId,
         jdSnapshot !== null ? JSON.stringify(jdSnapshot) : null,
       ],
-      ],
     );
 
     const newJobPosting = res.rows[0];
@@ -1064,7 +1063,7 @@ export class RecruitmentCatalogService {
         businessType: 'hrm_job_posting' as const,
         businessId: id,
         companyId,
-        submitterUserId: payload.created_by,
+        submitterUserId: (payload as unknown as Record<string, unknown>).created_by as string | undefined,
       };
       await this.recruitmentWorkflowBridge.startRecruitmentWorkflowIfConfigured(
         wfCtx,

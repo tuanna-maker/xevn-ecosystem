@@ -49,6 +49,7 @@ import {
   Wrench,
   Truck,
   TrendingUp,
+  Newspaper,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -118,6 +119,7 @@ const mainNavItems: NavItemWithChildren[] = [
   { titleKey: 'nav.services', icon: ConciergeBell, path: '/internal-services', module: 'services' },
   { titleKey: 'nav.tools', icon: Wrench, path: '/tools-equipment', module: 'tools' },
   { titleKey: 'nav.fleet', icon: Truck, path: '/fleet' },
+  { titleKey: 'nav.internalNews', icon: Newspaper, path: '/internal-news' },
 ];
 
 const settingsNavItems: NavItem[] = [

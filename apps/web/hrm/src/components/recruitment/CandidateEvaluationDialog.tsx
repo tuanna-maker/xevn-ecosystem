@@ -282,11 +282,34 @@ export function CandidateEvaluationDialog({
 
     const run = async () => {
       setLoading(true);
+      
+      /** FIX: Compute laneAId inside run to avoid stale closure */
+      const currentLaneAId = candidate
+        ? resolveLaneACandidateIdForMailEval({
+            id: candidate.id,
+            recruitment_candidate_id: candidate.recruitment_candidate_id,
+            list_lane: candidate.list_lane,
+            requisition_id: candidate.requisition_id,
+            recruitment_request_id: candidate.recruitment_request_id,
+            application_id: candidate.application_id,
+          })
+        : null;
+      
+      /** FIX: Show warning when candidate has YCTD but no Lane A id (neo) */
+      const hasYctd = !!(candidate.requisition_id || candidate.recruitment_request_id);
+      if (hasYctd && !currentLaneAId) {
+        toast({
+          title: 'Cảnh báo nguồn dữ liệu',
+          description: 'Ứng viên này gắn YCTD nhưng không tìm thấy neo. Đánh giá có thể không chính xác.',
+          variant: 'default',
+        });
+      }
+      
       try {
-        const evalQuery = laneAId
+        const evalQuery = currentLaneAId
           ? {
               company_id: currentCompanyId,
-              recruitment_candidate_id: laneAId,
+              recruitment_candidate_id: currentLaneAId,
               application_id: candidate.application_id ?? undefined,
             }
           : {

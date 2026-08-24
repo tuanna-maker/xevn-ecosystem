@@ -1,6 +1,6 @@
 import React from 'react';
-import { NavLink, useParams } from 'react-router-dom';
-import type { LucideIcon } from 'lucide-react';
+import { NavLink, useSearchParams } from 'react-router-dom';
+import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import {
   LayoutDashboard,
   Users,
@@ -21,6 +21,7 @@ import {
   Truck,
   HelpCircle,
   FileSignature,
+  Newspaper,
 } from 'lucide-react';
 import {
   NAV_SUBSIDEBAR_ITEM_ACTIVE_CLASS,
@@ -28,7 +29,8 @@ import {
   NAV_SUBSIDEBAR_TITLE_CLASS,
 } from '../../pages/command-center/settings-form-pattern';
 import type { HrmWorkspaceMenuKey } from './types';
-import { hrmPortalPath } from './paths';
+import type { LucideIcon } from 'lucide-react';
+import { tenantHrmPortalPath } from './paths';
 
 const RAIL_STROKE = 1.5;
 
@@ -52,6 +54,7 @@ const MAIN_AFTER: NavItem[] = [
   { key: 'internal_services', label: 'Dịch vụ nội bộ', Icon: ConciergeBell },
   { key: 'tools_equipment', label: 'Công cụ & thiết bị', Icon: Wrench },
   { key: 'fleet', label: 'Hồ sơ xe', Icon: Truck },
+  { key: 'internal_news', label: 'Tin nội bộ', Icon: Newspaper },
 ];
 
 const ADMIN: NavItem[] = [
@@ -69,7 +72,9 @@ const ICON_ONLY_ITEMS: NavItem[] = [
 ];
 
 export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = false }) => {
-  const { tenantId } = useParams<{ tenantId: string }>();
+  const [searchParams] = useSearchParams();
+  const { selectedTenant } = useTenantScope();
+  const tenantId = searchParams.get('tenantId') ?? selectedTenant?.tenantId;
   const sectionLabelClass = 'px-1 text-xs font-semibold uppercase tracking-wider text-xevn-textSecondary';
 
   const linkClass = (isActive: boolean, iconOnly?: boolean) => {
@@ -83,7 +88,7 @@ export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = fals
   const renderLink = (item: NavItem, opts?: { compact?: boolean; iconOnly?: boolean }) => (
     <NavLink
       key={item.key}
-      to={hrmPortalPath(item.key, tenantId)}
+      to={tenantHrmPortalPath(tenantId, item.key)}
       end={false}
       title={item.label}
       className={({ isActive }) => linkClass(isActive, opts?.iconOnly)}

@@ -2552,7 +2552,7 @@ export async function listCandidateApplications(params: {
   const search = new URLSearchParams();
   search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
   if (params.job_posting_id) search.set("job_posting_id", params.job_posting_id);
-  return requestHrm<{ total: number; data: HrmCandidateApplicationRow[] }>(
+  return requestHrm<{ total: number; data: HrmCandidateApplicationEnriched[] }>(
     `/api/hrm/recruitment/candidate-applications?${search.toString()}`,
     { method: "GET" },
   );
@@ -10417,6 +10417,102 @@ export async function retireDecDecisionType(decisionTypeId: string, companyId: s
 
 /**
  * @CODE-MEMORY
+ * Screen:     /settings — tab Chức danh công việc (job_titles catalog)
+ * UC:         HRM-SC-01..03 · FR-HRM-RC-JD-01
+ * BR:         job_titles là prerequisite cho JD templates và YCTD
+ * Purpose:    Client CRUD cho job_titles catalog via settings-catalogs API
+ * WorkItem:   PO-HRM-SETTINGS-JOB-TITLES-FE-01
+ * Coded:      2026-08-24
+ * Callers:    CatalogJobTitlesSettingsPanel
+ * Callees:    requestHrm · normalizeHrmApiListCompanyId · inferRuntimeScope
+ * must_keep:  catalog_key=job_titles · soft-delete via status=draft · FR-HRM-RC-JD-01 dependency
+ */
+
+export type HrmJobTitleRecord = {
+  code: string;
+  label: string;
+  unit: string | null;
+  status: "active" | "draft";
+  origin: "xbos" | "hrm";
+};
+
+export async function listJobTitles(params: {
+  company_id: string;
+  status?: string;
+  include_archived?: boolean;
+  q?: string;
+}) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(params.company_id));
+  if (params.status) search.set("status", params.status);
+  if (params.include_archived) search.set("include_archived", "true");
+  if (params.q?.trim()) search.set("q", params.q.trim());
+  const scope = inferRuntimeScope();
+  const res = await requestHrm<{ catalog_key: string; data: HrmJobTitleRecord[] }>(
+    `/api/hrm/settings-catalogs/job_titles/items?${search.toString()}`,
+    { method: "GET" },
+  );
+  return res.data ?? [];
+}
+
+export type UpsertJobTitlePayload = {
+  companyId: string;
+  code: string;
+  label: string;
+  itemValue?: string;
+  status?: "active" | "draft";
+};
+
+export async function upsertJobTitle(payload: UpsertJobTitlePayload) {
+  const scope = inferRuntimeScope();
+  const res = await fetch(`${HRM_API_ORIGIN}/api/hrm/settings-catalogs/items`, {
+    method: "POST",
+    headers: await headers({ scope }),
+    body: JSON.stringify({
+      companyId: normalizeHrmApiListCompanyId(payload.companyId),
+      catalogKey: "job_titles",
+      code: payload.code.trim(),
+      label: payload.label.trim(),
+      itemValue: payload.itemValue ?? null,
+      status: payload.status ?? "active",
+    }),
+  });
+  const json = await res.json();
+  if (!res.ok) {
+    throw new ApiClientError({
+      status: res.status,
+      code: json.code ?? "HRM-SET-ITEM-UPSERT-FAILED",
+      message: json.message ?? "Không lưu được chức danh.",
+    });
+  }
+  return json.data as HrmJobTitleRecord;
+}
+
+export async function retireJobTitle(code: string, companyId: string) {
+  const scope = inferRuntimeScope();
+  const res = await fetch(`${HRM_API_ORIGIN}/api/hrm/settings-catalogs/items`, {
+    method: "PATCH",
+    headers: await headers({ scope }),
+    body: JSON.stringify({
+      companyId: normalizeHrmApiListCompanyId(companyId),
+      catalogKey: "job_titles",
+      code: code.trim(),
+      status: "draft",
+    }),
+  });
+  const json = await res.json();
+  if (!res.ok) {
+    throw new ApiClientError({
+      status: res.status,
+      code: json.code ?? "HRM-SET-ITEM-RETIRE-FAILED",
+      message: json.message ?? "Không ngừng được chức danh.",
+    });
+  }
+  return json.data as HrmJobTitleRecord;
+}
+
+/**
+ * @CODE-MEMORY
  * Screen:     /settings · SI CFG — F-SI-CAT-TYP/EFF client
  * UC:         AC-PLT-SI-INS-01..01d · BR-PLT-02/04/05/06 · FR-UC-BP-CORE-10
  * BR:         open catalog · soft-delete retire · U19 company_id scope
@@ -11544,6 +11640,127 @@ export async function retireAttSchedule(id: string, company_id: string) {
     { method: 'POST' },
   );
 }
+
+// ============================================================================
+// Internal News API
+// ============================================================================
+
+export type HrmInternalNewsRecord = {
+  id: string;
+  company_id: string;
+  tenant_id: string | null;
+  title: string;
+  slug: string;
+  summary: string | null;
+  content: string | null;
+  featured_image_url: string | null;
+  attachments: unknown[];
+  category: string;
+  tags: string[];
+  status: string;
+  published_at: string | null;
+  pinned: boolean;
+  visibility: string;
+  department_ids: string[];
+  author_id: string | null;
+  author_name: string;
+  view_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateInternalNewsPayload = {
+  company_id: string;
+  title: string;
+  slug?: string;
+  summary?: string;
+  content?: string;
+  featured_image_url?: string;
+  attachments?: string[];
+  category?: string;
+  tags?: string[];
+  status?: string;
+  published_at?: string;
+  pinned?: boolean;
+  visibility?: string;
+  department_ids?: string[];
+  author_id?: string;
+  author_name?: string;
+};
+
+export type UpdateInternalNewsPayload = Partial<Omit<CreateInternalNewsPayload, 'company_id'>> & {
+  company_id: string;
+};
+
+export async function listHrmInternalNews(params: {
+  company_id: string;
+  category?: string;
+  status?: string;
+  include_drafts?: boolean;
+  page?: number;
+  page_size?: number;
+}) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(params.company_id));
+  if (params.category) search.set('category', params.category);
+  if (params.status) search.set('status', params.status);
+  if (params.include_drafts) search.set('include_drafts', 'true');
+  if (params.page) search.set('page', String(params.page));
+  if (params.page_size) search.set('page_size', String(params.page_size));
+
+  const res = await requestHrm<{
+    total: number;
+    page: number;
+    page_size: number;
+    data: HrmInternalNewsRecord[];
+  }>(`/api/hrm/internal-news?${search.toString()}`, { method: 'GET' });
+
+  return res;
+}
+
+export async function getHrmInternalNews(id: string, company_id: string) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(company_id));
+  return requestHrm<HrmInternalNewsRecord>(
+    `/api/hrm/internal-news/${encodeURIComponent(id)}?${search.toString()}`,
+    { method: 'GET' },
+  );
+}
+
+export async function createHrmInternalNews(payload: CreateInternalNewsPayload) {
+  return requestHrm<HrmInternalNewsRecord>('/api/hrm/internal-news', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateHrmInternalNews(id: string, payload: UpdateInternalNewsPayload) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(payload.company_id));
+  return requestHrm<HrmInternalNewsRecord>(
+    `/api/hrm/internal-news/${encodeURIComponent(id)}?${search.toString()}`,
+    { method: 'PATCH', body: JSON.stringify(payload) },
+  );
+}
+
+export async function deleteHrmInternalNews(id: string, company_id: string) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(company_id));
+  return requestHrm<{ id: string }>(
+    `/api/hrm/internal-news/${encodeURIComponent(id)}?${search.toString()}`,
+    { method: 'DELETE' },
+  );
+}
+
+export async function viewHrmInternalNews(id: string, company_id: string) {
+  const search = new URLSearchParams();
+  search.set('company_id', normalizeHrmApiListCompanyId(company_id));
+  return requestHrm<{ view_count: number }>(
+    `/api/hrm/internal-news/${encodeURIComponent(id)}/view?${search.toString()}`,
+    { method: 'POST' },
+  );
+}
+
 export const hrmApi = {
   get: <T>(path: string, init?: RequestInit & { headers?: Record<string, string> }) =>
     requestHrm<T>(path, { ...init, method: 'GET' }),
