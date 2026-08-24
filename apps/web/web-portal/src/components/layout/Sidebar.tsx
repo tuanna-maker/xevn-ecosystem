@@ -398,7 +398,7 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-50 flex h-dvh w-64 flex-col bg-xevn-sidebar">
+    <aside className="fixed left-0 top-0 z-50 flex h-dvh w-64 flex-col bg-slate-900">
       {/* Logo Header */}
       <div className="p-6 border-b border-slate-700">
         <div className="flex items-center gap-3">

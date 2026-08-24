@@ -410,7 +410,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in" ref={dashboardRef}>
-      <h1 className="sr-only">Bảng điều khiển (Dashboard)</h1>
+      <h1 className="text-xl md:text-2xl font-bold text-xevn-text">Bảng điều khiển (Dashboard)</h1>
       <div className="flex items-center gap-2 flex-wrap">
         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
           <SelectTrigger className="w-[140px] md:w-[160px] bg-background">

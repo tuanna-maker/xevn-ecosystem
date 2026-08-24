@@ -35,7 +35,7 @@ import TopHeader from './TopHeader';
 
 /** Membership chrome required on CC shell (not UnifiedShell / cockpit). */
 export function isCommandCenterShellPath(pathname: string): boolean {
-  return pathname === '/command-center' || pathname.startsWith('/command-center/');
+  return pathname.includes('/command-center');
 }
 
 /**

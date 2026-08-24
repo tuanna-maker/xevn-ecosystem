@@ -183,12 +183,12 @@ const PositionsSettingsPage: React.FC = () => {
       render: (value) => (
         <div className="flex items-center gap-2">
           <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm ${
               value <= 2
-                ? 'bg-red-500'
+                ? 'bg-xevn-danger'
                 : value <= 4
-                ? 'bg-amber-500'
-                : 'bg-slate-400'
+                ? 'bg-xevn-warning'
+                : 'bg-xevn-neutral'
             }`}
           >
             {value}
@@ -200,7 +200,7 @@ const PositionsSettingsPage: React.FC = () => {
       key: 'description',
       header: 'Mô tả',
       render: (value) => (
-        <span className="text-sm text-slate-600">{value}</span>
+        <span className="text-sm text-xevn-textSecondary">{value}</span>
       ),
     },
     {
@@ -209,9 +209,9 @@ const PositionsSettingsPage: React.FC = () => {
       render: (value: string[]) => (
         <div className="flex flex-wrap gap-1">
           {value.map((companyId) => (
-            <Badge key={companyId} variant="info" size="sm">
+            <span key={companyId} className="inline-flex items-center rounded-md bg-xevn-info/10 px-2 py-1 text-xs font-medium text-xevn-info ring-1 ring-inset ring-xevn-info/20">
               {getCompanyName(companyId)}
-            </Badge>
+            </span>
           ))}
         </div>
       ),
@@ -224,13 +224,13 @@ const PositionsSettingsPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => openEditModal(item)}
-            className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+            className="p-1.5 text-xevn-textSecondary hover:text-xevn-primary hover:bg-xevn-primary/10 rounded transition-colors"
           >
             <Edit2 size={16} />
           </button>
           <button
             onClick={() => handleDelete(item.id)}
-            className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+            className="p-1.5 text-xevn-textSecondary hover:text-xevn-danger hover:bg-xevn-danger/10 rounded transition-colors"
           >
             <Trash2 size={16} />
           </button>

@@ -396,7 +396,7 @@ export default function Insurance() {
 
   return (
     <div className="flex flex-col h-full">
-      <h1 className="sr-only">Bảo hiểm (Insurance)</h1>
+      <h1 className="text-xl md:text-2xl font-bold text-xevn-text px-4 md:px-6 pt-4 pb-2">Bảo hiểm (Insurance)</h1>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 md:px-6 py-3 md:py-4 border-b bg-card">
         <div className="flex items-center gap-2">

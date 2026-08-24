@@ -4135,7 +4135,7 @@ export default function Attendance() {
 
   return (
     <div className="space-y-0 animate-fade-in -mt-3 -mx-3 md:-mt-6 md:-mx-6">
-      <h1 className="sr-only">Chấm công (Attendance)</h1>
+      <h1 className="text-xl md:text-2xl font-bold text-xevn-text px-4 md:px-6 pt-4 pb-2">Chấm công (Attendance)</h1>
       {/* Top Navigation Tabs - Pill Style */}
       <div className="bg-background border-b px-2 md:px-6 py-2 md:py-3">
         <div className="mobile-scroll-tabs">
