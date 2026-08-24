@@ -284,21 +284,22 @@ export class MobileAuthService {
     );
   }
 
-  private async fetchActiveEmployeesByEmail(
-    email: string,
-    alsoEmail?: string,
+  private async fetchActiveEmployeesByIdentifier(
+    identifier: string,
+    alsoIdentifier?: string,
   ): Promise<EmployeeAuthRow[]> {
-    const emails = [email.trim().toLowerCase()];
-    const alt = alsoEmail?.trim().toLowerCase();
-    if (alt && !emails.includes(alt)) emails.push(alt);
+    const identifiers = [identifier.trim().toLowerCase()];
+    const alt = alsoIdentifier?.trim().toLowerCase();
+    if (alt && !identifiers.includes(alt)) identifiers.push(alt);
     const res = await this.db.query<EmployeeAuthRow>(
       `
         SELECT id, company_id, email, full_name, employee_code, job_title_key, custom_fields
         FROM public.employees
-        WHERE lower(email) = ANY($1::text[]) AND archived_at IS NULL AND status = 'active'
+        WHERE (lower(email) = ANY($1::text[]) OR custom_fields->>'phone_number' = ANY($1::text[]))
+          AND archived_at IS NULL AND status = 'active'
         ORDER BY company_id, employee_code;
       `,
-      [emails],
+      [identifiers],
     );
     return res.rows;
   }
@@ -587,41 +588,41 @@ export class MobileAuthService {
     body: MobileLoginDto,
     scopeHint?: { tenantId?: string; companyId?: string },
   ) {
-    const rawEmail = body.email.trim().toLowerCase();
-    const email = resolveCanonicalUatLoginEmail(rawEmail);
-    const uatSeq = parseUatMobileSeqFromLoginEmail(rawEmail);
+    const rawIdentifier = body.identifier.trim().toLowerCase();
+    const identifier = resolveCanonicalUatLoginEmail(rawIdentifier);
+    const uatSeq = parseUatMobileSeqFromLoginEmail(rawIdentifier);
     // Legacy nguyen.van.an.#### alias — upsert canonical row before fetch (stale legacy row parity).
-    if (uatSeq && matchesUatMobilePassword(rawEmail, body.password)) {
+    if (uatSeq && matchesUatMobilePassword(rawIdentifier, body.password)) {
       await ensureUatMobileEmployeeRow(this.db, uatSeq, body.password);
     }
-    let rows = await this.fetchActiveEmployeesByEmail(
-      email,
-      rawEmail !== email ? rawEmail : undefined,
+    let rows = await this.fetchActiveEmployeesByIdentifier(
+      identifier,
+      rawIdentifier !== identifier ? rawIdentifier : undefined,
     );
     if (!rows.length) {
-      await this.ensureDocumentedMobileLoginRow(rawEmail, body.password);
-      rows = await this.fetchActiveEmployeesByEmail(
-        email,
-        rawEmail !== email ? rawEmail : undefined,
+      await this.ensureDocumentedMobileLoginRow(rawIdentifier, body.password);
+      rows = await this.fetchActiveEmployeesByIdentifier(
+        identifier,
+        rawIdentifier !== identifier ? rawIdentifier : undefined,
       );
     }
     let verified = rows.filter((row) =>
-      this.verifyPassword(email, body.password, row),
+      this.verifyPassword(row.email, body.password, row),
     );
     if (!verified.length) {
-      await this.ensureDocumentedMobileLoginRow(rawEmail, body.password);
-      rows = await this.fetchActiveEmployeesByEmail(
-        email,
-        rawEmail !== email ? rawEmail : undefined,
+      await this.ensureDocumentedMobileLoginRow(rawIdentifier, body.password);
+      rows = await this.fetchActiveEmployeesByIdentifier(
+        identifier,
+        rawIdentifier !== identifier ? rawIdentifier : undefined,
       );
       verified = rows.filter((row) =>
-        this.verifyPassword(email, body.password, row),
+        this.verifyPassword(row.email, body.password, row),
       );
     }
     if (!verified.length) {
       throw new ApiException(
         'HRM-AUTH-401',
-        'Email hoặc mật khẩu không đúng',
+        'Tài khoản hoặc mật khẩu không đúng',
         HttpStatus.UNAUTHORIZED,
       );
     }
@@ -651,7 +652,7 @@ export class MobileAuthService {
         }) ?? verified[0];
     }
 
-    if (uatSeq && matchesUatMobilePassword(rawEmail, body.password)) {
+    if (uatSeq && matchesUatMobilePassword(rawIdentifier, body.password)) {
       await ensureUatMobilePilotTransactionData(
         this.db,
         uatSeq,
@@ -665,7 +666,7 @@ export class MobileAuthService {
       );
     }
 
-    return await this.buildLoginResponse(email, selected, verified);
+    return await this.buildLoginResponse(identifier, selected, verified);
   }
 
   async selectMembership(email: string, employeeId: string) {
