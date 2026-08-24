@@ -153,17 +153,13 @@ export function useTasks() {
   const createTask = useMutation({
     mutationFn: async (formData: TaskFormData) => {
       if (!currentCompanyId) throw new Error('No company');
-      try {
-        return await createOperationsTask({
-          company_id: coerceHrmListCompanyId(currentCompanyId),
-          title: formData.title,
-          description: formData.description,
-          due_date: formData.due_date,
-          priority: (formData.priority as 'low' | 'medium' | 'high') || 'medium',
-        });
-      } catch (err) {
-        throw err;
-      }
+      return await createOperationsTask({
+        company_id: coerceHrmListCompanyId(currentCompanyId),
+        title: formData.title,
+        description: formData.description,
+        due_date: formData.due_date,
+        priority: (formData.priority as 'low' | 'medium' | 'high') || 'medium',
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -189,11 +185,7 @@ export function useTasks() {
 
   const updateTaskStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      try {
-        await updateOperationsTaskStatus(id, { status: toApiStatus(status) });
-      } catch (err) {
-        throw err;
-      }
+      await updateOperationsTaskStatus(id, { status: toApiStatus(status) });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });

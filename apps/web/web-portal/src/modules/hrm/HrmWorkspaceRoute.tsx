@@ -226,7 +226,7 @@ export const HrmWorkspaceRoute: React.FC = () => {
     pendingSoftNavPathRef.current = null;
     setIframeLoading(true);
     setIframeLoadFailed(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only when scope key remounts
+     
   }, [embedScopeKey]);
 
   useEffect(() => {
@@ -240,7 +240,7 @@ export const HrmWorkspaceRoute: React.FC = () => {
     }
     dispatchSoftNavToIframe(softNavPath, portalSuffix);
     // portalSuffix tracked with softNavPath (derived from same location)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- soft-nav only on path change
+     
   }, [softNavPath]);
 
   useEffect(() => () => clearSoftNavVerifyTimer(), []);

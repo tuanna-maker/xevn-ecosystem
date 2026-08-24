@@ -74,7 +74,7 @@ describe('requestCoalescer', () => {
   });
 
   it('invalidateCoalesced by prefix forces a fresh fetch of matching keys', async () => {
-    let clock = 0;
+    const clock = 0;
     const now = () => clock;
     const factory = vi.fn(async () => 'v');
 

@@ -253,8 +253,8 @@ export function EmployeeDegrees({ employeeId }: EmployeeDegreesProps) {
     try {
       if (degree.file_url) {
         const filePath = degree.file_url.split('/employee-documents/')[1];
-        if (filePath) {
-        }
+        // if (filePath) {
+        // }
       }
       toast.success(t('degrees.toast.deleted'));
       queryClient.invalidateQueries({ queryKey: ['employee-degrees', employeeId] });

@@ -237,8 +237,8 @@ export function EmployeeCertificates({ employeeId }: EmployeeCertificatesProps) 
     try {
       if (cert.file_url) {
         const filePath = cert.file_url.split('/employee-documents/')[1];
-        if (filePath) {
-        }
+        // if (filePath) {
+        // }
       }
       toast.success(t('certificates.toast.deleted'));
       queryClient.invalidateQueries({ queryKey: ['employee-certificates', employeeId] });

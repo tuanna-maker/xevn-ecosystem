@@ -279,8 +279,8 @@ export const SalaryTemplateBuilder = ({ template, onClose, onSave }: SalaryTempl
       // Update components
       if (templateId) {
         // Remove existing components and add new ones
-        if (template) {
-        }
+        // if (template) {
+        // }
 
         if (templateComponents.length > 0) {
           const componentsToInsert = templateComponents.map((tc, index) => ({
