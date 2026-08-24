@@ -186,7 +186,7 @@ export class InternalNewsService {
     const slug = payload.slug ?? this.generateSlug(payload.title, companyId);
     const now = new Date().toISOString();
 
-    const status = payload.status ?? 'draft';
+    const status = payload.status ?? 'published';
     const publishedAt = payload.published_at?.toISOString() ?? (status === 'published' ? now : null);
 
     const res = await this.db.query<HrmInternalNewsRow>(
