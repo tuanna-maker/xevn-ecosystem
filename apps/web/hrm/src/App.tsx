@@ -202,7 +202,8 @@ const App = () => {
                   <Route path="/tools_equipment" element={<Navigate to="/tools-equipment" replace />} />
                   {/* FL-01 list-only — portal bypass; no invent create (G-FL-07 / G-FL-UPSERT) */}
                   <Route path="/fleet" element={withSuspense(<Fleet />)} />
-                  <Route path="/internal-news" element={<PermissionRoute module="internal_news">{withSuspense(<InternalNews />)}</PermissionRoute>} />
+                  <Route path="/internal-news" element={withSuspense(<InternalNews />)} />
+                  <Route path="/internal_news" element={<Navigate to="/internal-news" replace />} />
                 </Route>
 
                 <Route path="*" element={withSuspense(<NotFound />)} />
