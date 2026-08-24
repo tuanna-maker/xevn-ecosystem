@@ -38,7 +38,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import {
+  type HrmListScope,
   type HrmListScopeContext,
+  expandPayrollPeriodCompanyIds,
   resolveHrmListScope,
 } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
@@ -235,13 +237,14 @@ export class RecruitmentDashboardService {
     });
     const companyHint = (query.company_id ?? '').trim() || 'main';
     const scope = resolveHrmListScope(authorization, companyHint, scopeContext);
+    const readCompanyIds = this.dashboardReadCompanyIds(scope);
     const periodMonths = new Set(period.months);
     const deptKey = query.department_key?.trim() || '';
     const posKey = query.position_key?.trim() || '';
 
     const [cells, yctds, catalog] = await Promise.all([
-      this.loadO2Cells(scope.companyIds, period, deptKey, posKey),
-      this.loadYctds(scope.companyIds, deptKey, posKey),
+      this.loadO2Cells(readCompanyIds, period, deptKey, posKey),
+      this.loadYctds(readCompanyIds, deptKey, posKey),
       this.loadCatalogHints(authorization, companyHint, scopeContext?.tenantId),
     ]);
 
@@ -249,7 +252,7 @@ export class RecruitmentDashboardService {
     const plannedNeed = cells.plannedNeed;
 
     const candidates = await this.loadCandidates(
-      scope.companyIds,
+      readCompanyIds,
       yctds.map((y) => y.id),
     );
 
@@ -321,8 +324,8 @@ export class RecruitmentDashboardService {
     const dto: RecruitmentDashboardDto = {
       period: { year: period.year, from: period.from, to: period.to },
       scope: {
-        company_ids: [...scope.companyIds],
-        rollup: scope.companyIds.length > 1,
+        company_ids: [...readCompanyIds],
+        rollup: readCompanyIds.length > 1,
       },
       planned_need: metrics.planned_need,
       filled_count: metrics.filled_count,
@@ -344,6 +347,11 @@ export class RecruitmentDashboardService {
       empty_guide,
     };
     return dto;
+  }
+
+  /** Group CEO rollup reads include legacy `main` rows (peer recruitment.service / payroll). */
+  private dashboardReadCompanyIds(scope: HrmListScope): string[] {
+    return expandPayrollPeriodCompanyIds(scope);
   }
 
   private buildDrillRows(

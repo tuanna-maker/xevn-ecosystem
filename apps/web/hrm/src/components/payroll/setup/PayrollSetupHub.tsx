@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @CODE-MEMORY
  * Screen:     HRM Lương → Thiết lập lương · Hub (L1–L6 navigation)
  * UC:         Spine UC-BP-PAY-STP-01..12
@@ -40,6 +40,9 @@ import { ContractEmploymentTypesSetupScreen } from './ContractEmploymentTypesSet
 import { InsuranceTypesSetupScreen } from './InsuranceTypesSetupScreen';
 import { OvertimeTypesSetupScreen } from './OvertimeTypesSetupScreen';
 import { FormulaInputPackSetupScreen } from './FormulaInputPackSetupScreen';
+import { SalaryTemplatesSetupScreen } from './SalaryTemplatesSetupScreen';
+import { ImportProfileSetupScreen } from './ImportProfileSetupScreen';
+import { ResolveConfigPanel } from './ResolveConfigPanel';
 
 type SetupSectionId =
   | 'policy-pack'
@@ -64,15 +67,15 @@ type SetupSection = {
 const SETUP_SECTIONS: SetupSection[] = [
   { id: 'policy-pack', label: 'Gói chính sách', testId: 'pay-stp-nav-policy-pack', ready: true },
   { id: 'components', label: 'Danh mục thành phần', testId: 'pay-stp-nav-components', ready: true },
-  { id: 'templates', label: 'Mẫu bảng', testId: 'pay-stp-nav-templates', ready: false },
-  { id: 'import-profile', label: 'Profile nhập', testId: 'pay-stp-nav-import-profile', ready: false },
+  { id: 'templates', label: 'Mẫu bảng', testId: 'pay-stp-nav-templates', ready: true },
+  { id: 'import-profile', label: 'Profile nhập', testId: 'pay-stp-nav-import-profile', ready: true },
   { id: 'salary-groups', label: 'Nhóm lương (Ngạch bậc)', testId: 'pay-stp-nav-salary-groups', ready: true },
   { id: 'decision-types', label: 'Loại quyết định', testId: 'pay-stp-nav-decision-types', ready: true },
   { id: 'contract-employment-types', label: 'Loại HĐ & LHDL', testId: 'pay-stp-nav-contract-employment-types', ready: true },
   { id: 'insurance-types', label: 'Loại bảo hiểm & Tỷ lệ', testId: 'pay-stp-nav-insurance-types', ready: true },
   { id: 'overtime-types', label: 'Loại OT & Loại trừ', testId: 'pay-stp-nav-overtime-types', ready: true },
   { id: 'formula-input-pack', label: 'Biến công thức (Allowlist)', testId: 'pay-stp-nav-formula-input-pack', ready: true },
-  { id: 'resolve-panel', label: 'Gợi ý cấu hình', testId: 'pay-stp-nav-resolve-panel', ready: false },
+  { id: 'resolve-panel', label: 'Gợi ý cấu hình', testId: 'pay-stp-nav-resolve-panel', ready: true },
 ];
 
 const DEFAULT_SECTION: SetupSectionId = 'policy-pack';

@@ -42,9 +42,17 @@ export function hrmPortalPath(view: string): string {
 /** Lấy suffix sau `/command-center/hrm/` (vd. `contracts`, `employees/uuid`). */
 export function hrmPortalSuffixFromPathname(pathname: string): string {
   const normalized = pathname.replace(/\/+$/, '');
-  if (normalized === HRM_PORTAL_BASE) return HRM_PORTAL_DEFAULT;
-  if (!normalized.startsWith(`${HRM_PORTAL_BASE}/`)) return HRM_PORTAL_DEFAULT;
-  const suffix = normalized.slice(`${HRM_PORTAL_BASE}/`.length);
+  
+  // Xóa bỏ phần /:tenantId ở đầu nếu có (vd: /xbos-master/command-center/hrm -> /command-center/hrm)
+  let strippedPathname = normalized;
+  const parts = normalized.split('/');
+  if (parts.length > 2 && parts[2] === 'command-center') {
+    strippedPathname = '/' + parts.slice(2).join('/');
+  }
+  
+  if (strippedPathname === HRM_PORTAL_BASE) return HRM_PORTAL_DEFAULT;
+  if (!strippedPathname.startsWith(`${HRM_PORTAL_BASE}/`)) return HRM_PORTAL_DEFAULT;
+  const suffix = strippedPathname.slice(`${HRM_PORTAL_BASE}/`.length);
   return suffix || HRM_PORTAL_DEFAULT;
 }
 

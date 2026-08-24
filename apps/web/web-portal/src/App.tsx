@@ -15,6 +15,9 @@ const ExecutiveDashboardPage = lazy(() => import('./pages/dashboard/ExecutiveDas
 const CatalogGovernancePage = lazy(() => import('./pages/governance/CatalogGovernancePage'));
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const CommandCenterPage = lazy(() => import('./pages/command-center/CommandCenterPage'));
+import { TenantScopeSync } from './components/layout/TenantScopeSync';
+import { Outlet } from 'react-router-dom';
+import { useTenantScope } from './contexts/GlobalFilterContext';
 const CommandCenterInboxPage = lazy(() => import('./pages/command-center/CommandCenterInboxPage'));
 const UnifiedShellPage = lazy(() => import('./pages/unified/UnifiedShellPage'));
 const CustomersPage = lazy(() => import('./pages/customers/CustomersPage'));
@@ -34,6 +37,12 @@ const RouteLoadingFallback: React.FC = () => (
   <div className="flex h-96 items-center justify-center text-slate-500">Đang tải...</div>
 );
 
+const RootRedirector: React.FC = () => {
+  const { selectedTenant } = useTenantScope();
+  if (selectedTenant.id === '__loading__') return <RouteLoadingFallback />;
+  return <Navigate to={`/${selectedTenant.tenantId}/cockpit`} replace />;
+};
+
 const App: React.FC = () => {
   return (
     <AuthProvider>
@@ -42,68 +51,72 @@ const App: React.FC = () => {
           <Suspense fallback={<RouteLoadingFallback />}>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              
+              {/* Root redirector based on preferred tenant */}
+              <Route path="/" element={<RequireAuth><RootRedirector /></RequireAuth>} />
+
               {/* Unified Shell → Cockpit (dashboard) → sau đó mới mở /dashboard/* (MainLayout) */}
               <Route
-                path="/"
+                path="/:tenantId"
                 element={
                   <RequireAuth>
-                    <ExecutiveDashboardLayout />
+                    <TenantScopeSync>
+                      <Outlet />
+                    </TenantScopeSync>
                   </RequireAuth>
                 }
               >
-              <Route index element={<UnifiedShellPage />} />
-              <Route path="cockpit" element={<ExecutiveDashboardPage />} />
-              <Route path="catalog-governance" element={<CatalogGovernancePage />} />
-              <Route path="command-center/inbox" element={<CommandCenterInboxPage />} />
-              <Route path="command-center" element={<CommandCenterPage />}>
-                <Route path="hrm" element={<Navigate to="hrm/dashboard" replace />} />
-                <Route path="hrm/*" element={<HrmWorkspaceRoute />} />
+                <Route element={<ExecutiveDashboardLayout />}>
+                  <Route index element={<UnifiedShellPage />} />
+                  <Route path="cockpit" element={<ExecutiveDashboardPage />} />
+                  <Route path="catalog-governance" element={<CatalogGovernancePage />} />
+                  <Route path="command-center/inbox" element={<CommandCenterInboxPage />} />
+                  <Route path="command-center" element={<CommandCenterPage />}>
+                    <Route path="hrm" element={<Navigate to="hrm/dashboard" replace />} />
+                    <Route path="hrm/*" element={<HrmWorkspaceRoute />} />
+                  </Route>
+                </Route>
+
+                {/* Main Layout with Sidebar - All Other Pages */}
+                <Route
+                  path="dashboard/*"
+                  element={<MainLayout />}
+                >
+                  <Route path="organization" element={<OrganizationPage />} />
+                  <Route path="hr" element={<HRPage />} />
+                  <Route path="customers" element={<CustomersPage />} />
+                  <Route path="partners" element={<PartnersPage />} />
+                  <Route path="kpi-policy" element={<KPIPolicyPage />} />
+                  <Route path="kpi-dashboard" element={<KPIDashboardPage />} />
+
+                  {/* Settings Pages */}
+                  <Route path="settings">
+                    <Route path="positions" element={<PositionsSettingsPage />} />
+                    <Route path="departments" element={<DepartmentsSettingsPage />} />
+                    <Route path="regions" element={<RegionsSettingsPage />} />
+                    <Route path="vehicles" element={<VehicleTypesSettingsPage />} />
+                    <Route path="vendors" element={<VendorsSettingsPage />} />
+                    <Route path="expense-categories" element={<ExpenseCategoriesSettingsPage />} />
+                    <Route path="kpi-metrics" element={<KPIMetricsSettingsPage />} />
+                    <Route path="kpi-formulas" element={<KpiFormulasSettingsPage />} />
+                  </Route>
+
+                  {/* Redirect dashboard root to organization */}
+                  <Route index element={<Navigate to="organization" replace />} />
+
+                  {/* 404 */}
+                  <Route
+                    path="*"
+                    element={
+                      <div className="flex flex-col items-center justify-center h-96">
+                        <h1 className="text-4xl font-bold text-slate-800">404</h1>
+                        <p className="text-slate-500 mt-2">Không tìm thấy trang</p>
+                      </div>
+                    }
+                  />
+                </Route>
               </Route>
-            </Route>
-
-            {/* Main Layout with Sidebar - All Other Pages */}
-            <Route
-              path="/dashboard/*"
-              element={
-                <RequireAuth>
-                  <MainLayout />
-                </RequireAuth>
-              }
-            >
-              <Route path="organization" element={<OrganizationPage />} />
-              <Route path="hr" element={<HRPage />} />
-              <Route path="customers" element={<CustomersPage />} />
-              <Route path="partners" element={<PartnersPage />} />
-              <Route path="kpi-policy" element={<KPIPolicyPage />} />
-              <Route path="kpi-dashboard" element={<KPIDashboardPage />} />
-
-              {/* Settings Pages */}
-              <Route path="settings">
-                <Route path="positions" element={<PositionsSettingsPage />} />
-                <Route path="departments" element={<DepartmentsSettingsPage />} />
-                <Route path="regions" element={<RegionsSettingsPage />} />
-                <Route path="vehicles" element={<VehicleTypesSettingsPage />} />
-                <Route path="vendors" element={<VendorsSettingsPage />} />
-                <Route path="expense-categories" element={<ExpenseCategoriesSettingsPage />} />
-                <Route path="kpi-metrics" element={<KPIMetricsSettingsPage />} />
-                <Route path="kpi-formulas" element={<KpiFormulasSettingsPage />} />
-              </Route>
-
-              {/* Redirect dashboard root to organization */}
-              <Route index element={<Navigate to="organization" replace />} />
-
-              {/* 404 */}
-              <Route
-                path="*"
-                element={
-                  <div className="flex flex-col items-center justify-center h-96">
-                    <h1 className="text-4xl font-bold text-slate-800">404</h1>
-                    <p className="text-slate-500 mt-2">Không tìm thấy trang</p>
-                  </div>
-                }
-              />
-            </Route>
-          </Routes>
+            </Routes>
           </Suspense>
         </BrowserRouter>
       </GlobalFilterProvider>

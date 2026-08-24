@@ -22,7 +22,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Building2,
   Truck,
@@ -37,8 +37,11 @@ import {
   Package,
   Zap,
   AlertTriangle,
-  Activity,
   Bell,
+  User,
+  Settings,
+  LogOut,
+  MapPin
 } from 'lucide-react';
 import { Container } from '@xevn/ui';
 import { mockModuleCards, type AlertItem, type ModuleCardData } from '../../data/mockExecutiveDashboardData';
@@ -61,6 +64,13 @@ import {
   resolveExecModuleCards,
 } from '../../integrations/execModuleCatalog';
 import { useAuth } from '../../contexts/AuthContext';
+import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
+import {
+  membershipTenantDisplay,
+  membershipCompanyDisplay,
+  membershipRoleDisplay,
+} from '../../integrations/authSession';
+import { useTenantNavigate } from '../../hooks/useTenantNavigate';
 
 // Sparkline component
 const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color }) => {
@@ -88,7 +98,14 @@ const Sparkline: React.FC<{ data: number[]; color: string }> = ({ data, color })
 
 const ExecutiveDashboardPage: React.FC = () => {
   const { tenantId, companyId } = useTenantScope();
-  const { memberships } = useAuth();
+  const { selectedTenant, tenants, setSelectedTenant } = useGlobalFilter();
+  const { memberships, selectMembership, membershipSwitching, user, logout } = useAuth();
+  const navigate = useTenantNavigate();
+  const [isTenantDropdownOpen, setIsTenantDropdownOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const tenantDropdownRef = React.useRef<HTMLDivElement>(null);
+  const profileDropdownRef = React.useRef<HTMLDivElement>(null);
+
   const [rollupCount, setRollupCount] = useState<number | null>(null);
   const [pendingTasks, setPendingTasks] = useState<number | null>(null);
   const [cockpitAlerts, setCockpitAlerts] = useState<AlertItem[]>([]);
@@ -148,6 +165,36 @@ const ExecutiveDashboardPage: React.FC = () => {
       });
   }, [tenantId, companyId]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tenantDropdownRef.current && !tenantDropdownRef.current.contains(event.target as Node)) {
+        setIsTenantDropdownOpen(false);
+      }
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleMembershipSelect = async (tenant: (typeof tenants)[number]) => {
+    if (tenant.tenantId === selectedTenant.tenantId || membershipSwitching) {
+      setIsTenantDropdownOpen(false);
+      return;
+    }
+    try {
+      await selectMembership(tenant.tenantId);
+      navigate('/cockpit');
+      setSelectedTenant(tenant);
+      setIsTenantDropdownOpen(false);
+    } catch (error) {
+      // Ignored for now
+    }
+  };
+
+  const tenantLabel = membershipTenantDisplay(selectedTenant);
+
   return (
     <div className="min-h-screen bg-xevn-background">
       {/* ROW 1: Header */}
@@ -174,27 +221,72 @@ const ExecutiveDashboardPage: React.FC = () => {
               {/* Global Filter & Actions */}
               <div className="flex items-center gap-4">
                 <Link
-                  to="/"
+                  to={`/${tenantId}`}
                   className="rounded-input border border-xevn-border bg-xevn-surface px-4 py-2.5 text-sm font-semibold text-xevn-textSecondary shadow-sm transition hover:bg-xevn-background"
                 >
                   Unified Shell
                 </Link>
                 <Link
-                  to="/command-center"
+                  to={`/${tenantId}/command-center`}
                   className="rounded-input border border-xevn-primary/30 bg-xevn-surface px-4 py-2.5 text-sm font-semibold text-xevn-primary shadow-sm transition hover:bg-xevn-primary/5"
                 >
                   Command Center
                 </Link>
                 <Link
-                  to="/dashboard/organization"
+                  to={`/${tenantId}/dashboard/organization`}
                   className="rounded-xl border border-emerald-200/80 bg-emerald-50/80 px-4 py-2.5 text-sm font-semibold text-emerald-900 shadow-sm transition hover:bg-emerald-100/80"
                 >
                   Workspace Portal
                 </Link>
                 {/* Global Filter */}
-                <div className="flex items-center gap-2 rounded-input border border-xevn-primary/20 bg-xevn-primary/5 px-4 py-2.5 shadow-sm">
-                  <span className="text-sm font-semibold text-xevn-primary">Toàn Tập đoàn</span>
-                  <ChevronDown className="w-4 h-4 text-xevn-primary" />
+                <div className="relative min-w-0" ref={tenantDropdownRef}>
+                  <button
+                    type="button"
+                    disabled={membershipSwitching}
+                    onClick={() => setIsTenantDropdownOpen(!isTenantDropdownOpen)}
+                    className="flex items-center gap-2 rounded-input border border-xevn-primary/20 bg-xevn-primary/5 px-4 py-2.5 shadow-sm transition hover:bg-xevn-primary/10"
+                  >
+                    <span className="text-sm font-semibold text-xevn-primary truncate max-w-[200px]">{tenantLabel}</span>
+                    <ChevronDown className={`w-4 h-4 text-xevn-primary transition-transform duration-200 ${isTenantDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isTenantDropdownOpen && (
+                    <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-card border border-xevn-border bg-white shadow-xl">
+                      <div className="max-h-72 overflow-y-auto p-2">
+                        <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-xevn-textSecondary">
+                          Tenant được gán (membership)
+                        </p>
+                        {tenants.map((tenant) => (
+                          <button
+                            key={tenant.tenantId}
+                            type="button"
+                            disabled={membershipSwitching}
+                            onClick={() => void handleMembershipSelect(tenant)}
+                            className={`flex w-full items-center gap-3 rounded-input p-3 transition-all duration-150 ${
+                              selectedTenant.tenantId === tenant.tenantId
+                                ? 'border border-xevn-accent/20 bg-xevn-accent/10'
+                                : 'hover:bg-slate-50'
+                            }`}
+                          >
+                            <div
+                              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg font-semibold text-white shadow-sm"
+                              style={{ backgroundColor: tenant.color || '#3b82f6' }}
+                            >
+                              {(tenant.shortName || membershipTenantDisplay(tenant)).charAt(0) || 'X'}
+                            </div>
+                            <div className="min-w-0 flex-1 text-left">
+                              <p className="truncate text-sm font-semibold text-xevn-text">
+                                {membershipTenantDisplay(tenant)}
+                              </p>
+                              <p className="truncate text-xs text-xevn-textSecondary">
+                                {membershipCompanyDisplay(tenant)} · {membershipRoleDisplay(tenant)}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Notification Icon */}
@@ -208,15 +300,63 @@ const ExecutiveDashboardPage: React.FC = () => {
                 </div>
 
                 {/* Admin Profile */}
-                <div className="flex items-center gap-3 px-4 py-2.5 bg-white rounded-xl border border-xevn-border shadow-sm">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-xevn-primary">
-                    <span className="text-white text-sm font-bold">AD</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-xevn-text">Admin</p>
-                    <p className="text-xs text-xevn-textSecondary">Super Admin</p>
-                  </div>
-                  <ChevronDown className="w-4 h-4 text-xevn-textMuted" />
+                <div className="relative" ref={profileDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                    className="flex items-center gap-3 px-4 py-2 bg-white rounded-xl border border-xevn-border shadow-sm transition hover:bg-slate-50"
+                  >
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-xevn-primary">
+                      <span className="text-white text-sm font-bold">{(user?.displayName?.[0] ?? 'A').toUpperCase()}</span>
+                    </div>
+                    <div className="text-left hidden md:block">
+                      <p className="text-sm font-semibold text-xevn-text">{user?.displayName ?? 'Admin'}</p>
+                      <p className="text-xs text-xevn-textSecondary">{membershipRoleDisplay(selectedTenant)}</p>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-xevn-textMuted" />
+                  </button>
+                  {isProfileDropdownOpen && (
+                    <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-card border border-xevn-border bg-xevn-surface shadow-soft">
+                      <div className="border-b border-xevn-border p-4">
+                        <p className="font-semibold text-xevn-text">{user?.displayName ?? 'Admin User'}</p>
+                        <p className="text-sm text-xevn-textSecondary">{membershipRoleDisplay(selectedTenant)}</p>
+                      </div>
+                      <div className="p-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsProfileDropdownOpen(false);
+                            navigate('/login');
+                          }}
+                          className="flex w-full items-center gap-3 rounded-input p-2.5 text-sm text-xevn-textSecondary hover:bg-xevn-background hover:text-xevn-text"
+                        >
+                          <User size={16} />
+                          Hồ sơ cá nhân
+                        </button>
+                        <button
+                          type="button"
+                          className="flex w-full items-center gap-3 rounded-input p-2.5 text-sm text-xevn-textSecondary hover:bg-xevn-background hover:text-xevn-text"
+                        >
+                          <Settings size={16} />
+                          Cài đặt tài khoản
+                        </button>
+                      </div>
+                      <div className="border-t border-xevn-border p-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsProfileDropdownOpen(false);
+                            logout();
+                            navigate('/login');
+                          }}
+                          className="flex w-full items-center gap-3 rounded-input p-2.5 text-sm text-xevn-danger hover:bg-red-50"
+                        >
+                          <LogOut size={16} />
+                          Đăng xuất
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -415,7 +555,54 @@ const ExecutiveDashboardPage: React.FC = () => {
           )}
         </section>
 
-        {/* ROW 3: Module Cards */}
+        {/* ROW 3: Đơn vị thành viên */}
+        {tenants.filter(t => !t.isMaster).length > 0 && (
+          <section className="mb-8">
+            <div className="flex items-center justify-between mb-6 px-2">
+              <h2 className="text-xl font-black text-xevn-text">Đơn vị thành viên</h2>
+              <span className="text-sm font-medium text-xevn-textSecondary bg-xevn-background px-3 py-1.5 rounded-lg">
+                {tenants.filter(t => !t.isMaster).length} đơn vị
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {tenants.filter(t => !t.isMaster).map(t => (
+                <div 
+                  key={t.tenantId} 
+                  onClick={() => handleMembershipSelect(t)}
+                  className="group cursor-pointer rounded-2xl border border-xevn-border bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-xevn-primary/30 relative overflow-hidden"
+                >
+                  <div className={`absolute top-0 right-0 w-2 h-full ${selectedTenant.tenantId === t.tenantId ? 'bg-xevn-primary' : 'bg-transparent'}`} />
+                  <div className="flex items-start gap-4">
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold shadow-sm"
+                      style={{ backgroundColor: t.color || '#3b82f6' }}
+                    >
+                      {(t.shortName || membershipTenantDisplay(t)).charAt(0) || 'X'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-xevn-text truncate text-lg group-hover:text-xevn-primary transition-colors">{membershipTenantDisplay(t)}</h3>
+                      <p className="text-sm text-xevn-textSecondary truncate">{membershipCompanyDisplay(t)}</p>
+                      
+                      <div className="mt-4 flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
+                          <MapPin className="w-3 h-3" />
+                          {membershipRoleDisplay(t)}
+                        </span>
+                        {selectedTenant.tenantId === t.tenantId && (
+                          <span className="inline-flex items-center gap-1 rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                            Đang mở
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ROW 4: Module Cards */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-6 px-2">
             <h2 className="text-xl font-black text-xevn-text">Cổng Phân hệ Nghiệp vụ</h2>
@@ -451,7 +638,7 @@ const ExecutiveDashboardPage: React.FC = () => {
 
 // ModuleCard Component
 const ModuleCard: React.FC<{ card: ModuleCardData }> = ({ card }) => {
-  const navigate = useNavigate();
+  const navigate = useTenantNavigate();
 
   const handleAccessClick = () => {
     navigate(resolveExecModuleAccessRoute(card.id));

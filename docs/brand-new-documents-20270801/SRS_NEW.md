@@ -1,4 +1,4 @@
-﻿# SRS-XEVN-NEW v1
+# SRS-XEVN-NEW v1
 Software Requirements — XeVN Ecosystem OS
 Based on: BRD-XEVN-NEW v1
 Date: 2026-08-07
@@ -43,9 +43,8 @@ Every persistent entity carries `tenant_id` at the database row level. Tenant is
 ## 3. XBOS Requirements
 
 ### 3.1 Tenant Lifecycle (UC-B01)
-
-- Tenant activation email with cryptographically secure token, default link expiry of forty-eight hours.
-- Tenant status lifecycle: PROVISIONING → ACTIVE → SUSPENDED → ARCHIVED.
+- Tenant auto-provisioning with adminEmail and adminPassword fields from UI, optionally sending an activation email with a secure token.
+- Tenant status lifecycle: PROVISIONING -> ACTIVE -> SUSPENDED -> ARCHIVED.
 - Provisioning is idempotent: a duplicate slug or admin email returns a deterministic conflict.
 
 ### 3.2 RBAC Engine (UC-B02)

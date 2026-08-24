@@ -42,7 +42,7 @@ Mở chi tiết đơn vị thành viên: hồ sơ pháp nhân, điều hướng 
 
 | Cap | FN-ID | Chức năng | UI/API | Mutate? |
 |-----|-------|-----------|--------|---------|
-| CAP-CC03 | FN-CC03-OPEN | Mở detail | GET LE | N |
+| CAP-CC03 | FN-CC03-OPEN | Mở detail (và fetchHoldingLegalEntities) | GET LE | N |
 | CAP-CC03 | FN-CC03-TAB | Chuyển tab hồ sơ/cổ đông/RACI | CC tabs | N |
 
 **Đếm chức năng:** 2

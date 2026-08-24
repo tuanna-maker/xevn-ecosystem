@@ -79,6 +79,7 @@ import { SettingsCatalogsModule } from './settings-catalogs/settings-catalogs.mo
 import { AllowanceCatalogController } from './settings/allowance-catalog.controller';
 import { AllowanceCatalogSyncService } from './settings/allowance-catalog-sync.service';
 import { SettingsCompanySettingsController } from './settings/settings-company-settings.controller';
+import { SettingsPayrollParamsController } from './settings/settings-payroll-params.controller';
 import { SettingsTaxParamsService } from './settings/settings-tax-params.service';
 import { SettingsPayrollParamsService } from './settings/settings-payroll-params.service';
 import { InsuranceRateCfgController } from './settings/insurance-rate-cfg.controller';
@@ -125,6 +126,7 @@ import { CompanyScopeModule } from './company-scope/company-scope.module';
     SettingsCatalogsController,
     AllowanceCatalogController,
     SettingsCompanySettingsController,
+    SettingsPayrollParamsController,
     InsuranceRateCfgController,
     InsuranceRateController,
     PositionCompensationPolicyController,

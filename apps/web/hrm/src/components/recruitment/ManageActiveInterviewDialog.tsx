@@ -65,6 +65,8 @@ import {
 import { ApiClientError, toErrorMessage } from '@/lib/apiError';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
+import { postRecruitmentCandidateTransition } from '@/integrations/hrmApi';
+import { useRecPipelineStagesEffective } from '@/hooks/useRecPipelineStagesEffective';
 import type { CandidateActiveInterviewBadge } from './candidateActiveInterview';
 
 const timeSlots = [
@@ -125,7 +127,7 @@ export type ManageActiveInterviewCandidate = {
   position?: string | null;
 };
 
-type ManageMode = 'actions' | 'reschedule' | 'cancel';
+type ManageMode = 'actions' | 'reschedule' | 'cancel' | 'complete';
 
 interface ManageActiveInterviewDialogProps {
   open: boolean;
@@ -157,12 +159,18 @@ export function ManageActiveInterviewDialog({
   const initialDt = useMemo(() => parseInitialDateTime(scheduledAtIso), [scheduledAtIso]);
   const [rescheduleDate, setRescheduleDate] = useState<Date>(initialDt.date);
   const [rescheduleTime, setRescheduleTime] = useState(initialDt.time);
+  const [completeStage, setCompleteStage] = useState('');
+  const [completeNote, setCompleteNote] = useState('');
+
+  const { stageOptions } = useRecPipelineStagesEffective({ enabled: open });
 
   useEffect(() => {
     if (!open) return;
     setMode('actions');
     setCancelReason('');
     setInterviewer('');
+    setCompleteStage('');
+    setCompleteNote('');
     const dt = parseInitialDateTime(scheduledAtIso);
     setRescheduleDate(dt.date);
     setRescheduleTime(dt.time);
@@ -251,6 +259,37 @@ export function ManageActiveInterviewDialog({
     }
   };
 
+  const runComplete = async () => {
+    const id = requireInterviewId();
+    if (!id || !currentCompanyId) return;
+    setIsSubmitting(true);
+    try {
+      await updateRecruitmentInterviewStatus(
+        id,
+        { status: 'completed' },
+        currentCompanyId,
+      );
+
+      if (completeStage.trim()) {
+        await postRecruitmentCandidateTransition(candidate.id, currentCompanyId, {
+          to_stage: completeStage.trim(),
+          note: completeNote.trim() || undefined,
+        });
+      }
+
+      toast.success('Đã hoàn tất phỏng vấn', {
+        description: candidate ? `Ứng viên: ${candidate.fullName}` : undefined,
+        'data-testid': 'manage-interview-complete-success-toast',
+      });
+      onOpenChange(false);
+      onSuccess?.();
+    } catch (error: unknown) {
+      toastIvError(error, 'Không thể hoàn tất phỏng vấn');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (!candidate) return null;
 
   return (
@@ -323,8 +362,8 @@ export function ManageActiveInterviewDialog({
                 type="button"
                 variant="outline"
                 disabled={isSubmitting || !interviewId}
-                data-testid="manage-interview-complete"
-                onClick={() => void runStatus('completed')}
+                data-testid="manage-interview-complete-open"
+                onClick={() => setMode('complete')}
               >
                 {isSubmitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
                 Hoàn tất
@@ -469,6 +508,54 @@ export function ManageActiveInterviewDialog({
               >
                 {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Lưu đổi lịch
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
+        {mode === 'complete' ? (
+          <div className="space-y-4" data-testid="manage-interview-complete-form">
+            <p className="text-sm text-muted-foreground">
+              Đóng lịch phỏng vấn hiện tại và tuỳ chọn chuyển bước tiếp theo cho ứng viên.
+            </p>
+            <div className="space-y-2">
+              <Label>Chuyển sang trạng thái (tuỳ chọn)</Label>
+              <Select value={completeStage} onValueChange={setCompleteStage} disabled={isSubmitting}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Chỉ đóng lịch (Giữ nguyên trạng thái)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value=" ">Giữ nguyên trạng thái hiện tại</SelectItem>
+                  {stageOptions
+                    .filter(opt => opt.value !== candidate.stage)
+                    .map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Nhận xét / Ghi chú (tuỳ chọn)</Label>
+              <Textarea
+                value={completeNote}
+                onChange={e => setCompleteNote(e.target.value)}
+                placeholder="Nhập nhận xét phỏng vấn hoặc lý do chuyển bước..."
+                disabled={isSubmitting}
+                rows={3}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" disabled={isSubmitting} onClick={() => setMode('actions')}>
+                Quay lại
+              </Button>
+              <Button
+                type="button"
+                disabled={isSubmitting}
+                data-testid="manage-interview-complete-submit"
+                onClick={() => void runComplete()}
+              >
+                {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Xác nhận hoàn tất
               </Button>
             </div>
           </div>

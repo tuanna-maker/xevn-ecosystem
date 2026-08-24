@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { 
   ArrowLeft, Check, User, Phone, Mail, Calendar, MapPin, Briefcase, Building2, 
   FileText, CreditCard, Video, Star, ArrowRightLeft, Megaphone, Tag, Edit,
-  Clock, Users, UserCheck, CheckCircle, XCircle, Loader2, Globe, Paperclip, History, UserPlus
+  Clock, Users, UserCheck, CheckCircle, XCircle, Loader2, Globe, Paperclip, History, UserPlus,
+  BarChart3
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -157,6 +158,8 @@ interface CandidateDetailViewProps {
   onOpenMail?: () => void;
   /** FR-07 — open accept-offer dialog (offer-ready / idempotent; parent owns mutate). */
   onOpenAcceptOffer?: () => void;
+  /** REC-06b — open compare dialog for this candidate's YCTD (parent owns dialog). */
+  onCompare?: () => void;
   /** Bump after transition 2xx so timeline reloads. */
   stageHistoryRefreshToken?: number;
 }
@@ -206,6 +209,7 @@ export function CandidateDetailView({
   onOpenStageTransition,
   onOpenMail,
   onOpenAcceptOffer,
+  onCompare,
   stageHistoryRefreshToken = 0,
 }: CandidateDetailViewProps) {
   const { t } = useTranslation();
@@ -632,9 +636,20 @@ export function CandidateDetailView({
 
             {/* Actions */}
             <div className="flex flex-col gap-2">
-              <Button onClick={onEvaluate} className="w-full">
+              <Button onClick={onEvaluate} className="w-full" data-testid="rec-detail-evaluate-btn">
                 {r('evaluateCandidate')}
               </Button>
+              {onCompare ? (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  data-testid="rec-detail-compare-yctd-btn"
+                  onClick={onCompare}
+                >
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  {t('recruitment.compareCandidates')}
+                </Button>
+              ) : null}
               <Button variant="outline" className="w-full">
                 {r('sendInvitation')}
               </Button>

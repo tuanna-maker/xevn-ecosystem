@@ -104,7 +104,11 @@ const CATALOG_FAMILIES: readonly CatalogFamilyDef[] = [
   },
   {
     familyId: 'rec_stage',
-    aliases: ['recruitment_pipeline_stages', 'recruitment_stages', 'pipeline_stages'],
+    aliases: [
+      'recruitment_pipeline_stages',
+      'recruitment_stages',
+      'pipeline_stages',
+    ],
     storageKey: 'recruitment_pipeline_stages',
   },
   {

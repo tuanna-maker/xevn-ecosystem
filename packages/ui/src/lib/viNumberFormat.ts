@@ -19,9 +19,8 @@
 export function formatViGroupedInteger(value: number): string {
   if (!Number.isFinite(value)) return '';
   const truncated = Math.trunc(value);
-  if (truncated === 0) return '';
   if (Math.abs(truncated) < 1000) return String(truncated);
-  return truncated.toLocaleString('vi-VN');
+  return truncated.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
 /** Strip grouping dots/spaces; keep digits only for integer parsing. */
@@ -39,10 +38,18 @@ export function parseViGroupedInteger(raw: string): number {
 export function formatViGroupedDecimal(value: number, fractionDigits = 2): string {
   if (!Number.isFinite(value)) return '';
   if (value === 0) return '';
-  return value.toLocaleString('vi-VN', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: fractionDigits,
-  });
+  
+  const factor = Math.pow(10, fractionDigits);
+  const rounded = Math.round(value * factor) / factor;
+  
+  const parts = rounded.toString().split('.');
+  const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  
+  if (parts.length > 1) {
+    return `${integerPart},${parts[1]}`;
+  }
+  
+  return integerPart;
 }
 
 /**

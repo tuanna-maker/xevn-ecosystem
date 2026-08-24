@@ -32,20 +32,64 @@ export const ViGroupedIntegerInput: React.FC<ViGroupedIntegerInputProps> = ({
   onBlur,
   ...props
 }) => {
-  const display = value === 0 ? '' : formatViGroupedInteger(value);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const lastEmittedValue = React.useRef(value);
+
+  // Sync from props (only if external change, e.g. API load or reset)
+  React.useEffect(() => {
+    if (value !== lastEmittedValue.current) {
+      if (inputRef.current) {
+        inputRef.current.value = value === 0 ? '' : formatViGroupedInteger(value);
+      }
+      lastEmittedValue.current = value;
+    }
+  }, [value]);
 
   return (
     <input
+      ref={inputRef}
       type="text"
       inputMode="numeric"
       autoComplete="off"
-      className={cn('tabular-nums', className)}
-      value={display}
+      maxLength={22}
+      className={cn('tabular-nums min-h-[42px]', className)}
+      defaultValue={value === 0 ? '' : formatViGroupedInteger(value)}
       onChange={(e) => {
-        onValueChange(parseViGroupedInteger(e.target.value));
+        const raw = e.target.value;
+        const selectionStart = e.target.selectionStart;
+        
+        // Strip non-digits
+        const digits = raw.replace(/\D/g, '');
+        const parsed = digits === '' ? 0 : Number(digits);
+        const formatted = digits === '' ? '' : digits === '0' ? '0' : formatViGroupedInteger(parsed);
+
+        // Calculate new cursor position safely
+        let newCursor = 0;
+        if (selectionStart !== null) {
+          const digitsBefore = raw.substring(0, selectionStart).replace(/\D/g, '').length;
+          let countedDigits = 0;
+          for (let i = 0; i < formatted.length; i++) {
+            if (countedDigits === digitsBefore) break;
+            if (/\d/.test(formatted[i])) countedDigits++;
+            newCursor = i + 1;
+          }
+        }
+
+        // Synchronously update the DOM to prevent React event batching bugs
+        if (inputRef.current) {
+          inputRef.current.value = formatted;
+          if (selectionStart !== null) {
+            inputRef.current.setSelectionRange(newCursor, newCursor);
+          }
+        }
+
+        lastEmittedValue.current = parsed;
+        onValueChange(parsed);
       }}
       onBlur={(e) => {
-        // Re-sync display from numeric value (already controlled via `value`).
+        if (inputRef.current) {
+           inputRef.current.value = value === 0 ? '' : formatViGroupedInteger(value);
+        }
         onBlur?.(e);
       }}
       {...props}

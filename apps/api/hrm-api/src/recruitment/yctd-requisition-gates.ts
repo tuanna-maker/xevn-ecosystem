@@ -381,6 +381,110 @@ export function isLegacyUnclassifiedMode(
   return mode == null || String(mode).trim() === '';
 }
 
+/** O4 DATA-01 — one-time uplift copy for legacy rows without headcount_mode. */
+export const YCTD_LEGACY_BACKFILL_OUT_REASON_VI =
+  'YCTD legacy — phân loại ngoài định biên (nâng cấp Wave-2)';
+
+export type LegacyYctdHeadcountModeBackfill = {
+  headcount_mode: YctdHeadcountMode;
+  hire_reason: YctdHireReason;
+  approval_matrix_key: string;
+  out_of_plan_reason?: string;
+};
+
+/**
+ * Infer Wave-2 classification for grandfather rows (NULL headcount_mode).
+ * Rows already linked to a headcount cell → in_plan; otherwise out_of_plan + reason.
+ */
+export function inferLegacyYctdHeadcountModeBackfill(input: {
+  headcount_mode: string | null | undefined;
+  headcount_cell_id: string | null | undefined;
+}): LegacyYctdHeadcountModeBackfill | null {
+  if (!isLegacyUnclassifiedMode(input.headcount_mode)) return null;
+  const cellId = String(input.headcount_cell_id ?? '').trim();
+  if (cellId) {
+    return {
+      headcount_mode: 'in_plan',
+      hire_reason: 'new',
+      approval_matrix_key: YCTD_MATRIX_SHORT,
+    };
+  }
+  return {
+    headcount_mode: 'out_of_plan',
+    hire_reason: 'new',
+    approval_matrix_key: YCTD_MATRIX_LONG_BOD,
+    out_of_plan_reason: YCTD_LEGACY_BACKFILL_OUT_REASON_VI,
+  };
+}
+
+export const LEGACY_YCTD_HEADCOUNT_MODE_BACKFILL_IN_PLAN_SQL = `
+  WITH winners AS (
+    SELECT DISTINCT ON (company_id, headcount_cell_id) id
+    FROM public.job_requisitions
+    WHERE headcount_mode IS NULL
+      AND headcount_cell_id IS NOT NULL
+    ORDER BY company_id, headcount_cell_id, created_at ASC NULLS LAST, id ASC
+  )
+  UPDATE public.job_requisitions r
+  SET
+    headcount_mode = 'in_plan',
+    hire_reason = COALESCE(r.hire_reason, 'new'),
+    approval_matrix_key = COALESCE(
+      NULLIF(TRIM(r.approval_matrix_key), ''),
+      '${YCTD_MATRIX_SHORT}'
+    ),
+    updated_at = NOW()
+  FROM winners w
+  WHERE r.id = w.id;
+`;
+
+export const LEGACY_YCTD_HEADCOUNT_MODE_BACKFILL_OUT_OF_PLAN_SQL = `
+  UPDATE public.job_requisitions
+  SET
+    headcount_mode = 'out_of_plan',
+    hire_reason = COALESCE(hire_reason, 'new'),
+    out_of_plan_reason = COALESCE(
+      NULLIF(TRIM(out_of_plan_reason), ''),
+      '${YCTD_LEGACY_BACKFILL_OUT_REASON_VI}'
+    ),
+    approval_matrix_key = COALESCE(
+      NULLIF(TRIM(approval_matrix_key), ''),
+      '${YCTD_MATRIX_LONG_BOD}'
+    ),
+    updated_at = NOW()
+  WHERE headcount_mode IS NULL;
+`;
+
+export async function backfillLegacyYctdHeadcountMode(db: {
+  query: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ rows?: unknown[] } | unknown>;
+}): Promise<void> {
+  try {
+    const probe = await db.query(`
+      SELECT 1 AS n
+      FROM public.job_requisitions
+      WHERE headcount_mode IS NULL
+      LIMIT 1
+    `);
+    const rows =
+      probe && typeof probe === 'object' && 'rows' in probe
+        ? (probe as { rows?: unknown[] }).rows
+        : undefined;
+    if (!rows?.length) return;
+
+    await db.query(LEGACY_YCTD_HEADCOUNT_MODE_BACKFILL_IN_PLAN_SQL);
+    await db.query(LEGACY_YCTD_HEADCOUNT_MODE_BACKFILL_OUT_OF_PLAN_SQL);
+  } catch (err) {
+    // Never fail ensureSchema — legacy rows stay classifiable via PATCH; avoids HTTP 500 on all HRM routes.
+    console.warn(
+      '[hrm-api] YCTD legacy headcount_mode backfill skipped:',
+      err instanceof Error ? err.message : err,
+    );
+  }
+}
+
 export function assertYctdModeClassifiedOrThrow(
   mode: string | null | undefined,
 ): void {

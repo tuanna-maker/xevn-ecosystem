@@ -24,7 +24,7 @@
 
 ## 1. Mục tiêu UC (1 đoạn)
 
-Thêm/sửa/xóa phòng ban (org-unit) theo pháp nhân, tree cập nhật sau F5.
+Thêm/sửa/xóa phòng ban (org-unit) theo pháp nhân, tree cập nhật sau F5. Giao diện dạng grid với các cột Mã, Tên, Đơn vị cấp trên, Trạng thái.
 
 ---
 

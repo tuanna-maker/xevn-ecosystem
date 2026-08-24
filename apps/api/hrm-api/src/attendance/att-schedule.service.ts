@@ -30,7 +30,10 @@ export type UpsertAttSchedulePayload = {
 export class AttScheduleService {
   constructor(private readonly db: HrmDbService) {}
 
-  async listSchedules(companyId: string, q?: string): Promise<AttScheduleRow[]> {
+  async listSchedules(
+    companyId: string,
+    q?: string,
+  ): Promise<AttScheduleRow[]> {
     let sql = `
       SELECT * FROM public.att_schedule
       WHERE company_id = $1 AND archived_at IS NULL
@@ -50,12 +53,20 @@ export class AttScheduleService {
   ): Promise<AttScheduleRow> {
     const code = payload.code.trim().toUpperCase();
     if (!code) {
-      throw new ApiException('HRM-SCHED-400', 'Thiếu mã lịch trình', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-SCHED-400',
+        'Thiếu mã lịch trình',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const name = payload.nameVi.trim();
     if (!name) {
-      throw new ApiException('HRM-SCHED-400', 'Thiếu tên lịch trình', HttpStatus.BAD_REQUEST);
+      throw new ApiException(
+        'HRM-SCHED-400',
+        'Thiếu tên lịch trình',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const existing = await this.db.query(
@@ -128,7 +139,11 @@ export class AttScheduleService {
       [companyId, id],
     );
     if (res.rowCount === 0) {
-      throw new ApiException('HRM-SCHED-404', 'Không tìm thấy lịch trình hoặc đã bị xóa', HttpStatus.NOT_FOUND);
+      throw new ApiException(
+        'HRM-SCHED-404',
+        'Không tìm thấy lịch trình hoặc đã bị xóa',
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 }

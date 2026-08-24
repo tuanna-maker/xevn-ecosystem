@@ -140,6 +140,28 @@
   --xevn-type-label-min: 0.875rem; /* 14px */
   --xevn-font-display: "Montserrat", system-ui, sans-serif;
   --xevn-font-body: "Source Sans 3", "Source Sans Pro", system-ui, sans-serif;
+
+  /* Shadcn UI bridge variables */
+  --background: 210 20% 98%;
+  --foreground: 220 39% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 39% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 39% 11%;
+  --primary: 226 71% 40%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 220 39% 11%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 14% 34%;
+  --accent: 189 94% 43%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 189 94% 43%;
+  --radius: 0.5rem;
 }
 
 /* Base Styles */

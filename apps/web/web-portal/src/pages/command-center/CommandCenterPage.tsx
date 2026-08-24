@@ -93,7 +93,7 @@ import { RACI_LETTER_MEANINGS, RACI_ORG_COLUMNS, RACI_SOURCE_FILE } from '../../
 import { OrgGradeOrgChart } from '../../components/org/OrgGradeOrgChart';
 import { OrgGradeOrgChartEditor } from '../../components/org/OrgGradeOrgChartEditor';
 import {
-  AutoResizeTextarea,
+  AutoResizeTextarea, SettingsInput,
   NAV_SUBSIDEBAR_HELPER_CLASS,
   NAV_SUBSIDEBAR_ITEM_ACTIVE_CLASS,
   NAV_SUBSIDEBAR_ITEM_IDLE_CLASS,
@@ -129,6 +129,7 @@ import {
   formatViGroupedInteger,
   parseViGroupedInteger,
   ViDateInput,
+  ViDatePickerField,
   ViGroupedIntegerInput,
 } from '@xevn/ui';
 import {
@@ -325,6 +326,8 @@ import {
 import {
   fetchGroupMemberUnitsForCommandCenter,
   GROUP_HOLDING_ROOT_ID,
+  createMemberTenant,
+  CreateMemberTenantApiPayload,
 } from '../../integrations/tenantScopeApi';
 import {
   createLegalEntity,
@@ -1503,20 +1506,37 @@ const CommandCenterPage: React.FC = () => {
     setGroupMemberUnitsLoading(true);
     setGroupMemberUnitsNotice(null);
     try {
-      const rows = await fetchGroupMemberUnitsForCommandCenter();
-      setGroupMemberUnitsRows(rows);
-      if (rows.length > 0) {
-        setLegalEntityList(rows);
-      } else {
-        const legalRows = await fetchLegalEntities(MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID);
-        const mapped = legalRows.map((row) => mapLegalEntityRowToCompany(row));
-        if (mapped.length) setLegalEntityList(mapped);
-        setGroupMemberUnitsNotice(
-          mapped.length
-            ? null
-            : 'XBOS trả về danh sách pháp nhân rỗng. Chạy seed org nếu môi trường dev.',
-        );
+      const tenantId = import.meta.env.VITE_DEFAULT_TENANT_ID ?? MASTER_TENANT_ID;
+      const [memberRows, legalRows, holdingRows] = await Promise.all([
+        fetchGroupMemberUnitsForCommandCenter(),
+        fetchLegalEntities(tenantId, MEMBER_DEFAULT_COMPANY_ID),
+        fetchHoldingLegalEntities(tenantId),
+      ]);
+      
+      const byId = new Map<string, Company>();
+      for (const r of memberRows) {
+        byId.set(r.id, r);
       }
+      for (const lr of legalRows) {
+        if (!byId.has(String(lr.id))) {
+          byId.set(String(lr.id), mapLegalEntityRowToCompany(lr));
+        }
+      }
+      for (const hr of holdingRows) {
+        if (!byId.has(String(hr.id))) {
+          byId.set(String(hr.id), mapLegalEntityRowToCompany(hr));
+        }
+      }
+      
+      const combined = Array.from(byId.values());
+      setGroupMemberUnitsRows(combined);
+      setLegalEntityList(combined);
+      
+      setGroupMemberUnitsNotice(
+        combined.length
+          ? null
+          : 'XBOS trả về danh sách pháp nhân rỗng. Chạy seed org nếu môi trường dev.',
+      );
     } catch (e) {
       setGroupMemberUnitsRows(null);
       const msg = e instanceof Error ? e.message : 'Lỗi không xác định';
@@ -3134,7 +3154,7 @@ const CommandCenterPage: React.FC = () => {
       companyEntityId && companyEntityId !== 'new'
         ? settingsLegalEntities.find((e) => e.id === companyEntityId) ??
           legalEntityList.find((e) => e.id === companyEntityId)
-        : settingsLegalEntities[0] ?? legalEntityList[0];
+        : undefined;
     const tenantId =
       scopeRow?.tenantId ??
       import.meta.env.VITE_DEFAULT_TENANT_ID ??
@@ -3203,8 +3223,24 @@ const CommandCenterPage: React.FC = () => {
 
       let persistedId = companyEntityId === 'new' ? null : saveEntityId;
       if (companyEntityId === 'new') {
-        const saved = await createLegalEntity(tenantId, xbosCompanyId, legalPayload);
-        persistedId = String(saved.id);
+        if (companyForm.entityLevel === 'parent') {
+          const createForm: CreateMemberTenantApiPayload = {
+            tenantName: companyFormForPayload.nameVi,
+            shortName: companyForm.shortName || '',
+            adminEmail: (companyForm as any).adminEmail || 'admin@xe.vn',
+            defaultCompanyCode: stableMemberCode || companyForm.enterpriseCode || 'main',
+          };
+          await createMemberTenant(createForm);
+          await reloadMemberAndLegalEntities();
+          setPublishMessage('Tạo Member Tenant thành công.');
+          setCompanySaveFeedback({ kind: 'success', text: 'Tạo Member Tenant thành công.' });
+          setCompanySaving(false);
+          openNewCompanyEntity(); // Reset form
+          return;
+        } else {
+          const saved = await createLegalEntity(tenantId, xbosCompanyId, legalPayload);
+          persistedId = String(saved.id);
+        }
       } else if (companyEntityId) {
         if (!saveEntityId || !isPersistedApiId(saveEntityId)) {
           if (isHoldingRoot) {
@@ -5126,6 +5162,30 @@ const CommandCenterPage: React.FC = () => {
                       ) : null}
                     </div>
                   </label>
+                  {companyEntityId === 'new' && companyForm.entityLevel === 'parent' && (
+                    <>
+                      <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span6} ${SETTINGS_FIELD_COMPACT}`}>
+                        <span className={SETTINGS_LABEL_CLASS}>Email Quản trị Tenant *</span>
+                        <input
+                          type="email"
+                          placeholder="admin@tenant.vn"
+                          value={companyForm.adminEmail ?? ''}
+                          onChange={(e) => setCompanyForm((s) => ({ ...s, adminEmail: e.target.value }))}
+                          className={inputClass}
+                        />
+                      </label>
+                      <label className={`${SETTINGS_FIELD_SHELL} w-full ${SETTINGS_COL.span6} ${SETTINGS_FIELD_COMPACT}`}>
+                        <span className={SETTINGS_LABEL_CLASS}>Mật khẩu Admin *</span>
+                        <input
+                          type="password"
+                          placeholder="Nhập mật khẩu"
+                          value={companyForm.adminPassword ?? ''}
+                          onChange={(e) => setCompanyForm((s) => ({ ...s, adminPassword: e.target.value }))}
+                          className={inputClass}
+                        />
+                      </label>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -5249,7 +5309,7 @@ const CommandCenterPage: React.FC = () => {
                   <label className={`${SETTINGS_FIELD_SHELL} ${SETTINGS_COL.span4} ${SETTINGS_FIELD_COMPACT}`}>
                     <span className={SETTINGS_LABEL_CLASS}>Ngày cấp lần đầu</span>
                     <div className="relative min-w-0">
-                      <ViDateInput
+                      <ViDatePickerField
                         aria-label="Ngày cấp lần đầu"
                         value={companyForm.firstIssueDate}
                         onValueChange={(iso) =>
@@ -6224,7 +6284,7 @@ const CommandCenterPage: React.FC = () => {
                         {infraUiMerged.fields.leaseLegalEndDate?.labelVi ?? 'Thời hạn thuê / pháp lý'}
                       </span>
                       <div className="relative min-w-0">
-                        <ViDateInput
+                        <ViDatePickerField
                           aria-label={
                             infraUiMerged.fields.leaseLegalEndDate?.labelVi ?? 'Thời hạn thuê / pháp lý'
                           }
@@ -6969,6 +7029,18 @@ const CommandCenterPage: React.FC = () => {
                   ) : null}
                   <div className={`overflow-x-auto border border-xevn-border ${SETTINGS_RADIUS_CARD}`}>
                     <div className="min-w-[960px] space-y-4 p-4">
+                      {scopedDeptRows.length > 0 && (
+                        <div className="flex gap-4 border-b border-xevn-border pb-2 text-[0.8125rem] font-bold uppercase tracking-wider text-xevn-textSecondary">
+                          <div className="grid min-w-0 flex-1 grid-cols-1 gap-4 md:grid-cols-12">
+                            <div className={SETTINGS_COL.span2}>Mã phòng ban</div>
+                            <div className={SETTINGS_COL.span3}>Tên phòng ban</div>
+                            <div className={SETTINGS_COL.span3}>Đơn vị cấp trên</div>
+                            <div className={SETTINGS_COL.span2}>Trưởng bộ phận</div>
+                            <div className={SETTINGS_COL.span2}>Chức năng / Mô tả</div>
+                          </div>
+                          <div className="w-[5.5rem] shrink-0 text-center">Thao tác</div>
+                        </div>
+                      )}
                       {scopedDeptRows.map((row) => {
                         const parentCandidates = scopedDeptRows.filter((d) => d.id !== row.id);
                         const parentLabel = (d: LegalDepartmentRow) => {

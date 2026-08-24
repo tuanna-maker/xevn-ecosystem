@@ -103,6 +103,16 @@ const TopHeader: React.FC = () => {
     setSwitchError(null);
     try {
       await selectMembership(tenant.tenantId);
+      // Navigate to the equivalent route under the new tenant
+      const pathParts = location.pathname.split('/');
+      // e.g. path "/tenant-a/command-center" -> ["", "tenant-a", "command-center"]
+      if (pathParts.length > 1) {
+        pathParts[1] = tenant.tenantId;
+        const newPath = pathParts.join('/') + location.search + location.hash;
+        navigate(newPath);
+      } else {
+        navigate(`/${tenant.tenantId}/cockpit`);
+      }
       setSelectedTenant(tenant);
       setIsTenantDropdownOpen(false);
     } catch (error) {
@@ -125,7 +135,7 @@ const TopHeader: React.FC = () => {
       <header className="sticky top-0 z-40 flex h-14 w-full shrink-0 items-center justify-between border-b border-xevn-border bg-xevn-surface/80 xevn-safe-inline shadow-soft backdrop-blur-md">
         <div className="flex min-w-0 items-center gap-3">
           <Link
-            to="/command-center"
+            to={`/${selectedTenant.tenantId}/command-center`}
             className="flex h-10 shrink-0 items-center gap-2.5 rounded-input pr-1 transition hover:opacity-90"
             data-testid="portal-brand-mark"
             aria-label="XeVN — về Command Center"

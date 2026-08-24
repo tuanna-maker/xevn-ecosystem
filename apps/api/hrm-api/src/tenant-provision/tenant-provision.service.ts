@@ -27,7 +27,6 @@ import {
   MASTER_REC_HEALTH_REQS,
 } from './recruitment-provision.constants';
 
-
 export interface TenantProvisionedPayload {
   eventType: 'TENANT_PROVISIONED';
   tenantId: string;
@@ -35,6 +34,7 @@ export interface TenantProvisionedPayload {
   modules: ('hrm' | 'logistics')[];
   activatedAt: string; // ISO 8601
   issuedBy: string;
+  adminEmail?: string;
 }
 
 /** 8 loại nghỉ theo BLLĐ 2019 */
@@ -205,6 +205,7 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
       await this.seedMinimumWageRegions(query, tenantId, defaultCompanyId);
       await this.seedRecruitmentMasterData(query, tenantId, defaultCompanyId);
       await this.seedJobDescriptionTemplates(query, tenantId, defaultCompanyId);
+      await this.seedAdminEmployee(query, tenantId, defaultCompanyId, payload.adminEmail || payload.issuedBy);
     });
 
     this.logger.log(
@@ -213,6 +214,21 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ─── Private seed methods — executed inside withTransaction ─────────────────
+
+  private async seedAdminEmployee(
+    query: HrmDbQueryFn,
+    tenantId: string,
+    companyId: string,
+    adminEmail: string,
+  ): Promise<void> {
+    await query(
+      `INSERT INTO public.employees 
+         (id, company_id, employee_code, email, full_name, job_title_key, status, hired_at)
+       VALUES (gen_random_uuid(), $1, 'ADMIN01', $2, 'Tenant Admin', 'CEO', 'active', CURRENT_DATE)
+       ON CONFLICT (company_id, employee_code) DO NOTHING`,
+      [companyId, adminEmail || 'admin@xe.vn'],
+    );
+  }
 
   private async seedLeaveTypes(
     query: HrmDbQueryFn,
@@ -301,7 +317,7 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
         [tenantId, companyId, 'recruitment_channels', src.code, src.name_vi],
       );
     }
-    
+
     // 2. Giai đoạn tuyển dụng -> rec_pipeline_stage
     for (const stage of MASTER_REC_STAGES) {
       const exists = await query(
@@ -371,17 +387,21 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
         title: 'Tuyển dụng Lái xe',
         position_code: 'POS_LAI_XE',
         position_name: 'Lái xe',
-        job_description: '- Bước 1: Tiếp nhận hồ sơ (Phòng HCNS)\n- Bước 2: Phỏng vấn sơ loại (Phòng HCNS)\n- Bước 3: Sát hạch tay lái (Đội trưởng Đội xe)\n- Bước 4: Ký hợp đồng thử việc',
-        requirements: '- Bằng lái xe hạng D trở lên\n- Sức khỏe tốt (Giấy khám sức khỏe loại I)\n- Hộ khẩu thường trú rõ ràng',
+        job_description:
+          '- Bước 1: Tiếp nhận hồ sơ (Phòng HCNS)\n- Bước 2: Phỏng vấn sơ loại (Phòng HCNS)\n- Bước 3: Sát hạch tay lái (Đội trưởng Đội xe)\n- Bước 4: Ký hợp đồng thử việc',
+        requirements:
+          '- Bằng lái xe hạng D trở lên\n- Sức khỏe tốt (Giấy khám sức khỏe loại I)\n- Hộ khẩu thường trú rõ ràng',
       },
       {
         code: 'JD_QUAN_LY',
         title: 'Tuyển dụng Quản lý',
         position_code: 'POS_QUAN_LY',
         position_name: 'Quản lý',
-        job_description: '- Bước 1: Tiếp nhận hồ sơ (Phòng HCNS)\n- Bước 2: Phỏng vấn vòng 1 (Phòng HCNS & Trưởng phòng chuyên môn)\n- Bước 3: Đánh giá năng lực (Làm bài Test)\n- Bước 4: Phỏng vấn vòng 2 (Giám đốc khối)\n- Bước 5: Thỏa thuận lương & Ký hợp đồng',
-        requirements: '- Tốt nghiệp Đại học trở lên\n- Có ít nhất 3 năm kinh nghiệm quản lý\n- Kỹ năng giao tiếp, giải quyết vấn đề và lập kế hoạch tốt',
-      }
+        job_description:
+          '- Bước 1: Tiếp nhận hồ sơ (Phòng HCNS)\n- Bước 2: Phỏng vấn vòng 1 (Phòng HCNS & Trưởng phòng chuyên môn)\n- Bước 3: Đánh giá năng lực (Làm bài Test)\n- Bước 4: Phỏng vấn vòng 2 (Giám đốc khối)\n- Bước 5: Thỏa thuận lương & Ký hợp đồng',
+        requirements:
+          '- Tốt nghiệp Đại học trở lên\n- Có ít nhất 3 năm kinh nghiệm quản lý\n- Kỹ năng giao tiếp, giải quyết vấn đề và lập kế hoạch tốt',
+      },
     ];
 
     for (const tpl of defaultTemplates) {
@@ -391,7 +411,13 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
            (tenant_id, company_id, catalog_key, code, label, status)
          VALUES ($1, $2, $3, $4, $5, 'active')
          ON CONFLICT ON CONSTRAINT uq_hrm_cat_ext_scope_key_code DO NOTHING`,
-        [tenantId, companyId, 'job_titles', tpl.position_code, tpl.position_name],
+        [
+          tenantId,
+          companyId,
+          'job_titles',
+          tpl.position_code,
+          tpl.position_name,
+        ],
       );
 
       // 2. Insert JD Template
@@ -407,7 +433,7 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
           tpl.position_code,
           tpl.position_name,
           tpl.job_description,
-          tpl.requirements
+          tpl.requirements,
         ],
       );
     }

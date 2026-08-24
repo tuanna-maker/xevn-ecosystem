@@ -134,6 +134,15 @@ export type HrmEmployeeApiRow = {
 
 const HRM_LIST_MAX_PAGE_SIZE = 100;
 
+export async function createHrmEmployee(scope: IdentityScopeContext, payload: any) {
+  const listScope = hrmListScope(scope);
+  return request<HrmEmployeeApiRow>(
+    `/api/hrm/employees?company_id=${listScope.companyId}`,
+    { method: 'POST', body: JSON.stringify(payload) },
+    listScope,
+  );
+}
+
 export async function listHrmEmployees(scope: IdentityScopeContext) {
   const listScope = hrmListScope(scope);
   const q = new URLSearchParams({

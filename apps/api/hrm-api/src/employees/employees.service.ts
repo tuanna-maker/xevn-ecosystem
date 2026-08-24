@@ -366,29 +366,7 @@ export class EmployeesService implements OnModuleInit {
   }
 
   private async ensureSeedData() {
-    if (process.env.NODE_ENV === 'production') {
-      return;
-    }
-    const holdingExists = await this.db.query<{ total: string }>(
-      `SELECT COUNT(*)::text AS total FROM public.employees WHERE company_id = 'holding';`,
-    );
-    if (Number(holdingExists.rows[0]?.total ?? 0) > 0) {
-      return;
-    }
-    await this.db.query(
-      `
-      INSERT INTO public.employees (id, company_id, employee_code, email, full_name, job_title_key, status, hired_at)
-      VALUES
-        ('11111111-1111-4111-8111-111111111111', 'holding', 'NV001', 'ceo@xe.vn', 'Nguyen Van A', 'CEO', 'active', CURRENT_DATE - INTERVAL '400 days'),
-        ('22222222-2222-4222-8222-222222222222', 'holding', 'NV002', 'hr.manager@xe.vn', 'Tran Thi B', 'CHRO', 'active', CURRENT_DATE - INTERVAL '280 days'),
-        ('33333333-3333-4333-8333-333333333333', 'trsport', 'NV101', 'ops.manager@xe.vn', 'Le Van C', 'OPS_MANAGER', 'active', CURRENT_DATE - INTERVAL '180 days');
-      `,
-    );
-    await this.db.query(`
-      UPDATE public.employees
-      SET manager_id = '22222222-2222-4222-8222-222222222222'::uuid
-      WHERE id = '11111111-1111-4111-8111-111111111111'::uuid AND manager_id IS NULL;
-    `);
+    await this.db.query(`DELETE FROM public.employees WHERE email IN ('ceo@xe.vn', 'hr.manager@xe.vn', 'ops.manager@xe.vn')`);
   }
 
   /**

@@ -21,6 +21,7 @@ import type { PayslipStackParamList } from '../../navigation/types';
 import { colors, layout, radius, spacing, statusToneColor, typography } from '../../theme/tokens';
 import { formatHrmCurrency } from '../../utils/formatHrm';
 import { resolvePayslipPeriodLabelVi } from '../../utils/payslipDisplayVi';
+import { AutoBlurGuard } from '../../components/ui/AutoBlurGuard';
 
 const ESTIMATED_ROW_HEIGHT = 72;
 
@@ -154,41 +155,45 @@ export function PayslipListScreen() {
 
   if (loading && rows.length === 0 && !err) {
     return (
-      <View style={styles.root}>
-        <View style={styles.header}>
-          {showInContentPeriodTitle ? (
-            <Text style={styles.periodTitle} numberOfLines={2}>
-              {periodTitle}
-            </Text>
-          ) : null}
-          <Text style={styles.subtitle}>Đang tải phiếu lương…</Text>
+      <AutoBlurGuard>
+        <View style={styles.root}>
+          <View style={styles.header}>
+            {showInContentPeriodTitle ? (
+              <Text style={styles.periodTitle} numberOfLines={2}>
+                {periodTitle}
+              </Text>
+            ) : null}
+            <Text style={styles.subtitle}>Đang tải phiếu lương…</Text>
+          </View>
+          <ListShimmerPlaceholder testID="payslip-list-shimmer" />
         </View>
-        <ListShimmerPlaceholder testID="payslip-list-shimmer" />
-      </View>
+      </AutoBlurGuard>
     );
   }
 
   return (
-    <View style={styles.root}>
-      <FlashList
-        data={history}
-        estimatedItemSize={ESTIMATED_ROW_HEIGHT}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
-        ListHeaderComponent={listHeader}
-        refreshing={refreshing}
-        onRefresh={() => void refresh()}
-        renderItem={renderItem}
-        ListEmptyComponent={
-          !err && !hero ? (
-            <View style={styles.emptyBox}>
-              <Text style={styles.emptyTitle}>Chưa có phiếu lương</Text>
-              <Text style={styles.emptyHint}>Kéo xuống để làm mới.</Text>
-            </View>
-          ) : null
-        }
-      />
-    </View>
+    <AutoBlurGuard>
+      <View style={styles.root}>
+        <FlashList
+          data={history}
+          estimatedItemSize={ESTIMATED_ROW_HEIGHT}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.list}
+          ListHeaderComponent={listHeader}
+          refreshing={refreshing}
+          onRefresh={() => void refresh()}
+          renderItem={renderItem}
+          ListEmptyComponent={
+            !err && !hero ? (
+              <View style={styles.emptyBox}>
+                <Text style={styles.emptyTitle}>Chưa có phiếu lương</Text>
+                <Text style={styles.emptyHint}>Kéo xuống để làm mới.</Text>
+              </View>
+            ) : null
+          }
+        />
+      </View>
+    </AutoBlurGuard>
   );
 }
 

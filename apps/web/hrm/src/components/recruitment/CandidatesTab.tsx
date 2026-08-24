@@ -109,6 +109,8 @@ import {
   XCircle,
   Download,
   Upload,
+  BarChart3,
+  ClipboardCheck,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { Button } from '@/components/ui/button';
@@ -148,6 +150,10 @@ import { ManageActiveInterviewDialog } from './ManageActiveInterviewDialog';
 import { CandidateFormDialog } from './CandidateFormDialog';
 import { CandidateDetailView } from './CandidateDetailView';
 import { CandidateEvaluationDialog } from './CandidateEvaluationDialog';
+import {
+  CandidateComparisonDialog,
+  type CompareEvaluateTarget,
+} from './CandidateComparisonDialog';
 import { CandidateMailDialog } from './CandidateMailDialog';
 import { CandidateAcceptOfferDialog } from './CandidateAcceptOfferDialog';
 import { CandidateImportDialog } from './CandidateImportDialog';
@@ -155,6 +161,8 @@ import { HireEmployeeLinkDialog } from './HireEmployeeLinkDialog';
 import { CandidateStageTransitionDialog } from './CandidateStageTransitionDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useCandidateEvaluations } from '@/hooks/useCandidateEvaluations';
+import { useJobRequisitions } from '@/hooks/useJobRequisitions';
 import { deleteCandidatePool, listCandidatesPool, listRecruitmentCandidates, startCandidatePipeline, updateCandidatePoolStage } from '@/integrations/hrmApi';
 import { toErrorMessage } from '@/lib/apiError';
 import {
@@ -189,6 +197,7 @@ import {
 import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
 import {
   mergeYctdDisplayOntoPoolCandidates,
+  normalizeRequisitionId,
   parseRequisitionIdFromSearch,
   resolveCandidatePositionLabel,
   resolveCandidateYctdLabel,
@@ -356,6 +365,11 @@ export function CandidatesTab() {
   const [selectedCandidateForDetail, setSelectedCandidateForDetail] = useState<Candidate | null>(null);
   const [isEvaluationDialogOpen, setIsEvaluationDialogOpen] = useState(false);
   const [evaluatingCandidate, setEvaluatingCandidate] = useState<Candidate | null>(null);
+  const [isComparisonDialogOpen, setIsComparisonDialogOpen] = useState(false);
+  const [compareInitialRequisitionId, setCompareInitialRequisitionId] = useState<string | null>(
+    null,
+  );
+  const [compareInitialCandidateId, setCompareInitialCandidateId] = useState<string | null>(null);
   const [isMailDialogOpen, setIsMailDialogOpen] = useState(false);
   const [mailingCandidate, setMailingCandidate] = useState<Candidate | null>(null);
   const [isAcceptOfferOpen, setIsAcceptOfferOpen] = useState(false);
@@ -370,6 +384,10 @@ export function CandidatesTab() {
   const [stageTransitionCandidate, setStageTransitionCandidate] = useState<Candidate | null>(null);
   const [stageTransitionInitial, setStageTransitionInitial] = useState<string | null>(null);
   const [stageHistoryRefreshToken, setStageHistoryRefreshToken] = useState(0);
+
+  const { evaluations } = useCandidateEvaluations(isComparisonDialogOpen);
+  const { requisitions: compareSeedRequisitions, refetch: refreshCompareRequisitions } =
+    useJobRequisitions();
 
   const fetchCandidates = useCallback(async () => {
     if (!currentCompanyId) return;
@@ -404,6 +422,30 @@ export function CandidatesTab() {
       setLoading(false);
     }
   }, [currentCompanyId, t, toast]);
+
+  const openCompareForYctd = useCallback(
+    (requisitionId: string | null | undefined, candidateId?: string | null) => {
+      setCompareInitialRequisitionId(normalizeRequisitionId(requisitionId) || null);
+      setCompareInitialCandidateId((candidateId ?? '').trim() || null);
+      setIsComparisonDialogOpen(true);
+    },
+    [],
+  );
+
+  const compareTargetToCandidate = useCallback((target: CompareEvaluateTarget): Candidate => {
+    const spineId = (target.recruitment_candidate_id ?? '').trim();
+    return {
+      id: target.id,
+      company_id: currentCompanyId || '',
+      full_name: target.full_name,
+      email: target.email,
+      position: target.position ?? null,
+      requisition_id: target.requisition_id,
+      recruitment_candidate_id: target.recruitment_candidate_id ?? null,
+      list_lane: spineId ? 'spine' : 'pool',
+      created_at: '',
+    };
+  }, [currentCompanyId]);
 
   useEffect(() => {
     fetchCandidates();
@@ -784,6 +826,19 @@ export function CandidatesTab() {
             <RefreshCw className="w-4 h-4 mr-2" />
             {t('recruitment.ct.refresh')}
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="hdsd-rec-candidate-compare-open"
+            onClick={() => {
+              setCompareInitialRequisitionId(null);
+              setCompareInitialCandidateId(null);
+              setIsComparisonDialogOpen(true);
+            }}
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            {t('recruitment.compareCandidates')}
+          </Button>
           <Button onClick={handleCreate} data-testid={HDSD_MUTATE_TEST_IDS.candidateCreateBtn}>
             <Plus className="w-4 h-4 mr-2" />
             {t('recruitment.ct.addCandidate')}
@@ -1081,6 +1136,43 @@ export function CandidatesTab() {
                             ) : null}
                             <Tooltip>
                               <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  data-testid="rec-candidate-evaluate-btn"
+                                  onClick={() => {
+                                    setEvaluatingCandidate(candidate);
+                                    setIsEvaluationDialogOpen(true);
+                                  }}
+                                >
+                                  <ClipboardCheck className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>{t('recruitment.evaluateCandidate')}</TooltipContent>
+                            </Tooltip>
+                            {normalizeRequisitionId(candidate.requisition_id) ||
+                            normalizeRequisitionId(candidate.recruitment_request_id) ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    data-testid="rec-candidate-compare-btn"
+                                    onClick={() =>
+                                      openCompareForYctd(
+                                        candidate.requisition_id || candidate.recruitment_request_id,
+                                        candidate.recruitment_candidate_id || candidate.id,
+                                      )
+                                    }
+                                  >
+                                    <BarChart3 className="w-4 h-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>{t('recruitment.compareCandidates')}</TooltipContent>
+                              </Tooltip>
+                            ) : null}
+                            <Tooltip>
+                              <TooltipTrigger asChild>
                                 <Button variant="ghost" size="sm" onClick={() => setSelectedCandidateForDetail(candidate)}>
                                   <Eye className="w-4 h-4" />
                                 </Button>
@@ -1276,6 +1368,14 @@ export function CandidatesTab() {
                 setEvaluatingCandidate(selectedCandidateForDetail);
                 setIsEvaluationDialogOpen(true);
               }}
+              onCompare={() =>
+                openCompareForYctd(
+                  selectedCandidateForDetail.requisition_id ||
+                    selectedCandidateForDetail.recruitment_request_id,
+                  selectedCandidateForDetail.recruitment_candidate_id ||
+                    selectedCandidateForDetail.id,
+                )
+              }
               onEdit={() => {
                 setEditingCandidate(selectedCandidateForDetail);
                 setIsFormDialogOpen(true);
@@ -1353,6 +1453,33 @@ export function CandidatesTab() {
             ? () => openLaneAStageTransition(evaluatingCandidate)
             : undefined
         }
+        onCompareByYctd={(requisitionId, candidateId) => {
+          openCompareForYctd(requisitionId, candidateId);
+        }}
+      />
+
+      <CandidateComparisonDialog
+        open={isComparisonDialogOpen}
+        onOpenChange={(open) => {
+          setIsComparisonDialogOpen(open);
+          if (!open) {
+            setCompareInitialRequisitionId(null);
+            setCompareInitialCandidateId(null);
+          }
+        }}
+        initialRequisitionId={compareInitialRequisitionId}
+        initialCandidateId={compareInitialCandidateId}
+        seedEvaluations={evaluations}
+        seedRequisitions={compareSeedRequisitions}
+        refreshRequisitions={refreshCompareRequisitions}
+        onEvaluateCandidate={(target) => {
+          const mapped = compareTargetToCandidate(target);
+          setEvaluatingCandidate(mapped);
+          setIsEvaluationDialogOpen(true);
+        }}
+        onChangeStage={(target) => {
+          openLaneAStageTransition(compareTargetToCandidate(target));
+        }}
       />
 
       <CandidateImportDialog

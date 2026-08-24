@@ -102,6 +102,7 @@ export const F6_CANDIDATE_STAGES = [
 
 const PLAN_TERMINAL = new Set(['approved', 'rejected', 'cancelled']);
 const REQUISITION_TERMINAL = new Set([
+  'draft',
   'open',
   'open_for_hire',
   'approved',
@@ -628,6 +629,9 @@ export class RecruitmentWorkflowBridge {
           headers: {
             ...upstreamHeaders,
             'content-type': 'application/json',
+            // Leave parity — scope headers when JWT claims omitted / internal key only.
+            'x-tenant-id': tenantId,
+            'x-company-id': xbosHeaderCompanyId,
           },
           body: JSON.stringify({
             workflowCode,

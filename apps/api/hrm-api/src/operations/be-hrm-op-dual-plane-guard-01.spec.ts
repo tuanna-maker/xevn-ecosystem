@@ -72,9 +72,7 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
     it('LE UUID persist → HRM-PLANE-409', () => {
       expect(() =>
         resolveHrmOperationsPersistCompanyId(undefined, XBOS_LE_UUID),
-      ).toThrow(
-        expect.objectContaining({ code: 'HRM-PLANE-409' }),
-      );
+      ).toThrow(expect.objectContaining({ code: 'HRM-PLANE-409' }));
     });
   });
 
@@ -156,9 +154,7 @@ describe('D-HRM-OP-DUAL-PLANE-GUARD-01', () => {
     });
 
     it('getSummary with LE company_id rejects (no silent fake 0)', async () => {
-      await expect(
-        service.getSummary(XBOS_LE_UUID),
-      ).rejects.toMatchObject({
+      await expect(service.getSummary(XBOS_LE_UUID)).rejects.toMatchObject({
         code: 'HRM-PLANE-409',
       });
       expect(

@@ -33,7 +33,7 @@
  * Why: AC-SET-CONSUMER-CH-REC-01 · BR-REC-CH-SOT-01..02
  * must_keep: YCTD SELECT · stage EFF · hire gate · U65
  */
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -97,6 +97,7 @@ import {
   formatYctdOptionLabel,
   isUvCreateSubmitBlocked,
   normalizeRequisitionId,
+  sortYctdPickerRows,
   UV_YCTD_EMPTY_HINT_VI,
   UV_YCTD_NONE_SENTINEL,
   UV_YCTD_OPEN_CTA_VI,
@@ -203,6 +204,7 @@ const getMaritalStatusOptions = (r: (key: string) => string) => [
 function toPickerRow(row: HrmJobRequisition): UvYctdPickerRow {
   return {
     id: row.id,
+    company_id: row.company_id,
     title: row.title,
     status: row.status,
     jd_code: row.jd_code,
@@ -211,6 +213,10 @@ function toPickerRow(row: HrmJobRequisition): UvYctdPickerRow {
     position_key: row.position_key,
     position_name: row.position_name,
     recruitment_request_id: row.recruitment_request_id,
+    department: row.department,
+    headcount: row.headcount,
+    candidate_count: row.candidate_count,
+    created_at: row.created_at,
   };
 }
 
@@ -301,7 +307,9 @@ export function CandidateFormDialog({
         page_size: HRM_API_MAX_PAGE_SIZE,
         receivable: true,
       });
-      const rows = filterReceivableRequisitions(response.data ?? []).map(toPickerRow);
+      const rows = sortYctdPickerRows(
+        filterReceivableRequisitions(response.data ?? []).map(toPickerRow),
+      );
       setReceivableYctds(rows);
     } catch (error: unknown) {
       console.error('Error loading receivable YCTD:', error);
@@ -318,7 +326,21 @@ export function CandidateFormDialog({
     }
   }, [open, loadReceivableYctds]);
 
+  const wasOpenRef = useRef(false);
+  const lastCandidateIdRef = useRef<string | null>(null);
   useEffect(() => {
+    if (!open) {
+      wasOpenRef.current = false;
+      lastCandidateIdRef.current = null;
+      return;
+    }
+    const opened = !wasOpenRef.current;
+    wasOpenRef.current = true;
+    const nextId = candidate?.id ?? null;
+    const idChanged = nextId !== lastCandidateIdRef.current;
+    lastCandidateIdRef.current = nextId;
+    if (!opened && !idChanged) return;
+
     if (candidate) {
       const existingYctd =
         normalizeRequisitionId(candidate.requisition_id) ||
@@ -359,7 +381,8 @@ export function CandidateFormDialog({
         notes: '',
       });
     }
-  }, [candidate, form, open, contextRequisitionId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open/id edge only; cấm deps `form` / object candidate (Textarea 1 ký tự)
+  }, [open, candidate?.id, contextRequisitionId]);
 
   const selectedYctd = useMemo(() => {
     const id = normalizeRequisitionId(watchedRequisitionId);

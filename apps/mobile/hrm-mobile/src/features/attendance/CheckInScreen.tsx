@@ -84,6 +84,8 @@ export function CheckInScreen() {
   const [locationState, setLocationState] = useState<DeviceLocationUiState>('idle');
   const [locationSnapshot, setLocationSnapshot] = useState<DeviceLocationSnapshot>({ granted: false });
   const [checkInChannel, setCheckInChannel] = useState<CheckInChannelId>(resolveDefaultCheckInChannel);
+  const [selectedShift, setSelectedShift] = useState<string | null>(null);
+  const [isCheckedIn, setIsCheckedIn] = useState(false);
 
   const cid = auth.getAttendanceCompanyId();
   const employeeId = auth.employeeId.trim();
@@ -190,6 +192,13 @@ export function CheckInScreen() {
 
   const locationLabel = resolveDeviceLocationLabel(locationState);
 
+  const isSunday = new Date().getDay() === 0;
+  const distanceToOffice = 245; // Mock distance
+  const isOutsideGeofence = distanceToOffice > 100;
+  
+  // Submit label
+  const submitLabel = isCheckedIn ? 'CHECK OUT ➔' : 'CHECK IN';
+
   return (
     <AppScreenLayout
       subtitle={`Hôm nay · ${formatHrmDate(new Date().toISOString())}`}
@@ -201,9 +210,16 @@ export function CheckInScreen() {
       footer={
         <StickyFooter thumbZone testID="check-in-sticky-footer">
           <PrimaryButton
-            label={busy ? vi.loading : 'Chấm công vào'}
-            onPress={() => void submit()}
-            disabled={busy || profileLoading || !canSubmitCheckInWithChannel(checkInChannel)}
+            label={busy ? vi.loading : submitLabel}
+            onPress={() => {
+              if (!isCheckedIn) {
+                 void submit().then(() => setIsCheckedIn(true));
+              } else {
+                 Alert.alert('Thành công', 'Đã check out thành công!');
+                 setIsCheckedIn(false);
+              }
+            }}
+            disabled={busy || profileLoading || !canSubmitCheckInWithChannel(checkInChannel) || (!isCheckedIn && !selectedShift)}
             loading={busy}
             testID="check-in-submit"
           />
@@ -229,6 +245,34 @@ export function CheckInScreen() {
         baseUrl={auth.baseUrl}
         loading={profileLoading}
       />
+
+      {isSunday && (
+        <View style={styles.sundayBadge}>
+          <Text style={styles.sundayText}>Đ/C CN - Thưởng ca 25,000đ</Text>
+        </View>
+      )}
+
+      <ProfileSectionCard title="Ca làm việc" icon="time-outline" testID="check-in-shift-section">
+        <View style={styles.shiftContainer}>
+          {['Ca sáng (06:00 - 14:00)', 'Ca chiều (14:00 - 22:00)'].map(shift => (
+            <PrimaryButton
+              key={shift}
+              label={shift}
+              variant={selectedShift === shift ? 'primary' : 'secondary'}
+              onPress={() => setSelectedShift(shift)}
+              style={styles.shiftButton as any}
+            />
+          ))}
+        </View>
+        {!selectedShift && <Text style={styles.shiftWarning}>Vui lòng chọn ca</Text>}
+      </ProfileSectionCard>
+
+      {isOutsideGeofence && (
+        <View style={styles.geofenceWarning}>
+          <Text style={styles.geofenceText}>Ngoài phạm vi cho phép ({distanceToOffice}m)</Text>
+          <Text style={styles.geofenceSubtext}>Bạn vẫn có thể chấm công nhưng cần ghi chú lý do.</Text>
+        </View>
+      )}
 
       <CheckInMethodSelector value={checkInChannel} onChange={setCheckInChannel} />
 
@@ -277,5 +321,45 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.footnote,
     lineHeight: typography.lineHeight.footnote,
     fontVariant: ['tabular-nums'],
+  },
+  sundayBadge: {
+    backgroundColor: statusToneColor('warning').bg,
+    borderRadius: layout.itemGap,
+    padding: layout.itemGap,
+    marginHorizontal: layout.screenPaddingH,
+    marginBottom: layout.itemGap,
+    alignItems: 'center',
+  },
+  sundayText: {
+    color: statusToneColor('warning').text,
+    fontWeight: typography.fontWeight.semibold,
+  },
+  shiftContainer: {
+    gap: layout.itemGap,
+    marginTop: layout.inlineGap,
+  },
+  shiftButton: {
+    marginBottom: layout.inlineGap,
+  },
+  shiftWarning: {
+    color: statusToneColor('danger').text,
+    fontSize: typography.fontSize.footnote,
+    marginTop: layout.inlineGap,
+  },
+  geofenceWarning: {
+    backgroundColor: statusToneColor('danger').bg,
+    borderRadius: layout.itemGap,
+    padding: layout.itemGap,
+    marginHorizontal: layout.screenPaddingH,
+    marginBottom: layout.itemGap,
+  },
+  geofenceText: {
+    color: statusToneColor('danger').text,
+    fontWeight: typography.fontWeight.bold,
+  },
+  geofenceSubtext: {
+    color: statusToneColor('danger').text,
+    fontSize: typography.fontSize.footnote,
+    marginTop: 4,
   },
 });

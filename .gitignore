@@ -80,4 +80,12 @@ docs/docs/qa/evidence/
 # Local testing scripts
 query.js
 test_*.js
-
+test*.js
+test*.sql
+delete*.js
+delete*.sql
+*.js
+!jest.config.js
+!commitlint.config.js
+!babel.config.js
+!metro.config.js

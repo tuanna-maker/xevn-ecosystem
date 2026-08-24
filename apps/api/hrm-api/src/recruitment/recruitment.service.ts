@@ -168,6 +168,8 @@ import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
+  expandPayrollPeriodCompanyIds,
+  HrmListScope,
   HrmListScopeContext,
   MASTER_TENANT_ID,
   pushCompanyIdFilter,
@@ -260,10 +262,13 @@ import {
   assertCompareSameYctdOrThrow,
   assertUvPositionKeyMatchesOrThrow,
   assertUvYctdReceivableOrThrow,
+  COMPARE_EVAL_LANE_A_ID_SQL,
   HRM_REC_UV_YCTD_NOT_FOUND,
   isUvReceivableListQuery,
   isUvYctdBindTargetQuery,
+  normalizeCompareScoreItems,
   parseCandidateIdList,
+  REC_COMPARE_MAX_N,
   requireUvYctdRequisitionId,
   resolveUvYctdRequisitionId,
   toCandidateUvDisplayReady,
@@ -281,6 +286,7 @@ import {
   assertYctdReceivableForMutateOrThrow,
   applyInternalScanComplete,
   applyInternalScanSkip,
+  backfillLegacyYctdHeadcountMode,
   EMPTY_PIPELINE_FLAGS,
   HRM_YCTD_CELL_MISSING,
   HRM_YCTD_CELL_NOT_APPROVED,
@@ -343,6 +349,8 @@ type JobRequisitionRow = {
   job_grade_key?: string | null;
   position_name?: string | null;
   position_code?: string | null;
+  /** Lane A UV count on this YCTD (list/picker disambiguation). */
+  candidate_count?: number | string | null;
   created_at: string;
   updated_at: string;
 };
@@ -746,6 +754,8 @@ export class RecruitmentService {
       ON public.job_requisitions (company_id, approval_matrix_key)
       WHERE approval_matrix_key IS NOT NULL;
     `);
+    // PO-HRM-MVP-GD1-REC-02-CLUSTER-DATA-01 §7 — O4 legacy uplift (cell → in_plan, else out_of_plan).
+    await backfillLegacyYctdHeadcountMode(this.db);
     // PO-HRM-MVP-GD1-REC-05-CLUSTER-BE-01 — DATA-01 O4: DROP closed-six → open non-empty.
     await this.db.query(`
       DO $$
@@ -1230,6 +1240,10 @@ export class RecruitmentService {
       requires_bod: requires_bod || undefined,
       recruitment_request_id: row.id,
       requisition_id: row.id,
+      candidate_count:
+        row.candidate_count != null && Number.isFinite(Number(row.candidate_count))
+          ? Number(row.candidate_count)
+          : 0,
     };
   }
 
@@ -1251,6 +1265,8 @@ export class RecruitmentService {
               t.position_code AS position_code,
               COALESCE(NULLIF(r.position_key, ''), t.position_code, '') AS position_key,
               t.position_name AS position_name,
+              (SELECT COUNT(1)::int FROM public.recruitment_candidates rc
+                WHERE rc.requisition_id = r.id) AS candidate_count,
               r.created_at, r.updated_at
        FROM public.job_requisitions r
        LEFT JOIN public.job_description_templates t ON t.id::text = r.job_template_id`;
@@ -1636,6 +1652,59 @@ export class RecruitmentService {
     filters.push(`${alias}.company_id = ANY($${values.length}::text[])`);
   }
 
+  /**
+   * F-REC-CMP-02 — map pool/eval neo ids → Lane A spine on one YCTD.
+   * Scope via job_requisitions (parity listApplicationsByYctd).
+   */
+  private async resolveCompareSpineCandidateIdsForYctd(
+    requisitionId: string,
+    rawIds: string[],
+    scope: import('../common/hrm-list-scope').HrmListScope,
+  ): Promise<string[]> {
+    if (rawIds.length === 0) return [];
+    const filters: string[] = [];
+    const values: unknown[] = [rawIds, requisitionId];
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'r');
+    const scopeClause = filters.length > 0 ? ` AND ${filters.join(' AND ')}` : '';
+    const mapRes = await this.db.query<{
+      requested_id: string;
+      spine_id: string | null;
+    }>(
+      `WITH requested AS (
+         SELECT id::uuid AS requested_id, ord
+         FROM unnest($1::uuid[]) WITH ORDINALITY AS t(id, ord)
+       )
+       SELECT req.requested_id::text AS requested_id,
+              COALESCE(c_direct.id, c_eval.id)::text AS spine_id
+       FROM requested req
+       INNER JOIN public.job_requisitions r ON r.id = $2::uuid${scopeClause}
+       LEFT JOIN public.recruitment_candidates c_direct
+         ON c_direct.id = req.requested_id AND c_direct.requisition_id = r.id
+       LEFT JOIN public.candidate_evaluations e
+         ON e.candidate_id = req.requested_id
+         OR e.recruitment_candidate_id = req.requested_id
+         OR e.application_id = req.requested_id
+       LEFT JOIN public.recruitment_candidates c_eval
+         ON c_eval.id = COALESCE(e.recruitment_candidate_id, e.application_id)
+         AND c_eval.requisition_id = r.id
+       ORDER BY req.ord ASC;`,
+      values,
+    );
+    const spineByRequested = new Map(
+      mapRes.rows.map((row) => [row.requested_id, row.spine_id]),
+    );
+    const resolved: string[] = [];
+    const mixRows: Array<{ id: string; requisition_id: string }> = [];
+    for (const requestedId of rawIds) {
+      const spineId = spineByRequested.get(requestedId);
+      if (!spineId) continue;
+      resolved.push(spineId);
+      mixRows.push({ id: spineId, requisition_id: requisitionId });
+    }
+    assertCompareSameYctdOrThrow(requisitionId, mixRows, rawIds);
+    return resolved;
+  }
+
   async listJobRequisitions(
     query: ListJobRequisitionsQueryDto,
     authorization?: string,
@@ -1669,7 +1738,7 @@ export class RecruitmentService {
     }
     const whereClause = filters.length ? filters.join(' AND ') : 'TRUE';
     const countRes = await this.db.query<{ total: string }>(
-      `SELECT COUNT(*)::text AS total
+      `SELECT COUNT(DISTINCT r.id)::text AS total
        FROM public.job_requisitions r
        LEFT JOIN public.job_description_templates t ON t.id::text = r.job_template_id
        WHERE ${whereClause};`,
@@ -1682,7 +1751,16 @@ export class RecruitmentService {
        LIMIT $${values.length + 1} OFFSET $${values.length + 2};`,
       [...values, pageSize, offset],
     );
-    const data = res.rows.map((row) => this.mapRequisitionDisplay(row));
+    // Defense: one physical YCTD id → one picker row (join must not multiply).
+    const seenIds = new Set<string>();
+    const data = res.rows
+      .filter((row) => {
+        const id = String(row.id);
+        if (seenIds.has(id)) return false;
+        seenIds.add(id);
+        return true;
+      })
+      .map((row) => this.mapRequisitionDisplay(row));
     const receivableMode = isUvReceivableListQuery(query);
     return {
       total: Number(countRes.rows[0]?.total ?? 0),
@@ -4238,6 +4316,8 @@ export class RecruitmentService {
   /**
    * F-REC-CMP-01 — applications (+ evals) by YCTD. Lane A spine = recruitment_candidates.
    * FORBIDDEN: filter via job_postings / job_posting_id.
+   * Scope company via YCTD (r.company_id) so UV attached to an in-scope YCTD still list
+   * when candidate.company_id differs from OU used on the picker (UV meta vs empty list).
    */
   async listApplicationsByYctd(
     query: ListApplicationsQueryDto,
@@ -4257,12 +4337,17 @@ export class RecruitmentService {
     const includeEvals = String(query.include ?? '')
       .toLowerCase()
       .includes('eval');
+    // Scope via YCTD (r.company_id), not UV partition — UV may share YCTD across OU
+    // while candidate_count on picker counts all Lane A rows on requisition_id.
     const filters: string[] = ['c.requisition_id = $1::uuid'];
     const values: unknown[] = [requisitionId];
-    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'r');
     const whereClause = filters.join(' AND ');
     const countRes = await this.db.query<{ total: string }>(
-      `SELECT COUNT(*)::text AS total FROM public.recruitment_candidates c WHERE ${whereClause};`,
+      `SELECT COUNT(*)::text AS total
+       FROM public.recruitment_candidates c
+       INNER JOIN public.job_requisitions r ON r.id = c.requisition_id
+       WHERE ${whereClause};`,
       values,
     );
     const res = await this.db.query<{
@@ -4273,9 +4358,17 @@ export class RecruitmentService {
       email: string;
       status: string;
       created_at: string;
+      position_key: string | null;
+      position_name: string | null;
+      yctd_title: string | null;
     }>(
-      `SELECT c.id, c.company_id, c.requisition_id, c.full_name, c.email, c.status, c.created_at
+      `SELECT c.id, c.company_id, c.requisition_id, c.full_name, c.email, c.status, c.created_at,
+              COALESCE(NULLIF(r.position_key, ''), t.position_code, '') AS position_key,
+              COALESCE(NULLIF(t.position_name, ''), NULLIF(r.title, ''), '') AS position_name,
+              r.title AS yctd_title
        FROM public.recruitment_candidates c
+       INNER JOIN public.job_requisitions r ON r.id = c.requisition_id
+       LEFT JOIN public.job_description_templates t ON t.id::text = r.job_template_id
        WHERE ${whereClause}
        ORDER BY c.created_at DESC
        LIMIT $${values.length + 1} OFFSET $${values.length + 2};`,
@@ -4283,33 +4376,49 @@ export class RecruitmentService {
     );
     let evalByCandidate = new Map<
       string,
-      { scores: unknown[]; result: string | null; total_score: number | null }
+      {
+        scores: ReturnType<typeof normalizeCompareScoreItems>;
+        result: string | null;
+        total_score: number | null;
+        weighted_score: number | null;
+        overall_feedback: string | null;
+        recommendation: string | null;
+      }
     >();
     if (includeEvals && res.rows.length > 0) {
       const ids = res.rows.map((r) => r.id);
       const evalRes = await this.db.query<{
-        candidate_id: string;
+        lane_candidate_id: string;
         scores: unknown;
         result: string | null;
         total_score: number | null;
+        weighted_score: number | null;
+        overall_feedback: string | null;
+        recommendation: string | null;
       }>(
-        `SELECT DISTINCT ON (e.candidate_id)
-            e.candidate_id::text AS candidate_id,
+        `SELECT DISTINCT ON (${COMPARE_EVAL_LANE_A_ID_SQL})
+            ${COMPARE_EVAL_LANE_A_ID_SQL}::text AS lane_candidate_id,
             e.scores,
             e.result,
-            e.total_score
+            e.total_score,
+            e.weighted_score,
+            e.overall_feedback,
+            e.recommendation
          FROM public.candidate_evaluations e
-         WHERE e.candidate_id = ANY($1::uuid[])
-         ORDER BY e.candidate_id, e.created_at DESC;`,
+         WHERE ${COMPARE_EVAL_LANE_A_ID_SQL} = ANY($1::uuid[])
+         ORDER BY ${COMPARE_EVAL_LANE_A_ID_SQL}, e.created_at DESC NULLS LAST;`,
         [ids],
       );
       evalByCandidate = new Map(
         evalRes.rows.map((e) => [
-          e.candidate_id,
+          e.lane_candidate_id,
           {
-            scores: Array.isArray(e.scores) ? e.scores : [],
+            scores: normalizeCompareScoreItems(e.scores),
             result: e.result,
             total_score: e.total_score,
+            weighted_score: e.weighted_score,
+            overall_feedback: e.overall_feedback,
+            recommendation: e.recommendation,
           },
         ]),
       );
@@ -4317,18 +4426,32 @@ export class RecruitmentService {
     const items = res.rows.map((row) => {
       const ev = evalByCandidate.get(row.id);
       const evalStatus = ev ? 'scored' : 'none';
+      const weighted =
+        ev?.weighted_score != null && Number.isFinite(Number(ev.weighted_score))
+          ? Number(ev.weighted_score)
+          : ev?.total_score != null && Number.isFinite(Number(ev.total_score))
+            ? Number(ev.total_score)
+            : null;
       return {
         candidate_id: row.id,
+        recruitment_candidate_id: row.id,
         application_id: row.id,
         full_name: row.full_name,
+        email: row.email ?? null,
         stage: row.status,
+        position_key: row.position_key || null,
+        position_name: row.position_name || null,
+        yctd_title: row.yctd_title || null,
         requisition_id: row.requisition_id,
         recruitment_request_id: row.requisition_id,
         eval_status: evalStatus,
         eval_label: evalStatus === 'none' ? 'chưa đánh giá' : undefined,
         scores: ev?.scores ?? [],
         result: ev?.result ?? null,
+        recommendation: ev?.recommendation ?? null,
+        overall_feedback: ev?.overall_feedback ?? null,
         total_score: ev?.total_score ?? null,
+        weighted_score: weighted,
       };
     });
     return {
@@ -4356,11 +4479,11 @@ export class RecruitmentService {
       scopeContext,
     );
     const requisitionId = requireUvYctdRequisitionId(query);
-    const candidateIds = parseCandidateIdList(
+    const rawCandidateIds = parseCandidateIdList(
       query.candidate_ids ?? query.application_ids,
     );
-    assertCompareMaxNOrThrow(candidateIds);
-    if (candidateIds.length === 0) {
+    assertCompareMaxNOrThrow(rawCandidateIds);
+    if (rawCandidateIds.length === 0) {
       return {
         requisition_id: requisitionId,
         recruitment_request_id: requisitionId,
@@ -4369,12 +4492,17 @@ export class RecruitmentService {
         items: [],
       };
     }
+    const candidateIds = await this.resolveCompareSpineCandidateIdsForYctd(
+      requisitionId,
+      rawCandidateIds,
+      scope,
+    );
     const filters: string[] = [
       'c.id = ANY($1::uuid[])',
       'c.requisition_id = $2::uuid',
     ];
     const values: unknown[] = [candidateIds, requisitionId];
-    this.pushRequisitionCompanyFilter(filters, values, scope, 'c');
+    this.pushRequisitionCompanyFilter(filters, values, scope, 'r');
     const res = await this.db.query<{
       id: string;
       requisition_id: string;
@@ -4383,6 +4511,7 @@ export class RecruitmentService {
     }>(
       `SELECT c.id, c.requisition_id::text AS requisition_id, c.full_name, c.status
        FROM public.recruitment_candidates c
+       INNER JOIN public.job_requisitions r ON r.id = c.requisition_id
        WHERE ${filters.join(' AND ')};`,
       values,
     );
@@ -4395,7 +4524,7 @@ export class RecruitmentService {
         anyFilters,
         anyValues,
         scope,
-        'c',
+        'r',
       );
       const anyRes = await this.db.query<{
         id: string;
@@ -4403,6 +4532,7 @@ export class RecruitmentService {
       }>(
         `SELECT c.id, c.requisition_id::text AS requisition_id
          FROM public.recruitment_candidates c
+         INNER JOIN public.job_requisitions r ON r.id = c.requisition_id
          WHERE ${anyFilters.join(' AND ')};`,
         anyValues,
       );
@@ -4413,60 +4543,102 @@ export class RecruitmentService {
       assertCompareSameYctdOrThrow(requisitionId, res.rows, candidateIds);
     }
     const evalRes = await this.db.query<{
-      candidate_id: string;
+      lane_candidate_id: string;
       scores: unknown;
       result: string | null;
       total_score: number | null;
+      weighted_score: number | null;
+      overall_feedback: string | null;
+      recommendation: string | null;
     }>(
-      `SELECT DISTINCT ON (e.candidate_id)
-          e.candidate_id::text AS candidate_id,
+      `SELECT DISTINCT ON (${COMPARE_EVAL_LANE_A_ID_SQL})
+          ${COMPARE_EVAL_LANE_A_ID_SQL}::text AS lane_candidate_id,
           e.scores,
           e.result,
-          e.total_score
+          e.total_score,
+          e.weighted_score,
+          e.overall_feedback,
+          e.recommendation
        FROM public.candidate_evaluations e
-       WHERE e.candidate_id = ANY($1::uuid[])
-       ORDER BY e.candidate_id, e.created_at DESC;`,
+       WHERE ${COMPARE_EVAL_LANE_A_ID_SQL} = ANY($1::uuid[])
+       ORDER BY ${COMPARE_EVAL_LANE_A_ID_SQL}, e.created_at DESC NULLS LAST;`,
       [candidateIds],
     );
-    const evalMap = new Map(evalRes.rows.map((e) => [e.candidate_id, e]));
+    const evalMap = new Map(evalRes.rows.map((e) => [e.lane_candidate_id, e]));
     const criteriaKeys = new Set<string>();
     for (const e of evalRes.rows) {
-      const scores = Array.isArray(e.scores) ? e.scores : [];
-      for (const s of scores) {
-        if (s && typeof s === 'object' && 'criterion' in (s as object)) {
-          criteriaKeys.add(String((s as { criterion: string }).criterion));
-        } else if (s && typeof s === 'object' && 'name' in (s as object)) {
-          criteriaKeys.add(String((s as { name: string }).name));
+      for (const s of normalizeCompareScoreItems(e.scores)) {
+        criteriaKeys.add(s.criterion_name);
+      }
+    }
+    let criteria: Array<{ id?: string; name: string; weight?: number }> = [
+      ...criteriaKeys,
+    ].map((name) => ({ name }));
+    // TECH-01 §3.2 — when no stored scores, fall back to active eval template axes.
+    if (criteria.length === 0) {
+      const reqCompanyRes = await this.db.query<{ company_id: string }>(
+        `SELECT company_id FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1;`,
+        [requisitionId],
+      );
+      const candidateCompanyId = res.rows[0]
+        ? (
+            await this.db.query<{ company_id: string }>(
+              `SELECT company_id FROM public.recruitment_candidates WHERE id = $1::uuid LIMIT 1;`,
+              [res.rows[0].id],
+            )
+          ).rows[0]?.company_id
+        : null;
+      const templateCompanyIds = [
+        reqCompanyRes.rows[0]?.company_id,
+        candidateCompanyId,
+        ...expandPayrollPeriodCompanyIds(scope),
+      ]
+        .map((id) => (id != null ? String(id).trim() : ''))
+        .filter((id) => id.length > 0);
+      const seenTemplateCompanies = new Set<string>();
+      for (const companyId of templateCompanyIds) {
+        if (seenTemplateCompanies.has(companyId)) continue;
+        seenTemplateCompanies.add(companyId);
+        const tplRes = await this.db.query<{
+          id: string;
+          name: string;
+          weight: number | null;
+        }>(
+          `SELECT id::text AS id, name, weight
+           FROM public.evaluation_criteria_templates
+           WHERE company_id = $1 AND COALESCE(is_active, TRUE) = TRUE
+           ORDER BY sort_order ASC, name ASC;`,
+          [companyId],
+        );
+        if (tplRes.rows.length > 0) {
+          criteria = tplRes.rows.map((t) => ({
+            id: t.id,
+            name: t.name,
+            weight: t.weight != null ? Number(t.weight) : undefined,
+          }));
+          break;
         }
       }
     }
-    const criteria = [...criteriaKeys].map((name) => ({ name }));
     const byId = new Map(res.rows.map((r) => [r.id, r]));
     const rows = candidateIds.map((id) => {
       const cand = byId.get(id)!;
       const ev = evalMap.get(id);
-      const scoresArr = Array.isArray(ev?.scores) ? ev.scores : [];
+      const scoresArr = normalizeCompareScoreItems(ev?.scores);
       const scoresObj: Record<string, number | null> = {};
       for (const c of criteria) {
         scoresObj[c.name] = null;
+        if (c.id) scoresObj[c.id] = null;
       }
       for (const s of scoresArr) {
-        if (s && typeof s === 'object') {
-          const name =
-            'criterion' in (s as object)
-              ? String((s as { criterion: string }).criterion)
-              : 'name' in (s as object)
-                ? String((s as { name: string }).name)
-                : null;
-          const val =
-            'score' in (s as object)
-              ? Number((s as { score: number }).score)
-              : 'value' in (s as object)
-                ? Number((s as { value: number }).value)
-                : null;
-          if (name) scoresObj[name] = Number.isFinite(val) ? val : null;
-        }
+        scoresObj[s.criterion_name] = s.actual_score;
       }
+      const weighted =
+        ev?.weighted_score != null && Number.isFinite(Number(ev.weighted_score))
+          ? Number(ev.weighted_score)
+          : ev?.total_score != null && Number.isFinite(Number(ev.total_score))
+            ? Number(ev.total_score)
+            : null;
       return {
         candidate_id: id,
         application_id: id,
@@ -4476,15 +4648,96 @@ export class RecruitmentService {
         eval_label: ev ? undefined : 'chưa đánh giá',
         scores: scoresObj,
         result: ev?.result ?? null,
+        recommendation: ev?.recommendation ?? null,
+        overall_feedback: ev?.overall_feedback ?? null,
         total_score: ev?.total_score ?? null,
+        weighted_score: weighted,
       };
     });
     return {
       requisition_id: requisitionId,
       recruitment_request_id: requisitionId,
+      max_n: REC_COMPARE_MAX_N,
       criteria,
       rows,
       items: rows,
+    };
+  }
+
+  /**
+   * @CODE-MEMORY method · Lane A GET interviews list — FR-UC-BP-REC-06a §3.4
+   * HTTP: GET …/interviews · SoT public.recruitment_interviews (+ candidate display)
+   * DENY public.interviews catalog twin (Lane B) as list SoT for Quản lý lịch PV.
+   * WorkItem: PO-HRM-REC-IV-LIST-LANE-A-01
+   */
+  async listRecruitmentInterviews(
+    companyId: string,
+    authorization?: string,
+    options?: { candidateId?: string },
+  ): Promise<{
+    total: number;
+    data: Array<
+      InterviewRow & {
+        candidate_name: string | null;
+        candidate_email: string | null;
+        position: string | null;
+        scheduled_at_display_vi_vn: string | null;
+      }
+    >;
+  }> {
+    await this.ensureSchema();
+    const scope = resolveHrmListScope(authorization, companyId);
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    if (scope.companyIds.length === 1) {
+      values.push(scope.companyIds[0]);
+      filters.push(`i.company_id = $${values.length}::text`);
+    } else {
+      values.push(scope.companyIds);
+      filters.push(`i.company_id = ANY($${values.length}::text[])`);
+    }
+    if (options?.candidateId?.trim()) {
+      values.push(options.candidateId.trim());
+      filters.push(`i.candidate_id = $${values.length}::uuid`);
+    }
+    const where =
+      filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
+    const countRes = await this.db.query<{ total: string }>(
+      `SELECT COUNT(*)::text AS total
+       FROM public.recruitment_interviews i
+       ${where}`,
+      values,
+    );
+    const res = await this.db.query<
+      InterviewRow & {
+        candidate_name: string | null;
+        candidate_email: string | null;
+        position: string | null;
+      }
+    >(
+      `SELECT i.id, i.company_id, i.candidate_id::text AS candidate_id,
+              i.scheduled_at::text AS scheduled_at, i.interviewer, i.status,
+              i.cancel_reason, i.created_at::text AS created_at,
+              i.updated_at::text AS updated_at,
+              c.full_name AS candidate_name,
+              c.email AS candidate_email,
+              nullif(btrim(r.title), '') AS position
+       FROM public.recruitment_interviews i
+       LEFT JOIN public.recruitment_candidates c ON c.id = i.candidate_id
+       LEFT JOIN public.job_requisitions r ON r.id = c.requisition_id
+       ${where}
+       ORDER BY
+         CASE WHEN i.status IN ('scheduled','confirmed') THEN 0 ELSE 1 END,
+         i.scheduled_at DESC NULLS LAST`,
+      values,
+    );
+    const data = res.rows.map((row) => ({
+      ...row,
+      scheduled_at_display_vi_vn: this.toViVnDateTime(row.scheduled_at),
+    }));
+    return {
+      total: Number(countRes.rows[0]?.total ?? 0),
+      data,
     };
   }
 

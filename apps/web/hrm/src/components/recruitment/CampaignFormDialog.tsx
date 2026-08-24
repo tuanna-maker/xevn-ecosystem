@@ -164,6 +164,7 @@ export function CampaignFormDialog({
   }, [companyId]);
 
   useEffect(() => {
+    if (!open) return;
     if (campaign) {
       form.reset({
         name: campaign.name, description: campaign.description || '',
@@ -187,7 +188,8 @@ export function CampaignFormDialog({
         salary_level: '', quantity: 1, requirements: '', degree: '', major: '',
       });
     }
-  }, [campaign, form, open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open/id only; cấm deps `form` (Textarea 1 ký tự)
+  }, [open, campaign?.id]);
 
   const onSubmit = async (data: CampaignFormValues) => {
     setIsSubmitting(true);

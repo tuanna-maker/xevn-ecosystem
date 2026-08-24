@@ -22,7 +22,13 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
+    "@radix-ui/react-popover": "^1.1.14",
+    "@radix-ui/react-slot": "^1.2.3",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "lucide-react": "^1.33.0",
+    "react-day-picker": "^8.10.1",
     "tailwind-merge": "^2.6.1"
   },
   "devDependencies": {

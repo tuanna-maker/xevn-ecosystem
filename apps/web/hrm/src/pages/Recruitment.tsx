@@ -105,7 +105,7 @@
  * Why: DEF-REC-EMBED-DEEPLINK-TAB-CANDIDATES — iframe src omits tab; stayed on Dashboard
  * must_keep: Tab ids · G4 URL seal · U65
  */
-import { Fragment, lazy, Suspense, useState, useEffect, useMemo } from 'react';
+import { Fragment, lazy, Suspense, useState, useEffect, useMemo, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
@@ -201,6 +201,9 @@ import { KanbanCandidate } from '@/hooks/useKanbanCandidates';
 import { useRecruitmentDashboard } from '@/hooks/useRecruitmentDashboard';
 import { useRecruitmentPlans, RecruitmentPlan } from '@/hooks/useRecruitmentPlans';
 import { useCandidateEvaluations, CandidateEvaluation } from '@/hooks/useCandidateEvaluations';
+import { useJobRequisitions } from '@/hooks/useJobRequisitions';
+import { normalizeRequisitionId } from '@/lib/candidateUvYctdUi';
+import type { CompareEvaluateTarget } from '@/components/recruitment/CandidateComparisonDialog';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
@@ -227,6 +230,11 @@ import { useJobTemplates } from '@/hooks/useJobTemplates';
 const CampaignsTab = lazy(() => import('@/components/recruitment/CampaignsTab').then(m => ({ default: m.CampaignsTab })));
 const CandidateEvaluationDialog = lazy(() => import('@/components/recruitment/CandidateEvaluationDialog').then(m => ({ default: m.CandidateEvaluationDialog })));
 const CandidateComparisonDialog = lazy(() => import('@/components/recruitment/CandidateComparisonDialog').then(m => ({ default: m.CandidateComparisonDialog })));
+const CandidateStageTransitionDialog = lazy(() =>
+  import('@/components/recruitment/CandidateStageTransitionDialog').then((m) => ({
+    default: m.CandidateStageTransitionDialog,
+  })),
+);
 const CandidateDetailView = lazy(() => import('@/components/recruitment/CandidateDetailView').then(m => ({ default: m.CandidateDetailView })));
 const HeadcountProposalTab = lazy(() => import('@/components/recruitment/HeadcountProposalTab').then(m => ({ default: m.HeadcountProposalTab })));
 const JobPostingsTab = lazy(() => import('@/components/recruitment/JobPostingsTab').then(m => ({ default: m.JobPostingsTab })));
@@ -586,7 +594,19 @@ export default function Recruitment() {
   } | null>(null);
   const [isEvaluationDialogOpen, setIsEvaluationDialogOpen] = useState(false);
   const [isComparisonDialogOpen, setIsComparisonDialogOpen] = useState(false);
-  const [evaluatingCandidate, setEvaluatingCandidate] = useState<KanbanCandidate | null>(null);
+  const [compareInitialRequisitionId, setCompareInitialRequisitionId] = useState<string | null>(null);
+  const [compareInitialCandidateId, setCompareInitialCandidateId] = useState<string | null>(null);
+  const [evaluatingCandidate, setEvaluatingCandidate] = useState<{
+    id: string;
+    fullName: string;
+    email: string;
+    position?: string | null;
+    requisition_id?: string | null;
+    recruitment_candidate_id?: string | null;
+    list_lane?: string | null;
+  } | null>(null);
+  const [stageFromCompare, setStageFromCompare] = useState<CompareEvaluateTarget | null>(null);
+  const [stageTransitionOpen, setStageTransitionOpen] = useState(false);
   const [hirePendingKanban, setHirePendingKanban] = useState<KanbanCandidate | null>(null);
   const [hirePendingKanbanStage, setHirePendingKanbanStage] = useState<string | null>(null);
   const [hireSubmitting, setHireSubmitting] = useState(false);
@@ -642,7 +662,46 @@ export default function Recruitment() {
     evaluations,
     loading: evaluationsLoading,
     stats: evaluationStats,
-  } = useCandidateEvaluations(evaluationsTabEnabled);
+    refetch: refetchEvaluations,
+  } = useCandidateEvaluations(evaluationsTabEnabled || isComparisonDialogOpen);
+
+  const { requisitions: compareSeedRequisitions, refetch: refreshCompareRequisitions } =
+    useJobRequisitions();
+
+  const openCompareForYctd = useCallback(
+    (requisitionId: string | null | undefined, candidateId?: string | null) => {
+      setCompareInitialRequisitionId(normalizeRequisitionId(requisitionId) || null);
+      setCompareInitialCandidateId((candidateId ?? '').trim() || null);
+      setIsComparisonDialogOpen(true);
+    },
+    [],
+  );
+
+  const openEvaluationFromCompare = useCallback((target: CompareEvaluateTarget) => {
+    setEvaluatingCandidate({
+      id: target.id,
+      fullName: target.full_name,
+      email: target.email,
+      position: target.position ?? null,
+      requisition_id: target.requisition_id,
+      recruitment_candidate_id: target.recruitment_candidate_id ?? null,
+      list_lane: target.recruitment_candidate_id ? 'spine' : 'pool',
+    });
+    setIsEvaluationDialogOpen(true);
+  }, []);
+
+  const openEvaluationFromRow = useCallback((evaluation: CandidateEvaluation) => {
+    setEvaluatingCandidate({
+      id: evaluation.candidate_id,
+      fullName: evaluation.candidate_name,
+      email: evaluation.candidate_email,
+      position: evaluation.candidate_position,
+      requisition_id: evaluation.requisition_id ?? null,
+      recruitment_candidate_id: evaluation.recruitment_candidate_id ?? null,
+      list_lane: evaluation.recruitment_candidate_id ? 'spine' : 'pool',
+    });
+    setIsEvaluationDialogOpen(true);
+  }, []);
 
   // Handle drag and drop — FR-HRM-INT-01: hired requires employee link picker
   const handleDragEnd = (result: DropResult) => {
@@ -1403,7 +1462,11 @@ export default function Recruitment() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">{t('recruitment.evaluateCandidate')}</h2>
               <Button
-                onClick={() => setIsComparisonDialogOpen(true)}
+                onClick={() => {
+                  setCompareInitialRequisitionId(null);
+                  setCompareInitialCandidateId(null);
+                  setIsComparisonDialogOpen(true);
+                }}
                 data-testid="hdsd-rec-compare-open-btn"
               >
                 <BarChart3 className="w-4 h-4 mr-2" />
@@ -1500,19 +1563,29 @@ export default function Recruitment() {
                           {new Date(evaluation.created_at).toLocaleDateString('vi-VN')}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => {
-                              const candidateForEval = candidates.find(c => c.id === evaluation.candidate_id);
-                              if (candidateForEval) {
-                                setEvaluatingCandidate(candidateForEval);
-                                setIsEvaluationDialogOpen(true);
+                          <div className="flex items-center justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              data-testid="rec-eval-row-compare"
+                              title={t('recruitment.compareCandidates')}
+                              onClick={() =>
+                                openCompareForYctd(
+                                  evaluation.requisition_id,
+                                  evaluation.recruitment_candidate_id || evaluation.candidate_id,
+                                )
                               }
-                            }}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
+                            >
+                              <BarChart3 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openEvaluationFromRow(evaluation)}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -2234,9 +2307,16 @@ export default function Recruitment() {
             full_name: evaluatingCandidate.fullName,
             email: evaluatingCandidate.email,
             position: evaluatingCandidate.position || null,
+            recruitment_candidate_id: evaluatingCandidate.recruitment_candidate_id,
+            list_lane: evaluatingCandidate.list_lane,
+            requisition_id: evaluatingCandidate.requisition_id,
           } : null}
           open={isEvaluationDialogOpen}
           onOpenChange={setIsEvaluationDialogOpen}
+          onSaved={() => void refetchEvaluations()}
+          onCompareByYctd={(requisitionId, candidateId) => {
+            openCompareForYctd(requisitionId, candidateId);
+          }}
         />
       </Suspense>
 
@@ -2244,7 +2324,46 @@ export default function Recruitment() {
       <Suspense fallback={null}>
         <CandidateComparisonDialog
           open={isComparisonDialogOpen}
-          onOpenChange={setIsComparisonDialogOpen}
+          onOpenChange={(open) => {
+            setIsComparisonDialogOpen(open);
+            if (!open) {
+              setCompareInitialRequisitionId(null);
+              setCompareInitialCandidateId(null);
+            }
+          }}
+          initialRequisitionId={compareInitialRequisitionId}
+          initialCandidateId={compareInitialCandidateId}
+          seedEvaluations={evaluations}
+          seedRequisitions={compareSeedRequisitions}
+          refreshRequisitions={refreshCompareRequisitions}
+          onEvaluateCandidate={openEvaluationFromCompare}
+          onChangeStage={(target) => {
+            setStageFromCompare(target);
+            setStageTransitionOpen(true);
+          }}
+        />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <CandidateStageTransitionDialog
+          open={stageTransitionOpen}
+          onOpenChange={(open) => {
+            setStageTransitionOpen(open);
+            if (!open) setStageFromCompare(null);
+          }}
+          candidate={
+            stageFromCompare
+              ? {
+                  id: stageFromCompare.id,
+                  full_name: stageFromCompare.full_name,
+                  email: stageFromCompare.email,
+                  requisition_id: stageFromCompare.requisition_id,
+                  recruitment_candidate_id: stageFromCompare.recruitment_candidate_id,
+                  list_lane: stageFromCompare.recruitment_candidate_id ? 'spine' : 'pool',
+                }
+              : null
+          }
+          onSuccess={() => void refetchEvaluations()}
         />
       </Suspense>
 

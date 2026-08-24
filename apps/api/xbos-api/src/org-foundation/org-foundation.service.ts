@@ -287,8 +287,25 @@ export class OrgFoundationService {
         JSON.stringify(body.payload ?? {}),
       ],
     );
-    return rows[0];
+    const newEntity = rows[0];
+    
+    const adminEmail = (body.payload as any)?.companyForm?.adminEmail;
+    if (adminEmail) {
+      try {
+        await this.db.query(
+          `INSERT INTO public.employees (id, company_id, employee_code, email, full_name, job_title_key, status, hired_at)
+           VALUES (gen_random_uuid(), $1, 'ADMIN01', $2, 'Tenant Admin', 'CEO', 'active', CURRENT_DATE)
+           ON CONFLICT DO NOTHING`,
+          [targetCompanyId, adminEmail]
+        );
+      } catch (err) {
+        console.warn('Failed to auto-create tenant admin employee', err);
+      }
+    }
+    
+    return newEntity;
   }
+
 
   /**
    * UC-XBOS-ORG-01 — member tenant org tree; master tenant returns aggregated member trees (ADR group-org-overview).

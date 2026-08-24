@@ -99,13 +99,35 @@ export function isAttHoursVarKey(key: string): boolean {
  * - gd1_eval_v1 + lines[] → evaluable subset
  * - FE GĐ1 opaque (`form: gd1` / ops opaque|noop) → not LIVE
  */
-export type ClassifiedPayFormula = 
-  | { kind: 'gd1_eval_v1'; lines: PayFormulaEvalLineInput[]; warnings: string[]; gd1Lines?: PayFormulaEvalLineInput[] }
-  | { kind: 'hyperformula_v1'; lines: PayFormulaEvalLineHyperFormulaInput[]; warnings: string[]; gd1Lines?: PayFormulaEvalLineInput[] }
-  | { kind: 'opaque_gd1'; lines: never[]; warnings: string[]; gd1Lines?: PayFormulaEvalLineInput[] }
-  | { kind: 'unknown'; lines: never[]; warnings: string[]; gd1Lines?: PayFormulaEvalLineInput[] };
+export type ClassifiedPayFormula =
+  | {
+      kind: 'gd1_eval_v1';
+      lines: PayFormulaEvalLineInput[];
+      warnings: string[];
+      gd1Lines?: PayFormulaEvalLineInput[];
+    }
+  | {
+      kind: 'hyperformula_v1';
+      lines: PayFormulaEvalLineHyperFormulaInput[];
+      warnings: string[];
+      gd1Lines?: PayFormulaEvalLineInput[];
+    }
+  | {
+      kind: 'opaque_gd1';
+      lines: never[];
+      warnings: string[];
+      gd1Lines?: PayFormulaEvalLineInput[];
+    }
+  | {
+      kind: 'unknown';
+      lines: never[];
+      warnings: string[];
+      gd1Lines?: PayFormulaEvalLineInput[];
+    };
 
-export function classifyPayFormulaExpression(expressionJson: unknown): ClassifiedPayFormula {
+export function classifyPayFormulaExpression(
+  expressionJson: unknown,
+): ClassifiedPayFormula {
   const warnings: string[] = [];
   if (
     !expressionJson ||
@@ -168,9 +190,14 @@ export function classifyPayFormulaExpression(expressionJson: unknown): Classifie
         continue;
       }
       const row = raw as Record<string, unknown>;
-      const component_code = String(row.component_code ?? row.componentCode ?? '').trim();
-      const signRaw = String(row.sign ?? 'earning').trim().toLowerCase();
-      const sign: PayFormulaEvalSign = signRaw === 'deduction' ? 'deduction' : 'earning';
+      const component_code = String(
+        row.component_code ?? row.componentCode ?? '',
+      ).trim();
+      const signRaw = String(row.sign ?? 'earning')
+        .trim()
+        .toLowerCase();
+      const sign: PayFormulaEvalSign =
+        signRaw === 'deduction' ? 'deduction' : 'earning';
       const formula = String(row.formula ?? '').trim();
       if (!component_code || !formula.startsWith('=')) {
         warnings.push('SKIP_INVALID_LINE_FIELDS');
@@ -233,7 +260,8 @@ function evaluateHyperFormulaExpression(
     const hf = HyperFormula.buildEmpty({ licenseKey: 'gpl-v3' });
     const sheetName = hf.addSheet('Sheet1');
     const sheetId = hf.getSheetId(sheetName);
-    if (sheetId === undefined) throw new Error('Failed to get HyperFormula sheet');
+    if (sheetId === undefined)
+      throw new Error('Failed to get HyperFormula sheet');
 
     for (const [k, v] of Object.entries(vars)) {
       if (Number.isFinite(v)) {
@@ -254,7 +282,12 @@ function evaluateHyperFormulaExpression(
         amount = val;
       } else if (typeof val === 'string' && Number.isFinite(Number(val))) {
         amount = Number(val);
-      } else if (val && typeof val === 'object' && 'value' in val && typeof val.value === 'number') {
+      } else if (
+        val &&
+        typeof val === 'object' &&
+        'value' in val &&
+        typeof val.value === 'number'
+      ) {
         amount = val.value; // For CellError or detailed responses
       } else {
         return {
@@ -287,7 +320,11 @@ function evaluateHyperFormulaExpression(
       gross,
       deduction,
       net: roundMoney(gross - deduction),
-      warnings: [...warnings, 'HYPERFORMULA_V1_EVALUATED', 'PAYROLL_E2E_READY_FALSE'],
+      warnings: [
+        ...warnings,
+        'HYPERFORMULA_V1_EVALUATED',
+        'PAYROLL_E2E_READY_FALSE',
+      ],
     };
   } catch (err) {
     return {
@@ -317,7 +354,7 @@ export function evaluatePayFormulaExpression(
       warnings: classified.warnings,
     };
   }
-  
+
   if (classified.kind === 'hyperformula_v1') {
     if (classified.lines.length === 0) {
       return {
@@ -327,7 +364,11 @@ export function evaluatePayFormulaExpression(
         warnings: classified.warnings,
       };
     }
-    return evaluateHyperFormulaExpression(classified.lines, vars, classified.warnings);
+    return evaluateHyperFormulaExpression(
+      classified.lines,
+      vars,
+      classified.warnings,
+    );
   }
 
   if (classified.kind !== 'gd1_eval_v1') {
@@ -475,7 +516,8 @@ export function collectExpressionVarKeys(
       for (const line of classified.gd1Lines ?? classified.lines) {
         if (line.source === 'var' && line.var) keys.add(line.var);
         if (line.source === 'expr' && line.expr) {
-          if (typeof line.expr.left === 'string') keys.add(line.expr.left.trim());
+          if (typeof line.expr.left === 'string')
+            keys.add(line.expr.left.trim());
           if (typeof line.expr.right === 'string')
             keys.add(line.expr.right.trim());
         }
@@ -484,7 +526,8 @@ export function collectExpressionVarKeys(
       // For HyperFormula, extract potential variables from the formula string (words matching variable naming conventions)
       for (const line of classified.lines) {
         if ('formula' in line) {
-          const matches = String(line.formula).match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
+          const matches =
+            String(line.formula).match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
           for (const match of matches) {
             // Ignore hyperformula built-in function names like IF, SUM, etc.
             if (match.toUpperCase() !== match) {

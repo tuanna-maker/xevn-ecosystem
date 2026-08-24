@@ -136,12 +136,12 @@ export function validateRecEvalCommit(input: {
   const neo =
     Boolean(input.laneAId?.trim()) || Boolean((input.applicationId ?? '').trim());
   if (!neo) {
-    return { ok: false, message: REC_EVAL_NEO_REQUIRED_CLIENT_VI };
+    return { ok: false as const, message: REC_EVAL_NEO_REQUIRED_CLIENT_VI };
   }
   if (!isRecEvalPassFail(input.result)) {
-    return { ok: false, message: REC_EVAL_PASSFAIL_REQUIRED_CLIENT_VI };
+    return { ok: false as const, message: REC_EVAL_PASSFAIL_REQUIRED_CLIENT_VI };
   }
-  return { ok: true };
+  return { ok: true as const };
 }
 
 export function formatRecMailStatusVi(status: string | null | undefined): string {

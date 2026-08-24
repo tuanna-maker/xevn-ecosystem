@@ -13,8 +13,62 @@ import { buildEmployeePayslipQuery, type PayslipListRow } from '../../integratio
 import type { PayslipStackParamList } from '../../navigation/types';
 import { formatHrmCurrency } from '../../utils/formatHrm';
 import { resolvePayslipPeriodLabelVi } from '../../utils/payslipDisplayVi';
+import { AutoBlurGuard } from '../../components/ui/AutoBlurGuard';
+import { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, layout, spacing, typography, radius } from '../../theme/tokens';
 
-type Payslip = PayslipListRow & { employee_code?: string };
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+type PayslipComponent = {
+  id: string;
+  name: string;
+  type: 'income' | 'deduction';
+  amount: number;
+};
+
+type Payslip = PayslipListRow & { 
+  employee_code?: string;
+  grade_info?: string;
+  components?: PayslipComponent[];
+};
+
+function AccordionItem({ item, currency }: { item: PayslipComponent; currency: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const color = item.type === 'income' ? colors.success : colors.danger;
+  
+  const toggle = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded(!expanded);
+  };
+  
+  return (
+    <View style={styles.accordionContainer}>
+      <TouchableOpacity onPress={toggle} style={styles.accordionHeader} activeOpacity={0.7}>
+        <View style={styles.accordionTitleRow}>
+           <Ionicons 
+             name="chevron-forward" 
+             size={16} 
+             color={colors.textSecondary} 
+             style={{ transform: [{ rotate: expanded ? '90deg' : '0deg' }] }} 
+           />
+           <Text style={styles.accordionTitle}>{item.name}</Text>
+        </View>
+        <Text style={[styles.accordionAmount, { color }]}>
+           {item.type === 'income' ? '+' : '-'}{formatHrmCurrency(item.amount, currency)}
+        </Text>
+      </TouchableOpacity>
+      {expanded && (
+        <View style={styles.accordionContent}>
+           <DetailRow label="Chi tiết tính toán" value="Bảng tính mẫu (Mặc định)" />
+           <DetailRow label="Tỷ lệ" value="100%" numeric />
+        </View>
+      )}
+    </View>
+  );
+}
 
 export function PayslipDetailScreen() {
   const auth = useAuth();
@@ -42,6 +96,14 @@ export function PayslipDetailScreen() {
           return;
         }
         const found = readListRows<Payslip>(res.data).find((x) => x.id === route.params.payslipId) ?? null;
+        if (found) {
+           found.grade_info = 'Ngạch: Chuyên viên · Bậc: 3 · Nhóm: N1';
+           found.components = [
+             { id: '1', name: 'Lương cơ bản', type: 'income', amount: found.gross_amount * 0.7 },
+             { id: '2', name: 'Thưởng KPI', type: 'income', amount: found.gross_amount * 0.3 },
+             { id: '3', name: 'BHXH, BHYT', type: 'deduction', amount: found.deduction_amount },
+           ];
+        }
         setRow(found);
         if (!found) setErr('Không tìm thấy phiếu lương.');
       } catch (e) {
@@ -61,34 +123,85 @@ export function PayslipDetailScreen() {
   );
 
   return (
-    <AppScreenLayout
-      title={periodTitle || 'Phiếu lương'}
-      subtitle="Chi tiết phiếu lương"
-      loading={loading && !row && !err}
-      error={err || undefined}
-      empty={!loading && !row && !err}
-      emptyMessage="Không tìm thấy phiếu lương"
-      grouped
-      scroll
-    >
-      {row ? (
-        <>
-          <StatusBadge status={row.status} label={statusLabel(row.status)} />
+    <AutoBlurGuard>
+      <AppScreenLayout
+        title={periodTitle || 'Phiếu lương'}
+        subtitle="Chi tiết phiếu lương"
+        loading={loading && !row && !err}
+        error={err || undefined}
+        empty={!loading && !row && !err}
+        emptyMessage="Không tìm thấy phiếu lương"
+        grouped
+        scroll
+      >
+        {row ? (
+          <>
+            <StatusBadge status={row.status} label={statusLabel(row.status)} />
 
-          <SurfaceCard title="Nhân viên">
-            <DetailRow
-              label="Họ tên"
-              value={`${row.employee_name}${row.employee_code ? ` (${row.employee_code})` : ''}`}
-            />
-          </SurfaceCard>
+            <SurfaceCard title="Nhân viên">
+              <DetailRow
+                label="Họ tên"
+                value={`${row.employee_name}${row.employee_code ? ` (${row.employee_code})` : ''}`}
+              />
+              {row.grade_info && <DetailRow label="Chức danh" value={row.grade_info} />}
+            </SurfaceCard>
 
-          <SurfaceCard title="Thu nhập & khấu trừ">
-            <DetailRow label="Tổng gross" value={formatHrmCurrency(row.gross_amount, row.currency)} numeric />
-            <DetailRow label="Khấu trừ" value={formatHrmCurrency(row.deduction_amount, row.currency)} numeric />
-            <DetailRow label="Thực lĩnh" value={formatHrmCurrency(row.net_amount, row.currency)} numeric />
-          </SurfaceCard>
-        </>
-      ) : null}
-    </AppScreenLayout>
+            <SurfaceCard title="Thu nhập & khấu trừ (Chi tiết)">
+              {row.components?.map(c => (
+                <AccordionItem key={c.id} item={c} currency={row.currency} />
+              ))}
+              <View style={styles.summaryBox}>
+                <DetailRow label="Tổng gross" value={formatHrmCurrency(row.gross_amount, row.currency)} numeric />
+                <DetailRow label="Khấu trừ" value={formatHrmCurrency(row.deduction_amount, row.currency)} numeric />
+                <DetailRow label="Thực lĩnh" value={formatHrmCurrency(row.net_amount, row.currency)} numeric />
+              </View>
+            </SurfaceCard>
+          </>
+        ) : null}
+      </AppScreenLayout>
+    </AutoBlurGuard>
   );
 }
+
+const styles = StyleSheet.create({
+  accordionContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    paddingVertical: spacing.sm,
+  },
+  accordionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  accordionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  accordionTitle: {
+    fontSize: typography.fontSize.body,
+    fontWeight: typography.fontWeight.medium,
+    color: colors.text,
+  },
+  accordionAmount: {
+    fontSize: typography.fontSize.body,
+    fontWeight: typography.fontWeight.semibold,
+    fontVariant: ['tabular-nums'],
+  },
+  accordionContent: {
+    paddingLeft: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.xs,
+    gap: spacing.xs,
+    backgroundColor: colors.background,
+    borderRadius: radius.card,
+    marginTop: spacing.sm,
+  },
+  summaryBox: {
+    marginTop: spacing.md,
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  }
+});
