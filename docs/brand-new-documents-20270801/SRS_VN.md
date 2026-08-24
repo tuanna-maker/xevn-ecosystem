@@ -8,7 +8,7 @@ Node.js, Express, TypeScript, React, React Native, Postgres 16, Redis.
 Mọi bảng đều có cột tenant_id. JWT chứa tenantId, membershipId, roles[]. Không bao giờ xóa giá trị do nền tảng sở hữu khi mở rộng catalog theo tenant.
 
 ## 3. Yêu cầu XBOS
-- Vòng đời tenant với email kích hoạt và xóa mềm (soft delete)
+- Vòng đời tenant với tính năng cấp phát tự động tài khoản admin (adminEmail, adminPassword) từ Command Center, và xóa mềm (soft delete)
 - RBAC: SUPER_ADMIN, TENANT_ADMIN, HR_MANAGER, DEPT_MANAGER, FINANCE_STAFF, RECRUITER, EMPLOYEE
 - Phạm vi tài nguyên: phòng ban và kỳ lương
 - Máy trạng thái workflow với phê duyệt hai cấp, chống tự phê duyệt, SLA 24h và 48h, leo thang, nhắc nhở

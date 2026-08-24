@@ -11,7 +11,7 @@ Auth: Bearer JWT. Header X-Tenant-ID validated against JWT.
 ## 2. XBOS
 
 ### Tenants
-POST /xbos/tenants SUPER_ADMIN
+POST /xbos/tenants SUPER_ADMIN (Payload bao gồm adminEmail, adminPassword)
 GET /xbos/tenants SUPER_ADMIN
 PATCH /xbos/tenants/:id SUPER_ADMIN
 POST /xbos/tenants/:id/activate SUPER_ADMIN
