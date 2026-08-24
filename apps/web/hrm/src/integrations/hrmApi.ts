@@ -26,6 +26,7 @@ import { getHrmPortalMode } from "@/lib/hrmPortalMode";
 import {
   getPortalJwtTenantId,
   resolveHrmMutateCompanyScope,
+  resolveHrmRequestTenantId,
   resolveHrmSpreadsheetScope,
 } from "@/lib/hrmSpreadsheetScope";
 import { safeRandomUuid } from "@/lib/safeRandomUuid";
@@ -107,15 +108,11 @@ async function headers(opts?: HrmHeaderOptions) {
   }
 
   if (!baseHeaders["x-tenant-id"]) {
-    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-    const fallbackTenant = 
-      urlParams?.get('tenantId')?.trim() || 
-      getPortalJwtTenantId() || 
+    const fallbackTenant =
+      resolveHrmRequestTenantId() ||
       import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim() ||
-      (typeof localStorage !== 'undefined' ? localStorage.getItem('hrm_current_tenant_id') : null) ||
-      (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('hrm_current_tenant_id') : null) ||
       HRM_MASTER_TENANT_ID;
-      
+
     if (fallbackTenant) {
       baseHeaders["x-tenant-id"] = fallbackTenant;
     }
@@ -463,6 +460,10 @@ export type HrmAttendanceRecord = {
   id: string;
   company_id: string;
   employee_id: string;
+  /** OS 28 — display-ready from BE join employees. */
+  employee_code?: string | null;
+  employee_name?: string | null;
+  department?: string | null;
   attendance_date: string;
   check_in_at: string | null;
   check_out_at: string | null;

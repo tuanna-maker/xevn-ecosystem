@@ -107,6 +107,38 @@ export function getPortalJwtTenantId(): string | null {
   return pickClaim(claims, ['tenantId', 'tenant_id', 'tid']);
 }
 
+/**
+ * Tenant for HRM request headers when spreadsheet scope is unavailable.
+ * JWT tenant wins over URL `tenantId` for member partitions — prevents 409.
+ */
+export function resolveHrmRequestTenantId(
+  search = typeof window !== 'undefined' ? window.location.search : '',
+): string | null {
+  const urlParams = new URLSearchParams(search);
+  const qsTenantId = urlParams.get('tenantId')?.trim();
+  const tenantFromEnv = import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim();
+  const jwtTenant = getPortalJwtTenantId()?.trim();
+
+  if (hasPortalSession() && jwtTenant === HRM_MASTER_TENANT_ID) {
+    return jwtTenant;
+  }
+
+  const memberJwtTenant =
+    hasPortalSession() && jwtTenant && jwtTenant !== HRM_MASTER_TENANT_ID
+      ? jwtTenant
+      : null;
+
+  return (
+    memberJwtTenant ||
+    qsTenantId ||
+    jwtTenant ||
+    tenantFromEnv ||
+    (typeof localStorage !== 'undefined' ? localStorage.getItem('hrm_current_tenant_id') : null) ||
+    (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('hrm_current_tenant_id') : null) ||
+    null
+  );
+}
+
 /** Portal JWT role for context chips (UC-HRM-SCOPE-05 / AC-CD-F3-01). */
 export function getPortalJwtRoleCode(): string | null {
   const claims = parseJwtClaims(getPortalAccessToken() ?? undefined);
@@ -154,7 +186,15 @@ export function resolveHrmSpreadsheetScope(
   const companyId = rawCompanyId ? coerceHrmListCompanyId(rawCompanyId) : null;
   if (!companyId) return null;
 
+  // Member portal JWT tenant wins over URL tenantId — prevents 409 when embed has ?tenantId=xevn
+  // but the signed-in user belongs to visun (or another member partition).
+  const memberJwtTenant =
+    hasPortalSession() && jwtTenant && jwtTenant !== HRM_MASTER_TENANT_ID
+      ? jwtTenant
+      : null;
+
   const tenantId =
+    memberJwtTenant ||
     qsTenantId ||
     jwtTenant ||
     tenantFromEnv ||
@@ -206,8 +246,6 @@ export function resolveHrmMutateCompanyScope(
 ): HrmSpreadsheetScope | null {
   const urlParams = new URLSearchParams(search);
   const qsCompanyId = urlParams.get('companyId')?.trim();
-  const qsTenantId = urlParams.get('tenantId')?.trim();
-  const tenantFromEnv = import.meta.env.VITE_HRM_SCOPE_TENANT_ID?.trim();
   const jwtCompany = getPortalJwtCompanyId();
   const jwtTenant = getPortalJwtTenantId();
 
@@ -238,11 +276,7 @@ export function resolveHrmMutateCompanyScope(
 
   const companyId = normalizeHrmApiListCompanyId(rawCompanyId);
   const tenantId =
-    qsTenantId ||
-    jwtTenant ||
-    tenantFromEnv ||
-    (typeof localStorage !== 'undefined' ? localStorage.getItem('hrm_current_tenant_id') : null) ||
-    (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('hrm_current_tenant_id') : null) ||
+    resolveHrmRequestTenantId(search) ||
     HRM_MASTER_TENANT_ID;
 
   return { tenantId, companyId };

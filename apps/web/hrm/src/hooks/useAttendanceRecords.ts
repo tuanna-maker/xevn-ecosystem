@@ -75,7 +75,9 @@ import {
   createAttendanceRecord,
   HrmAttendanceRecord,
   HrmAttendanceStatus,
+  HrmEmployeeRecord,
   listAttendanceRecords,
+  listEmployees,
   updateAttendanceStatus,
 } from '@/integrations/hrmApi';
 
@@ -205,7 +207,41 @@ function toTime(value?: string | null) {
   if (!value) return null;
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value.slice(11, 16) || null;
-  return date.toISOString().slice(11, 16);
+  const h = String(date.getHours()).padStart(2, '0');
+  const m = String(date.getMinutes()).padStart(2, '0');
+  return `${h}:${m}`;
+}
+
+function employeeDisplayFromRecord(emp: HrmEmployeeRecord): Partial<AttendanceRecord> {
+  const custom = emp.custom_fields ?? {};
+  const department =
+    custom.department_label?.trim() ||
+    emp.department?.trim() ||
+    custom.department?.trim() ||
+    null;
+  return {
+    employee_code: emp.employee_code,
+    employee_name: emp.display_name?.trim() || emp.full_name,
+    department,
+  };
+}
+
+async function loadEmployeeDisplayLookup(
+  companyId: string,
+): Promise<Map<string, Partial<AttendanceRecord>>> {
+  const map = new Map<string, Partial<AttendanceRecord>>();
+  const pageSize = clampHrmPageSize(500);
+  let page = 1;
+  for (;;) {
+    const res = await listEmployees({ company_id: companyId, page, page_size: pageSize });
+    for (const emp of res.data ?? []) {
+      map.set(emp.id, employeeDisplayFromRecord(emp));
+    }
+    if (!res.data?.length || res.data.length < pageSize) break;
+    page += 1;
+    if (page > 5) break;
+  }
+  return map;
 }
 
 function toUiRecord(row: HrmAttendanceRecord, fallback?: Partial<AttendanceRecord>): AttendanceRecord {
@@ -222,9 +258,9 @@ function toUiRecord(row: HrmAttendanceRecord, fallback?: Partial<AttendanceRecor
     id: row.id,
     company_id: row.company_id,
     employee_id: row.employee_id,
-    employee_code: fallback?.employee_code ?? 'N/A',
-    employee_name: fallback?.employee_name ?? 'N/A',
-    department: fallback?.department ?? null,
+    employee_code: row.employee_code?.trim() || fallback?.employee_code || 'N/A',
+    employee_name: row.employee_name?.trim() || fallback?.employee_name || 'N/A',
+    department: (row.department?.trim() || fallback?.department) ?? null,
     attendance_date: row.attendance_date,
     check_in_time: checkInTime,
     check_out_time: checkOutTime,
@@ -273,7 +309,19 @@ export function useAttendanceRecords(dateFilter?: string) {
         page: 1,
         page_size: clampHrmPageSize(100),
       });
-      setRecords((response.data ?? []).map((row) => toUiRecord(row)));
+      const rows = response.data ?? [];
+      const needsEmployeeLookup = rows.some((row) => !row.employee_name?.trim());
+      let employeeLookup: Map<string, Partial<AttendanceRecord>> | undefined;
+      if (needsEmployeeLookup) {
+        try {
+          employeeLookup = await loadEmployeeDisplayLookup(currentCompanyId);
+        } catch (lookupError) {
+          console.warn('Attendance records: employee lookup fallback failed', lookupError);
+        }
+      }
+      setRecords(
+        rows.map((row) => toUiRecord(row, employeeLookup?.get(row.employee_id))),
+      );
     } catch (error: any) {
       console.error('Error fetching attendance records:', error);
       toast({ title: t('messages.error'), description: toErrorMessage(error, h('fetchError')), variant: 'destructive' });

@@ -94,4 +94,8 @@ export class CreateJobPostingDto {
   @IsOptional()
   @IsString()
   jd_template_id?: string;
+
+  @IsOptional()
+  @IsString()
+  workflow_id?: string;
 }

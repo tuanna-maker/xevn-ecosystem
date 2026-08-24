@@ -10,6 +10,7 @@ import {
 } from '@/lib/empEmploymentStatusCatalog';
 import {
   empMutateKeyToastMessage,
+  isValidEmpPositionKeyFormat,
   normalizeEmpPositionKey,
 } from '@/lib/empPositionCatalog';
 import {
@@ -147,6 +148,12 @@ export function useEmployeeMutations(opts?: { onMutated?: () => void | Promise<v
         const jobTitleKey = data.position?.trim()
           ? normalizeEmpPositionKey(data.position)
           : undefined;
+        if (jobTitleKey && !isValidEmpPositionKeyFormat(jobTitleKey)) {
+          toast.error(
+            'Chức danh phải là mã từ danh mục job_titles — chọn từ danh sách, không dùng tên hiển thị.',
+          );
+          return null;
+        }
         const payload = {
           company_id: data.company_id?.trim() || currentCompanyId,
           employee_code: data.employee_code,
@@ -204,6 +211,12 @@ export function useEmployeeMutations(opts?: { onMutated?: () => void | Promise<v
             : data.position?.trim()
               ? normalizeEmpPositionKey(data.position)
               : undefined;
+        if (jobTitleKey && !isValidEmpPositionKeyFormat(jobTitleKey)) {
+          toast.error(
+            'Chức danh phải là mã từ danh mục job_titles — chọn từ danh sách, không dùng tên hiển thị.',
+          );
+          return false;
+        }
         await updateEmployeeApi(id, {
           email: data.email ?? undefined,
           full_name: data.full_name ?? undefined,

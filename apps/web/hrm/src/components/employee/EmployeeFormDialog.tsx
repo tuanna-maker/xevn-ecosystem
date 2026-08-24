@@ -78,15 +78,25 @@ import { resolveEmpEmploymentStatusEditValue } from '@/lib/empEmploymentStatusCa
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import {
   departmentOptionsFromCatalog,
-  toCatalogPickerOptions,
+  jobTitleOptionsFromCatalog,
 } from '@/lib/catalogSearchPicker';
 import { HRM_EMP_DEPT_EMPTY_CATALOG_CODE, resolveEmpDeptEditValue } from '@/lib/empDeptCatalog';
+import {
+  HRM_WH_PICK_EMPTY_CATALOG_CODE,
+  isEmpPositionKeyInCatalog,
+  resolveEmpPositionEditValue,
+} from '@/lib/empPositionCatalog';
 import { resolveEmployeeDepartmentLabel } from '@/lib/employeePickerLabel';
 import { HRM_LIST_DEFAULT_COMPANY_ID } from '@/lib/hrmListScope';
 import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
+import {
+  CORE_CB_MAP_REDIRECT_BODY_VI,
+  CORE_CB_MAP_REDIRECT_TITLE_VI,
+} from '@/lib/empCorePublicRing';
 import { EmployeeAvatarUpload } from './EmployeeAvatarUpload';
 import { type HrmSettingsCatalogOverviewRow, type HrmSpreadsheetScope } from '@/integrations/hrmApi';
 import { HDSD_MUTATE_TEST_IDS } from '@/lib/hdsdMutateTestIds';
+import { toast } from 'sonner';
 
 const employeeFormSchema = z.object({
   employee_code: z.string().min(1),
@@ -132,6 +142,8 @@ interface EmployeeFormDialogProps {
   companies?: { id: string; name: string }[];
   onSubmit: (data: EmployeeFormData & { company_id?: string }) => Promise<boolean>;
   isLoading?: boolean;
+  /** Open HĐ tab → Đãi ngộ (compensation packages) — salary/bank/MST không lưu qua form công khai. */
+  onOpenCompensationTab?: () => void;
 }
 
 type EmployeeBasicFieldKey =
@@ -300,6 +312,7 @@ export function EmployeeFormDialog({
   companies,
   onSubmit,
   isLoading,
+  onOpenCompensationTab,
 }: EmployeeFormDialogProps) {
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
@@ -373,7 +386,7 @@ export function EmployeeFormDialog({
         email: employee.email || '',
         phone: employee.phone || '',
         department: employee.department || '',
-        position: employee.position || '',
+        position: '',
         start_date: employee.start_date || '',
         salary: employee.salary || undefined,
         status: employee.status || '',
@@ -507,6 +520,8 @@ export function EmployeeFormDialog({
     [financeFieldsCatalog],
   );
   const hasFinanceField = (field: EmployeeFinanceFieldKey) => activeFinanceFields.has(field);
+  const hasFinanceCbFields = DEFAULT_FINANCE_FIELDS.some((field) => hasFinanceField(field));
+  const hasEditableFinanceCbFields = false;
   const financeLabel = (field: EmployeeFinanceFieldKey, fallback: string) => financeFieldLabels.get(field) ?? fallback;
   const dynamicFinanceFields = useMemo(
     () => buildDynamicFields<EmployeeFinanceFieldKey>(financeFieldsCatalog, DEFAULT_FINANCE_FIELDS),
@@ -559,13 +574,34 @@ export function EmployeeFormDialog({
     }
   }, [open, employee, statusOptions, empStatusCatalogBound, form]);
 
-  const positionCatalog = findCatalog(catalogs, ['job_titles', 'positions', 'employee_positions']);
   const positionOptions = useMemo(
-    () => toCatalogPickerOptions(positionCatalog?.effectiveItems ?? []),
-    [positionCatalog],
+    () => jobTitleOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
   );
+  const positionCatalogBound = positionOptions.length > 0;
+
+  useEffect(() => {
+    if (!open) return;
+    const storedKey = employee?.job_title_key?.trim() || '';
+    const resolved = resolveEmpPositionEditValue(
+      positionOptions,
+      storedKey,
+      positionCatalogBound,
+    );
+    if (form.getValues('position') !== resolved) {
+      form.setValue('position', resolved);
+    }
+  }, [open, employee?.job_title_key, positionOptions, positionCatalogBound, form]);
 
   const handleSubmit = async (values: FormValues) => {
+    if (values.position?.trim() && positionCatalogBound) {
+      if (!isEmpPositionKeyInCatalog(positionOptions, values.position)) {
+        toast.error(
+          'Chức danh phải chọn mã từ danh mục job_titles — không dùng tên hiển thị tự do.',
+        );
+        return;
+      }
+    }
     const customFields = Object.fromEntries(
       Object.entries(dynamicFieldValues).filter(([, value]) => value != null && String(value).trim().length > 0),
     );
@@ -580,7 +616,6 @@ export function EmployeeFormDialog({
       department: values.department || null,
       position: values.position || null,
       start_date: values.start_date || null,
-      salary: values.salary || null,
       gender: values.gender || null,
       birth_date: values.birth_date || null,
       id_number: values.id_number || null,
@@ -592,11 +627,6 @@ export function EmployeeFormDialog({
       emergency_phone: values.emergency_phone || null,
       employment_type: values.employment_type || null,
       work_location: values.work_location || null,
-      bank_name: values.bank_name || null,
-      bank_account: values.bank_account || null,
-      tax_code: values.tax_code || null,
-      social_insurance_number: values.social_insurance_number || null,
-      health_insurance_number: values.health_insurance_number || null,
       custom_fields: customFields,
     });
     
@@ -800,12 +830,24 @@ export function EmployeeFormDialog({
                               catalogsError ? t('settings.catalogs.loadError') : undefined
                             }
                             emptyHint={
-                              <a
-                                href="/settings"
-                                className="text-primary underline text-xs font-medium"
-                              >
-                                Mở Cài đặt → Danh mục nghiệp vụ
-                              </a>
+                              positionOptions.length === 0 ? (
+                                <span className="text-xs text-muted-foreground">
+                                  {HRM_WH_PICK_EMPTY_CATALOG_CODE} —{' '}
+                                  <a
+                                    href="/settings"
+                                    className="text-primary underline font-medium"
+                                  >
+                                    Mở Cài đặt → Danh mục nghiệp vụ
+                                  </a>
+                                </span>
+                              ) : (
+                                <a
+                                  href="/settings"
+                                  className="text-primary underline text-xs font-medium"
+                                >
+                                  Mở Cài đặt → Danh mục nghiệp vụ
+                                </a>
+                              )
                             }
                           />
                         </FormControl>
@@ -1127,8 +1169,32 @@ export function EmployeeFormDialog({
 
               {hasAnyFinanceFields && (
               <TabsContent value="finance" className="space-y-4 pt-4">
+                {hasFinanceCbFields && (
+                  <div
+                    className="rounded-lg border border-amber-200 bg-amber-50/80 p-4 text-sm text-amber-950"
+                    data-testid="emp-form-cb-map-redirect"
+                  >
+                    <p className="font-medium">{CORE_CB_MAP_REDIRECT_TITLE_VI}</p>
+                    <p className="mt-1 text-amber-900/90">{CORE_CB_MAP_REDIRECT_BODY_VI}</p>
+                    {onOpenCompensationTab ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-3"
+                        onClick={() => {
+                          onOpenChange(false);
+                          onOpenCompensationTab();
+                        }}
+                        data-testid="emp-form-cb-map-open-compensation"
+                      >
+                        Mở Hợp đồng → Đãi ngộ
+                      </Button>
+                    ) : null}
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-4">
-                  {hasFinanceField('salary') && (
+                  {hasEditableFinanceCbFields && hasFinanceField('salary') && (
                   <FormField
                     control={form.control}
                     name="salary"
@@ -1151,7 +1217,7 @@ export function EmployeeFormDialog({
                     )}
                   />
                   )}
-                  {hasFinanceField('tax_code') && (
+                  {hasEditableFinanceCbFields && hasFinanceField('tax_code') && (
                   <FormField
                     control={form.control}
                     name="tax_code"
@@ -1166,7 +1232,7 @@ export function EmployeeFormDialog({
                     )}
                   />
                   )}
-                  {hasFinanceField('bank_name') && (
+                  {hasEditableFinanceCbFields && hasFinanceField('bank_name') && (
                   <FormField
                     control={form.control}
                     name="bank_name"
@@ -1181,7 +1247,7 @@ export function EmployeeFormDialog({
                     )}
                   />
                   )}
-                  {hasFinanceField('bank_account') && (
+                  {hasEditableFinanceCbFields && hasFinanceField('bank_account') && (
                   <FormField
                     control={form.control}
                     name="bank_account"
@@ -1196,7 +1262,7 @@ export function EmployeeFormDialog({
                     )}
                   />
                   )}
-                  {hasFinanceField('social_insurance_number') && (
+                  {hasEditableFinanceCbFields && hasFinanceField('social_insurance_number') && (
                   <FormField
                     control={form.control}
                     name="social_insurance_number"
@@ -1211,7 +1277,7 @@ export function EmployeeFormDialog({
                     )}
                   />
                   )}
-                  {hasFinanceField('health_insurance_number') && (
+                  {hasEditableFinanceCbFields && hasFinanceField('health_insurance_number') && (
                   <FormField
                     control={form.control}
                     name="health_insurance_number"
