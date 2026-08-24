@@ -65,8 +65,8 @@ const TEMPLATE_COLUMNS = [
   { key: 'employee_name', label: 'TĂªn nhĂ¢n viĂªn', required: true },
   { key: 'department', label: 'PhĂ²ng ban', required: false },
   { key: 'contract_type', label: 'Loáº¡i há»£p Ä‘á»“ng', required: true },
-  { key: 'effective_date', label: 'NgĂ y hiá»‡u lá»±c (DD/MM/YYYY)', required: false },
-  { key: 'expiry_date', label: 'NgĂ y háº¿t háº¡n (DD/MM/YYYY)', required: false },
+  { key: 'effective_date', label: 'NgĂ y hiá»‡u lá»±c (DD/MM/YYYY)', required: false },
+  { key: 'expiry_date', label: 'NgĂ y háº¿t háº¡n (DD/MM/YYYY)', required: false },
   { key: 'status', label: 'Tráº¡ng thĂ¡i (active/pending/expired)', required: false },
   { key: 'notes', label: 'Ghi chĂº', required: false },
   { key: 'created_by', label: 'NgÆ°á»i táº¡o', required: false },
@@ -122,7 +122,7 @@ export function ContractImportDialog({
     XLSX.utils.book_append_sheet(wb, ws, 'Máº«u nháº­p há»£p Ä‘á»“ng');
     
     XLSX.writeFile(wb, 'mau_import_hop_dong.xlsx');
-    toast.success('ÄĂ£ táº£i file máº«u thĂ nh cĂ´ng');
+    toast.success('ÄĂ£ táº£i file máº«u thĂ nh cĂ´ng');
   };
 
   const parseDate = (dateStr: string): string | null => {
@@ -163,8 +163,8 @@ export function ContractImportDialog({
     const employeeName = row['TĂªn nhĂ¢n viĂªn']?.toString().trim();
     const department = row['PhĂ²ng ban']?.toString().trim();
     const contractType = row['Loáº¡i há»£p Ä‘á»“ng']?.toString().trim();
-    const effectiveDateStr = row['NgĂ y hiá»‡u lá»±c (DD/MM/YYYY)']?.toString().trim();
-    const expiryDateStr = row['NgĂ y háº¿t háº¡n (DD/MM/YYYY)']?.toString().trim();
+    const effectiveDateStr = row['NgĂ y hiá»‡u lá»±c (DD/MM/YYYY)']?.toString().trim();
+    const expiryDateStr = row['NgĂ y háº¿t háº¡n (DD/MM/YYYY)']?.toString().trim();
     const statusStr = row['Tráº¡ng thĂ¡i (active/pending/expired)']?.toString().trim().toLowerCase();
     const notes = row['Ghi chĂº']?.toString().trim();
     const createdBy = row['NgÆ°á»i táº¡o']?.toString().trim();
@@ -190,12 +190,12 @@ export function ContractImportDialog({
     // Date validation
     const effectiveDate = parseDate(effectiveDateStr || '');
     if (effectiveDateStr && !effectiveDate) {
-      errors.push('NgĂ y hiá»‡u lá»±c khĂ´ng há»£p lá»‡');
+      errors.push('NgĂ y hiá»‡u lá»±c khĂ´ng há»£p lá»‡');
     }
 
     const expiryDate = parseDate(expiryDateStr || '');
     if (expiryDateStr && !expiryDate) {
-      warnings.push('NgĂ y háº¿t háº¡n khĂ´ng há»£p lá»‡');
+      warnings.push('NgĂ y háº¿t háº¡n khĂ´ng há»£p lá»‡');
     }
 
     // Status validation
@@ -204,7 +204,7 @@ export function ContractImportDialog({
       if (['active', 'pending', 'expired'].includes(statusStr)) {
         status = statusStr;
       } else {
-        warnings.push('Tráº¡ng thĂ¡i khĂ´ng há»£p lá»‡, máº·c Ä‘á»‹nh lĂ  "pending"');
+        warnings.push('Tráº¡ng thĂ¡i khĂ´ng há»£p lá»‡, máº·c Ä‘á»‹nh lĂ  "pending"');
       }
     }
 
@@ -410,7 +410,7 @@ export function ContractImportDialog({
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
                 <li>â€¢ CĂ¡c cá»™t báº¯t buá»™c: MĂ£ há»£p Ä‘á»“ng, TĂªn nhĂ¢n viĂªn, Loáº¡i há»£p Ä‘á»“ng</li>
                 <li>â€¢ Loáº¡i HÄ: Há»£p Ä‘á»“ng 1 nÄƒm, 3 nÄƒm, 6 thĂ¡ng, há»c viá»‡c, thá»­ viá»‡c</li>
-                <li>â€¢ Äá»‹nh dáº¡ng ngĂ y: DD/MM/YYYY (VD: 01/01/2024)</li>
+                <li>â€¢ Äá»‹nh dáº¡ng ngĂ y: DD/MM/YYYY (VD: 01/01/2024)</li>
                 <li>â€¢ Tráº¡ng thĂ¡i: active, pending, expired</li>
               </ul>
             </div>
@@ -449,7 +449,7 @@ export function ContractImportDialog({
                     <TableHead>MĂ£ HÄ</TableHead>
                     <TableHead>NhĂ¢n viĂªn</TableHead>
                     <TableHead>Loáº¡i HÄ</TableHead>
-                    <TableHead>NgĂ y hiá»‡u lá»±c</TableHead>
+                    <TableHead>NgĂ y hiá»‡u lá»±c</TableHead>
                     <TableHead className="w-48">Lá»—i/Cáº£nh bĂ¡o</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -516,13 +516,13 @@ export function ContractImportDialog({
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
               </div>
-              <h3 className="mt-4 text-lg font-medium">Import hoĂ n táº¥t!</h3>
+              <h3 className="mt-4 text-lg font-medium">Import hoĂ n táº¥t!</h3>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-green-50 dark:bg-green-950/30 rounded-lg p-4 text-center">
                 <p className="text-3xl font-bold text-green-600">{importResults.success}</p>
-                <p className="text-sm text-green-700 dark:text-green-400">ThĂ nh cĂ´ng</p>
+                <p className="text-sm text-green-700 dark:text-green-400">ThĂ nh cĂ´ng</p>
               </div>
               <div className="bg-yellow-50 dark:bg-yellow-950/30 rounded-lg p-4 text-center">
                 <p className="text-3xl font-bold text-yellow-600">{importResults.warnings}</p>

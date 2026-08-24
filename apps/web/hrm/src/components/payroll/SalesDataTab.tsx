@@ -152,7 +152,7 @@ export function SalesDataTab() {
     queryKey: ['employees-list', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      return null || [];
+      return [];
     },
     enabled: !!currentCompanyId,
   });

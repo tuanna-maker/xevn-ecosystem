@@ -137,7 +137,7 @@ export function AttendanceExportDialog({ children }: AttendanceExportDialogProps
     if (!currentCompanyId) {
       throw new Error(t('attendanceExport.errors.noCompany'));
     }
-      return null || [];
+      return [];
   };
 
   const calculateSummary = (records: AttendanceRecord[]): EmployeeSummary[] => {

@@ -69,8 +69,8 @@ const TEMPLATE_COLUMNS = [
   { key: 'health_insurance_number', label: 'Sá»‘ BHYT', required: false },
   { key: 'unemployment_insurance_number', label: 'Sá»‘ BHTN', required: false },
   { key: 'base_salary', label: 'Má»©c lÆ°Æ¡ng Ä‘Ă³ng BH', required: false },
-  { key: 'effective_date', label: 'NgĂ y hiá»‡u lá»±c (DD/MM/YYYY)', required: false },
-  { key: 'expiry_date', label: 'NgĂ y háº¿t háº¡n (DD/MM/YYYY)', required: false },
+  { key: 'effective_date', label: 'NgĂ y hiá»‡u lá»±c (DD/MM/YYYY)', required: false },
+  { key: 'expiry_date', label: 'NgĂ y háº¿t háº¡n (DD/MM/YYYY)', required: false },
   { key: 'status', label: 'Tráº¡ng thĂ¡i (active/pending/expired)', required: false },
   { key: 'notes', label: 'Ghi chĂº', required: false },
 ];
@@ -116,7 +116,7 @@ export function InsuranceImportDialog({
     XLSX.utils.book_append_sheet(wb, ws, 'Máº«u nháº­p báº£o hiá»ƒm');
     
     XLSX.writeFile(wb, 'mau_import_bao_hiem.xlsx');
-    toast.success('ÄĂ£ táº£i file máº«u thĂ nh cĂ´ng');
+    toast.success('ÄĂ£ táº£i file máº«u thĂ nh cĂ´ng');
   };
 
   const parseDate = (dateStr: string): string | null => {
@@ -160,8 +160,8 @@ export function InsuranceImportDialog({
     const healthInsuranceNumber = row['Sá»‘ BHYT']?.toString().trim();
     const unemploymentInsuranceNumber = row['Sá»‘ BHTN']?.toString().trim();
     const baseSalaryStr = row['Má»©c lÆ°Æ¡ng Ä‘Ă³ng BH']?.toString().trim();
-    const effectiveDateStr = row['NgĂ y hiá»‡u lá»±c (DD/MM/YYYY)']?.toString().trim();
-    const expiryDateStr = row['NgĂ y háº¿t háº¡n (DD/MM/YYYY)']?.toString().trim();
+    const effectiveDateStr = row['NgĂ y hiá»‡u lá»±c (DD/MM/YYYY)']?.toString().trim();
+    const expiryDateStr = row['NgĂ y háº¿t háº¡n (DD/MM/YYYY)']?.toString().trim();
     const statusStr = row['Tráº¡ng thĂ¡i (active/pending/expired)']?.toString().trim().toLowerCase();
     const notes = row['Ghi chĂº']?.toString().trim();
 
@@ -179,7 +179,7 @@ export function InsuranceImportDialog({
 
     // Insurance number validation
     if (!socialInsuranceNumber && !healthInsuranceNumber && !unemploymentInsuranceNumber) {
-      warnings.push('ChÆ°a cĂ³ sá»‘ báº£o hiá»ƒm nĂ o Ä‘Æ°á»£c nháº­p');
+      warnings.push('ChÆ°a cĂ³ sá»‘ báº£o hiá»ƒm nĂ o Ä‘Æ°á»£c nháº­p');
     }
 
     // Salary validation
@@ -196,12 +196,12 @@ export function InsuranceImportDialog({
     // Date validation
     const effectiveDate = parseDate(effectiveDateStr || '');
     if (effectiveDateStr && !effectiveDate) {
-      warnings.push('NgĂ y hiá»‡u lá»±c khĂ´ng há»£p lá»‡');
+      warnings.push('NgĂ y hiá»‡u lá»±c khĂ´ng há»£p lá»‡');
     }
 
     const expiryDate = parseDate(expiryDateStr || '');
     if (expiryDateStr && !expiryDate) {
-      warnings.push('NgĂ y háº¿t háº¡n khĂ´ng há»£p lá»‡');
+      warnings.push('NgĂ y háº¿t háº¡n khĂ´ng há»£p lá»‡');
     }
 
     // Status validation
@@ -210,7 +210,7 @@ export function InsuranceImportDialog({
       if (['active', 'pending', 'expired'].includes(statusStr)) {
         status = statusStr;
       } else {
-        warnings.push('Tráº¡ng thĂ¡i khĂ´ng há»£p lá»‡, máº·c Ä‘á»‹nh lĂ  "active"');
+        warnings.push('Tráº¡ng thĂ¡i khĂ´ng há»£p lá»‡, máº·c Ä‘á»‹nh lĂ  "active"');
       }
     }
 
@@ -408,7 +408,7 @@ export function InsuranceImportDialog({
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
                 <li>â€¢ CĂ¡c cá»™t báº¯t buá»™c: MĂ£ nhĂ¢n viĂªn, TĂªn nhĂ¢n viĂªn</li>
                 <li>â€¢ Nháº­p Ă­t nháº¥t má»™t sá»‘ báº£o hiá»ƒm (BHXH, BHYT hoáº·c BHTN)</li>
-                <li>â€¢ Äá»‹nh dáº¡ng ngĂ y: DD/MM/YYYY (VD: 01/01/2024)</li>
+                <li>â€¢ Äá»‹nh dáº¡ng ngĂ y: DD/MM/YYYY (VD: 01/01/2024)</li>
                 <li>â€¢ Tráº¡ng thĂ¡i: active, pending, expired</li>
               </ul>
             </div>
@@ -514,13 +514,13 @@ export function InsuranceImportDialog({
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
               </div>
-              <h3 className="mt-4 text-lg font-medium">Import hoĂ n táº¥t!</h3>
+              <h3 className="mt-4 text-lg font-medium">Import hoĂ n táº¥t!</h3>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-green-50 dark:bg-green-950/30 rounded-lg p-4 text-center">
                 <p className="text-3xl font-bold text-green-600">{importResults.success}</p>
-                <p className="text-sm text-green-700 dark:text-green-400">ThĂ nh cĂ´ng</p>
+                <p className="text-sm text-green-700 dark:text-green-400">ThĂ nh cĂ´ng</p>
               </div>
               <div className="bg-yellow-50 dark:bg-yellow-950/30 rounded-lg p-4 text-center">
                 <p className="text-3xl font-bold text-yellow-600">{importResults.warnings}</p>
