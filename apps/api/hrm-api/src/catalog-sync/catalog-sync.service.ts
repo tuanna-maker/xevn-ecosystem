@@ -317,15 +317,11 @@ export class CatalogSyncService {
   }
 
   private async ensureSchema() {
-    const rawTenant = masterTenantIdFromEnv();
-    const rawCompany = defaultCompanyIdFromEnv();
-    if (!rawTenant || !rawCompany) {
-      throw new ApiException(
-        'HRM-SYNC-CONF',
-        'Set MASTER_TENANT_ID or DEFAULT_TENANT_ID and DEFAULT_COMPANY_ID (or DEFAULT_COMPANY_HEADER_ID) for catalog DDL bootstrap.',
-        HttpStatus.SERVICE_UNAVAILABLE,
-      );
-    }
+    // Fallback defaults for DDL bootstrap — matches pattern used in other HRM services
+    // (e.g. masterTenantIdFromEnv() || 'xevn'). This prevents 503/500 when env vars
+    // are not set for DDL-only fields; table CREATE uses these as DEFAULT values.
+    const rawTenant = masterTenantIdFromEnv() || 'xevn';
+    const rawCompany = defaultCompanyIdFromEnv() || 'main';
     const tenantDdl = this.normalizeScopeId(rawTenant, 'tenantId');
     const companyDdl = this.normalizeScopeId(rawCompany, 'companyId');
     const tenantSql = tenantDdl.replace(/'/g, "''");

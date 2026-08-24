@@ -29,6 +29,7 @@ import {
   NAV_SUBSIDEBAR_TITLE_CLASS,
 } from '../../pages/command-center/settings-form-pattern';
 import type { HrmWorkspaceMenuKey } from './types';
+import type { LucideIcon } from 'lucide-react';
 import { tenantHrmPortalPath } from './paths';
 
 const RAIL_STROKE = 1.5;

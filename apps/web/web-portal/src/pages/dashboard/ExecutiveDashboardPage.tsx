@@ -41,7 +41,8 @@ import {
   User,
   Settings,
   LogOut,
-  MapPin
+  MapPin,
+  Activity,
 } from 'lucide-react';
 import { Container } from '@xevn/ui';
 import { mockModuleCards, type AlertItem, type ModuleCardData } from '../../data/mockExecutiveDashboardData';

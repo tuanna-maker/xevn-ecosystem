@@ -94,26 +94,26 @@ export class InternalNewsService {
     return `${base}-${timestamp}`;
   }
 
-  private mapRow(row: Record<string, unknown>): HrmInternalNewsRow {
+  private mapRow(row: HrmInternalNewsRow): HrmInternalNewsRow {
     return {
-      id: row.id as string,
-      company_id: row.company_id as string,
-      tenant_id: (row.tenant_id as string) ?? null,
-      title: row.title as string,
-      slug: row.slug as string,
-      summary: (row.summary as string) ?? null,
-      content: (row.content as string) ?? null,
-      featured_image_url: (row.featured_image_url as string) ?? null,
-      attachments: (row.attachments as unknown[]) ?? [],
-      category: (row.category as string) ?? 'general',
-      tags: (row.tags as string[]) ?? [],
-      status: (row.status as string) ?? 'draft',
+      id: row.id,
+      company_id: row.company_id,
+      tenant_id: row.tenant_id,
+      title: row.title,
+      slug: row.slug,
+      summary: row.summary ?? null,
+      content: row.content ?? null,
+      featured_image_url: row.featured_image_url ?? null,
+      attachments: row.attachments ?? [],
+      category: row.category ?? 'general',
+      tags: row.tags ?? [],
+      status: row.status ?? 'draft',
       published_at: row.published_at ? String(row.published_at) : null,
       pinned: Boolean(row.pinned),
-      visibility: (row.visibility as string) ?? 'all',
-      department_ids: (row.department_ids as string[]) ?? [],
-      author_id: (row.author_id as string) ?? null,
-      author_name: row.author_name as string,
+      visibility: row.visibility ?? 'all',
+      department_ids: row.department_ids ?? [],
+      author_id: row.author_id ?? null,
+      author_name: row.author_name,
       view_count: Number(row.view_count) ?? 0,
       created_at: String(row.created_at),
       updated_at: String(row.updated_at),
@@ -122,7 +122,7 @@ export class InternalNewsService {
 
   async listNews(query: ListInternalNewsQueryDto, authorization?: string): Promise<InternalNewsListResult> {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id);
+    const scope = resolveHrmListScope(authorization, query.company_id ?? '');
     const page = this.resolvePage(query.page, 1);
     const pageSize = this.resolvePageSize(query.page_size, 20);
     const offset = (page - 1) * pageSize;
@@ -131,9 +131,9 @@ export class InternalNewsService {
     const values: unknown[] = [];
 
     // Apply scope filter
-    if (scope.companyId) {
+    if (scope.companyIds?.length > 0) {
       filters.push(`company_id = $${values.length + 1}`);
-      values.push(scope.companyId);
+      values.push(scope.companyIds[0]);
     }
 
     // Category filter

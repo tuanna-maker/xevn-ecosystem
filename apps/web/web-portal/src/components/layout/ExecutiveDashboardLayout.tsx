@@ -32,6 +32,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { isCommandCenterHrmPath } from '../../modules/hrm/commandCenterUrl';
+import { stripTenantPrefixFromPathname } from '../../modules/hrm/paths';
 import TopHeader from './TopHeader';
 
 /** Membership chrome required on CC shell (not UnifiedShell / cockpit / HRM embed). */

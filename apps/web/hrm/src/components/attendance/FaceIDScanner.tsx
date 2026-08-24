@@ -131,11 +131,9 @@ export function FaceIDScanner({ onCheckInOut, featureHold = false }: FaceIDScann
     };
   }, []);
 
-  // Load models and face data on mount
-  useEffect(() => {
-    loadModels();
-    fetchFaceData();
-  }, [loadModels, fetchFaceData]);
+  // Load models and face data on mount - only once
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { loadModels(); fetchFaceData(); }, []);
 
   const startCamera = async () => {
     try {
@@ -167,6 +165,8 @@ export function FaceIDScanner({ onCheckInOut, featureHold = false }: FaceIDScann
     }
   };
 
+  const isScanningRef = useRef(false);
+  
   const startScanning = async () => {
     if (!modelsLoaded) {
       toast.error(t('faceIdScanner.cameraNotReady'));
@@ -177,16 +177,41 @@ export function FaceIDScanner({ onCheckInOut, featureHold = false }: FaceIDScann
     if (!cameraStarted) return;
 
     setIsScanning(true);
+    isScanningRef.current = true;
     setScanStatus('scanning');
     setMatchedEmployee(null);
 
-    // Start continuous face detection
-    scanIntervalRef.current = setInterval(async () => {
-      await scanForFace();
-    }, 500);
+    // Wait for video to be ready before starting scan
+    const waitForVideo = () => {
+      return new Promise<void>((resolve) => {
+        const check = () => {
+          if (videoRef.current && videoRef.current.readyState >= 2) {
+            resolve();
+          } else {
+            setTimeout(check, 100);
+          }
+        };
+        check();
+      });
+    };
+
+    const scanLoop = async () => {
+      await waitForVideo();
+      
+      // Scan with debounce - only scan when isScanningRef is still true
+      while (isScanningRef.current) {
+        await scanForFace();
+        await new Promise(resolve => setTimeout(resolve, 200)); // 200ms debounce between scans
+      }
+    };
+
+    scanLoop();
   };
 
   const stopScanning = useCallback(() => {
+    // Set ref to false first to stop the async while loop
+    isScanningRef.current = false;
+    
     if (scanIntervalRef.current) {
       clearInterval(scanIntervalRef.current);
       scanIntervalRef.current = null;
@@ -218,14 +243,18 @@ export function FaceIDScanner({ onCheckInOut, featureHold = false }: FaceIDScann
         ctx.strokeRect(box.x, box.y, box.width, box.height);
       }
 
-      setScanStatus('detected');
+      if (scanStatus !== 'detected') {
+        setScanStatus('detected');
+      }
 
       // Try to match the face
       const match = await matchFace(detection.descriptor, employees);
 
       if (match) {
         // Face matched!
-        setScanStatus('matched');
+        if (scanStatus !== 'matched') {
+          setScanStatus('matched');
+        }
         const employee = employees.find((e) => e.id === match.employee_id);
         
         if (employee) {
@@ -256,9 +285,8 @@ export function FaceIDScanner({ onCheckInOut, featureHold = false }: FaceIDScann
           });
         }
       }
-    } else {
-      setScanStatus('scanning');
     }
+    // Don't set 'scanning' status when no face detected - prevents flickering
   };
 
   const handleConfirmAttendance = async (action: 'checkin' | 'checkout') => {

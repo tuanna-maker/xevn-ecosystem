@@ -2,9 +2,10 @@ import { Transform } from 'class-transformer';
 import { IsOptional, IsString, Matches } from 'class-validator';
 
 export class ListInternalNewsQueryDto {
+  @IsOptional()
   @IsString()
-  @Matches(/^[0-9a-f-]{1,64}$/i)
-  company_id!: string;
+  @Matches(/^[0-9a-z-]{1,64}$/i)
+  company_id?: string;
 
   @IsOptional()
   @IsString()
