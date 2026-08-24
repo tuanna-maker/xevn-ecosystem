@@ -84,6 +84,9 @@ export default defineConfig(({ mode }) => {
         '@xevn/ui': path.resolve(__dirname, '../../../packages/ui/src'),
       },
     },
+    optimizeDeps: {
+      exclude: ['@xevn/ui']
+    },
     server: {
       host: true,
       // Local/Docker Vite may receive sibling Host headers — allow all in dev only (static prod build ignores this).

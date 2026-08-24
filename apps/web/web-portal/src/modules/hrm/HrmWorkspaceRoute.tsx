@@ -248,7 +248,7 @@ export const HrmWorkspaceRoute: React.FC = () => {
   usePortalEmbedSessionPublisher(iframeRef, viewValid && scope != null, accessToken);
 
   if (!viewValid) {
-    return <Navigate to={hrmPortalPath(HRM_DEFAULT_VIEW)} replace />;
+    return <Navigate to={`/${selectedTenant.tenantId}${hrmPortalPath(HRM_DEFAULT_VIEW)}`.replace(/\/+/g, '/')} replace />;
   }
 
   if (!tenantReady) {

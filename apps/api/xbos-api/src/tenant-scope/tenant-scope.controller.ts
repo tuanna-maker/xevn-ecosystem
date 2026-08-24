@@ -1,4 +1,4 @@
-import { Controller, Get, Headers, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Headers, HttpStatus, Query } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { getVerifiedInternalJwtPayload, isAuthorizedInternalRequest } from '../common/internal-auth';
@@ -95,5 +95,19 @@ export class TenantScopeController {
       undefined;
     const data = await this.service.companyUnits(userId, { tenantId, roleCode });
     return ok(data, 'XBOS-TENANT-200', 'Company units loaded');
+  }
+
+  @Post('members')
+  async createMemberTenant(
+    @Body() body: any,
+    @Query('userId') queryUserId: string | undefined,
+    @Headers('x-user-id') headerUserId: string | undefined,
+    @Headers('authorization') authorization?: string,
+    @Headers('x-internal-api-key') internalApiKey?: string,
+  ) {
+    this.assertInternal(authorization, internalApiKey);
+    const userId = this.resolveUserId(authorization, headerUserId, queryUserId);
+    const data = await this.service.createMemberTenant(userId, body);
+    return ok(data, 'XBOS-TENANT-201', 'Member tenant created successfully');
   }
 }

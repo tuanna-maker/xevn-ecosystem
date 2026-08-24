@@ -1,10 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { createHash } from 'node:crypto';
 import { ensurePilotMembershipForUser } from '../auth/pilot-membership.bootstrap';
 import { ApiException } from '../common/api.exception';
 import { isGroupCeoOnMasterTenant } from '../common/xbos-group-legal-scope';
 import { isMasterTenant, GROUP_HOLDING_ROOT_ID, MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../common/tenant.constants';
 import { XbosDbService } from '../db/xbos-db.service';
 import { OrgFoundationService } from '../org-foundation/org-foundation.service';
+import { PlatformAuditService } from '../platform/platform-audit.service';
 
 export type AccessibleTenant = {
   tenantId: string;
@@ -23,6 +25,7 @@ export class TenantScopeService {
   constructor(
     private readonly db: XbosDbService,
     private readonly org: OrgFoundationService,
+    private readonly audit: PlatformAuditService,
   ) {}
 
   async assertMembership(userId: string, tenantId: string) {
@@ -177,5 +180,84 @@ export class TenantScopeService {
       return companyHint?.trim() || MASTER_TENANT_ID;
     }
     return MEMBER_DEFAULT_COMPANY_ID;
+  }
+
+  async createMemberTenant(userId: string, payload: any) {
+    const tenantId = payload.tenantId || `t-${(payload.code || Date.now()).toString().toLowerCase()}`;
+    const defaultCompanyId = payload.defaultCompanyCode || MEMBER_DEFAULT_COMPANY_ID;
+    
+    await this.db.query('BEGIN');
+    try {
+      // 1. Insert tenant registry
+      await this.db.query(
+        `INSERT INTO public.xbos_tenant_registry (tenant_id, name, short_name, tenant_kind, default_company_id, modules, status)
+         VALUES ($1, $2, $3, 'member', $4, '["core", "hrm", "fin"]', 'active')`,
+        [tenantId, payload.tenantName || payload.name || 'New Tenant', payload.shortName || '', defaultCompanyId]
+      );
+
+      // 2. Insert legal entity
+      await this.db.query(
+        `INSERT INTO public.xbos_legal_entity (id, tenant_id, company_id, code, name, entity_type, payload, status)
+         VALUES (gen_random_uuid(), $1, $2, $2, $3, 'member_root', $4, 'active')`,
+        [tenantId, defaultCompanyId, payload.tenantName || payload.name || 'New Tenant', { companyForm: payload }]
+      );
+
+      // 3. Insert membership for current user
+      await this.db.query(
+        `INSERT INTO public.xbos_user_tenant_membership (user_id, tenant_id, role_code, status)
+         VALUES ($1, $2, 'admin', 'active')
+         ON CONFLICT (user_id, tenant_id) DO UPDATE SET role_code = 'admin', status = 'active'`,
+        [userId, tenantId]
+      );
+      
+      // 4. (Optional) insert for adminEmail if provided
+      const adminEmail = payload.adminEmail ? payload.adminEmail.trim().toLowerCase() : userId;
+      if (adminEmail && adminEmail !== userId) {
+        // Create user in xbos_portal_user if not exists
+        if (payload.adminPassword) {
+          const passwordHash = createHash('sha256')
+            .update(`${adminEmail}:${payload.adminPassword}:xevn-portal-dev`)
+            .digest('hex');
+          await this.db.query(
+            `INSERT INTO public.xbos_portal_user (user_id, display_name, password_hash, status)
+             VALUES ($1, 'Admin ' || $2, $3, 'active')
+             ON CONFLICT (user_id) DO NOTHING`,
+            [adminEmail, payload.tenantName || 'Tenant', passwordHash]
+          );
+        }
+        
+        await this.db.query(
+          `INSERT INTO public.xbos_user_tenant_membership (user_id, tenant_id, role_code, status)
+           VALUES ($1, $2, 'admin', 'active')
+           ON CONFLICT (user_id, tenant_id) DO UPDATE SET role_code = 'admin', status = 'active'`,
+          [adminEmail, tenantId]
+        );
+      }
+
+      await this.db.query('COMMIT');
+
+      const activatedAt = new Date().toISOString();
+      await this.audit.emit({
+        actor: userId,
+        tenantId,
+        action: 'TENANT_PROVISIONED',
+        entityType: 'tenant',
+        entityId: tenantId,
+        payload: {
+          eventType: 'TENANT_PROVISIONED',
+          tenantId,
+          defaultCompanyId,
+          modules: ['core', 'hrm', 'fin'],
+          activatedAt,
+          issuedBy: adminEmail,
+          adminEmail: adminEmail,
+        },
+      });
+
+      return { tenantId, defaultCompanyId };
+    } catch (e) {
+      await this.db.query('ROLLBACK');
+      throw e;
+    }
   }
 }

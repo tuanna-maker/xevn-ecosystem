@@ -34,6 +34,7 @@ export interface TenantProvisionedPayload {
   modules: ('hrm' | 'logistics')[];
   activatedAt: string; // ISO 8601
   issuedBy: string;
+  adminEmail?: string;
 }
 
 /** 8 loại nghỉ theo BLLĐ 2019 */
@@ -204,6 +205,7 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
       await this.seedMinimumWageRegions(query, tenantId, defaultCompanyId);
       await this.seedRecruitmentMasterData(query, tenantId, defaultCompanyId);
       await this.seedJobDescriptionTemplates(query, tenantId, defaultCompanyId);
+      await this.seedAdminEmployee(query, tenantId, defaultCompanyId, payload.adminEmail || payload.issuedBy);
     });
 
     this.logger.log(
@@ -212,6 +214,21 @@ export class TenantProvisionService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ─── Private seed methods — executed inside withTransaction ─────────────────
+
+  private async seedAdminEmployee(
+    query: HrmDbQueryFn,
+    tenantId: string,
+    companyId: string,
+    adminEmail: string,
+  ): Promise<void> {
+    await query(
+      `INSERT INTO public.employees 
+         (id, company_id, employee_code, email, full_name, job_title_key, status, hired_at)
+       VALUES (gen_random_uuid(), $1, 'ADMIN01', $2, 'Tenant Admin', 'CEO', 'active', CURRENT_DATE)
+       ON CONFLICT (company_id, employee_code) DO NOTHING`,
+      [companyId, adminEmail || 'admin@xe.vn'],
+    );
+  }
 
   private async seedLeaveTypes(
     query: HrmDbQueryFn,

@@ -2,7 +2,7 @@ import type { Company } from '../data/mock-data';
 import { MASTER_TENANT_ID, MEMBER_DEFAULT_COMPANY_ID } from '../constants/tenant';
 import type { OrgTreeNode } from './orgFoundationApi';
 import { coalesceGet } from './requestCoalescer';
-import { xbosGetData } from './xbosHttp';
+import { xbosGetData, xbosFetch } from './xbosHttp';
 
 /** Coalesce window for read-only membership scope (P1-CC-MOUNT-DUP-CALLS-FE). */
 const ACCESSIBLE_TENANTS_TTL_MS = 30_000;
@@ -144,3 +144,27 @@ export async function fetchCompanyUnitsForCommandCenter(): Promise<Company[]> {
 export async function fetchGroupMemberUnitsForCommandCenter(): Promise<Company[]> {
   return fetchCompanyUnitsForCommandCenter();
 }
+
+export type CreateMemberTenantApiPayload = {
+  tenantId?: string;
+  tenantName: string;
+  shortName?: string;
+  adminEmail: string;
+  adminPassword?: string;
+  defaultCompanyCode: string;
+};
+
+export async function createMemberTenant(payload: CreateMemberTenantApiPayload) {
+  const envelope = await xbosFetch<{ success?: boolean; data?: { tenantId: string; defaultCompanyId: string } }>(
+    '/tenant-scope/members',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }
+  );
+  if (envelope?.success && envelope.data) {
+    return envelope.data;
+  }
+  throw new Error('Failed to create member tenant');
+}
+

@@ -343,5 +343,4 @@ export class SettingsPayrollParamsService {
 
     return merged;
   }
-  }
 }

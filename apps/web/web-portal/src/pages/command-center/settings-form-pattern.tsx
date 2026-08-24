@@ -120,7 +120,7 @@ export const SETTINGS_COL = {
 
 /** Label trường form — 0.9375rem (~15px @ 16px), scales with --xevn-ui-density */
 export const SETTINGS_LABEL_CLASS =
-  'block min-w-0 break-words text-left text-[0.9375rem] font-medium leading-snug text-xevn-textSecondary hyphens-auto';
+  'block min-w-0 break-words text-left text-[0.9375rem] font-medium leading-snug text-xevn-text hyphens-auto';
 
 /**
  * Thứ bậc Typography (Workspace):
@@ -209,7 +209,7 @@ export const NAV_RAIL_LINK_SECTION_LABEL_CLASS =
 export const SETTINGS_SECTION_STACK = 'space-y-4';
 
 /** Chuẩn chữ trong ô nhập (Input / Select / Textarea) — break-words trong Safe Area */
-export const SETTINGS_CONTROL_TEXT = 'break-words text-[0.9375rem] leading-snug';
+export const SETTINGS_CONTROL_TEXT = 'break-words text-[0.9375rem] leading-snug text-xevn-text';
 
 /** Tiêu đề cột bảng Workspace / settings — ADR §8 textSecondary (không slate-500) */
 export const SETTINGS_TABLE_TH_CLASS =
@@ -245,6 +245,16 @@ export const AutoResizeTextarea: React.FC<{
       aria-label={ariaLabel}
       onChange={(e) => onChange(e.target.value)}
       className={`box-border min-w-0 max-w-full resize-none overflow-hidden border border-xevn-border bg-white px-3 py-2 outline-none placeholder:text-xevn-textMuted focus:ring-2 focus:ring-xevn-accent ${SETTINGS_CONTROL_TEXT} ${SETTINGS_RADIUS_INPUT} ${className ?? ''}`}
+    />
+  );
+};
+
+export const SettingsInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => {
+  return (
+    <input
+      type="text"
+      className={`box-border min-h-[42px] min-w-0 max-w-full border border-xevn-border bg-white px-3 py-2 outline-none placeholder:text-xevn-textMuted focus:ring-2 focus:ring-xevn-accent ${SETTINGS_CONTROL_TEXT} ${SETTINGS_RADIUS_INPUT} ${className ?? ''}`}
+      {...props}
     />
   );
 };

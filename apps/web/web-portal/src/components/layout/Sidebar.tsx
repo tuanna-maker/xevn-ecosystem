@@ -259,7 +259,7 @@ const settingsMenus: MenuItem[] = [
 ];
 
 const Sidebar: React.FC = () => {
-  const { isMasterContext } = useTenantScope();
+  const { isMasterContext, selectedTenant } = useTenantScope();
   const [expandedMenus, setExpandedMenus] = useState<string[]>(['settings']);
   const location = useLocation();
 
@@ -269,17 +269,6 @@ const Sidebar: React.FC = () => {
     return true;
   });
   const visibleSettingsMenus = isMasterContext ? [] : settingsMenus;
-
-  const resolveExternalHref = (href: string) => {
-    if (href.startsWith('/command-center/hrm')) return href;
-    // Legacy menu paths `/hr/...` → in-app Command Center embed (no :8080 hop).
-    if (href.startsWith('/hr')) {
-      const rest = href.slice('/hr'.length) || '/dashboard';
-      const suffix = rest === '/' ? '/dashboard' : rest.startsWith('/') ? rest : `/${rest}`;
-      return `/command-center/hrm${suffix}`;
-    }
-    return href;
-  };
 
   const toggleMenu = (menuId: string) => {
     setExpandedMenus((prev) =>
@@ -294,8 +283,16 @@ const Sidebar: React.FC = () => {
   const renderMenuItem = (item: MenuItem, isChild = false) => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = isMenuExpanded(item.id);
+    const tenantPrefix = `/${selectedTenant?.tenantId || ''}`;
+    
+    // Resolve path function
+    const resolvePath = (path?: string) => {
+      if (!path) return '';
+      return path.startsWith('/') ? `${tenantPrefix}${path}`.replace(/\/+/g, '/') : path;
+    };
+
     const isParentActive = item.children?.some(
-      (child) => location.pathname === child.path
+      (child) => location.pathname === resolvePath(child.path)
     );
 
     if (hasChildren) {
@@ -328,14 +325,14 @@ const Sidebar: React.FC = () => {
       );
     }
 
+    const itemResolvedPath = resolvePath(item.path);
+
     if (item.external && item.path) {
-      // Treat HRM routes as internal navigation to avoid full reload.
-      // (Full reload can make Mac browser re-apply a different per-origin zoom.)
       if (item.path.startsWith('/command-center/hrm')) {
         return (
           <NavLink
             key={item.id}
-            to={item.path}
+            to={itemResolvedPath}
             className={({ isActive }) =>
               `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive
@@ -349,7 +346,7 @@ const Sidebar: React.FC = () => {
               <span>{item.label}</span>
             </div>
             {item.badge && (
-              <span className="px-2 py-0.5 text-[10px] font-bold uppercase bg-green-500 text-white rounded-full animate-pulse">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-xevn-accent text-[10px] font-bold text-white">
                 {item.badge}
               </span>
             )}
@@ -359,17 +356,15 @@ const Sidebar: React.FC = () => {
       return (
         <a
           key={item.id}
-          href={resolveExternalHref(item.path)}
-          className={`flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
-            isChild ? 'py-2.5 text-[13px]' : ''
-          } text-white/55 hover:bg-slate-700/50 hover:text-white`}
+          href={itemResolvedPath}
+          className={`flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 text-white/55 hover:bg-slate-700/50 hover:text-white ${isChild ? 'py-2.5 text-[13px]' : ''}`}
         >
           <div className="flex items-center gap-3">
             {item.icon}
             <span>{item.label}</span>
           </div>
           {item.badge && (
-            <span className="px-2 py-0.5 text-[10px] font-bold uppercase bg-green-500 text-white rounded-full animate-pulse">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-xevn-accent text-[10px] font-bold text-white">
               {item.badge}
             </span>
           )}
@@ -380,7 +375,7 @@ const Sidebar: React.FC = () => {
     return (
       <NavLink
         key={item.id}
-        to={item.path || P}
+        to={itemResolvedPath || resolvePath(P)}
         className={({ isActive }) =>
           `flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
             isActive
@@ -394,7 +389,7 @@ const Sidebar: React.FC = () => {
           <span>{item.label}</span>
         </div>
         {item.badge && (
-          <span className="px-2 py-0.5 text-[10px] font-bold uppercase bg-green-500 text-white rounded-full animate-pulse">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-xevn-accent text-[10px] font-bold text-white">
             {item.badge}
           </span>
         )}

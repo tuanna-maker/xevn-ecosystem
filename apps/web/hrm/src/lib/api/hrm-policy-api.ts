@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Purpose:    Thin API client for HRM Policy Engine endpoints.
  *             All fetch calls go through here — no direct fetch() in components.
@@ -35,11 +35,16 @@ async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
     return { employee_code: 'MOCK', employee_name: 'Mock', period_month: '2026-08', total_income_vnd: '10000', total_deduction_vnd: '0', net_pay_vnd: '10000', status: 'DRAFT', components: [] } as any;
   }
 
+  const tenantId = 
+    (typeof localStorage !== 'undefined' ? localStorage.getItem('hrm_current_tenant_id') : null) ||
+    "xevn";
+
   const res = await fetch(`${HRM_API}${path}`, {
     ...opts,
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${getToken()}`,
+      "x-tenant-id": tenantId,
       ...(opts.headers ?? {}),
     },
   });

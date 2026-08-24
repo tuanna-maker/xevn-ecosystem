@@ -6,7 +6,8 @@
  * must_keep: module routing / disabled reasons; no Nest
  */
 import React, { type Dispatch, type SetStateAction } from 'react';
-import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import { matchPath, useLocation } from 'react-router-dom';
+import { useTenantNavigate } from '../../hooks/useTenantNavigate';
 import type { LucideIcon } from 'lucide-react';
 import {
   LayoutDashboard,
@@ -59,7 +60,7 @@ export const CommandCenterModuleRail: React.FC<CommandCenterModuleRailProps> = (
   portalRailExpanded,
   onPortalRailToggle,
 }) => {
-  const navigate = useNavigate();
+  const navigate = useTenantNavigate();
   const location = useLocation();
   const { contentExpanded, collapseEnabled } = useWorkspaceRail();
 

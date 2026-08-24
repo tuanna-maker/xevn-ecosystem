@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useTenantNavigate } from '../../hooks/useTenantNavigate';
 import {
   Users,
   UserPlus,
@@ -28,15 +28,15 @@ import { resolveHrPageEmployeesOnFailure } from '../../utils/portalStrictMode';
 import { hrmPortalPath } from '../../modules/hrm/paths';
 
 const HRPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { selectedCompany } = useGlobalFilter();
+  const navigate = useTenantNavigate();
+  const { selectedTenant } = useGlobalFilter();
   const [apiEmployees, setApiEmployees] = useState<Employee[]>([]);
   const [apiLoadFailed, setApiLoadFailed] = useState(false);
   const [usingMockFallback, setUsingMockFallback] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const scopeHint = selectedCompany.id === 'all' ? null : selectedCompany.id;
+    const scopeHint = selectedTenant.id === 'all' ? null : selectedTenant.id;
     let scope: { tenantId: string; companyId: string };
     try {
       scope = resolveIdentityScope(scopeHint);
@@ -69,7 +69,7 @@ const HRPage: React.FC = () => {
         setApiEmployees(mapped);
       })
       .catch(() => {
-        const failure = resolveHrPageEmployeesOnFailure(selectedCompany.id);
+        const failure = resolveHrPageEmployeesOnFailure(selectedTenant.id);
         setApiLoadFailed(failure.loadFailed);
         setUsingMockFallback(failure.usingMockFallback);
         setApiEmployees(failure.rows);
@@ -77,7 +77,7 @@ const HRPage: React.FC = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [selectedCompany.id]);
+  }, [selectedTenant.id]);
 
   const companyEmployees = useMemo(() => apiEmployees, [apiEmployees]);
 

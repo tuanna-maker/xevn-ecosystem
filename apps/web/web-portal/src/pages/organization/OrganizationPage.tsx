@@ -18,7 +18,7 @@
  * @CODE-MEMORY-CHANGE D-XBOS-DASHBOARD-FE-01 (2026-08-01): Thêm toolbar HDSD + sửa map name→label TreeView; export/lọc client-side.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useTenantNavigate } from '../../hooks/useTenantNavigate';
 import { Building2, Info } from 'lucide-react';
 import { PageHeader, TreeView, InfoBanner, Container, Section, StatCard } from '@xevn/ui';
 import { useGlobalFilter, useTenantScope } from '../../contexts/GlobalFilterContext';
@@ -37,7 +37,7 @@ import {
 } from '../../lib/dashboardPageToolbar';
 
 const OrganizationPage: React.FC = () => {
-  const navigate = useNavigate();
+  const navigate = useTenantNavigate();
   const { selectedTenant } = useGlobalFilter();
   const { tenantId, isMasterContext, canAccessMaster } = useTenantScope();
   const [orgRows, setOrgRows] = useState<Array<Record<string, unknown>>>([]);

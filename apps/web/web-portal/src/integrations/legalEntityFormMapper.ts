@@ -38,6 +38,8 @@ export type LegalEntityCompanyFormState = {
   website: string;
   entityLevel: 'parent' | 'subsidiary';
   parentEntityId: string;
+  adminEmail?: string;
+  adminPassword?: string;
 };
 
 /** UC-CC-03/04 — map org-foundation legal entity row to Command Center edit form. */
@@ -75,6 +77,8 @@ export function mapLegalEntityRowToCompanyForm(row: LegalEntityApiRow): LegalEnt
     website: String(nested.website ?? ''),
     entityLevel,
     parentEntityId: String(nested.parentEntityId ?? ''),
+    adminEmail: String(nested.adminEmail ?? ''),
+    adminPassword: '',
   };
 }
 

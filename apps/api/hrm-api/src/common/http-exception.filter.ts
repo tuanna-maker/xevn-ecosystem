@@ -51,7 +51,27 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
       }
     }
     if (!(exception instanceof HttpException) && exception instanceof Error) {
-      message = exception.message || message;
+      const err = exception as any;
+      if (err.code === '23505' || err.code === 'P2002') {
+        status = HttpStatus.CONFLICT;
+        code = 'HRM-DB-409';
+        const constraint = String(err.constraint || err.meta?.target || '').toLowerCase();
+        if (constraint.includes('email')) {
+          message = 'Email này đã tồn tại trong hệ thống.';
+        } else if (constraint.includes('code') || constraint.includes('employee_code')) {
+          message = 'Mã (Code) này đã được sử dụng. Vui lòng chọn mã khác.';
+        } else if (constraint.includes('tax_code')) {
+          message = 'Mã số thuế này đã tồn tại trong hệ thống.';
+        } else {
+          message = 'Dữ liệu đã tồn tại hoặc bị trùng lặp trong hệ thống.';
+        }
+      } else if (err.code === '23503' || err.code === 'P2003') {
+        status = HttpStatus.BAD_REQUEST;
+        code = 'HRM-DB-400';
+        message = 'Dữ liệu tham chiếu không hợp lệ hoặc không tồn tại (vi phạm khóa ngoại).';
+      } else {
+        message = exception.message || message;
+      }
     }
 
     logHttpException(request.log, {
