@@ -21,6 +21,7 @@ import {
   Truck,
   HelpCircle,
   FileSignature,
+  Newspaper,
 } from 'lucide-react';
 import {
   NAV_SUBSIDEBAR_ITEM_ACTIVE_CLASS,
@@ -53,6 +54,7 @@ const MAIN_AFTER: NavItem[] = [
   { key: 'internal_services', label: 'Dịch vụ nội bộ', Icon: ConciergeBell },
   { key: 'tools_equipment', label: 'Công cụ & thiết bị', Icon: Wrench },
   { key: 'fleet', label: 'Hồ sơ xe', Icon: Truck },
+  { key: 'internal_news', label: 'Tin nội bộ', Icon: Newspaper },
 ];
 
 const ADMIN: NavItem[] = [

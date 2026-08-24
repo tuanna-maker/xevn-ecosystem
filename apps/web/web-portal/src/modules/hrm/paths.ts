@@ -130,6 +130,7 @@ export const HRM_VIEW_PATH_MAP: Record<string, string> = {
   internal_services: '/internal-services',
   tools_equipment: '/tools-equipment',
   fleet: '/fleet',
+  internal_news: '/internal-news',
   guide: '/guide',
 };
 

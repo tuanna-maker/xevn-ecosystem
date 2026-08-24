@@ -239,6 +239,10 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
         title: 'Hồ sơ xe',
         subtitle: 'Danh mục xe, giấy tờ và trạng thái vận hành.',
       },
+      internal_news: {
+        title: 'Tin nội bộ',
+        subtitle: 'Thông báo, chính sách và sự kiện nội bộ.',
+      },
       reports: { title: 'Báo cáo', subtitle: 'Báo cáo nhân sự tổng hợp.' },
       settings: { title: 'Cấu hình HRM', subtitle: 'Thiết lập hệ thống HRM.' },
       guide: {
@@ -789,6 +793,21 @@ export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }
               className="inline-flex items-center gap-2 rounded-lg bg-xevn-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
             >
               Mở HRM / Phòng ban &amp; Công ty
+            </button>
+          </div>
+        );
+      case 'internal_news':
+        return (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-slate-600">
+              Tin tức nội bộ, thông báo và sự kiện được quản lý trong HRM.
+            </p>
+            <button
+              type="button"
+              onClick={() => openHrmApp('/hr/internal-news')}
+              className="inline-flex items-center gap-2 rounded-lg bg-xevn-primary px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition active:scale-95 hover:opacity-90"
+            >
+              Mở HRM / Tin nội bộ
             </button>
           </div>
         );

@@ -20,6 +20,7 @@ export const HRM_ALL_VIEWS = [
   'internal_services',
   'tools_equipment',
   'fleet',
+  'internal_news',
   'company',
   'reports',
   'settings',
