@@ -286,7 +286,7 @@ export function resolveCurrentTenantId(): string {
     const searchParams = new URLSearchParams(window.location.search);
     const urlTenant = searchParams.get('tenantId');
     if (urlTenant) return urlTenant.trim();
-  } catch {}
+  } catch (_e) { /* ignore parse errors */ }
 
   // 2. Secondary: check generic storage key first
   let val = localStorage.getItem('current_tenant_id') || sessionStorage.getItem('current_tenant_id');
@@ -309,7 +309,7 @@ export function resolveCurrentTenantId(): string {
         if (dynamicVal) return dynamicVal.trim();
       }
     }
-  } catch {}
+  } catch (_e) { /* ignore storage errors */ }
 
   // 4. Fallback: Parse from pathname if structured as /:tenantId/module/...
   const pathParts = window.location.pathname.split('/').filter(Boolean);
@@ -481,6 +481,9 @@ async function fetchLegalEntitiesForHrm(
       message: body?.message ?? 'Không tải được hồ sơ pháp nhân',
     });
   }
+  return body.data?.items ?? [];
+}
+
 /** Group CEO + member CEO — unified company units (legal profile SoT). */
 export async function fetchCompanyUnitsForHrm(): Promise<HrmCompanyRow[]> {
   const res = await fetch('/api/xbos/tenant-scope/company-units', {
