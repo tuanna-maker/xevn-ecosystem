@@ -1443,24 +1443,28 @@ export class RecruitmentService {
     }
 
     if (mode === 'in_plan') {
-      if (!headcount_cell_id) {
+      // On complete submit (requireComplete=true), cell_id is mandatory.
+      // On draft (requireComplete=false), allow partial data — cell validation deferred to submit.
+      if (!headcount_cell_id && opts.requireComplete) {
         throw new ApiException(
           HRM_YCTD_CELL_MISSING,
           'headcount_cell_id bắt buộc khi headcount_mode=in_plan',
           HttpStatus.CONFLICT,
         );
       }
-      const cell = await this.resolveInPlanCellOrThrow(
-        headcount_cell_id,
-        opts.companyIds,
-      );
-      assertCellQtyOrThrow(opts.headcount, cell.headcount_need_hire);
-      await this.assertNoSpawnDupOrThrow(
-        opts.companyIdPersist,
-        headcount_cell_id,
-        opts.excludeRequisitionId,
-      );
-      recruitment_plan_id = cell.plan_id;
+      if (headcount_cell_id) {
+        const cell = await this.resolveInPlanCellOrThrow(
+          headcount_cell_id,
+          opts.companyIds,
+        );
+        assertCellQtyOrThrow(opts.headcount, cell.headcount_need_hire);
+        await this.assertNoSpawnDupOrThrow(
+          opts.companyIdPersist,
+          headcount_cell_id,
+          opts.excludeRequisitionId,
+        );
+        recruitment_plan_id = cell.plan_id;
+      }
     }
 
     return {
