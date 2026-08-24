@@ -4,10 +4,10 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   hrmAppRelPathFromPortalSuffix,
-  hrmPortalPath,
   hrmPortalSuffixFromPathname,
   hrmPortalPrimaryView,
   hrmProxyPathFromSuffix,
+  tenantHrmPortalPath,
 } from './paths';
 import { HRM_DEFAULT_VIEW, isHrmWorkspaceView } from './registry';
 import { useGlobalFilter } from '../../contexts/GlobalFilterContext';
@@ -248,7 +248,7 @@ export const HrmWorkspaceRoute: React.FC = () => {
   usePortalEmbedSessionPublisher(iframeRef, viewValid && scope != null, accessToken);
 
   if (!viewValid) {
-    return <Navigate to={`/${selectedTenant.tenantId}${hrmPortalPath(HRM_DEFAULT_VIEW)}`.replace(/\/+/g, '/')} replace />;
+    return <Navigate to={tenantHrmPortalPath(selectedTenant.tenantId, HRM_DEFAULT_VIEW)} replace />;
   }
 
   if (!tenantReady) {

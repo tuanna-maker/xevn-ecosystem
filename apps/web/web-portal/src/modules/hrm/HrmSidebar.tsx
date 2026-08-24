@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useSearchParams } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import {
   LayoutDashboard,
@@ -27,8 +27,9 @@ import {
   NAV_SUBSIDEBAR_ITEM_IDLE_CLASS,
   NAV_SUBSIDEBAR_TITLE_CLASS,
 } from '../../pages/command-center/settings-form-pattern';
+import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import type { HrmWorkspaceMenuKey } from './types';
-import { hrmPortalPath } from './paths';
+import { tenantHrmPortalPath } from './paths';
 
 const RAIL_STROKE = 1.5;
 
@@ -69,6 +70,9 @@ const ICON_ONLY_ITEMS: NavItem[] = [
 ];
 
 export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = false }) => {
+  const [searchParams] = useSearchParams();
+  const { selectedTenant } = useTenantScope();
+  const tenantId = searchParams.get('tenantId') ?? selectedTenant?.tenantId;
   const sectionLabelClass = 'px-1 text-xs font-semibold uppercase tracking-wider text-xevn-textSecondary';
 
   const linkClass = (isActive: boolean, iconOnly?: boolean) => {
@@ -82,7 +86,7 @@ export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = fals
   const renderLink = (item: NavItem, opts?: { compact?: boolean; iconOnly?: boolean }) => (
     <NavLink
       key={item.key}
-      to={hrmPortalPath(item.key)}
+      to={tenantHrmPortalPath(tenantId, item.key)}
       end={false}
       title={item.label}
       className={({ isActive }) => linkClass(isActive, opts?.iconOnly)}

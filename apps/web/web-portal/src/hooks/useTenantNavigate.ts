@@ -1,18 +1,17 @@
 import { useNavigate, NavigateOptions } from 'react-router-dom';
 import { useTenantScope } from '../contexts/GlobalFilterContext';
+import { withTenantQueryParam } from '../modules/hrm/paths';
 
 /**
- * A custom hook that wraps `useNavigate` to automatically prepend the current 
- * tenantId to absolute paths (paths starting with `/`).
+ * Wraps `useNavigate` — keeps tenant in `?tenantId=` on absolute paths.
  */
 export function useTenantNavigate() {
   const navigate = useNavigate();
   const { selectedTenant } = useTenantScope();
-  const tenantPrefix = `/${selectedTenant?.tenantId || ''}`;
 
   const tenantNavigate = (to: string, options?: NavigateOptions) => {
     if (to.startsWith('/')) {
-      const resolvedPath = `${tenantPrefix}${to}`.replace(/\/+/g, '/');
+      const resolvedPath = withTenantQueryParam(to, selectedTenant?.tenantId);
       navigate(resolvedPath, options);
     } else {
       navigate(to, options);

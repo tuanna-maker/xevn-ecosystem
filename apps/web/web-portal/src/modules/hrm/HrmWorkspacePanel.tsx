@@ -44,7 +44,7 @@
  */
 /** HRM workspace — mount bởi router `/command-center/hrm/:view`, không nhồi vào CommandCenterPage. */
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useTenantNavigate } from '../../hooks/useTenantNavigate';
 import {
   Users,
   UserPlus,
@@ -137,7 +137,7 @@ export interface HrmWorkspacePanelProps {
 }
 
 export function HrmWorkspacePanel({ view, legalEntityList: legalEntityListProp }: HrmWorkspacePanelProps) {
-  const navigate = useNavigate();
+  const navigate = useTenantNavigate();
   const { selectedCompany } = useGlobalFilter();
   const [hrmLegalEntities, setHrmLegalEntities] = useState<Company[]>(legalEntityListProp ?? []);
   const [hrmCompaniesNotice, setHrmCompaniesNotice] = useState<string | null>(null);

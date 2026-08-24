@@ -16,6 +16,9 @@ const CatalogGovernancePage = lazy(() => import('./pages/governance/CatalogGover
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const CommandCenterPage = lazy(() => import('./pages/command-center/CommandCenterPage'));
 import { TenantScopeSync } from './components/layout/TenantScopeSync';
+import { TenantLegacyPathRedirect } from './components/layout/TenantLegacyPathRedirect';
+import { TenantQueryScopeSync } from './components/layout/TenantQueryScopeSync';
+import { TenantPathPrefixRedirect } from './components/layout/TenantPathPrefixRedirect';
 import { Outlet } from 'react-router-dom';
 import { useTenantScope } from './contexts/GlobalFilterContext';
 const CommandCenterInboxPage = lazy(() => import('./pages/command-center/CommandCenterInboxPage'));
@@ -55,6 +58,69 @@ const App: React.FC = () => {
               {/* Root redirector based on preferred tenant */}
               <Route path="/" element={<RequireAuth><RootRedirector /></RequireAuth>} />
 
+              {/* Legacy URLs (no /:tenantId) — hard reload / bookmark / old links */}
+              <Route
+                path="/cockpit"
+                element={
+                  <RequireAuth>
+                    <TenantLegacyPathRedirect />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/catalog-governance"
+                element={
+                  <RequireAuth>
+                    <TenantLegacyPathRedirect />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/command-center"
+                element={
+                  <RequireAuth>
+                    <TenantQueryScopeSync>
+                      <ExecutiveDashboardLayout />
+                    </TenantQueryScopeSync>
+                  </RequireAuth>
+                }
+              >
+                <Route path="inbox" element={<CommandCenterInboxPage />} />
+                <Route element={<CommandCenterPage />}>
+                  <Route index element={<></>} />
+                  <Route path="hrm" element={<Navigate to="dashboard" replace />} />
+                  <Route path="hrm/*" element={<HrmWorkspaceRoute />} />
+                </Route>
+              </Route>
+
+              {/* Legacy `/:tenantId/command-center/*` → canonical `?tenantId=` URL */}
+              <Route
+                path="/:tenantId/command-center/*"
+                element={
+                  <RequireAuth>
+                    <TenantPathPrefixRedirect />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/:tenantId/command-center"
+                element={
+                  <RequireAuth>
+                    <TenantPathPrefixRedirect />
+                  </RequireAuth>
+                }
+              />
+
+              {/* Legacy URLs (no ?tenantId=) — cockpit / dashboard still path-prefixed */}
+              <Route
+                path="/dashboard/*"
+                element={
+                  <RequireAuth>
+                    <TenantLegacyPathRedirect />
+                  </RequireAuth>
+                }
+              />
+
               {/* Unified Shell → Cockpit (dashboard) → sau đó mới mở /dashboard/* (MainLayout) */}
               <Route
                 path="/:tenantId"
@@ -70,11 +136,6 @@ const App: React.FC = () => {
                   <Route index element={<UnifiedShellPage />} />
                   <Route path="cockpit" element={<ExecutiveDashboardPage />} />
                   <Route path="catalog-governance" element={<CatalogGovernancePage />} />
-                  <Route path="command-center/inbox" element={<CommandCenterInboxPage />} />
-                  <Route path="command-center" element={<CommandCenterPage />}>
-                    <Route path="hrm" element={<Navigate to="hrm/dashboard" replace />} />
-                    <Route path="hrm/*" element={<HrmWorkspaceRoute />} />
-                  </Route>
                 </Route>
 
                 {/* Main Layout with Sidebar - All Other Pages */}

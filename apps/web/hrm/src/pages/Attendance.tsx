@@ -4076,7 +4076,7 @@ export default function Attendance() {
             <LeaveTab />
           </div>
         );
-        }
+      }
       case 'leave':
         return (
           <div className="p-6">
