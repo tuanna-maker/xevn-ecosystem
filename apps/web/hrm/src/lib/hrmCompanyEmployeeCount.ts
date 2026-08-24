@@ -46,7 +46,8 @@ import {
   type HrmOperatingUnitRow,
   type HrmOperatingUnitSlug,
 } from '@/lib/hrmOperatingUnits';
-import { isHrmOperatingUnitSlug } from '@/lib/hrmListScope';
+import { isHrmOperatingUnitSlug, HRM_MASTER_TENANT_ID } from '@/lib/hrmListScope';
+import { resolveCurrentTenantId } from '@/integrations/tenantScopeApi';
 
 /** Pilot UUID → slug (inverse of BE HRM_COMPANY_UUID_BY_SLUG). Never treat LE UUID as slug. */
 const HRM_PILOT_UUID_TO_SLUG: Record<string, HrmOperatingUnitSlug> = {
@@ -275,6 +276,7 @@ export type HrmWorkforceCountFetchResult = {
  */
 export async function fetchEmployeeCountsByOperatingSlug(
   slugs: readonly string[],
+  mySlug: HrmOperatingUnitSlug | null = null,
 ): Promise<HrmWorkforceCountFetchResult> {
   const unique = [
     ...new Set(
@@ -285,6 +287,9 @@ export async function fetchEmployeeCountsByOperatingSlug(
   if (unique.length === 0) {
     return { countsBySlug: result, rollupTotal: null };
   }
+
+  const currentTenant = resolveCurrentTenantId();
+  const isMasterTenant = currentTenant === HRM_MASTER_TENANT_ID || !currentTenant;
 
   let rollupTotal: number | null = null;
 
@@ -298,10 +303,19 @@ export async function fetchEmployeeCountsByOperatingSlug(
         result.set(slug, byCompany.has(slug) ? (byCompany.get(slug) as number) : null);
       }
       return { countsBySlug: result, rollupTotal };
+    } else if (!isMasterTenant) {
+      if (mySlug && rollupTotal !== null) {
+        result.set(mySlug, rollupTotal);
+      }
+      return { countsBySlug: result, rollupTotal };
     }
   } catch {
     rollupTotal = null;
     // Fall through to per-slug interim.
+  }
+
+  if (!isMasterTenant) {
+    return { countsBySlug: result, rollupTotal };
   }
 
   await Promise.all(
@@ -365,7 +379,17 @@ export async function enrichHrmCompaniesWithWorkforceCounts(
       ? [...new Set([...slugsNeeded, ...HRM_OPERATING_UNIT_SLUGS_LIST])]
       : [];
 
-  const { countsBySlug, rollupTotal } = await fetchEmployeeCountsByOperatingSlug(slugs);
+  const currentTenant = resolveCurrentTenantId();
+
+  let mySlug: HrmOperatingUnitSlug | null = null;
+  if (currentTenant && currentTenant !== HRM_MASTER_TENANT_ID) {
+    const myCompany = companies.find((c) => c.tenant_id === currentTenant);
+    if (myCompany) {
+      mySlug = resolveHrmCompanyRowOperatingSlug(myCompany, nameToSlug) ?? null;
+    }
+  }
+
+  const { countsBySlug, rollupTotal } = await fetchEmployeeCountsByOperatingSlug(slugs, mySlug);
   return {
     companies: enrichHrmCompaniesWithEmployeeCounts(companies, countsBySlug, nameToSlug),
     rollupTotal,

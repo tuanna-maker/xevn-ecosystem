@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useLocation, useSearchParams } from 'react-router-dom';
+import { NavLink, useSearchParams } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import {
   LayoutDashboard,
@@ -86,6 +86,7 @@ export const HrmSidebar: React.FC<{ collapsed?: boolean }> = ({ collapsed = fals
   const renderLink = (item: NavItem, opts?: { compact?: boolean; iconOnly?: boolean }) => (
     <NavLink
       key={item.key}
+<<<<<<< HEAD
       to={tenantHrmPortalPath(tenantId, item.key)}
       end={false}
       title={item.label}

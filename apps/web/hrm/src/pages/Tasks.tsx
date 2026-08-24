@@ -50,7 +50,7 @@ export default function Tasks() {
   const handleCreate = () => { setEditingTask(null); setDefaultDate(''); setFormOpen(true); };
   const handleCreateOnDate = (date: string) => { setEditingTask(null); setDefaultDate(date); setFormOpen(true); };
   const handleEdit = (task: Task) => { setEditingTask(task); setFormOpen(true); };
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: TaskFormData) => {
     if (editingTask) updateTask.mutate({ ...data, id: editingTask.id }, { onSuccess: () => setFormOpen(false) });
     else createTask.mutate(data, { onSuccess: () => setFormOpen(false) });
   };
@@ -84,7 +84,7 @@ export default function Tasks() {
 
   return (
     <div className="p-4 md:p-6 max-w-[1400px] mx-auto">
-      <h1 className="sr-only">Công việc (Tasks)</h1>
+      
       <PageHeader title={t('taskManagement.title')} subtitle={t('taskManagement.subtitle')} actions={
         <div className="flex items-center gap-2">
           <PermissionGate module="tasks" action="create">

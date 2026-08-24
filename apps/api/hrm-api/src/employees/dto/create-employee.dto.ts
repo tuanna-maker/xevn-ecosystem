@@ -35,6 +35,10 @@ export class CreateEmployeeDto {
 
   @IsOptional()
   @IsString()
+  phone_number?: string;
+
+  @IsOptional()
+  @IsString()
   @MaxLength(100)
   job_title_key?: string;
 
