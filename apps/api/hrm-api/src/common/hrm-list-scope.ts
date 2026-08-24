@@ -1144,6 +1144,7 @@ function buildAllowedCompanyKeys(scope: HrmListScope): {
   const slugs = new Set(scope.companyIds.map((id) => id.trim().toLowerCase()));
   if (scope.masterTenantPartition) {
     slugs.add(HRM_PILOT_OPERATING_COMPANY_ID);
+    slugs.add('holding');
   }
   if (scope.memberTenantId) {
     const uuids = new Set<string>();

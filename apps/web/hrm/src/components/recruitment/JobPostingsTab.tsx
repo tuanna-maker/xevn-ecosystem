@@ -118,6 +118,7 @@ import {
   Edit,
   Eye,
   Trash2,
+  Check,
   CalendarIcon,
   Building2,
   Clock,
@@ -239,6 +240,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
   const statusOptions = [
     { value: 'all', label: t('recruitment.jt.statuses.all') },
     { value: 'active', label: t('recruitment.jt.statuses.active') },
+    { value: 'pending_approval', label: t('recruitment.jt.statuses.pendingApproval') || 'Chờ duyệt' },
     { value: 'draft', label: t('recruitment.jt.statuses.draft') },
     { value: 'paused', label: t('recruitment.jt.statuses.paused') },
     { value: 'closed', label: t('recruitment.jt.statuses.closed') },
@@ -265,6 +267,8 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
         return <Badge className="border-0 bg-success/15 text-success hover:bg-success/15">{t('recruitment.jt.statuses.active')}</Badge>;
       case 'draft':
         return <Badge className="border-0 bg-xevn-neutral/15 text-xevn-textSecondary hover:bg-xevn-neutral/15">{t('recruitment.jt.statuses.draft')}</Badge>;
+      case 'pending_approval':
+        return <Badge className="border-0 bg-warning/15 text-warning hover:bg-warning/15">{t('recruitment.jt.statuses.pendingApproval') || 'Chờ duyệt'}</Badge>;
       case 'paused':
         return <Badge className="border-0 bg-warning/15 text-warning hover:bg-warning/15">{t('recruitment.jt.statuses.paused')}</Badge>;
       case 'closed':
@@ -291,7 +295,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
     headcount: z.string().min(1, t('recruitment.form.openingsRequired')),
     deadline: z.date().optional(),
     priority: z.string().default('medium'),
-    status: z.string().default('draft'),
+    status: z.string().default('pending_approval'),
     jd_template_id: z.string().optional(),
     workflow_id: z.string().optional(),
   });
@@ -311,7 +315,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
       is_salary_visible: true,
       headcount: '1',
       priority: 'medium',
-      status: 'draft',
+      status: 'pending_approval',
       jd_template_id: '',
       workflow_id: '',
     },
@@ -514,6 +518,20 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
   });
 
   // Delete mutation
+  const approveMutation = useMutation({
+    mutationFn: async (id: string) => {
+      if (!currentCompanyId) throw new Error('Missing company scope');
+      await updateJobPosting(id, currentCompanyId, { status: 'active' });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['job-postings'] });
+      toast.success(t('recruitment.jt.updateSuccess') || 'Duyệt thành công');
+    },
+    onError: (error) => {
+      toast.error(t('common.error') + ': ' + error.message);
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       if (!currentCompanyId) throw new Error('Missing company scope');
@@ -600,7 +618,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
       is_salary_visible: true,
       headcount: '1',
       priority: 'medium',
-      status: 'draft',
+      status: 'pending_approval',
       jd_template_id: '',
       workflow_id: '',
     });
@@ -645,6 +663,13 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
   const handleOpenDelete = (job: JobPosting) => {
     setSelectedJob(job);
     setIsDeleteOpen(true);
+  };
+
+  const handleApprove = (job: JobPosting, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm('Xác nhận duyệt tin tuyển dụng này?')) {
+      approveMutation.mutate(job.id);
+    }
   };
 
   const onSubmit = (values: JobPostingFormValues) => {
@@ -887,16 +912,21 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
                     <TableCell>{getStatusBadge(job.status)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => handleOpenCandidates(job)} title={t('recruitment.jt.viewCandidates')}>
+                        {job.status === 'pending_approval' && (
+                          <Button variant="ghost" size="icon" onClick={(e) => handleApprove(job, e)} title="Duyệt">
+                            <Check className="w-4 h-4 text-success" />
+                          </Button>
+                        )}
+                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleOpenCandidates(job); }} title={t('recruitment.jt.viewCandidates')}>
                           <UserPlus className="w-4 h-4 text-primary" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleOpenView(job)}>
+                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleOpenView(job); }}>
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(job)}>
+                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleOpenEdit(job); }}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleOpenDelete(job)}>
+                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleOpenDelete(job); }}>
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
                       </div>
@@ -1278,6 +1308,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
                             </FormControl>
                             <SelectContent>
                               <SelectItem value="draft">{t('recruitment.jt.statuses.draft')}</SelectItem>
+                              <SelectItem value="pending_approval">{t('recruitment.jt.statuses.pendingApproval') || 'Chờ duyệt'}</SelectItem>
                               <SelectItem value="active">{t('recruitment.jt.statuses.active')}</SelectItem>
                               <SelectItem value="paused">{t('recruitment.jt.statuses.paused')}</SelectItem>
                               <SelectItem value="closed">{t('recruitment.jt.statuses.closed')}</SelectItem>

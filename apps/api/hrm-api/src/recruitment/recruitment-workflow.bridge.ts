@@ -75,9 +75,11 @@ const UUID_RE =
 export const WF_HRM_RECRUITMENT_PLAN_APPROVAL_CODE =
   'hrm_recruitment_plan_approval';
 export const WF_HRM_REQUISITION_APPROVAL_CODE = 'hrm_requisition_approval';
+export const WF_HRM_JOB_POSTING_APPROVAL_CODE = 'hrm_job_posting_approval';
 export const WF_HRM_CANDIDATE_PIPELINE_CODE = 'hrm_candidate_pipeline';
 export const WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN = 'hrm_recruitment_plan';
 export const WF_BUSINESS_TYPE_HRM_REQUISITION = 'hrm_requisition';
+export const WF_BUSINESS_TYPE_HRM_JOB_POSTING = 'hrm_job_posting';
 export const WF_BUSINESS_TYPE_HRM_CANDIDATE = 'hrm_candidate';
 
 export const REC_WF_TASK_TYPE_TO_STAGE: Readonly<Record<string, string>> = {
@@ -111,10 +113,12 @@ const REQUISITION_TERMINAL = new Set([
   'cancelled',
 ]);
 const CANDIDATE_TERMINAL = new Set(['hired', 'rejected']);
+const JOB_POSTING_TERMINAL = new Set(['active', 'closed', 'rejected', 'cancelled']);
 
 export type RecruitmentBusinessType =
   | typeof WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN
   | typeof WF_BUSINESS_TYPE_HRM_REQUISITION
+  | typeof WF_BUSINESS_TYPE_HRM_JOB_POSTING
   | typeof WF_BUSINESS_TYPE_HRM_CANDIDATE;
 
 export type RecruitmentWorkflowSpawnContext = {
@@ -168,12 +172,13 @@ export function mapRecTaskTypeToStage(taskType: string): string | null {
 export function isRecruitmentWorkflowLocked(
   workflowInstanceId: string | null | undefined,
   statusOrStage: string | null | undefined,
-  entity: 'plan' | 'requisition' | 'candidate',
+  entity: 'plan' | 'requisition' | 'candidate' | 'job_posting',
 ): boolean {
   if (!workflowInstanceId?.trim()) return false;
   const value = (statusOrStage ?? '').trim().toLowerCase();
   if (entity === 'plan') return !PLAN_TERMINAL.has(value);
   if (entity === 'requisition') return !REQUISITION_TERMINAL.has(value);
+  if (entity === 'job_posting') return !JOB_POSTING_TERMINAL.has(value);
   return !CANDIDATE_TERMINAL.has(value);
 }
 
@@ -185,6 +190,9 @@ function workflowCodeForBusinessType(
   }
   if (businessType === WF_BUSINESS_TYPE_HRM_REQUISITION) {
     return WF_HRM_REQUISITION_APPROVAL_CODE;
+  }
+  if (businessType === WF_BUSINESS_TYPE_HRM_JOB_POSTING) {
+    return WF_HRM_JOB_POSTING_APPROVAL_CODE;
   }
   return WF_HRM_CANDIDATE_PIPELINE_CODE;
 }
@@ -198,6 +206,9 @@ function tableForBusinessType(businessType: RecruitmentBusinessType): {
   }
   if (businessType === WF_BUSINESS_TYPE_HRM_REQUISITION) {
     return { table: 'public.job_requisitions', statusCol: 'status' };
+  }
+  if (businessType === WF_BUSINESS_TYPE_HRM_JOB_POSTING) {
+    return { table: 'public.job_postings', statusCol: 'status' };
   }
   return { table: 'public.candidates', statusCol: 'stage' };
 }
@@ -238,6 +249,16 @@ export class RecruitmentWorkflowBridge {
         const { rows } = await this.db.query<{ subject: string | null }>(
           `SELECT nullif(btrim(title), '') AS subject
            FROM public.recruitment_plans
+           WHERE id = $1::uuid
+           LIMIT 1`,
+          [ctx.businessId],
+        );
+        return rows[0]?.subject?.trim() || null;
+      }
+      if (ctx.businessType === WF_BUSINESS_TYPE_HRM_JOB_POSTING) {
+        const { rows } = await this.db.query<{ subject: string | null }>(
+          `SELECT nullif(btrim(title), '') AS subject
+           FROM public.job_postings
            WHERE id = $1::uuid
            LIMIT 1`,
           [ctx.businessId],
@@ -502,6 +523,18 @@ export class RecruitmentWorkflowBridge {
       ADD COLUMN IF NOT EXISTS wf_callback_fingerprint TEXT NULL;
     `);
     await this.db.query(`
+      ALTER TABLE public.job_postings
+      ADD COLUMN IF NOT EXISTS workflow_instance_id UUID NULL;
+    `);
+    await this.db.query(`
+      ALTER TABLE public.job_postings
+      ADD COLUMN IF NOT EXISTS rejected_reason TEXT NULL;
+    `);
+    await this.db.query(`
+      ALTER TABLE public.job_postings
+      ADD COLUMN IF NOT EXISTS wf_callback_fingerprint TEXT NULL;
+    `);
+    await this.db.query(`
       ALTER TABLE public.candidates
       ADD COLUMN IF NOT EXISTS workflow_instance_id UUID NULL;
     `);
@@ -544,6 +577,11 @@ export class RecruitmentWorkflowBridge {
     await this.db.query(`
       CREATE INDEX IF NOT EXISTS idx_job_requisitions_workflow_instance_id
         ON public.job_requisitions (workflow_instance_id)
+        WHERE workflow_instance_id IS NOT NULL;
+    `);
+    await this.db.query(`
+      CREATE INDEX IF NOT EXISTS idx_job_postings_workflow_instance_id
+        ON public.job_postings (workflow_instance_id)
         WHERE workflow_instance_id IS NOT NULL;
     `);
     await this.db.query(`
@@ -608,7 +646,9 @@ export class RecruitmentWorkflowBridge {
         ? 'planId'
         : ctx.businessType === WF_BUSINESS_TYPE_HRM_REQUISITION
           ? 'requisitionId'
-          : 'candidateId';
+          : ctx.businessType === WF_BUSINESS_TYPE_HRM_JOB_POSTING
+            ? 'jobPostingId'
+            : 'candidateId';
     const submitterEmployeeId = await this.resolveSubmitterEmployeeId(ctx);
     if (!submitterEmployeeId) {
       this.logger.warn(
@@ -711,7 +751,8 @@ export class RecruitmentWorkflowBridge {
     await this.ensureSchema();
     if (
       payload.businessType === WF_BUSINESS_TYPE_HRM_RECRUITMENT_PLAN ||
-      payload.businessType === WF_BUSINESS_TYPE_HRM_REQUISITION
+      payload.businessType === WF_BUSINESS_TYPE_HRM_REQUISITION ||
+      payload.businessType === WF_BUSINESS_TYPE_HRM_JOB_POSTING
     ) {
       this.logger.log(
         `HRM-REC-WF-CALLBACK-SKIP reason=plan_req_step_noop businessType=${payload.businessType} id=${payload.businessId}`,
@@ -785,7 +826,69 @@ export class RecruitmentWorkflowBridge {
     if (payload.businessType === WF_BUSINESS_TYPE_HRM_REQUISITION) {
       return this.handleRequisitionTerminal(payload);
     }
+    if (payload.businessType === WF_BUSINESS_TYPE_HRM_JOB_POSTING) {
+      return this.handleJobPostingTerminal(payload);
+    }
     return this.handleCandidateTerminal(payload);
+  }
+
+  private async handleJobPostingTerminal(
+    payload: RecruitmentTerminalCallbackPayload,
+  ): Promise<{
+    applied: boolean;
+    status?: string;
+    skipReason?: string;
+  }> {
+    const existing = await this.db.query<{
+      status: string;
+      workflow_instance_id: string | null;
+    }>(
+      `SELECT status, workflow_instance_id::text AS workflow_instance_id
+       FROM public.job_postings WHERE id = $1::uuid LIMIT 1`,
+      [payload.businessId],
+    );
+    const row = existing.rows[0];
+    if (!row) throw new Error('HRM-REC-JOBPOST-404');
+    if (JOB_POSTING_TERMINAL.has((row.status ?? '').toLowerCase())) {
+      this.logger.log(
+        `HRM-REC-WF-CALLBACK-SKIP reason=already_terminal job_posting=${payload.businessId} status=${row.status}`,
+      );
+      return {
+        applied: false,
+        status: row.status,
+        skipReason: 'already_terminal',
+      };
+    }
+    if (
+      row.workflow_instance_id &&
+      payload.workflowInstanceId &&
+      row.workflow_instance_id !== payload.workflowInstanceId
+    ) {
+      this.logger.log(
+        `HRM-REC-WF-CALLBACK-SKIP reason=instance_mismatch job_posting=${payload.businessId}`,
+      );
+      return {
+        applied: false,
+        status: row.status,
+        skipReason: 'instance_mismatch',
+      };
+    }
+    const nextStatus =
+      payload.terminalStatus === 'completed' ? 'active' : 'rejected';
+    const res = await this.db.query<{ status: string }>(
+      `UPDATE public.job_postings
+       SET status = $2,
+           rejected_reason = CASE WHEN $2 = 'rejected' THEN $3 ELSE rejected_reason END,
+           updated_at = NOW()
+       WHERE id = $1::uuid
+       RETURNING status`,
+      [
+        payload.businessId,
+        nextStatus,
+        payload.rejectedReason ?? 'Workflow rejected',
+      ],
+    );
+    return { applied: true, status: res.rows[0]?.status ?? nextStatus };
   }
 
   private async handlePlanTerminal(
@@ -1091,7 +1194,7 @@ export class RecruitmentWorkflowBridge {
   assertNotLockedOrThrow(
     workflowInstanceId: string | null | undefined,
     statusOrStage: string | null | undefined,
-    entity: 'plan' | 'requisition' | 'candidate',
+    entity: 'plan' | 'requisition' | 'candidate' | 'job_posting',
   ): void {
     if (
       isRecruitmentWorkflowLocked(workflowInstanceId, statusOrStage, entity)
