@@ -276,17 +276,17 @@ export default function InternalNews() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 md:px-6 pt-4 pb-2">
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-xevn-text">
-            {t('internalNews.title')}
+            {t('hrm:internalNews.title')}
           </h1>
           <p className="text-sm text-xevn-textSecondary">
-            {t('internalNews.subtitle')}
+            {t('hrm:internalNews.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder={t('internalNews.search')}
+              placeholder={t('hrm:internalNews.search')}
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-9 w-full sm:w-64"
@@ -294,7 +294,7 @@ export default function InternalNews() {
           </div>
           <Button size="sm" className="gap-2" onClick={handleOpenCreate}>
             <Plus className="w-4 h-4" />
-            <span>{t('internalNews.addNew')}</span>
+            <span>{t('hrm:internalNews.addNew')}</span>
           </Button>
         </div>
       </div>
@@ -328,7 +328,7 @@ export default function InternalNews() {
               }}
             />
             <Label htmlFor="include-drafts" className="text-sm text-muted-foreground cursor-pointer">
-              {t('internalNews.includeDrafts')}
+              {t('hrm:internalNews.includeDrafts')}
             </Label>
           </div>
         </div>
@@ -340,20 +340,20 @@ export default function InternalNews() {
           <TableHeader className="sticky top-0 bg-muted/50 z-10">
             <TableRow>
               <TableHead className="w-12">#</TableHead>
-              <TableHead>{t('internalNews.tableHeaders.title')}</TableHead>
-              <TableHead>{t('internalNews.tableHeaders.category')}</TableHead>
-              <TableHead>{t('internalNews.tableHeaders.status')}</TableHead>
-              <TableHead>{t('internalNews.tableHeaders.author')}</TableHead>
-              <TableHead>{t('internalNews.tableHeaders.publishedAt')}</TableHead>
-              <TableHead className="w-28 text-center">{t('internalNews.tableHeaders.views')}</TableHead>
-              <TableHead className="w-28 text-center">{t('internalNews.tableHeaders.actions')}</TableHead>
+              <TableHead>{t('hrm:internalNews.tableHeaders.title')}</TableHead>
+              <TableHead>{t('hrm:internalNews.tableHeaders.category')}</TableHead>
+              <TableHead>{t('hrm:internalNews.tableHeaders.status')}</TableHead>
+              <TableHead>{t('hrm:internalNews.tableHeaders.author')}</TableHead>
+              <TableHead>{t('hrm:internalNews.tableHeaders.publishedAt')}</TableHead>
+              <TableHead className="w-28 text-center">{t('hrm:internalNews.tableHeaders.views')}</TableHead>
+              <TableHead className="w-28 text-center">{t('hrm:internalNews.tableHeaders.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-10">
-                  {t('internalNews.loading')}
+                  {t('hrm:internalNews.loading')}
                 </TableCell>
               </TableRow>
             ) : paginatedNews.length === 0 ? (
@@ -361,9 +361,9 @@ export default function InternalNews() {
                 <TableCell colSpan={8} className="text-center py-10">
                   <div className="flex flex-col items-center gap-2">
                     <Newspaper className="w-8 h-8 text-muted-foreground" />
-                    <p>{t('internalNews.noData')}</p>
+                    <p>{t('hrm:internalNews.noData')}</p>
                     <Button size="sm" onClick={handleOpenCreate}>
-                      {t('internalNews.addNew')}
+                      {t('hrm:internalNews.addNew')}
                     </Button>
                   </div>
                 </TableCell>
@@ -438,7 +438,7 @@ export default function InternalNews() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-6 py-3 border-t bg-card">
           <span className="text-sm text-muted-foreground">
-            {t('internalNews.showingRecords', {
+            {t('hrm:internalNews.showingRecords', {
               start: startIndex + 1,
               end: Math.min(endIndex, filteredNews.length),
               total: filteredNews.length,
@@ -486,12 +486,12 @@ export default function InternalNews() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingNews ? t('internalNews.editTitle') : t('internalNews.addTitle')}
+              {editingNews ? t('hrm:internalNews.editTitle') : t('hrm:internalNews.addTitle')}
             </DialogTitle>
             <DialogDescription>
               {editingNews
-                ? t('internalNews.editDesc')
-                : t('internalNews.addDesc')}
+                ? t('hrm:internalNews.editDesc')
+                : t('hrm:internalNews.addDesc')}
             </DialogDescription>
           </DialogHeader>
 
@@ -499,10 +499,10 @@ export default function InternalNews() {
             {/* Title */}
             <div className="space-y-2">
               <Label>
-                {t('internalNews.form.titleLabel')} <span className="text-destructive">*</span>
+                {t('hrm:internalNews.form.titleLabel')} <span className="text-destructive">*</span>
               </Label>
               <Input
-                placeholder={t('internalNews.form.titlePlaceholder')}
+                placeholder={t('hrm:internalNews.form.titlePlaceholder')}
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               />
@@ -510,9 +510,9 @@ export default function InternalNews() {
 
             {/* Summary */}
             <div className="space-y-2">
-              <Label>{t('internalNews.form.summaryLabel')}</Label>
+              <Label>{t('hrm:internalNews.form.summaryLabel')}</Label>
               <Input
-                placeholder={t('internalNews.form.summaryPlaceholder')}
+                placeholder={t('hrm:internalNews.form.summaryPlaceholder')}
                 value={formData.summary}
                 onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
               />
@@ -520,9 +520,9 @@ export default function InternalNews() {
 
             {/* Content */}
             <div className="space-y-2">
-              <Label>{t('internalNews.form.contentLabel')}</Label>
+              <Label>{t('hrm:internalNews.form.contentLabel')}</Label>
               <Textarea
-                placeholder={t('internalNews.form.contentPlaceholder')}
+                placeholder={t('hrm:internalNews.form.contentPlaceholder')}
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 rows={6}
@@ -532,7 +532,7 @@ export default function InternalNews() {
             {/* Category & Status */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>{t('internalNews.form.categoryLabel')}</Label>
+                <Label>{t('hrm:internalNews.form.categoryLabel')}</Label>
                 <Select
                   value={formData.category}
                   onValueChange={(value) => setFormData({ ...formData, category: value })}
@@ -551,7 +551,7 @@ export default function InternalNews() {
               </div>
 
               <div className="space-y-2">
-                <Label>{t('internalNews.form.statusLabel')}</Label>
+                <Label>{t('hrm:internalNews.form.statusLabel')}</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value })}
@@ -572,7 +572,7 @@ export default function InternalNews() {
 
             {/* Visibility */}
             <div className="space-y-2">
-              <Label>{t('internalNews.form.visibilityLabel')}</Label>
+              <Label>{t('hrm:internalNews.form.visibilityLabel')}</Label>
               <Select
                 value={formData.visibility}
                 onValueChange={(value) => setFormData({ ...formData, visibility: value })}
@@ -598,20 +598,20 @@ export default function InternalNews() {
                 onCheckedChange={(checked) => setFormData({ ...formData, pinned: !!checked })}
               />
               <Label htmlFor="pinned" className="cursor-pointer">
-                {t('internalNews.form.pinnedLabel')}
+                {t('hrm:internalNews.form.pinnedLabel')}
               </Label>
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={handleCloseDialog}>
-              {t('internalNews.cancelBtn')}
+              {t('hrm:internalNews.cancelBtn')}
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={!formData.title.trim() || isSubmitting}
             >
-              {isSubmitting ? t('internalNews.saving') : editingNews ? t('internalNews.update') : t('internalNews.create')}
+              {isSubmitting ? t('hrm:internalNews.saving') : editingNews ? t('hrm:internalNews.update') : t('hrm:internalNews.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -633,21 +633,21 @@ export default function InternalNews() {
               {viewingNews?.pinned && (
                 <Badge variant="default">
                   <Pin className="w-3 h-3 mr-1" />
-                  {t('internalNews.pinned')}
+                  {t('hrm:internalNews.pinned')}
                 </Badge>
               )}
             </div>
 
             {viewingNews?.summary && (
               <div>
-                <Label className="text-muted-foreground">{t('internalNews.form.summaryLabel')}</Label>
+                <Label className="text-muted-foreground">{t('hrm:internalNews.form.summaryLabel')}</Label>
                 <p className="mt-1">{viewingNews.summary}</p>
               </div>
             )}
 
             {viewingNews?.content && (
               <div>
-                <Label className="text-muted-foreground">{t('internalNews.form.contentLabel')}</Label>
+                <Label className="text-muted-foreground">{t('hrm:internalNews.form.contentLabel')}</Label>
                 <p className="mt-1 whitespace-pre-wrap">{viewingNews.content}</p>
               </div>
             )}
@@ -666,14 +666,14 @@ export default function InternalNews() {
                 </div>
               )}
               <div>
-                {viewingNews?.view_count} {t('internalNews.views')}
+                {viewingNews?.view_count} {t('hrm:internalNews.views')}
               </div>
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
-              {t('internalNews.closeBtn')}
+              {t('hrm:internalNews.closeBtn')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -683,18 +683,18 @@ export default function InternalNews() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('internalNews.deleteConfirm')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('hrm:internalNews.deleteConfirm')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('internalNews.deleteConfirmDesc')} "{deletingNews?.title}"
+              {t('hrm:internalNews.deleteConfirmDesc')} "{deletingNews?.title}"
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('internalNews.cancelBtn')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('hrm:internalNews.cancelBtn')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? t('internalNews.deleting') : t('common.delete')}
+              {isDeleting ? t('hrm:internalNews.deleting') : t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
