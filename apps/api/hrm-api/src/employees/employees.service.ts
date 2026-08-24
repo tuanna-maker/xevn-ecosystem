@@ -713,6 +713,9 @@ export class EmployeesService implements OnModuleInit {
     const customFields: Record<string, string> = {
       ...(payload.custom_fields ?? {}),
     };
+    if (payload.phone_number?.trim()) {
+      customFields.phone_number = payload.phone_number.trim();
+    }
     if (scope.memberTenantId && !customFields.tenant_id?.trim()) {
       customFields.tenant_id = scope.memberTenantId;
     } else if (scope.masterTenantPartition && !customFields.tenant_id?.trim()) {
@@ -1629,6 +1632,17 @@ export class EmployeesService implements OnModuleInit {
             payload.custom_fields,
           )
         : (payload.custom_fields ?? {});
+    }
+
+    if (payload.phone_number !== undefined) {
+      nextCustomFields = {
+        ...(nextCustomFields ?? existing.custom_fields ?? {}),
+      };
+      if (payload.phone_number.trim()) {
+        nextCustomFields.phone_number = payload.phone_number.trim();
+      } else {
+        delete nextCustomFields.phone_number;
+      }
     }
 
     if (

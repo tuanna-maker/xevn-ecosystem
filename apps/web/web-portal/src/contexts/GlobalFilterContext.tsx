@@ -16,6 +16,7 @@ export type TenantOption = Company & {
   isMaster: boolean;
   /** OS 28 — bind from auth BE; empty/— only when missing (no FE invent). */
   membershipId?: string;
+  modules?: string[];
   tenant_label?: string;
   company_label?: string;
   role_label?: string;
@@ -63,6 +64,7 @@ function mapTenantToOption(t: AccessibleTenant, index: number): TenantOption {
     roleCode: t.roleCode,
     isMaster: t.isMaster,
     membershipId: t.membershipId,
+    modules: t.modules,
     tenant_label: t.tenant_label,
     company_label: t.company_label,
     role_label: t.role_label,

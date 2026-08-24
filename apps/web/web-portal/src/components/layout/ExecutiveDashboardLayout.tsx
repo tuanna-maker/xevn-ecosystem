@@ -31,14 +31,12 @@
  */
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { stripTenantPrefixFromPathname } from '../../modules/hrm/paths';
 import { isCommandCenterHrmPath } from '../../modules/hrm/commandCenterUrl';
 import TopHeader from './TopHeader';
 
 /** Membership chrome required on CC shell (not UnifiedShell / cockpit / HRM embed). */
 export function isCommandCenterShellPath(pathname: string): boolean {
-  const stripped = stripTenantPrefixFromPathname(pathname);
-  return stripped === '/command-center' || stripped.startsWith('/command-center/');
+  return pathname.includes('/command-center');
 }
 
 /**

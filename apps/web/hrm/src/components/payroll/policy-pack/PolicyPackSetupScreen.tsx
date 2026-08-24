@@ -18,7 +18,7 @@
  *
  * @CODE-MEMORY-CHANGE 2026-08-22 PO-HRM-PAY-CNTT-FE-STP-01-POLICY-PACK-REDESIGN
  * change_mode: UPGRADE
- * What: Thay Sheet/Dialog → custom fullscreen overlay (fixed inset-0 z-[200]) tránh brand
+ * What: Thay Sheet/Dialog → custom fullscreen overlay (fixed inset-0 z-50) tránh brand
  *       chrome bloat; 2 cột scroll độc lập; PolicyGroupEditor nhóm chính sách nhiều loại.
  *       groups[] serialize vào rateParams.__groups JSON (FE-only; BE migration sau).
  * Why: Dialog component có brand chrome XeVN không cho fullscreen thực sự.
@@ -132,7 +132,7 @@ function FullscreenPanel({
 
   const panel = (
     <div
-      className="fixed inset-0 z-[500] flex flex-col bg-slate-50"
+      className="fixed inset-0 z-50 flex flex-col bg-slate-50"
       role="dialog"
       aria-modal="true"
       data-testid="pay-policy-pack-dialog"

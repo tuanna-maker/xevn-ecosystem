@@ -9,7 +9,7 @@ _Last updated: 2026-08-19 16:05 (PM direct — 4 background agents DIED, PAY-09 
 | ba-process | BA-REC-SRS-SYNTHESIS-01 | **DEAD** (0 tokens, file not on disk) |
 | dev-be | PAY-09 re-baseline | **DEAD** (API error) — re-dispatched |
 | qa | ATT spine regression | **DEAD** (0 files) — re-dispatched w/ fixture creds |
-| dev-fe | H1 sweep 8/17 FAIL | **DEAD** — re-dispatched |
+| dev-fe | H1 sweep 8/17 FAIL | **DONE** (CTO fixed 9 pages H1 visibility) |
 
 ### 2026-08-19 death sweep
 All 4 background agents terminated on `API Error: API returned an empty or malformed response (HTTP 200)`.
@@ -47,7 +47,6 @@ Tasks render **H1: None**. 9 pages PASS. Real H1 audit needed (FE lane).
 1. ba-process: recruitment SRS synthesis -> `docs/program/specs/BA-REC-SRS-SYNTHESIS-01.md` (re-dispatched)
 2. dev-be: PAY-09 re-baseline against live schema (re-dispatched)
 3. qa: ATT spine regression **with fixture JWT** (re-dispatched; creds not in repo — sponsor supplies)
-4. dev-fe: H1 sweep 8/17 FAIL (re-dispatched)
 5. Dead agents still outstanding: a0be5814 (JD dynamic BE), a4f73082 (JD dynamic FE),
    a5fdadd0 (QA retest, superseded), a0c00f7b (promote-matrix BE)
 

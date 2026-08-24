@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Outlet, matchPath, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, matchPath, useLocation } from 'react-router-dom';
 import {
   ChevronRight,
   AlertTriangle,
@@ -146,6 +146,7 @@ import {
 } from './workspace-rail-context';
 import { HrmApiHealthBanner } from '../../components/common/HrmApiHealthBanner';
 import { hrmPortalPath } from '../../modules/hrm/paths';
+import { useTenantNavigate } from '../../hooks/useTenantNavigate';
 import {
   commandCenterInboxInstanceDeepLink,
   isCommandCenterHrmPath,
@@ -1430,7 +1431,7 @@ const CommandCenterPage: React.FC = () => {
     useState<SettingsMenuKey>('company_member_units');
   const activeSettingsMenuRef = useRef<SettingsMenuKey>(activeSettingsMenu);
   const [companySetupGroupOpen, setCompanySetupGroupOpen] = useState(true);
-  const navigate = useNavigate();
+  const navigate = useTenantNavigate();
   const location = useLocation();
 
   useEffect(() => {
