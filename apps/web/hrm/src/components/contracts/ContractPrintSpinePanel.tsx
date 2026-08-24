@@ -639,9 +639,7 @@ export function ContractPrintSpinePanel({
             (CORE-09a), không soạn lại toàn văn. Lương qua C&amp;B (F5), không nhập free-type trên
             form này. Xem trước = ephemeral (không INSERT phiên bản in).
           </p>
-          {!CONTRACTS_PRINTABLE_READY ? (
-            
-          ) : null}
+          {!CONTRACTS_PRINTABLE_READY ? null : null}
           <p
             className="mt-1 text-[11px] text-amber-800/90"
             data-testid="ctr-core09-honesty"

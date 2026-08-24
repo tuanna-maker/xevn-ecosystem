@@ -4034,7 +4034,7 @@ export default function Attendance() {
         return renderAttendanceContent();
       case 'shifts':
         return renderShiftsContent();
-      case 'requests':
+      case 'requests': {
         if (activeRequestType === 'overtime') return <OvertimeRequestTab />;
         if (activeRequestType === 'business-trip') return <BusinessTripRequestTab />;
         if (activeRequestType === 'late-early') return <LateEarlyRequestTab />;

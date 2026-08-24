@@ -61,7 +61,7 @@ export function CandidateSourceStats({ selectedSource, onSourceFilter }: Candida
     queryKey: ['candidates_source_stats', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      return null || [];
+      return [];
     },
     enabled: !!currentCompanyId,
   });

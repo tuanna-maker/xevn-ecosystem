@@ -594,8 +594,8 @@ export const seedKpiActualValues: KpiActualValue[] = [
 export const seedCalculationRuns: CalculationRun[] = [];
 export const seedRewardPenaltyResults: RewardPenaltyResult[] = [];
 
-const defaultCascadeStatus: 'draft' = 'draft';
-const defaultCascadePeriodType: 'Q1' = 'Q1';
+const defaultCascadeStatus = 'draft' as const;
+const defaultCascadePeriodType = 'Q1' as const;
 
 export const seedKpiCascadeHeaders: KpiCascadeAllocationHeader[] = [
   {

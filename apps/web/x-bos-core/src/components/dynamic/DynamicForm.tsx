@@ -109,7 +109,7 @@ function FieldControl({
           disabled={disabled}
         />
       );
-    case 'boolean':
+    case 'boolean': {
       // Boolean không có "danh sách lựa chọn" như select.
       // Nhãn bật/tắt có thể được cấu hình trong metadata.validationJson.
       const trueLabel =
@@ -128,10 +128,11 @@ function FieldControl({
             disabled={disabled}
           />
           <span className="text-sm text-xevn-muted">
-            {Boolean(value) ? trueLabel : falseLabel}
+            {value ? trueLabel : falseLabel}
           </span>
         </label>
       );
+    }
     case 'select': {
       const fromDna = field.refCategoryCode
         ? getItemsByCategory(field.refCategoryCode, tenantId).map((i) => ({
