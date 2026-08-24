@@ -107,6 +107,8 @@ import { HomeController } from './home/home.controller';
 import { HomeService } from './home/home.service';
 import { ContractTemplatesModule } from './contract-templates/contract-templates.module';
 import { CompanyScopeModule } from './company-scope/company-scope.module';
+import { InternalNewsController } from './internal-news/internal-news.controller';
+import { InternalNewsService } from './internal-news/internal-news.service';
 
 @Module({
   imports: [
@@ -149,6 +151,7 @@ import { CompanyScopeModule } from './company-scope/company-scope.module';
     CatalogExtensionsController,
     OperatingUnitsController,
     HomeController,
+    InternalNewsController,
   ],
   providers: [
     MobileAuthService,
@@ -222,6 +225,7 @@ import { CompanyScopeModule } from './company-scope/company-scope.module';
     CatalogExtensionsService,
     OperatingUnitsService,
     HomeService,
+    InternalNewsService,
   ],
 })
 export class AppModule {}

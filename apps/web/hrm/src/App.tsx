@@ -71,6 +71,7 @@ const InternalServices = lazy(() => import("./pages/InternalServices"));
 const ToolsEquipment = lazy(() => import("./pages/ToolsEquipment"));
 const Fleet = lazy(() => import("./pages/Fleet"));
 const InboxNotifications = lazy(() => import("./pages/InboxNotifications"));
+const InternalNews = lazy(() => import("./pages/InternalNews"));
 const PayrollSetupHub = lazy(() =>
   import("./components/payroll/setup/PayrollSetupHub").then((m) => ({ default: m.PayrollSetupHub })),
 );
@@ -201,6 +202,7 @@ const App = () => {
                   <Route path="/tools_equipment" element={<Navigate to="/tools-equipment" replace />} />
                   {/* FL-01 list-only — portal bypass; no invent create (G-FL-07 / G-FL-UPSERT) */}
                   <Route path="/fleet" element={withSuspense(<Fleet />)} />
+                  <Route path="/internal-news" element={<PermissionRoute module="internal_news">{withSuspense(<InternalNews />)}</PermissionRoute>} />
                 </Route>
 
                 <Route path="*" element={withSuspense(<NotFound />)} />
