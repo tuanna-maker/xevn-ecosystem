@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useSearchParams } from 'react-router-dom';
-import type { LucideIcon } from 'lucide-react';
+import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import {
   LayoutDashboard,
   Users,
@@ -28,7 +28,6 @@ import {
   NAV_SUBSIDEBAR_ITEM_IDLE_CLASS,
   NAV_SUBSIDEBAR_TITLE_CLASS,
 } from '../../pages/command-center/settings-form-pattern';
-import { useTenantScope } from '../../contexts/GlobalFilterContext';
 import type { HrmWorkspaceMenuKey } from './types';
 import { tenantHrmPortalPath } from './paths';
 

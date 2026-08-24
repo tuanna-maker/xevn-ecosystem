@@ -31,7 +31,6 @@
  */
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { stripTenantPrefixFromPathname } from '../../modules/hrm/paths';
 import { isCommandCenterHrmPath } from '../../modules/hrm/commandCenterUrl';
 import TopHeader from './TopHeader';
 

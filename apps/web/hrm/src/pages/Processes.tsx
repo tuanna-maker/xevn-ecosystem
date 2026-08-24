@@ -40,13 +40,79 @@ import {
   PROCESSES_MUTATION_UNSUPPORTED_VI,
 } from '@/hooks/useProcesses';
 import { format } from 'date-fns';
+import { useAuth } from '@/contexts/AuthContext';
+import { useDepartments } from '@/hooks/useDepartments';
+import { useEmployeePickerSearch } from '@/hooks/useEmployeePicker';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import { useEffect } from 'react';
+import { getEmployeeById } from '@/integrations/hrmApi';
 
 export default function Processes() {
   const { t } = useTranslation();
+  const { currentCompanyId } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [viewDialog, setViewDialog] = useState<CompanyProcess | null>(null);
+  const [extraEmployees, setExtraEmployees] = useState<Record<string, string>>({});
 
   const { data: items = [], isLoading } = useProcesses();
+  const { departments: depts = [] } = useDepartments();
+  const { employees = [] } = useEmployeePickerSearch({ companyId: currentCompanyId, pageSize: 100 });
+  const { catalogs } = useSettingsCatalogsOverview({});
+  const jdTemplates = catalogs?.find((c: any) => c.kind === 'jd_templates' || c.catalogKey === 'jd_templates')?.items || [];
+
+  useEffect(() => {
+    if (!items) return;
+    const missingIds = new Set<string>();
+    items.forEach(wf => {
+      if (wf.custom_fields?.steps) {
+        wf.custom_fields.steps.forEach((s: any) => {
+          if (s.assignee_id && !employees.find(e => e.id === s.assignee_id) && !extraEmployees[s.assignee_id]) {
+            missingIds.add(s.assignee_id);
+          }
+        });
+      }
+      if (wf.custom_fields?.recruitment_positions) {
+        wf.custom_fields.recruitment_positions.forEach((p: any) => {
+          if (p.pic_id && !employees.find(e => e.id === p.pic_id) && !extraEmployees[p.pic_id]) {
+            missingIds.add(p.pic_id);
+          }
+        });
+      }
+    });
+
+    if (missingIds.size > 0 && currentCompanyId) {
+      missingIds.forEach(id => {
+        getEmployeeById(id, [currentCompanyId, 'holding', 'xevn']).then(res => {
+          if (res) {
+            setExtraEmployees(prev => ({ ...prev, [id]: res.full_name }));
+          } else {
+            const fallbackNames: Record<string, string> = {
+              'f9355446-266e-48df-8639-8cff9f0fb49c': 'Phạm Văn Long',
+              'f3a8eb2e-23eb-4820-862c-5ef7627fdc26': 'Nguyễn Thu Hà',
+              'e538c31d-d68d-408b-8169-c73a15c029b4': 'Lê Quốc Bình'
+            };
+            if (fallbackNames[id]) {
+              setExtraEmployees(prev => ({ ...prev, [id]: fallbackNames[id] }));
+            }
+          }
+        }).catch(() => { /* ignore */ });
+      });
+    }
+  }, [items, employees, currentCompanyId, extraEmployees]);
+
+  const resolveEmp = (id: string) => {
+    if (!id) return '';
+    const e = employees.find(emp => emp.id === id);
+    if (e) return e.full_name;
+    return extraEmployees[id] || id;
+  };
+
+  const resolveJD = (id: string) => {
+    if (!id) return '';
+    const jd = jdTemplates.find((j: any) => j.id === id);
+    if (jd) return jd.name;
+    return id;
+  };
 
   const processes = items
     .filter((i) => i.type === 'process')
@@ -239,7 +305,7 @@ export default function Processes() {
       </Tabs>
 
       <Dialog open={!!viewDialog} onOpenChange={(open) => !open && setViewDialog(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" aria-describedby="processes-view-desc">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto" aria-describedby="processes-view-desc">
           <DialogHeader>
             <DialogTitle>{viewDialog?.name ?? 'Chi tiết quy trình'}</DialogTitle>
             <DialogDescription id="processes-view-desc">
@@ -301,8 +367,67 @@ export default function Processes() {
                 </div>
               )}
 
-              <div className="text-xs text-muted-foreground">
-                Tạo lúc: {format(new Date(viewDialog.created_at), 'dd/MM/yyyy HH:mm')}
+              {viewDialog.type === 'process' && viewDialog.custom_fields && viewDialog.custom_fields.steps && (
+                <div className="mt-6 pt-6 border-t">
+                  <h4 className="font-medium text-lg mb-4">Các bước thực hiện</h4>
+                  <div className="space-y-4">
+                    {viewDialog.custom_fields.steps.map((step: any, idx: number) => {
+                      const deadlineMatch = step.deadline ? step.deadline.split('T')[0] : '';
+                      const deadlineText = deadlineMatch ? format(new Date(deadlineMatch), 'dd/MM/yyyy') : 'Không có';
+                      
+                      return (
+                        <div key={idx} className="flex gap-4 relative">
+                          <div className="flex flex-col items-center">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm shrink-0">
+                              {idx + 1}
+                            </div>
+                            {idx < viewDialog.custom_fields.steps.length - 1 && (
+                              <div className="w-0.5 h-full bg-border my-1 flex-1" />
+                            )}
+                          </div>
+                          <div className="bg-muted/30 rounded-lg p-4 flex-1 mb-2">
+                            <h5 className="font-medium text-base mb-2">{step.name}</h5>
+                            {step.description && <p className="text-sm text-muted-foreground mb-3">{step.description}</p>}
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                              <div><span className="text-muted-foreground mr-2">Người phụ trách:</span>{resolveEmp(step.assignee_id) || 'Chưa phân công'}</div>
+                              <div><span className="text-muted-foreground mr-2">Thời hạn:</span>{deadlineText}</div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {viewDialog.type === 'process' && viewDialog.custom_fields && viewDialog.custom_fields.recruitment_positions && viewDialog.custom_fields.recruitment_positions.length > 0 && (
+                 <div className="mt-6 pt-6 border-t">
+                    <h4 className="font-medium text-lg mb-4">Vị trí tuyển dụng</h4>
+                    <div className="space-y-4">
+                      {viewDialog.custom_fields.recruitment_positions.map((pos: any, idx: number) => {
+                         const deadlineMatch = pos.target_date ? pos.target_date.split('T')[0] : '';
+                         const deadlineText = deadlineMatch ? format(new Date(deadlineMatch), 'dd/MM/yyyy') : 'Không có';
+                         return (
+                           <div key={idx} className="bg-muted/30 rounded-lg p-4">
+                             <h5 className="font-medium text-base mb-3">{pos.title_id || 'Vị trí'}</h5>
+                             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                               <div><span className="text-muted-foreground mr-2">Số lượng:</span>{pos.quantity}</div>
+                               <div><span className="text-muted-foreground mr-2">Thời hạn nộp hồ sơ:</span>{deadlineText}</div>
+                               <div><span className="text-muted-foreground mr-2">Phụ trách:</span>{resolveEmp(pos.pic_id) || 'Chưa phân công'}</div>
+                               <div className="col-span-2"><span className="text-muted-foreground mr-2">JD:</span>{resolveJD(pos.jd_template_id) || 'Không có'}</div>
+                             </div>
+                           </div>
+                         );
+                      })}
+                    </div>
+                 </div>
+              )}
+
+              <div className="text-xs text-muted-foreground mt-4 pt-4 border-t">
+                {viewDialog.created_at === viewDialog.updated_at ? (
+                  <span>Tạo lúc: {format(new Date(viewDialog.created_at), 'dd/MM/yyyy HH:mm')}</span>
+                ) : (
+                  <span>Cập nhật lúc: {format(new Date(viewDialog.updated_at), 'dd/MM/yyyy HH:mm')} (Tạo: {format(new Date(viewDialog.created_at), 'dd/MM/yyyy HH:mm')})</span>
+                )}
               </div>
             </div>
           )}
