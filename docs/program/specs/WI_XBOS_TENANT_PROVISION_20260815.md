@@ -170,6 +170,7 @@ Fields:
 - Loại (`tenantKind`): Master / Thành viên
 - Phân hệ được phép (`modules`): [x] HRM [ ] Logistics
 - Thông tin pháp nhân: Mã, Tên pháp nhân, MST, Ngành nghề (optional)
+- Thông tin Quản trị (chỉ dành cho Thành viên): `adminEmail` và `adminPassword` để cấp phát tài khoản Admin cho Tenant mới.
 
 #### Dialog: Cập nhật module
 - Cho phép thêm/bỏ module sau khi tạo (nếu tenant chưa có payroll data lock)
