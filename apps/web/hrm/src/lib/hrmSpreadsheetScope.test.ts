@@ -5,6 +5,7 @@ import {
   getPortalJwtEssCompanyId,
   getPortalJwtRoleCode,
   resolveHrmMutateCompanyScope,
+  resolveHrmRequestTenantId,
   resolveHrmSettingsCatalogScope,
   resolveHrmSpreadsheetScope,
 } from './hrmSpreadsheetScope';
@@ -112,6 +113,14 @@ describe('hrmSpreadsheetScope', () => {
     expect(getPortalJwtRoleCode()).toBe('subsidiary_ceo');
     const scope = resolveHrmSettingsCatalogScope(null, '?portal=1&tenantId=visun&companyId=main');
     expect(scope).toEqual({ tenantId: 'visun', companyId: 'main' });
+  });
+
+  it('member Visun JWT ignores conflicting URL tenantId to prevent 409', () => {
+    sessionStorage.setItem(STORAGE_TOKEN, JWT_VISUN);
+    const scope = resolveHrmSpreadsheetScope('main', '?tenantId=xevn&companyId=main');
+    expect(scope?.tenantId).toBe('visun');
+    expect(scope?.companyId).toBe('main');
+    expect(resolveHrmRequestTenantId('?tenantId=xevn&companyId=main')).toBe('visun');
   });
 
   it('D-PAY-ESS-FE-SCOPE-COERCE: ESS JWT preserves holding (not null/main)', () => {

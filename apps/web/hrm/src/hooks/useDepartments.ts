@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { listDepartmentsFromSettingsCatalog } from '@/lib/hrmDepartmentCatalog';
+import { loadCompanyDepartments } from '@/lib/hrmDepartmentCatalog';
 
 export interface Department {
   id: string;
@@ -35,7 +35,10 @@ export function useDepartments(opts?: { enabled?: boolean }) {
     const fetchDepartments = async () => {
       setIsLoading(true);
       try {
-        const rows = await listDepartmentsFromSettingsCatalog(currentCompanyId);
+        const { rows, fetchError } = await loadCompanyDepartments(currentCompanyId);
+        if (fetchError) {
+          console.error('Error fetching departments:', fetchError);
+        }
         setDepartments(rows);
       } catch (error) {
         console.error('Error fetching departments:', error);

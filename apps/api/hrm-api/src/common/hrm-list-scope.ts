@@ -451,15 +451,21 @@ export function resolveHrmListScope(
   const requested = requestedCompanyId.trim().toLowerCase();
   const tenantOnly = isHrmTenantOnlyScopeEnabled();
 
+  const groupCeoMasterBucket = isGroupCeoMasterOperatingBucket(
+    jwtPayload,
+    tenantId,
+    claimCompany,
+    roleCode,
+  );
+
   const isGroupRollup =
     tenantId === MASTER_TENANT_ID &&
     requested === HRM_PILOT_OPERATING_COMPANY_ID &&
-    isGroupCeoMasterOperatingBucket(
-      jwtPayload,
-      tenantId,
-      claimCompany,
-      roleCode,
-    );
+    groupCeoMasterBucket;
+
+  /** Group catalog rows persist under `holding`; portal query must not narrow to xevn-only tenant slice. */
+  const isGroupHoldingRollup =
+    tenantId === MASTER_TENANT_ID && requested === 'holding' && groupCeoMasterBucket;
 
   const serviceGroupMain =
     !jwtPayload &&
@@ -467,7 +473,7 @@ export function resolveHrmListScope(
     requested === HRM_PILOT_OPERATING_COMPANY_ID;
 
   if (tenantOnly) {
-    if (isGroupRollup || serviceGroupMain) {
+    if (isGroupRollup || isGroupHoldingRollup || serviceGroupMain) {
       return {
         companyIds: [HRM_PILOT_OPERATING_COMPANY_ID],
         masterTenantPartition: true,
@@ -493,13 +499,9 @@ export function resolveHrmListScope(
     const narrowTenant = resolveTenantIdFromLegacyOuOrTenant(requested);
     if (
       narrowTenant &&
+      narrowTenant !== MASTER_TENANT_ID &&
       tenantId === MASTER_TENANT_ID &&
-      isGroupCeoMasterOperatingBucket(
-        jwtPayload,
-        tenantId,
-        claimCompany,
-        roleCode,
-      )
+      groupCeoMasterBucket
     ) {
       return {
         companyIds: [HRM_PILOT_OPERATING_COMPANY_ID],
@@ -527,7 +529,7 @@ export function resolveHrmListScope(
     };
   }
 
-  if (isGroupRollup || serviceGroupMain) {
+  if (isGroupRollup || isGroupHoldingRollup || serviceGroupMain) {
     return {
       companyIds: [...HRM_GROUP_MEMBER_COMPANY_SLUGS],
       masterTenantPartition: true,
@@ -1116,6 +1118,25 @@ function readResourceTenantId(
   return typeof raw === 'string' ? raw.trim() : '';
 }
 
+/**
+ * Tenant-only migrated rows: group CEO rollup persists `main`→`holding` (resolveHrmPersistCompanyIdText)
+ * while list SQL expands main↔holding (expandHrmTextCompanyIds). Row guard must accept both without
+ * requiring HRM_TENANT_ONLY_LEGACY_BRIDGE for the master partition.
+ */
+function isMasterTenantPartitionCompanyId(
+  companyId: string,
+  scope: HrmListScope,
+): boolean {
+  if (companyId === HRM_PILOT_OPERATING_COMPANY_ID) {
+    return true;
+  }
+  if (!scope.masterTenantPartition) {
+    return false;
+  }
+  const holdingUuid = HRM_COMPANY_UUID_BY_SLUG.holding.toLowerCase();
+  return companyId === 'holding' || companyId === holdingUuid;
+}
+
 function buildAllowedCompanyKeys(scope: HrmListScope): {
   slugs: Set<string>;
   uuids: Set<string>;
@@ -1179,7 +1200,7 @@ export function assertResourceInHrmScope(
     const effectiveTenant = rowTenant || MASTER_TENANT_ID;
     const migratedMatch =
       allowedTenants.has(effectiveTenant) &&
-      companyId === HRM_PILOT_OPERATING_COMPANY_ID;
+      isMasterTenantPartitionCompanyId(companyId, scope);
     const legacyMatch =
       effectiveTenant === MASTER_TENANT_ID && legacyOus.has(companyId);
     if (!migratedMatch && !legacyMatch) {

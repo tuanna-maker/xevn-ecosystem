@@ -21,7 +21,7 @@ export class PayrollConfigService {
       name_vi: row.name_vi,
       component_type: row.component_type,
       taxable_badge: row.is_taxable ? 'Có tính thuế' : 'Không tính thuế',
-      bhxh_badge: row.in_bhxh_base ? 'Tính BHXH' : 'Không tính BHXH',
+      bhxh_badge: row.in_bhxh_base ? 'Tính BHXH' : 'Không tính',
     }));
   }
 
