@@ -543,7 +543,71 @@
     "lateCount": "Late Count",
     "pendingLeaves": "Pending Leaves",
     "totalPayroll": "Total Payroll",
-    "comparedToLastMonth": "compared to last month"
+    "comparedToLastMonth": "compared to last month",
+    "internalNews": {
+      "title": "Internal News",
+      "subtitle": "Manage internal news and announcements",
+      "addNew": "Post News",
+      "editTitle": "Edit News",
+      "editDesc": "Update internal news content",
+      "addTitle": "Post New News",
+      "addDesc": "Create a new internal news for the company",
+      "search": "Search news...",
+      "noData": "No internal news yet",
+      "loading": "Loading...",
+      "cancelBtn": "Cancel",
+      "saving": "Saving...",
+      "delete": "Delete",
+      "deleting": "Deleting...",
+      "closeBtn": "Close",
+      "create": "Create",
+      "update": "Update",
+      "showingRecords": "Showing {{start}} - {{end}} of {{total}} records",
+      "includeDrafts": "Include drafts",
+      "deleteConfirm": "Confirm Delete",
+      "deleteConfirmDesc": "Are you sure you want to delete this news?",
+      "cannotUndo": "This action cannot be undone.",
+      "pinned": "Pinned",
+      "views": "views",
+      "categories": {
+        "all": "All",
+        "general": "General",
+        "policy": "Policy",
+        "announcement": "Announcement",
+        "event": "Event"
+      },
+      "statuses": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "visibility": {
+        "all": "All employees",
+        "management": "Management",
+        "hr": "HR"
+      },
+      "form": {
+        "titleLabel": "Title",
+        "titlePlaceholder": "Enter news title...",
+        "summaryLabel": "Summary",
+        "summaryPlaceholder": "Enter a brief summary...",
+        "contentLabel": "Content",
+        "contentPlaceholder": "Enter news content...",
+        "categoryLabel": "Category",
+        "statusLabel": "Status",
+        "pinnedLabel": "Pin to top",
+        "visibilityLabel": "Visible to"
+      },
+      "tableHeaders": {
+        "title": "Title",
+        "category": "Category",
+        "status": "Status",
+        "author": "Author",
+        "publishedAt": "Published",
+        "views": "Views",
+        "actions": "Actions"
+      }
+    }
   },
   "employees": {
     "title": "Employee Management",
@@ -6817,70 +6881,6 @@
       "chartInProgress": "In Progress",
       "chartOverdue": "Overdue",
       "noData": "No data available"
-    },
-    "internalNews": {
-      "title": "Internal News",
-      "subtitle": "Manage internal news and announcements",
-      "addNew": "Post News",
-      "editTitle": "Edit News",
-      "editDesc": "Update internal news content",
-      "addTitle": "Post New News",
-      "addDesc": "Create a new internal news for the company",
-      "search": "Search news...",
-      "noData": "No internal news yet",
-      "loading": "Loading...",
-      "cancelBtn": "Cancel",
-      "saving": "Saving...",
-      "delete": "Delete",
-      "deleting": "Deleting...",
-      "closeBtn": "Close",
-      "create": "Create",
-      "update": "Update",
-      "showingRecords": "Showing {{start}} - {{end}} of {{total}} records",
-      "includeDrafts": "Include drafts",
-      "deleteConfirm": "Confirm Delete",
-      "deleteConfirmDesc": "Are you sure you want to delete this news?",
-      "cannotUndo": "This action cannot be undone.",
-      "pinned": "Pinned",
-      "views": "views",
-      "categories": {
-        "all": "All",
-        "general": "General",
-        "policy": "Policy",
-        "announcement": "Announcement",
-        "event": "Event"
-      },
-      "statuses": {
-        "draft": "Draft",
-        "published": "Published",
-        "archived": "Archived"
-      },
-      "visibility": {
-        "all": "All employees",
-        "management": "Management",
-        "hr": "HR"
-      },
-      "form": {
-        "titleLabel": "Title",
-        "titlePlaceholder": "Enter news title...",
-        "summaryLabel": "Summary",
-        "summaryPlaceholder": "Enter a brief summary...",
-        "contentLabel": "Content",
-        "contentPlaceholder": "Enter news content...",
-        "categoryLabel": "Category",
-        "statusLabel": "Status",
-        "pinnedLabel": "Pin to top",
-        "visibilityLabel": "Visible to"
-      },
-      "tableHeaders": {
-        "title": "Title",
-        "category": "Category",
-        "status": "Status",
-        "author": "Author",
-        "publishedAt": "Published",
-        "views": "Views",
-        "actions": "Actions"
-      }
     }
   }
 }

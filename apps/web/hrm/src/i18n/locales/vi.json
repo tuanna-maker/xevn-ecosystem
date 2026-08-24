@@ -543,7 +543,71 @@
     "lateCount": "Đi muộn",
     "pendingLeaves": "Chờ duyệt nghỉ",
     "totalPayroll": "Tổng chi lương",
-    "comparedToLastMonth": "so với tháng trước"
+    "comparedToLastMonth": "so với tháng trước",
+    "internalNews": {
+      "title": "Tin nội bộ",
+      "subtitle": "Quản lý tin tức và thông báo nội bộ",
+      "addNew": "Đăng tin mới",
+      "editTitle": "Chỉnh sửa tin",
+      "editDesc": "Cập nhật nội dung tin nội bộ",
+      "addTitle": "Đăng tin mới",
+      "addDesc": "Tạo tin nội bộ mới cho công ty",
+      "search": "Tìm kiếm tin...",
+      "noData": "Chưa có tin nội bộ nào",
+      "loading": "Đang tải...",
+      "cancelBtn": "Hủy",
+      "saving": "Đang lưu...",
+      "delete": "Xóa",
+      "deleting": "Đang xóa...",
+      "closeBtn": "Đóng",
+      "create": "Tạo mới",
+      "update": "Cập nhật",
+      "showingRecords": "Hiển thị {{start}} - {{end}} trong số {{total}} bản ghi",
+      "includeDrafts": "Bao gồm dự thảo",
+      "deleteConfirm": "Xác nhận xóa",
+      "deleteConfirmDesc": "Bạn có chắc muốn xóa tin này?",
+      "cannotUndo": "Hành động này không thể hoàn tác.",
+      "pinned": "Ghim",
+      "views": "lượt xem",
+      "categories": {
+        "all": "Tất cả",
+        "general": "Tin chung",
+        "policy": "Chính sách",
+        "announcement": "Thông báo",
+        "event": "Sự kiện"
+      },
+      "statuses": {
+        "draft": "Dự thảo",
+        "published": "Đã đăng",
+        "archived": "Đã lưu trữ"
+      },
+      "visibility": {
+        "all": "Tất cả nhân viên",
+        "management": "Quản lý",
+        "hr": "Nhân sự"
+      },
+      "form": {
+        "titleLabel": "Tiêu đề",
+        "titlePlaceholder": "Nhập tiêu đề tin...",
+        "summaryLabel": "Tóm tắt",
+        "summaryPlaceholder": "Nhập tóm tắt ngắn...",
+        "contentLabel": "Nội dung",
+        "contentPlaceholder": "Nhập nội dung tin...",
+        "categoryLabel": "Danh mục",
+        "statusLabel": "Trạng thái",
+        "pinnedLabel": "Ghim lên đầu",
+        "visibilityLabel": "Hiển thị với"
+      },
+      "tableHeaders": {
+        "title": "Tiêu đề",
+        "category": "Danh mục",
+        "status": "Trạng thái",
+        "author": "Người đăng",
+        "publishedAt": "Ngày đăng",
+        "views": "Lượt xem",
+        "actions": "Thao tác"
+      }
+    }
   },
   "employees": {
     "title": "Quản lý nhân viên",
@@ -6822,70 +6886,6 @@
       "chartInProgress": "Đang thực hiện",
       "chartOverdue": "Quá hạn",
       "noData": "Chưa có dữ liệu"
-    },
-    "internalNews": {
-      "title": "Tin nội bộ",
-      "subtitle": "Quản lý tin tức và thông báo nội bộ",
-      "addNew": "Đăng tin mới",
-      "editTitle": "Chỉnh sửa tin",
-      "editDesc": "Cập nhật nội dung tin nội bộ",
-      "addTitle": "Đăng tin mới",
-      "addDesc": "Tạo tin nội bộ mới cho công ty",
-      "search": "Tìm kiếm tin...",
-      "noData": "Chưa có tin nội bộ nào",
-      "loading": "Đang tải...",
-      "cancelBtn": "Hủy",
-      "saving": "Đang lưu...",
-      "delete": "Xóa",
-      "deleting": "Đang xóa...",
-      "closeBtn": "Đóng",
-      "create": "Tạo mới",
-      "update": "Cập nhật",
-      "showingRecords": "Hiển thị {{start}} - {{end}} trong số {{total}} bản ghi",
-      "includeDrafts": "Bao gồm dự thảo",
-      "deleteConfirm": "Xác nhận xóa",
-      "deleteConfirmDesc": "Bạn có chắc muốn xóa tin này?",
-      "cannotUndo": "Hành động này không thể hoàn tác.",
-      "pinned": "Ghim",
-      "views": "lượt xem",
-      "categories": {
-        "all": "Tất cả",
-        "general": "Tin chung",
-        "policy": "Chính sách",
-        "announcement": "Thông báo",
-        "event": "Sự kiện"
-      },
-      "statuses": {
-        "draft": "Dự thảo",
-        "published": "Đã đăng",
-        "archived": "Đã lưu trữ"
-      },
-      "visibility": {
-        "all": "Tất cả nhân viên",
-        "management": "Quản lý",
-        "hr": "Nhân sự"
-      },
-      "form": {
-        "titleLabel": "Tiêu đề",
-        "titlePlaceholder": "Nhập tiêu đề tin...",
-        "summaryLabel": "Tóm tắt",
-        "summaryPlaceholder": "Nhập tóm tắt ngắn...",
-        "contentLabel": "Nội dung",
-        "contentPlaceholder": "Nhập nội dung tin...",
-        "categoryLabel": "Danh mục",
-        "statusLabel": "Trạng thái",
-        "pinnedLabel": "Ghim lên đầu",
-        "visibilityLabel": "Hiển thị với"
-      },
-      "tableHeaders": {
-        "title": "Tiêu đề",
-        "category": "Danh mục",
-        "status": "Trạng thái",
-        "author": "Người đăng",
-        "publishedAt": "Ngày đăng",
-        "views": "Lượt xem",
-        "actions": "Thao tác"
-      }
     }
   }
 }
