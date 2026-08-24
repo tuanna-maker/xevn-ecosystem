@@ -909,8 +909,7 @@ export class RecruitmentCatalogService {
       `SELECT jp.*,
         jdt.code AS jd_code,
         jdt.title AS jd_title,
-        COALESCE(jp.jd_snapshot_json, jdt.values_json) AS jd_content,
-        (SELECT COUNT(*) FROM public.candidate_applications ca WHERE ca.job_posting_id = jp.id) AS applied_count
+        COALESCE(jp.jd_snapshot_json, jdt.values_json) AS jd_content
        FROM public.job_postings jp
        LEFT JOIN public.job_description_templates jdt ON jdt.id = jp.jd_template_id
        WHERE ${filters.join(' AND ')} ORDER BY jp.created_at DESC;`,
@@ -944,8 +943,7 @@ export class RecruitmentCatalogService {
       `SELECT jp.*,
         jdt.code AS jd_code,
         jdt.title AS jd_title,
-        COALESCE(jp.jd_snapshot_json, jdt.values_json) AS jd_content,
-        (SELECT COUNT(*) FROM public.candidate_applications ca WHERE ca.job_posting_id = jp.id) AS applied_count
+        COALESCE(jp.jd_snapshot_json, jdt.values_json) AS jd_content
        FROM public.job_postings jp
        LEFT JOIN public.job_description_templates jdt ON jdt.id = jp.jd_template_id
        WHERE ${filters.join(' AND ')} LIMIT 1;`,
