@@ -11490,15 +11490,17 @@ export async function listAttRules(params: { company_id: string; q?: string }) {
   const search = new URLSearchParams();
   search.set('company_id', normalizeHrmApiListCompanyId(params.company_id));
   if (params.q?.trim()) search.set('q', params.q.trim());
-  const res = await requestHrm<{ total?: number; items?: HrmAttRuleRecord[] }>(
-    `/api/hrm/attendance/rules?${search.toString()}`,
-    { method: 'GET' },
-  );
-  return { items: res.items ?? [], total: res.total ?? res.items?.length ?? 0 };
+  const res = await requestHrm<{
+    total?: number;
+    items?: HrmAttRuleRecord[];
+    data?: HrmAttRuleRecord[];
+  }>(`/api/hrm/attendance/work-rules?${search.toString()}`, { method: 'GET' });
+  const items = res.items ?? res.data ?? [];
+  return { items, total: res.total ?? items.length };
 }
 
 export async function upsertAttRule(payload: UpsertAttRulePayload) {
-  return requestHrm<HrmAttRuleRecord>('/api/hrm/attendance/rules', {
+  return requestHrm<HrmAttRuleRecord>('/api/hrm/attendance/work-rules', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
@@ -11508,7 +11510,7 @@ export async function retireAttRule(id: string, company_id: string) {
   const search = new URLSearchParams();
   search.set('company_id', normalizeHrmApiListCompanyId(company_id));
   return requestHrm<{ retired: boolean }>(
-    `/api/hrm/attendance/rules/${encodeURIComponent(id)}/retire?${search.toString()}`,
+    `/api/hrm/attendance/work-rules/${encodeURIComponent(id)}/retire?${search.toString()}`,
     { method: 'POST' },
   );
 }
@@ -11540,11 +11542,13 @@ export async function listAttSchedules(params: { company_id: string; q?: string 
   const search = new URLSearchParams();
   search.set('company_id', normalizeHrmApiListCompanyId(params.company_id));
   if (params.q?.trim()) search.set('q', params.q.trim());
-  const res = await requestHrm<{ total?: number; items?: HrmAttScheduleRecord[] }>(
-    `/api/hrm/attendance/schedules?${search.toString()}`,
-    { method: 'GET' },
-  );
-  return { items: res.items ?? [], total: res.total ?? res.items?.length ?? 0 };
+  const res = await requestHrm<{
+    total?: number;
+    items?: HrmAttScheduleRecord[];
+    data?: HrmAttScheduleRecord[];
+  }>(`/api/hrm/attendance/schedules?${search.toString()}`, { method: 'GET' });
+  const items = res.items ?? res.data ?? [];
+  return { items, total: res.total ?? items.length };
 }
 
 export async function upsertAttSchedule(payload: UpsertAttSchedulePayload) {

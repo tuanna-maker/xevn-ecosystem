@@ -1730,7 +1730,9 @@ export class PayrollController {
       companyId: query.company_id,
     });
     return this.payrollCatalog
-      .listSalaryComponents(query.company_id, authorization, query)
+      .listSalaryComponents(query.company_id, authorization, query, {
+        tenantId,
+      })
       .then((data) => ok(data, 'HRM-SC-200', 'Salary components listed'));
   }
 

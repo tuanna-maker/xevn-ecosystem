@@ -564,18 +564,9 @@ export default function Recruitment() {
   const jobTemplatesEnabled = activeTab === 'requisitions' || activeTab === 'jd-library';
   const recruitmentJobTemplatesState = useJobTemplates(jobTemplatesEnabled);
 
-  /** Only refetch when tab needs templates and cache is empty (avoid duplicate ~1.4s GET). */
-  useEffect(() => {
-    if (!jobTemplatesEnabled) return;
-    if (recruitmentJobTemplatesState.loading) return;
-    if (recruitmentJobTemplatesState.templates.length > 0) return;
-    void recruitmentJobTemplatesState.refetch();
-  }, [
-    jobTemplatesEnabled,
-    recruitmentJobTemplatesState.loading,
-    recruitmentJobTemplatesState.templates.length,
-    recruitmentJobTemplatesState.refetch,
-  ]);
+  // NOTE: Do NOT add an effect that refetch() when templates.length===0.
+  // useJobTemplates already loads on [companyId, enabled]. A "retry while empty"
+  // effect loops forever (empty library OR failed GET → loading flicker / Đang tải…).
 
   useEffect(() => {
     const tab = resolveRecruitmentTabFromSearch(location.search);

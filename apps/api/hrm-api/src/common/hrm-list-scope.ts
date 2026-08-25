@@ -845,7 +845,12 @@ export function resolveHrmPersistCompanyIdText(
       (scope.tenantIds ?? []).map((id) => id.trim().toLowerCase()),
     );
     const tenantId = resolveHrmPersistTenantId(authorization, raw, context);
-    if (tenantId && !allowedTenants.has(tenantId.trim().toLowerCase())) {
+    // Empty tenantIds = unresolved service/internal scope — do not false-positive 409.
+    if (
+      tenantId &&
+      allowedTenants.size > 0 &&
+      !allowedTenants.has(tenantId.trim().toLowerCase())
+    ) {
       throw new ApiException(
         'HRM-SCOPE-409',
         'Resource tenant_id is outside token scope',
