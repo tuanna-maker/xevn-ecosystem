@@ -30,6 +30,7 @@ import {
   HRM_MASTER_TENANT_ID,
   HRM_ROLLUP_TENANT_IDS,
 } from '@/lib/hrmListScope';
+import { isDepartmentUuid } from '@/lib/companyDepartmentMutate';
 const DEPARTMENT_CATALOG_KEYS = ['departments', 'department_catalog', 'org_departments'] as const;
 
 export function findDepartmentCatalog(
@@ -173,6 +174,32 @@ export function mergeDepartmentCatalogRows(
     if (!row.name?.trim()) continue;
     merged.set(departmentMergeKey(row, rollupByTenant), row);
   }
+
+  // Pair catalog code rows with HRM rows that lack code but share the same name.
+  for (const catalogRow of catalogRows) {
+    if (!catalogRow.code?.trim() || !catalogRow.name?.trim()) continue;
+    const codeKey = departmentMergeKey(catalogRow, rollupByTenant);
+    const nameKey = departmentMergeKey(
+      { ...catalogRow, code: null },
+      rollupByTenant,
+    );
+    const hrmByName = merged.get(nameKey);
+    const catalogAtCode = merged.get(codeKey);
+    if (
+      hrmByName &&
+      catalogAtCode &&
+      isDepartmentUuid(hrmByName.id) &&
+      !hrmByName.code?.trim() &&
+      !isDepartmentUuid(catalogAtCode.id)
+    ) {
+      merged.delete(nameKey);
+      merged.set(codeKey, {
+        ...hrmByName,
+        code: catalogRow.code.trim(),
+      });
+    }
+  }
+
   return [...merged.values()].sort(
     (a, b) =>
       a.sort_order - b.sort_order ||

@@ -53,4 +53,9 @@ export class UpdateDepartmentDto {
   @IsString()
   @IsIn(['active', 'inactive'])
   status?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  previous_catalog_code?: string;
 }

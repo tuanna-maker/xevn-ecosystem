@@ -1,44 +1,63 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Optional } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
+import { getVerifiedInternalJwtPayload } from '../common/internal-auth';
 import {
   assertResourceInHrmScope,
-  pushCompanyIdFilter,
+  MASTER_TENANT_ID,
   pushDepartmentTableScopeFilters,
   pushEmployeeListScopeFilters,
-  pushHrmTableScopeFilters,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
   resolveHrmPersistTenantId,
+  resolveHrmSettingsCatalogCompanyId,
   type HrmListScope,
 } from '../common/hrm-list-scope';
 import { ensureHrmTenantIdColumns } from '../common/hrm-tenant-scope-schema';
 import { HrmDbService } from '../db/hrm-db.service';
+import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
+import {
+  isDepartmentUuid,
+  mergeDepartmentCatalogRows,
+  type DepartmentRow,
+} from './department-catalog-merge';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { ListDepartmentsQueryDto } from './dto/list-departments.query.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 
-export type DepartmentRow = {
-  id: string;
-  company_id: string;
-  tenant_id?: string | null;
-  parent_id: string | null;
-  name: string;
-  code: string | null;
-  description: string | null;
-  manager_name: string | null;
-  manager_email: string | null;
-  employee_count: number;
-  level: number;
-  sort_order: number;
-  status: string;
-  created_at: string;
-  updated_at: string;
-};
+export type { DepartmentRow } from './department-catalog-merge';
+
+function readJwtClaim(
+  payload: Record<string, unknown>,
+  ...keys: string[]
+): string | undefined {
+  for (const key of keys) {
+    const value = payload[key];
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+  return undefined;
+}
+
+function suggestDepartmentCode(name: string): string {
+  const base = name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 48);
+  return base || `phong_${Date.now()}`;
+}
 
 @Injectable()
 export class DepartmentsService {
-  constructor(private readonly db: HrmDbService) {}
+  constructor(
+    private readonly db: HrmDbService,
+    @Optional() private readonly settingsCatalogs?: SettingsCatalogsService,
+  ) {}
 
   private async ensureSchema() {
     await this.db.query(`
@@ -73,6 +92,200 @@ export class DepartmentsService {
       level: Number(row.level ?? 1),
       sort_order: Number(row.sort_order ?? 0),
     };
+  }
+
+  private shouldRollupCatalogByTenant(
+    authorization: string | undefined,
+    scope: HrmListScope,
+  ): boolean {
+    if (!scope.masterTenantPartition) return false;
+    const jwt = getVerifiedInternalJwtPayload(authorization);
+    if (!jwt) return false;
+    const tenant = (
+      readJwtClaim(jwt, 'tenantId', 'tenant_id', 'tid') ?? ''
+    ).toLowerCase();
+    const role = (
+      readJwtClaim(jwt, 'roleCode', 'role_code', 'role') ?? ''
+    ).toLowerCase();
+    return (
+      tenant === MASTER_TENANT_ID &&
+      (role === 'group_ceo' || role.startsWith('group_'))
+    );
+  }
+
+  private resolveCatalogTenantIds(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    scope: HrmListScope,
+    rollupByTenant: boolean,
+  ): string[] {
+    if (rollupByTenant && scope.tenantIds?.length) {
+      return scope.tenantIds;
+    }
+    return [resolveHrmPersistTenantId(authorization, requestedCompanyId)];
+  }
+
+  private async syncDepartmentCatalogItem(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    input: { code: string; name: string; status: 'active' | 'draft' },
+    tenantId?: string,
+  ) {
+    if (!this.settingsCatalogs) return;
+    const resolvedTenant =
+      tenantId?.trim() ||
+      resolveHrmPersistTenantId(authorization, requestedCompanyId);
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      resolvedTenant,
+      requestedCompanyId,
+    );
+    await this.settingsCatalogs.upsertCatalogItem(resolvedTenant, {
+      company_id: catalogCompanyId,
+      category_key: 'departments',
+      item_key: input.code,
+      item_name: input.name,
+      status: input.status,
+    });
+  }
+
+  private async loadCatalogDepartmentRows(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    scope: HrmListScope,
+    rollupByTenant: boolean,
+    catalogStatus: 'active' | 'draft',
+  ): Promise<DepartmentRow[]> {
+    if (!this.settingsCatalogs) return [];
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      requestedCompanyId,
+    );
+    const tenantIds = this.resolveCatalogTenantIds(
+      authorization,
+      requestedCompanyId,
+      scope,
+      rollupByTenant,
+    );
+    const now = new Date().toISOString();
+    const rows: DepartmentRow[] = [];
+
+    for (const tenantId of tenantIds) {
+      const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+        authorization,
+        tenantId,
+        requestedCompanyId,
+      );
+      const items = await this.settingsCatalogs.getEffectiveItemsForKey(
+        tenantId,
+        catalogCompanyId,
+        'departments',
+      );
+      items
+        .filter((item) =>
+          catalogStatus === 'active'
+            ? item.status === 'active'
+            : item.status !== 'active',
+        )
+        .forEach((item, index) => {
+          const code = item.code?.trim() || null;
+          rows.push({
+            id: code || `catalog-dept-${tenantId}-${index}`,
+            name: item.label.trim(),
+            code,
+            company_id: persistCompanyId,
+            tenant_id: tenantId,
+            parent_id: null,
+            level: 1,
+            sort_order: index,
+            status: catalogStatus === 'active' ? 'active' : 'inactive',
+            description: null,
+            manager_name: null,
+            manager_email: null,
+            employee_count: 0,
+            created_at: now,
+            updated_at: now,
+          });
+        });
+    }
+
+    return rows;
+  }
+
+  private async queryHrmDepartmentRows(
+    query: ListDepartmentsQueryDto,
+    authorization: string | undefined,
+  ): Promise<DepartmentRow[]> {
+    const scope = resolveHrmListScope(authorization, query.company_id);
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    pushDepartmentTableScopeFilters(filters, values, scope);
+    if (query.status) {
+      values.push(query.status);
+      filters.push(`status = $${values.length}`);
+    } else {
+      filters.push(`status = 'active'`);
+    }
+    const res = await this.db.query<DepartmentRow>(
+      `SELECT ${this.selectColumns}
+       FROM public.departments
+       WHERE ${filters.join(' AND ')}
+       ORDER BY sort_order ASC, name ASC;`,
+      values,
+    );
+    return res.rows.map((row) => this.mapRow(row));
+  }
+
+  private async findHrmDepartmentRowByKey(
+    departmentKey: string,
+    companyId: string,
+    authorization?: string,
+  ): Promise<DepartmentRow | null> {
+    const trimmed = departmentKey.trim();
+    if (!trimmed) return null;
+    const scope = resolveHrmListScope(authorization, companyId);
+    const filters: string[] = [];
+    const values: unknown[] = [];
+    pushDepartmentTableScopeFilters(filters, values, scope);
+    if (isDepartmentUuid(trimmed)) {
+      values.push(trimmed);
+      filters.push(`id = $${values.length}::uuid`);
+    } else {
+      values.push(trimmed);
+      filters.push(`LOWER(TRIM(code)) = LOWER(TRIM($${values.length}))`);
+    }
+    const res = await this.db.query<DepartmentRow>(
+      `SELECT ${this.selectColumns}
+       FROM public.departments
+       WHERE ${filters.join(' AND ')}
+       LIMIT 1;`,
+      values,
+    );
+    return res.rows[0] ? this.mapRow(res.rows[0]) : null;
+  }
+
+  private async resolveDepartmentUuid(
+    departmentKey: string,
+    companyId: string,
+    authorization?: string,
+    catalogCode?: string | null,
+  ): Promise<string | null> {
+    const direct = departmentKey.trim();
+    if (isDepartmentUuid(direct)) return direct;
+
+    const lookupKeys = [
+      catalogCode?.trim(),
+      direct,
+    ]
+      .filter((key): key is string => Boolean(key))
+      .map((key) => key.toLowerCase());
+    const uniqueKeys = [...new Set(lookupKeys)];
+
+    for (const key of uniqueKeys) {
+      const row = await this.findHrmDepartmentRowByKey(key, companyId, authorization);
+      if (row?.id && isDepartmentUuid(row.id)) return row.id;
+    }
+    return null;
   }
 
   /** Count active employees by custom_fields.department ↔ department code (not stored column). */
@@ -134,26 +347,25 @@ export class DepartmentsService {
   ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, query.company_id);
-    const filters: string[] = [];
-    const values: unknown[] = [];
-    pushDepartmentTableScopeFilters(filters, values, scope);
-    if (query.status) {
-      values.push(query.status);
-      filters.push(`status = $${values.length}`);
-    } else {
-      filters.push(`status = 'active'`);
-    }
-    const res = await this.db.query<DepartmentRow>(
-      `SELECT ${this.selectColumns}
-       FROM public.departments
-       WHERE ${filters.join(' AND ')}
-       ORDER BY sort_order ASC, name ASC;`,
-      values,
-    );
-    const data = await this.attachLiveEmployeeCounts(
-      res.rows.map((row) => this.mapRow(row)),
+    const rollupByTenant = this.shouldRollupCatalogByTenant(
+      authorization,
       scope,
     );
+    const hrmRows = await this.queryHrmDepartmentRows(query, authorization);
+    const catalogStatus = query.status === 'inactive' ? 'draft' : 'active';
+    const catalogRows = await this.loadCatalogDepartmentRows(
+      authorization,
+      query.company_id,
+      scope,
+      rollupByTenant,
+      catalogStatus,
+    );
+    const merged = mergeDepartmentCatalogRows(
+      hrmRows,
+      catalogRows,
+      rollupByTenant,
+    );
+    const data = await this.attachLiveEmployeeCounts(merged, scope);
     return { total: data.length, data };
   }
 
@@ -164,27 +376,34 @@ export class DepartmentsService {
   ) {
     await this.ensureSchema();
     const scope = resolveHrmListScope(authorization, companyId);
-    const filters: string[] = ['id = $1::uuid'];
-    const values: unknown[] = [departmentId];
-    pushDepartmentTableScopeFilters(filters, values, scope);
-    const res = await this.db.query<DepartmentRow>(
-      `SELECT ${this.selectColumns}
-       FROM public.departments
-       WHERE ${filters.join(' AND ')}
-       LIMIT 1;`,
-      values,
+    const hrmRow = await this.findHrmDepartmentRowByKey(
+      departmentId,
+      companyId,
+      authorization,
     );
-    const row = res.rows[0];
-    if (!row) {
+    if (hrmRow) {
+      const [enriched] = await this.attachLiveEmployeeCounts([hrmRow], scope);
+      return enriched;
+    }
+
+    const { data } = await this.listDepartments(
+      { company_id: companyId },
+      authorization,
+    );
+    const key = departmentId.trim().toLowerCase();
+    const hit = data.find(
+      (row) =>
+        row.id.trim().toLowerCase() === key ||
+        row.code?.trim().toLowerCase() === key,
+    );
+    if (!hit) {
       throw new ApiException(
         'HRM-DEPT-404',
         'Department not found',
         HttpStatus.NOT_FOUND,
       );
     }
-    const mapped = this.mapRow(row);
-    const [enriched] = await this.attachLiveEmployeeCounts([mapped], scope);
-    return enriched;
+    return hit;
   }
 
   async createDepartment(payload: CreateDepartmentDto, authorization?: string) {
@@ -193,6 +412,61 @@ export class DepartmentsService {
       authorization,
       payload.company_id,
     );
+    const name = payload.name.trim();
+    const code = (payload.code?.trim() || suggestDepartmentCode(name)).toLowerCase();
+    const status = payload.status === 'inactive' ? 'inactive' : 'active';
+
+    await this.syncDepartmentCatalogItem(authorization, payload.company_id, {
+      code,
+      name,
+      status: status === 'inactive' ? 'draft' : 'active',
+    });
+
+    const existingId = await this.resolveDepartmentUuid(
+      code,
+      payload.company_id,
+      authorization,
+      code,
+    );
+    if (existingId) {
+      return this.updateDepartment(
+        existingId,
+        {
+          company_id: payload.company_id,
+          name,
+          code,
+          description: payload.description ?? null,
+          manager_name: payload.manager_name ?? null,
+          manager_email: payload.manager_email ?? null,
+          parent_id: payload.parent_id ?? null,
+          level: payload.level,
+          sort_order: payload.sort_order,
+          status,
+        },
+        authorization,
+      );
+    }
+
+    if (status === 'inactive') {
+      return {
+        id: code,
+        company_id: companyId,
+        tenant_id: resolveHrmPersistTenantId(authorization, payload.company_id),
+        parent_id: payload.parent_id ?? null,
+        name,
+        code,
+        description: payload.description ?? null,
+        manager_name: payload.manager_name?.trim() ?? null,
+        manager_email: payload.manager_email?.trim() ?? null,
+        employee_count: 0,
+        level: payload.level ?? 1,
+        sort_order: payload.sort_order ?? 0,
+        status: 'inactive',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+    }
+
     const tenantId = resolveHrmPersistTenantId(
       authorization,
       payload.company_id,
@@ -211,8 +485,8 @@ export class DepartmentsService {
         companyId,
         tenantId,
         payload.parent_id ?? null,
-        payload.name.trim(),
-        payload.code?.trim() ?? null,
+        name,
+        code,
         payload.description ?? null,
         payload.manager_name?.trim() ?? null,
         payload.manager_email?.trim() ?? null,
@@ -229,8 +503,70 @@ export class DepartmentsService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const existing = await this.getDepartmentById(
+    const name = payload.name?.trim();
+    const code =
+      payload.code !== undefined
+        ? payload.code?.trim()?.toLowerCase() ?? null
+        : undefined;
+    const previousCatalogCode =
+      payload.previous_catalog_code?.trim().toLowerCase() || null;
+    const catalogStatus =
+      payload.status === 'inactive' ? ('draft' as const) : ('active' as const);
+
+    if (previousCatalogCode && code && previousCatalogCode !== code) {
+      await this.syncDepartmentCatalogItem(
+        authorization,
+        payload.company_id,
+        {
+          code: previousCatalogCode,
+          name: name || previousCatalogCode,
+          status: 'draft',
+        },
+      );
+    }
+
+    if (code && name) {
+      await this.syncDepartmentCatalogItem(authorization, payload.company_id, {
+        code,
+        name,
+        status: catalogStatus,
+      });
+    }
+
+    const resolvedId = await this.resolveDepartmentUuid(
       departmentId,
+      payload.company_id,
+      authorization,
+      code ?? previousCatalogCode ?? departmentId,
+    );
+
+    if (!resolvedId) {
+      if (catalogStatus === 'draft' || payload.status === 'inactive') {
+        return this.getDepartmentById(
+          code || departmentId,
+          payload.company_id,
+          authorization,
+        );
+      }
+      return this.createDepartment(
+        {
+          company_id: payload.company_id,
+          name: name || code || departmentId,
+          code: code || undefined,
+          description: payload.description ?? undefined,
+          manager_name: payload.manager_name ?? undefined,
+          manager_email: payload.manager_email ?? undefined,
+          parent_id: payload.parent_id ?? undefined,
+          level: payload.level,
+          sort_order: payload.sort_order,
+          status: payload.status,
+        },
+        authorization,
+      );
+    }
+
+    const existing = await this.getDepartmentById(
+      resolvedId,
       payload.company_id,
       authorization,
     );
@@ -259,7 +595,7 @@ export class DepartmentsService {
     if (payload.status != null) set('status', payload.status);
     if (fields.length === 0) return existing;
     fields.push('updated_at = NOW()');
-    values.push(departmentId);
+    values.push(resolvedId);
     const res = await this.db.query<DepartmentRow>(
       `UPDATE public.departments SET ${fields.join(', ')}
        WHERE id = $${values.length}::uuid
@@ -280,14 +616,26 @@ export class DepartmentsService {
       companyId,
       authorization,
     );
-    const scope = resolveHrmListScope(authorization, companyId);
-    assertResourceInHrmScope(existing, scope, {
-      notFoundCode: 'HRM-DEPT-404',
-      mismatchCode: 'HRM-DEPT-409',
+    const code =
+      existing.code?.trim() || suggestDepartmentCode(existing.name);
+    await this.syncDepartmentCatalogItem(authorization, companyId, {
+      code: code.toLowerCase(),
+      name: existing.name,
+      status: 'draft',
     });
-    await this.db.query(`DELETE FROM public.departments WHERE id = $1::uuid;`, [
-      departmentId,
-    ]);
-    return { id: departmentId };
+
+    if (isDepartmentUuid(existing.id)) {
+      const scope = resolveHrmListScope(authorization, companyId);
+      assertResourceInHrmScope(existing, scope, {
+        notFoundCode: 'HRM-DEPT-404',
+        mismatchCode: 'HRM-DEPT-409',
+      });
+      await this.db.query(`DELETE FROM public.departments WHERE id = $1::uuid;`, [
+        existing.id,
+      ]);
+      return { id: existing.id };
+    }
+
+    return { id: existing.id };
   }
 }

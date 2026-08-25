@@ -211,6 +211,50 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     expect(departmentMergeKey(merged[0]!)).toBe('code:nhan_su');
   });
 
+  it('mergeDepartmentCatalogRows pairs HRM row without code to catalog row by name', () => {
+    const merged = mergeDepartmentCatalogRows(
+      [
+        {
+          id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+          name: 'Phòng Điều Phối Hàng Hóa',
+          code: null,
+          company_id: 'main',
+          parent_id: null,
+          level: 1,
+          sort_order: 0,
+          status: 'active',
+          description: null,
+          manager_name: null,
+          manager_email: null,
+          employee_count: 40,
+          created_at: '2026-01-01',
+          updated_at: '2026-01-01',
+        },
+      ],
+      [
+        {
+          id: 'phong_dphh',
+          name: 'Phòng Điều Phối Hàng Hóa',
+          code: 'phong_dphh',
+          company_id: 'main',
+          parent_id: null,
+          level: 1,
+          sort_order: 0,
+          status: 'active',
+          description: null,
+          manager_name: null,
+          manager_email: null,
+          employee_count: 0,
+          created_at: '2026-01-01',
+          updated_at: '2026-01-01',
+        },
+      ],
+    );
+    expect(merged).toHaveLength(1);
+    expect(merged[0]?.id).toBe('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
+    expect(merged[0]?.code).toBe('phong_dphh');
+  });
+
   it('coalesces parallel loads into one listDepartments call (R-DEPT-FETCH-X2)', async () => {
     let resolveList: (value: { data: Array<{ id: string; company_id: string; name: string; status: string }> }) => void =
       () => undefined;

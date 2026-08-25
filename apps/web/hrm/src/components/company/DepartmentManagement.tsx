@@ -57,7 +57,6 @@ import { SETTINGS_CATALOGS_QUERY_KEY, COMPANY_DEPARTMENTS_QUERY_KEY } from '@/ho
 import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
 import {
   departmentMutateErrorMessage,
-  isDepartmentUuid,
   persistCompanyDepartment,
   removeCompanyDepartment,
   suggestDepartmentCode,
@@ -216,10 +215,9 @@ export function DepartmentManagement() {
           status: formData.status === 'inactive' ? 'draft' : 'active',
         },
         {
-          departmentId: selectedDepartment && isDepartmentUuid(selectedDepartment.id)
-            ? selectedDepartment.id
-            : null,
+          departmentId: selectedDepartment?.id ?? null,
           catalogCode: selectedDepartment?.code ?? code,
+          previousCatalogCode: selectedDepartment?.code ?? null,
         },
       );
 
