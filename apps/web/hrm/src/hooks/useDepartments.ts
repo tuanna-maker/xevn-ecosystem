@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { loadCompanyDepartments, CatalogDepartmentRow } from '@/lib/hrmDepartmentCatalog';
+import type { HrmSpreadsheetScope } from '@/integrations/hrmApi';
 
 export interface Department extends CatalogDepartmentRow {}
 
-export function useDepartments(opts?: { enabled?: boolean }) {
+export function useDepartments(opts?: { enabled?: boolean; companyId?: string; scope?: HrmSpreadsheetScope | null }) {
   const enabled = opts?.enabled !== false;
   const { currentCompanyId } = useAuth();
+  const activeCompanyId = opts?.companyId && opts.companyId !== 'ALL_COMPANY' ? opts.companyId : currentCompanyId;
   const [departments, setDepartments] = useState<Department[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!enabled || !currentCompanyId) {
+    if (!enabled || !activeCompanyId) {
       setDepartments([]);
       setIsLoading(false);
       return;
@@ -20,7 +22,7 @@ export function useDepartments(opts?: { enabled?: boolean }) {
     const fetchDepartments = async () => {
       setIsLoading(true);
       try {
-        const { rows, fetchError } = await loadCompanyDepartments(currentCompanyId);
+        const { rows, fetchError } = await loadCompanyDepartments(activeCompanyId, opts?.scope);
         if (fetchError) {
           console.error('Error fetching departments:', fetchError);
         }
@@ -33,7 +35,7 @@ export function useDepartments(opts?: { enabled?: boolean }) {
     };
 
     void fetchDepartments();
-  }, [currentCompanyId, enabled]);
+  }, [activeCompanyId, enabled, opts?.scope]);
 
   return { departments, isLoading };
 }

@@ -193,7 +193,7 @@ export function CampaignFormDialog({
       });
     } else {
       form.reset({
-        name: '', description: '', status: 'active',
+        name: '', description: '', status: 'draft',
         start_date: new Date(), end_date: null,
         owner_name: '', follower_name: '', position: '', title: '',
         department: '', work_type: '', location: '', evaluation_criteria: '',
@@ -302,7 +302,7 @@ export function CampaignFormDialog({
                   <FormField control={form.control} name="status" render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('common.status.label')} *</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value} disabled={true}>
                         <FormControl><SelectTrigger><SelectValue placeholder={d('selectStatus')} /></SelectTrigger></FormControl>
                         <SelectContent>
                           {statusOptions.map((opt) => (

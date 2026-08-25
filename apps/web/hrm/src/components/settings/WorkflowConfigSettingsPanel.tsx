@@ -1,5 +1,5 @@
-import { useMemo, useState, useEffect, type Dispatch, type SetStateAction } from 'react';
-import { ArrowLeft, Copy, Eye, Plus, Save, Trash2, CalendarIcon } from 'lucide-react';
+import { useMemo, useState, useEffect, type Dispatch, type SetStateAction, Fragment } from 'react';
+import { ArrowLeft, Copy, Eye, Plus, Save, Trash2, CalendarIcon, ChevronUp, ChevronDown, ArrowDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -37,13 +37,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDepartments } from '@/hooks/useDepartments';
-import { useEmployeePickerSearch } from '@/hooks/useEmployeePicker';
+import { fetchEmployeePickerPage, useEmployeePickerSearch } from '@/hooks/useEmployeePicker';
 import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
-import { toCatalogPickerOptions } from '@/lib/catalogSearchPicker';
+import { jobTitleOptionsFromCatalog } from '@/lib/catalogSearchPicker';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import { useQuery } from '@tanstack/react-query';
-import { listJobDescriptionTemplates, type HrmSettingsCatalogOverviewRow } from '@/integrations/hrmApi';
+import {
+  getSettingsCatalogsOverview,
+  listJobDescriptionTemplates,
+  listScopedCompanies,
+  type HrmSettingsCatalogOverviewRow,
+  type HrmSpreadsheetScope,
+} from '@/integrations/hrmApi';
 import { amountStringToNumber, ViMoneyInput } from '@/components/ui/ViMoneyInput';
+import { loadCompanyDepartments } from '@/lib/hrmDepartmentCatalog';
+import { HRM_LIST_DEFAULT_COMPANY_ID } from '@/lib/hrmListScope';
 
 function findCatalog(
   catalogs: HrmSettingsCatalogOverviewRow[] | null | undefined,
@@ -92,6 +100,8 @@ type WorkflowStep = {
   condition: string;
   requiredInfo: string;
   slaHours: string;
+  actionType?: string;
+  allowReject?: boolean;
 };
 
 type WorkflowConfig = {
@@ -104,11 +114,34 @@ type WorkflowConfig = {
   positions: WorkflowPosition[];
   fields: WorkflowField[];
   steps: WorkflowStep[];
+  companyId?: string;
   createdAt?: string;
   updatedAt?: string;
 };
 
 type WorkflowDraft = Omit<WorkflowConfig, 'id'> & { id?: string };
+type WorkflowEmployeeOption = {
+  id: string;
+  full_name: string;
+  job_title?: string;
+  job_title_key?: string;
+  department_id?: string;
+  department_code?: string;
+  department_name?: string;
+};
+
+type WorkflowDepartmentOption = {
+  id: string;
+  name: string;
+  code?: string | null;
+};
+
+type WorkflowCompanyOption = {
+  id: string;
+  name: string;
+  tenantId?: string | null;
+  companyId?: string | null;
+};
 
 const STORAGE_KEY = 'hrm.workflow-configs.v3';
 
@@ -158,8 +191,6 @@ const POSITION_OPTIONS = [
   'Giám đốc tài chính',
   'Tổng giám đốc',
 ];
-const LEVEL_OPTIONS = ['Nhân viên', 'Chuyên viên', 'Trưởng nhóm', 'Trưởng phòng', 'Giám đốc', 'Tổng giám đốc'];
-
 const PEOPLE_OPTIONS = [
   { id: 'emp-hr-rec', name: 'Nguyễn Thu Hà', title: 'Chuyên viên tuyển dụng' },
   { id: 'emp-hrm', name: 'Trần Minh An', title: 'Trưởng phòng nhân sự' },
@@ -379,6 +410,7 @@ function emptyDraft(types: WorkflowType[], typeId = types[0]?.id ?? ''): Workflo
     name: '',
     typeId,
     status: 'draft',
+    companyId: 'ALL_COMPANY',
     appliesTo: code === 'REC' ? ['recruitment'] : [],
     positions: code === 'REC' ? [emptyPosition()] : [],
     fields: buildFields(code),
@@ -408,6 +440,69 @@ function persistState(types: WorkflowType[], workflows: WorkflowConfig[]) {
 
 function personLabel(personId: string) {
   return personId || 'Chưa chọn';
+}
+
+function normalizeWorkflowLookup(value: unknown): string {
+  return String(value ?? '').trim().toLowerCase();
+}
+
+function isAllDepartmentScope(value: string | undefined): boolean {
+  return !value || ['all', 'holding', 'all_company'].includes(normalizeWorkflowLookup(value));
+}
+
+function departmentLookupTokens(
+  departmentValue: string | undefined,
+  departments: readonly WorkflowDepartmentOption[],
+): Set<string> | null {
+  if (isAllDepartmentScope(departmentValue)) return null;
+  const selected = normalizeWorkflowLookup(departmentValue);
+  if (!selected) return null;
+  const tokens = new Set<string>([selected]);
+  const selectedDepartment = departments.find((department) =>
+    [department.id, department.code, department.name].some(
+      (value) => normalizeWorkflowLookup(value) === selected,
+    ),
+  );
+  if (selectedDepartment) {
+    [selectedDepartment.id, selectedDepartment.code, selectedDepartment.name].forEach((value) => {
+      const token = normalizeWorkflowLookup(value);
+      if (token) tokens.add(token);
+    });
+  }
+  return tokens;
+}
+
+function employeeMatchesDepartment(
+  employee: WorkflowEmployeeOption,
+  departmentValue: string | undefined,
+  departments: readonly WorkflowDepartmentOption[],
+): boolean {
+  const tokens = departmentLookupTokens(departmentValue, departments);
+  if (!tokens) return true;
+  return [employee.department_id, employee.department_code, employee.department_name].some((value) => {
+    const token = normalizeWorkflowLookup(value);
+    return Boolean(token && tokens.has(token));
+  });
+}
+
+function mergeWorkflowPickerOptionsPreferDisplay(
+  groups: ReadonlyArray<ReadonlyArray<{ value: string; label: string }>>,
+): Array<{ value: string; label: string }> {
+  const merged = new Map<string, { value: string; label: string }>();
+  for (const group of groups) {
+    for (const option of group) {
+      const value = option.value.trim();
+      const label = option.label.trim();
+      if (!value || !label) continue;
+      const existing = merged.get(value);
+      if (!existing || normalizeWorkflowLookup(existing.label) === normalizeWorkflowLookup(existing.value)) {
+        merged.set(value, { value, label });
+      }
+    }
+  }
+  return Array.from(merged.values()).sort((a, b) =>
+    a.label.localeCompare(b.label, 'vi', { sensitivity: 'base' }),
+  );
 }
 
 const EMPLOYMENT_TYPES = [
@@ -451,6 +546,24 @@ export function WorkflowConfigSettingsPanel() {
     setNewActionName('');
   };
 
+  const handleDeleteAction = (actionId: string, actionName: string) => {
+    const usingWorkflow = workflows.find(
+      (w) => w.status === 'active' && w.steps.some((step) => step.actionType === actionId)
+    );
+
+    if (usingWorkflow) {
+      toast({
+        title: 'Không thể xóa hành động',
+        description: `Hành động "${actionName}" đang được sử dụng trong quy trình đang áp dụng: "${usingWorkflow.name}". Vui lòng ngừng quy trình này trước khi xóa.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    saveCustomActions(customActions.filter(a => a.id !== actionId));
+    toast({ title: 'Đã xóa', description: `Xóa hành động "${actionName}" thành công.` });
+  };
+
   const [view, setView] = useState<'list' | 'detail'>('list');
   const [draft, setDraft] = useState<WorkflowDraft>(() => emptyDraft(initial.types));
   const [typeDialogOpen, setTypeDialogOpen] = useState(false);
@@ -460,15 +573,104 @@ export function WorkflowConfigSettingsPanel() {
   const selectedTypeCode = selectedType?.code ?? '';
   const isRecruitment = selectedTypeCode === 'REC';
 
-  const { currentCompanyId } = useAuth();
-  const { employees: rawEmployees = [] } = useEmployeePickerSearch({ companyId: currentCompanyId, pageSize: 100 });
+  const { currentCompanyId, memberships } = useAuth();
+
+  const { data: companiesData } = useQuery({
+    queryKey: ['scoped-companies'],
+    queryFn: () => listScopedCompanies(),
+  });
+
+  const selectableCompanies = useMemo(() => {
+    if (companiesData?.data) {
+      return companiesData.data
+        .map((company) => {
+          const tenantId = company.tenant_id || company.code || company.id;
+          return {
+            id: tenantId,
+            name: company.name,
+            tenantId,
+            companyId: company.company_id || HRM_LIST_DEFAULT_COMPANY_ID,
+          };
+        })
+        .filter((company, index, list) =>
+          company.id && list.findIndex((item) => item.id === company.id) === index,
+        );
+    }
+    return memberships.map((m) => ({
+      id: m.company.id,
+      name: m.company.name,
+      tenantId: (m as any).tenant_id ?? (m.company as any).tenant_id ?? null,
+      companyId: (m.company as any).company_id ?? m.company.id,
+    }));
+  }, [companiesData, memberships]);
+
+  const scopedCompanyIds = useMemo(() => {
+    const ids = selectableCompanies.map((company) => company.companyId || company.id).filter(Boolean);
+    return Array.from(new Set(ids.length ? ids : currentCompanyId ? [currentCompanyId] : []));
+  }, [currentCompanyId, selectableCompanies]);
+
+  const selectedCompanyId = draft.companyId || 'ALL_COMPANY';
+  const selectedCompany = selectableCompanies.find((company) => company.id === selectedCompanyId);
+  const isAllCompanyScope = selectedCompanyId === 'ALL_COMPANY';
+  const effectiveCompanyId = isAllCompanyScope ? currentCompanyId : selectedCompanyId;
+  const { departments: singleCompanyDepartments } = useDepartments({
+    companyId: effectiveCompanyId,
+    enabled: !isAllCompanyScope,
+  });
+  const { data: allCompanyDepartments = [] } = useQuery({
+    queryKey: ['workflow-config-all-company-departments', scopedCompanyIds],
+    queryFn: async () => {
+      const results = await Promise.all(scopedCompanyIds.map((companyId) => loadCompanyDepartments(companyId)));
+      return results.flatMap((result) => result.rows);
+    },
+    enabled: isAllCompanyScope && scopedCompanyIds.length > 0,
+  });
+  const departments = isAllCompanyScope ? allCompanyDepartments : singleCompanyDepartments;
+  const { employees: singleCompanyEmployees = [] } = useEmployeePickerSearch({
+    companyId: effectiveCompanyId,
+    pageSize: 100,
+    enabled: !isAllCompanyScope && Boolean(effectiveCompanyId),
+  });
+  const { data: allCompanyEmployees = [] } = useQuery({
+    queryKey: ['workflow-config-all-company-employees', scopedCompanyIds],
+    queryFn: async () => {
+      const results = await Promise.all(scopedCompanyIds.map((companyId) => fetchEmployeePickerPage({
+        company_id: companyId,
+        page_size: 100,
+      })));
+      return results.flatMap((result) => result.data);
+    },
+    enabled: isAllCompanyScope && scopedCompanyIds.length > 0,
+  });
+  const rawEmployees = isAllCompanyScope ? allCompanyEmployees : singleCompanyEmployees;
   /** Chuẩn hoá: map job_title_label / job_title_key → job_title để hiển thị chức danh trong dropdown */
-  const employees = useMemo(() => rawEmployees.map((e) => ({
-    id: e.id,
-    full_name: e.full_name,
-    job_title: (e.job_title_label || e.job_title_key || '') as string,
-      department_id: e.department_id,
-  })), [rawEmployees]);
+  const employees = useMemo(() => rawEmployees.map((e) => {
+    const customFields = e.custom_fields ?? {};
+    const departmentCode =
+      customFields.department ||
+      customFields.department_key ||
+      customFields.department_id ||
+      (e as any).department_id ||
+      (e as any).departmentId ||
+      undefined;
+    const departmentName = e.department || customFields.department_label || undefined;
+    const matchedDepartment = departments.find((department) =>
+      [department.id, department.code, department.name].some((value) =>
+        [departmentCode, departmentName].some(
+          (candidate) => normalizeWorkflowLookup(candidate) === normalizeWorkflowLookup(value),
+        ),
+      ),
+    );
+    return {
+      id: e.id,
+      full_name: e.full_name,
+      job_title: (e.job_title_label || customFields.job_title_label || customFields.position || undefined) as string | undefined,
+      job_title_key: e.job_title_key ?? undefined,
+      department_id: matchedDepartment?.id ?? (departmentCode ? String(departmentCode) : undefined),
+      department_code: matchedDepartment?.code ?? (departmentCode ? String(departmentCode) : undefined),
+      department_name: matchedDepartment?.name ?? (departmentName ? String(departmentName) : undefined),
+    };
+  }), [rawEmployees, departments]);
 
   const saveAll = (nextTypes = workflowTypes, nextWorkflows = workflows) => {
     setWorkflowTypes(nextTypes);
@@ -771,7 +973,7 @@ export function WorkflowConfigSettingsPanel() {
                     <TableCell className="font-medium text-slate-500">{action.id}</TableCell>
                     <TableCell>{action.name}</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" className="text-red-500" onClick={() => saveCustomActions(customActions.filter(a => a.id !== action.id))}>
+                      <Button variant="ghost" size="icon" className="text-red-500" onClick={() => handleDeleteAction(action.id, action.name)}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </TableCell>
@@ -868,6 +1070,36 @@ export function WorkflowConfigSettingsPanel() {
                 {selectedType?.description ? <p className="text-xs text-slate-500">{selectedType.description}</p> : null}
               </div>
               <div className="space-y-1.5">
+                <Label>Công ty áp dụng *</Label>
+                <Select
+                  value={draft.companyId || 'ALL_COMPANY'}
+                  onValueChange={(v) => setDraft((current) => ({
+                    ...current,
+                    companyId: v,
+                    positions: current.positions.map((position) => ({
+                      ...position,
+                      department: 'ALL_COMPANY',
+                      responsiblePersonId: '',
+                    })),
+                    steps: current.steps.map((step) => ({ ...step, ownerPersonId: '' })),
+                  }))}
+                >
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Chọn công ty" />
+                  </SelectTrigger>
+                  <SelectContent portalScope="iframe">
+                    <SelectItem value="ALL_COMPANY" className="font-semibold text-blue-600">
+                      Tất cả công ty (Tập đoàn)
+                    </SelectItem>
+                    {selectableCompanies.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
                 <Label>Trạng thái</Label>
                 <label className="flex h-10 items-center gap-2 rounded-input border border-slate-200 px-3 text-sm">
                   <Switch
@@ -917,9 +1149,14 @@ export function WorkflowConfigSettingsPanel() {
               setDraft={setDraft}
               updatePosition={updatePosition}
               employees={employees}
+              companyId={selectedCompanyId}
+              scopedCompanyIds={scopedCompanyIds}
+              scopedCompanies={selectableCompanies}
+              selectedCompany={selectedCompany}
+              departments={departments}
             />
           ) : null}
-          <WorkflowStepsCard draft={draft} setDraft={setDraft} updateStep={updateStep} employees={employees} customActions={customActions} />
+          <WorkflowStepsCard draft={draft} setDraft={setDraft} updateStep={updateStep} employees={employees} customActions={customActions} departments={departments} />
         </div>
       </div>
 
@@ -944,36 +1181,55 @@ function RecruitmentPositionsCard({
   setDraft,
   updatePosition,
   employees,
+  companyId,
+  scopedCompanyIds,
+  scopedCompanies,
+  selectedCompany,
+  departments,
 }: {
   positions: WorkflowPosition[];
   setDraft: DraftSetter;
   updatePosition: (id: string, patch: Partial<WorkflowPosition>) => void;
-  employees: Array<{ id: string; full_name: string; job_title?: string; department_id?: string }>;
+  employees: WorkflowEmployeeOption[];
+  companyId?: string;
+  scopedCompanyIds: string[];
+  scopedCompanies: WorkflowCompanyOption[];
+  selectedCompany?: WorkflowCompanyOption;
+  departments: WorkflowDepartmentOption[];
 }) {
-  const { currentCompanyId } = useAuth();
+  const isAllCompanyCatalogScope = companyId === 'ALL_COMPANY';
+  const { catalogs, scope } = useSettingsCatalogsOverview();
   
-  const { departments } = useDepartments();
+  const catalogPositionOptions = useMemo(() => {
+    return jobTitleOptionsFromCatalog(catalogs ?? []);
+  }, [catalogs]);
+
+
+  const catalogPositionLabelByValue = useMemo(() => {
+    return new Map(catalogPositionOptions.map((option) => [option.value, option.label]));
+  }, [catalogPositionOptions]);
   
-  const { catalogs } = useSettingsCatalogsOverview({});
-  const positionCatalog = findCatalog(catalogs, ['job_titles', 'positions', 'employee_positions']);
-  const positionOptions = useMemo(
-    () => toCatalogPickerOptions(positionCatalog?.effectiveItems ?? []),
-    [positionCatalog]
-  );
-  
-  const levelCatalog = findCatalog(catalogs, ['job_levels', 'levels']);
-  const levelOptions = useMemo(
-    () => toCatalogPickerOptions(levelCatalog?.effectiveItems ?? []),
-    [levelCatalog]
-  );
+  const positionOptions = useMemo(() => {
+    if (!isAllCompanyCatalogScope && employees.length > 0) {
+      const options = new Map<string, { value: string; label: string }>();
+      employees.forEach((employee) => {
+        const value = employee.job_title_key || employee.job_title;
+        const label = catalogPositionLabelByValue.get(value ?? '') || employee.job_title || employee.job_title_key;
+        if (value && label && !options.has(value)) options.set(value, { value, label });
+      });
+      return Array.from(options.values());
+    }
+    return catalogPositionOptions;
+  }, [catalogPositionLabelByValue, catalogPositionOptions, employees, isAllCompanyCatalogScope]);
 
   const { data: jdTemplates = [] } = useQuery({
-    queryKey: ['jd_templates_for_workflow', currentCompanyId],
+    queryKey: ['jd_templates_for_workflow', companyId, scopedCompanyIds],
     queryFn: async () => {
-      if (!currentCompanyId) return [];
-      return hrmApi.getJDTemplates(currentCompanyId, { is_active: true });
+      const companyIds = companyId === 'ALL_COMPANY' ? scopedCompanyIds : companyId ? [companyId] : [];
+      const results = await Promise.all(companyIds.map((id) => listJobDescriptionTemplates({ company_id: id, status: 'active' } as any)));
+      return results.flatMap((res) => res.data ?? []);
     },
-    enabled: !!currentCompanyId,
+    enabled: Boolean(companyId === 'ALL_COMPANY' ? scopedCompanyIds.length > 0 : companyId),
   });
 
   const jdOptions = useMemo(() => jdTemplates.map(jd => ({
@@ -1000,7 +1256,13 @@ function RecruitmentPositionsCard({
         </Button>
       </div>
       <div className="space-y-3">
-        {positions.map((position, index) => (
+        {positions.map((position, index) => {
+          const selectedPositionLabel =
+            catalogPositionLabelByValue.get(position.positionName) ||
+            positionOptions.find((option) => option.value === position.positionName)?.label ||
+            position.positionName;
+
+          return (
           <div key={position.id} className="rounded-input border border-slate-200 p-3">
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-semibold text-slate-800">Vị trí {index + 1}</p>
@@ -1028,7 +1290,7 @@ function RecruitmentPositionsCard({
                       </SelectItem>
                     ))}
                     {position.positionName && !positionOptions.some(o => o.value === position.positionName) && (
-                      <SelectItem value={position.positionName}>{position.positionName}</SelectItem>
+                      <SelectItem value={position.positionName}>{selectedPositionLabel}</SelectItem>
                     )}
                   </SelectContent>
                 </Select>
@@ -1044,7 +1306,14 @@ function RecruitmentPositionsCard({
               </div>
               <div className="space-y-1.5">
                 <Label>Phòng ban</Label>
-                <Select value={position.department} onValueChange={(value) => updatePosition(position.id, { department: value })}>
+                <Select
+                  value={position.department}
+                  onValueChange={(value) => updatePosition(position.id, {
+                    department: value,
+                    positionName: '',
+                    responsiblePersonId: '',
+                  })}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Chọn phòng ban" />
                   </SelectTrigger>
@@ -1163,7 +1432,8 @@ function RecruitmentPositionsCard({
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -1227,12 +1497,14 @@ function WorkflowStepsCard({
   updateStep,
   employees,
   customActions,
+  departments,
 }: {
   draft: WorkflowDraft;
   setDraft: DraftSetter;
   updateStep: (id: string, patch: Partial<WorkflowStep>) => void;
-  employees: Array<{ id: string; full_name: string; job_title?: string; department_id?: string }>;
+  employees: WorkflowEmployeeOption[];
   customActions: { id: string; name: string }[];
+  departments: WorkflowDepartmentOption[];
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStep, setEditingStep] = useState<WorkflowStep | null>(null);
@@ -1268,6 +1540,18 @@ function WorkflowStepsCard({
     }));
   };
 
+  const moveStep = (index: number, direction: 'up' | 'down') => {
+    setDraft(current => {
+      const steps = [...current.steps];
+      if (direction === 'up' && index > 0) {
+        [steps[index - 1], steps[index]] = [steps[index], steps[index - 1]];
+      } else if (direction === 'down' && index < steps.length - 1) {
+        [steps[index], steps[index + 1]] = [steps[index + 1], steps[index]];
+      }
+      return { ...current, steps };
+    });
+  };
+
   return (
     <div className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
@@ -1284,19 +1568,38 @@ function WorkflowStepsCard({
       <div className="space-y-3">
         {draft.steps.map((step, index) => {
           const actionName = customActions?.find(a => a.id === step.actionType)?.name || step.actionType || 'Chưa chọn';
+          const assignee = employees.find(e => e.id === step.ownerPersonId);
+          const assigneeName = assignee ? assignee.full_name : 'Chưa chọn';
+          const assigneeInitial = assigneeName !== 'Chưa chọn' ? assigneeName.split(' ').pop()?.substring(0, 2).toUpperCase() : '--';
           
           return (
-            <div key={step.id} className="relative flex items-center gap-4 rounded-lg border border-slate-200 p-4 hover:border-blue-300 hover:bg-blue-50/50 transition-colors">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
-                {index + 1}
-              </div>
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-[2fr_1fr_2fr_1fr] gap-4 items-center">
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">{step.name || `Bước ${index + 1}`}</p>
+            <Fragment key={step.id}>
+              {index > 0 && (
+                <div className="flex justify-center -my-2 relative z-10">
+                  <div className="bg-white px-2">
+                    <ArrowDown className="w-4 h-4 text-slate-300" />
+                  </div>
                 </div>
-                <div>
-                  <Badge variant="outline" className="bg-white text-xs">{actionName}</Badge>
+              )}
+              <div className="relative flex items-center gap-4 rounded-lg border border-slate-200 p-4 hover:border-blue-300 hover:bg-blue-50/50 transition-colors">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
+                  {index + 1}
                 </div>
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-[2fr_1.5fr_2fr_1fr] gap-4 items-center">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{step.name || `Bước ${index + 1}`}</p>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 border border-slate-200 text-[10px] font-medium text-slate-600 text-center">
+                        {assigneeInitial}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-xs font-medium text-slate-700 truncate" title={assigneeName}>{assigneeName}</span>
+                        <span className="text-[10px] text-slate-500 truncate" title={actionName}>{actionName}</span>
+                      </div>
+                    </div>
+                  </div>
                 <div>
                   <p className="text-xs text-slate-500 line-clamp-2">{step.condition || 'Không có điều kiện'}</p>
                 </div>
@@ -1304,7 +1607,14 @@ function WorkflowStepsCard({
                   <p className="text-xs font-medium text-slate-700">{step.slaHours} giờ (SLA)</p>
                 </div>
               </div>
-              <div className="flex shrink-0 gap-2">
+              <div className="flex shrink-0 gap-1 items-center">
+                <Button type="button" variant="ghost" size="icon" onClick={() => moveStep(index, 'up')} disabled={index === 0} className="h-8 w-8 text-slate-400 hover:text-blue-600">
+                  <ChevronUp className="w-4 h-4" />
+                </Button>
+                <Button type="button" variant="ghost" size="icon" onClick={() => moveStep(index, 'down')} disabled={index === draft.steps.length - 1} className="h-8 w-8 text-slate-400 hover:text-blue-600">
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+                <div className="w-px h-4 bg-slate-200 self-center mx-1"></div>
                 <Button type="button" variant="ghost" size="icon" onClick={() => handleEdit(step)} className="h-8 w-8 text-slate-500 hover:text-blue-600">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                 </Button>
@@ -1313,6 +1623,7 @@ function WorkflowStepsCard({
                 </Button>
               </div>
             </div>
+            </Fragment>
           );
         })}
       </div>
@@ -1321,10 +1632,12 @@ function WorkflowStepsCard({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         initialData={editingStep}
+        stepIndex={editingStep ? draft.steps.findIndex(s => s.id === editingStep.id) : -1}
         onSave={handleSaveModal}
         employees={employees}
         stepCount={draft.steps.length}
         customActions={customActions}
+        departments={departments}
       />
     </div>
   );
@@ -1334,18 +1647,22 @@ function WorkflowStepModal({
   isOpen,
   onClose,
   initialData,
+  stepIndex,
   onSave,
   employees,
   stepCount,
   customActions,
+  departments,
 }: {
   isOpen: boolean;
   onClose: () => void;
   initialData: WorkflowStep | null;
+  stepIndex: number;
   onSave: (data: WorkflowStep) => void;
-  employees: Array<{ id: string; full_name: string; job_title?: string; department_id?: string }>;
+  employees: WorkflowEmployeeOption[];
   stepCount: number;
   customActions: { id: string; name: string }[];
+  departments: WorkflowDepartmentOption[];
 }) {
   const [formData, setFormData] = useState<WorkflowStep>(() => ({
     id: `step-${Date.now()}`,
@@ -1382,79 +1699,132 @@ function WorkflowStepModal({
 
   const filteredEmployees = useMemo(() => {
     return employees.filter(e => {
-      if (filterDept !== 'ALL' && e.department_id !== filterDept) return false;
-      if (filterTitle !== 'ALL' && e.job_title !== filterTitle) return false;
+      if (filterDept !== 'ALL' && !employeeMatchesDepartment(e, filterDept, departments)) return false;
+      if (filterTitle !== 'ALL' && e.job_title !== filterTitle && e.job_title_key !== filterTitle) return false;
       return true;
     });
-  }, [employees, filterDept, filterTitle]);
+  }, [departments, employees, filterDept, filterTitle]);
+
+  const stepTitleOptions = useMemo(() => {
+    const options = new Map<string, { value: string; label: string }>();
+    employees
+      .filter((employee) => filterDept === 'ALL' || employeeMatchesDepartment(employee, filterDept, departments))
+      .forEach((employee) => {
+        const value = employee.job_title_key || employee.job_title;
+        const label = employee.job_title || employee.job_title_key;
+        if (value && label && !options.has(value)) options.set(value, { value, label });
+      });
+    return Array.from(options.values());
+  }, [departments, employees, filterDept]);
 
   if (!isOpen) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden" data-testid="settings-workflow-step-modal">
-        <DialogHeader className="px-6 py-4 border-b border-slate-100 flex flex-row items-center justify-between">
-          <div className="flex items-center gap-2">
+      <DialogContent className="max-w-3xl" data-testid="settings-workflow-step-modal">
+        <DialogHeader className="border-b border-slate-100 pb-4">
+          <div className="flex items-center gap-2 pr-8">
             <div className="h-5 w-1.5 bg-blue-600 rounded"></div>
             <DialogTitle className="text-lg text-slate-800">{initialData ? 'Chỉnh sửa bước' : 'Thêm bước mới'}</DialogTitle>
           </div>
         </DialogHeader>
 
-        <div className="p-6 grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6 bg-slate-50/30">
+        <div className="p-6 bg-slate-50/30 -mx-6 -mb-6 rounded-b-lg space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
+            <div className="space-y-4">
+              <div className="grid grid-cols-[3fr_1fr] gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-red-500 font-medium">Tên bước *</Label>
+                  <Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="VD: Xét duyệt, Ký số..." className="bg-white" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Thứ tự</Label>
+                  <Input value={initialData && stepIndex >= 0 ? stepIndex + 1 : stepCount + 1} readOnly className="bg-slate-100 text-center text-slate-500 font-medium cursor-not-allowed" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label className="text-red-500 font-medium">Hành động *</Label>
+                  <Select value={formData.actionType} onValueChange={v => setFormData({...formData, actionType: v})}>
+                    <SelectTrigger className="bg-white"><SelectValue placeholder="Chọn hành động" /></SelectTrigger>
+                    <SelectContent>
+                      {customActions.map(action => (
+                        <SelectItem key={action.id} value={action.id}>{action.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Thời hạn (giờ)</Label>
+                  <Input value={formData.slaHours} onChange={e => setFormData({...formData, slaHours: e.target.value.replace(/\D/g, '')})} className="bg-white" />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="border border-red-100 bg-red-50/50 rounded-lg p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex gap-2">
+                    <div className="mt-0.5 text-red-500">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-red-700">Từ chối</p>
+                      <p className="text-xs text-red-600/80 mt-0.5 leading-snug">Cho phép người xử lý từ chối và trả về bước trước</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={formData.allowReject}
+                    onCheckedChange={checked => setFormData({...formData, allowReject: checked})}
+                    className="data-[state=checked]:bg-red-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-4">
-            <div className="grid grid-cols-[3fr_1fr] gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-red-500 font-medium">Tên bước *</Label>
-                <Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="VD: Xét duyệt, Ký số..." className="bg-white" />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Thứ tự</Label>
-                <Input value={initialData ? undefined : stepCount + 1} readOnly className="bg-slate-100 text-center" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-red-500 font-medium">Hành động *</Label>
-                <Select value={formData.actionType} onValueChange={v => setFormData({...formData, actionType: v})}>
-                  <SelectTrigger className="bg-white"><SelectValue placeholder="Chọn hành động" /></SelectTrigger>
-                  <SelectContent portalScope="iframe">
-                    {customActions.map(action => (
-                      <SelectItem key={action.id} value={action.id}>{action.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Thời hạn (giờ)</Label>
-                <Input value={formData.slaHours} onChange={e => setFormData({...formData, slaHours: e.target.value.replace(/\D/g, '')})} className="bg-white" />
-              </div>
-            </div>
-
             <div className="space-y-1.5">
               <Label className="text-red-500 font-medium">Người thực hiện chính *</Label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Select value={filterDept} onValueChange={v => { setFilterDept(v); setFilterTitle('ALL'); }}>
                   <SelectTrigger className="bg-white"><SelectValue placeholder="Phòng ban" /></SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     <SelectItem value="ALL">Tất cả phòng ban</SelectItem>
-                    {Array.from(new Set(employees.map(e => e.department_id).filter(Boolean))).map(d => (
-                      <SelectItem key={d} value={d}>{d}</SelectItem>
+                    {departments.map((department) => (
+                      <SelectItem key={department.id} value={department.id}>
+                        {department.name}
+                      </SelectItem>
                     ))}
+                    {Array.from(new Set(employees.map(e => e.department_id).filter(Boolean))).map((departmentValue) => {
+                      if (!departmentValue || departments.some((department) =>
+                        [department.id, department.code, department.name].some(
+                          (value) => normalizeWorkflowLookup(value) === normalizeWorkflowLookup(departmentValue),
+                        ),
+                      )) {
+                        return null;
+                      }
+                      return (
+                        <SelectItem key={departmentValue} value={departmentValue}>
+                          {departmentValue}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
                 <Select value={filterTitle} onValueChange={setFilterTitle}>
                   <SelectTrigger className="bg-white"><SelectValue placeholder="Chức danh" /></SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     <SelectItem value="ALL">Tất cả chức danh</SelectItem>
-                    {Array.from(new Set(employees.filter(e => filterDept === 'ALL' || e.department_id === filterDept).map(e => e.job_title).filter(Boolean))).map(t => (
-                      <SelectItem key={t} value={t}>{t}</SelectItem>
+                    {stepTitleOptions.map((title) => (
+                      <SelectItem key={title.value} value={title.value}>{title.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 <Select value={formData.ownerPersonId} onValueChange={v => setFormData({...formData, ownerPersonId: v})}>
                   <SelectTrigger className="bg-white"><SelectValue placeholder="Người thực hiện" /></SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent>
                     {filteredEmployees.map((person) => (
                       <SelectItem key={person.id} value={person.id}>
                         {person.full_name}{person.job_title ? ` (${person.job_title})` : ''}
@@ -1479,37 +1849,6 @@ function WorkflowStepModal({
                 placeholder="VD: Áp dụng khi giá trị hợp đồng > 1 tỷ đồng"
                 className="bg-white min-h-[80px]"
               />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Giá trị hợp đồng tối thiểu (VNĐ)</Label>
-              <Input 
-                value={formData.minContractValue} 
-                onChange={e => setFormData({...formData, minContractValue: e.target.value.replace(/\D/g, '')})}
-                placeholder="Ví dụ: 1000000000" 
-                className="bg-white" 
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="border border-red-100 bg-red-50/50 rounded-lg p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex gap-2">
-                  <div className="mt-0.5 text-red-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-red-700">Từ chối</p>
-                    <p className="text-xs text-red-600/80 mt-0.5 leading-snug">Cho phép người xử lý từ chối và trả về bước trước</p>
-                  </div>
-                </div>
-                <Switch 
-                  checked={formData.allowReject} 
-                  onCheckedChange={checked => setFormData({...formData, allowReject: checked})} 
-                  className="data-[state=checked]:bg-red-500"
-                />
-              </div>
             </div>
           </div>
         </div>
@@ -1595,21 +1934,41 @@ function AssigneePicker({
 }: {
   position: WorkflowPosition;
   updatePosition: (id: string, patch: Partial<WorkflowPosition>) => void;
-  employees: Array<{ id: string; full_name: string; job_title?: string; department_id?: string }>;
-  departments: Array<{ id: string; name: string }>;
+  employees: WorkflowEmployeeOption[];
+  departments: WorkflowDepartmentOption[];
   positionOptions: Array<{ value: string; label: string }>;
 }) {
   const [filterTitle, setFilterTitle] = useState<string>('all');
+  const positionLabelByValue = useMemo(
+    () => new Map(positionOptions.map((option) => [option.value, option.label])),
+    [positionOptions],
+  );
+
+  const departmentEmployees = useMemo(() => {
+    return employees.filter((employee) => employeeMatchesDepartment(employee, position.department, departments));
+  }, [departments, employees, position.department]);
+
+  const titleOptions = useMemo(() => {
+    const options = new Map<string, { value: string; label: string }>();
+    departmentEmployees.forEach((employee) => {
+      const value = employee.job_title_key || employee.job_title;
+      const label = positionLabelByValue.get(value ?? '') || employee.job_title || employee.job_title_key;
+      if (value && label && !options.has(value)) options.set(value, { value, label });
+    });
+    return Array.from(options.values());
+  }, [departmentEmployees, positionLabelByValue]);
+
+  useEffect(() => {
+    setFilterTitle('all');
+  }, [position.department]);
 
   const filteredEmployees = useMemo(() => {
-    return employees.filter(e => {
-      // Dựa vào Phòng ban đã chọn ở trên (position.department)
-      if (position.department && position.department !== 'all' && position.department !== 'holding' && e.department_id !== position.department) return false;
-      // Dựa vào Chức danh chọn ở ô này
-      if (filterTitle !== 'all' && e.job_title !== filterTitle) return false;
-      return true;
-    });
-  }, [employees, position.department, filterTitle]);
+    return departmentEmployees.filter((employee) =>
+      filterTitle === 'all' ||
+      employee.job_title === filterTitle ||
+      employee.job_title_key === filterTitle,
+    );
+  }, [departmentEmployees, filterTitle]);
 
   return (
     <div className="col-span-full rounded border border-slate-100 bg-slate-50/50 p-3">
@@ -1621,7 +1980,7 @@ function AssigneePicker({
           </SelectTrigger>
           <SelectContent portalScope="iframe">
             <SelectItem value="all">Tất cả chức danh</SelectItem>
-            {positionOptions.map(p => (
+            {(titleOptions.length > 0 ? titleOptions : positionOptions).map(p => (
               <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
             ))}
           </SelectContent>

@@ -162,6 +162,12 @@ export function resolveHrmSpreadsheetScope(
 
   // Catalog/settings on group embed always anchor to JWT rollup `main` (U39 — not operating-unit filter).
   if (hasPortalSession() && jwtTenant === HRM_MASTER_TENANT_ID) {
+    if (currentCompanyId && currentCompanyId !== HRM_MASTER_TENANT_ID && !HRM_GROUP_LIST_ALIASES.has(currentCompanyId)) {
+      return {
+        tenantId: currentCompanyId,
+        companyId: HRM_LIST_DEFAULT_COMPANY_ID,
+      };
+    }
     return {
       tenantId: jwtTenant,
       companyId: HRM_LIST_DEFAULT_COMPANY_ID,
@@ -218,10 +224,10 @@ export function resolveHrmSettingsCatalogScope(
 ): HrmSpreadsheetScope | null {
   const jwtTenant = getPortalJwtTenantId();
   const catalogCompany = getPortalJwtCatalogCompanyId();
-  if (hasPortalSession() && jwtTenant === HRM_MASTER_TENANT_ID && catalogCompany) {
+  if (hasPortalSession() && jwtTenant === HRM_MASTER_TENANT_ID) {
     return {
       tenantId: jwtTenant,
-      companyId: normalizeHrmApiListCompanyId(catalogCompany),
+      companyId: catalogCompany ? normalizeHrmApiListCompanyId(catalogCompany) : HRM_LIST_DEFAULT_COMPANY_ID,
     };
   }
   // Member tenant CEO/HR (visun, xe-du-lich, …) — catalog partition = tenant + rollup `main`.

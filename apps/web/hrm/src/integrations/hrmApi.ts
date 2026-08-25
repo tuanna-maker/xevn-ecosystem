@@ -3585,10 +3585,12 @@ export async function listEmployees(params: {
   page_size?: number;
   /** When set, BE uses keyset pagination and ignores `page` (CD-FB-05). */
   cursor?: string;
+  scope?: HrmSpreadsheetScope;
 }): Promise<HrmEmployeeListPage> {
   const search = buildListSearchParams(params);
   return requestHrm<HrmEmployeeListPage>(`/api/hrm/employees?${search.toString()}`, {
     method: "GET",
+    scope: params.scope,
   });
 }
 

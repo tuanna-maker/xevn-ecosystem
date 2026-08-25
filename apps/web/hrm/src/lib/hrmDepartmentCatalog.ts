@@ -249,8 +249,11 @@ async function loadCompanyDepartmentsOnce(companyId: string): Promise<LoadCompan
   }
 
   try {
-    if (isGroupCeoDepartmentRollupContext()) {
+    if (isGroupCeoDepartmentRollupContext() && companyId === HRM_MASTER_TENANT_ID) {
       catalogRows = await listDepartmentsFromSettingsCatalogRollup();
+    } else if (isGroupCeoDepartmentRollupContext() && companyId !== HRM_MASTER_TENANT_ID) {
+      // Branch query by Group CEO: skip master catalog to prevent bleeding master departments into branch list
+      catalogRows = [];
     } else {
       const catalogScope = resolveHrmSettingsCatalogScope(companyId);
       if (catalogScope) {
@@ -266,7 +269,7 @@ async function loadCompanyDepartmentsOnce(companyId: string): Promise<LoadCompan
     );
   }
 
-  const rollupByTenant = isGroupCeoDepartmentRollupContext();
+  const rollupByTenant = isGroupCeoDepartmentRollupContext() && companyId === HRM_MASTER_TENANT_ID;
   let merged = mergeDepartmentCatalogRows(hrmRows, catalogRows, rollupByTenant);
 
   if (merged.length > 0) {
