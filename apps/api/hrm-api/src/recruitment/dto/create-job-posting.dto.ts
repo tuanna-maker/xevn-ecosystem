@@ -13,6 +13,10 @@ import {
  * must_keep: Lane B ≠ FR-RC-01 SoT (job_requisitions).
  */
 export class CreateJobPostingDto {
+  @IsOptional()
+  @IsString()
+  owner_id?: string;
+
   @IsString()
   @MaxLength(64)
   company_id!: string;

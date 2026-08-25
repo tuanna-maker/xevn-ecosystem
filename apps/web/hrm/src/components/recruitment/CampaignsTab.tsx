@@ -82,7 +82,7 @@ const mapJobPostingToCampaign = (row: HrmJobPostingRow): Campaign => ({
   status: row.status,
   start_date: row.created_at,
   end_date: row.deadline,
-  owner_name: null,
+  owner_name: row.owner_name || null,
   follower_name: null,
   position: row.position,
   title: row.title,
@@ -393,6 +393,16 @@ export function CampaignsTab() {
                         <p className="text-sm text-muted-foreground">{t('recruitment.cam.evalCriteria')}</p>
                         <p className="font-medium">{selectedCampaign.evaluation_criteria || '-'}</p>
                       </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Người phụ trách</p>
+                        <p className="font-medium">{selectedCampaign.owner_name || '-'}</p>
+                      </div>
+                      {selectedCampaign.follower_name && (
+                        <div>
+                          <p className="text-sm text-muted-foreground">Người theo dõi</p>
+                          <p className="font-medium">{selectedCampaign.follower_name || '-'}</p>
+                        </div>
+                      )}
                     </div>
 
                     {selectedCampaign.requirements && (

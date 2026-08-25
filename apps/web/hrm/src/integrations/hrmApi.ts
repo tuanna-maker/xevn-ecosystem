@@ -2225,6 +2225,8 @@ export async function rescheduleRecruitmentInterview(
 }
 
 export type HrmJobPostingRow = {
+  owner_id?: string;
+  owner_name?: string;
   id: string;
   company_id: string;
   title: string;

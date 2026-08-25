@@ -1,0 +1,342 @@
+{
+  "Description": "Update RecruitmentPositionsCard with dynamic DB options",
+  "Instruction": "Hook up Departments, Job Titles, Levels, and Employees to the dropdowns",
+  "ReplacementChunks": [
+    {
+      "AllowMultiple": false,
+      "EndLine": 754,
+      "ReplacementContent": "}) {\n  const { currentCompanyId } = useAuth();\n  \n  const { departments } = useDepartments();\n  \n  const { catalogs } = useSettingsCatalogsOverview({});\n  const positionCatalog = findCatalog(catalogs, ['job_titles', 'positions', 'employee_positions']);\n  const positionOptions = React.useMemo(\n    () => toCatalogPickerOptions(positionCatalog?.effectiveItems ?? []),\n    [positionCatalog]\n  );\n  \n  const levelCatalog = findCatalog(catalogs, ['job_levels', 'levels']);\n  const levelOptions = React.useMemo(\n    () => toCatalogPickerOptions(levelCatalog?.effectiveItems ?? []),\n    [levelCatalog]\n  );\n\n  const { data: employees } = useEmployeePickerSearch({ companyId: currentCompanyId });",
+      "StartLine": 754,
+      "TargetContent": "}) {"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 851,
+      "ReplacementContent": "            <div className=\"grid gap-3 md:grid-cols-2\">\n              <Select value={position.positionName} onValueChange={(value) => updatePosition(position.id, { positionName: value })}>\n                <SelectTrigger>\n                  <SelectValue placeholder=\"Chọn vị trí\" />\n                </SelectTrigger>\n                <SelectContent portalScope=\"iframe\">\n                  {positionOptions.map((option) => (\n                    <SelectItem key={option.value} value={option.value}>\n                      {option.label}\n                    </SelectItem>\n                  ))}\n                  {/* Fallback for existing data */}\n                  {position.positionName && !positionOptions.some(o => o.value === position.positionName) && (\n                    <SelectItem value={position.positionName}>{position.positionName}</SelectItem>\n                  )}\n                </SelectContent>\n              </Select>\n              <Input\n                inputMode=\"numeric\"\n                value={position.quantity}\n                placeholder=\"Số lượng\"\n                onChange={(event) => updatePosition(position.id, { quantity: event.target.value.replace(/\\D/g, '') })}\n              />\n              <Select value={position.department} onValueChange={(value) => updatePosition(position.id, { department: value })}>\n                <SelectTrigger>\n                  <SelectValue placeholder=\"Chọn phòng ban\" />\n                </SelectTrigger>\n                <SelectContent portalScope=\"iframe\">\n                  {departments.map((option) => (\n                    <SelectItem key={option.id} value={option.id}>\n                      {option.name}\n                    </SelectItem>\n                  ))}\n                  {/* Fallback for existing data */}\n                  {position.department && !departments.some(d => d.id === position.department) && (\n                    <SelectItem value={position.department}>{position.department}</SelectItem>\n                  )}\n                </SelectContent>\n              </Select>\n              <Select value={position.level} onValueChange={(value) => updatePosition(position.id, { level: value })}>\n                <SelectTrigger>\n                  <SelectValue placeholder=\"Chọn cấp bậc\" />\n                </SelectTrigger>\n                <SelectContent portalScope=\"iframe\">\n                  {levelOptions.map((option) => (\n                    <SelectItem key={option.value} value={option.value}>\n                      {option.label}\n                    </SelectItem>\n                  ))}\n                  {/* Fallback for existing data */}\n                  {position.level && !levelOptions.some(o => o.value === position.level) && (\n                    <SelectItem value={position.level}>{position.level}</SelectItem>\n                  )}\n                </SelectContent>\n              </Select>\n              <Select\n                value={position.responsiblePersonId}\n                onValueChange={(value) => updatePosition(position.id, { responsiblePersonId: value })}\n              >\n                <SelectTrigger>\n                  <SelectValue placeholder=\"Người chịu trách nhiệm\" />\n                </SelectTrigger>\n                <SelectContent portalScope=\"iframe\">\n                  {employees.map((person) => (\n                    <SelectItem key={person.id} value={person.id}>\n                      {person.full_name} {person.job_title ? `- ${person.job_title}` : ''}\n                    </SelectItem>\n                  ))}\n                  {/* Fallback for existing data */}\n                  {position.responsiblePersonId && !employees.some(e => e.id === position.responsiblePersonId) && (\n                    <SelectItem value={position.responsiblePersonId}>{position.responsiblePersonId}</SelectItem>\n                  )}\n                </SelectContent>\n              </Select>\n              <Input value={position.approverRole || resolveApproverRole(position.level)} readOnly />\n            </div>",
+      "StartLine": 793,
+      "TargetContent": "            <div className=\"grid gap-3 md:grid-cols-2\">\n              <Select value={position.positionName} onValueChange={(value) => updatePosition(position.id, { positionName: value })}>\n                <SelectTrigger>\n                  <SelectValue placeholder=\"Chọn vị trí\" />\n                </SelectTrigger>\n                <SelectContent portalScope=\"iframe\">\n                  {POSITION_OPTIONS.map((option) => (\n                    <SelectItem key={option} value={option}>\n                      {option}\n                    </SelectItem>\n                  ))}\n                </SelectContent>\n              </Select>\n              <Input\n                inputMode=\"numeric\"\n                value={position.quantity}\n                placeholder=\"Số lượng\"\n                onChange={(event) => updatePosition(position.id, { quantity: event.target.value.replace(/\\D/g, '') })}\n              />\n              <Select value={position.department} onValueChange={(value) => updatePosition(position.id, { department: value })}>\n                <SelectTrigger>\n                  <SelectValue placeholder=\"Chọn phòng ban\" />\n                </SelectTrigger>\n                <SelectContent portalScope=\"iframe\">\n                  {DEPARTMENT_OPTIONS.map((option) => (\n                    <SelectItem key={option} value={option}>\n                      {option}\n                    </SelectItem>\n                  ))}\n                </SelectContent>\n              </Select>\n              <Select value={position.level} onValueChange={(value) => updatePosition(position.id, { level: value })}>\n                <SelectTrigger>\n                  <SelectValue placeholder=\"Chọn cấp bậc\" />\n                </SelectTrigger>\n                <SelectContent portalScope=\"iframe\">\n                  {LEVEL_OPTIONS.map((option) => (\n                    <SelectItem key={option} value={option}>\n                      {option}\n                    </SelectItem>\n                  ))}\n                </SelectContent>\n              </Select>\n              <Select\n                value={position.responsiblePersonId}\n                onValueChange={(value) => updatePosition(position.id, { responsiblePersonId: value })}\n              >\n                <SelectTrigger>\n                  <SelectValue placeholder=\"Người chịu trách nhiệm\" />\n                </SelectTrigger>\n                <SelectContent portalScope=\"iframe\">\n                  {PEOPLE_OPTIONS.map((person) => (\n                    <SelectItem key={person.id} value={person.id}>\n                      {person.name} - {person.title}\n                    </SelectItem>\n                  ))}\n                </SelectContent>\n              </Select>\n              <Input value={position.approverRole || resolveApproverRole(position.level)} readOnly />\n            </div>"
+    }
+  ],
+  "TargetFile": "D:\\xevn-ecosystem\\apps\\web\\hrm\\src\\components\\settings\\WorkflowConfigSettingsPanel.tsx",
+  "toolAction": "Update dropdowns in RecruitmentPositionsCard",
+  "toolSummary": "Update dropdowns"
+}
+
+---
+
+{
+  "AllowMultiple": false,
+  "Description": "Inject hooks into RecruitmentPositionsCard",
+  "EndLine": 761,
+  "Instruction": "Add React and use hooks",
+  "ReplacementContent": "}) {\n  const { currentCompanyId } = useAuth();\n  \n  const { departments } = useDepartments();\n  \n  const { catalogs } = useSettingsCatalogsOverview({});\n  const positionCatalog = findCatalog(catalogs, ['job_titles', 'positions', 'employee_positions']);\n  const positionOptions = React.useMemo(\n    () => toCatalogPickerOptions(positionCatalog?.effectiveItems ?? []),\n    [positionCatalog]\n  );\n  \n  const levelCatalog = findCatalog(catalogs, ['job_levels', 'levels']);\n  const levelOptions = React.useMemo(\n    () => toCatalogPickerOptions(levelCatalog?.effectiveItems ?? []),\n    [levelCatalog]\n  );\n\n  const { data: employees = [] } = useEmployeePickerSearch({ companyId: currentCompanyId });\n\n  return (\n    <div className=\"rounded-card border border-slate-200 bg-white p-4 shadow-soft\">",
+  "StartLine": 759,
+  "TargetContent": "}) {\n  return (\n    <div className=\"rounded-card border border-slate-200 bg-white p-4 shadow-soft\">",
+  "TargetFile": "D:\\xevn-ecosystem\\apps\\web\\hrm\\src\\components\\settings\\WorkflowConfigSettingsPanel.tsx",
+  "toolAction": "Add hooks into RecruitmentPositionsCard",
+  "toolSummary": "Add hooks"
+}
+
+---
+
+{
+  "Description": "Fix fallback labels for old mock data",
+  "Instruction": "Update the fallbacks in RecruitmentPositionsCard to use the old mock arrays for labels if the value isn't found in DB data",
+  "ReplacementChunks": [
+    {
+      "AllowMultiple": false,
+      "EndLine": 835,
+      "ReplacementContent": "                  {/* Fallback for existing data */}\n                  {position.positionName && !positionOptions.some(o => o.value === position.positionName) && (\n                    <SelectItem value={position.positionName}>{POSITION_OPTIONS.includes(position.positionName) ? position.positionName : position.positionName}</SelectItem>\n                  )}",
+      "StartLine": 832,
+      "TargetContent": "                  {/* Fallback for existing data */}\n                  {position.positionName && !positionOptions.some(o => o.value === position.positionName) && (\n                    <SelectItem value={position.positionName}>{position.positionName}</SelectItem>\n                  )}"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 851,
+      "ReplacementContent": "                  {/* Fallback for existing data */}\n                  {position.department && !departments.some(d => d.id === position.department) && (\n                    <SelectItem value={position.department}>{DEPARTMENT_OPTIONS.includes(position.department) ? position.department : position.department}</SelectItem>\n                  )}",
+      "StartLine": 848,
+      "TargetContent": "                  {/* Fallback for existing data */}\n                  {position.department && !departments.some(d => d.id === position.department) && (\n                    <SelectItem value={position.department}>{position.department}</SelectItem>\n                  )}"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 867,
+      "ReplacementContent": "                  {/* Fallback for existing data */}\n                  {position.level && !levelOptions.some(o => o.value === position.level) && (\n                    <SelectItem value={position.level}>{LEVEL_OPTIONS.includes(position.level) ? position.level : position.level}</SelectItem>\n                  )}",
+      "StartLine": 864,
+      "TargetContent": "                  {/* Fallback for existing data */}\n                  {position.level && !levelOptions.some(o => o.value === position.level) && (\n                    <SelectItem value={position.level}>{position.level}</SelectItem>\n                  )}"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 884,
+      "ReplacementContent": "                  {/* Fallback for existing data */}\n                  {position.responsiblePersonId && !employees.some(e => e.id === position.responsiblePersonId) && (\n                    <SelectItem value={position.responsiblePersonId}>\n                      {PEOPLE_OPTIONS.find(p => p.id === position.responsiblePersonId)?.name || position.responsiblePersonId}\n                    </SelectItem>\n                  )}",
+      "StartLine": 881,
+      "TargetContent": "                  {/* Fallback for existing data */}\n                  {position.responsiblePersonId && !employees.some(e => e.id === position.responsiblePersonId) && (\n                    <SelectItem value={position.responsiblePersonId}>{position.responsiblePersonId}</SelectItem>\n                  )}"
+    }
+  ],
+  "TargetFile": "D:\\xevn-ecosystem\\apps\\web\\hrm\\src\\components\\settings\\WorkflowConfigSettingsPanel.tsx",
+  "toolAction": "Fix mock data fallbacks",
+  "toolSummary": "Fix fallback labels"
+}
+
+---
+
+{
+  "ArtifactMetadata": {
+    "RequestFeedback": true,
+    "Summary": "Implementation plan for selecting workflows in job postings and adding JD templates to workflow configurations",
+    "UserFacing": true
+  },
+  "CodeContent": "# Add Workflow Selection to Job Postings & JD Configuration\n\nThis change updates the recruitment workflow to allow selecting a pre-configured workflow when creating a Job Posting, and associating Job Description (JD) templates with each position inside the workflow configuration.\n\n## Proposed Changes\n\n### 1. `apps/web/hrm/src/components/settings/WorkflowConfigSettingsPanel.tsx`\n- **Schema Update:** Update `WorkflowPosition` type to include `jdTemplateId?: string` and initialize it in `emptyPosition`.\n- **Data Fetching:** Add a `useQuery` to fetch active JD templates (`listJobDescriptionTemplates({ company_id: currentCompanyId, status: 'active' })`).\n- **UI Update:** Inside `RecruitmentPositionsCard`, for each position add a new `Select` (or `CatalogSearchPicker`) field labeled **\"JD vị trí\"**. It will list the fetched JD templates so users can map a specific JD to a workflow position.\n\n### 2. `apps/web/hrm/src/components/recruitment/JobPostingsTab.tsx`\n- **Schema Update:** Add `workflow_id: z.string().optional()` to `jobPostingSchema`.\n- **Data Loading:** Read `hrm.workflow-configs.v3` from `localStorage` to get a list of active recruitment workflows.\n- **Form UI:** \n  - Add a **\"Quy trình\"** (Workflow) dropdown field right above the \"Vị trí\" field.\n  - When the user selects a workflow, the \"Vị trí\" options will be **filtered** to only show positions that exist within that workflow.\n  - When a \"Vị trí\" is selected, the form will auto-fill:\n    - Phòng ban (Department)\n    - Số lượng (Headcount)\n    - **JD Template** (based on `jdTemplateId` configured in the workflow). This will set the `jd_template_id` field and automatically link the JD.\n\n## User Review Required\n> [!IMPORTANT]\n> - Should the \"Vị trí\" (Position) dropdown in the Job Posting form be restricted ONLY to the positions configured in the selected workflow? Or should the user still be able to select other positions not in the workflow? (The plan assumes it will be restricted to make the link strict).\n> - The Workflow selected in the Job Posting form is only used as a \"template\" to auto-fill fields. The `workflow_id` itself is not saved to the `JobPosting` entity in the database since the schema doesn't have it. Is this acceptable?\n\n## Verification Plan\n### Manual Verification\n1. Go to **Cấu hình -> Quy trình**, add a position to a recruitment workflow, and select a \"JD vị trí\" for it. Click **Lưu quy trình**.\n2. Go to **Tuyển dụng -> Tin tuyển dụng**, click **Tạo tin**.\n3. Select the Workflow from the new dropdown.\n4. Select the Position from the dropdown (which should now be filtered).\n5. Verify that Phòng ban, Số lượng, and the JD are automatically filled in.",
+  "Description": "Create implementation plan to add workflow selection and JD mapping.",
+  "Overwrite": false,
+  "TargetFile": "C:\\Users\\admin\\.gemini\\antigravity-ide\\brain\\4cf3d852-f06d-438c-84d3-f982a9db4bc8\\implementation_plan.md",
+  "toolAction": "Write implementation_plan.md",
+  "toolSummary": "Write implementation plan"
+}
+
+---
+
+{
+  "ArtifactMetadata": {
+    "RequestFeedback": true,
+    "Summary": "Implementation plan for selecting workflows in job postings and adding JD templates to workflow configurations",
+    "UserFacing": true
+  },
+  "CodeContent": "# Add Workflow Selection to Job Postings & JD Configuration\n\nThis change updates the recruitment workflow to allow selecting a pre-configured workflow when creating a Job Posting, and associating Job Description (JD) templates with each position inside the workflow configuration.\n\n## Proposed Changes\n\n### 1. `apps/web/hrm/src/components/settings/WorkflowConfigSettingsPanel.tsx`\n- **Schema Update:** Update `WorkflowPosition` type to include `jdTemplateId?: string` and initialize it in `emptyPosition`.\n- **Data Fetching:** Add a `useQuery` to fetch active JD templates (`listJobDescriptionTemplates({ company_id: currentCompanyId, status: 'active' })`).\n- **UI Update:** Inside `RecruitmentPositionsCard`, for each position add a new `Select` (or `CatalogSearchPicker`) field labeled **\"JD vị trí\"**. It will list the fetched JD templates so users can map a specific JD to a workflow position.\n\n### 2. `apps/web/hrm/src/components/recruitment/JobPostingsTab.tsx`\n- **Schema Update:** Add `workflow_id: z.string().optional()` to `jobPostingSchema`.\n- **Data Loading:** Read `hrm.workflow-configs.v3` from `localStorage` to get a list of active recruitment workflows.\n- **Form UI:** \n  - Add a **\"Quy trình\"** (Workflow) dropdown field right above the \"Vị trí\" field.\n  - When the user selects a workflow, the \"Vị trí\" options will be **filtered** to only show positions that exist within that workflow.\n  - When a \"Vị trí\" is selected, the form will auto-fill:\n    - Phòng ban (Department)\n    - Số lượng (Headcount)\n    - **JD Template** (based on `jdTemplateId` configured in the workflow). This will set the `jd_template_id` field and automatically link the JD.\n\n## User Review Required\n> [!IMPORTANT]\n> - Should the \"Vị trí\" (Position) dropdown in the Job Posting form be restricted ONLY to the positions configured in the selected workflow? Or should the user still be able to select other positions not in the workflow? (The plan assumes it will be restricted to make the link strict).\n> - The Workflow selected in the Job Posting form is only used as a \"template\" to auto-fill fields. The `workflow_id` itself is not saved to the `JobPosting` entity in the database since the schema doesn't have it. Is this acceptable?\n\n## Verification Plan\n### Manual Verification\n1. Go to **Cấu hình -> Quy trình**, add a position to a recruitment workflow, and select a \"JD vị trí\" for it. Click **Lưu quy trình**.\n2. Go to **Tuyển dụng -> Tin tuyển dụng**, click **Tạo tin**.\n3. Select the Workflow from the new dropdown.\n4. Select the Position from the dropdown (which should now be filtered).\n5. Verify that Phòng ban, Số lượng, and the JD are automatically filled in.",
+  "Description": "Create implementation plan to add workflow selection and JD mapping.",
+  "Overwrite": true,
+  "TargetFile": "C:\\Users\\admin\\.gemini\\antigravity-ide\\brain\\4cf3d852-f06d-438c-84d3-f982a9db4bc8\\implementation_plan.md",
+  "toolAction": "Write implementation_plan.md",
+  "toolSummary": "Write implementation plan"
+}
+
+---
+
+{
+  "ArtifactMetadata": {
+    "RequestFeedback": false,
+    "Summary": "Task checklist for implementing workflow selection and JD mapping",
+    "UserFacing": false
+  },
+  "CodeContent": "# Tasks for Workflow JD Selection\n\n- `[ ]` 1. Update `WorkflowConfigSettingsPanel.tsx`\n  - `[ ]` 1.1 Add `jdTemplateId` to `WorkflowPosition` type and `emptyPosition` default\n  - `[ ]` 1.2 Import and use `listJobDescriptionTemplates` to load active JD templates\n  - `[ ]` 1.3 Add \"JD vị trí\" dropdown using `CatalogSearchPicker` in `RecruitmentPositionsCard`\n- `[ ]` 2. Update `JobPostingsTab.tsx`\n  - `[ ]` 2.1 Add `workflow_id` to `jobPostingSchema`\n  - `[ ]` 2.2 Read active recruitment workflows from `localStorage`\n  - `[ ]` 2.3 Add a new `FormField` for \"Quy trình tuyển dụng\" (Workflow)\n  - `[ ]` 2.4 Update \"Vị trí\" `FormField` to filter options by selected workflow\n  - `[ ]` 2.5 Update auto-fill logic to use selected workflow and map `jd_template_id`\n  - `[ ]` 2.6 Load JD templates to resolve `selectedJdRef` automatically upon auto-fill",
+  "Description": "Create task list.",
+  "Overwrite": false,
+  "TargetFile": "C:\\Users\\admin\\.gemini\\antigravity-ide\\brain\\4cf3d852-f06d-438c-84d3-f982a9db4bc8\\task.md",
+  "toolAction": "Create task list",
+  "toolSummary": "Create task list"
+}
+
+---
+
+{
+  "ArtifactMetadata": {
+    "RequestFeedback": false,
+    "Summary": "Task checklist for implementing workflow selection and JD mapping",
+    "UserFacing": false
+  },
+  "CodeContent": "# Tasks for Workflow JD Selection\n\n- `[/]` 1. Update `WorkflowConfigSettingsPanel.tsx`\n  - `[ ]` 1.1 Add `jdTemplateId` to `WorkflowPosition` type and `emptyPosition` default\n  - `[ ]` 1.2 Import and use `listJobDescriptionTemplates` to load active JD templates\n  - `[ ]` 1.3 Add \"JD vị trí\" dropdown using `CatalogSearchPicker` in `RecruitmentPositionsCard`\n- `[ ]` 2. Update `JobPostingsTab.tsx`\n  - `[ ]` 2.1 Add `workflow_id` to `jobPostingSchema`\n  - `[ ]` 2.2 Read active recruitment workflows from `localStorage`\n  - `[ ]` 2.3 Add a new `FormField` for \"Quy trình tuyển dụng\" (Workflow)\n  - `[ ]` 2.4 Update \"Vị trí\" `FormField` to filter options by selected workflow\n  - `[ ]` 2.5 Update auto-fill logic to use selected workflow and map `jd_template_id`\n  - `[ ]` 2.6 Load JD templates to resolve `selectedJdRef` automatically upon auto-fill",
+  "Description": "Create task list.",
+  "Overwrite": true,
+  "TargetFile": "C:\\Users\\admin\\.gemini\\antigravity-ide\\brain\\4cf3d852-f06d-438c-84d3-f982a9db4bc8\\task.md",
+  "toolAction": "Create task list",
+  "toolSummary": "Create task list"
+}
+
+---
+
+{
+  "Description": "Add jdTemplateId to WorkflowPosition and fetch JD templates in Settings",
+  "Instruction": "1. Add jdTemplateId to WorkflowPosition and emptyPosition. 2. Fetch JD templates in RecruitmentPositionsCard. 3. Render JD selector field.",
+  "ReplacementChunks": [
+    {
+      "AllowMultiple": false,
+      "EndLine": 40,
+      "ReplacementContent": "import { toCatalogPickerOptions } from '@/lib/catalogSearchPicker';\nimport { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';\nimport { useQuery } from '@tanstack/react-query';\nimport { listJobDescriptionTemplates, type HrmSettingsCatalogOverviewRow } from '@/integrations/hrmApi';",
+      "StartLine": 37,
+      "TargetContent": "import { toCatalogPickerOptions } from '@/lib/catalogSearchPicker';\nimport { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';\nimport { type HrmSettingsCatalogOverviewRow } from '@/integrations/hrmApi';"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 64,
+      "ReplacementContent": "  department: string;\n  level: string;\n  responsiblePersonId: string;\n  approverRole: string;\n  jdTemplateId?: string;\n};",
+      "StartLine": 59,
+      "TargetContent": "  department: string;\n  level: string;\n  responsiblePersonId: string;\n  approverRole: string;\n};"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 143,
+      "ReplacementContent": "  department: 'ALL_COMPANY',\n  level: 'ALL_LEVEL',\n  responsiblePersonId: 'none',\n  approverRole: 'none',\n  jdTemplateId: '',\n});",
+      "StartLine": 138,
+      "TargetContent": "  department: 'ALL_COMPANY',\n  level: 'ALL_LEVEL',\n  responsiblePersonId: 'none',\n  approverRole: 'none',\n});"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 798,
+      "ReplacementContent": "  const { data: jdTemplates = [] } = useQuery({\n    queryKey: ['jd_templates_for_workflow', currentCompanyId],\n    queryFn: async () => {\n      if (!currentCompanyId) return [];\n      const res = await listJobDescriptionTemplates({\n        company_id: currentCompanyId,\n        status: 'active',\n      });\n      return res.data || [];\n    },\n    enabled: !!currentCompanyId,\n  });\n\n  const jdOptions = useMemo(() => {\n    return jdTemplates.map(tpl => ({\n      value: tpl.id,\n      label: tpl.title || tpl.code,\n      code: tpl.code\n    }));\n  }, [jdTemplates]);\n\n  return (\n    <div className=\"rounded-xl border border-slate-200 bg-white shadow-sm\">",
+      "StartLine": 797,
+      "TargetContent": "  return (\n    <div className=\"rounded-xl border border-slate-200 bg-white shadow-sm\">"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 856,
+      "ReplacementContent": "                  <SelectItem value=\"ALL_COMPANY\" className=\"font-semibold text-blue-600\">Toàn công ty</SelectItem>\n                  {departments.map((option) => (\n                    <SelectItem key={option.id} value={option.id}>\n                      {option.name}\n                    </SelectItem>\n                  ))}\n                </SelectContent>\n              </Select>\n              <CatalogSearchPicker\n                options={jdOptions}\n                value={position.jdTemplateId || ''}\n                onValueChange={(val) => updatePosition(position.id, { jdTemplateId: val })}\n                placeholder=\"Chọn JD mô tả công việc...\"\n                searchPlacement=\"inline\"\n              />\n              <Select value={position.level} onValueChange={(value) => updatePosition(position.id, { level: value })}>",
+      "StartLine": 846,
+      "TargetContent": "                  <SelectItem value=\"ALL_COMPANY\" className=\"font-semibold text-blue-600\">Toàn công ty</SelectItem>\n                  {departments.map((option) => (\n                    <SelectItem key={option.id} value={option.id}>\n                      {option.name}\n                    </SelectItem>\n                  ))}\n                </SelectContent>\n              </Select>\n              <Select value={position.level} onValueChange={(value) => updatePosition(position.id, { level: value })}>"
+    }
+  ],
+  "TargetFile": "d:\\xevn-ecosystem\\apps\\web\\hrm\\src\\components\\settings\\WorkflowConfigSettingsPanel.tsx",
+  "toolAction": "Add JD templates to WorkflowConfigSettingsPanel",
+  "toolSummary": "Add JD templates"
+}
+
+---
+
+{
+  "ArtifactMetadata": {
+    "RequestFeedback": false,
+    "Summary": "Task checklist for implementing workflow selection and JD mapping",
+    "UserFacing": false
+  },
+  "CodeContent": "# Tasks for Workflow JD Selection\n\n- `[x]` 1. Update `WorkflowConfigSettingsPanel.tsx`\n  - `[x]` 1.1 Add `jdTemplateId` to `WorkflowPosition` type and `emptyPosition` default\n  - `[x]` 1.2 Import and use `listJobDescriptionTemplates` to load active JD templates\n  - `[x]` 1.3 Add \"JD vị trí\" dropdown using `CatalogSearchPicker` in `RecruitmentPositionsCard`\n- `[x]` 2. Update `JobPostingsTab.tsx`\n  - `[x]` 2.1 Add `workflow_id` to `jobPostingSchema`\n  - `[x]` 2.2 Read active recruitment workflows from `localStorage`\n  - `[x]` 2.3 Add a new `FormField` for \"Quy trình tuyển dụng\" (Workflow)\n  - `[x]` 2.4 Update \"Vị trí\" `FormField` to filter options by selected workflow\n  - `[x]` 2.5 Update auto-fill logic to use selected workflow and map `jd_template_id`\n  - `[x]` 2.6 Load JD templates to resolve `selectedJdRef` automatically upon auto-fill",
+  "Description": "Update task list.",
+  "Overwrite": true,
+  "TargetFile": "C:\\Users\\admin\\.gemini\\antigravity-ide\\brain\\4cf3d852-f06d-438c-84d3-f982a9db4bc8\\task.md",
+  "toolAction": "Update task list",
+  "toolSummary": "Update task list"
+}
+
+---
+
+{
+  "Description": "Add employmentType and deadlineDays to workflow positions",
+  "Instruction": "Update WorkflowPosition type, emptyPosition, add EMPLOYMENT_TYPES, and add the two fields to RecruitmentPositionsCard",
+  "ReplacementChunks": [
+    {
+      "AllowMultiple": false,
+      "EndLine": 65,
+      "ReplacementContent": "  approverRole: string;\n  jdTemplateId?: string;\n  employmentType?: string;\n  deadlineDays?: string;\n};",
+      "StartLine": 63,
+      "TargetContent": "  approverRole: string;\n  jdTemplateId?: string;\n};"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 108,
+      "ReplacementContent": "    code: 'ONB',\n    name: 'Onboarding chuẩn',\n    isActive: true,\n  },\n];\n\nconst EMPLOYMENT_TYPES = [\n  { value: 'full-time', label: 'Toàn thời gian' },\n  { value: 'part-time', label: 'Bán thời gian' },\n  { value: 'contract', label: 'Hợp đồng' },\n  { value: 'intern', label: 'Thực tập sinh' },\n  { value: 'freelance', label: 'Cộng tác viên' },\n];\n\nexport function WorkflowConfigSettingsPanel() {",
+      "StartLine": 104,
+      "TargetContent": "    code: 'ONB',\n    name: 'Onboarding chuẩn',\n    isActive: true,\n  },\n];\n\nexport function WorkflowConfigSettingsPanel() {"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 312,
+      "ReplacementContent": "  responsiblePersonId: 'none',\n  approverRole: 'none',\n  jdTemplateId: '',\n  employmentType: 'full-time',\n  deadlineDays: '',\n};",
+      "StartLine": 309,
+      "TargetContent": "  responsiblePersonId: 'none',\n  approverRole: 'none',\n  jdTemplateId: '',\n};"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 922,
+      "ReplacementContent": "                      Không có dữ liệu\n                    </SelectItem>\n                  )}\n                </SelectContent>\n              </Select>\n              <Select value={position.employmentType || 'full-time'} onValueChange={(val) => updatePosition(position.id, { employmentType: val })}>\n                <SelectTrigger>\n                  <SelectValue placeholder=\"Chọn loại hình\" />\n                </SelectTrigger>\n                <SelectContent portalScope=\"iframe\">\n                  {EMPLOYMENT_TYPES.map(type => (\n                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>\n                  ))}\n                </SelectContent>\n              </Select>\n              <Input\n                inputMode=\"numeric\"\n                value={position.deadlineDays || ''}\n                onChange={(e) => updatePosition(position.id, { deadlineDays: e.target.value })}\n                placeholder=\"Số ngày mở hạn nộp\"\n              />\n            </div>\n            {/* Display errors for this position */}",
+      "StartLine": 918,
+      "TargetContent": "                      Không có dữ liệu\n                    </SelectItem>\n                  )}\n                </SelectContent>\n              </Select>\n            </div>\n            {/* Display errors for this position */}"
+    }
+  ],
+  "TargetFile": "d:\\xevn-ecosystem\\apps\\web\\hrm\\src\\components\\settings\\WorkflowConfigSettingsPanel.tsx",
+  "toolAction": "Add employmentType and deadlineDays to WorkflowConfigSettingsPanel",
+  "toolSummary": "Add fields to WorkflowConfigSettingsPanel"
+}
+
+---
+
+{
+  "Description": "Chuyển useEmployeePickerSearch và useAuth lên main WorkflowConfigSettingsPanel để employees có thể được truyền xuống WorkflowStepsCard; xóa useEmployeePickerSearch khỏi RecruitmentPositionsCard và nhận employees qua prop.",
+  "Instruction": "1. Add useAuth + useEmployeePickerSearch hooks in main WorkflowConfigSettingsPanel component. 2. Pass employees down to both RecruitmentPositionsCard and WorkflowStepsCard. 3. Remove duplicate hook call from RecruitmentPositionsCard. 4. Update RecruitmentPositionsCard signature to accept employees prop.",
+  "ReplacementChunks": [
+    {
+      "AllowMultiple": false,
+      "EndLine": 403,
+      "ReplacementContent": "  const selectedType = workflowTypes.find((type) => type.id === draft.typeId);\n  const selectedTypeCode = selectedType?.code ?? '';\n  const isRecruitment = selectedTypeCode === 'REC';\n\n  const { currentCompanyId } = useAuth();\n  const { employees = [] } = useEmployeePickerSearch({ companyId: currentCompanyId });",
+      "StartLine": 400,
+      "TargetContent": "  const selectedType = workflowTypes.find((type) => type.id === draft.typeId);\n  const selectedTypeCode = selectedType?.code ?? '';\n  const isRecruitment = selectedTypeCode === 'REC';"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 784,
+      "ReplacementContent": "          <RecruitmentPositionsCard\n            positions={draft.positions}\n            setDraft={setDraft}\n            updatePosition={updatePosition}\n            employees={employees}\n          />",
+      "StartLine": 779,
+      "TargetContent": "          <RecruitmentPositionsCard\n            positions={draft.positions}\n            setDraft={setDraft}\n            updatePosition={updatePosition}\n          />"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 820,
+      "ReplacementContent": "function RecruitmentPositionsCard({\n  positions,\n  setDraft,\n  updatePosition,\n  employees,\n}: {\n  positions: WorkflowPosition[];\n  setDraft: DraftSetter;\n  updatePosition: (id: string, patch: Partial<WorkflowPosition>) => void;\n  employees: Array<{ id: string; full_name: string; job_title?: string }>;\n}) {\n  const { currentCompanyId } = useAuth();\n  ",
+      "StartLine": 812,
+      "TargetContent": "function RecruitmentPositionsCard({\n  positions,\n  setDraft,\n  updatePosition,\n}: {\n  positions: WorkflowPosition[];\n  setDraft: DraftSetter;\n  updatePosition: (id: string, patch: Partial<WorkflowPosition>) => void;\n}) {\n  const { currentCompanyId } = useAuth();\n  "
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 860,
+      "ReplacementContent": "\n  return (",
+      "StartLine": 859,
+      "TargetContent": "\n  const { employees = [] } = useEmployeePickerSearch({ companyId: currentCompanyId });\n\n  return ("
+    }
+  ],
+  "TargetFile": "d:\\xevn-ecosystem\\apps\\web\\hrm\\src\\components\\settings\\WorkflowConfigSettingsPanel.tsx",
+  "toolAction": "Fix employees scope in WorkflowConfigSettingsPanel",
+  "toolSummary": "Fix employees scope"
+}
+
+---
+
+{
+  "Description": "Fix layout column widths and remove sticky footer",
+  "Instruction": "Set right column to xl:col-span-7, remove xl:col-span-7 from RecruitmentPositionsCard, and remove the sticky footer with save button.",
+  "ReplacementChunks": [
+    {
+      "AllowMultiple": false,
+      "EndLine": 837,
+      "ReplacementContent": "      <div className=\"grid items-start gap-4 xl:grid-cols-12\">\n        <div className=\"space-y-4 xl:col-span-5\">\n          <div className=\"rounded-card border border-slate-200 bg-white p-4 shadow-soft\">\n            <p className=\"mb-3 text-sm font-semibold text-slate-900\">Thông tin chính</p>\n            <div className=\"grid gap-4 md:grid-cols-2\">",
+      "StartLine": 833,
+      "TargetContent": "      <div className=\"grid items-start gap-4 xl:grid-cols-12\">\n        <div className=\"space-y-4 xl:col-span-5\">\n          <div className=\"rounded-card border border-slate-200 bg-white p-4 shadow-soft\">\n            <p className=\"mb-3 text-sm font-semibold text-slate-900\">Thông tin chính</p>\n            <div className=\"grid gap-4 md:grid-cols-2\">"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 850,
+      "ReplacementContent": "        <div className=\"space-y-4 xl:col-span-7\">\n          {isRecruitment ? (\n            <RecruitmentPositionsCard\n              positions={draft.positions}\n              setDraft={setDraft}\n              updatePosition={updatePosition}\n              employees={employees}\n            />\n          ) : null}\n          <WorkflowStepsCard draft={draft} setDraft={setDraft} updateStep={updateStep} employees={employees} />\n        </div>\n      </div>\n    </div>\n  );\n}",
+      "StartLine": 838,
+      "TargetContent": "        <div className=\"space-y-4\">\n          {isRecruitment ? (\n            <RecruitmentPositionsCard\n              positions={draft.positions}\n              setDraft={setDraft}\n              updatePosition={updatePosition}\n              employees={employees}\n            />\n          ) : null}\n          <WorkflowStepsCard draft={draft} setDraft={setDraft} updateStep={updateStep} employees={employees} />\n        </div>\n      </div>\n\n      {/* Sticky footer for saving */}\n      <div className=\"sticky bottom-0 z-10 -mx-4 mt-8 border-t border-slate-200 bg-white p-4 shadow-top\">\n        <div className=\"mx-auto flex max-w-7xl justify-end\">\n          <Button type=\"button\" size=\"lg\" onClick={saveWorkflow}>\n            <Save className=\"mr-1.5 h-4 w-4\" />\n            Lưu quy trình\n          </Button>\n        </div>\n      </div>\n    </div>\n  );\n}"
+    },
+    {
+      "AllowMultiple": false,
+      "EndLine": 918,
+      "ReplacementContent": "  return (\n    <div className=\"rounded-card border border-slate-200 bg-white p-4 shadow-soft\">\n      <div className=\"mb-3 flex flex-wrap items-center justify-between gap-2\">",
+      "StartLine": 916,
+      "TargetContent": "  return (\n    <div className=\"rounded-card border border-slate-200 bg-white p-4 shadow-soft xl:col-span-7\">\n      <div className=\"mb-3 flex flex-wrap items-center justify-between gap-2\">"
+    }
+  ],
+  "TargetFile": "d:\\xevn-ecosystem\\apps\\web\\hrm\\src\\components\\settings\\WorkflowConfigSettingsPanel.tsx",
+  "toolAction": "Fix right column container layout",
+  "toolSummary": "Fix right column container"
+}
+
+---
+
+{
+  "CodeContent": "const fs = require('fs');\n\nlet content = fs.readFileSync('apps/web/hrm/src/components/settings/WorkflowConfigSettingsPanel.tsx', 'utf8');\n\n// Add xl:col-span-7 to right column wrapper\ncontent = content.replace(\n  /<div className=\"space-y-4\">\\s*\\{isRecruitment \\? \\(\\s*<RecruitmentPositionsCard/,\n  `<div className=\"space-y-4 xl:col-span-7\">\\n          {isRecruitment ? (\\n            <RecruitmentPositionsCard`\n);\n\n// Remove sticky footer\nconst footerStr = `      {/* Sticky footer for saving */}\n      <div className=\"sticky bottom-0 z-10 -mx-4 mt-8 border-t border-slate-200 bg-white p-4 shadow-top\">\n        <div className=\"mx-auto flex max-w-7xl justify-end\">\n          <Button type=\"button\" size=\"lg\" onClick={saveWorkflow}>\n            <Save className=\"mr-1.5 h-4 w-4\" />\n            Lưu quy trình\n          </Button>\n        </div>\n      </div>`;\ncontent = content.replace(footerStr, '');\n\nfs.writeFileSync('apps/web/hrm/src/components/settings/WorkflowConfigSettingsPanel.tsx', content);\nconsole.log('Successfully fixed right column and removed footer');\n",
+  "Description": "Fix column layout and remove footer",
+  "Overwrite": true,
+  "TargetFile": "d:\\xevn-ecosystem\\scratch\\update_layout_4.js",
+  "toolAction": "Create fixing script",
+  "toolSummary": "Create fixing script"
+}
+
+---
+
+{
+  "CommandLine": "node -e \"\nconst fs = require('fs');\nconst readline = require('readline');\nconst path = 'C:/Users/admin/.gemini/antigravity-ide/brain/4cf3d852-f06d-438c-84d3-f982a9db4bc8/.system_generated/logs/transcript_full.jsonl';\n\nconst rl = readline.createInterface({\n  input: fs.createReadStream(path),\n  crlfDelay: Infinity\n});\n\nrl.on('line', (line) => {\n  if (line.includes('RecruitmentPositionsCard') && line.includes('TargetFile')) {\n    const data = JSON.parse(line);\n    if (data.type === 'PLANNER_RESPONSE' && data.tool_calls) {\n      data.tool_calls.forEach(tc => {\n        if (JSON.stringify(tc.args).includes('RecruitmentPositionsCard')) {\n          fs.appendFileSync('scratch/found_positions.txt', JSON.stringify(tc.args, null, 2) + '\\n\\n---\\n\\n');\n        }\n      });\n    }\n  }\n});\n\"",
+  "Cwd": "d:\\xevn-ecosystem",
+  "WaitMsBeforeAsync": 3000,
+  "toolAction": "Extract RecruitmentPositionsCard from transcript",
+  "toolSummary": "Extract RecruitmentPositionsCard"
+}
+
+---
+

@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, type Dispatch, type SetStateAction } from 'react';
+import { useMemo, useState, type Dispatch, type SetStateAction } from 'react';
 import { ArrowLeft, Copy, Eye, Plus, Save, Trash2, CalendarIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -407,7 +406,8 @@ function persistState(types: WorkflowType[], workflows: WorkflowConfig[]) {
 }
 
 function personLabel(personId: string) {
-  return personId || 'Chưa chọn';
+  const person = PEOPLE_OPTIONS.find((item) => item.id === personId);
+  return person ? `${person.name} - ${person.title}` : 'Chưa chọn';
 }
 
 const EMPLOYMENT_TYPES = [
@@ -427,30 +427,6 @@ export function WorkflowConfigSettingsPanel() {
   const initial = useMemo(() => readStoredState(), []);
   const [workflowTypes, setWorkflowTypes] = useState<WorkflowType[]>(initial.types);
   const [workflows, setWorkflows] = useState<WorkflowConfig[]>(initial.workflows);
-  
-  const [customActions, setCustomActions] = useState<{ id: string; name: string }[]>(() => {
-    const saved = localStorage.getItem('hrm_workflow_custom_actions');
-    return saved ? JSON.parse(saved) : [
-      { id: 'phe_duyet', name: 'Phê duyệt' },
-      { id: 'ky_duyet', name: 'Ký duyệt' },
-      { id: 'nhap_lieu', name: 'Nhập liệu' }
-    ];
-  });
-  
-  const saveCustomActions = (newActions: { id: string; name: string }[]) => {
-    setCustomActions(newActions);
-    localStorage.setItem('hrm_workflow_custom_actions', JSON.stringify(newActions));
-  };
-
-  const [newActionId, setNewActionId] = useState('');
-  const [newActionName, setNewActionName] = useState('');
-  const addAction = () => {
-    if (!newActionId || !newActionName) return;
-    saveCustomActions([...customActions, { id: newActionId, name: newActionName }]);
-    setNewActionId('');
-    setNewActionName('');
-  };
-
   const [view, setView] = useState<'list' | 'detail'>('list');
   const [draft, setDraft] = useState<WorkflowDraft>(() => emptyDraft(initial.types));
   const [typeDialogOpen, setTypeDialogOpen] = useState(false);
@@ -607,7 +583,7 @@ export function WorkflowConfigSettingsPanel() {
       .map((step, index) => ({
         ...step,
         name: step.name.trim() || `Bước ${index + 1}`,
-        ownerPersonId: step.ownerPersonId || '',
+        ownerPersonId: step.ownerPersonId || PEOPLE_OPTIONS[0]?.id || '',
         condition: step.condition.trim(),
         requiredInfo: step.requiredInfo.trim(),
         slaHours: step.slaHours.replace(/\D/g, '') || '24',
@@ -665,15 +641,9 @@ export function WorkflowConfigSettingsPanel() {
 
   if (view === 'list') {
     return (
-      <Tabs defaultValue="workflows" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="workflows">Danh sách quy trình</TabsTrigger>
-          <TabsTrigger value="action-types">Danh mục Hành động bước</TabsTrigger>
-        </TabsList>
-        <TabsContent value="workflows" className="space-y-4">
-          <div className="space-y-4" data-testid="settings-workflow-config">
-            <div className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
-              <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="space-y-4" data-testid="settings-workflow-config">
+        <div className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Cấu hình quy trình</h2>
               <p className="mt-1 text-sm text-slate-600">
@@ -737,58 +707,6 @@ export function WorkflowConfigSettingsPanel() {
           </Table>
         </div>
       </div>
-        </TabsContent>
-        <TabsContent value="action-types" className="space-y-4">
-          <div className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Danh mục Hành động bước</h2>
-            
-            <div className="flex items-end gap-4 mb-6">
-              <div className="space-y-1.5 flex-1">
-                <Label>Mã hành động (ID)</Label>
-                <Input value={newActionId} onChange={e => setNewActionId(e.target.value)} placeholder="VD: tham_dinh" />
-              </div>
-              <div className="space-y-1.5 flex-1">
-                <Label>Tên hiển thị</Label>
-                <Input value={newActionName} onChange={e => setNewActionName(e.target.value)} placeholder="VD: Thẩm định" />
-              </div>
-              <Button onClick={addAction}>
-                <Plus className="w-4 h-4 mr-2" />
-                Thêm hành động
-              </Button>
-            </div>
-
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Mã hành động (ID)</TableHead>
-                  <TableHead>Tên hiển thị</TableHead>
-                  <TableHead className="w-[100px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {customActions.map(action => (
-                  <TableRow key={action.id}>
-                    <TableCell className="font-medium text-slate-500">{action.id}</TableCell>
-                    <TableCell>{action.name}</TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon" className="text-red-500" onClick={() => saveCustomActions(customActions.filter(a => a.id !== action.id))}>
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {customActions.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center py-6 text-slate-500">
-                      Chưa có hành động nào
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </TabsContent>
-      </Tabs>
     );
   }
 
@@ -821,8 +739,8 @@ export function WorkflowConfigSettingsPanel() {
         </div>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
-        <div className="space-y-4 xl:col-span-5">
+      <div className="grid items-start gap-4 xl:grid-cols-2">
+        <div className="space-y-4">
           <div className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
             <p className="mb-3 text-sm font-semibold text-slate-900">Thông tin chính</p>
             <div className="grid gap-4 md:grid-cols-2">
@@ -910,7 +828,7 @@ export function WorkflowConfigSettingsPanel() {
           <WorkflowFieldsCard draft={draft} setDraft={setDraft} updateField={updateField} />
         </div>
 
-        <div className="space-y-4 xl:col-span-7">
+        <div className="space-y-4">
           {isRecruitment ? (
             <RecruitmentPositionsCard
               positions={draft.positions}
@@ -919,12 +837,19 @@ export function WorkflowConfigSettingsPanel() {
               employees={employees}
             />
           ) : null}
-          <WorkflowStepsCard draft={draft} setDraft={setDraft} updateStep={updateStep} employees={employees} customActions={customActions} />
+          <WorkflowStepsCard draft={draft} setDraft={setDraft} updateStep={updateStep} employees={employees} />
         </div>
       </div>
 
       {/* Sticky footer for saving */}
-
+      <div className="sticky bottom-0 z-10 -mx-4 mt-8 border-t border-slate-200 bg-white p-4 shadow-top">
+        <div className="mx-auto flex max-w-7xl justify-end">
+          <Button type="button" size="lg" onClick={saveWorkflow}>
+            <Save className="mr-1.5 h-4 w-4" />
+            Lưu quy trình
+          </Button>
+        </div>
+      </div>
 
       <TypeDialog
         open={typeDialogOpen}
@@ -971,16 +896,22 @@ function RecruitmentPositionsCard({
     queryKey: ['jd_templates_for_workflow', currentCompanyId],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      return hrmApi.getJDTemplates(currentCompanyId, { is_active: true });
+      const res = await listJobDescriptionTemplates({
+        company_id: currentCompanyId,
+        status: 'active',
+      });
+      return res.data || [];
     },
     enabled: !!currentCompanyId,
   });
 
-  const jdOptions = useMemo(() => jdTemplates.map(jd => ({
-    value: jd.id,
-    label: jd.title,
-    description: jd.department?.name
-  })), [jdTemplates]);
+  const jdOptions = useMemo(() => {
+    return jdTemplates.map(tpl => ({
+      value: tpl.id,
+      label: tpl.title || tpl.code,
+      code: tpl.code
+    }));
+  }, [jdTemplates]);
 
   return (
     <div className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
@@ -999,6 +930,7 @@ function RecruitmentPositionsCard({
           Thêm vị trí
         </Button>
       </div>
+
       <div className="space-y-3">
         {positions.map((position, index) => (
           <div key={position.id} className="rounded-input border border-slate-200 p-3">
@@ -1009,156 +941,166 @@ function RecruitmentPositionsCard({
                 variant="ghost"
                 size="icon"
                 disabled={positions.length === 1}
-                onClick={() => setDraft((current) => ({ ...current, positions: current.positions.filter((item) => item.id !== position.id) }))}
+                onClick={() =>
+                  setDraft((current) => ({
+                    ...current,
+                    positions: current.positions.filter((item) => item.id !== position.id),
+                  }))
+                }
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
             <div className="grid gap-3 md:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label>Tên vị trí</Label>
-                <Select value={position.positionName} onValueChange={(value) => updatePosition(position.id, { positionName: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn vị trí" />
-                  </SelectTrigger>
-                  <SelectContent portalScope="iframe">
-                    {positionOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                    {position.positionName && !positionOptions.some(o => o.value === position.positionName) && (
-                      <SelectItem value={position.positionName}>{position.positionName}</SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Số lượng</Label>
-                <Input
-                  inputMode="numeric"
-                  value={position.quantity}
-                  placeholder="Số lượng"
-                  onChange={(event) => updatePosition(position.id, { quantity: event.target.value.replace(/\D/g, '') })}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Phòng ban</Label>
-                <Select value={position.department} onValueChange={(value) => updatePosition(position.id, { department: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn phòng ban" />
-                  </SelectTrigger>
-                  <SelectContent portalScope="iframe">
-                    <SelectItem value="ALL_COMPANY" className="font-semibold text-blue-600">Toàn công ty</SelectItem>
-                    {departments.map((option) => (
-                      <SelectItem key={option.id} value={option.id}>
-                        {option.name}
-                      </SelectItem>
-                    ))}
-                    {position.department && !departments.some(d => d.id === position.department) && position.department !== 'ALL_COMPANY' && (
-                      <SelectItem value={position.department}>{position.department}</SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>JD tiêu chuẩn</Label>
-                <CatalogSearchPicker
-                  options={jdOptions}
-                  value={position.jdTemplateId || ''}
-                  onValueChange={(val) => updatePosition(position.id, { jdTemplateId: val })}
-                  placeholder="Chọn JD mô tả công việc..."
-                  hideEmptyStateBox
-                />
-              </div>
-
-              <AssigneePicker
-                position={position}
-                updatePosition={updatePosition}
-                employees={employees}
-                departments={departments}
-                positionOptions={positionOptions}
+              <CatalogSearchPicker
+                options={positionOptions}
+                value={position.positionName}
+                onValueChange={(val) => updatePosition(position.id, { positionName: val })}
+                placeholder="Chọn hoặc nhập vị trí..."
+                allowFreeText
+              />
+              <Input
+                inputMode="numeric"
+                value={position.quantity}
+                placeholder="Số lượng"
+                onChange={(event) => updatePosition(position.id, { quantity: event.target.value.replace(/\D/g, '') })}
+              />
+              <Select value={position.department} onValueChange={(value) => updatePosition(position.id, { department: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Chọn phòng ban" />
+                </SelectTrigger>
+                <SelectContent portalScope="iframe">
+                  <SelectItem value="ALL_COMPANY" className="font-semibold text-blue-600">Toàn công ty</SelectItem>
+                  {departments.map((option) => (
+                    <SelectItem key={option.id} value={option.id}>
+                      {option.name}
+                    </SelectItem>
+                  ))}
+                  {departments.length === 0 && (
+                    <SelectItem value="EMPTY_DEPT" disabled>
+                      Không có dữ liệu
+                    </SelectItem>
+                  )}
+                  {/* Fallback for existing data */}
+                  {position.department && !departments.some(d => d.id === position.department) && position.department !== 'ALL_COMPANY' && (
+                    <SelectItem value={position.department}>{DEPARTMENT_OPTIONS.includes(position.department) ? position.department : position.department}</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+              <CatalogSearchPicker
+                options={jdOptions}
+                value={position.jdTemplateId || ''}
+                onValueChange={(val) => updatePosition(position.id, { jdTemplateId: val })}
+                placeholder="Chọn JD mô tả công việc..."
+                hideEmptyStateBox
               />
 
-              
-              <div className="space-y-1.5">
-                <Label>Loại hình</Label>
-                <Select value={position.employmentType || 'full-time'} onValueChange={(val) => updatePosition(position.id, { employmentType: val })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn loại hình" />
-                  </SelectTrigger>
-                  <SelectContent portalScope="iframe">
-                    {EMPLOYMENT_TYPES.map(type => (
-                      <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Định biên / Ngoại biên</Label>
-                <Select value={position.staffingType || 'within_budget'} onValueChange={(val) => updatePosition(position.id, { staffingType: val })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Định biên / Ngoại biên" />
-                  </SelectTrigger>
-                  <SelectContent portalScope="iframe">
-                    {STAFFING_TYPES.map(type => (
-                      <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Hạn nộp hồ sơ</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !position.deadlineDate && "text-slate-500"
+              {/* Người chịu trách nhiệm — lọc theo chức danh đồng bộ với approverRole */}
+              {(() => {
+                const resolvedRole = position.approverRole || resolveApproverRole(position.level);
+                const filteredEmployees = filterEmployeesByApproverRole(employees, resolvedRole);
+                const isFiltered = filteredEmployees.length < employees.length;
+                return (
+                  <Select
+                    value={position.responsiblePersonId}
+                    onValueChange={(value) => updatePosition(position.id, { responsiblePersonId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={isFiltered ? `Người chịu trách nhiệm (${resolvedRole})` : 'Người chịu trách nhiệm'} />
+                    </SelectTrigger>
+                    <SelectContent portalScope="iframe">
+                      {filteredEmployees.map((person) => (
+                        <SelectItem key={person.id} value={person.id}>
+                          {person.full_name}{person.job_title ? ` (${person.job_title})` : ''}
+                        </SelectItem>
+                      ))}
+                      {filteredEmployees.length === 0 && (
+                        <SelectItem value="EMPTY_EMP" disabled>Không có dữ liệu</SelectItem>
                       )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {position.deadlineDate ? format(new Date(position.deadlineDate), "dd/MM/yyyy") : "Hạn nộp hồ sơ"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={position.deadlineDate ? new Date(position.deadlineDate) : undefined}
-                      onSelect={(date) => updatePosition(position.id, { deadlineDate: date ? date.toISOString() : '' })}
-                      disabled={(date) => {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        return date < today;
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div className="space-y-1.5 col-span-full md:col-span-1">
-                <Label>Lương tối thiểu / Tối đa (VNĐ)</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium select-none">VNĐ</span>
-                    <ViMoneyInput
-                      className="pl-10"
-                      value={Number(position.salaryMin) || 0}
-                      placeholder="Lương tối thiểu"
-                      onValueChange={(val) => updatePosition(position.id, { salaryMin: val ? val.toString() : '' })}
-                    />
-                  </div>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium select-none">VNĐ</span>
-                    <ViMoneyInput
-                      className="pl-10"
-                      value={Number(position.salaryMax) || 0}
-                      placeholder="Lương tối đa"
-                      onValueChange={(val) => updatePosition(position.id, { salaryMax: val ? val.toString() : '' })}
-                    />
-                  </div>
+                      {/* Hiển thị người đã lưu nếu không còn trong danh sách lọc */}
+                      {position.responsiblePersonId &&
+                        !filteredEmployees.some(e => e.id === position.responsiblePersonId) && (
+                        <SelectItem value={position.responsiblePersonId}>
+                          {employees.find(e => e.id === position.responsiblePersonId)?.full_name ||
+                            PEOPLE_OPTIONS.find(p => p.id === position.responsiblePersonId)?.name ||
+                            position.responsiblePersonId}
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                );
+              })()}
+              <Input value={position.approverRole || resolveApproverRole(position.level)} readOnly />
+              <Select value={position.employmentType || 'full-time'} onValueChange={(val) => updatePosition(position.id, { employmentType: val })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Chọn loại hình" />
+                </SelectTrigger>
+                <SelectContent portalScope="iframe">
+                  {EMPLOYMENT_TYPES.map(type => (
+                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={position.staffingType || 'within_budget'} onValueChange={(val) => updatePosition(position.id, { staffingType: val })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Định biên / Ngoại biên" />
+                </SelectTrigger>
+                <SelectContent portalScope="iframe">
+                  {STAFFING_TYPES.map(type => (
+                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !position.deadlineDate && "text-slate-500"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {position.deadlineDate ? format(new Date(position.deadlineDate), "dd/MM/yyyy") : "Hạn nộp hồ sơ"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={position.deadlineDate ? new Date(position.deadlineDate) : undefined}
+                    onSelect={(date) => updatePosition(position.id, { deadlineDate: date ? date.toISOString() : '' })}
+                    disabled={(date) => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      return date < today;
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              {/* Lương tối thiểu và tối đa */}
+              <div className="grid grid-cols-2 gap-3 col-span-full md:col-span-1">
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium select-none">VNĐ</span>
+                  <ViMoneyInput
+                    className="pl-10"
+                    value={Number(position.salaryMin) || 0}
+                    placeholder="Lương tối thiểu"
+                    onValueChange={(val) => {
+                      updatePosition(position.id, { salaryMin: val ? val.toString() : '' });
+                    }}
+                  />
+                </div>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium select-none">VNĐ</span>
+                  <ViMoneyInput
+                    className="pl-10"
+                    value={Number(position.salaryMax) || 0}
+                    placeholder="Lương tối đa"
+                    onValueChange={(val) => {
+                      updatePosition(position.id, { salaryMax: val ? val.toString() : '' });
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -1226,305 +1168,111 @@ function WorkflowStepsCard({
   setDraft,
   updateStep,
   employees,
-  customActions,
 }: {
   draft: WorkflowDraft;
   setDraft: DraftSetter;
   updateStep: (id: string, patch: Partial<WorkflowStep>) => void;
   employees: Array<{ id: string; full_name: string; job_title?: string; department_id?: string }>;
-  customActions: { id: string; name: string }[];
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingStep, setEditingStep] = useState<WorkflowStep | null>(null);
-
-  const handleEdit = (step: WorkflowStep) => {
-    setEditingStep(step);
-    setIsModalOpen(true);
-  };
-
-  const handleAdd = () => {
-    setEditingStep(null);
-    setIsModalOpen(true);
-  };
-
-  const handleSaveModal = (stepData: WorkflowStep) => {
-    if (editingStep) {
-      // Update existing
-      updateStep(stepData.id, stepData);
-    } else {
-      // Add new
-      setDraft(current => ({
-        ...current,
-        steps: [...current.steps, stepData]
-      }));
-    }
-    setIsModalOpen(false);
-  };
-
-  const deleteStep = (id: string) => {
-    setDraft(current => ({
-      ...current,
-      steps: current.steps.filter(s => s.id !== id)
-    }));
-  };
-
+  const TGD_STEP_MARKER = '__TGD_APPROVAL__';
   return (
     <div className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-sm font-semibold text-slate-900">Các bước, điều kiện và thông tin</p>
-          <p className="text-xs text-slate-500">Sơ đồ luồng xử lý của quy trình này.</p>
+          <p className="text-xs text-slate-500">Người phụ trách là nhân sự cụ thể, hiển thị kèm chức danh.</p>
         </div>
-        <Button type="button" variant="outline" size="sm" onClick={handleAdd}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setDraft((current) => ({ ...current, steps: [...current.steps, emptyStep()] }))}
+        >
           <Plus className="mr-1.5 h-4 w-4" />
           Thêm bước
         </Button>
       </div>
-
       <div className="space-y-3">
-        {draft.steps.map((step, index) => {
-          const actionName = customActions?.find(a => a.id === step.actionType)?.name || step.actionType || 'Chưa chọn';
-          
-          return (
-            <div key={step.id} className="relative flex items-center gap-4 rounded-lg border border-slate-200 p-4 hover:border-blue-300 hover:bg-blue-50/50 transition-colors">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
-                {index + 1}
-              </div>
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-[2fr_1fr_2fr_1fr] gap-4 items-center">
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">{step.name || `Bước ${index + 1}`}</p>
-                </div>
-                <div>
-                  <Badge variant="outline" className="bg-white text-xs">{actionName}</Badge>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 line-clamp-2">{step.condition || 'Không có điều kiện'}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-slate-700">{step.slaHours} giờ (SLA)</p>
-                </div>
-              </div>
-              <div className="flex shrink-0 gap-2">
-                <Button type="button" variant="ghost" size="icon" onClick={() => handleEdit(step)} className="h-8 w-8 text-slate-500 hover:text-blue-600">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                </Button>
-                <Button type="button" variant="ghost" size="icon" onClick={() => deleteStep(step.id)} disabled={draft.steps.length === 1} className="h-8 w-8 text-slate-400 hover:text-red-600">
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
+        {draft.steps.map((step, index) => (
+          <div key={step.id} className="rounded-input border border-slate-200 p-3">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-sm font-semibold text-slate-800">Bước {index + 1}</p>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                disabled={draft.steps.length === 1}
+                onClick={() => setDraft((current) => ({ ...current, steps: draft.steps.filter((item) => item.id !== step.id) }))}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
-          );
-        })}
+            <div className="grid gap-3 md:grid-cols-2">
+              <Input value={step.name} placeholder="Tên bước" onChange={(event) => updateStep(step.id, { name: event.target.value })} />
+              <Select
+                value={step.ownerPersonId}
+                onValueChange={(value) => updateStep(step.id, { ownerPersonId: value })}
+                disabled={step.condition === TGD_STEP_MARKER}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Chọn người phụ trách" />
+                </SelectTrigger>
+                <SelectContent portalScope="iframe">
+                  {employees.map((person) => (
+                    <SelectItem key={person.id} value={person.id}>
+                      {person.full_name}{person.job_title ? ` (${person.job_title})` : ''}
+                    </SelectItem>
+                  ))}
+                  {employees.length === 0 && (
+                    <SelectItem value="EMPTY_EMP" disabled>Không có dữ liệu</SelectItem>
+                  )}
+                  {/* Fallback for existing saved person not in list */}
+                  {step.ownerPersonId && !employees.some(e => e.id === step.ownerPersonId) && (
+                    <SelectItem value={step.ownerPersonId}>
+                      {PEOPLE_OPTIONS.find(p => p.id === step.ownerPersonId)?.name || step.ownerPersonId}
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+              <Textarea
+                className="min-h-20"
+                value={step.condition === TGD_STEP_MARKER ? '' : step.condition}
+                placeholder="Điều kiện"
+                readOnly={step.condition === TGD_STEP_MARKER}
+                onChange={(event) => updateStep(step.id, { condition: event.target.value })}
+              />
+              <Textarea
+                className="min-h-20"
+                value={step.requiredInfo}
+                placeholder="Thông tin cần có"
+                onChange={(event) => updateStep(step.id, { requiredInfo: event.target.value })}
+              />
+              <Input
+                inputMode="numeric"
+                value={step.slaHours}
+                placeholder="SLA giờ"
+                onChange={(event) => updateStep(step.id, { slaHours: event.target.value.replace(/\D/g, '') })}
+              />
+              <Input
+                value={(() => {
+                  if (!step.ownerPersonId) {
+                    return step.condition === TGD_STEP_MARKER ? 'Tổng giám đốc (tự động)' : 'Chưa chọn';
+                  }
+                  const emp = employees.find(e => e.id === step.ownerPersonId);
+                  if (emp) return emp.job_title ? `${emp.full_name} (${emp.job_title})` : emp.full_name;
+                  const legacy = PEOPLE_OPTIONS.find(p => p.id === step.ownerPersonId);
+                  if (legacy) return `${legacy.name} (${legacy.title})`;
+                  return step.ownerPersonId;
+                })()}
+                readOnly
+              />
+            </div>
+          </div>
+        ))}
       </div>
-
-      <WorkflowStepModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        initialData={editingStep}
-        onSave={handleSaveModal}
-        employees={employees}
-        stepCount={draft.steps.length}
-        customActions={customActions}
-      />
     </div>
   );
 }
-
-function WorkflowStepModal({
-  isOpen,
-  onClose,
-  initialData,
-  onSave,
-  employees,
-  stepCount,
-  customActions,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  initialData: WorkflowStep | null;
-  onSave: (data: WorkflowStep) => void;
-  employees: Array<{ id: string; full_name: string; job_title?: string; department_id?: string }>;
-  stepCount: number;
-  customActions: { id: string; name: string }[];
-}) {
-  const [formData, setFormData] = useState<WorkflowStep>(() => ({
-    id: `step-${Date.now()}`,
-    name: '',
-    ownerPersonId: '',
-    condition: '',
-    requiredInfo: '',
-    slaHours: '24',
-    actionType: customActions?.[0]?.id || 'phe_duyet',
-    allowReject: false,
-    minContractValue: '',
-  }));
-
-  const [filterDept, setFilterDept] = useState('ALL');
-  const [filterTitle, setFilterTitle] = useState('ALL');
-
-  useEffect(() => {
-    if (isOpen) {
-      setFormData(initialData || {
-        id: `step-${Date.now()}`,
-        name: '',
-        ownerPersonId: '',
-        condition: '',
-        requiredInfo: '',
-        slaHours: '24',
-        actionType: customActions?.[0]?.id || 'phe_duyet',
-        allowReject: false,
-        minContractValue: '',
-      });
-      setFilterDept('ALL');
-      setFilterTitle('ALL');
-    }
-  }, [isOpen, initialData, customActions]);
-
-  const filteredEmployees = useMemo(() => {
-    return employees.filter(e => {
-      if (filterDept !== 'ALL' && e.department_id !== filterDept) return false;
-      if (filterTitle !== 'ALL' && e.job_title !== filterTitle) return false;
-      return true;
-    });
-  }, [employees, filterDept, filterTitle]);
-
-  if (!isOpen) return null;
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden" data-testid="settings-workflow-step-modal">
-        <DialogHeader className="px-6 py-4 border-b border-slate-100 flex flex-row items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-5 w-1.5 bg-blue-600 rounded"></div>
-            <DialogTitle className="text-lg text-slate-800">{initialData ? 'Chỉnh sửa bước' : 'Thêm bước mới'}</DialogTitle>
-          </div>
-        </DialogHeader>
-
-        <div className="p-6 grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6 bg-slate-50/30">
-          <div className="space-y-4">
-            <div className="grid grid-cols-[3fr_1fr] gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-red-500 font-medium">Tên bước *</Label>
-                <Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="VD: Xét duyệt, Ký số..." className="bg-white" />
-              </div>
-              <div className="space-y-1.5">
-                <Label>Thứ tự</Label>
-                <Input value={initialData ? undefined : stepCount + 1} readOnly className="bg-slate-100 text-center" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-red-500 font-medium">Hành động *</Label>
-                <Select value={formData.actionType} onValueChange={v => setFormData({...formData, actionType: v})}>
-                  <SelectTrigger className="bg-white"><SelectValue placeholder="Chọn hành động" /></SelectTrigger>
-                  <SelectContent portalScope="iframe">
-                    {customActions.map(action => (
-                      <SelectItem key={action.id} value={action.id}>{action.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Thời hạn (giờ)</Label>
-                <Input value={formData.slaHours} onChange={e => setFormData({...formData, slaHours: e.target.value.replace(/\D/g, '')})} className="bg-white" />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-red-500 font-medium">Người thực hiện chính *</Label>
-              <div className="grid grid-cols-3 gap-2">
-                <Select value={filterDept} onValueChange={v => { setFilterDept(v); setFilterTitle('ALL'); }}>
-                  <SelectTrigger className="bg-white"><SelectValue placeholder="Phòng ban" /></SelectTrigger>
-                  <SelectContent portalScope="iframe">
-                    <SelectItem value="ALL">Tất cả phòng ban</SelectItem>
-                    {Array.from(new Set(employees.map(e => e.department_id).filter(Boolean))).map(d => (
-                      <SelectItem key={d} value={d}>{d}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={filterTitle} onValueChange={setFilterTitle}>
-                  <SelectTrigger className="bg-white"><SelectValue placeholder="Chức danh" /></SelectTrigger>
-                  <SelectContent portalScope="iframe">
-                    <SelectItem value="ALL">Tất cả chức danh</SelectItem>
-                    {Array.from(new Set(employees.filter(e => filterDept === 'ALL' || e.department_id === filterDept).map(e => e.job_title).filter(Boolean))).map(t => (
-                      <SelectItem key={t} value={t}>{t}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={formData.ownerPersonId} onValueChange={v => setFormData({...formData, ownerPersonId: v})}>
-                  <SelectTrigger className="bg-white"><SelectValue placeholder="Người thực hiện" /></SelectTrigger>
-                  <SelectContent portalScope="iframe">
-                    {filteredEmployees.map((person) => (
-                      <SelectItem key={person.id} value={person.id}>
-                        {person.full_name}{person.job_title ? ` (${person.job_title})` : ''}
-                      </SelectItem>
-                    ))}
-                    {filteredEmployees.length === 0 && <SelectItem value="EMPTY_EMP" disabled>Không có dữ liệu</SelectItem>}
-                    {formData.ownerPersonId && !filteredEmployees.some(e => e.id === formData.ownerPersonId) && (
-                      <SelectItem value={formData.ownerPersonId}>
-                        {employees.find(e => e.id === formData.ownerPersonId)?.full_name || formData.ownerPersonId}
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Điều kiện kích hoạt (mô tả)</Label>
-              <Textarea 
-                value={formData.condition} 
-                onChange={e => setFormData({...formData, condition: e.target.value})}
-                placeholder="VD: Áp dụng khi giá trị hợp đồng > 1 tỷ đồng"
-                className="bg-white min-h-[80px]"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Giá trị hợp đồng tối thiểu (VNĐ)</Label>
-              <Input 
-                value={formData.minContractValue} 
-                onChange={e => setFormData({...formData, minContractValue: e.target.value.replace(/\D/g, '')})}
-                placeholder="Ví dụ: 1000000000" 
-                className="bg-white" 
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="border border-red-100 bg-red-50/50 rounded-lg p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex gap-2">
-                  <div className="mt-0.5 text-red-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-red-700">Từ chối</p>
-                    <p className="text-xs text-red-600/80 mt-0.5 leading-snug">Cho phép người xử lý từ chối và trả về bước trước</p>
-                  </div>
-                </div>
-                <Switch 
-                  checked={formData.allowReject} 
-                  onCheckedChange={checked => setFormData({...formData, allowReject: checked})} 
-                  className="data-[state=checked]:bg-red-500"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="px-6 py-4 border-t border-slate-100 flex justify-end gap-3 bg-white">
-          <Button variant="outline" onClick={onClose} className="border-slate-200">Hủy</Button>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => onSave(formData)}>
-            {initialData ? 'Cập nhật' : 'Lưu bước'}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 
 type TypeDialogProps = {
   open: boolean;

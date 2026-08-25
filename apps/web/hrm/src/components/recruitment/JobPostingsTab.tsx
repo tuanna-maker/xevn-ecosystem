@@ -240,7 +240,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
   const statusOptions = [
     { value: 'all', label: t('recruitment.jt.statuses.all') },
     { value: 'active', label: t('recruitment.jt.statuses.active') },
-    { value: 'pending_approval', label: t('recruitment.jt.statuses.pendingApproval') || 'Chờ duyệt' },
+    { value: 'pending_approval', label: t('recruitment.jt.statuses.pendingApproval', 'Chờ duyệt') },
     { value: 'draft', label: t('recruitment.jt.statuses.draft') },
     { value: 'paused', label: t('recruitment.jt.statuses.paused') },
     { value: 'closed', label: t('recruitment.jt.statuses.closed') },
@@ -268,7 +268,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
       case 'draft':
         return <Badge className="border-0 bg-xevn-neutral/15 text-xevn-textSecondary hover:bg-xevn-neutral/15">{t('recruitment.jt.statuses.draft')}</Badge>;
       case 'pending_approval':
-        return <Badge className="border-0 bg-warning/15 text-warning hover:bg-warning/15">{t('recruitment.jt.statuses.pendingApproval') || 'Chờ duyệt'}</Badge>;
+        return <Badge className="border-0 bg-warning/15 text-warning hover:bg-warning/15">{t('recruitment.jt.statuses.pendingApproval', 'Chờ duyệt')}</Badge>;
       case 'paused':
         return <Badge className="border-0 bg-warning/15 text-warning hover:bg-warning/15">{t('recruitment.jt.statuses.paused')}</Badge>;
       case 'closed':
@@ -1308,7 +1308,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
                             </FormControl>
                             <SelectContent>
                               <SelectItem value="draft">{t('recruitment.jt.statuses.draft')}</SelectItem>
-                              <SelectItem value="pending_approval">{t('recruitment.jt.statuses.pendingApproval') || 'Chờ duyệt'}</SelectItem>
+                              <SelectItem value="pending_approval">{t('recruitment.jt.statuses.pendingApproval', 'Chờ duyệt')}</SelectItem>
                               <SelectItem value="active">{t('recruitment.jt.statuses.active')}</SelectItem>
                               <SelectItem value="paused">{t('recruitment.jt.statuses.paused')}</SelectItem>
                               <SelectItem value="closed">{t('recruitment.jt.statuses.closed')}</SelectItem>

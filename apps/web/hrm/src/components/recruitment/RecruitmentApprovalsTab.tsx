@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ClipboardCheck, Loader2, Check, X, ExternalLink, CalendarClock } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useJobRequisitions } from '@/hooks/useJobRequisitions';
-import { useJobPostings } from '@/hooks/useJobPostings';
 import { format } from 'date-fns';
 import { resolveWorkflowInstanceDisplay } from '@/lib/labelMaps';
-import { updateJobRequisition, updateJobPosting } from '@/integrations/hrmApi';
+import { updateJobRequisition, updateJobPosting, listJobPostings } from '@/integrations/hrmApi';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,8 +17,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 export function RecruitmentApprovalsTab() {
   const { t } = useTranslation();
   const { requisitions, refetch: refetchReqs, loading: reqsLoading } = useJobRequisitions();
-  const { jobs: jobPostings, refetch: refetchJobs, isLoading: jobsLoading } = useJobPostings();
   const { currentCompanyId } = useAuth();
+  
+  const { data: jobPostingsData, refetch: refetchJobs, isLoading: jobsLoading } = useQuery({
+    queryKey: ['jobPostings', currentCompanyId],
+    queryFn: async () => {
+      if (!currentCompanyId) return { data: [], total: 0 };
+      return listJobPostings(currentCompanyId, { limit: 1000 });
+    },
+    enabled: !!currentCompanyId,
+  });
+  const jobPostings = jobPostingsData?.data ?? [];
   const { toast } = useToast();
   
   const [approvingId, setApprovingId] = useState<string | null>(null);

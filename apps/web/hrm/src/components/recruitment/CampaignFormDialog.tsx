@@ -50,7 +50,7 @@ const createSchema = (t: (key: string) => string) =>
     status: z.string().min(1, t('camForm.val.statusRequired')),
     start_date: z.date({ required_error: t('camForm.val.startDateRequired') }),
     end_date: z.date().optional().nullable(),
-    owner_name: z.string().optional(),
+    owner_id: z.string().optional(),
     follower_name: z.string().optional(),
     position: z.string().optional(),
     title: z.string().optional(),
@@ -74,6 +74,7 @@ interface Campaign {
   start_date: string;
   end_date?: string | null;
   owner_name?: string | null;
+  owner_id?: string | null;
   follower_name?: string | null;
   position?: string | null;
   title?: string | null;
@@ -140,13 +141,24 @@ export function CampaignFormDialog({
     defaultValues: {
       name: '', description: '', status: 'active',
       start_date: new Date(), end_date: null,
-      owner_name: '', follower_name: '', position: '', title: '',
+      owner_id: '', follower_name: '', position: '', title: '',
       department: '', work_type: '', location: '', evaluation_criteria: '',
       salary_level: '', quantity: 1, requirements: '', degree: '', major: '',
     },
   });
 
   useEffect(() => {
+    const fetchEmployees = async () => {
+      if (!companyId) return;
+      try {
+        const response = await listEmployees({ company_id: companyId });
+        setEmployees(response.data ?? []);
+      } catch (error) {
+        console.error('Error fetching employees:', error);
+      }
+    };
+    fetchEmployees();
+
     const fetchDepartments = async () => {
       if (!companyId) return;
       try {
@@ -171,7 +183,7 @@ export function CampaignFormDialog({
         status: campaign.status,
         start_date: campaign.start_date ? new Date(campaign.start_date) : new Date(),
         end_date: campaign.end_date ? new Date(campaign.end_date) : null,
-        owner_name: campaign.owner_name || '', follower_name: campaign.follower_name || '',
+        owner_id: campaign.owner_id || '', follower_name: campaign.follower_name || '',
         position: campaign.position || '', title: campaign.title || '',
         department: campaign.department || '', work_type: campaign.work_type || '',
         location: campaign.location || '', evaluation_criteria: campaign.evaluation_criteria || '',
@@ -195,6 +207,7 @@ export function CampaignFormDialog({
     setIsSubmitting(true);
     try {
       const campaignData = {
+        owner_id: data.owner_id || undefined,
         company_id: companyId,
         title: data.title?.trim() ? data.title : data.name,
         position: data.position?.trim() ? data.position : data.name,
@@ -209,7 +222,7 @@ export function CampaignFormDialog({
         benefits: data.evaluation_criteria || undefined,
         // Keep rich campaign metadata in extra fields until BE model is expanded.
         note: [
-          data.owner_name ? `owner:${data.owner_name}` : null,
+          null,
           data.follower_name ? `follower:${data.follower_name}` : null,
           data.salary_level ? `salary:${data.salary_level}` : null,
           data.degree ? `degree:${data.degree}` : null,
@@ -234,6 +247,7 @@ export function CampaignFormDialog({
           headcount: campaignData.headcount as number | undefined,
           deadline: campaignData.deadline as string | undefined,
           status: campaignData.status as string | undefined,
+          owner_id: campaignData.owner_id as string | undefined,
         });
         toast({ title: t('common.success'), description: d('createSuccess') });
       }

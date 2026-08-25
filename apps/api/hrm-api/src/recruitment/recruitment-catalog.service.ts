@@ -610,7 +610,8 @@ export class RecruitmentCatalogService {
     await this.db.query(`
       ALTER TABLE public.job_postings
         ADD COLUMN IF NOT EXISTS jd_template_id UUID REFERENCES public.job_description_templates(id) ON DELETE SET NULL,
-        ADD COLUMN IF NOT EXISTS jd_snapshot_json JSONB;
+        ADD COLUMN IF NOT EXISTS jd_snapshot_json JSONB,
+        ADD COLUMN IF NOT EXISTS owner_id UUID;
     `);
     await this.db.query(`
       ALTER TABLE public.headcount_proposals
@@ -2102,6 +2103,7 @@ export class RecruitmentCatalogService {
         deadline = COALESCE($14::date, deadline),
         priority = COALESCE($15, priority),
         status = COALESCE($16, status),
+        owner_id = CASE WHEN $21::boolean THEN $22::uuid ELSE owner_id END,
         updated_at = NOW()
        WHERE id = $1::uuid RETURNING *;`,
       [
@@ -2125,6 +2127,8 @@ export class RecruitmentCatalogService {
         nextDepartmentKey ?? null,
         hasPositionKey,
         nextPositionKey,
+        Object.prototype.hasOwnProperty.call(payload, 'owner_id'),
+        payload.owner_id ?? null,
       ],
     );
     return res.rows[0];
