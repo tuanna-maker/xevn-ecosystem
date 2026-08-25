@@ -6,6 +6,22 @@ Global OS doctrine: `../../_vibe-team-os/MEMORY.md`. Bus vertical: `docs/program
 
 ---
 
+## Session rollup 2026-08-25 (Antigravity IDE — Sửa lỗi Scope Resolution & Tenant Data Leak trong Workflow Config)
+
+**Bối cảnh:** Sponsor cấu hình Quy trình tuyển dụng (Workflow Config) bằng quyền Group CEO nhưng chọn áp dụng cho công ty con (Tenant Visun). Xảy ra lỗi "lọt" phòng ban của Tập đoàn mẹ (Phòng CNTT) vào danh sách phòng ban của Visun, và sau đó là lỗi 409 crash toàn bộ trang khi cố gắng load danh sách Vị trí tuyển dụng và Nhân viên từ Catalog của Tenant.
+
+**Lesson Learned & Bug Fixes:**
+- **Kiến trúc Scope & Cross-Tenant:** API XeVN cho phép Group CEO "vượt rào" truy vấn `public.departments` và `public.employees` của chi nhánh bằng cách truyền `x-tenant-id = VISUN` (native cross-tenant). TUY NHIÊN, API **Settings Catalog** (`/api/hrm/settings-catalogs`) cấm tuyệt đối cross-tenant header và sẽ trả về `409 SCOPE_CONTEXT_MISMATCH` nếu `x-tenant-id` khác với JWT.
+- **Lỗi tràn Data (Data Leak):** Do Group CEO xài chung Master Catalog, nếu merge Master Catalog khi đang xem dữ liệu của chi nhánh, các phòng ban/chức danh toàn cục (ví dụ: Phòng CNTT, DRIVER) sẽ lọt vào danh sách dropdown của chi nhánh. Đã xử lý bằng cách ngắt merge catalog (`catalogRows = []`) khi Group CEO query nhánh (`companyId !== HRM_MASTER_TENANT_ID`).
+- **Fix `hrmSpreadsheetScope.ts`:**
+  - Hàm `resolveHrmSpreadsheetScope`: Cập nhật để trả về đúng `tenantId = currentCompanyId` cho Group CEO khi truy vấn dữ liệu thực tế (Phòng ban, Nhân sự).
+  - Hàm `resolveHrmSettingsCatalogScope`: Cập nhật để **luôn luôn** trả về `tenantId = HRM_MASTER_TENANT_ID` cho Group CEO để tránh crash `409` khi gọi Catalog API.
+- **Workflow Config Dropdowns (Lọc theo Tenant/Phòng ban):**
+  - **Phòng ban:** Đã lấy chính xác danh sách phòng ban thuộc Tenant hiện tại (thông qua API xuyên Tenant bằng `currentCompanyId`).
+  - **Vị trí tuyển dụng, Chức danh & Danh sách nhân viên của Người phụ trách:** Đảm bảo phải lọc chuẩn xác theo thứ bậc: Lọc theo Tenant -> Lọc theo Phòng ban -> Lọc theo Chức danh. Các dropdown này nay được trích xuất động từ danh sách nhân viên thực tế của chi nhánh/phòng ban (`employees.map(e => e.job_title)`), thay vì kéo mù toàn bộ từ Master Catalog.
+
+---
+
 ## Session rollup 2026-08-11 (Claude Code — PM takeover sau khi Cursor Claude terminal dừng)
 
 **Bối cảnh:** Cursor-side Claude terminal (đóng vai PM) dừng giữa chừng sau khi dispatch 1 loạt Task (PAY-09-CLUSTER-01, REC-01-BE-01, CORE-02-DATA-01 — xem `.cursor/team/AGENT_MESSAGE_BUS.md` tail) nhưng chưa có INTAKE/evidence cho các Task đó. Sponsor yêu cầu Claude Code tiếp quản vai PM.
