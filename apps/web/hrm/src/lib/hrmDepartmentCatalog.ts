@@ -165,10 +165,13 @@ async function loadCompanyDepartmentsOnce(companyId: string): Promise<LoadCompan
   try {
     if (isGroupCeoDepartmentRollupContext()) {
       catalogRows = await listDepartmentsFromSettingsCatalogRollup();
-    } else if (scope) {
-      catalogRows = await listDepartmentsFromSettingsCatalogForScope(scope);
     } else {
-      catalogRows = await listDepartmentsFromSettingsCatalog(companyId);
+      const catalogScope = resolveHrmSettingsCatalogScope(companyId);
+      if (catalogScope) {
+        catalogRows = await listDepartmentsFromSettingsCatalogForScope(catalogScope);
+      } else {
+        catalogRows = await listDepartmentsFromSettingsCatalog(companyId);
+      }
     }
   } catch (error) {
     catalogError = toErrorMessage(

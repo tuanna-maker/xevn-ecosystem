@@ -287,7 +287,7 @@ export class RecruitmentCatalogService {
     /** F-REC-CAT-EFF-01 — optional for legacy specs; production injects RecPipelineStageService. */
     @Optional() private readonly recPipelineStages?: RecPipelineStageService,
     @Optional() private readonly moduleRef?: ModuleRef,
-  ) {}
+  ) { }
 
   private resolveRecPipelineStages(): RecPipelineStageService | undefined {
     if (this.recPipelineStages) return this.recPipelineStages;
@@ -962,6 +962,7 @@ export class RecruitmentCatalogService {
   async createJobPosting(
     payload: CreateJobPostingDto & { jd_template_id?: string },
     authorization?: string,
+    submitterUserId?: string,
   ) {
     await this.ensureWave2Schema();
     const companyId = resolveHrmPersistCompanyIdText(
@@ -1054,7 +1055,6 @@ export class RecruitmentCatalogService {
         jdTemplateId,
         jdSnapshot !== null ? JSON.stringify(jdSnapshot) : null,
       ],
-      ],
     );
 
     const newJobPosting = res.rows[0];
@@ -1064,7 +1064,7 @@ export class RecruitmentCatalogService {
         businessType: 'hrm_job_posting' as const,
         businessId: id,
         companyId,
-        submitterUserId: payload.created_by,
+        submitterUserId,
       };
       await this.recruitmentWorkflowBridge.startRecruitmentWorkflowIfConfigured(
         wfCtx,
@@ -1084,8 +1084,8 @@ export class RecruitmentCatalogService {
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [id];
     pushCompanyIdFilter(filters, values, scope);
-    const res = await this.db.query(
-      `DELETE FROM public.job_postings WHERE ${filters.join(' AND ')} RETURNING id;`,
+    const res = await this.db.query<{ company_id: string; workflow_instance_id?: string; status?: string }>(
+      `SELECT company_id, workflow_instance_id::text AS workflow_instance_id, status FROM public.job_postings WHERE id = $1::uuid LIMIT 1;`,
       values,
     );
     if (!res.rows[0]) {
@@ -1095,6 +1095,15 @@ export class RecruitmentCatalogService {
         HttpStatus.NOT_FOUND,
       );
     }
+    this.recruitmentWorkflowBridge.assertNotLockedOrThrow(
+      res.rows[0].workflow_instance_id,
+      res.rows[0].status,
+      'job_posting',
+    );
+    await this.db.query(
+      `DELETE FROM public.job_postings WHERE id = $1::uuid;`,
+      values,
+    );
     return { id };
   }
 
@@ -1376,10 +1385,10 @@ export class RecruitmentCatalogService {
     const stageCatalog = this.resolveRecPipelineStages();
     const catalogHit = stageCatalog
       ? await stageCatalog.assertStageInEffectiveCatalog({
-          companyId: app.company_id || companyId,
-          stageKey: stage,
-          authorization,
-        })
+        companyId: app.company_id || companyId,
+        stageKey: stage,
+        authorization,
+      })
       : null;
     const hiredOutcomeKey = catalogHit?.isHiredOutcome
       ? catalogHit.stageKey
@@ -1911,19 +1920,19 @@ export class RecruitmentCatalogService {
     const writePlan =
       departments.length > 0
         ? await this.buildPlanDepartmentWritePlan(
-            existing.company_id,
-            departments,
-            {
-              planApproved,
-              allowOverride,
-              existingByNaturalKey: existingMap,
-              authorization,
-              requireTwelve: Boolean(
-                payload.require_twelve === true ||
-                payload.submit_ready === true,
-              ),
-            },
-          )
+          existing.company_id,
+          departments,
+          {
+            planApproved,
+            allowOverride,
+            existingByNaturalKey: existingMap,
+            authorization,
+            requireTwelve: Boolean(
+              payload.require_twelve === true ||
+              payload.submit_ready === true,
+            ),
+          },
+        )
         : null;
     await this.db.withTransaction(async (query) => {
       await query(
@@ -2001,7 +2010,7 @@ export class RecruitmentCatalogService {
       `SELECT * FROM public.job_postings WHERE id = $1::uuid LIMIT 1;`,
       [jobPostingId],
     );
-    const existing = existingRes.rows[0] as { company_id: string } | undefined;
+    const existing = existingRes.rows[0] as { company_id: string; workflow_instance_id?: string; status?: string } | undefined;
     if (!existing) {
       throw new ApiException(
         'HRM-REC-JP-404',
@@ -2014,6 +2023,14 @@ export class RecruitmentCatalogService {
       notFoundCode: 'HRM-REC-JP-404',
       mismatchCode: 'HRM-REC-JP-409',
     });
+    const mappedStatus = payload.status as string | undefined;
+    if (mappedStatus !== 'active' && mappedStatus !== 'rejected') {
+      this.recruitmentWorkflowBridge.assertNotLockedOrThrow(
+        existing.workflow_instance_id,
+        existing.status,
+        'job_posting',
+      );
+    }
     const hasPositionKey = Object.prototype.hasOwnProperty.call(
       payload,
       'position_key',
@@ -2113,6 +2130,71 @@ export class RecruitmentCatalogService {
     return res.rows[0];
   }
 
+  async submitJobPostingWorkflow(
+    jobPostingId: string,
+    companyId: string,
+    authorization?: string,
+    submitterUserId?: string,
+  ) {
+    await this.ensureWave2Schema();
+    const existingRes = await this.db.query(
+      `SELECT company_id, workflow_instance_id::text AS workflow_instance_id, status FROM public.job_postings WHERE id = $1::uuid LIMIT 1;`,
+      [jobPostingId],
+    );
+    const existing = existingRes.rows[0] as {
+      company_id: string;
+      workflow_instance_id?: string;
+      status?: string;
+    } | undefined;
+
+    if (!existing) {
+      throw new ApiException(
+        'HRM-REC-JP-404',
+        'Job posting not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const scope = resolveHrmListScope(authorization, companyId);
+    assertResourceInHrmScope(existing, scope, {
+      notFoundCode: 'HRM-REC-JP-404',
+      mismatchCode: 'HRM-REC-JP-409',
+    });
+
+    if (existing.workflow_instance_id) {
+      return {
+        ...existing,
+        spawn: {
+          workflowInstanceId: existing.workflow_instance_id,
+          idempotent: true,
+        },
+      };
+    }
+
+    const wfCtx = {
+      businessType: 'hrm_job_posting' as const,
+      businessId: jobPostingId,
+      companyId: existing.company_id,
+      submitterUserId,
+    };
+    const spawnRes =
+      await this.recruitmentWorkflowBridge.startRecruitmentWorkflowIfConfigured(
+        wfCtx,
+      );
+    if (!spawnRes) {
+      throw new ApiException(
+        'HRM-REC-WF-SPAWN-400',
+        'Cấu hình quy trình không hợp lệ hoặc lỗi kết nối. Hãy kiểm tra lại.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return {
+      ...existing,
+      workflow_instance_id: spawnRes.workflowInstanceId,
+      status: 'pending_approval',
+      spawn: spawnRes,
+    };
+  }
+
   /**
    * FR-HRM-INT-01 · G-DB-01 — stage=hired yêu cầu employee_id (soft).
    * SRS bước: Diễn biến #5 từ chối thiếu hồ sơ · #7 Lưu hired + khóa hồ sơ.
@@ -2137,12 +2219,12 @@ export class RecruitmentCatalogService {
     );
     const existing = existingRes.rows[0] as
       | {
-          id: string;
-          company_id: string;
-          stage?: string;
-          workflow_instance_id?: string | null;
-          employee_id?: string | null;
-        }
+        id: string;
+        company_id: string;
+        stage?: string;
+        workflow_instance_id?: string | null;
+        employee_id?: string | null;
+      }
       | undefined;
     if (!existing) {
       throw new ApiException(
@@ -2178,10 +2260,10 @@ export class RecruitmentCatalogService {
     const stageCatalog = this.resolveRecPipelineStages();
     const catalogHit = stageCatalog
       ? await stageCatalog.assertStageInEffectiveCatalog({
-          companyId: existing.company_id || companyId,
-          stageKey: stage,
-          authorization,
-        })
+        companyId: existing.company_id || companyId,
+        stageKey: stage,
+        authorization,
+      })
       : null;
     const treatAsHired = catalogHit
       ? Boolean(catalogHit.isHiredOutcome)
@@ -2250,10 +2332,10 @@ export class RecruitmentCatalogService {
     const stageCatalog = this.resolveRecPipelineStages();
     const catalogHit = stageCatalog
       ? await stageCatalog.assertStageInEffectiveCatalog({
-          companyId,
-          stageKey: stage,
-          authorization,
-        })
+        companyId,
+        stageKey: stage,
+        authorization,
+      })
       : null;
     let employeeId: string | null = payload.employee_id?.trim() || null;
     // FR-HRM-INT-01 #5 — không tạo thẳng hired thiếu khóa hồ sơ.
@@ -2346,11 +2428,11 @@ export class RecruitmentCatalogService {
     );
     const existing = existingRes.rows[0] as
       | {
-          company_id: string;
-          stage?: string;
-          workflow_instance_id?: string | null;
-          employee_id?: string | null;
-        }
+        company_id: string;
+        stage?: string;
+        workflow_instance_id?: string | null;
+        employee_id?: string | null;
+      }
       | undefined;
     assertResourceInHrmScope(
       existing,
@@ -2386,10 +2468,10 @@ export class RecruitmentCatalogService {
     const catalogHit =
       stageCatalog && nextStage?.trim()
         ? await stageCatalog.assertStageInEffectiveCatalog({
-            companyId: existing!.company_id || companyId,
-            stageKey: nextStage,
-            authorization,
-          })
+          companyId: existing!.company_id || companyId,
+          stageKey: nextStage,
+          authorization,
+        })
         : null;
     // Diễn biến #5/#7 — hired bắt buộc khóa hồ sơ; stamp soft employee_id.
     const treatAsHired = nextStage
@@ -3003,7 +3085,7 @@ export class RecruitmentCatalogService {
         : null;
     const salaryRec =
       typeof payload.salary_recommendation === 'number' &&
-      Number.isFinite(payload.salary_recommendation)
+        Number.isFinite(payload.salary_recommendation)
         ? payload.salary_recommendation
         : null;
 
@@ -3313,10 +3395,10 @@ export class RecruitmentCatalogService {
     );
     const existing = existingRes.rows[0] as
       | {
-          company_id: string;
-          status?: string;
-          workflow_instance_id?: string | null;
-        }
+        company_id: string;
+        status?: string;
+        workflow_instance_id?: string | null;
+      }
       | undefined;
     if (!existing) {
       throw new ApiException(
@@ -3434,13 +3516,13 @@ export class RecruitmentCatalogService {
     );
     const existing = existingRes.rows[0] as
       | {
-          id: string;
-          company_id: string;
-          status?: string;
-          year?: number;
-          title?: string;
-          activation_mode?: string | null;
-        }
+        id: string;
+        company_id: string;
+        status?: string;
+        year?: number;
+        title?: string;
+        activation_mode?: string | null;
+      }
       | undefined;
     if (!existing) {
       throw new ApiException(
@@ -3667,11 +3749,11 @@ export class RecruitmentCatalogService {
     );
     const existing = existingRes.rows[0] as
       | {
-          id: string;
-          company_id: string;
-          status: string;
-          workflow_instance_id?: string | null;
-        }
+        id: string;
+        company_id: string;
+        status: string;
+        workflow_instance_id?: string | null;
+      }
       | undefined;
     if (!existing) {
       throw new ApiException(
@@ -3741,14 +3823,14 @@ export class RecruitmentCatalogService {
     );
     const existing = existingRes.rows[0] as
       | {
-          id: string;
-          company_id: string;
-          full_name: string;
-          email: string | null;
-          source: string | null;
-          stage: string;
-          workflow_instance_id?: string | null;
-        }
+        id: string;
+        company_id: string;
+        full_name: string;
+        email: string | null;
+        source: string | null;
+        stage: string;
+        workflow_instance_id?: string | null;
+      }
       | undefined;
     if (!existing) {
       throw new ApiException(
@@ -3948,10 +4030,10 @@ export class RecruitmentCatalogService {
     const snapshot = row.layout_snapshot_json;
     const sections = this.jdDynamic
       ? this.jdDynamic.buildDisplaySections(snapshot, valuesJson, {
-          title: row.title as string,
-          job_description: row.job_description as string | null,
-          requirements: row.requirements as string | null,
-        })
+        title: row.title as string,
+        job_description: row.job_description as string | null,
+        requirements: row.requirements as string | null,
+      })
       : [];
     const mapped = this.mapJdTemplateRow(row);
     return {

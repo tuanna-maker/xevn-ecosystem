@@ -1456,6 +1456,13 @@ export default function Recruitment() {
           </Suspense>
         )}
 
+        {/* Approvals Tab */}
+        {activeTab === 'approvals' && (
+          <Suspense fallback={<RecTabSkeleton />}>
+            <RecruitmentApprovalsTab />
+          </Suspense>
+        )}
+
         {/* Evaluations Tab */}
         {activeTab === 'evaluations' && (
           <div className="space-y-4">
