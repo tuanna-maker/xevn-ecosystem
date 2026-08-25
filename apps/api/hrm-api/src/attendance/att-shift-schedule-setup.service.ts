@@ -74,6 +74,36 @@ export class AttShiftScheduleSetupService implements OnModuleInit {
       );
     `);
 
+    // Bootstrap empty catalogs so Settings tabs are not falsely blank after table create.
+    for (const companyId of ['main', 'holding']) {
+      await this.db.query(
+        `
+        INSERT INTO public.att_rule (
+          id, company_id, code, name_vi, rule_type, formula_desc, status
+        )
+        SELECT gen_random_uuid(), $1, 'STD_26', 'Công chuẩn 26 ngày', 'STANDARD_WORK',
+               'Chuẩn 26 ngày công / tháng (8h/ngày)', 'active'
+        WHERE NOT EXISTS (
+          SELECT 1 FROM public.att_rule WHERE company_id = $1 AND archived_at IS NULL
+        );
+        `,
+        [companyId],
+      );
+      await this.db.query(
+        `
+        INSERT INTO public.att_schedule (
+          id, company_id, code, name_vi, default_shift_code, working_days, status
+        )
+        SELECT gen_random_uuid(), $1, 'SCH_OFFICE', 'Lịch văn phòng', 'HC',
+               'mon,tue,wed,thu,fri', 'active'
+        WHERE NOT EXISTS (
+          SELECT 1 FROM public.att_schedule WHERE company_id = $1 AND archived_at IS NULL
+        );
+        `,
+        [companyId],
+      );
+    }
+
     this.schemaReady = true;
   }
 }

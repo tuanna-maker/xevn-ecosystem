@@ -250,6 +250,7 @@ const HireEmployeeLinkDialog = lazy(() => import('@/components/recruitment/HireE
 const RecruitmentApprovalsTab = lazy(() => import('@/components/recruitment/RecruitmentApprovalsTab').then(m => ({ default: m.RecruitmentApprovalsTab })));
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
+import { scheduleReleaseHrmPortalBodyLock } from '@/lib/hrmDialogPortal';
 import { resolveRecruitmentTabFromSearch } from '@/lib/recruitmentEmbedDeepLink';
 import { isRecruitmentWorkflowLocked, RECRUITMENT_WF_LOCKED_HINT_VI } from '@/lib/recruitmentWorkflowUi';
 import {
@@ -257,10 +258,7 @@ import {
   resolveHireTargetStage,
 } from '@/lib/recruitmentHireLink';
 import { useRecPipelineStagesEffective } from '@/hooks/useRecPipelineStagesEffective';
-import {
-  buildRecPipelineKanbanColumns,
-  REC_PIPELINE_STAGE_EMPTY_CTA_VI,
-} from '@/lib/recPipelineStageCatalog';
+import { buildRecPipelineKanbanColumns } from '@/lib/recPipelineStageCatalog';
 
 // Recruitment plan form schema
 const recruitmentPlanSchema = z.object({
@@ -566,19 +564,23 @@ export default function Recruitment() {
   const [activeJobsType, setActiveJobsType] = useState('all');
   const [activeCandidatesType, setActiveCandidatesType] = useState('all');
   const [activeInterviewsType, setActiveInterviewsType] = useState('scheduled');
-  const recruitmentJobTemplatesState = useJobTemplates(true);
+  const jobTemplatesEnabled = activeTab === 'requisitions' || activeTab === 'jd-library';
+  const recruitmentJobTemplatesState = useJobTemplates(jobTemplatesEnabled);
 
-  /** D-HDSD-MUTATE-FE-13/FE-14 — sync page-level templates when entering jd-library or requisitions. */
-  useEffect(() => {
-    if (activeTab === 'requisitions' || activeTab === 'jd-library') {
-      void recruitmentJobTemplatesState.refetch();
-    }
-  }, [activeTab, recruitmentJobTemplatesState.refetch]);
+  // NOTE: Do NOT add an effect that refetch() when templates.length===0.
+  // useJobTemplates already loads on [companyId, enabled]. A "retry while empty"
+  // effect loops forever (empty library OR failed GET → loading flicker / Đang tải…).
 
   useEffect(() => {
     const tab = resolveRecruitmentTabFromSearch(location.search);
     if (tab) setActiveTab(tab);
   }, [location.search]);
+
+  // Recover from leftover Radix portal body lock (DropdownMenu→Dialog in CC embed).
+  useEffect(() => {
+    scheduleReleaseHrmPortalBodyLock();
+  }, [activeTab]);
+
   const [selectedCandidate, setSelectedCandidate] = useState<KanbanCandidate | null>(null);
   const [selectedProposal, setSelectedProposal] = useState<typeof staffingProposals[0] | null>(null);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
@@ -648,7 +650,7 @@ export default function Recruitment() {
     updatePlanStatus,
     submitPlanWorkflow,
     spawnPlanRequests,
-  } = useRecruitmentPlans();
+  } = useRecruitmentPlans(activeTab === 'plans' || isPlanDialogOpen);
 
   useEffect(() => {
     if (!selectedPlan) return;
@@ -665,7 +667,7 @@ export default function Recruitment() {
   } = useCandidateEvaluations(evaluationsTabEnabled || isComparisonDialogOpen);
 
   const { requisitions: compareSeedRequisitions, refetch: refreshCompareRequisitions } =
-    useJobRequisitions();
+    useJobRequisitions({ enabled: isComparisonDialogOpen });
 
   const openCompareForYctd = useCallback(
     (requisitionId: string | null | undefined, candidateId?: string | null) => {
@@ -1284,19 +1286,7 @@ export default function Recruitment() {
                     Đang tải danh mục giai đoạn pipeline…
                   </p>
                 ) : kanbanSoftEmpty ? (
-                  <div
-                    className="rounded-card border border-dashed border-xevn-border bg-muted/30 px-4 py-8 text-center space-y-3"
-                    data-testid="rec-kanban-stages-empty"
-                  >
-                    <p className="text-sm text-xevn-textSecondary">{REC_PIPELINE_STAGE_EMPTY_CTA_VI}</p>
-                    <Link
-                      to="/settings"
-                      className="inline-block text-sm font-medium text-primary underline"
-                      data-testid="rec-kanban-stages-empty-cta"
-                    >
-                      Mở Cài đặt → Giai đoạn REC
-                    </Link>
-                  </div>
+                  <div className="min-h-[200px]" data-testid="rec-kanban-stages-empty" aria-hidden />
                 ) : (
                   <DragDropContext onDragEnd={handleDragEnd}>
                     <div
@@ -1429,7 +1419,7 @@ export default function Recruitment() {
           </Suspense>
         )}
 
-        {/* Proposals Tab — O5 HOLD ≠ YCTD SoT; CTA redirect only */}
+        {/* Proposals Tab — create đề xuất ngoài ĐB tại chỗ; convert→YCTD khi đã duyệt */}
         {activeTab === 'proposals' && (
           <Suspense fallback={<RecTabSkeleton />}>
             <HeadcountProposalTab

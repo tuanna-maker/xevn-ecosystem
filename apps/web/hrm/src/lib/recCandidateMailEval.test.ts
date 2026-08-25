@@ -53,6 +53,17 @@ describe('recCandidateMailEval helpers (UC-BP-REC-06)', () => {
     expect(r.ok).toBe(false);
   });
 
+  it('rejects undeliverable fixture emails like @dev.local', () => {
+    const r = validateRecMailForm({
+      laneAId: 'cand-1',
+      templateCode: 'fail_cv',
+      to: ['admin1@dev.local'],
+      ccInterviewers: [],
+    });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.message).toMatch(/dev\.local|inbox thật/i);
+  });
+
   it('parses email lists and Pass/Fail commit gate', () => {
     expect(parseEmailList('a@xe.vn, b@xe.vn')).toEqual(['a@xe.vn', 'b@xe.vn']);
     expect(isRecEvalPassFail('pass')).toBe(true);

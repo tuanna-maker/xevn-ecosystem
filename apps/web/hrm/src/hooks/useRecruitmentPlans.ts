@@ -178,7 +178,7 @@ function toastFromHcError(error: unknown, fallback: string): string {
   return toErrorMessage(error, fallback);
 }
 
-export function useRecruitmentPlans() {
+export function useRecruitmentPlans(enabled = true) {
   const [plans, setPlans] = useState<RecruitmentPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -188,10 +188,10 @@ export function useRecruitmentPlans() {
   const h = (key: string): string => t(`hk.recruitmentPlan.${key}`) as string;
 
   const fetchPlans = useCallback(async () => {
-    if (!currentCompanyId) {
-      setPlans([]);
+    if (!enabled || !currentCompanyId) {
       setFetchError(null);
       setLoading(false);
+      if (enabled) setPlans([]);
       return;
     }
     setLoading(true);
@@ -206,7 +206,7 @@ export function useRecruitmentPlans() {
     } finally {
       setLoading(false);
     }
-  }, [currentCompanyId]);
+  }, [currentCompanyId, enabled]);
 
   useEffect(() => {
     void fetchPlans();

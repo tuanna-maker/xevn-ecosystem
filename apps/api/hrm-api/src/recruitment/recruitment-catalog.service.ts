@@ -182,15 +182,17 @@ import { ApiException } from '../common/api.exception';
 import {
   assertResourceInHrmScope,
   expandPayrollPeriodCompanyIds,
+  HrmListScopeContext,
   MASTER_TENANT_ID,
   pushCompanyIdFilter,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
+  resolveHrmPersistTenantId,
   resolveHrmSettingsCatalogCompanyId,
 } from '../common/hrm-list-scope';
 import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
 import { HrmDbService, type HrmDbQueryFn } from '../db/hrm-db.service';
-import { ensureHrmTenantIdColumns } from '../common/hrm-tenant-scope-schema';
+import { ensureHrmTenantIdColumns, backfillRecruitmentMainPartitionTenantId } from '../common/hrm-tenant-scope-schema';
 import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
 import { CreateJobPostingDto } from './dto/create-job-posting.dto';
 import { ListCandidatesTableQueryDto } from './dto/list-candidates-table.query.dto';
@@ -279,6 +281,10 @@ type PlanDepartmentWrite = {
 
 @Injectable()
 export class RecruitmentCatalogService {
+  /** REC-PERF: skip ~68 DDL round-trips after first successful ensure (remote DB). */
+  private wave2SchemaReady = false;
+  private wave2SchemaEnsurePromise: Promise<void> | null = null;
+
   constructor(
     private readonly db: HrmDbService,
     private readonly recruitmentWorkflowBridge: RecruitmentWorkflowBridge,
@@ -345,6 +351,14 @@ export class RecruitmentCatalogService {
   }
 
   private async ensureWave2Schema() {
+    if (this.wave2SchemaReady) return;
+    if (this.wave2SchemaEnsurePromise) return this.wave2SchemaEnsurePromise;
+    this.wave2SchemaEnsurePromise = this.runEnsureWave2Schema();
+    return this.wave2SchemaEnsurePromise;
+  }
+
+  private async runEnsureWave2Schema() {
+    try {
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.job_postings (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -820,6 +834,14 @@ export class RecruitmentCatalogService {
         ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ NULL;
     `);
     await ensureHrmTenantIdColumns((sql) => this.db.query(sql));
+    await backfillRecruitmentMainPartitionTenantId(
+      (sql, params) => this.db.query(sql, params),
+      masterTenantIdFromEnv(),
+    );
+    this.wave2SchemaReady = true;
+    } finally {
+      this.wave2SchemaEnsurePromise = null;
+    }
   }
 
   /**
@@ -1122,9 +1144,14 @@ export class RecruitmentCatalogService {
   async listCandidatesTable(
     query: ListCandidatesTableQueryDto,
     authorization?: string,
+    scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureWave2Schema();
-    const scope = resolveHrmListScope(authorization, query.company_id);
+    const scope = resolveHrmListScope(
+      authorization,
+      query.company_id,
+      scopeContext,
+    );
     const filters: string[] = [];
     const values: unknown[] = [];
     pushCompanyIdFilter(filters, values, scope);
@@ -1835,6 +1862,10 @@ export class RecruitmentCatalogService {
       authorization,
       String(payload.company_id ?? ''),
     );
+    const tenantId = resolveHrmPersistTenantId(
+      authorization,
+      String(payload.company_id ?? ''),
+    );
     const planId = randomUUID();
     const departments =
       (payload.departments as Array<Record<string, unknown>>) ?? [];
@@ -1853,11 +1884,12 @@ export class RecruitmentCatalogService {
     await this.db.withTransaction(async (query) => {
       await query(
         `INSERT INTO public.recruitment_plans (
-          id, company_id, title, start_month, end_month, year, note, status, creator_name,
+          id, tenant_id, company_id, title, start_month, end_month, year, note, status, creator_name,
           submitted_by_dept_key
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`,
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`,
         [
           planId,
+          tenantId,
           companyId,
           String(payload.title ?? '').trim(),
           payload.start_month ?? 1,
@@ -2324,12 +2356,18 @@ export class RecruitmentCatalogService {
       notes?: string | null;
     },
     authorization?: string,
+    scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureWave2Schema();
     await this.recruitmentWorkflowBridge.ensureSchema();
     const companyId = resolveHrmPersistCompanyIdText(
       authorization,
       payload.company_id,
+    );
+    const tenantId = resolveHrmPersistTenantId(
+      authorization,
+      payload.company_id,
+      scopeContext,
     );
     const stage = payload.stage ?? 'applied';
     // VAL-REC-CNS-02 / BR-PLT-REC-STAGE-06 — when EFF >0, initial stage must ∈ effective.
@@ -2366,15 +2404,16 @@ export class RecruitmentCatalogService {
         : 0;
     const res = await this.db.query(
       `INSERT INTO public.candidates (
-        id, company_id, full_name, email, phone, position, stage, source, rating,
+        id, tenant_id, company_id, full_name, email, phone, position, stage, source, rating,
         applied_date, expected_start_date, nationality, hometown, marital_status, notes, employee_id
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9,
-        COALESCE($10::date, CURRENT_DATE), $11::date, $12, $13, $14, $15, $16::uuid
+        $1, $2::text, $3, $4, $5, $6, $7, $8, $9, $10,
+        COALESCE($11::date, CURRENT_DATE), $12::date, $13, $14, $15, $16, $17::uuid
       )
       RETURNING *;`,
       [
         randomUUID(),
+        tenantId,
         companyId,
         payload.full_name.trim(),
         payload.email?.toLowerCase().trim() ?? null,
@@ -2799,6 +2838,10 @@ export class RecruitmentCatalogService {
       authorization,
       String(payload.company_id ?? ''),
     );
+    const tenantId = resolveHrmPersistTenantId(
+      authorization,
+      String(payload.company_id ?? companyId),
+    );
     const pos = await this.assertConsumerPositionKey({
       companyId,
       positionKey: payload.position_key,
@@ -2814,14 +2857,14 @@ export class RecruitmentCatalogService {
         ? payload.department_key.trim() || null
         : null;
     if (departmentKey && this.settingsCatalogs) {
-      const tenantId = this.resolveCatalogTenantId();
+      const catalogTenantId = this.resolveCatalogTenantId();
       const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
         authorization,
-        tenantId,
+        catalogTenantId,
         companyId,
       );
       await this.settingsCatalogs.assertCodeInEffectiveCatalog({
-        tenantId,
+        tenantId: catalogTenantId,
         companyId: catalogCompanyId,
         catalogKey: 'departments',
         code: departmentKey,
@@ -2831,15 +2874,16 @@ export class RecruitmentCatalogService {
     }
     const res = await this.db.query(
       `INSERT INTO public.headcount_proposals (
-        id, company_id, title, department, department_key, position_name, position_key,
+        id, tenant_id, company_id, title, department, department_key, position_name, position_key,
         current_headcount, requested_headcount,
         proposal_type, priority, status, justification, expected_start_date,
         salary_budget_min, salary_budget_max, job_description, requirements, requested_by, notes
       ) VALUES (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::date,$15,$16,$17,$18,$19,$20
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15::date,$16,$17,$18,$19,$20,$21
       ) RETURNING *;`,
       [
         randomUUID(),
+        tenantId,
         companyId,
         payload.title,
         payload.department,
@@ -2861,6 +2905,122 @@ export class RecruitmentCatalogService {
         payload.notes ?? null,
       ],
     );
+    return res.rows[0];
+  }
+
+  async updateHeadcountProposal(
+    proposalId: string,
+    payload: Record<string, unknown>,
+    companyId: string,
+    authorization?: string,
+  ) {
+    await this.ensureWave2Schema();
+    const existingRes = await this.db.query(
+      `SELECT * FROM public.headcount_proposals WHERE id = $1::uuid LIMIT 1;`,
+      [proposalId],
+    );
+    const existing = existingRes.rows[0] as
+      | { company_id: string; status: string }
+      | undefined;
+    if (!existing) {
+      throw new ApiException(
+        'HRM-REC-HC-404',
+        'Headcount proposal not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const scope = resolveHrmListScope(authorization, companyId);
+    assertResourceInHrmScope(existing, scope, {
+      notFoundCode: 'HRM-REC-HC-404',
+      mismatchCode: 'HRM-REC-HC-409',
+    });
+    if (String(existing.status ?? '') !== 'pending') {
+      throw new ApiException(
+        'HRM-REC-HC-409',
+        'Only pending headcount proposals can be edited',
+        HttpStatus.CONFLICT,
+      );
+    }
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? existing.company_id),
+    );
+    const pos = await this.assertConsumerPositionKey({
+      companyId: persistCompanyId,
+      positionKey: payload.position_key,
+      errorCode: HRM_HCP_POS_KEY,
+      authorization,
+    });
+    const positionName =
+      typeof payload.position_name === 'string' && payload.position_name.trim()
+        ? payload.position_name.trim()
+        : pos.label;
+    const departmentKey =
+      typeof payload.department_key === 'string'
+        ? payload.department_key.trim() || null
+        : null;
+    if (departmentKey && this.settingsCatalogs) {
+      const catalogTenantId = this.resolveCatalogTenantId();
+      const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+        authorization,
+        catalogTenantId,
+        persistCompanyId,
+      );
+      await this.settingsCatalogs.assertCodeInEffectiveCatalog({
+        tenantId: catalogTenantId,
+        companyId: catalogCompanyId,
+        catalogKey: 'departments',
+        code: departmentKey,
+        errorCode: HRM_HCP_POS_KEY,
+        errorMessage: `department_key '${departmentKey}' is not in departments catalog`,
+      });
+    }
+    const res = await this.db.query(
+      `UPDATE public.headcount_proposals SET
+        title = $2,
+        department = $3,
+        department_key = $4,
+        position_name = $5,
+        position_key = $6,
+        current_headcount = $7,
+        requested_headcount = $8,
+        proposal_type = $9,
+        priority = $10,
+        justification = $11,
+        expected_start_date = $12::date,
+        salary_budget_min = $13,
+        salary_budget_max = $14,
+        requested_by = $15,
+        notes = $16,
+        updated_at = NOW()
+       WHERE id = $1::uuid
+       RETURNING *;`,
+      [
+        proposalId,
+        payload.title,
+        payload.department,
+        departmentKey,
+        positionName,
+        pos.code,
+        payload.current_headcount ?? 0,
+        payload.requested_headcount ?? 1,
+        payload.proposal_type ?? 'new',
+        payload.priority ?? 'medium',
+        payload.justification ?? null,
+        payload.expected_start_date ?? null,
+        payload.salary_budget_min ?? null,
+        payload.salary_budget_max ?? null,
+        payload.requested_by ?? 'HR',
+        payload.notes ?? null,
+      ],
+    );
+    if (!res.rows[0]) {
+      throw new ApiException(
+        'HRM-REC-HC-404',
+        'Headcount proposal not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
     return res.rows[0];
   }
 
@@ -4276,20 +4436,6 @@ export class RecruitmentCatalogService {
     }
 
     const nextCode = payload.code?.trim();
-    if (nextCode && nextCode.toLowerCase() !== existing.code.toLowerCase()) {
-      const dup = await this.db.query(
-        `SELECT id FROM public.job_description_templates
-         WHERE company_id = $1 AND lower(code) = lower($2) AND id <> $3::uuid LIMIT 1;`,
-        [existing.company_id, nextCode, templateId],
-      );
-      if (dup.rows[0]) {
-        throw new ApiException(
-          'HRM-JD-CODE-DUP',
-          'JD template code already exists for company',
-          HttpStatus.CONFLICT,
-        );
-      }
-    }
 
     let nextPositionCode: string | undefined;
     let nextPositionName: string | null | undefined;
@@ -4322,6 +4468,7 @@ export class RecruitmentCatalogService {
 
     let patchTitle =
       payload.title !== undefined ? payload.title.trim() : undefined;
+    // Column SoT: prefer non-empty payload.code; values_json.code may bridge only when non-empty.
     let patchCode =
       nextCode !== undefined && nextCode.length > 0 ? nextCode : undefined;
     let patchDesc =
@@ -4344,6 +4491,14 @@ export class RecruitmentCatalogService {
         ...(existing.values_json ?? {}),
         ...(incomingValues ?? {}),
       };
+      // Keep SoT code in values map so canvas blank "Mã JD" cannot wipe column.
+      if (patchCode) mergedValues.code = patchCode;
+      else if (
+        typeof mergedValues.code !== 'string' ||
+        !String(mergedValues.code).trim()
+      ) {
+        if (existing.code?.trim()) mergedValues.code = existing.code;
+      }
       const snap =
         incomingSnapshot ?? existing.layout_snapshot_json ?? undefined;
       if (snap) {
@@ -4359,8 +4514,11 @@ export class RecruitmentCatalogService {
         patchLayoutVersion = payload.layout_version ?? validated.layout_version;
         if (typeof validated.values.title === 'string')
           patchTitle = validated.values.title;
-        if (typeof validated.values.code === 'string')
-          patchCode = validated.values.code;
+        // Never blank-out company-unique code via values bridge (HRM-DB-409 vs empty-code peer).
+        if (typeof validated.values.code === 'string') {
+          const fromValues = validated.values.code.trim();
+          if (fromValues) patchCode = fromValues;
+        }
         if (typeof validated.values.responsibilities === 'string') {
           patchDesc = validated.values.responsibilities;
         }
@@ -4377,6 +4535,30 @@ export class RecruitmentCatalogService {
         patchSnapshotJson = JSON.stringify(incomingSnapshot);
         patchLayoutVersion =
           payload.layout_version ?? Math.max(existing.layout_version ?? 1, 2);
+      }
+    }
+
+    if (patchCode !== undefined) {
+      const finalCode = patchCode.trim();
+      if (!finalCode) {
+        patchCode = undefined;
+      } else if (finalCode.toLowerCase() !== existing.code.toLowerCase()) {
+        const dup = await this.db.query(
+          `SELECT id FROM public.job_description_templates
+           WHERE company_id = $1 AND lower(code) = lower($2) AND id <> $3::uuid LIMIT 1;`,
+          [existing.company_id, finalCode, templateId],
+        );
+        if (dup.rows[0]) {
+          throw new ApiException(
+            'HRM-JD-CODE-DUP',
+            'JD template code already exists for company',
+            HttpStatus.CONFLICT,
+          );
+        }
+        patchCode = finalCode;
+      } else {
+        // Same code (case-insensitive) — skip SET to avoid noop unique races; still OK to set.
+        patchCode = finalCode;
       }
     }
 

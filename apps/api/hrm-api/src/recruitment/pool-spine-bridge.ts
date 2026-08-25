@@ -11,6 +11,7 @@
 import { randomUUID } from 'node:crypto';
 import type { HrmDbService } from '../db/hrm-db.service';
 import { pushCompanyIdFilter } from '../common/hrm-list-scope';
+import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
 
 export type PoolCandidateSpineSource = {
   id: string;
@@ -107,14 +108,25 @@ export async function ensureSpineRecruitmentCandidateFromPool(
     return null;
   }
 
+  const reqTenantRes = await db.query<{ tenant_id: string | null }>(
+    `SELECT NULLIF(TRIM(tenant_id), '') AS tenant_id
+     FROM public.job_requisitions
+     WHERE id = $1::uuid
+     LIMIT 1;`,
+    [requisitionId],
+  );
+  const tenantId =
+    reqTenantRes.rows[0]?.tenant_id ?? masterTenantIdFromEnv();
+
   const spineId = randomUUID();
   const source = (pool.source ?? 'pool').trim() || 'pool';
   await db.query(
     `INSERT INTO public.recruitment_candidates
-      (id, company_id, requisition_id, full_name, email, source, status, pool_candidate_id)
-     VALUES ($1, $2::text, $3::uuid, $4, $5, $6, 'new', $7::uuid);`,
+      (id, tenant_id, company_id, requisition_id, full_name, email, source, status, pool_candidate_id)
+     VALUES ($1, $2::text, $3::text, $4::uuid, $5, $6, $7, 'new', $8::uuid);`,
     [
       spineId,
+      tenantId,
       pool.company_id,
       requisitionId,
       pool.full_name.trim(),

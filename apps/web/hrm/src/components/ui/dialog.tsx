@@ -118,6 +118,7 @@ import { cn } from "@/lib/utils";
 import {
   getRadixPortalContainer,
   isHrmDialogMountedToPortalParent,
+  scheduleReleaseHrmPortalBodyLock,
   syncHrmStylesheetsToParentForPortalDialogs,
 } from "@/lib/hrmDialogPortal";
 import { attachPortalDialogA11yMirror } from "@/lib/hrmDialogPortalA11y";
@@ -139,7 +140,18 @@ type DialogContentProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.
   portalScope?: "iframe" | "parent";
 };
 
-const Dialog = DialogPrimitive.Root;
+const Dialog = ({
+  onOpenChange,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root>) => (
+  <DialogPrimitive.Root
+    {...props}
+    onOpenChange={(open) => {
+      onOpenChange?.(open);
+      if (!open) scheduleReleaseHrmPortalBodyLock();
+    }}
+  />
+);
 
 const DialogTrigger = DialogPrimitive.Trigger;
 

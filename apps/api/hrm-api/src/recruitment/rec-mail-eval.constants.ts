@@ -42,6 +42,9 @@ export const CFG_EVAL_ALLOW_DRAFT = 'recruitment.eval.allow_draft';
 /** CFG — optional JSON array of active mail template_code values. */
 export const CFG_MAIL_TEMPLATE_CODES = 'recruitment.mail.template_codes';
 
+/** CFG — full catalog { code, label_vi, subject, body, active }[] for REC mail. */
+export const CFG_MAIL_TEMPLATES = 'recruitment.mail.templates';
+
 /** GĐ1 default active mail templates when CFG unset. */
 export const DEFAULT_MAIL_TEMPLATE_CODES = [
   'fail_cv',

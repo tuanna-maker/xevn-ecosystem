@@ -216,6 +216,9 @@ function tableForBusinessType(businessType: RecruitmentBusinessType): {
 @Injectable()
 export class RecruitmentWorkflowBridge {
   private readonly logger = new Logger(RecruitmentWorkflowBridge.name);
+  /** REC-PERF: ALTER/INDEX once per process (called from list paths). */
+  private schemaReady = false;
+  private schemaEnsurePromise: Promise<void> | null = null;
 
   constructor(
     private readonly catalogSync: CatalogSyncService,
@@ -498,6 +501,14 @@ export class RecruitmentWorkflowBridge {
   }
 
   async ensureSchema(): Promise<void> {
+    if (this.schemaReady) return;
+    if (this.schemaEnsurePromise) return this.schemaEnsurePromise;
+    this.schemaEnsurePromise = this.runEnsureSchema();
+    return this.schemaEnsurePromise;
+  }
+
+  private async runEnsureSchema(): Promise<void> {
+    try {
     await this.db.query(`
       ALTER TABLE public.recruitment_plans
       ADD COLUMN IF NOT EXISTS workflow_instance_id UUID NULL;
@@ -589,6 +600,10 @@ export class RecruitmentWorkflowBridge {
         ON public.candidates (workflow_instance_id)
         WHERE workflow_instance_id IS NOT NULL;
     `);
+    this.schemaReady = true;
+    } finally {
+      this.schemaEnsurePromise = null;
+    }
   }
 
   async startRecruitmentWorkflowIfConfigured(

@@ -109,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       : null;
   const portalCompanyIdRaw =
     isPortalMode || embedActive
-      ? searchParams.get('companyId') || storedPortalCompanyId
+      ? searchParams.get('companyId') || storedPortalCompanyId || 'main'
       : null;
   const portalCompanyId = portalCompanyIdRaw ? coerceHrmListCompanyId(portalCompanyIdRaw) : null;
 

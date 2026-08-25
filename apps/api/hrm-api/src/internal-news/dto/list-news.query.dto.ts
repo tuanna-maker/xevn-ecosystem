@@ -1,5 +1,11 @@
 import { Transform } from 'class-transformer';
-import { IsOptional, IsString, Matches } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, Matches } from 'class-validator';
+
+function toOptionalBoolean(value: unknown): boolean | undefined {
+  if (value === true || value === 'true' || value === '1') return true;
+  if (value === false || value === 'false' || value === '0') return false;
+  return undefined;
+}
 
 export class ListInternalNewsQueryDto {
   @IsOptional()
@@ -17,10 +23,11 @@ export class ListInternalNewsQueryDto {
   @Matches(/^(draft|published|archived)$/i)
   status?: string;
 
+  /** Query string `true`/`false` → boolean (avoid Transform+IsString mismatch). */
   @IsOptional()
-  @Transform(({ value }) => value === 'true')
-  @IsString()
-  include_drafts?: string;
+  @Transform(({ value }) => toOptionalBoolean(value))
+  @IsBoolean()
+  include_drafts?: boolean;
 
   @IsOptional()
   @Transform(({ value, obj }) => {

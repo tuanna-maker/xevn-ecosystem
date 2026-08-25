@@ -375,7 +375,7 @@ const friendlyByCode: Record<string, string> = {
     "Dữ liệu thư chưa hợp lệ (địa chỉ nhận / nội dung). Kiểm tra rồi gửi lại.",
   "HRM-REC-MAIL-404": "Không tìm thấy bản ghi thư trong phạm vi đơn vị hiện tại.",
   "HRM-REC-MAIL-PROVIDER-FAIL":
-    "Gửi thư thất bại — hệ thống giữ trạng thái failed/nháp và không đổi giai đoạn pipeline.",
+    "Gửi thư thất bại (SMTP chưa cấu hình / Gmail từ chối / stub bị tắt). Điền HRM_SMTP_* + App Password trong apps/api/hrm-api/.env, restart hrm-api. Pipeline không đổi.",
   /** F-REC-APP-03 UPGRADE — Pass/Fail neo YCTD. */
   "HRM-REC-EVAL-PASSFAIL-REQUIRED":
     "Chốt đánh giá bắt buộc chọn Đạt (Pass) hoặc Không đạt (Fail). Không để nháp/pending làm DONE.",
@@ -523,6 +523,14 @@ export function toErrorMessage(error: unknown, fallback: string) {
       error.code === "HRM-PAY-FORMULA-412" &&
       error.message?.trim() &&
       !isPayFormula412BindMessage(error.message)
+    ) {
+      return formatApiErrorWithCode(error.code, error.message.trim());
+    }
+    // Prefer BE detail for mail provider (SMTP misconfig / Gmail reject).
+    if (
+      error.code === "HRM-REC-MAIL-PROVIDER-FAIL" &&
+      error.message?.trim() &&
+      /SMTP|App Password|HRM_MAIL|HRM_SMTP|Gmail|cấu hình/i.test(error.message)
     ) {
       return formatApiErrorWithCode(error.code, error.message.trim());
     }

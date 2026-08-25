@@ -26,8 +26,20 @@ describe('CandidateMailDialog physical path lock', () => {
   it('POST/GET mail via hrmApi under /recruitment/candidates', () => {
     expect(mailSrc).toContain('sendRecruitmentCandidateMail');
     expect(mailSrc).toContain('listRecruitmentCandidateMail');
+    expect(mailSrc).toContain('listRecruitmentMailTemplates');
+    expect(apiSrc).toContain('/api/hrm/recruitment/mail-templates');
+    expect(apiSrc).toContain('method: "GET"');
+    // listRecruitmentMailTemplates must pass init so requestHrm does not throw on init.method
+    expect(apiSrc).toMatch(
+      /listRecruitmentMailTemplates[\s\S]*?mail-templates\?\$\{search\.toString\(\)\}[\s\S]*?method:\s*"GET"/,
+    );
     expect(mailSrc).toContain('rec-mail-submit');
-    expect(mailSrc).toContain('interview_invite');
+    expect(mailSrc).toContain('isRecMailInviteTemplate');
+    expect(mailSrc).toContain('rec-mail-subject');
+    expect(mailSrc).toContain('rec-mail-body');
+    expect(mailSrc).toContain('subject:');
+    expect(mailSrc).toContain('body:');
+    expect(mailSrc).toContain('rec-mail-templates');
     expect(mailSrc).not.toMatch(/\/api\/hrm\/rec\//);
   });
 });

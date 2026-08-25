@@ -60,6 +60,7 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
   };
 
   beforeEach(() => {
+    process.env.HRM_MAIL_PROVIDER = 'local';
     db = {
       query: jest.fn().mockResolvedValue({ rows: [] }),
       withTransaction: jest.fn(async (fn) => fn(db.query)),
@@ -72,6 +73,10 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
       db as unknown as HrmDbService,
       mockBridge() as never,
     );
+  });
+
+  afterEach(() => {
+    delete process.env.HRM_MAIL_PROVIDER;
   });
 
   it('ensureSchema ADD rec_mail_outbox + rec_mail_log (DATA-01)', async () => {
@@ -180,6 +185,67 @@ describe('PO-HRM-MVP-GD1-REC-06-CLUSTER-BE-01 mail + YCTD eval', () => {
           s.includes('SET status'),
       ),
     ).toBe(false);
+  });
+
+  it('SMTP unset (not local) → HRM-REC-MAIL-PROVIDER-FAIL · no fake sent', async () => {
+    delete process.env.HRM_MAIL_PROVIDER;
+    delete process.env.HRM_SMTP_USER;
+    delete process.env.HRM_SMTP_PASS;
+    delete process.env.HRM_MAIL_FROM;
+    db.query.mockImplementation(async (sql: string, params?: unknown[]) => {
+      if (
+        sql.includes('FROM public.recruitment_candidates') &&
+        sql.includes('LIMIT 1')
+      ) {
+        return { rows: [candidateRow] } as never;
+      }
+      if (sql.includes('INSERT INTO public.rec_mail_outbox')) {
+        return {
+          rows: [
+            {
+              id: params?.[0] ?? OUTBOX_ID,
+              company_id: HOLDING,
+              recruitment_candidate_id: CAND_ID,
+              application_id: null,
+              requisition_id: REQ_ID,
+              template_code: 'fail_cv',
+              to_emails_json: ['a@xe.vn'],
+              cc_emails_json: null,
+              payload_json: null,
+              status: 'failed',
+              queued_at: '2026-08-09T01:00:00.000Z',
+              sent_at: null,
+              error_message: 'Chưa cấu hình',
+            },
+          ],
+        } as never;
+      }
+      if (sql.includes('FROM public.rec_mail_log')) {
+        return {
+          rows: [
+            {
+              attempt_no: 1,
+              result: 'failed',
+              error_message: 'Chưa cấu hình',
+              provider_ref: null,
+              logged_at: '2026-08-09T01:00:01.000Z',
+            },
+          ],
+        } as never;
+      }
+      if (sql.includes('SELECT status FROM public.recruitment_candidates')) {
+        return { rows: [{ status: 'interview' }] } as never;
+      }
+      return { rows: [] } as never;
+    });
+    await expect(
+      service.enqueueCandidateMail(
+        CAND_ID,
+        { template_code: 'fail_cv', to: ['a@xe.vn'] },
+        HOLDING,
+      ),
+    ).rejects.toMatchObject({ code: HRM_REC_MAIL_PROVIDER_FAIL });
+    process.env.HRM_MAIL_PROVIDER = 'local';
   });
 
   it('interview_invite missing CC → HRM-REC-MAIL-CC-REQUIRED · no outbox INSERT', async () => {
