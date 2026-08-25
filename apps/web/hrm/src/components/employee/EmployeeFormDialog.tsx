@@ -77,7 +77,6 @@ import {
 import { resolveEmpEmploymentStatusEditValue } from '@/lib/empEmploymentStatusCatalog';
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import {
-  departmentOptionsFromCatalog,
   jobTitleOptionsFromCatalog,
 } from '@/lib/catalogSearchPicker';
 import { HRM_EMP_DEPT_EMPTY_CATALOG_CODE, resolveEmpDeptEditValue } from '@/lib/empDeptCatalog';
@@ -336,9 +335,17 @@ export function EmployeeFormDialog({
 
   const {
     catalogs,
+    departmentPickerOptions: departmentOptions,
     isLoading: catalogsLoading,
+    isDepartmentLoading,
     isError: catalogsError,
-  } = useSettingsCatalogsOverview({ enabled: open, scope: catalogScope });
+    departmentFetchError,
+  } = useSettingsCatalogsOverview({
+    enabled: open,
+    scope: catalogScope,
+    departmentCompanyId: currentCompanyId,
+  });
+  const departmentCatalogBound = departmentOptions.length > 0;
   const {
     nestOptions: nestStatusOptions,
     effectiveCount: empStatusEffectiveCount,
@@ -532,13 +539,6 @@ export function EmployeeFormDialog({
   const hasAnyWorkFields = activeWorkFields.size > 0;
   const hasAnyFinanceFields = activeFinanceFields.size > 0;
 
-  // FR-HRM-SC-MD-02 / AC-SET-FS-01..05 — catalog SoT only; empty → CatalogSearchPicker CTA (no name-as-code)
-  // R-8088-FE-SOFTDEL-EMP-FORM-MAP-01 — never departments.map; nullish catalogs → []
-  const departmentOptions = useMemo(
-    () => departmentOptionsFromCatalog(catalogs ?? []),
-    [catalogs],
-  );
-
   useEffect(() => {
     if (!open || !employee) return;
     const stored = resolveEmployeeDepartmentLabel(employee);
@@ -546,7 +546,7 @@ export function EmployeeFormDialog({
     const resolved = resolveEmpDeptEditValue(
       departmentOptions,
       stored,
-      departmentOptions.length > 0,
+      departmentCatalogBound,
     );
     if (resolved && form.getValues('department') !== resolved) {
       form.setValue('department', resolved);
@@ -781,9 +781,11 @@ export function EmployeeFormDialog({
                             value={field.value}
                             onValueChange={field.onChange}
                             placeholder={t('employeeForm.selectDepartment')}
-                            loading={catalogsLoading}
+                            loading={catalogsLoading || isDepartmentLoading}
                             errorText={
-                              catalogsError ? t('settings.catalogs.loadError') : undefined
+                              catalogsError || departmentFetchError
+                                ? t('settings.catalogs.loadError')
+                                : undefined
                             }
                             emptyHint={
                               departmentOptions.length === 0 ? (

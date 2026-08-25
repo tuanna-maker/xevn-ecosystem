@@ -677,7 +677,7 @@ export async function loadAttHoursFromClosedLine(
  * BR-W10-03: source_kinds that collide with PAY_FORMULA_REQUIRED_VAR_ALLOWLIST names
  * are silently skipped — ATT-computed vars cannot be overridden by input packs.
  *
- * @param periodId    pay_period_input_lines.pay_period_id (UUID)
+ * @param periodId    pay_period_input_lines.period_id (UUID)
  * @param employeeId  pay_period_input_lines.employee_id (UUID)
  * @param db          HrmDbService — only pay_period_input_lines is queried (be_boundary)
  */
@@ -691,10 +691,10 @@ export async function loadInputPackBag(
   );
   const res = await db.query<{ source_kind: string; total: string }>(
     `SELECT source_kind, SUM(amount)::text AS total
-     FROM pay_period_input_lines
-     WHERE pay_period_id = $1
+     FROM public.pay_period_input_lines
+     WHERE period_id = $1
        AND employee_id = $2
-       AND deleted_at IS NULL
+       AND archived_at IS NULL
      GROUP BY source_kind`,
     [periodId, employeeId],
   );

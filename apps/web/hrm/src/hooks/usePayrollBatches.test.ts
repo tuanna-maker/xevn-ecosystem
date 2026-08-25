@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { HrmPayrollPeriod, HrmPayslipRow } from '@/integrations/hrmApi';
 import {
+  enrichPayrollRecordsFromEmployees,
   mapPayrollPeriodToBatch,
   mapPayslipToPayrollRecord,
   parsePayrollAmount,
@@ -94,6 +95,27 @@ describe('usePayrollBatches mapping helpers', () => {
     expect(totals.total_net).toBe(9_500_000);
   });
 
+  it('enriches payslip rows with employee department labels', () => {
+    const records = [
+      mapPayslipToPayrollRecord('period-1', {
+        id: 'slip-1',
+        employee_id: 'emp-1',
+        employee_code: 'NV001',
+        employee_name: 'Nguyen Van A',
+        gross_amount: '0',
+        deduction_amount: '0',
+        net_amount: '0',
+        status: 'draft',
+        period_label: '08/2026',
+      }),
+    ];
+    const enriched = enrichPayrollRecordsFromEmployees(records, [
+      { id: 'emp-1', department: 'Phòng Kế toán', position: 'Nhân viên' },
+    ]);
+    expect(enriched[0].department).toBe('Phòng Kế toán');
+    expect(enriched[0].position).toBe('Nhân viên');
+  });
+
   it('maps payslip rows for F5-safe detail records', () => {
     const payslip: HrmPayslipRow = {
       id: 'slip-1',
@@ -111,8 +133,85 @@ describe('usePayrollBatches mapping helpers', () => {
     expect(mapped.batch_id).toBe('period-1');
     expect(mapped.employee_id).toBe('emp-1');
     expect(mapped.gross_salary).toBe(15000000);
+    expect(mapped.base_salary).toBe(0);
     expect(mapped.insurance_deduction).toBe(1000000);
     expect(mapped.net_salary).toBe(14000000);
+  });
+
+  it('maps payslip component lines into record values', () => {
+    const payslip: HrmPayslipRow = {
+      id: 'slip-2',
+      employee_id: 'emp-2',
+      employee_code: 'NV002',
+      employee_name: 'Tran B',
+      gross_amount: '20000000',
+      deduction_amount: '2000000',
+      net_amount: '18000000',
+      status: 'processed',
+      period_label: '08/2026',
+    };
+    const mapped = mapPayslipToPayrollRecord(
+      'period-1',
+      payslip,
+      {
+        LUONG_THEO_CONG: 6_200_000,
+        THUONG_P4: 14_000_000,
+        KHAU_TRU_BHXH: 2_000_000,
+      },
+      { hasPayslipLines: true },
+    );
+    expect(mapped.base_salary).toBe(6_200_000);
+    expect(mapped.bonus).toBe(14_000_000);
+    expect(mapped.gross_salary).toBe(20_000_000);
+    expect(mapped.component_values?.LUONG_THEO_CONG).toBe(6_200_000);
+    expect(mapped.has_payslip_lines).toBe(true);
+  });
+
+  it('derives totals from period input when draft and header is zero', () => {
+    const payslip: HrmPayslipRow = {
+      id: 'slip-3',
+      employee_id: 'emp-3',
+      employee_code: 'XE00250',
+      employee_name: 'Le T K',
+      gross_amount: '0',
+      deduction_amount: '0',
+      net_amount: '0',
+      status: 'draft',
+      period_label: '05/2026',
+    };
+    const mapped = mapPayslipToPayrollRecord('period-1', payslip, {
+      THUONG_P4: 14_000_000,
+      PC_XANG_XE: 8_350_000,
+      KHAU_TRU_BHXH: 598_500,
+    });
+    expect(mapped.gross_salary).toBe(22_350_000);
+    expect(mapped.net_salary).toBe(21_751_500);
+  });
+
+  it('replaces stale processed header when payslip lines are missing', () => {
+    const payslip: HrmPayslipRow = {
+      id: 'slip-4',
+      employee_id: 'emp-4',
+      employee_code: 'XE00236',
+      employee_name: 'Mai V P',
+      gross_amount: '34027122.52',
+      deduction_amount: '1096609.62',
+      net_amount: '32930512.90',
+      status: 'processed',
+      period_label: '05/2026',
+    };
+    const mapped = mapPayslipToPayrollRecord(
+      'period-1',
+      payslip,
+      {
+        THUONG_P4: 4_519_230,
+        LUONG_OT_200: 121_394,
+        KHAU_TRU_BHXH: 521_755,
+      },
+      { hasPayslipLines: false },
+    );
+    expect(mapped.gross_salary).toBe(4_640_624);
+    expect(mapped.net_salary).toBe(4_118_869);
   });
 
   it('parses invalid payroll amounts to zero', () => {

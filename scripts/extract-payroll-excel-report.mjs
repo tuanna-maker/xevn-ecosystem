@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import XLSX from 'xlsx';
 import pg from 'pg';
 import { loadDeployEnv } from './seed-env-loader.mjs';
+import { normalizeSocialInsuranceDeduction } from './lib/vp-hanoi-payroll-config.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
@@ -68,7 +69,7 @@ function parsePayrollSheet(rows) {
       continue;
     }
     if (i < 6) continue; // skip header rows
-    employees.push({
+    const employee = {
       row_number: i + 1,
       department,
       employee_code: code.toUpperCase(),
@@ -85,7 +86,7 @@ function parsePayrollSheet(rows) {
         base_salary_p1_p2: num(row[11]),
         kpi_salary_p3: num(row[12]),
         performance_bonus_p4: num(row[13]),
-        paying_insurance: row[14] === '' ? null : row[14],
+        paying_insurance: row[14] === '' ? null : num(row[14]),
       },
       probation_rate: num(row[15]),
       probation_salary: num(row[16]),
@@ -135,7 +136,9 @@ function parsePayrollSheet(rows) {
       notes: cleanStr(row[62]) || null,
       legal_entity: cleanStr(row[63]) || null,
       company_note: cleanStr(row[64]) || null,
-    });
+    };
+    employee.deductions.social_insurance = normalizeSocialInsuranceDeduction(employee);
+    employees.push(employee);
   }
   return employees;
 }

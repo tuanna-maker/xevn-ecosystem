@@ -38,7 +38,11 @@
  */
 
 import type { CatalogPickerOption } from '@/lib/catalogSearchPicker';
-import { isCodeInNestSalaryCatalog } from '@/lib/salaryComponentCatalog';
+import { PAY_DATA_FIELD_CATALOG, payDataFieldLabel, type PayFormulaPickerSearchOpts } from '@/lib/payDataFieldCatalog';
+import {
+  isCodeInNestSalaryCatalog,
+  type NestSalaryComponentLike,
+} from '@/lib/salaryComponentCatalog';
 
 /** Format-only — khớp BE PAY_FORMULA_CODE_FORMAT; KHÔNG phải danh sách đóng code. */
 export const PAY_FORMULA_CODE_FORMAT = /^[a-z][a-z0-9_]{1,62}$/;
@@ -107,16 +111,105 @@ export function payFormulaStatusLabel(status: string | null | undefined): string
   return status?.trim() ? String(status) : '—';
 }
 
-export function payFormulaRequiredVarLabel(key: string): string {
+export function payFormulaRequiredVarLabel(
+  key: string,
+  opts?: { componentVarLabels?: ReadonlyMap<string, string> },
+): string {
   const k = key.trim();
+  if (!k) return '—';
+  const fromComponent = opts?.componentVarLabels?.get(k);
+  if (fromComponent) return fromComponent;
+  const fromCatalog = payDataFieldLabel(k);
+  if (fromCatalog !== k) return fromCatalog;
   if (PAY_FORMULA_REQUIRED_VAR_LABELS[k]) return PAY_FORMULA_REQUIRED_VAR_LABELS[k];
   if (PAY_FORMULA_ALLOWANCE_VAR_RE.test(k)) {
     return `Phụ cấp (${k.replace(/^allowance_/, '')})`;
   }
-  return k || '—';
+  return k;
 }
 
-/** Display-ready: nhãn + mã — cấm raw-key-only trên UI. */
+export function buildSalaryComponentVarLabelMap(
+  components: readonly NestSalaryComponentLike[],
+): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const row of components) {
+    const name = String(row.name ?? '').trim();
+    const formula = String((row as { formula?: string }).formula ?? '').trim();
+    if (!name || !formula.startsWith('=')) continue;
+    const body = formula.slice(1).trim();
+    const singleVar = body.match(/^([a-z][a-z0-9_]*)$/i);
+    if (singleVar) {
+      map.set(singleVar[1].toLowerCase(), name);
+      continue;
+    }
+    const vars = body.match(/[a-z][a-z0-9_]*/gi) ?? [];
+    for (const v of vars) {
+      const key = v.toLowerCase();
+      if (key === 'base' || key === 'salary') continue;
+      if (!map.has(key)) map.set(key, name);
+    }
+  }
+  return map;
+}
+
+/** Gợi ý biến cho PayDataFieldFormulaInput — merge catalog + map từ DB salary_components. */
+export function salaryComponentVarHintsForFormulaInput(
+  components: readonly NestSalaryComponentLike[],
+): { code: string; name: string }[] {
+  return [...buildSalaryComponentVarLabelMap(components).entries()].map(([code, name]) => ({
+    code,
+    name,
+  }));
+}
+
+/** Token chèn vào công thức TP khi user chọn theo tên thành phần lương. */
+export function resolveSalaryComponentFormulaInsertToken(
+  row: NestSalaryComponentLike,
+): string {
+  const formula = String((row as { formula?: string }).formula ?? '').trim();
+  if (formula.startsWith('=')) {
+    const body = formula.slice(1).trim();
+    const singleVar = body.match(/^([a-z][a-z0-9_]*)$/i);
+    if (singleVar) return singleVar[1].toLowerCase();
+    const firstVar = body.match(/[a-z][a-z0-9_]*/i);
+    if (firstVar) return firstVar[0].toLowerCase();
+  }
+  return String(row.code ?? '').trim().toLowerCase();
+}
+
+/** Thành phần lương Nest — tìm theo tên/mã trong picker công thức. */
+export function salaryComponentPickerHintsForFormulaInput(
+  components: readonly NestSalaryComponentLike[],
+): { componentCode: string; insertToken: string; name: string; formula?: string }[] {
+  return components
+    .map((row) => {
+      const componentCode = String(row.code ?? '').trim();
+      if (!componentCode) return null;
+      const name = String(row.name ?? '').trim() || componentCode;
+      const formula = String((row as { formula?: string }).formula ?? '').trim();
+      const insertToken = resolveSalaryComponentFormulaInsertToken(row);
+      return {
+        componentCode,
+        insertToken,
+        name,
+        formula: formula || undefined,
+      };
+    })
+    .filter((row): row is NonNullable<typeof row> => Boolean(row?.insertToken));
+}
+
+/** Gộp extraVarHints + salaryComponents cho PayDataFieldFormulaInput. */
+export function payFormulaPickerSearchOptsFromSalaryComponents(
+  components: readonly NestSalaryComponentLike[],
+): {
+  extraVarHints: { code: string; name: string }[];
+  salaryComponents: { componentCode: string; insertToken: string; name: string; formula?: string }[];
+} {
+  return {
+    extraVarHints: salaryComponentVarHintsForFormulaInput(components),
+    salaryComponents: salaryComponentPickerHintsForFormulaInput(components),
+  };
+}
 export function formatPayFormulaDisplay(
   code: string,
   label: string | null | undefined,
@@ -516,6 +609,458 @@ export function extractVarKeysFromHyperFormulaLines(lines: HyperFormulaLineDraft
   return [...keys];
 }
 
+type Gd1ExprNode = {
+  op: Gd1EvalOp;
+  left: number | string | Gd1ExprNode;
+  right: number | string | Gd1ExprNode;
+};
+
+function isGd1ExprNode(value: unknown): value is Gd1ExprNode {
+  return (
+    value != null &&
+    typeof value === 'object' &&
+    'op' in value &&
+    'left' in value &&
+    'right' in value
+  );
+}
+
+function tokenizeSalaryFormulaBody(body: string): string[] {
+  const tokens: string[] = [];
+  let i = 0;
+  while (i < body.length) {
+    if (/\s/.test(body[i])) {
+      i += 1;
+      continue;
+    }
+    if ('+-*/'.includes(body[i])) {
+      tokens.push(body[i]);
+      i += 1;
+      continue;
+    }
+    const rest = body.slice(i);
+    const m = rest.match(/^([a-z][a-z0-9_]*|\d+(?:\.\d+)?)/i);
+    if (!m) break;
+    tokens.push(m[1]);
+    i += m[1].length;
+  }
+  return tokens;
+}
+
+function isVarToken(tok: string): boolean {
+  return /^[a-z][a-z0-9_]*$/i.test(tok);
+}
+
+function isNumberToken(tok: string): boolean {
+  return /^-?\d+(\.\d+)?$/.test(tok);
+}
+
+function opCharToGd1(ch: string): Gd1EvalOp | null {
+  if (ch === '+') return 'add';
+  if (ch === '-') return 'sub';
+  if (ch === '*') return 'mul';
+  if (ch === '/') return 'div';
+  return null;
+}
+
+function buildSalaryFormulaExprTree(tokens: string[]): number | string | Gd1ExprNode | null {
+  if (tokens.length === 0) return null;
+  if (tokens.length === 1) {
+    const tok = tokens[0];
+    if (isNumberToken(tok)) return Number(tok);
+    if (isVarToken(tok)) return tok;
+    return null;
+  }
+  let i = 0;
+  const parsePrimary = (): number | string | Gd1ExprNode => {
+    const tok = tokens[i];
+    i += 1;
+    if (isNumberToken(tok)) return Number(tok);
+    if (isVarToken(tok)) return tok;
+    throw new Error(`Invalid operand: ${tok}`);
+  };
+  const parseMulDiv = (): number | string | Gd1ExprNode => {
+    let node = parsePrimary();
+    while (i < tokens.length && (tokens[i] === '*' || tokens[i] === '/')) {
+      const op = opCharToGd1(tokens[i]);
+      if (!op) break;
+      i += 1;
+      node = { op, left: node, right: parsePrimary() };
+    }
+    return node;
+  };
+  const parseAddSub = (): number | string | Gd1ExprNode => {
+    let node = parseMulDiv();
+    while (i < tokens.length && (tokens[i] === '+' || tokens[i] === '-')) {
+      const op = opCharToGd1(tokens[i]);
+      if (!op) break;
+      i += 1;
+      node = { op, left: node, right: parseMulDiv() };
+    }
+    return node;
+  };
+  return parseAddSub();
+}
+
+/** Chuyển công thức TP (=base_salary*payable_hours/...) → gd1_eval source (var|const|expr). */
+export function parseSalaryFormulaToGd1Source(formula: string): {
+  source: Gd1EvalSource;
+  var?: string;
+  amount?: number;
+  expr?: Gd1ExprNode;
+} | null {
+  const body = stripFormulaEquals(formula);
+  if (!body) return null;
+  const tokens = tokenizeSalaryFormulaBody(body);
+  if (tokens.length === 1 && isVarToken(tokens[0])) {
+    return { source: 'var', var: tokens[0] };
+  }
+  if (tokens.length === 1 && isNumberToken(tokens[0])) {
+    return { source: 'const', amount: Number(tokens[0]) };
+  }
+  const expr = buildSalaryFormulaExprTree(tokens);
+  if (expr == null) return null;
+  if (typeof expr === 'string') return { source: 'var', var: expr };
+  if (typeof expr === 'number') return { source: 'const', amount: expr };
+  return { source: 'expr', expr };
+}
+
+const FORMULA_OP_SYMBOL: Record<Gd1EvalOp, string> = {
+  add: '+',
+  sub: '−',
+  mul: '×',
+  div: '÷',
+};
+
+function formatGd1ExprNodeReadable(
+  node: number | string | Gd1ExprNode,
+  opts?: { componentVarLabels?: ReadonlyMap<string, string> },
+): string {
+  if (typeof node === 'string') return payFormulaRequiredVarLabel(node, opts);
+  if (typeof node === 'number') return String(node);
+  const left = formatGd1ExprNodeReadable(node.left, opts);
+  const right = formatGd1ExprNodeReadable(node.right, opts);
+  return `${left} ${FORMULA_OP_SYMBOL[node.op]} ${right}`;
+}
+
+/** Hiển thị công thức HF bằng nhãn biến hệ thống (không tính amount). */
+export function formatSalaryFormulaReadable(
+  formula: string,
+  opts?: { componentVarLabels?: ReadonlyMap<string, string> },
+): string {
+  const body = stripFormulaEquals(formula);
+  if (!body) return '—';
+  const labelOpts = opts?.componentVarLabels
+    ? { componentVarLabels: opts.componentVarLabels }
+    : undefined;
+  try {
+    const parsed = parseSalaryFormulaToGd1Source(formula);
+    if (!parsed) return body;
+    if (parsed.source === 'var') return payFormulaRequiredVarLabel(parsed.var ?? '', labelOpts);
+    if (parsed.source === 'const') return String(parsed.amount);
+    if (parsed.expr) return formatGd1ExprNodeReadable(parsed.expr, labelOpts);
+    return body;
+  } catch {
+    return body
+      .replace(/\*/g, ' × ')
+      .replace(/\//g, ' ÷ ')
+      .replace(/\+/g, ' + ')
+      .replace(/-/g, ' − ');
+  }
+}
+
+const FORMULA_BRACKET_LABEL_RE = /\[([^\]]+)\]/g;
+
+/** Gói nhãn tiếng Việt trong [] để sửa công thức dễ đọc. */
+export function bracketLabelForFormulaField(label: string): string {
+  const clean = String(label ?? '').replace(/\]/g, '').trim();
+  return clean ? `[${clean}]` : '';
+}
+
+/** Map mã biến → nhãn hiển thị (catalog + TP lương Nest). */
+export function buildPayFormulaDisplayLabelMap(
+  opts?: PayFormulaPickerSearchOpts,
+): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const field of PAY_DATA_FIELD_CATALOG) {
+    map.set(field.key.toLowerCase(), field.label);
+  }
+  for (const row of opts?.extraVarHints ?? []) {
+    const key = row.code.trim().toLowerCase();
+    if (!key) continue;
+    map.set(key, row.name.trim() || key);
+  }
+  for (const row of opts?.salaryComponents ?? []) {
+    const key = row.insertToken.trim().toLowerCase();
+    if (!key) continue;
+    map.set(key, row.name.trim() || row.componentCode.trim());
+  }
+  return map;
+}
+
+function resolveFormulaVarLabel(
+  key: string,
+  labelMap: ReadonlyMap<string, string>,
+): string {
+  const k = key.trim().toLowerCase();
+  return labelMap.get(k) ?? payFormulaRequiredVarLabel(k, { componentVarLabels: labelMap });
+}
+
+/** Công thức TP — dạng sửa trên form: =[Lương cơ bản] + [Phụ cấp P2]. */
+export function formatSalaryFormulaDisplayText(
+  sourceFormula: string,
+  labelMap: ReadonlyMap<string, string>,
+): string {
+  const raw = String(sourceFormula ?? '');
+  if (!raw.trim()) return raw;
+  const hasEq = raw.startsWith('=');
+  const body = hasEq ? raw.slice(1).trim() : raw.trim();
+  if (!body) return hasEq ? '=' : '';
+
+  const tokens = tokenizeSalaryFormulaBody(body);
+  if (tokens.length === 0) return raw;
+
+  const formatted = tokens
+    .map((tok) => {
+      if ('+-*/()'.includes(tok)) {
+        return '+-*/'.includes(tok) ? ` ${tok} ` : tok;
+      }
+      if (isNumberToken(tok)) return tok;
+      if (isVarToken(tok)) {
+        const key = tok.toLowerCase();
+        if (tok.length <= 2 && !labelMap.has(key)) return '';
+        return bracketLabelForFormulaField(resolveFormulaVarLabel(tok, labelMap));
+      }
+      return tok;
+    })
+    .join('')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return hasEq ? `=${formatted}` : formatted;
+}
+
+/** Map nhãn hiển thị → mã biến (cho parse công thức có []). */
+export function buildPayFormulaReverseLabelMap(
+  labelMap: ReadonlyMap<string, string>,
+  opts?: PayFormulaPickerSearchOpts,
+): Map<string, string> {
+  const reverse = new Map<string, string>();
+  for (const [key, label] of labelMap) {
+    const name = label.trim();
+    if (name) reverse.set(name, key);
+  }
+  for (const field of PAY_DATA_FIELD_CATALOG) {
+    reverse.set(field.label.trim(), field.key);
+  }
+  for (const row of opts?.extraVarHints ?? []) {
+    const key = row.code.trim().toLowerCase();
+    const name = row.name.trim();
+    if (key && name) reverse.set(name, key);
+  }
+  for (const row of opts?.salaryComponents ?? []) {
+    const key = row.insertToken.trim().toLowerCase();
+    const name = row.name.trim();
+    if (key && name) reverse.set(name, key);
+  }
+  return reverse;
+}
+
+function lookupFormulaLabelKey(
+  label: string,
+  labelMap: ReadonlyMap<string, string>,
+  reverseMap?: ReadonlyMap<string, string>,
+): string | null {
+  const trimmed = label.trim();
+  if (!trimmed) return null;
+  const fromReverse = reverseMap?.get(trimmed);
+  if (fromReverse) return fromReverse;
+  for (const [key, mapped] of labelMap) {
+    if (mapped === trimmed) return key;
+  }
+  return null;
+}
+
+/** Chuyển công thức hiển thị (có []) về mã biến snake_case để lưu Nest. */
+export function parseSalaryFormulaDisplayText(
+  displayFormula: string,
+  labelMap: ReadonlyMap<string, string>,
+  opts?: PayFormulaPickerSearchOpts,
+): string {
+  const raw = String(displayFormula ?? '');
+  if (!raw.trim()) return raw;
+  const hasEq = raw.startsWith('=');
+  let body = hasEq ? raw.slice(1) : raw;
+  const reverseMap = buildPayFormulaReverseLabelMap(labelMap, opts);
+
+  body = body.replace(FORMULA_BRACKET_LABEL_RE, (_, label: string) => {
+    const trimmed = label.trim();
+    return lookupFormulaLabelKey(trimmed, labelMap, reverseMap) ?? trimmed;
+  });
+
+  body = body.replace(/\s*([+\-*/()])\s*/g, '$1').trim();
+  return hasEq ? `=${body}` : body;
+}
+
+export function formatGd1EvalLineReadable(line: Gd1EvalLineDraft): string {
+  if (line.source === 'var') {
+    return payFormulaRequiredVarLabel(line.var);
+  }
+  if (line.source === 'const') {
+    return line.amount || '—';
+  }
+  const left = line.exprLeft.trim();
+  const right = line.exprRight.trim();
+  if (left && right) {
+    return `${payFormulaRequiredVarLabel(left)} ${FORMULA_OP_SYMBOL[line.exprOp]} ${payFormulaRequiredVarLabel(right)}`;
+  }
+  return '—';
+}
+
+export type PayFormulaComponentReadableLine = {
+  componentCode: string;
+  componentLabel: string;
+  sign: Gd1EvalSign;
+  readableFormula: string;
+};
+
+/** Đọc chi tiết từng TP + công thức biến (từ HF hoặc gd1_eval). */
+export function readPayFormulaReadableLines(
+  expressionJson: unknown,
+  componentLabels?: ReadonlyMap<string, string>,
+  componentFormulas?: ReadonlyMap<string, string>,
+): PayFormulaComponentReadableLine[] {
+  const gd1 = readGd1EvalV1Expression(expressionJson);
+  if (gd1.isEvalV1 && gd1.lines.length > 0) {
+    return gd1.lines.map((line) => {
+      const code = line.component_code.trim().toUpperCase();
+      return {
+        componentCode: code,
+        componentLabel: componentLabels?.get(code) ?? code,
+        sign: line.sign,
+        readableFormula: formatGd1EvalLineReadable(line),
+      };
+    });
+  }
+  const hfLines = readHyperFormulaV1Lines(expressionJson);
+  return hfLines.map((line) => {
+    const code = line.component_code.trim().toUpperCase();
+    const catalogFormula = componentFormulas?.get(code) ?? line.formula;
+    return {
+      componentCode: code,
+      componentLabel: componentLabels?.get(code) ?? code,
+      sign: line.sign,
+      readableFormula: formatSalaryFormulaReadable(catalogFormula),
+    };
+  });
+}
+
+export function gd1EvalLinesToComponentTokens(
+  lines: Gd1EvalLineDraft[],
+  componentLabels?: ReadonlyMap<string, string>,
+): PayFormulaComponentToken[] {
+  const tokens: PayFormulaComponentToken[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (i > 0) {
+      tokens.push({
+        type: 'op',
+        label: line.sign === 'deduction' ? '−' : '+',
+        value: line.sign === 'deduction' ? '-' : '+',
+      });
+    }
+    const code = line.component_code.trim();
+    const name = componentLabels?.get(code.toUpperCase()) ?? code;
+    tokens.push({ type: 'var', label: `[${name}]`, value: code });
+  }
+  return tokens;
+}
+
+/**
+ * Gộp biểu thức TP → gd1_eval_v1 (mỗi TP lấy formula từ catalog, parse sang biến hệ thống).
+ * Thay hyperformula_v1 — dễ đọc + khớp BE process evaluator.
+ */
+export function buildGd1EvalFromComponentComposite(input: {
+  expression: string;
+  tokens?: PayFormulaComponentToken[];
+  componentFormulas: ReadonlyMap<string, string>;
+  componentLabels?: ReadonlyMap<string, string>;
+}): {
+  expressionJson: Record<string, unknown>;
+  lines: Gd1EvalLineDraft[];
+  readableLines: PayFormulaComponentReadableLine[];
+} {
+  const expression =
+    input.expression.trim() || (input.tokens ? tokensToComponentExpression(input.tokens) : '');
+  const terms = parseComponentCompositeExpression(expression);
+  const serializedLines: Record<string, unknown>[] = [];
+  const drafts: Gd1EvalLineDraft[] = [];
+  const readableLines: PayFormulaComponentReadableLine[] = [];
+
+  for (const term of terms) {
+    const baseFormula = input.componentFormulas.get(term.componentCode) ?? '';
+    const body = baseFormula ? stripFormulaEquals(baseFormula) : term.componentCode.toLowerCase();
+    const wrapped =
+      term.coefficient === 1 ? `=${body}` : `=(${body}) * ${term.coefficient}`;
+    const parsed = parseSalaryFormulaToGd1Source(wrapped);
+    if (!parsed) continue;
+
+    const line: Record<string, unknown> = {
+      component_code: term.componentCode,
+      sign: term.sign,
+      source: parsed.source,
+    };
+    if (parsed.source === 'var') line.var = parsed.var;
+    if (parsed.source === 'const') line.amount = parsed.amount;
+    if (parsed.source === 'expr') line.expr = parsed.expr;
+    serializedLines.push(line);
+
+    const draft = emptyGd1EvalLineDraft({
+      component_code: term.componentCode,
+      sign: term.sign,
+      source: parsed.source,
+      var: parsed.var ?? '',
+      amount: parsed.amount != null ? String(parsed.amount) : '',
+    });
+    if (parsed.source === 'expr' && parsed.expr) {
+      draft.exprOp = parsed.expr.op;
+      draft.exprLeft =
+        typeof parsed.expr.left === 'object' ? '' : String(parsed.expr.left ?? '');
+      draft.exprRight =
+        typeof parsed.expr.right === 'object' ? '' : String(parsed.expr.right ?? '');
+    }
+    drafts.push(draft);
+
+    const code = term.componentCode.toUpperCase();
+    readableLines.push({
+      componentCode: code,
+      componentLabel: input.componentLabels?.get(code) ?? code,
+      sign: term.sign,
+      readableFormula: formatSalaryFormulaReadable(wrapped),
+    });
+  }
+
+  const ui: PayFormulaComponentCompositeUi = {
+    mode: 'component_composite',
+    expression,
+    tokens:
+      input.tokens && input.tokens.length > 0
+        ? input.tokens
+        : gd1EvalLinesToComponentTokens(drafts, input.componentLabels),
+  };
+
+  return {
+    lines: drafts,
+    readableLines,
+    expressionJson: {
+      form: PAY_FORMULA_EVAL_FORM,
+      lines: serializedLines,
+      dialect: PAY_FORMULA_EVAL_FORM,
+      staged: true,
+      [PAY_FORMULA_COMPOSITE_UI_KEY]: ui,
+    },
+  };
+}
+
 /** Bag variable hints for Settings formula line editor (DV-18 starter). */
 export function payFormulaBagVariableHints(): { value: string; label: string }[] {
   return PAY_FORMULA_REQUIRED_VAR_STARTER.map((value) => ({
@@ -588,7 +1133,18 @@ export function readPayFormulaComponentTokens(
   }
 
   const lines = readHyperFormulaV1Lines(expressionJson);
-  if (lines.length === 0) return null;
+  if (lines.length === 0) {
+    const gd1 = readGd1EvalV1Expression(expressionJson);
+    if (gd1.isEvalV1 && gd1.lines.length > 0) {
+      const tokens = gd1EvalLinesToComponentTokens(gd1.lines, componentLabels);
+      return {
+        mode: 'component_composite',
+        expression: tokensToComponentExpression(tokens),
+        tokens,
+      };
+    }
+    return null;
+  }
   const tokens = hyperFormulaLinesToComponentTokens(lines, componentLabels);
   return {
     mode: 'component_composite',

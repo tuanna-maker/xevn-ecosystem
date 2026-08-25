@@ -16,6 +16,11 @@
  * @CODE-MEMORY-CHANGE 2026-08-11 PO-HRM-CTR-WORKSPACE-WAVE-G3
  * What: NV-first default subject_type employee · prefill from workspace deep-link
  * Why: BA G1 AMEND · EmployeeContracts / REC hire CTA prefill employee_id
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-24 PO-HRM-CTR-CREATE-CATALOG-PARITY-01
+ * What: persistRegistry — dev console POST payload; console.error on API fail with code
+ * Why: PM debug 400 HRM-CON-* · traceability PO-HRM-CTR-CREATE-CATALOG-PARITY-01
+ * Spec: docs/program/specs/PO-HRM-CTR-CREATE-CATALOG-PARITY-01.md
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { normalizeHrmApiListCompanyId } from '@/lib/hrmListScope';
@@ -278,8 +283,12 @@ export function ContractCreateWizardDialog({
         candidatePositionName: selectedCandidate?.position_name ?? selectedCandidate?.full_name,
       });
       if (!built.ok) {
+        console.warn('[contract-create] form validation blocked:', built.message);
         toast.error(built.message);
         return null;
+      }
+      if (import.meta.env.DEV) {
+        console.info('[contract-create] POST payload', built.payload);
       }
       setIsSubmitting(true);
       try {
@@ -308,6 +317,10 @@ export function ContractCreateWizardDialog({
         toast.success(registryOnly ? 'Đã lưu sổ đăng ký' : 'Đã lưu hợp đồng');
         return created.id;
       } catch (err: unknown) {
+        console.error('[contract-create] POST /contracts-insurance/contracts failed', {
+          payload: built.payload,
+          error: err,
+        });
         toast.error(toErrorMessage(err, 'Không lưu hợp đồng'));
         return null;
       } finally {

@@ -78,6 +78,20 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
       expect(cols[0].override_applied).toBe(true);
     });
 
+    it('formula_definition_id alone does not imply override_applied (SRC-05 default)', () => {
+      const cols = parsePeriodSnapshotColumns({
+        columns: [
+          {
+            component_code: 'LUONG_THEO_CONG',
+            sort_order: 1,
+            formula_definition_id: 'f1',
+          },
+        ],
+      });
+      expect(cols[0].override_applied).toBe(false);
+      expect(cols[0].formula_definition_id).toBe('f1');
+    });
+
     it('returns empty for invalid snapshot', () => {
       expect(parsePeriodSnapshotColumns(null)).toEqual([]);
       expect(parsePeriodSnapshotColumns([])).toEqual([]);

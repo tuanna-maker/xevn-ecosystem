@@ -38,17 +38,19 @@ export const PAY_FORMULA_ATT_HOUR_VARS = [
 
 export type PayFormulaEvalSign = 'earning' | 'deduction';
 
+export type PayFormulaExprNode = {
+  op: 'add' | 'sub' | 'mul' | 'div';
+  left: number | string | PayFormulaExprNode;
+  right: number | string | PayFormulaExprNode;
+};
+
 export type PayFormulaEvalLineInput = {
   component_code: string;
   sign: PayFormulaEvalSign;
   source: 'var' | 'const' | 'expr';
   var?: string;
   amount?: number;
-  expr?: {
-    op: 'add' | 'sub' | 'mul' | 'div';
-    left: number | string;
-    right: number | string;
-  };
+  expr?: PayFormulaExprNode;
 };
 
 export type PayFormulaEvalResultLine = {
@@ -92,6 +94,30 @@ export type PayFormulaEvalResult = PayFormulaEvalOk | PayFormulaEvalFail;
 
 export function isAttHoursVarKey(key: string): boolean {
   return (PAY_FORMULA_ATT_HOUR_VARS as readonly string[]).includes(key.trim());
+}
+
+/** PROCESS: absent optional operands default 0 — never ATT/C&B fidelity keys. */
+const PROCESS_ZERO_DEFAULT_FORBIDDEN = new Set<string>([
+  'base_salary',
+  'dependents_count',
+  'gtgc_amount',
+  'gtgc_amount_vnd',
+  ...PAY_FORMULA_ATT_HOUR_VARS,
+]);
+
+export function applyProcessZeroDefaults(
+  needed: string[],
+  bag: Record<string, number>,
+): string[] {
+  const applied: string[] = [];
+  for (const key of needed) {
+    if (PROCESS_ZERO_DEFAULT_FORBIDDEN.has(key)) continue;
+    if (!(key in bag) || !Number.isFinite(bag[key])) {
+      bag[key] = 0;
+      applied.push(key);
+    }
+  }
+  return applied;
 }
 
 /**
@@ -233,6 +259,29 @@ export function classifyPayFormulaExpression(
   };
 }
 
+function isExprNode(value: unknown): value is PayFormulaExprNode {
+  return (
+    value != null &&
+    typeof value === 'object' &&
+    'op' in value &&
+    'left' in value &&
+    'right' in value
+  );
+}
+
+function collectExprVarKeys(operand: unknown, keys: Set<string>): void {
+  if (typeof operand === 'string') {
+    const k = operand.trim();
+    if (k) keys.add(k);
+    return;
+  }
+  if (typeof operand === 'number') return;
+  if (isExprNode(operand)) {
+    collectExprVarKeys(operand.left, keys);
+    collectExprVarKeys(operand.right, keys);
+  }
+}
+
 function resolveOperand(
   value: number | string,
   vars: Record<string, number>,
@@ -245,6 +294,32 @@ function resolveOperand(
     return { ok: false, key };
   }
   return { ok: true, value: vars[key] };
+}
+
+function evaluateExprOperand(
+  operand: number | string | PayFormulaExprNode,
+  vars: Record<string, number>,
+): { ok: true; value: number } | { ok: false; key: string } {
+  if (isExprNode(operand)) {
+    const left = evaluateExprOperand(operand.left, vars);
+    if (!left.ok) return left;
+    const right = evaluateExprOperand(operand.right, vars);
+    if (!right.ok) return right;
+    if (operand.op === 'add') {
+      return { ok: true, value: left.value + right.value };
+    }
+    if (operand.op === 'sub') {
+      return { ok: true, value: left.value - right.value };
+    }
+    if (operand.op === 'mul') {
+      return { ok: true, value: left.value * right.value };
+    }
+    if (right.value === 0) {
+      return { ok: false, key: '0' };
+    }
+    return { ok: true, value: left.value / right.value };
+  }
+  return resolveOperand(operand, vars);
 }
 
 function roundMoney(n: number): number {
@@ -431,8 +506,8 @@ export function evaluatePayFormulaExpression(
           warnings,
         };
       }
-      const left = resolveOperand(expr.left, vars);
-      const right = resolveOperand(expr.right, vars);
+      const left = evaluateExprOperand(expr.left, vars);
+      const right = evaluateExprOperand(expr.right, vars);
       if (!left.ok) {
         return {
           ok: false,
@@ -516,10 +591,8 @@ export function collectExpressionVarKeys(
       for (const line of classified.gd1Lines ?? classified.lines) {
         if (line.source === 'var' && line.var) keys.add(line.var);
         if (line.source === 'expr' && line.expr) {
-          if (typeof line.expr.left === 'string')
-            keys.add(line.expr.left.trim());
-          if (typeof line.expr.right === 'string')
-            keys.add(line.expr.right.trim());
+          collectExprVarKeys(line.expr.left, keys);
+          collectExprVarKeys(line.expr.right, keys);
         }
       }
     } else if (classified.kind === 'hyperformula_v1') {

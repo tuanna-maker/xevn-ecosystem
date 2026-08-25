@@ -119,6 +119,15 @@
  * What: getContractById → clause_ids alias + clause_layout[] + can_issue + preview_summary via ContractLegalPrintService
  * Why: SA-01 §4.1 G-CTR-GET-LAYOUT-01 — ContractWorkspace view shell one round-trip
  * must_keep: list/get scope parity; registry fields; print-overlay only mutate clause order; contracts_printable_ready=false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-24 PO-HRM-CTR-CREATE-CATALOG-PARITY-01
+ * change_mode: FIX
+ * What: resolveCatalogCompanyId → resolveHrmSettingsCatalogCompanyId on all catalog asserts;
+ *       assertConDepartmentKey — catalog departments ∪ public.departments (picker parity);
+ *       HRM_CON_DEPT_KEY distinct from HRM_CON_POS_KEY
+ * Why: POST create 400 HRM-CON-TYPE-KEY (main vs holding) · HRM-CON-POS-KEY on PHONG_QLPT (HRM-only dept)
+ * Spec: docs/program/specs/PO-HRM-CTR-CREATE-CATALOG-PARITY-01.md
+ * must_keep: BR-CD-F5-01; CORE-02 C&B SoT; tenant-only persist company_id=main; U65 no seed
  */
 import { HttpStatus, Injectable, Optional } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
@@ -133,9 +142,11 @@ import {
   MASTER_TENANT_ID,
   normalizePayrollListCompanyId,
   pushCompanyIdFilter,
+  pushDepartmentTableScopeFilters,
   pushWorkforceEmployeeScopeFilter,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
+  resolveHrmSettingsCatalogCompanyId,
 } from '../common/hrm-list-scope';
 import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
 import { HrmDbService } from '../db/hrm-db.service';
@@ -169,6 +180,7 @@ import { EmpEmploymentTypeService } from '../employees/emp-employment-type.servi
 import { HRM_EMP_ET_UNKNOWN } from '../employees/emp-employment-type.constants';
 
 export const HRM_CON_POS_KEY = 'HRM-CON-POS-KEY';
+export const HRM_CON_DEPT_KEY = 'HRM-CON-DEPT-KEY';
 export const HRM_CON_SIGNER_POS_KEY = 'HRM-CON-SIGNER-POS-KEY';
 /** E2 — contract_type ∈ effective contract_types (closes R-E1A-A8-CTYPE). */
 export const HRM_CON_TYPE_KEY = 'HRM-CON-TYPE-KEY';
@@ -444,10 +456,23 @@ export class ContractsInsuranceService {
     return masterTenantIdFromEnv() || MASTER_TENANT_ID;
   }
 
+  /** Settings catalog partition — parity with GET /settings-catalogs (main→holding). */
+  private resolveCatalogCompanyId(
+    authorization: string | undefined,
+    companyId: string,
+  ): string {
+    return resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      this.resolveCatalogTenantId(),
+      companyId,
+    );
+  }
+
   private async assertConPositionKey(
     companyId: string,
     positionKey: string | null | undefined,
     required: boolean,
+    authorization?: string,
   ): Promise<{ code: string; label: string } | null> {
     const code = positionKey?.trim() ?? '';
     if (!code) {
@@ -459,9 +484,10 @@ export class ContractsInsuranceService {
       );
     }
     if (!this.settingsCatalogs) return { code, label: code };
+    const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
     const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
       tenantId: this.resolveCatalogTenantId(),
-      companyId,
+      companyId: catalogCompanyId,
       catalogKey: 'job_titles',
       code,
       errorCode: HRM_CON_POS_KEY,
@@ -474,6 +500,7 @@ export class ContractsInsuranceService {
     companyId: string,
     signerPositionKey: string | null | undefined,
     required: boolean,
+    authorization?: string,
   ): Promise<{ code: string; label: string } | null> {
     const code = signerPositionKey?.trim() ?? '';
     if (!code) {
@@ -485,9 +512,10 @@ export class ContractsInsuranceService {
       );
     }
     if (!this.settingsCatalogs) return { code, label: code };
+    const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
     const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
       tenantId: this.resolveCatalogTenantId(),
-      companyId,
+      companyId: catalogCompanyId,
       catalogKey: 'job_titles',
       code,
       errorCode: HRM_CON_SIGNER_POS_KEY,
@@ -496,17 +524,96 @@ export class ContractsInsuranceService {
     return { code: hit.code, label: hit.label };
   }
 
+  /**
+   * department_key ∈ settings catalog OR active row in public.departments (picker parity).
+   */
+  private async lookupHrmDepartmentKeyInScope(
+    companyId: string,
+    departmentKey: string,
+    authorization?: string,
+  ): Promise<string | null> {
+    const trimmed = departmentKey.trim();
+    if (!trimmed) return null;
+    const scope = resolveHrmListScope(authorization, companyId);
+    const filters: string[] = [`status = 'active'`];
+    const values: unknown[] = [];
+    const uuidLike =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        trimmed,
+      );
+    if (uuidLike) {
+      values.push(trimmed);
+      filters.push(`id = $${values.length}::uuid`);
+    } else {
+      values.push(trimmed);
+      filters.push(`LOWER(TRIM(code)) = LOWER(TRIM($${values.length}))`);
+    }
+    pushDepartmentTableScopeFilters(filters, values, scope);
+    const res = await this.db.query<{ code: string | null; id: string }>(
+      `SELECT id::text AS id, code
+       FROM public.departments
+       WHERE ${filters.join(' AND ')}
+       LIMIT 1`,
+      values,
+    );
+    const row = res.rows[0];
+    if (!row) return null;
+    return row.code?.trim() || row.id?.trim() || null;
+  }
+
+  private async assertConDepartmentKey(
+    companyId: string,
+    departmentKey: string | null | undefined,
+    authorization?: string,
+  ): Promise<string> {
+    const code = departmentKey?.trim() ?? '';
+    if (!code) {
+      throw new ApiException(
+        HRM_CON_DEPT_KEY,
+        'department_key cannot be empty when provided',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (this.settingsCatalogs) {
+      const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
+      const items = await this.settingsCatalogs.getEffectiveItemsForKey(
+        this.resolveCatalogTenantId(),
+        catalogCompanyId,
+        'departments',
+      );
+      const catalogHit = items.find(
+        (item) =>
+          item.status === 'active' &&
+          item.code?.trim()?.toLowerCase() === code.toLowerCase(),
+      );
+      if (catalogHit?.code?.trim()) return catalogHit.code.trim();
+    }
+    const fromHrm = await this.lookupHrmDepartmentKeyInScope(
+      companyId,
+      code,
+      authorization,
+    );
+    if (fromHrm) return fromHrm;
+    throw new ApiException(
+      HRM_CON_DEPT_KEY,
+      `department_key '${code}' is not in departments catalog or company department list`,
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+
   /** Lookup active job_titles code — null when absent or not in effective catalog. */
   private async lookupActiveJobTitleCode(
     companyId: string,
     code: string,
+    authorization?: string,
   ): Promise<string | null> {
     const trimmed = code.trim();
     if (!trimmed) return null;
     if (!this.settingsCatalogs) return trimmed;
+    const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
     const items = await this.settingsCatalogs.getEffectiveItemsForKey(
       this.resolveCatalogTenantId(),
-      companyId,
+      catalogCompanyId,
       'job_titles',
     );
     const hit = items.find(
@@ -526,12 +633,14 @@ export class ContractsInsuranceService {
     companyId: string,
     employeeId: string | null,
     explicitKey: string | null | undefined,
+    authorization?: string,
   ): Promise<string> {
     const trimmed = explicitKey?.trim() ?? '';
     if (trimmed) {
       const fromExplicit = await this.lookupActiveJobTitleCode(
         companyId,
         trimmed,
+        authorization,
       );
       if (fromExplicit) return fromExplicit;
     }
@@ -549,6 +658,7 @@ export class ContractsInsuranceService {
         const fromEmployee = await this.lookupActiveJobTitleCode(
           companyId,
           fromEmployeeRaw,
+          authorization,
         );
         if (fromEmployee) return fromEmployee;
         if (!this.settingsCatalogs) return fromEmployeeRaw;
@@ -556,9 +666,10 @@ export class ContractsInsuranceService {
     }
 
     if (this.settingsCatalogs) {
+      const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
       const items = await this.settingsCatalogs.getEffectiveItemsForKey(
         this.resolveCatalogTenantId(),
-        companyId,
+        catalogCompanyId,
         'job_titles',
       );
       const firstActive = items.find(
@@ -579,6 +690,7 @@ export class ContractsInsuranceService {
   private async assertConContractType(
     companyId: string,
     contractType: string | null | undefined,
+    authorization?: string,
   ): Promise<string> {
     const code = contractType?.trim() ?? '';
     if (!code) {
@@ -589,9 +701,10 @@ export class ContractsInsuranceService {
       );
     }
     if (!this.settingsCatalogs) return code;
+    const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
     const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
       tenantId: this.resolveCatalogTenantId(),
-      companyId,
+      companyId: catalogCompanyId,
       catalogKey: 'contract_types',
       code,
       errorCode: HRM_CON_TYPE_KEY,
@@ -671,15 +784,16 @@ export class ContractsInsuranceService {
       }
     }
     if (!this.settingsCatalogs) return normalized;
+    const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
     const waItems = await this.settingsCatalogs.getEffectiveItemsForKey(
       this.resolveCatalogTenantId(),
-      companyId,
+      catalogCompanyId,
       'work_arrangements',
     );
     if (!waItems.length) return normalized;
     const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
       tenantId: this.resolveCatalogTenantId(),
-      companyId,
+      companyId: catalogCompanyId,
       catalogKey: 'work_arrangements',
       code: trimmed,
       errorCode: HRM_CTR_WORK_FORM_400,
@@ -715,9 +829,10 @@ export class ContractsInsuranceService {
       }
     }
     if (!this.settingsCatalogs) return trimmed;
+    const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
     const items = await this.settingsCatalogs.getEffectiveItemsForKey(
       this.resolveCatalogTenantId(),
-      companyId,
+      catalogCompanyId,
       'work_arrangements',
     );
     const hit = items.find(
@@ -870,13 +985,15 @@ export class ContractsInsuranceService {
     companyId: string,
     contractCode: string | null | undefined,
     contractTypeCode: string,
+    authorization?: string,
   ): Promise<string | null> {
     const code = contractCode?.trim() ?? '';
     let typeLabel = contractTypeCode;
     if (this.settingsCatalogs) {
+      const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
       const items = await this.settingsCatalogs.getEffectiveItemsForKey(
         this.resolveCatalogTenantId(),
-        companyId,
+        catalogCompanyId,
         'contract_types',
       );
       const hit = items.find(
@@ -964,9 +1081,10 @@ export class ContractsInsuranceService {
     }
     // Legacy unit-test path without Nest catalog provider.
     if (!this.settingsCatalogs) return { code, label: code };
+    const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
     const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
       tenantId: this.resolveCatalogTenantId(),
-      companyId,
+      companyId: catalogCompanyId,
       catalogKey: 'insurers',
       code,
       errorCode: HRM_INS_INSURER_KEY,
@@ -1006,9 +1124,10 @@ export class ContractsInsuranceService {
     }
     // Legacy unit-test path without Nest catalog provider.
     if (!this.settingsCatalogs) return code;
+    const catalogCompanyId = this.resolveCatalogCompanyId(authorization, companyId);
     const hit = await this.settingsCatalogs.assertCodeInEffectiveCatalog({
       tenantId: this.resolveCatalogTenantId(),
-      companyId,
+      companyId: catalogCompanyId,
       catalogKey: 'insurance_types',
       code,
       errorCode: HRM_INS_TYPE_KEY,
@@ -1365,6 +1484,7 @@ export class ContractsInsuranceService {
     const contractTypeCode = await this.assertConContractType(
       companyId,
       payload.contract_type,
+      authorization,
     );
     const startDate = resolveContractStartDateForCreate({
       startDate: payload.start_date,
@@ -1415,12 +1535,14 @@ export class ContractsInsuranceService {
       companyId,
       employeeId,
       payload.position_key,
+      authorization,
     );
     // E1-A — Vị trí catalog SoT (AC-E1A-CI-POS-01).
     const pos = await this.assertConPositionKey(
       companyId,
       resolvedPositionKey,
       true,
+      authorization,
     );
     const signerPresent = Boolean(
       payload.signer_name?.trim() ||
@@ -1431,21 +1553,18 @@ export class ContractsInsuranceService {
       companyId,
       payload.signer_position_key,
       signerPresent,
+      authorization,
     );
     const positionSnapshot = payload.position?.trim() || pos!.label;
     const signerPositionSnapshot =
       payload.signer_position?.trim() || (signerPos ? signerPos.label : null);
-    const departmentKey = payload.department_key?.trim() || null;
-    if (departmentKey && this.settingsCatalogs) {
-      await this.settingsCatalogs.assertCodeInEffectiveCatalog({
-        tenantId: this.resolveCatalogTenantId(),
-        companyId,
-        catalogKey: 'departments',
-        code: departmentKey,
-        errorCode: HRM_CON_POS_KEY,
-        errorMessage: `department_key '${departmentKey}' is not in departments catalog`,
-      });
-    }
+    const departmentKey = payload.department_key?.trim()
+      ? await this.assertConDepartmentKey(
+          companyId,
+          payload.department_key,
+          authorization,
+        )
+      : null;
     const licenseClass =
       payload.license_class?.trim() ||
       payload.driver_license_class?.trim() ||
@@ -1462,6 +1581,7 @@ export class ContractsInsuranceService {
         companyId,
         payload.contract_code,
         contractTypeCode,
+        authorization,
       )) ||
       payload.job_description_text?.trim() ||
       null;
@@ -1935,6 +2055,7 @@ export class ContractsInsuranceService {
         existing!.company_id,
         payload.position_key,
         true,
+        authorization,
       );
       nextPositionKey = pos!.code;
       nextPosition = payload.position?.trim() || pos!.label;
@@ -1947,29 +2068,27 @@ export class ContractsInsuranceService {
         existing!.company_id,
         payload.signer_position_key,
         true,
+        authorization,
       );
       nextSignerKey = signerPos!.code;
       nextSignerPos = payload.signer_position?.trim() || signerPos!.label;
     }
     const hasDeptKey = payload.department_key !== undefined;
     const nextDeptKey = hasDeptKey
-      ? payload.department_key?.trim() || null
+      ? payload.department_key?.trim()
+        ? await this.assertConDepartmentKey(
+            existing!.company_id,
+            payload.department_key,
+            authorization,
+          )
+        : null
       : null;
-    if (nextDeptKey && this.settingsCatalogs) {
-      await this.settingsCatalogs.assertCodeInEffectiveCatalog({
-        tenantId: this.resolveCatalogTenantId(),
-        companyId: existing!.company_id,
-        catalogKey: 'departments',
-        code: nextDeptKey,
-        errorCode: HRM_CON_POS_KEY,
-        errorMessage: `department_key '${nextDeptKey}' is not in departments catalog`,
-      });
-    }
     let nextContractType: string | null = null;
     if (payload.contract_type !== undefined) {
       nextContractType = await this.assertConContractType(
         existing!.company_id,
         payload.contract_type,
+        authorization,
       );
     }
     const aliases = this.normalizeGd1FieldAliases(payload);

@@ -81,7 +81,6 @@ import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import {
   buildDepartmentKeyFields,
   buildPositionKeyFields,
-  departmentOptionsFromCatalog,
   HRM_MASTER_DATA_CATALOG_KEYS,
   jobTitleOptionsFromCatalog,
   mergeEffectiveItemsByKeys,
@@ -277,6 +276,7 @@ export default function Decisions() {
   const calendarLocale = i18n.language === 'vi' ? vi : i18n.language === 'zh' ? zhCN : enUS;
   const {
     catalogs,
+    departmentPickerOptions: departmentOptions,
     isLoading: catalogsLoading,
     isError: catalogsError,
   } = useSettingsCatalogsOverview();
@@ -297,10 +297,6 @@ export default function Decisions() {
 
   const positionOptions = useMemo(
     () => jobTitleOptionsFromCatalog(catalogs ?? []),
-    [catalogs],
-  );
-  const departmentOptions = useMemo(
-    () => departmentOptionsFromCatalog(catalogs ?? []),
     [catalogs],
   );
 

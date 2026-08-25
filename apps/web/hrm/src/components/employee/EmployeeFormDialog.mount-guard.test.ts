@@ -18,8 +18,8 @@ describe('EmployeeFormDialog mount guard — SoftDel EMP-FORM-MAP', () => {
     expect(dialogSrc).not.toMatch(/departments\.map\s*\(/);
   });
 
-  it('must resolve dept options via departmentOptionsFromCatalog(catalogs ?? [])', () => {
-    expect(dialogSrc).toMatch(/departmentOptionsFromCatalog\s*\(\s*catalogs\s*\?\?\s*\[\s*\]\s*\)/);
+  it('must resolve dept options via useSettingsCatalogsOverview departmentPickerOptions', () => {
+    expect(dialogSrc).toMatch(/departmentPickerOptions:\s*departmentOptions/);
   });
 
   it('props interface must not require departments array', () => {

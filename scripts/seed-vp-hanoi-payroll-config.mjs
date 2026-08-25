@@ -35,6 +35,8 @@ import {
   VP_SALARY_COMPONENTS,
   VP_SHEET_COLUMN_ORDER,
   amountForComponentFromPayrollRow,
+  shouldSeedPeriodInput,
+  normalizeSocialInsuranceDeduction,
   buildGd1EvalExpressionJson,
 } from './lib/vp-hanoi-payroll-config.mjs';
 
@@ -654,9 +656,8 @@ async function seedPeriodInputs(client, payrollRows, employees) {
     const row = byCode.get(emp.employee_code.toUpperCase());
     if (!row) continue;
     for (const code of VP_SHEET_COLUMN_ORDER) {
-      if (code === 'LUONG_THEO_CONG') continue;
       const amount = amountForComponentFromPayrollRow(code, row);
-      if (amount == null || amount === 0) continue;
+      if (!shouldSeedPeriodInput(code, amount)) continue;
       const lineId = stableUuid(
         `${VP_HANOI_SEED_TAG}:period-input:${emp.employee_code}:${code}`,
       );

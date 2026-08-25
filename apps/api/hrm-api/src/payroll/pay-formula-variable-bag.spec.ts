@@ -555,7 +555,7 @@ describe('loadInputPackBag (W10)', () => {
   it('issues correct SQL with periodId + employeeId params', async () => {
     const db = mockDb((sql, params) => {
       expect(String(sql)).toContain('pay_period_input_lines');
-      expect(String(sql)).toContain('deleted_at IS NULL');
+      expect(String(sql)).toContain('archived_at IS NULL');
       expect(String(sql)).toContain('GROUP BY source_kind');
       expect(params).toEqual([PERIOD_ID_W10, EMP_ID_W10]);
       return { rows: [] };

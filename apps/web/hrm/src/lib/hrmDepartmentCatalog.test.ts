@@ -20,9 +20,11 @@ vi.mock('@/lib/hrmSpreadsheetScope', () => ({
 
 import {
   departmentMergeKey,
+  departmentPickerOptionsFromCompanyRows,
   loadCompanyDepartments,
   mapHrmDepartmentRow,
   mergeDepartmentCatalogRows,
+  mergeDepartmentPickerOptions,
   __resetCompanyDepartmentsInflightForTests,
 } from './hrmDepartmentCatalog';
 import {
@@ -135,27 +137,17 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     expect(departmentMergeKey(merged[0]!, true)).not.toBe(departmentMergeKey(merged[1]!, true));
   });
 
-  it('group CEO loads department catalog from every rollup tenant', async () => {
+  it('group CEO loads department catalog for JWT tenant only (no cross-tenant 409)', async () => {
     vi.mocked(getPortalJwtRoleCode).mockReturnValue('group_ceo');
     vi.mocked(getPortalJwtTenantId).mockReturnValue('xevn');
     listDepartments.mockResolvedValue({ data: [] });
     getSettingsCatalogsOverview.mockImplementation(async (scope: { tenantId: string }) => {
-      if (scope.tenantId === 'visun') {
+      if (scope.tenantId === 'xevn') {
         return {
           catalogs: [
             {
               catalogKey: 'departments',
-              effectiveItems: [{ label: 'Phòng Visun', code: 'visun_dept', status: 'active' }],
-            },
-          ],
-        };
-      }
-      if (scope.tenantId === 'xe-tmdv') {
-        return {
-          catalogs: [
-            {
-              catalogKey: 'departments',
-              effectiveItems: [{ label: 'Phòng TMDV', code: 'tmdv_dept', status: 'active' }],
+              effectiveItems: [{ label: 'Phòng Tập đoàn', code: 'xevn_dept', status: 'active' }],
             },
           ],
         };
@@ -166,10 +158,9 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     const result = await loadCompanyDepartments('main');
 
     expect(result.fetchError).toBeNull();
-    expect(result.rows.map((r) => r.name)).toEqual(
-      expect.arrayContaining(['Phòng Visun', 'Phòng TMDV']),
-    );
-    expect(getSettingsCatalogsOverview.mock.calls.length).toBeGreaterThanOrEqual(2);
+    expect(result.rows.map((r) => r.name)).toEqual(['Phòng Tập đoàn']);
+    expect(getSettingsCatalogsOverview.mock.calls).toHaveLength(1);
+    expect(getSettingsCatalogsOverview.mock.calls[0]?.[0]?.tenantId).toBe('xevn');
   });
 
   it('mergeDepartmentCatalogRows prefers HRM metadata for same code', () => {
@@ -288,5 +279,58 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
 
     expect(result.fetchError).toBeNull();
     expect(result.rows[0]?.name).toBe('Xưởng dịch vụ');
+  });
+});
+
+describe('departmentPickerOptionsFromCompanyRows', () => {
+  it('maps active rows to picker options (code SoT, id fallback)', () => {
+    const opts = departmentPickerOptionsFromCompanyRows([
+      {
+        id: 'uuid-1',
+        name: 'Phòng Nhân sự',
+        code: 'nhan_su',
+        company_id: 'main',
+        parent_id: null,
+        level: 1,
+        sort_order: 0,
+        status: 'active',
+        description: null,
+        manager_name: null,
+        manager_email: null,
+        employee_count: 0,
+        created_at: '',
+        updated_at: '',
+      },
+      {
+        id: 'uuid-2',
+        name: 'Phòng mới',
+        code: null,
+        company_id: 'main',
+        parent_id: null,
+        level: 1,
+        sort_order: 1,
+        status: 'active',
+        description: null,
+        manager_name: null,
+        manager_email: null,
+        employee_count: 0,
+        created_at: '',
+        updated_at: '',
+      },
+    ]);
+    expect(opts).toHaveLength(2);
+    expect(opts.find((o) => o.value === 'nhan_su')?.label).toBe('Phòng Nhân sự');
+    expect(opts.find((o) => o.value === 'uuid-2')?.label).toBe('Phòng mới');
+  });
+});
+
+describe('mergeDepartmentPickerOptions', () => {
+  it('primary HRM options override catalog duplicates', () => {
+    const merged = mergeDepartmentPickerOptions(
+      [{ value: 'hr', label: 'HR (HRM)', code: 'hr' }],
+      [{ value: 'hr', label: 'HR (catalog)', code: 'hr' }],
+    );
+    expect(merged).toHaveLength(1);
+    expect(merged[0]?.label).toBe('HR (HRM)');
   });
 });

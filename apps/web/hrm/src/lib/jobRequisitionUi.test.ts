@@ -74,7 +74,7 @@ describe.skip('jobRequisitionUi', () => {
     ).toEqual(['Phòng KD', 'Vận hành']);
     expect(
       requisitionDepartmentPickerOptions(
-        [{ catalogKey: 'departments', effectiveItems: [{ code: 'HR', label: 'Nhân sự', status: 'active' }] }],
+        [{ value: 'HR', label: 'Nhân sự', code: 'HR' }],
         ['Legacy'],
         ['OU'],
       ).map((o) => o.value),

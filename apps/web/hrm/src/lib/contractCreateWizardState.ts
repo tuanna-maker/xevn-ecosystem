@@ -32,6 +32,16 @@
 
  * Why: QA RETEST-03 HRM-CON-TYPE-KEY — NV001-HD sent VI label not catalog code
 
+ *
+
+ * @CODE-MEMORY-CHANGE 2026-08-24 PO-HRM-CTR-CREATE-CATALOG-PARITY-01
+
+ * What: buildRegistrySubmitPayload — contract_type chỉ gửi catalog code; chặn submit khi catalog trống
+
+ * Why: Không fallback fixed_term/resolvedType → BE HRM-CON-TYPE-KEY; parity PO-HRM-CTR-CREATE-CATALOG-PARITY-01
+
+ * Spec: docs/program/specs/PO-HRM-CTR-CREATE-CATALOG-PARITY-01.md
+
  */
 
 
@@ -312,7 +322,14 @@ export function buildRegistrySubmitPayload(input: {
 
   }
 
-  if (catalogBound && !contractTypeCode.trim()) {
+  if (!catalogBound) {
+    return {
+      ok: false as const,
+      message: 'Danh mục loại hợp đồng trống — mở Cài đặt → Danh mục nghiệp vụ.',
+    };
+  }
+
+  if (!contractTypeCode.trim()) {
     return { ok: false as const, message: 'Chọn loại hợp đồng từ danh mục.' };
   }
 
@@ -469,7 +486,7 @@ export function buildRegistrySubmitPayload(input: {
 
         : { subject_type: 'employee' as const }),
 
-      contract_type: contractTypeCode.trim() || resolvedType,
+      contract_type: contractTypeCode.trim(),
 
       start_date: format(effective_date!, 'yyyy-MM-dd'),
 

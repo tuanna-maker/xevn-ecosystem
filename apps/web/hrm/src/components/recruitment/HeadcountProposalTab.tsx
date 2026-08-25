@@ -55,7 +55,6 @@ import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview
 import {
   buildDepartmentKeyFields,
   buildPositionKeyFields,
-  departmentOptionsFromCatalog,
   jobTitleOptionsFromCatalog,
   resolveDepartmentLabel,
   resolvePositionDisplayLabel,
@@ -355,15 +354,12 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
   const [viewingProposal, setViewingProposal] = useState<HeadcountProposal | null>(null);
   const {
     catalogs,
+    departmentPickerOptions: departmentOptions,
     isLoading: catalogsLoading,
     isError: catalogsError,
   } = useSettingsCatalogsOverview();
   const positionOptions = useMemo(
     () => jobTitleOptionsFromCatalog(catalogs ?? []),
-    [catalogs],
-  );
-  const departmentOptions = useMemo(
-    () => departmentOptionsFromCatalog(catalogs ?? []),
     [catalogs],
   );
 

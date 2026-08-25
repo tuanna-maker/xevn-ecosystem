@@ -91,7 +91,6 @@ import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview
 import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import {
   buildDepartmentKeyFields,
-  departmentOptionsFromCatalog,
   isCatalogPickerValueAllowed,
   jobTitleOptionsFromCatalog,
   resolveDepartmentLabel,
@@ -169,16 +168,13 @@ export function EmployeeWorkTimeline({ employeeId }: EmployeeWorkTimelineProps) 
 
   const {
     catalogs,
+    departmentPickerOptions: departmentOptions,
     isLoading: catalogsLoading,
     isError: catalogsError,
   } = useSettingsCatalogsOverview();
 
   const positionOptions = useMemo(
     () => jobTitleOptionsFromCatalog(catalogs ?? []),
-    [catalogs],
-  );
-  const departmentOptions = useMemo(
-    () => departmentOptionsFromCatalog(catalogs ?? []),
     [catalogs],
   );
 

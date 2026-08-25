@@ -96,7 +96,6 @@ import {
   buildDepartmentKeyFields,
   buildPositionKeyFields,
   contractTypeOptionsFromCatalog,
-  departmentOptionsFromCatalog,
   jobTitleOptionsFromCatalog,
   resolveContractTypeCatalogLabel,
 } from '@/lib/catalogSearchPicker';
@@ -276,15 +275,12 @@ export function EmployeeContracts({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const {
     catalogs,
+    departmentPickerOptions: departmentOptions,
     isLoading: catalogsLoading,
     isError: catalogsError,
   } = useSettingsCatalogsOverview();
   const positionOptions = useMemo(
     () => jobTitleOptionsFromCatalog(catalogs ?? []),
-    [catalogs],
-  );
-  const departmentOptions = useMemo(
-    () => departmentOptionsFromCatalog(catalogs ?? []),
     [catalogs],
   );
   const contractTypeOptions = useMemo(

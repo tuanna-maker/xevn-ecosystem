@@ -41,6 +41,12 @@
  *       history/table blue → xevn-primary; DialogTitle inherits shared ≥20 floor
  * Why: ADR-20260805 §8 pale ban · §9 dual-surface · §10 modal · inventory W3-EMP-B E12
  * must_keep: UF-HRM-06 payslip path; dialog a11y; no Nest/seed; no OCR/QR invent
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-24 PO-HRM-EMP-SALARY-CB-FALLBACK-01
+ * change_mode: FIX
+ * What: Fallback summary + phụ cấp từ gói C&B active khi payslip thiếu hoặc gross=0
+ * Why: Tab «Lương & Phụ cấp» chỉ đọc payroll_payslips — NV có C&B (Đãi ngộ) vẫn hiện 0
+ * must_keep: Payslip SoT khi gross>0; C&B read-only trên tab này — sửa tại Hợp đồng → Đãi ngộ
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -124,6 +130,9 @@ import {
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { listPayrollPayslips, type HrmPayslipRow } from '@/integrations/hrmApi';
+import { compensationPackageLines } from '@/components/employee/EmployeeCompensationPanel';
+import { useEmployeeCompensation } from '@/hooks/useEmployeeCompensation';
+import { resolveAllowanceCodeDisplayLabel } from '@/lib/labelMaps';
 import { EmbedApiEmptyState } from '@/components/hrm/EmbedApiEmptyState';
 import { formatDisplayDate, formatPayrollPayDateCell } from '@/lib/formatDisplayDate';
 
@@ -181,10 +190,13 @@ const formatCurrency = (value: number) =>
 export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps) {
   const { t } = useTranslation();
   const { currentCompanyId } = useAuth();
+  const { active: activeCompensation, isLoading: compensationLoading } =
+    useEmployeeCompensation(employeeId);
   const [apiPayslips, setApiPayslips] = useState<HrmPayslipRow[] | null>(null);
   const [payslipsLoading, setPayslipsLoading] = useState(true);
   const [allowances, setAllowances] = useState<AllowanceRow[]>([]);
   const [salaryHistory] = useState<SalaryHistoryRow[]>([]);
+  const isLoading = payslipsLoading || compensationLoading;
 
   useEffect(() => {
     const companyId = currentCompanyId;
@@ -210,30 +222,86 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
     };
   }, [employeeId, currentCompanyId]);
 
+  const compensationLines = useMemo(
+    () => compensationPackageLines(activeCompensation),
+    [activeCompensation],
+  );
+
+  const compensationBase = useMemo(() => {
+    const baseLine = compensationLines.find((line) => line.line_type === 'base');
+    const amount = Number(baseLine?.amount ?? 0);
+    return Number.isFinite(amount) ? amount : 0;
+  }, [compensationLines]);
+
+  const compensationAllowanceRows = useMemo((): AllowanceRow[] => {
+    const effectiveFrom = activeCompensation?.effective_from ?? '';
+    return compensationLines
+      .filter((line) => line.line_type === 'allowance')
+      .map((line, index) => {
+        const code = line.allowance_code ?? line.component_code ?? 'other';
+        const amount = Number(line.amount ?? 0);
+        return {
+          id: line.id ?? `cb-line-${index}`,
+          name: resolveAllowanceCodeDisplayLabel(code) || code,
+          type: 'other',
+          amount: Number.isFinite(amount) ? amount : 0,
+          isFixed: true,
+          effectiveDate: effectiveFrom,
+        };
+      });
+  }, [activeCompensation?.effective_from, compensationLines]);
+
+  const latestPayslip = apiPayslips?.[0];
+  const payslipGross = Number(latestPayslip?.gross_amount ?? 0);
+  const payslipNet = Number(latestPayslip?.net_amount ?? 0);
+  const usePayslipSummary = Number.isFinite(payslipGross) && payslipGross > 0;
+  const useCompensationFallback =
+    !usePayslipSummary && (compensationBase > 0 || compensationAllowanceRows.length > 0);
+
   const salaryData = useMemo(() => {
-    const latest = apiPayslips?.[0];
-    if (!latest) {
+    if (usePayslipSummary && latestPayslip) {
       return {
-        baseSalary: 0,
-        grossSalary: 0,
-        netSalary: 0,
-        effectiveDate: '',
-        salaryGrade: '—',
-        salaryCoefficient: 0,
+        baseSalary: payslipGross,
+        grossSalary: payslipGross,
+        netSalary: Number.isFinite(payslipNet) ? payslipNet : 0,
+        effectiveDate: latestPayslip.period_label ?? '',
+        salaryGrade: '',
+        salaryCoefficient: 1,
       };
     }
-    const gross = Number(latest.gross_amount);
-    const net = Number(latest.net_amount);
+    if (useCompensationFallback) {
+      const allowanceTotal = compensationAllowanceRows.reduce((sum, row) => sum + row.amount, 0);
+      const gross = compensationBase + allowanceTotal;
+      return {
+        baseSalary: compensationBase,
+        grossSalary: gross,
+        netSalary: 0,
+        effectiveDate: activeCompensation?.effective_from ?? '',
+        salaryGrade: '',
+        salaryCoefficient: 1,
+      };
+    }
     return {
-      baseSalary: gross,
-      grossSalary: gross,
-      netSalary: net,
-      effectiveDate: latest.period_label,
-      // No grade field on payslip API yet — leave empty (do not render tech «API» badge)
-      salaryGrade: '',
-      salaryCoefficient: 1,
+      baseSalary: 0,
+      grossSalary: 0,
+      netSalary: 0,
+      effectiveDate: '',
+      salaryGrade: '—',
+      salaryCoefficient: 0,
     };
-  }, [apiPayslips]);
+  }, [
+    activeCompensation?.effective_from,
+    compensationAllowanceRows,
+    compensationBase,
+    latestPayslip,
+    payslipGross,
+    payslipNet,
+    useCompensationFallback,
+    usePayslipSummary,
+  ]);
+
+  const displayAllowances = useCompensationFallback ? compensationAllowanceRows : allowances;
+  const allowanceReadOnly = useCompensationFallback;
 
   const monthlyPayroll = useMemo((): MonthlyPayrollRow[] => {
     if (!apiPayslips?.length) return [];
@@ -252,6 +320,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
   }, [apiPayslips]);
 
   const hasPayslipData = (apiPayslips?.length ?? 0) > 0;
+  const hasDisplayData = usePayslipSummary || useCompensationFallback;
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingAllowance, setEditingAllowance] = useState<AllowanceRow | null>(null);
@@ -264,7 +333,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
     effectiveDate: format(new Date(), 'yyyy-MM-dd'),
   });
 
-  const totalAllowances = allowances.reduce((sum, a) => sum + a.amount, 0);
+  const totalAllowances = displayAllowances.reduce((sum, a) => sum + a.amount, 0);
   const totalIncome = salaryData.baseSalary + totalAllowances;
   const chartData = monthlyPayroll.slice(0, 12).reverse().map((item) => ({
     month: item.month,
@@ -374,22 +443,31 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {payslipsLoading ? (
+      {isLoading ? (
         <Card>
           <CardContent className="py-8 text-center text-sm text-xevn-textSecondary">
             {t('common.loading', 'Đang tải…')}
           </CardContent>
         </Card>
-      ) : !hasPayslipData ? (
+      ) : !hasDisplayData ? (
         <EmbedApiEmptyState
           title={t('salary.emptyTitle', 'Chưa có dữ liệu lương')}
           body={t(
             'salary.emptyBody',
-            'Phiếu lương sẽ hiển thị tại đây khi có bản ghi cho nhân viên.',
+            'Phiếu lương sẽ hiển thị tại đây khi có bản ghi cho nhân viên. Tạo gói C&B tại tab Hợp đồng → Đãi ngộ.',
           )}
         />
       ) : (
         <>
+      {useCompensationFallback ? (
+        <Card className="border-amber-200 bg-amber-50/80" data-testid="emp-salary-cb-fallback-banner">
+          <CardContent className="py-3 text-sm text-amber-950">
+            Đang hiển thị <strong>gói C&B</strong> (Hợp đồng → Đãi ngộ). Phiếu lương chưa được tính
+            {hasPayslipData ? ' (bản ghi payslip hiện tại = 0₫)' : ''}. Chỉnh sửa lương/phụ cấp tại tab
+            Đãi ngộ.
+          </CardContent>
+        </Card>
+      ) : null}
       {/* Summary Cards — ops-dense Precision Motion (no AI pastel gradients) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="rounded-card border-xevn-border bg-xevn-surface">
@@ -422,7 +500,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
               <div>
                 <p className="text-sm text-xevn-textSecondary font-medium">{t('salary.totalAllowances')}</p>
                 <p className="text-2xl font-bold text-xevn-text mt-1">{formatCurrency(totalAllowances)}</p>
-                <p className="text-xs text-xevn-textSecondary mt-2">{t('salary.allowanceCount', { count: allowances.length })}</p>
+                <p className="text-xs text-xevn-textSecondary mt-2">{t('salary.allowanceCount', { count: displayAllowances.length })}</p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-xevn-accent/15 flex items-center justify-center">
                 <Gift className="w-6 h-6 text-xevn-primary" />
@@ -451,8 +529,16 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-xevn-textSecondary font-medium">{t('salary.netSalary')}</p>
-                <p className="text-2xl font-bold text-xevn-primary mt-1">{formatCurrency(salaryData.netSalary)}</p>
-                <p className="text-xs text-xevn-textSecondary mt-2">{t('salary.afterTax')}</p>
+                <p className="text-2xl font-bold text-xevn-primary mt-1">
+                  {useCompensationFallback && salaryData.netSalary <= 0
+                    ? '—'
+                    : formatCurrency(salaryData.netSalary)}
+                </p>
+                <p className="text-xs text-xevn-textSecondary mt-2">
+                  {useCompensationFallback && salaryData.netSalary <= 0
+                    ? 'Chưa có phiếu lương đã trừ thuế/BH'
+                    : t('salary.afterTax')}
+                </p>
               </div>
               <div className="w-12 h-12 rounded-xl bg-xevn-primary/10 flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-xevn-primary" />
@@ -472,12 +558,14 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                 {t('salary.allowanceList')}
               </CardTitle>
               <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                {!allowanceReadOnly ? (
                 <DialogTrigger asChild>
                   <Button size="sm" className="gap-1.5">
                     <Plus className="w-4 h-4" />
                     {t('salary.addAllowance')}
                   </Button>
                 </DialogTrigger>
+                ) : null}
                 <DialogContent className="max-w-md">
                   <DialogHeader>
                     <DialogTitle>{t('salary.addNewAllowance', 'Thêm phụ cấp mới')}</DialogTitle>
@@ -500,7 +588,7 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {allowances.map((allowance) => {
+                {displayAllowances.map((allowance) => {
                   const TypeIcon = getTypeIcon(allowance.type);
                   return (
                     <div key={allowance.id} className="flex items-center gap-4 p-4 rounded-xl border border-xevn-border bg-xevn-background/60 hover:bg-xevn-background transition-colors">
@@ -523,6 +611,8 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                         <p className="text-xs text-xevn-textSecondary">/{t('salary.perMonth')}</p>
                       </div>
                       <div className="flex items-center gap-1">
+                        {!allowanceReadOnly ? (
+                        <>
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -543,12 +633,14 @@ export function EmployeeSalary({ employeeId, employeeName }: EmployeeSalaryProps
                             <TooltipContent>{t('common.delete')}</TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
+                        </>
+                        ) : null}
                       </div>
                     </div>
                   );
                 })}
 
-                {allowances.length === 0 && (
+                {displayAllowances.length === 0 && (
                   <div className="text-center py-8 text-xevn-textSecondary">
                     <Gift className="w-12 h-12 mx-auto mb-3 opacity-50" />
                     <p>{t('salary.noAllowances')}</p>
