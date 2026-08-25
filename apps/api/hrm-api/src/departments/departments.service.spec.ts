@@ -1,10 +1,12 @@
 import { signServiceJwt } from '../common/jwt-sign';
 import { HrmDbService } from '../db/hrm-db.service';
+import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
 import { DepartmentsService } from './departments.service';
 
 describe('DepartmentsService', () => {
   let service: DepartmentsService;
   let db: jest.Mocked<HrmDbService>;
+  let settingsCatalogs: jest.Mocked<SettingsCatalogsService>;
 
   beforeEach(() => {
     db = {
@@ -12,7 +14,11 @@ describe('DepartmentsService', () => {
       onModuleDestroy: jest.fn(),
     } as unknown as jest.Mocked<HrmDbService>;
     db.query.mockResolvedValue({ rows: [] } as never);
-    service = new DepartmentsService(db);
+    settingsCatalogs = {
+      getEffectiveItemsForKey: jest.fn().mockResolvedValue([]),
+      upsertCatalogItem: jest.fn().mockResolvedValue({ upserted: 1 }),
+    } as unknown as jest.Mocked<SettingsCatalogsService>;
+    service = new DepartmentsService(db, settingsCatalogs);
   });
 
   it('listDepartments scopes company_id for group CEO main', async () => {
@@ -35,6 +41,7 @@ describe('DepartmentsService', () => {
       expect.stringContaining('company_id = ANY'),
       expect.arrayContaining([expect.any(Array)]),
     );
+    expect(settingsCatalogs.getEffectiveItemsForKey).toHaveBeenCalled();
   });
 
   it('getDepartmentById returns 404 when row missing', async () => {
@@ -94,6 +101,37 @@ describe('DepartmentsService', () => {
     expect(db.query).toHaveBeenCalledWith(
       expect.stringContaining("custom_fields->>'department'"),
       expect.any(Array),
+    );
+  });
+
+  it('listDepartments without rollup_tenants narrows to JWT tenant catalog', async () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    db.query.mockImplementation(async (sql: string) => {
+      if (sql.includes('FROM public.departments')) {
+        return { rows: [] } as never;
+      }
+      return { rows: [] } as never;
+    });
+    settingsCatalogs.getEffectiveItemsForKey.mockResolvedValue([
+      { code: 'xevn_dept', label: 'Phòng Tập đoàn', status: 'active' },
+    ]);
+
+    const result = await service.listDepartments(
+      { company_id: 'main', rollup_tenants: false },
+      `Bearer ${token}`,
+    );
+
+    expect(result.data.map((row) => row.name)).toEqual(['Phòng Tập đoàn']);
+    expect(settingsCatalogs.getEffectiveItemsForKey).toHaveBeenCalledTimes(1);
+    expect(settingsCatalogs.getEffectiveItemsForKey).toHaveBeenCalledWith(
+      'xevn',
+      expect.any(String),
+      'departments',
     );
   });
 });

@@ -112,18 +112,27 @@ export function DepartmentManagement() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [positionConfigDept, setPositionConfigDept] = useState<Department | null>(null);
 
+  const departmentRollupTenants = isGroupCeoDepartmentRollupContext();
+
   const {
     data,
     isLoading: loading,
     error: queryError,
     refetch,
   } = useQuery({
-    queryKey: [COMPANY_DEPARTMENTS_QUERY_KEY, currentCompanyId],
+    queryKey: [
+      COMPANY_DEPARTMENTS_QUERY_KEY,
+      currentCompanyId,
+      departmentRollupTenants,
+    ],
     queryFn: async () => {
       if (!currentCompanyId) {
         return { rows: [] as CatalogDepartmentRow[], fetchError: null as string | null };
       }
-      return loadCompanyDepartments(currentCompanyId);
+      return loadCompanyDepartments(currentCompanyId, {
+        scope: catalogScope ?? undefined,
+        rollupTenants: departmentRollupTenants,
+      });
     },
     enabled: !!currentCompanyId,
     staleTime: 60_000,

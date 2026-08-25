@@ -54,11 +54,11 @@ import {
   type HrmSettingsCatalogOverviewRow,
   type HrmSpreadsheetScope,
 } from '@/integrations/hrmApi';
-import { departmentOptionsFromCatalog } from '@/lib/catalogSearchPicker';
 import {
+  companyDepartmentsLoadKey,
   departmentPickerOptionsFromCompanyRows,
   loadCompanyDepartments,
-  mergeDepartmentPickerOptions,
+  type LoadCompanyDepartmentsOptions,
 } from '@/lib/hrmDepartmentCatalog';
 import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
 
@@ -68,8 +68,11 @@ export const SETTINGS_CATALOGS_QUERY_KEY = 'hrm-settings-catalogs';
 /** Shared RQ root — HRM `/departments` ∪ catalog (DepartmentManagement + form pickers). */
 export const COMPANY_DEPARTMENTS_QUERY_KEY = 'company-departments';
 
-export function companyDepartmentsQueryKey(companyId: string | null | undefined) {
-  return [COMPANY_DEPARTMENTS_QUERY_KEY, companyId ?? null] as const;
+export function companyDepartmentsQueryKey(
+  companyId: string | null | undefined,
+  opts?: LoadCompanyDepartmentsOptions,
+) {
+  return [COMPANY_DEPARTMENTS_QUERY_KEY, ...(companyId ? companyDepartmentsLoadKey(companyId, opts) : [null])] as const;
 }
 
 export function settingsCatalogsQueryKey(scope: HrmSpreadsheetScope | null | undefined) {
@@ -105,24 +108,26 @@ export function useSettingsCatalogsOverview(opts?: {
   const catalogs = (query.data?.catalogs ?? []) as HrmSettingsCatalogOverviewRow[];
 
   const departmentsQuery = useQuery({
-    queryKey: companyDepartmentsQueryKey(departmentCompanyId),
+    queryKey: companyDepartmentsQueryKey(departmentCompanyId, {
+      scope: scope ?? undefined,
+      rollupTenants: false,
+    }),
     queryFn: async () => {
       if (!departmentCompanyId) {
         return { rows: [], fetchError: null as string | null };
       }
-      return loadCompanyDepartments(departmentCompanyId);
+      return loadCompanyDepartments(departmentCompanyId, {
+        scope: scope ?? undefined,
+        rollupTenants: false,
+      });
     },
     enabled: enabled && !!departmentCompanyId,
     staleTime: 60_000,
   });
 
   const departmentPickerOptions = useMemo(
-    () =>
-      mergeDepartmentPickerOptions(
-        departmentPickerOptionsFromCompanyRows(departmentsQuery.data?.rows ?? []),
-        departmentOptionsFromCatalog(catalogs),
-      ),
-    [departmentsQuery.data?.rows, catalogs],
+    () => departmentPickerOptionsFromCompanyRows(departmentsQuery.data?.rows ?? []),
+    [departmentsQuery.data?.rows],
   );
 
   const invalidateSettingsCatalogs = () =>

@@ -8675,11 +8675,14 @@ export async function replaceEvaluationCriteriaTemplates(companyId: string, temp
 }
 
 export async function listDepartments(
-  params: { company_id: string },
+  params: { company_id: string; rollup_tenants?: boolean },
   scope?: HrmSpreadsheetScope,
 ) {
   const search = new URLSearchParams();
   setListCompanyId(search, params.company_id);
+  if (params.rollup_tenants) {
+    search.set('rollup_tenants', 'true');
+  }
   return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
     `/api/hrm/departments?${search.toString()}`,
     { method: "GET", scope },
@@ -8819,6 +8822,7 @@ export async function createDepartment(
     sort_order?: number;
     manager_name?: string;
     manager_email?: string;
+    status?: string;
   },
   scope?: HrmSpreadsheetScope,
 ) {
@@ -8846,6 +8850,7 @@ export async function updateDepartment(
     manager_name?: string | null;
     manager_email?: string | null;
     status?: string;
+    previous_catalog_code?: string | null;
   },
   scope?: HrmSpreadsheetScope,
 ) {

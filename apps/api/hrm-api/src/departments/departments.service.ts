@@ -97,7 +97,9 @@ export class DepartmentsService {
   private shouldRollupCatalogByTenant(
     authorization: string | undefined,
     scope: HrmListScope,
+    rollupTenantsRequested: boolean,
   ): boolean {
+    if (!rollupTenantsRequested) return false;
     if (!scope.masterTenantPartition) return false;
     const jwt = getVerifiedInternalJwtPayload(authorization);
     if (!jwt) return false;
@@ -113,6 +115,41 @@ export class DepartmentsService {
     );
   }
 
+  /** Picker/form — restrict to JWT tenant even when group CEO list scope is rolled up. */
+  private narrowScopeToRequestTenant(
+    scope: HrmListScope,
+    authorization: string | undefined,
+    requestedCompanyId: string,
+  ): HrmListScope {
+    const tenantId = this.resolveCatalogTenantId(
+      authorization,
+      requestedCompanyId,
+    );
+    return {
+      ...scope,
+      masterTenantPartition: tenantId === MASTER_TENANT_ID,
+      memberTenantId: tenantId !== MASTER_TENANT_ID ? tenantId : undefined,
+      tenantOnlyMode: scope.tenantOnlyMode ?? true,
+      tenantIds: [tenantId],
+    };
+  }
+
+  private resolveCatalogTenantId(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+  ): string {
+    const fromPersist = resolveHrmPersistTenantId(
+      authorization,
+      requestedCompanyId,
+    );
+    if (fromPersist) return fromPersist;
+    const jwt = getVerifiedInternalJwtPayload(authorization);
+    const fromJwt = jwt
+      ? readJwtClaim(jwt, 'tenantId', 'tenant_id', 'tid')
+      : undefined;
+    return fromJwt || MASTER_TENANT_ID;
+  }
+
   private resolveCatalogTenantIds(
     authorization: string | undefined,
     requestedCompanyId: string,
@@ -122,7 +159,7 @@ export class DepartmentsService {
     if (rollupByTenant && scope.tenantIds?.length) {
       return scope.tenantIds;
     }
-    return [resolveHrmPersistTenantId(authorization, requestedCompanyId)];
+    return [this.resolveCatalogTenantId(authorization, requestedCompanyId)];
   }
 
   private async syncDepartmentCatalogItem(
@@ -134,7 +171,7 @@ export class DepartmentsService {
     if (!this.settingsCatalogs) return;
     const resolvedTenant =
       tenantId?.trim() ||
-      resolveHrmPersistTenantId(authorization, requestedCompanyId);
+      this.resolveCatalogTenantId(authorization, requestedCompanyId);
     const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
       authorization,
       resolvedTenant,
@@ -215,8 +252,8 @@ export class DepartmentsService {
   private async queryHrmDepartmentRows(
     query: ListDepartmentsQueryDto,
     authorization: string | undefined,
+    scope: HrmListScope,
   ): Promise<DepartmentRow[]> {
-    const scope = resolveHrmListScope(authorization, query.company_id);
     const filters: string[] = [];
     const values: unknown[] = [];
     pushDepartmentTableScopeFilters(filters, values, scope);
@@ -346,12 +383,24 @@ export class DepartmentsService {
     authorization?: string,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id);
+    const listScope = resolveHrmListScope(authorization, query.company_id);
     const rollupByTenant = this.shouldRollupCatalogByTenant(
       authorization,
+      listScope,
+      query.rollup_tenants === true,
+    );
+    const scope = rollupByTenant
+      ? listScope
+      : this.narrowScopeToRequestTenant(
+          listScope,
+          authorization,
+          query.company_id,
+        );
+    const hrmRows = await this.queryHrmDepartmentRows(
+      query,
+      authorization ?? '',
       scope,
     );
-    const hrmRows = await this.queryHrmDepartmentRows(query, authorization);
     const catalogStatus = query.status === 'inactive' ? 'draft' : 'active';
     const catalogRows = await this.loadCatalogDepartmentRows(
       authorization,
@@ -451,7 +500,7 @@ export class DepartmentsService {
       return {
         id: code,
         company_id: companyId,
-        tenant_id: resolveHrmPersistTenantId(authorization, payload.company_id),
+        tenant_id: this.resolveCatalogTenantId(authorization, payload.company_id),
         parent_id: payload.parent_id ?? null,
         name,
         code,
@@ -470,7 +519,7 @@ export class DepartmentsService {
     const tenantId = resolveHrmPersistTenantId(
       authorization,
       payload.company_id,
-    );
+    ) ?? this.resolveCatalogTenantId(authorization, payload.company_id);
     const id = randomUUID();
     const res = await this.db.query<DepartmentRow>(
       `INSERT INTO public.departments (
