@@ -6,6 +6,7 @@
  * Purpose:    Jest pure evaluate / classify — no DB
  */
 import {
+  applyProcessZeroDefaults,
   classifyPayFormulaExpression,
   collectExpressionVarKeys,
   evaluatePayFormulaExpression,
@@ -82,6 +83,36 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
     expect(r.reason).toBe('MISSING_VAR');
   });
 
+  it('evaluates nested expr for LUONG_THEO_CONG (base * payable / standard)', () => {
+    const expr = {
+      form: 'gd1_eval_v1',
+      lines: [
+        {
+          component_code: 'LUONG_THEO_CONG',
+          sign: 'earning',
+          source: 'expr',
+          expr: {
+            op: 'mul',
+            left: 'base_salary',
+            right: { op: 'div', left: 'payable_hours', right: 'standard_hours' },
+          },
+        },
+      ],
+    };
+    const keys = collectExpressionVarKeys(expr);
+    expect(keys.sort()).toEqual(
+      ['base_salary', 'payable_hours', 'standard_hours'].sort(),
+    );
+    const r = evaluatePayFormulaExpression(expr, {
+      base_salary: 5_700_000,
+      payable_hours: 212,
+      standard_hours: 196,
+    });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.lines[0].amount).toBeCloseTo(6_165_306.12, 0);
+  });
+
   it('collectExpressionVarKeys + missingVarKeys', () => {
     const exprOnly = collectExpressionVarKeys({
       form: 'gd1_eval_v1',
@@ -143,6 +174,17 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
         ],
       }),
     ).toEqual([]);
+  });
+
+  it('applyProcessZeroDefaults fills optional operands, not ATT/C&B keys', () => {
+    const bag: Record<string, number> = { base_salary: 5_000_000 };
+    const applied = applyProcessZeroDefaults(
+      ['ot_150_hours', 'base_salary', 'payable_hours'],
+      bag,
+    );
+    expect(applied).toEqual(['ot_150_hours']);
+    expect(bag.ot_150_hours).toBe(0);
+    expect(bag.payable_hours).toBeUndefined();
   });
 
   it('div by zero → DIV_BY_ZERO', () => {

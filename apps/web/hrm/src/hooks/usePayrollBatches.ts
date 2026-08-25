@@ -4,14 +4,23 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { buildPayrollEnrollPayload } from '@/lib/payrollEnrollPayload';
+import {
+  derivePayrollTotalsFromComponentValues,
+  groupPeriodInputLinesByEmployee,
+  mapPayslipLinesToComponentValues,
+  mergePayrollComponentValues,
+} from '@/lib/payrollBatchSheetColumns';
 import { resolvePaySheetTemplateDisplayFromPeriod } from '@/lib/paySheetTemplateCatalog';
 import {
   closePayrollPeriod,
   createPayrollPeriod,
   enrollPayrollPeriod,
   getPayrollEligibility,
-  HrmPayslipRow,
   HrmPayrollPeriod,
+  HrmPaySheetTemplatePeriodSnapshot,
+  HrmPayslipRow,
+  listPayrollPeriodInputLines,
+  listPayrollPayslipLines,
   listPayrollPeriods,
   listPayrollPayslips,
   processPayrollPeriod,
@@ -20,6 +29,15 @@ import { ApiClientError, toErrorMessage } from '@/lib/apiError';
 import { resolvePayAtt412UserMessage } from '@/lib/payPay01BindRing';
 
 /**
+ * @CODE-MEMORY-CHANGE 2026-08-24
+ * WorkItem: PO-HRM-PAY-VP-HANOI-BATCH-DETAIL-COLUMNS-01
+ * change_mode: FIX
+ * What: fetchBatchRecords loads input-lines per enrolled employee_id (parallel) not one global limit=500;
+ *       mapPayslipToPayrollRecord derives gross/net from component_values when draft or missing payslip lines
+ * Why: VP HN 05/2026 has 700 period input rows — global list truncates → XE00236/XE00250 show 0₫ columns
+ *       while stale processed header still showed ~34M gross (not merged salaries — separate payslips)
+ * must_keep: mergePayrollComponentValues · has_payslip_lines dotted preview · payroll_e2e_ready=false · no FE formula
+ *
  * @CODE-MEMORY-CHANGE 2026-08-07
  * WorkItem: PO-HRM-PAYROLL-FORMULA-RUN-GAP-W3-FE-SUMMARY-CARDS-01
  * change_mode: FIX
@@ -53,6 +71,8 @@ export interface PayrollBatch {
   pay_sheet_template_id: string | null;
   pay_sheet_template_name: string | null;
   pay_sheet_template_code: string | null;
+  /** Immutable column layout from bind — drives batch detail table. */
+  sheet_template_snapshot_json?: HrmPaySheetTemplatePeriodSnapshot | null;
   employee_count: number;
   total_gross: number;
   total_deduction: number;
@@ -94,6 +114,8 @@ export interface PayrollRecord {
   late_days: number;
   leave_days: number;
   component_values: Record<string, number> | null;
+  /** True when payroll_payslip_lines exist — false means amounts may come from period input preview. */
+  has_payslip_lines: boolean;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -227,6 +249,8 @@ export function mapPayrollPeriodToBatch(item: HrmPayrollPeriod): PayrollBatch {
     pay_sheet_template_id: tplDisplay.id,
     pay_sheet_template_name: tplDisplay.name,
     pay_sheet_template_code: tplDisplay.code,
+    sheet_template_snapshot_json:
+      item.sheet_template_snapshot_json ?? item.sheetTemplateSnapshotJson ?? null,
     employee_count: employeeCount,
     total_gross: displayTotals.total_gross,
     total_deduction: displayTotals.total_deduction,
@@ -245,10 +269,26 @@ export function mapPayrollPeriodToBatch(item: HrmPayrollPeriod): PayrollBatch {
   };
 }
 
-export function mapPayslipToPayrollRecord(batchId: string, row: HrmPayslipRow): PayrollRecord {
-  const gross = parsePayrollAmount(row.gross_amount);
-  const deduction = parsePayrollAmount(row.deduction_amount);
-  const net = parsePayrollAmount(row.net_amount);
+export function mapPayslipToPayrollRecord(
+  batchId: string,
+  row: HrmPayslipRow,
+  componentValues?: Record<string, number> | null,
+  opts?: { hasPayslipLines?: boolean },
+): PayrollRecord {
+  const values = componentValues ?? null;
+  let gross = parsePayrollAmount(row.gross_amount);
+  let deduction = parsePayrollAmount(row.deduction_amount);
+  let net = parsePayrollAmount(row.net_amount);
+  const hasComponentValues = values != null && Object.keys(values).length > 0;
+  const useComponentTotals =
+    hasComponentValues && (row.status === 'draft' || opts?.hasPayslipLines === false);
+  if (useComponentTotals && values) {
+    const derived = derivePayrollTotalsFromComponentValues(values);
+    gross = derived.gross;
+    deduction = derived.deduction;
+    net = derived.net;
+  }
+  const baseSalary = values?.LUONG_CO_BAN ?? values?.LUONG_THEO_CONG ?? 0;
   return {
     id: row.id,
     company_id: '',
@@ -258,12 +298,12 @@ export function mapPayslipToPayrollRecord(batchId: string, row: HrmPayslipRow): 
     employee_name: row.employee_name,
     department: null,
     position: null,
-    base_salary: gross,
+    base_salary: baseSalary,
     allowances: 0,
-    bonus: 0,
-    overtime: 0,
+    bonus: values?.THUONG_P4 ?? 0,
+    overtime: (values?.LUONG_OT_150 ?? 0) + (values?.LUONG_OT_200 ?? 0),
     insurance_deduction: deduction,
-    tax_deduction: 0,
+    tax_deduction: values?.THUE_TNCN ?? 0,
     other_deduction: 0,
     gross_salary: gross,
     net_salary: net,
@@ -272,11 +312,40 @@ export function mapPayslipToPayrollRecord(batchId: string, row: HrmPayslipRow): 
     overtime_hours: 0,
     late_days: 0,
     leave_days: 0,
-    component_values: null,
+    component_values: values,
+    has_payslip_lines: opts?.hasPayslipLines ?? false,
     notes: null,
     created_at: '',
     updated_at: '',
   };
+}
+
+export type PayrollRecordEmployeeEnrich = {
+  id: string;
+  department?: string | null;
+  position?: string | null;
+};
+
+/** Enrich payslip rows with employee master labels (department/position) — API payslip list omits these. */
+export function enrichPayrollRecordsFromEmployees(
+  records: PayrollRecord[],
+  employees: readonly PayrollRecordEmployeeEnrich[],
+): PayrollRecord[] {
+  if (records.length === 0 || employees.length === 0) return records;
+  const byId = new Map(employees.map((e) => [e.id, e]));
+  return records.map((record) => {
+    if (!record.employee_id) return record;
+    const emp = byId.get(record.employee_id);
+    if (!emp) return record;
+    const department = emp.department?.trim() || record.department;
+    const position = emp.position?.trim() || record.position;
+    if (!department && !position) return record;
+    return {
+      ...record,
+      department: department ?? record.department,
+      position: position ?? record.position,
+    };
+  });
 }
 
 export const usePayrollBatches = (options?: { periodMonth?: number; periodYear?: number }) => {
@@ -303,8 +372,50 @@ export const usePayrollBatches = (options?: { periodMonth?: number; periodYear?:
   // Fetch records for a batch
   const fetchBatchRecords = useCallback(async (batchId: string): Promise<PayrollRecord[]> => {
     if (!currentCompanyId) return [];
-    const response = await listPayrollPayslips({ company_id: currentCompanyId, period_id: batchId });
-    return (response.data ?? []).map((row) => mapPayslipToPayrollRecord(batchId, row));
+    const payslipResponse = await listPayrollPayslips({
+      company_id: currentCompanyId,
+      period_id: batchId,
+    });
+    const rows = payslipResponse.data ?? [];
+    const employeeIds = [
+      ...new Set(
+        rows.map((row) => row.employee_id).filter((id): id is string => Boolean(id?.trim())),
+      ),
+    ];
+    const inputLineResponses = await Promise.all(
+      employeeIds.map((employee_id) =>
+        listPayrollPeriodInputLines(batchId, {
+          company_id: currentCompanyId,
+          employee_id,
+          limit: 500,
+        }).catch(() => ({ items: [] as const })),
+      ),
+    );
+    const periodInputsByEmployee = groupPeriodInputLinesByEmployee(
+      inputLineResponses.flatMap((response) => response.items ?? []),
+    );
+
+    const records = await Promise.all(
+      rows.map(async (row) => {
+        const periodInputValues =
+          row.employee_id != null ? (periodInputsByEmployee.get(row.employee_id) ?? {}) : {};
+        let payslipLineValues: Record<string, number> = {};
+        let hasPayslipLines = false;
+        try {
+          const linesResponse = await listPayrollPayslipLines(row.id, {
+            company_id: currentCompanyId,
+          });
+          const lines = linesResponse.data ?? [];
+          hasPayslipLines = lines.length > 0;
+          payslipLineValues = mapPayslipLinesToComponentValues(lines);
+        } catch {
+          payslipLineValues = {};
+        }
+        const componentValues = mergePayrollComponentValues(payslipLineValues, periodInputValues);
+        return mapPayslipToPayrollRecord(batchId, row, componentValues, { hasPayslipLines });
+      }),
+    );
+    return records;
   }, [currentCompanyId]);
 
   // Create batch mutation

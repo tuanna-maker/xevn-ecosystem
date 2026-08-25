@@ -176,7 +176,6 @@ import { resolveContractWorkspaceSearch } from '@/lib/contractWorkspaceDeepLink'
 import { resolveContractStatusLabelVi } from '@/lib/contractCore09Ring';
 import {
   contractTypeOptionsFromCatalog,
-  departmentOptionsFromCatalog,
   jobTitleOptionsFromCatalog,
   resolveContractTypeCatalogLabel,
   resolveContractTypeEditValue,
@@ -443,10 +442,13 @@ export default function Contracts() {
 
   const {
     catalogs,
+    departmentPickerOptions,
     isLoading: catalogsLoading,
+    isDepartmentLoading,
     isError: catalogsError,
   } = useSettingsCatalogsOverview({
     enabled: true, // filter chips + form need contract_types (E2 parity)
+    departmentCompanyId: currentCompanyId,
   });
   const formFieldsCatalog = findCatalog(catalogs, ['hrm_contract_form_fields', 'contract_form_fields']);
   const contractStatusesCatalog = findCatalog(catalogs, ['contract_statuses', 'hrm_contract_statuses']);
@@ -502,11 +504,6 @@ export default function Contracts() {
     if (fromCatalog.length > 0) return fromCatalog;
     return STATUS_OPTIONS;
   }, [contractStatusesCatalog, STATUS_OPTIONS]);
-
-  const departmentPickerOptions = useMemo(
-    () => departmentOptionsFromCatalog(catalogs ?? []),
-    [catalogs],
-  );
 
   const handleEmployeeSelect = (employeeId: string) => {
     const emp = employeesList.find((e) => e.id === employeeId);
@@ -588,13 +585,15 @@ export default function Contracts() {
     });
   }, [workspaceOpen, editingContract, formData.contract_type, contractTypePickerOptions]);
 
+  const formLookupsLoading = catalogsLoading || isDepartmentLoading;
+
   const isCreateFormReady = useMemo(
     () =>
       isContractCreateWizardFormReady({
         editing: Boolean(editingContract),
-        catalogsLoading,
+        catalogsLoading: formLookupsLoading,
       }),
-    [editingContract, catalogsLoading],
+    [editingContract, formLookupsLoading],
   );
 
   const {
@@ -896,10 +895,15 @@ export default function Contracts() {
         setIsSubmitting(false);
         return;
       }
+      if (!contractTypeCode.trim()) {
+        toast.error('Chọn loại hợp đồng từ danh mục (Cài đặt → Loại HĐ).');
+        setIsSubmitting(false);
+        return;
+      }
       const dataWithFile = {
         ...formData,
         file_url: fileUrl,
-        contract_type: contractTypeCode.trim() || resolvedType,
+        contract_type: contractTypeCode.trim(),
         effective_date,
         expiry_date,
         position_key: posResolved.position_key,
@@ -1695,7 +1699,7 @@ export default function Contracts() {
           employeesList={employeesList}
           onEmployeeSelect={handleEmployeeSelect}
           hasContractField={hasContractField}
-          catalogsLoading={catalogsLoading}
+          catalogsLoading={formLookupsLoading}
           catalogsError={catalogsError}
           isCreateFormReady={isCreateFormReady}
           packCode={printPackCode}

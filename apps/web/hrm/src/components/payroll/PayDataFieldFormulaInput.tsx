@@ -4,7 +4,7 @@
  * Ghi chú kỹ thuật (DEF-PAY-FIELD-SEARCH-FOCUS-01):
  * Radix FocusScope refocus khi picker thêm `<button>` — chip dùng div; khôi phục focus search.
  */
-import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -12,12 +12,19 @@ import { Label } from '@/components/ui/label';
 import { FormulaInput } from '@/components/payroll/FormulaInput';
 import {
   payDataFieldsForFormulaInput,
-  searchPayDataFields,
+  searchPayFormulaPickerFields,
   suggestPayFormulaQuickInserts,
   type PayAttendanceUnit,
   type PayDataFieldItem,
+  type PayFormulaPickerSearchOpts,
   type PayFormulaQuickInsert,
 } from '@/lib/payDataFieldCatalog';
+import {
+  bracketLabelForFormulaField,
+  buildPayFormulaDisplayLabelMap,
+  formatSalaryFormulaDisplayText,
+  parseSalaryFormulaDisplayText,
+} from '@/lib/payFormulaCatalog';
 
 const OPERATORS = ['+', '-', '*', '/', '(', ')'] as const;
 
@@ -28,18 +35,38 @@ type PayDataFieldFormulaInputProps = {
   className?: string;
   variant?: 'default' | 'sidebar';
   attendanceUnit?: PayAttendanceUnit;
+  /** Biến bổ sung từ Nest salary_components (formula → tên TP). */
+  extraVarHints?: readonly { code: string; name: string }[];
+  /** Thành phần lương Nest — tìm theo tên/mã (LUONG_CO_BAN). */
+  salaryComponentHints?: PayFormulaPickerSearchOpts['salaryComponents'];
 };
+
+function normalizePrefixBeforeFieldInsert(prefix: string): string {
+  let p = prefix;
+  // Xóa ký tự đang gõ để tìm (vd. "l" trước khi chọn chip đầy đủ)
+  p = p.replace(/[a-zA-Z_][a-zA-Z0-9_]*$/, '');
+  // Xóa đoạn [ chưa đóng ngoặc
+  p = p.replace(/\[[^\]]*$/, '');
+  return p;
+}
 
 function insertAtFormula(
   current: string,
   insert: string,
   textarea: HTMLTextAreaElement | null,
+  append = false,
 ): string {
   const raw = current ?? '';
-  const start = textarea?.selectionStart ?? raw.length;
-  const end = textarea?.selectionEnd ?? raw.length;
-  const before = raw.slice(0, start);
+  const start = append ? raw.length : (textarea?.selectionStart ?? raw.length);
+  const end = append ? raw.length : (textarea?.selectionEnd ?? raw.length);
+  let before = raw.slice(0, start);
   const after = raw.slice(end);
+
+  const isOperator = OPERATORS.includes(insert as (typeof OPERATORS)[number]);
+  const isFieldToken = insert.startsWith('[');
+  if (isFieldToken) {
+    before = normalizePrefixBeforeFieldInsert(before);
+  }
 
   let prefix = before;
   let token = insert;
@@ -52,7 +79,6 @@ function insertAtFormula(
     prefix = `=${prefix}`;
   }
 
-  const isOperator = OPERATORS.includes(token as (typeof OPERATORS)[number]);
   const needsSpace =
     prefix.length > 1 &&
     !prefix.endsWith(' ') &&
@@ -61,9 +87,10 @@ function insertAtFormula(
     !prefix.endsWith('-') &&
     !prefix.endsWith('*') &&
     !prefix.endsWith('/') &&
-    !token.startsWith(')');
+    !token.startsWith(')') &&
+    !isOperator;
 
-  if (needsSpace && !isOperator) {
+  if (needsSpace) {
     token = ` ${token}`;
   }
 
@@ -77,21 +104,27 @@ function FieldChip({
 }: {
   field: PayDataFieldItem;
   compact?: boolean;
-  onPick: (key: string) => void;
+  onPick: (field: PayDataFieldItem) => void;
 }) {
+  const isSalaryComponent = field.group === 'salary_component';
   return (
     <div
       role="button"
       tabIndex={-1}
       title={`${field.sourceHint} · mã: ${field.key}`}
       onMouseDown={(e) => e.preventDefault()}
-      onClick={() => onPick(field.key)}
+      onClick={() => onPick(field)}
       className={cn(
-        'cursor-pointer text-left rounded-md border border-emerald-200 bg-white hover:bg-emerald-50 shadow-sm',
+        'cursor-pointer text-left rounded-md border bg-white shadow-sm',
+        isSalaryComponent
+          ? 'border-blue-200 hover:bg-blue-50'
+          : 'border-emerald-200 hover:bg-emerald-50',
         compact ? 'px-2 py-1 text-[11px]' : 'px-2.5 py-1.5 text-xs',
       )}
     >
-      <span className="font-medium text-emerald-900">{field.label}</span>
+      <span className={cn('font-medium', isSalaryComponent ? 'text-blue-900' : 'text-emerald-900')}>
+        {field.label}
+      </span>
       {!compact ? (
         <span className="text-[10px] text-gray-400 font-mono block">{field.key}</span>
       ) : null}
@@ -123,16 +156,20 @@ function QuickInsertChip({
 
 const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
   onPick,
+  onPickQuickInsert,
   onPickOperator,
   attendanceUnit,
   isSidebar,
   searchClassName,
+  pickerSearchOpts,
 }: {
-  onPick: (token: string) => void;
+  onPick: (field: PayDataFieldItem) => void;
+  onPickQuickInsert: (insert: string) => void;
   onPickOperator: (op: string) => void;
   attendanceUnit: PayAttendanceUnit;
   isSidebar: boolean;
   searchClassName?: string;
+  pickerSearchOpts?: PayFormulaPickerSearchOpts;
 }) {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -140,8 +177,8 @@ const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
   const fieldLimit = isSidebar ? 10 : 999;
 
   const filtered = useMemo(
-    () => searchPayDataFields(query, fieldLimit),
-    [query, fieldLimit],
+    () => searchPayFormulaPickerFields(query, fieldLimit, pickerSearchOpts),
+    [query, fieldLimit, pickerSearchOpts],
   );
   const quickInserts = useMemo(
     () => suggestPayFormulaQuickInserts(query, attendanceUnit).slice(0, isSidebar ? 3 : 4),
@@ -174,7 +211,7 @@ const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
             onBlur={() => {
               searchFocusedRef.current = false;
             }}
-            placeholder="Tìm: giờ công, nghỉ phép, KPI…"
+            placeholder="Tìm: giờ công, lương cơ bản, LUONG_CO_BAN…"
             className="pl-9 h-9 text-sm"
             aria-label="Tìm trường dữ liệu"
             autoComplete="off"
@@ -212,7 +249,7 @@ const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
             </p>
             <div className="flex flex-wrap gap-1">
               {quickInserts.map((item) => (
-                <QuickInsertChip key={item.id} item={item} onPick={onPick} />
+                <QuickInsertChip key={item.id} item={item} onPick={onPickQuickInsert} />
               ))}
             </div>
           </div>
@@ -220,12 +257,15 @@ const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
 
         {filtered.length === 0 ? (
           <p className="text-xs text-muted-foreground italic px-1">
-            Không tìm thấy trường — thử &quot;giờ công&quot;, &quot;nghỉ phép&quot;, &quot;KPI&quot;…
+            Không tìm thấy — thử &quot;giờ công&quot;, &quot;lương cơ bản&quot;, &quot;LUONG_CO_BAN&quot;…
           </p>
         ) : (
           <div>
             {!query.trim() && isSidebar ? (
               <p className="text-[10px] font-semibold text-gray-500 mb-1">Trường hay dùng</p>
+            ) : null}
+            {query.trim() && filtered.some((f) => f.group === 'salary_component') ? (
+              <p className="text-[10px] font-semibold text-blue-700 mb-1">Thành phần lương</p>
             ) : null}
             <div className="flex flex-wrap gap-1">
               {filtered.map((field) => (
@@ -234,7 +274,7 @@ const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
             </div>
             {isSidebar && !query.trim() ? (
               <p className="text-[10px] text-muted-foreground mt-1.5">
-                Gõ từ khóa để tìm thêm (vd. nghỉ phép, doanh thu, phụ cấp…)
+                Gõ tên thành phần lương hoặc trường dữ liệu (vd. lương cơ bản, nghỉ phép…)
               </p>
             ) : null}
           </div>
@@ -251,34 +291,110 @@ export const PayDataFieldFormulaInput = memo(function PayDataFieldFormulaInput({
   className,
   variant = 'default',
   attendanceUnit = 'hours',
+  extraVarHints,
+  salaryComponentHints,
 }: PayDataFieldFormulaInputProps) {
   const isSidebar = variant === 'sidebar';
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const formulaOptions = useMemo(() => payDataFieldsForFormulaInput(), []);
+  const pickerSearchOpts = useMemo<PayFormulaPickerSearchOpts>(
+    () => ({
+      extraVarHints,
+      salaryComponents: salaryComponentHints,
+    }),
+    [extraVarHints, salaryComponentHints],
+  );
+  const formulaOptions = useMemo(
+    () => payDataFieldsForFormulaInput(pickerSearchOpts),
+    [pickerSearchOpts],
+  );
+
+  const labelMap = useMemo(
+    () => buildPayFormulaDisplayLabelMap(pickerSearchOpts),
+    [pickerSearchOpts],
+  );
+  const [displayValue, setDisplayValue] = useState(() =>
+    formatSalaryFormulaDisplayText(value, labelMap),
+  );
+  const displayValueRef = useRef(displayValue);
+  displayValueRef.current = displayValue;
+  const editingRef = useRef(false);
+  const suppressBlurUntilRef = useRef(0);
+
+  useEffect(() => {
+    if (editingRef.current) return;
+    const formatted = formatSalaryFormulaDisplayText(value, labelMap);
+    if (formatted === displayValueRef.current) return;
+    displayValueRef.current = formatted;
+    setDisplayValue(formatted);
+  }, [value, labelMap]);
+
+  const syncToParent = useCallback(
+    (nextDisplay: string) => {
+      const source = parseSalaryFormulaDisplayText(nextDisplay, labelMap, pickerSearchOpts);
+      displayValueRef.current = nextDisplay;
+      setDisplayValue(nextDisplay);
+      editingRef.current = true;
+      onChange(source);
+    },
+    [labelMap, onChange, pickerSearchOpts],
+  );
 
   const insertTokenRef = useRef<(token: string) => void>(() => {});
   insertTokenRef.current = (token: string) => {
-    const next = insertAtFormula(value, token, textareaRef.current);
-    onChange(next);
-    requestAnimationFrame(() => textareaRef.current?.focus());
+    suppressBlurUntilRef.current = Date.now() + 500;
+    editingRef.current = true;
+    const nextDisplay = insertAtFormula(displayValueRef.current, token, textareaRef.current, true);
+    syncToParent(nextDisplay);
   };
 
-  const onPickField = useCallback((token: string) => {
-    insertTokenRef.current(token);
+  const onPickField = useCallback((field: PayDataFieldItem) => {
+    insertTokenRef.current(bracketLabelForFormulaField(field.label));
+  }, []);
+
+  const onPickQuickInsert = useCallback((insert: string) => {
+    insertTokenRef.current(insert);
   }, []);
 
   const onPickOperator = useCallback((op: string) => {
     insertTokenRef.current(op);
   }, []);
 
+  const handleDisplayChange = useCallback(
+    (nextDisplay: string) => {
+      editingRef.current = true;
+      displayValueRef.current = nextDisplay;
+      setDisplayValue(nextDisplay);
+      const source = parseSalaryFormulaDisplayText(nextDisplay, labelMap, pickerSearchOpts);
+      onChange(source);
+    },
+    [labelMap, onChange, pickerSearchOpts],
+  );
+
+  const handleFormulaBlur = useCallback(() => {
+    if (Date.now() < suppressBlurUntilRef.current) return;
+    editingRef.current = false;
+    const source = parseSalaryFormulaDisplayText(displayValueRef.current, labelMap, pickerSearchOpts);
+    const formatted = formatSalaryFormulaDisplayText(source, labelMap);
+    displayValueRef.current = formatted;
+    setDisplayValue(formatted);
+    onChange(source);
+  }, [labelMap, onChange, pickerSearchOpts]);
+
+  const formatInsertToken = useCallback(
+    (item: { code: string; name: string }) => bracketLabelForFormulaField(item.name),
+    [],
+  );
+
   return (
     <div className={cn(isSidebar ? 'space-y-2' : 'space-y-3', className)}>
       <PayFieldSearchPanel
         onPick={onPickField}
+        onPickQuickInsert={onPickQuickInsert}
         onPickOperator={onPickOperator}
         attendanceUnit={attendanceUnit}
         isSidebar={isSidebar}
         searchClassName={!isSidebar ? 'max-w-md w-full' : undefined}
+        pickerSearchOpts={pickerSearchOpts}
       />
 
       {!isSidebar ? (
@@ -299,19 +415,31 @@ export const PayDataFieldFormulaInput = memo(function PayDataFieldFormulaInput({
       ) : null}
 
       <FormulaInput
-        value={value}
-        onChange={onChange}
+        value={displayValue}
+        onChange={handleDisplayChange}
+        validationValue={value}
+        disableAutocomplete
         availableComponents={formulaOptions}
         placeholder={placeholder}
-        className={cn('font-mono text-sm', isSidebar && '[&_textarea]:min-h-[56px]')}
+        className={cn('text-sm', isSidebar && '[&_textarea]:min-h-[56px]')}
         textareaRef={textareaRef}
+        formatInsertToken={formatInsertToken}
+        onFocus={() => {
+          editingRef.current = true;
+        }}
+        onBlur={handleFormulaBlur}
       />
 
       {!isSidebar ? (
         <p className="text-xs text-muted-foreground">
-          Bạn chỉ cần chọn <strong>tên tiếng Việt</strong>; hệ thống tự chèn mã trường.
+          Công thức hiển thị <strong>tên tiếng Việt</strong>; hệ thống tự lưu mã trường khi bạn lưu
+          thành phần.
         </p>
-      ) : null}
+      ) : (
+        <p className="text-[10px] text-muted-foreground leading-snug">
+          Hiển thị tên tiếng Việt — lưu Nest vẫn là mã biến (<span className="font-mono">base_salary</span>…).
+        </p>
+      )}
     </div>
   );
 });

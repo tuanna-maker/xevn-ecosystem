@@ -391,7 +391,7 @@ export function CheckInOutWidget({ onCheckInOut }: CheckInOutWidgetProps) {
                   <SelectTrigger className="xevn-field-select-md">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent portalScope="iframe">
+                  <SelectContent portalScope="parent">
                     <SelectItem value="normal">{t('attendanceType.normal')}</SelectItem>
                     <SelectItem value="remote">{t('attendanceType.remote')}</SelectItem>
                     <SelectItem value="field_work">{t('attendanceType.fieldWork')}</SelectItem>

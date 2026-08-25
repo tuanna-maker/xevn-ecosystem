@@ -1,9 +1,22 @@
+/**
+ * @CODE-MEMORY
+ * Lib:        HRM org chart ∪ settings catalog → department picker options
+ * WorkItem:   PO-HRM-CTR-CREATE-CATALOG-PARITY-01
+ * must_keep:  mergeDepartmentPickerOptions — primary (HRM) wins on duplicate code
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-24 PO-HRM-CTR-CREATE-CATALOG-PARITY-01
+ * change_mode: EXPAND
+ * What: loadCompanyDepartments + mergeDepartmentPickerOptions — dual SoT for form pickers
+ * Why: Tab Phòng ban (public.departments) vs catalog departments; BE assert parity
+ * Spec: docs/program/specs/PO-HRM-CTR-CREATE-CATALOG-PARITY-01.md
+ */
 import {
   getSettingsCatalogsOverview,
   listDepartments,
   type HrmSettingsCatalogOverviewRow,
   type HrmSpreadsheetScope,
 } from '@/integrations/hrmApi';
+import type { CatalogPickerOption } from '@/lib/catalogSearchPicker';
 import { toErrorMessage } from '@/lib/apiError';
 import {
   getPortalJwtRoleCode,
@@ -73,6 +86,49 @@ export type LoadCompanyDepartmentsResult = {
   rows: CatalogDepartmentRow[];
   fetchError: string | null;
 };
+
+/** Map merged HRM + catalog department rows → CatalogSearchPicker options (code SoT, id fallback). */
+export function departmentPickerOptionsFromCompanyRows(
+  rows: readonly CatalogDepartmentRow[],
+): CatalogPickerOption[] {
+  const out: CatalogPickerOption[] = [];
+  const seen = new Set<string>();
+  for (const row of rows) {
+    if (row.status && row.status !== 'active') continue;
+    const label = row.name?.trim();
+    if (!label) continue;
+    const code = row.code?.trim() || row.id?.trim();
+    if (!code) continue;
+    const key = code.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ value: code, label, code: row.code?.trim() || code });
+  }
+  return out.sort((a, b) =>
+    a.label.localeCompare(b.label, 'vi', { sensitivity: 'base' }),
+  );
+}
+
+/** Union picker options — primary wins on duplicate code (HRM physical row over catalog). */
+export function mergeDepartmentPickerOptions(
+  primary: readonly CatalogPickerOption[],
+  secondary: readonly CatalogPickerOption[],
+): CatalogPickerOption[] {
+  const merged = new Map<string, CatalogPickerOption>();
+  for (const opt of secondary) {
+    const key = (opt.code ?? opt.value).trim().toLowerCase();
+    if (!key) continue;
+    merged.set(key, opt);
+  }
+  for (const opt of primary) {
+    const key = (opt.code ?? opt.value).trim().toLowerCase();
+    if (!key) continue;
+    merged.set(key, opt);
+  }
+  return [...merged.values()].sort((a, b) =>
+    a.label.localeCompare(b.label, 'vi', { sensitivity: 'base' }),
+  );
+}
 
 /** Group CEO on master tenant — union department catalogs across all member tenants. */
 export function isGroupCeoDepartmentRollupContext(): boolean {

@@ -28,6 +28,10 @@ import {
 } from '@/components/ui/select';
 import { SettingsDialogSelectContent } from '@/components/settings/SettingsDialogSelectContent';
 import { PayDataFieldFormulaInput } from '@/components/payroll/PayDataFieldFormulaInput';
+import {
+  formatSalaryFormulaReadable,
+  payFormulaPickerSearchOptsFromSalaryComponents,
+} from '@/lib/payFormulaCatalog';
 import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
 import {
   payTypeOptionsFromCatalog,
@@ -84,10 +88,14 @@ const emptyForm = (): FormState => ({
   formula: '',
 });
 
-function truncateFormula(raw: string | undefined, max = 48): string {
+function displayFormulaReadable(raw: string | undefined): string {
   const v = (raw ?? '').trim();
   if (!v) return '—';
-  return v.length > max ? `${v.slice(0, max)}…` : v;
+  const readable = formatSalaryFormulaReadable(v);
+  if (readable === '—' || readable === v.replace(/^=/, '').trim()) {
+    return v.length > 56 ? `${v.slice(0, 56)}…` : v;
+  }
+  return readable.length > 72 ? `${readable.slice(0, 72)}…` : readable;
 }
 
 export const PaySalaryComponentList = () => {
@@ -102,6 +110,11 @@ export const PaySalaryComponentList = () => {
   const payTypeOptions = useMemo(
     () => payTypeOptionsFromCatalog(catalogs ?? []),
     [catalogs],
+  );
+
+  const formulaPickerOpts = useMemo(
+    () => payFormulaPickerSearchOptsFromSalaryComponents(components),
+    [components],
   );
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -232,7 +245,7 @@ export const PaySalaryComponentList = () => {
                     {resolvePayTypeLabel(payTypeOptions, c.component_type) || c.component_type}
                   </td>
                   <td className="py-4 font-mono text-xs text-blue-800 max-w-[200px]">
-                    {truncateFormula(c.formula)}
+                    {displayFormulaReadable(c.formula)}
                   </td>
                   <td className="py-4">
                     <Badge color={c.is_taxable ? 'blue' : 'gray'}>
@@ -368,6 +381,8 @@ export const PaySalaryComponentList = () => {
                 variant="sidebar"
                 value={formData.formula}
                 onChange={handleFormulaChange}
+                extraVarHints={formulaPickerOpts.extraVarHints}
+                salaryComponentHints={formulaPickerOpts.salaryComponents}
                 placeholder="=Chọn trường bên dưới hoặc gõ công thức…"
               />
             </div>

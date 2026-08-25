@@ -436,6 +436,7 @@
     "services": "Dịch vụ nội bộ",
     "tools": "Công cụ dụng cụ",
     "fleet": "Hồ sơ xe",
+    "internalNews": "Tin nội bộ",
     "more": "Thêm"
   },
   "hrmChat": {
@@ -542,7 +543,71 @@
     "lateCount": "Đi muộn",
     "pendingLeaves": "Chờ duyệt nghỉ",
     "totalPayroll": "Tổng chi lương",
-    "comparedToLastMonth": "so với tháng trước"
+    "comparedToLastMonth": "so với tháng trước",
+    "internalNews": {
+      "title": "Tin nội bộ",
+      "subtitle": "Quản lý tin tức và thông báo nội bộ",
+      "addNew": "Đăng tin mới",
+      "editTitle": "Chỉnh sửa tin",
+      "editDesc": "Cập nhật nội dung tin nội bộ",
+      "addTitle": "Đăng tin mới",
+      "addDesc": "Tạo tin nội bộ mới cho công ty",
+      "search": "Tìm kiếm tin...",
+      "noData": "Chưa có tin nội bộ nào",
+      "loading": "Đang tải...",
+      "cancelBtn": "Hủy",
+      "saving": "Đang lưu...",
+      "delete": "Xóa",
+      "deleting": "Đang xóa...",
+      "closeBtn": "Đóng",
+      "create": "Tạo mới",
+      "update": "Cập nhật",
+      "showingRecords": "Hiển thị {{start}} - {{end}} trong số {{total}} bản ghi",
+      "includeDrafts": "Bao gồm dự thảo",
+      "deleteConfirm": "Xác nhận xóa",
+      "deleteConfirmDesc": "Bạn có chắc muốn xóa tin này?",
+      "cannotUndo": "Hành động này không thể hoàn tác.",
+      "pinned": "Ghim",
+      "views": "lượt xem",
+      "categories": {
+        "all": "Tất cả",
+        "general": "Tin chung",
+        "policy": "Chính sách",
+        "announcement": "Thông báo",
+        "event": "Sự kiện"
+      },
+      "statuses": {
+        "draft": "Dự thảo",
+        "published": "Đã đăng",
+        "archived": "Đã lưu trữ"
+      },
+      "visibility": {
+        "all": "Tất cả nhân viên",
+        "management": "Quản lý",
+        "hr": "Nhân sự"
+      },
+      "form": {
+        "titleLabel": "Tiêu đề",
+        "titlePlaceholder": "Nhập tiêu đề tin...",
+        "summaryLabel": "Tóm tắt",
+        "summaryPlaceholder": "Nhập tóm tắt ngắn...",
+        "contentLabel": "Nội dung",
+        "contentPlaceholder": "Nhập nội dung tin...",
+        "categoryLabel": "Danh mục",
+        "statusLabel": "Trạng thái",
+        "pinnedLabel": "Ghim lên đầu",
+        "visibilityLabel": "Hiển thị với"
+      },
+      "tableHeaders": {
+        "title": "Tiêu đề",
+        "category": "Danh mục",
+        "status": "Trạng thái",
+        "author": "Người đăng",
+        "publishedAt": "Ngày đăng",
+        "views": "Lượt xem",
+        "actions": "Thao tác"
+      }
+    }
   },
   "employees": {
     "title": "Quản lý nhân viên",
@@ -2608,10 +2673,10 @@
   "formulaInput": {
     "mustStartWithEquals": "Công thức phải bắt đầu bằng dấu \"=\"",
     "extraCloseParen": "Dấu ngoặc đóng \")\" thừa",
-    "missingCloseParen": "Thiếu {count} dấu ngoặc đóng \")\"",
-    "emptyFunction": "Hàm \"{name}\" không có tham số",
-    "unknownFunction": "Hàm \"{name}\" không được nhận dạng",
-    "componentNotExist": "Thành phần \"{code}\" không tồn tại",
+    "missingCloseParen": "Thiếu {{count}} dấu ngoặc đóng \")\"",
+    "emptyFunction": "Hàm \"{{name}}\" không có tham số",
+    "unknownFunction": "Hàm \"{{name}}\" không được nhận dạng",
+    "componentNotExist": "Trường \"{{code}}\" không tồn tại trong danh mục",
     "consecutiveOperators": "Có toán tử liên tiếp không hợp lệ",
     "endsWithOperator": "Công thức kết thúc bằng toán tử không hợp lệ",
     "placeholder": "VD: =SUM(LUONG_CO_BAN,PHU_CAP)",

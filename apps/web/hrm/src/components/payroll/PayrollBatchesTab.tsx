@@ -1,4 +1,11 @@
 /**
+ * @CODE-MEMORY-CHANGE 2026-08-24
+ * WorkItem: PO-HRM-PAY-VP-HANOI-BATCH-DETAIL-COLUMNS-01
+ * change_mode: FIX
+ * What: Detail table renders resolvePayrollSheetColumns from period snapshot; dotted underline when !has_payslip_lines
+ * Why: VP Hà Nội 21-column template — not fixed 5 cols; draft preview from period input after per-employee fetch fix
+ * must_keep: payrollRecordComponentAmount · headerTotals resolvePayrollHeaderTotals · payroll_e2e_ready=false
+ *
  * @CODE-MEMORY-CHANGE 2026-08-10
  * WorkItem: PO-HRM-MVP-GD1-PAY-01-CLUSTER-FE-01
  * change_mode: ADD
@@ -119,6 +126,7 @@ import {
   usePayrollPeriodEligibility,
   mapPayrollPeriodToBatch,
   resolvePayrollHeaderTotals,
+  enrichPayrollRecordsFromEmployees,
 } from '@/hooks/usePayrollBatches';
 import {
   formatPayrollEligibilityReason,
@@ -136,6 +144,10 @@ import {
   paySheetTemplateFormValue,
 } from '@/components/payroll/payrollPaySheetTemplateSelect';
 import { PAY_SHEET_TPL_PACK_ALIAS_NOTE } from '@/lib/paySheetTemplateCatalog';
+import {
+  payrollRecordComponentAmount,
+  resolvePayrollSheetColumns,
+} from '@/lib/payrollBatchSheetColumns';
 import { cn } from '@/lib/utils';
 import { toErrorMessage } from '@/lib/apiError';
 import { toast } from 'sonner';
@@ -220,7 +232,6 @@ export function PayrollBatchesTab() {
     lockBatch,
     addRecord,
     updateRecord,
-    deleteRecord,
     isCreating,
   } = usePayrollBatches({ periodMonth, periodYear });
 
@@ -344,10 +355,11 @@ export function PayrollBatchesTab() {
 
   // Load records when viewing batch detail
   useEffect(() => {
-    if (selectedBatch) {
-      fetchBatchRecords(selectedBatch.id).then(setBatchRecords);
-    }
-  }, [selectedBatch, fetchBatchRecords]);
+    if (!selectedBatch) return;
+    void fetchBatchRecords(selectedBatch.id).then((records) => {
+      setBatchRecords(enrichPayrollRecordsFromEmployees(records, employees));
+    });
+  }, [selectedBatch, fetchBatchRecords, employees]);
 
   const filteredBatches = batches.filter(batch => {
     const matchesSearch = batch.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -497,23 +509,13 @@ export function PayrollBatchesTab() {
       });
 
       const updatedRecords = await fetchBatchRecords(selectedBatch.id);
-      setBatchRecords(updatedRecords);
+      setBatchRecords(enrichPayrollRecordsFromEmployees(updatedRecords, employees));
       const refreshed = await refetch();
       const updated = (refreshed.data ?? []).find((b) => b.id === selectedBatch.id);
       if (updated) setSelectedBatch(updated);
 
       setShowAddEmployeeDialog(false);
       setSelectedEmployeesToAdd([]);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleRemoveRecord = async (recordId: string) => {
-    if (!selectedBatch) return;
-    try {
-      await deleteRecord({ id: recordId, batchId: selectedBatch.id });
-      setBatchRecords(prev => prev.filter(r => r.id !== recordId));
     } catch (error) {
       console.error(error);
     }
@@ -530,6 +532,14 @@ export function PayrollBatchesTab() {
   if (selectedBatch) {
     const isEditable = selectedBatch.status === 'draft' || selectedBatch.status === 'pending';
     const headerTotals = resolvePayrollHeaderTotals(selectedBatch, batchRecords);
+    const observedComponentCodes = batchRecords.flatMap((record) =>
+      Object.keys(record.component_values ?? {}),
+    );
+    const sheetColumns = resolvePayrollSheetColumns(
+      selectedBatch.sheet_template_snapshot_json,
+      observedComponentCodes,
+    );
+    const detailTableColSpan = 5 + sheetColumns.length + (isEditable ? 1 : 0);
 
     return (
       <div className="p-6 space-y-6">
@@ -644,33 +654,62 @@ export function PayrollBatchesTab() {
               )}
             </div>
 
+            {isEditable && batchRecords.length > 0 ? (
+              <p className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                {headerTotals.total_net === 0 ? (
+                  <>
+                    Kỳ lương đang nháp — bảng hiển thị <strong>số liệu đầu vào kỳ</strong> (vd.{' '}
+                    <em>Lương cơ bản P1+P2</em> = 5,7tr + 2,9tr = 8,6tr cho XE00250). Cột tính theo
+                    công thức (vd. <em>Lương theo công</em>) và tổng Net sẽ đầy đủ sau khi bấm{' '}
+                    <strong>Khóa bảng lương</strong>.
+                  </>
+                ) : (
+                  <>
+                    Một số nhân viên chưa được tính lương — cột có gạch chân nét đứt là dữ liệu đầu
+                    vào kỳ (chưa qua công thức).
+                  </>
+                )}
+              </p>
+            ) : null}
+
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Mã NV</TableHead>
-                    <TableHead>Họ và tên</TableHead>
-                    <TableHead>Phòng ban</TableHead>
-                    <TableHead className="text-right">Lương cơ bản</TableHead>
-                    <TableHead className="text-right">Phụ cấp</TableHead>
-                    <TableHead className="text-right">Thưởng</TableHead>
-                    <TableHead className="text-right">Khấu trừ</TableHead>
-                    <TableHead className="text-right">Lương Net</TableHead>
+                    <TableHead className="sticky left-0 z-10 bg-background min-w-[88px]">Mã NV</TableHead>
+                    <TableHead className="sticky left-[88px] z-10 bg-background min-w-[180px]">Họ và tên</TableHead>
+                    <TableHead className="min-w-[120px]">Phòng ban</TableHead>
+                    {sheetColumns.map((col) => (
+                      <TableHead
+                        key={col.componentCode}
+                        className={cn(
+                          'text-right whitespace-nowrap min-w-[120px]',
+                          col.isDeduction && 'text-destructive',
+                        )}
+                        title={col.componentCode}
+                      >
+                        {col.displayLabel}
+                      </TableHead>
+                    ))}
+                    <TableHead className="text-right whitespace-nowrap min-w-[120px]">Tổng thu nhập</TableHead>
+                    <TableHead className="text-right whitespace-nowrap min-w-[120px]">Lương Net</TableHead>
                     {isEditable && <TableHead className="w-10"></TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {batchRecords.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={detailTableColSpan} className="text-center py-8 text-muted-foreground">
                         Chưa có nhân viên nào trong bảng lương
                       </TableCell>
                     </TableRow>
                   ) : (
                     batchRecords.map(record => (
                       <TableRow key={record.id}>
-                        <TableCell className="font-medium">{record.employee_code}</TableCell>
-                        <TableCell>
+                        <TableCell className="sticky left-0 z-10 bg-background font-medium">
+                          {record.employee_code}
+                        </TableCell>
+                        <TableCell className="sticky left-[88px] z-10 bg-background">
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
                               <AvatarFallback className="text-xs bg-primary/10 text-primary">
@@ -681,20 +720,43 @@ export function PayrollBatchesTab() {
                           </div>
                         </TableCell>
                         <TableCell>{record.department || '-'}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(record.base_salary)}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(record.allowances)}</TableCell>
-                        <TableCell className="text-right text-success">{formatCurrency(record.bonus)}</TableCell>
-                        <TableCell className="text-right text-destructive">
-                          {formatCurrency(record.insurance_deduction + record.tax_deduction + record.other_deduction)}
+                        {sheetColumns.map((col) => {
+                          const amount = payrollRecordComponentAmount(record, col.componentCode);
+                          const isDraftPreview = !record.has_payslip_lines && amount > 0;
+                          return (
+                            <TableCell
+                              key={`${record.id}-${col.componentCode}`}
+                              className={cn(
+                                'text-right tabular-nums',
+                                col.isDeduction && amount > 0 && 'text-destructive',
+                                !col.isDeduction && amount > 0 && 'text-success',
+                                isDraftPreview && 'underline decoration-dotted decoration-muted-foreground/50',
+                              )}
+                              title={
+                                isDraftPreview
+                                  ? 'Dữ liệu đầu vào kỳ — chưa tính qua công thức'
+                                  : col.componentCode
+                              }
+                            >
+                              {formatCurrency(amount)}
+                            </TableCell>
+                          );
+                        })}
+                        <TableCell className="text-right font-medium tabular-nums">
+                          {formatCurrency(record.gross_salary)}
                         </TableCell>
-                        <TableCell className="text-right font-bold">{formatCurrency(record.net_salary)}</TableCell>
+                        <TableCell className="text-right font-bold tabular-nums">
+                          {formatCurrency(record.net_salary)}
+                        </TableCell>
                         {isEditable && (
                           <TableCell>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 text-destructive hover:text-destructive"
-                              onClick={() => handleRemoveRecord(record.id)}
+                              className="h-8 w-8 text-destructive/40 hover:text-destructive/40 cursor-not-allowed"
+                              disabled
+                              title="Xóa bản ghi lương chưa được hỗ trợ bởi HRM payroll API"
+                              aria-label="Xóa bản ghi lương (chưa hỗ trợ)"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>

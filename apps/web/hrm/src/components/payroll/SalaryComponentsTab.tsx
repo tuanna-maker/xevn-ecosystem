@@ -128,7 +128,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
-import { FormulaInput } from '@/components/payroll/FormulaInput';
+import { PayDataFieldFormulaInput } from '@/components/payroll/PayDataFieldFormulaInput';
+import { payFormulaPickerSearchOptsFromSalaryComponents } from '@/lib/payFormulaCatalog';
 import {
   createSalaryComponentFormSchema,
   DEFAULT_SALARY_COMPONENT_FORM_VALUES,
@@ -309,12 +310,10 @@ export const SalaryComponentsTab = () => {
     });
   }, [searchTerm, componentTypeFilter, natureFilter]);
 
-  const formulaAvailableComponents = useMemo(() => {
-    return [
-      ...components.map((c) => ({ code: c.code, name: c.name })),
-      ...systemSalaryComponents.map((c) => ({ code: c.code, name: c.name })),
-    ];
-  }, [components]);
+  const formulaPickerOpts = useMemo(
+    () => payFormulaPickerSearchOptsFromSalaryComponents(components),
+    [components],
+  );
 
   const stats = useMemo(() => {
     const total = components.length;
@@ -1063,10 +1062,11 @@ export const SalaryComponentsTab = () => {
                     <Label className="text-right pt-2">
                       {t('salaryComponents.form.formula')}
                     </Label>
-                    <FormulaInput
+                    <PayDataFieldFormulaInput
                       value={field.value || ''}
                       onChange={field.onChange}
-                      availableComponents={formulaAvailableComponents}
+                      extraVarHints={formulaPickerOpts.extraVarHints}
+                      salaryComponentHints={formulaPickerOpts.salaryComponents}
                       placeholder={t('salaryComponents.form.formulaPlaceholder')}
                     />
                   </FormItem>
@@ -1251,10 +1251,11 @@ export const SalaryComponentsTab = () => {
 
             <div className="grid grid-cols-[150px_1fr] items-start gap-4">
               <Label className="text-right pt-2">{t('salaryComponents.form.formula')}</Label>
-              <FormulaInput
+              <PayDataFieldFormulaInput
                 value={formData.formula || ''}
                 onChange={(value) => setFormData((prev) => ({ ...prev, formula: value }))}
-                availableComponents={formulaAvailableComponents}
+                extraVarHints={formulaPickerOpts.extraVarHints}
+                salaryComponentHints={formulaPickerOpts.salaryComponents}
                 placeholder={t('salaryComponents.form.formulaPlaceholder')}
               />
             </div>

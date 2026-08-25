@@ -61,7 +61,6 @@ import {
   createCandidateApplication,
   deleteCandidateApplication,
   listCandidateApplications,
-  listCandidatesPool,
   updateCandidateApplicationStage,
   type HrmCandidateApplicationEnriched,
 } from '@/integrations/hrmApi';
@@ -107,7 +106,8 @@ interface CandidateApplication {
 interface JobCandidatesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  requisitionId: string;
+  /** Job posting ID (Lane B candidate_applications) */
+  jobPostingId: string;
   jobTitle: string;
 }
 
@@ -124,7 +124,7 @@ const getStageOptions = (t: (k: string) => string) => [
 export function JobCandidatesDialog({
   open,
   onOpenChange,
-  requisitionId,
+  jobPostingId,
   jobTitle,
 }: JobCandidatesDialogProps) {
   const { t } = useTranslation();
@@ -161,56 +161,56 @@ export function JobCandidatesDialog({
 
   // Fetch candidates from pool for this requisition
   const { data: applications = [], isLoading } = useQuery({
-    queryKey: ['candidate_applications', requisitionId, currentCompanyId],
+    queryKey: ['candidate_applications', jobPostingId, currentCompanyId],
     queryFn: async () => {
-      if (!currentCompanyId || !requisitionId) return [] as CandidateApplication[];
-      const pool = await listCandidatesPool({ 
+      if (!currentCompanyId || !jobPostingId) return [] as CandidateApplication[];
+      const res = await listCandidateApplications({
         company_id: currentCompanyId,
-        requisition_id: requisitionId
+        job_posting_id: jobPostingId
       });
-      
-      return (pool.data ?? []).map((c) => ({
-        id: c.id, // Use candidate ID as pseudo-application ID
-        candidate_id: c.id,
-        job_posting_id: requisitionId,
-        company_id: currentCompanyId,
-        stage: c.stage,
-        rating: c.rating,
-        applied_date: c.applied_date,
-        interview_date: null,
-        interviewer: null,
-        salary_expectation: null,
-        notes: c.notes,
-        created_at: c.applied_date || new Date().toISOString(),
-        candidates: c,
+
+      return (res.data ?? []).map((ca) => ({
+        id: ca.id,
+        candidate_id: ca.candidate_id,
+        job_posting_id: ca.job_posting_id,
+        company_id: ca.company_id,
+        stage: ca.stage,
+        rating: ca.rating,
+        applied_date: ca.applied_date,
+        interview_date: (ca as any).interview_date ?? null,
+        interviewer: (ca as any).interviewer ?? null,
+        salary_expectation: (ca as any).salary_expectation ?? null,
+        notes: ca.notes,
+        created_at: ca.created_at,
+        candidates: {
+          id: ca.candidate_id,
+          full_name: ca.candidates?.full_name ?? '',
+          email: ca.candidates?.email ?? '',
+          phone: ca.candidates?.phone ?? null,
+          position: ca.candidates?.position ?? null,
+          stage: ca.stage,
+          rating: ca.rating,
+          avatar_url: ca.candidates?.avatar_url ?? null,
+          applied_date: ca.candidates?.applied_date ?? ca.applied_date,
+          source: ca.candidates?.source ?? null,
+        },
       })) as CandidateApplication[];
     },
-    enabled: open && !!requisitionId && !!currentCompanyId,
+    enabled: open && !!jobPostingId && !!currentCompanyId,
   });
 
-  // Fetch all candidates not yet linked to this job
+  // Fetch all candidates from pool for selection (not yet linked to this job)
   const { data: availableCandidates = [] } = useQuery({
-    queryKey: ['available_candidates', requisitionId, currentCompanyId, applications.length],
+    queryKey: ['available_candidates', jobPostingId, currentCompanyId, applications.length],
     queryFn: async () => {
       if (!currentCompanyId) return [];
-      const pool = await listCandidatesPool({ company_id: currentCompanyId });
-      const linked = new Set(
-        applications.map((a) => a.candidate_id),
+      // Get all applications for this company
+      const allApps = await listCandidateApplications({ company_id: currentCompanyId });
+      const linkedCandidateIds = new Set(
+        allApps.data.map((ca) => ca.candidate_id),
       );
-      return (pool.data ?? [])
-        .filter((c) => !linked.has(c.id))
-        .map((c) => ({
-          id: c.id,
-          full_name: String(c.full_name ?? ''),
-          email: String(c.email ?? ''),
-          phone: c.phone ? String(c.phone) : null,
-          position: c.position ? String(c.position) : null,
-          stage: c.stage ? String(c.stage) : null,
-          rating: null,
-          avatar_url: null,
-          applied_date: c.applied_date ? String(c.applied_date) : null,
-          source: c.source ? String(c.source) : null,
-        })) as Candidate[];
+      // Return linked candidate IDs for display
+      return Array.from(linkedCandidateIds);
     },
     enabled: isAddDialogOpen && !!currentCompanyId,
   });
@@ -227,8 +227,8 @@ export function JobCandidatesDialog({
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['candidate_applications', requisitionId] });
-      queryClient.invalidateQueries({ queryKey: ['available_candidates', requisitionId] });
+      queryClient.invalidateQueries({ queryKey: ['candidate_applications', jobPostingId] });
+      queryClient.invalidateQueries({ queryKey: ['available_candidates', jobPostingId] });
       queryClient.invalidateQueries({ queryKey: ['job_postings'] });
       toast.success(t('jobCand.addedSuccess'));
       setIsAddDialogOpen(false);
@@ -253,7 +253,7 @@ export function JobCandidatesDialog({
       await updateCandidateApplicationStage(id, currentCompanyId, stage, employeeId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['candidate_applications', requisitionId] });
+      queryClient.invalidateQueries({ queryKey: ['candidate_applications', jobPostingId] });
       toast.success(t('jobCand.stageUpdated'));
     },
     onError: (error: unknown) => {
@@ -300,8 +300,8 @@ export function JobCandidatesDialog({
       await deleteCandidateApplication(id, currentCompanyId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['candidate_applications', requisitionId] });
-      queryClient.invalidateQueries({ queryKey: ['available_candidates', requisitionId] });
+      queryClient.invalidateQueries({ queryKey: ['candidate_applications', jobPostingId] });
+      queryClient.invalidateQueries({ queryKey: ['available_candidates', jobPostingId] });
       queryClient.invalidateQueries({ queryKey: ['job_postings'] });
       toast.success(t('jobCand.removedSuccess'));
       setIsRemoveDialogOpen(false);

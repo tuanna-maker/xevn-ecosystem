@@ -239,3 +239,154 @@ Ket luan: Project that = NFD. NFC la ban duplicate (khong phai git repo) - .agen
   + Do hrm-api dùng pg thuần (không Prisma), luôn phải gọi lệnh SQL thông qua HrmDbService.
   + Giao diện Settings sử dụng cơ chế truyền 	ab qua param và SettingsNavLayout. 
   + Không conflict với luồng Tuyển dụng hay pay_payroll_group.
+
+---
+
+## SESSION ROLLUP 2026-08-24 — Contract create catalog parity + department dual SoT (Cursor)
+
+**Bối cảnh:** Sponsor test tạo HĐ trên tenant `xevn` / company `main` (`HRM_TENANT_ONLY_SCOPE=true`, Group CEO `ceo@xe.vn`). Form điền đủ nhưng POST `400`.
+
+**work_item_id:** `PO-HRM-CTR-CREATE-CATALOG-PARITY-01`
+
+### Incident 1 — `HRM-CON-TYPE-KEY` dù picker có `HDLD_XDHN_12`
+
+| Layer | Catalog partition |
+|-------|-------------------|
+| FE picker | `holding` — `resolveHrmSettingsCatalogCompanyId` (Group CEO `main`→`holding`) |
+| BE assert (trước fix) | `main` — `resolveHrmPersistCompanyIdText` only |
+
+**Fix BE:** `ContractsInsuranceService.resolveCatalogCompanyId()` → `resolveHrmSettingsCatalogCompanyId` cho mọi catalog assert (`contract_types`, `job_titles`, `departments`, `work_arrangements`, insurers…).
+
+**Fix FE:** `contractCreateWizardState.ts` — chỉ gửi mã catalog `contract_type`; chặn submit khi catalog trống; không fallback `fixed_term`.
+
+**Verified:** `node scripts/qa/verify-contract-create.mjs` → POST `HDLD_XDHN_12` **201**.
+
+### Incident 2 — `HRM-CON-POS-KEY` với `department_key: PHONG_QLPT`
+
+**Root cause:** Picker central = HRM `GET /departments` ∪ settings catalog (`useSettingsCatalogsOverview` → `mergeDepartmentPickerOptions`). `PHONG_QLPT` chỉ có trên tab **Công ty → Phòng ban** (`public.departments`), không có trong catalog `departments`.
+
+**Fix BE:** `assertConDepartmentKey()` — catalog trước, fallback `lookupHrmDepartmentKeyInScope()` trên `public.departments`. Mã lỗi riêng: `HRM-CON-DEPT-KEY` (không dùng `HRM-CON-POS-KEY` cho phòng ban).
+
+**Fix FE:** `apiError.ts` friendly messages `HRM-CON-TYPE-KEY`, `HRM-CON-DEPT-KEY`, `HRM-CTR-*`.
+
+### Không phải bug — lương NV = 0 nhưng form HĐ thấy 5.700.000
+
+- Public `GET /employees` **không** trả lương (`AC-CORE-PUB-02` / `mapPublicEmployee`).
+- SoT lương: `employee_compensation_packages` + lines — tab **Hợp đồng → Đãi ngộ**.
+- Wizard C&B bootstrap (`ContractCbReadOnlyCard`, `BR-CTR-CB-BOOT-01`) → `POST compensation-packages`, không ghi `salary` trên `employee_contracts` (`BR-CD-F5-01`).
+- Tham chiếu chain đã LOCKED: `PO-HRM-CTR-CB-INIT-FLOW-SPEC-01`, `BA/SA-CTR-INSURANCE-SALARY-SOURCE-01`.
+
+### Traceability đã ghi
+
+| Loại | Path |
+|------|------|
+| Spec | `docs/program/specs/PO-HRM-CTR-CREATE-CATALOG-PARITY-01.md` |
+| Evidence | `docs/qa/evidence/po-hrm-ctr-create-catalog-parity-01.md` |
+| `@CODE-MEMORY-CHANGE` | `contracts-insurance.service.ts`, `contractCreateWizardState.ts`, `ContractCreateWizardDialog.tsx`, `useSettingsCatalogsOverview.ts`, `hrmDepartmentCatalog.ts`, `apiError.ts`, `be-erp-e2-01.spec.ts`, `scripts/qa/verify-contract-create.mjs` |
+
+### must_keep
+
+- Catalog assert BE **phải** dùng cùng partition với Settings GET (`resolveHrmSettingsCatalogCompanyId`).
+- Department picker ∪ HRM assert parity — không chỉ catalog.
+- C&B SoT `compensation_packages` — không invent cột lương trên `employee_contracts`.
+- `git add .` vẫn cấm — thay đổi chưa commit trừ khi sponsor yêu cầu.
+
+### OPEN (không scope fix này)
+
+- Auto-sync `public.departments` → catalog `departments` (XBOS apply) — work item riêng.
+- UX: placeholder hồ sơ NV thay vì `0` khi chưa có gói C&B.
+- Payload user log có `start_date` = `end_date` (`2026-04-01`) — có thể hit `HRM-CON-002` sau khi department pass; cần `end_date > start_date` cho HĐ có thời hạn.
+
+### Resume checklist (contract create)
+
+1. Đọc spec `PO-HRM-CTR-CREATE-CATALOG-PARITY-01` trước khi sửa assert catalog hoặc department picker.
+2. Smoke: `node scripts/qa/verify-contract-create.mjs`
+3. Unit: `npx jest be-erp-e2-01.spec.ts --testNamePattern="contract_types|department_key"`
+
+---
+
+## SESSION ROLLUP 2026-08-24 — VP Hà Nội payroll batch detail: cột 0₫ + tổng thu nhập sai (Cursor)
+
+**Bối cảnh:** Sponsor test kỳ **VP Hà Nội 05/2026** (`period_id: a4e896b6-6b22-4c0f-80e3-0acda5ee2810`, tenant `xevn` / `main`, user `ceo@xe.vn`). Bảng lương có 2 NV: **XE00236** (Mai Văn Phúc), **XE00250** (Lê Trung Kiên). UI: mọi cột thành phần = 0₫; XE00236 Tổng thu nhập ~34M; XE00250 toàn 0.
+
+**work_item_id:** `PO-HRM-PAY-VP-HANOI-BATCH-DETAIL-COLUMNS-01`
+
+### Kết luận nghiệp vụ — KHÔNG gộp lương 2 người
+
+| Kiểm tra | Kết quả |
+|----------|---------|
+| `payroll_payslips` | 2 dòng riêng (1 payslip / NV) |
+| `pay_period_input_lines` | XE00236: 7 dòng · XE00250: 10 dòng — tách biệt theo `employee_id` |
+| Gross ~34M trên XE00236 | Từ **header payslip** sau process — **không** phải cộng lương XE00250 vào XE00236 |
+
+### Incident 1 — Cột thành phần toàn 0₫ (P0 UI)
+
+**Root cause:** FE `fetchBatchRecords` gọi `GET /payroll/periods/:id/input-lines?limit=500` **một lần cho cả kỳ**. BE cap `limit` tối đa **500**, sort `updated_at DESC`. Kỳ seed VP HN có **700 dòng** (85 NV × ~8 cột) → XE00236/XE00250 **không nằm trong 500 dòng đầu** → `groupPeriodInputLinesByEmployee` rỗng → `component_values` = {} → UI 0₫.
+
+**Xác minh API:**
+- Global `limit=500` → 0 component cho cả 2 NV
+- `employee_id=<uuid>` → XE00236: 7 lines · XE00250: 10 lines (đúng DB)
+
+**Fix FE:** `usePayrollBatches.fetchBatchRecords` — sau `listPayrollPayslips`, fetch input-lines **song song theo từng `employee_id` đã enroll** (filter BE đã có sẵn).
+
+### Incident 2 — Tổng thu nhập ~34M trong khi cột = 0
+
+**Root cause kép:**
+1. Cột 0 do Incident 1 — user chỉ thấy header `gross_amount` trên payslip list.
+2. XE00236 đã **process** với gross header ~34M (công thức SRC cộng `LUONG_CO_BAN` + `LUONG_THEO_CONG` + period input — double-count thiết kế VP; `payroll_payslip_lines` = 0 sau process — vấn đề BE riêng).
+
+**Fix FE:** `mapPayslipToPayrollRecord` — khi `draft` hoặc `!has_payslip_lines` và có `component_values`, derive gross/deduction/net từ `derivePayrollTotalsFromComponentValues` thay header cũ.
+
+### Incident 3 — BHXH seed Excel ×10 (đã fix trước phiên, ghi lại cho trace)
+
+- Excel cột `deductions.social_insurance` thường ~10× `total_deduction`.
+- Script `scripts/qa/repair-vp-hanoi-period-inputs.mjs` + `normalizeSocialInsuranceDeduction()` trong `scripts/lib/vp-hanoi-payroll-config.mjs`.
+- Sample sau repair: XE00236 BHXH **521.754,81** · XE00250 **598.500**.
+
+### DB / seed đã chạy trong phiên
+
+```bash
+node scripts/qa/repair-vp-hanoi-period-inputs.mjs
+# → 85 employees · 700 input lines · 2 payslips reset draft (gross/net=0)
+node scripts/qa/check-payslip-ui-state.mjs
+node scripts/qa/debug-api-input-lines.mjs   # verify per-employee API
+```
+
+**Kỳ vọng UI sau F5 (draft, chưa process lại):**
+
+| NV | Tổng thu nhập (period input) | Khấu trừ | Net (ước) |
+|----|------------------------------|----------|-----------|
+| XE00236 | ~5.217.548 | ~1.096.610 | ~4.120.938 |
+| XE00250 | ~23.557.692 | ~25.854.035 | ~-2.296.343 |
+
+Cột có giá trị + gạch chấm = dữ liệu đầu vào kỳ (chưa qua công thức).
+
+### Traceability đã ghi
+
+| Loại | Path |
+|------|------|
+| `@CODE-MEMORY` / `@CODE-MEMORY-CHANGE` | `payrollBatchSheetColumns.ts`, `usePayrollBatches.ts`, `PayrollBatchesTab.tsx`, `hrmApi.ts` (`listPayrollPeriodInputLines`) |
+| Unit tests | `payrollBatchSheetColumns.test.ts`, `usePayrollBatches.test.ts` (20 tests PASS) |
+| QA scripts | `scripts/qa/repair-vp-hanoi-period-inputs.mjs`, `check-payslip-ui-state.mjs`, `debug-api-input-lines.mjs` |
+| Seed report | `scripts/seed-reports/payroll-vp-hanoi-2026-05/` |
+
+### must_keep
+
+- Batch detail **phải** load period input theo `employee_id` enroll — không rely global `limit=500` khi kỳ có >500 dòng input.
+- `mergePayrollComponentValues`: payslip lines thắng period input; dotted underline khi `!has_payslip_lines`.
+- **Không** invent công thức trên FE — `payroll_e2e_ready=false`.
+- Chưa process lại cho đến khi sponsor xác nhận UI đúng — process hiện vẫn có thể gross cao (LUONG_CO_BAN + LUONG_THEO_CONG).
+
+### OPEN (ngoài scope fix FE này)
+
+- BE: `payroll_payslip_lines` = 0 sau process dù header gross set — `replacePayslipLines` / SRC resolver cần audit.
+- BE/product: double-count `LUONG_CO_BAN` + `LUONG_THEO_CONG` trong gross VP template — quyết định nghiệp vụ.
+- BE: tăng cap `limit` hoặc pagination `input-lines` cho màn admin xem cả kỳ 85 NV.
+- FE: bổ sung `LUONG_CO_BAN`/`LUONG_THEO_CONG` preview từ C&B + attendance khi không có period input (hiện chỉ seed các cột Excel).
+
+### Resume checklist (VP HN payroll batch)
+
+1. F5 bảng lương kỳ `a4e896b6-…` — xác nhận cột + tổng khớp bảng trên.
+2. **Chưa** bấm Khóa/process lại cho đến khi UI OK.
+3. Nếu cần reset DB: `node scripts/qa/repair-vp-hanoi-period-inputs.mjs`.
+4. Debug API: `node scripts/qa/debug-api-input-lines.mjs`.

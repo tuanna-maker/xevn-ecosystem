@@ -775,6 +775,7 @@ export function CandidateComparisonDialog({
         const activeYctdId = selectedYctdId;
         /** Lane A spine SoT first — seed eval có thể mang pool id → BE YCTD-MIX. */
         let items: CompareApplicationListItem[] = [];
+        let primaryFailed = false;
         try {
           const response = await listRecruitmentApplicationsByYctd({
             company_id: yctdCompanyId,
@@ -782,27 +783,47 @@ export function CandidateComparisonDialog({
             include: 'evals',
           });
           items = normalizeCompareListRows<CompareApplicationListItem>(response);
-        } catch {
-          items = [];
+        } catch (error) {
+          /** FIX: Show toast feedback when primary API fails */
+          primaryFailed = true;
+          console.warn('Primary compare list fetch failed, trying fallback:', error);
+        }
+        /** FIX: Show toast when switching to fallback source */
+        if (primaryFailed && items.length === 0) {
+          toast({
+            title: 'Đang tải từ nguồn khác',
+            description: 'Không lấy được danh sách từ YCTD, thử nguồn dự phòng...',
+            variant: 'default',
+          });
         }
         if (items.length === 0) {
-          const fallback = await listRecruitmentCandidates({
-            company_id: yctdCompanyId,
-            requisition_id: activeYctdId,
-            page: 1,
-            page_size: HRM_API_MAX_PAGE_SIZE,
-          });
-          items = (fallback.data ?? []).map((row) => ({
-            candidate_id: row.id,
-            recruitment_candidate_id: row.id,
-            application_id: row.id,
-            full_name: row.full_name,
-            email: row.email,
-            position_name: row.position_name ?? null,
-            position_key: row.position_key ?? null,
-            stage: row.status,
-            eval_status: 'none' as const,
-          }));
+          try {
+            const fallback = await listRecruitmentCandidates({
+              company_id: yctdCompanyId,
+              requisition_id: activeYctdId,
+              page: 1,
+              page_size: HRM_API_MAX_PAGE_SIZE,
+            });
+            items = (fallback.data ?? []).map((row) => ({
+              candidate_id: row.id,
+              recruitment_candidate_id: row.id,
+              application_id: row.id,
+              full_name: row.full_name,
+              email: row.email,
+              position_name: row.position_name ?? null,
+              position_key: row.position_key ?? null,
+              stage: row.status,
+              eval_status: 'none' as const,
+            }));
+          } catch (fallbackError) {
+            /** FIX: Show toast when fallback also fails */
+            console.warn('Fallback compare list fetch failed:', fallbackError);
+            toast({
+              title: 'Không lấy được danh sách ứng viên',
+              description: 'Vui lòng thử lại sau hoặc chọn YCTD khác.',
+              variant: 'destructive',
+            });
+          }
         }
         if (items.length === 0) {
           items = buildCompareApplicationsFromEvaluations(seedEvalRows, activeYctdId);

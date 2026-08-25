@@ -38,6 +38,13 @@
  * What: scope via resolveHrmSettingsCatalogScope (trsport JWT → x-company-id=trsport)
  * Why: spreadsheet main forced empty leave_types picker vs create assert OU partition
  * must_keep: shared SETTINGS_CATALOGS_QUERY_KEY; Group CEO main→holding; U65 no seed
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-24 PO-HRM-CTR-CREATE-CATALOG-PARITY-01
+ * change_mode: EXPAND
+ * What: departmentPickerOptions = HRM GET /departments ∪ settings catalog (mergeDepartmentPickerOptions)
+ * Why: Central picker parity with BE assertConDepartmentKey; PHONG_QLPT HRM-only visible on forms
+ * Spec: docs/program/specs/PO-HRM-CTR-CREATE-CATALOG-PARITY-01.md
+ * must_keep: COMPANY_DEPARTMENTS_QUERY_KEY; HRM row wins on duplicate code; catalog scope unchanged
  */
 import { useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -47,10 +54,23 @@ import {
   type HrmSettingsCatalogOverviewRow,
   type HrmSpreadsheetScope,
 } from '@/integrations/hrmApi';
+import { departmentOptionsFromCatalog } from '@/lib/catalogSearchPicker';
+import {
+  departmentPickerOptionsFromCompanyRows,
+  loadCompanyDepartments,
+  mergeDepartmentPickerOptions,
+} from '@/lib/hrmDepartmentCatalog';
 import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
 
 /** Stable RQ root — all FE settings-catalog overview consumers must use this. */
 export const SETTINGS_CATALOGS_QUERY_KEY = 'hrm-settings-catalogs';
+
+/** Shared RQ root — HRM `/departments` ∪ catalog (DepartmentManagement + form pickers). */
+export const COMPANY_DEPARTMENTS_QUERY_KEY = 'company-departments';
+
+export function companyDepartmentsQueryKey(companyId: string | null | undefined) {
+  return [COMPANY_DEPARTMENTS_QUERY_KEY, companyId ?? null] as const;
+}
 
 export function settingsCatalogsQueryKey(scope: HrmSpreadsheetScope | null | undefined) {
   return [SETTINGS_CATALOGS_QUERY_KEY, scope?.tenantId ?? null, scope?.companyId ?? null] as const;
@@ -60,6 +80,8 @@ export function useSettingsCatalogsOverview(opts?: {
   enabled?: boolean;
   /** Override auth-derived scope (rare). */
   scope?: HrmSpreadsheetScope | null;
+  /** Operating company for HRM `/departments` load (default: AuthContext currentCompanyId). */
+  departmentCompanyId?: string | null;
 }) {
   const { currentCompanyId } = useAuth();
   const queryClient = useQueryClient();
@@ -70,6 +92,7 @@ export function useSettingsCatalogsOverview(opts?: {
     return resolveHrmSettingsCatalogScope(currentCompanyId);
   }, [opts?.scope, currentCompanyId]);
 
+  const departmentCompanyId = opts?.departmentCompanyId ?? currentCompanyId;
   const enabled = opts?.enabled !== false && !!scope;
 
   const query = useQuery({
@@ -79,13 +102,43 @@ export function useSettingsCatalogsOverview(opts?: {
     staleTime: 60_000,
   });
 
+  const catalogs = (query.data?.catalogs ?? []) as HrmSettingsCatalogOverviewRow[];
+
+  const departmentsQuery = useQuery({
+    queryKey: companyDepartmentsQueryKey(departmentCompanyId),
+    queryFn: async () => {
+      if (!departmentCompanyId) {
+        return { rows: [], fetchError: null as string | null };
+      }
+      return loadCompanyDepartments(departmentCompanyId);
+    },
+    enabled: enabled && !!departmentCompanyId,
+    staleTime: 60_000,
+  });
+
+  const departmentPickerOptions = useMemo(
+    () =>
+      mergeDepartmentPickerOptions(
+        departmentPickerOptionsFromCompanyRows(departmentsQuery.data?.rows ?? []),
+        departmentOptionsFromCatalog(catalogs),
+      ),
+    [departmentsQuery.data?.rows, catalogs],
+  );
+
   const invalidateSettingsCatalogs = () =>
     queryClient.invalidateQueries({ queryKey: [SETTINGS_CATALOGS_QUERY_KEY] });
+
+  const invalidateCompanyDepartments = () =>
+    queryClient.invalidateQueries({ queryKey: [COMPANY_DEPARTMENTS_QUERY_KEY] });
 
   return {
     ...query,
     scope,
-    catalogs: (query.data?.catalogs ?? []) as HrmSettingsCatalogOverviewRow[],
+    catalogs,
+    departmentPickerOptions,
+    isDepartmentLoading: departmentsQuery.isLoading,
+    departmentFetchError: departmentsQuery.data?.fetchError ?? null,
     invalidateSettingsCatalogs,
+    invalidateCompanyDepartments,
   };
 }

@@ -19,6 +19,14 @@ interface FormulaInputProps {
   className?: string;
   /** Gán ref textarea bên ngoài (chèn token từ picker). */
   textareaRef?: React.MutableRefObject<HTMLTextAreaElement | null>;
+  /** Tuỳ biến chuỗi chèn khi chọn gợi ý (mặc định: mã). */
+  formatInsertToken?: (item: { code: string; name: string }) => string;
+  /** Giá trị dùng validate (vd. mã kỹ thuật khi ô hiển thị nhãn tiếng Việt). */
+  validationValue?: string;
+  /** Tắt gợi ý gõ trong ô — dùng picker phía trên. */
+  disableAutocomplete?: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 // Excel-like formula functions
@@ -85,13 +93,21 @@ const validateFormula = (
     }
   }
   
-  // Check for referenced components that don't exist
+  // Check for referenced components that don't exist (UPPERCASE catalog codes only)
   const componentRefs = formulaContent.match(/[A-Z][A-Z0-9_]+/g) || [];
   for (const ref of componentRefs) {
-    // Skip if it's a function name
     if (EXCEL_FUNCTIONS.includes(ref)) continue;
-    // Check if it's a valid component
     if (!availableCodes.includes(ref)) {
+      warnings.push(t('formulaInput.componentNotExist', { code: ref }));
+    }
+  }
+
+  // Lowercase bag vars (salary component formulas)
+  const varRefs = formulaContent.match(/[a-z][a-z0-9_]*/g) || [];
+  const knownLower = new Set(availableCodes.map((c) => c.toLowerCase()));
+  for (const ref of varRefs) {
+    if (EXCEL_FUNCTIONS.includes(ref.toUpperCase())) continue;
+    if (!knownLower.has(ref.toLowerCase())) {
       warnings.push(t('formulaInput.componentNotExist', { code: ref }));
     }
   }
@@ -130,6 +146,11 @@ export const FormulaInput = ({
   placeholder,
   className,
   textareaRef,
+  formatInsertToken,
+  validationValue,
+  disableAutocomplete = false,
+  onFocus,
+  onBlur,
 }: FormulaInputProps) => {
   const { t } = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
@@ -142,8 +163,8 @@ export const FormulaInput = ({
   const availableCodes = useMemo(() => availableComponents.map(c => c.code), [availableComponents]);
   
   const validation = useMemo(
-    () => validateFormula(value, availableCodes, t), 
-    [value, availableCodes, t]
+    () => validateFormula(validationValue ?? value, availableCodes, t),
+    [validationValue, value, availableCodes, t],
   );
   
   const { word: currentWord, start: wordStart } = useMemo(
@@ -172,9 +193,13 @@ export const FormulaInput = ({
   
   // Show suggestions when there are matches and input is focused
   useEffect(() => {
+    if (disableAutocomplete) {
+      setShowSuggestions(false);
+      return;
+    }
     setShowSuggestions(isFocused && suggestions.length > 0 && currentWord.length > 0);
     setSelectedSuggestionIndex(0);
-  }, [isFocused, suggestions.length, currentWord]);
+  }, [disableAutocomplete, isFocused, suggestions.length, currentWord]);
   
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -189,10 +214,15 @@ export const FormulaInput = ({
   };
   
   // Insert suggestion
-  const insertSuggestion = (suggestion: { code: string; type: 'component' | 'function' }) => {
+  const insertSuggestion = (suggestion: { code: string; name: string; type: 'component' | 'function' }) => {
     const before = value.slice(0, wordStart);
     const after = value.slice(cursorPosition);
-    const insertText = suggestion.type === 'function' ? `${suggestion.code}()` : suggestion.code;
+    const insertText =
+      suggestion.type === 'function'
+        ? `${suggestion.code}()`
+        : formatInsertToken
+          ? formatInsertToken(suggestion)
+          : suggestion.code;
     const newValue = before + insertText + after;
     onChange(newValue);
     
@@ -263,8 +293,16 @@ export const FormulaInput = ({
           value={value}
           onChange={handleChange}
           onSelect={handleSelect}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+          onFocus={() => {
+            setIsFocused(true);
+            onFocus?.();
+          }}
+          onBlur={() => {
+            setTimeout(() => {
+              setIsFocused(false);
+              onBlur?.();
+            }, 200);
+          }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder || t('formulaInput.placeholder')}
           className={cn(
@@ -290,7 +328,7 @@ export const FormulaInput = ({
       </div>
       
       {/* Autocomplete suggestions dropdown */}
-      {showSuggestions && (
+      {showSuggestions && !disableAutocomplete && (
         <div 
           ref={suggestionsRef}
           className="absolute z-50 mt-1 w-full max-h-48 overflow-auto rounded-md border bg-popover shadow-lg"

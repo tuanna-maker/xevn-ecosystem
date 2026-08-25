@@ -305,9 +305,7 @@ export function parsePeriodSnapshotColumns(
         display_label: col.display_label ?? null,
         sort_order: Number(col.sort_order ?? idx),
         formula_definition_id: col.formula_definition_id ?? null,
-        override_applied: Boolean(
-          col.override_applied ?? col.formula_definition_id,
-        ),
+        override_applied: col.override_applied === true,
       };
       return def;
     })

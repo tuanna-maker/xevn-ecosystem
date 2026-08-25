@@ -100,7 +100,6 @@ import {
   type PerformanceEvalStatus,
 } from "@/lib/statusMachineE3";
 import {
-  departmentOptionsFromCatalog,
   jobGradeOptionsFromCatalog,
   kpiLibraryOptionsFromCatalog,
   resolveKpiLibraryLabel,
@@ -127,12 +126,12 @@ const EVAL_MSG = {
 export default function Performance() {
   const { currentCompanyId, user } = useAuth();
   const queryClient = useQueryClient();
-  const { catalogs, isLoading: catalogsLoading } = useSettingsCatalogsOverview();
+  const { catalogs, departmentPickerOptions: deptOptions, isLoading: catalogsLoading } =
+    useSettingsCatalogsOverview();
   const [editingCycle, setEditingCycle] = useState<HrmPerformanceCycle | null>(null);
 
   const kpiOptions = useMemo(() => kpiLibraryOptionsFromCatalog(catalogs), [catalogs]);
   const gradeOptions = useMemo(() => jobGradeOptionsFromCatalog(catalogs), [catalogs]);
-  const deptOptions = useMemo(() => departmentOptionsFromCatalog(catalogs), [catalogs]);
 
   const cycleSchema = useMemo(() => createPerformanceCycleFormSchema(CYCLE_MSG), []);
   const evalSchema = useMemo(

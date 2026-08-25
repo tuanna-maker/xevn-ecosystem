@@ -176,6 +176,7 @@ import {
   pushHrmTableScopeFilters,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
+  resolveHrmPersistTenantId,
   resolveHrmSettingsCatalogCompanyId,
 } from '../common/hrm-list-scope';
 import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
@@ -319,6 +320,7 @@ import {
 
 type JobRequisitionRow = {
   id: string;
+  tenant_id?: string | null;
   company_id: string;
   title: string;
   department: string;
@@ -571,6 +573,10 @@ export class RecruitmentService {
     await this.db.query(`
       ALTER TABLE public.recruitment_interviews
       ALTER COLUMN company_id TYPE TEXT USING company_id::text;
+    `);
+    await this.db.query(`
+      ALTER TABLE public.job_requisitions
+      ADD COLUMN IF NOT EXISTS tenant_id TEXT NULL;
     `);
     await this.db.query(`
       ALTER TABLE public.job_requisitions
@@ -1249,7 +1255,7 @@ export class RecruitmentService {
   }
 
   private requisitionSelectSql(): string {
-    return `SELECT r.id, r.company_id, r.title, r.department, r.employment_type, r.headcount, r.status,
+    return `SELECT r.id, r.tenant_id, r.company_id, r.title, r.department, r.employment_type, r.headcount, r.status,
               r.job_description, r.requirements, r.job_template_id,
               r.workflow_instance_id::text AS workflow_instance_id,
               r.headcount_mode, r.headcount_cell_id::text AS headcount_cell_id,
@@ -1561,21 +1567,26 @@ export class RecruitmentService {
       payload.job_grade_key,
     );
 
+    const tenantId = resolveHrmPersistTenantId(
+      authorization,
+      payload.company_id,
+    );
+
     const id = randomUUID();
     try {
       const res = await this.db.query<JobRequisitionRow>(
         `INSERT INTO public.job_requisitions
-          (id, company_id, title, department, employment_type, headcount, status,
+          (id, tenant_id, company_id, title, department, employment_type, headcount, status,
            job_description, requirements, job_template_id,
            headcount_mode, headcount_cell_id, target_month, recruitment_plan_id,
            department_key, position_key, job_grade_key, hire_reason, replace_employee_id,
            out_of_plan_reason, pipeline_flags_json)
-         VALUES ($1, $2::text, $3, $4, $5, $6, 'draft',
-                 $7, $8, $9,
-                 $10, $11::uuid, $12::date, $13::uuid,
-                 $14, $15, $16, $17, $18::uuid,
-                 $19, $20::jsonb)
-         RETURNING id, company_id, title, department, employment_type, headcount, status,
+         VALUES ($1, $2::text, $3::text, $4, $5, $6, $7, 'draft',
+                 $8, $9, $10,
+                 $11, $12::uuid, $13::date, $14::uuid,
+                 $15, $16, $17, $18, $19::uuid,
+                 $20, $21::jsonb)
+         RETURNING id, tenant_id, company_id, title, department, employment_type, headcount, status,
                    job_description, requirements, job_template_id,
                    headcount_mode, headcount_cell_id::text AS headcount_cell_id,
                    target_month::text AS target_month,
@@ -1585,6 +1596,7 @@ export class RecruitmentService {
                    created_at, updated_at;`,
         [
           id,
+          tenantId,
           companyId,
           payload.title.trim(),
           payload.department.trim(),

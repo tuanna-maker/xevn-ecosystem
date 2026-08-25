@@ -80,7 +80,7 @@
  * Why: DEF-REC-EMBED-DEEPLINK-TAB-CANDIDATES — parent CC URL carries tab/candidateId; iframe src omits them
  * must_keep: U65 · YCTD · stage transition · no seed
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -384,6 +384,14 @@ export function CandidatesTab() {
   const [stageTransitionCandidate, setStageTransitionCandidate] = useState<Candidate | null>(null);
   const [stageTransitionInitial, setStageTransitionInitial] = useState<string | null>(null);
   const [stageHistoryRefreshToken, setStageHistoryRefreshToken] = useState(0);
+  
+  /** FIX: AbortController to cancel stale requests when companyId changes */
+  const abortControllerRef = useRef<AbortController | null>(null);
+  /** FIX: Track synthetic candidate created from schedule conflict */
+  const [syntheticCandidateCreated, setSyntheticCandidateCreated] = useState(false);
+  /** FIX: Debounce search input to prevent excessive filtering */
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const { evaluations } = useCandidateEvaluations(isComparisonDialogOpen);
   const { requisitions: compareSeedRequisitions, refetch: refreshCompareRequisitions } =
@@ -391,19 +399,30 @@ export function CandidatesTab() {
 
   const fetchCandidates = useCallback(async () => {
     if (!currentCompanyId) return;
+    
+    /** FIX: Cancel previous request to prevent race conditions */
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    
     setLoading(true);
     try {
       const [poolResponse, spineResponse] = await Promise.all([
         listCandidatesPool({ company_id: currentCompanyId }),
         listRecruitmentCandidates({ company_id: currentCompanyId, page: 1, page_size: 500 }),
       ]);
+      
+      /** FIX: Check if request was cancelled before updating state */
+      if (controller.signal.aborted) return;
+      
       const spineRows = spineResponse.data ?? [];
       const withInterview = mergeActiveInterviewOntoPoolCandidates(
         poolResponse.data ?? [],
         spineRows,
       );
       const merged = mergeYctdDisplayOntoPoolCandidates(withInterview, spineRows);
-      // AC-REC-UV-02: Lane A POST writes spine only — union spine-only into list SoT (no dual-write).
       const list = unionSpineOnlyCandidatesIntoList(merged, spineRows);
       setCandidates(list as Candidate[]);
       setSelectedCandidateForDetail((prev) => {
@@ -412,6 +431,8 @@ export function CandidatesTab() {
         return next ?? prev;
       });
     } catch (error: any) {
+      /** FIX: Don't show error toast if request was aborted */
+      if (error?.name === 'AbortError' || controller.signal.aborted) return;
       console.error('Error fetching candidates:', error);
       toast({
         title: t('common.error'),
@@ -419,7 +440,9 @@ export function CandidatesTab() {
         variant: 'destructive',
       });
     } finally {
-      setLoading(false);
+      if (!controller.signal.aborted) {
+        setLoading(false);
+      }
     }
   }, [currentCompanyId, t, toast]);
 
@@ -451,23 +474,44 @@ export function CandidatesTab() {
     fetchCandidates();
   }, [fetchCandidates]);
 
-  /** Deep-link — ?candidateId= opens detail after list SoT loads (J-HRM-CTR-HIRE / QA harness). */
+  /** FIX: Deep-link — ?candidateId= opens detail after list SoT loads (J-HRM-CTR-HIRE / QA harness). */
   const candidateIdFromUrl = useMemo(() => {
     const id = resolveRecruitmentEmbedSearchParams(location.search).get('candidateId')?.trim();
     return id || null;
   }, [location.search]);
 
   useEffect(() => {
-    if (!candidateIdFromUrl || loading || candidates.length === 0) return;
+    /** FIX: Only proceed when we have an id and data is loaded */
+    if (!candidateIdFromUrl) return;
+    
+    /** Wait for data to load */
+    if (loading || candidates.length === 0) return;
+    
     const match = candidates.find(
       (c) =>
         c.id === candidateIdFromUrl ||
         (c.recruitment_candidate_id ?? '').trim() === candidateIdFromUrl,
     );
+    
     if (match) {
       setSelectedCandidateForDetail(match);
+    } else {
+      /** FIX: Show toast when candidate not found from deep link */
+      toast({
+        title: 'Không tìm thấy ứng viên',
+        description: `ID "${candidateIdFromUrl}" không tồn tại hoặc đã bị xóa.`,
+        variant: 'destructive',
+      });
+      /** Clear the invalid candidateId from URL */
+      const params = new URLSearchParams(location.search);
+      params.delete('candidateId');
+      const next = params.toString();
+      navigate(
+        { pathname: location.pathname, search: next ? `?${next}` : '' },
+        { replace: true },
+      );
     }
-  }, [candidateIdFromUrl, candidates, loading]);
+  }, [candidateIdFromUrl, candidates, loading, location.search, location.pathname, navigate, toast]);
 
   /** AC-REC-UV-04 — open create prefilled when ?requisition_id= present. */
   useEffect(() => {
@@ -548,22 +592,29 @@ export function CandidatesTab() {
     interviewId: string;
     candidate: { id: string; fullName: string; email: string; phone?: string; position?: string };
   }) => {
-    const row =
+    const existingInList =
       candidates.find((c) => c.id === payload.candidate.id) ||
-      candidates.find((c) => c.email?.toLowerCase() === payload.candidate.email.toLowerCase()) ||
-      ({
-        id: payload.candidate.id,
-        company_id: currentCompanyId || '',
-        full_name: payload.candidate.fullName,
-        email: payload.candidate.email,
-        phone: payload.candidate.phone || null,
-        position: payload.candidate.position || null,
-        active_interview: {
-          has_active_interview: true,
-          active_interview_id: payload.interviewId,
-          active_interview_badge_label: 'Đã có lịch',
-        },
-      } as Candidate);
+      candidates.find((c) => c.email?.toLowerCase() === payload.candidate.email.toLowerCase());
+    
+    /** FIX: Track if we're creating synthetic data (candidate not in list) */
+    const isSynthetic = !existingInList;
+    if (isSynthetic) {
+      setSyntheticCandidateCreated(true);
+    }
+    
+    const row = existingInList || ({
+      id: payload.candidate.id,
+      company_id: currentCompanyId || '',
+      full_name: payload.candidate.fullName,
+      email: payload.candidate.email,
+      phone: payload.candidate.phone || null,
+      position: payload.candidate.position || null,
+      active_interview: {
+        has_active_interview: true,
+        active_interview_id: payload.interviewId,
+        active_interview_badge_label: 'Đã có lịch',
+      },
+    } as Candidate);
     handleManageActiveInterview(
       {
         ...row,
@@ -751,14 +802,16 @@ export function CandidatesTab() {
   }, [candidates, channelCatalogOptions, channelCatalogCount]);
 
   const filteredCandidates = useMemo(() => {
+    /** FIX: Use debounced search for better performance */
+    const query = debouncedSearchQuery.toLowerCase();
     return candidates.filter((candidate) => {
       const matchesSearch =
-        !searchQuery ||
-        candidate.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        candidate.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        candidate.position?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        resolveCandidatePositionLabel(candidate).toLowerCase().includes(searchQuery.toLowerCase()) ||
-        resolveCandidateYctdLabel(candidate).toLowerCase().includes(searchQuery.toLowerCase());
+        !query ||
+        candidate.full_name.toLowerCase().includes(query) ||
+        candidate.email.toLowerCase().includes(query) ||
+        candidate.position?.toLowerCase().includes(query) ||
+        resolveCandidatePositionLabel(candidate).toLowerCase().includes(query) ||
+        resolveCandidateYctdLabel(candidate).toLowerCase().includes(query);
 
       const matchesStageTab =
         activeStageTab === 'all' ||
@@ -772,7 +825,7 @@ export function CandidatesTab() {
 
       return matchesSearch && matchesStageTab && matchesStageFilter && matchesSource;
     });
-  }, [candidates, searchQuery, activeStageTab, stageFilter, sourceFilter]);
+  }, [candidates, debouncedSearchQuery, activeStageTab, stageFilter, sourceFilter]);
 
   const stageStats = useMemo(() => {
     return {
@@ -804,8 +857,12 @@ export function CandidatesTab() {
 
   const clearFilters = () => {
     setSearchQuery('');
+    setDebouncedSearchQuery('');
     setStageFilter('all');
     setSourceFilter('all');
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
   };
 
   return (
@@ -871,7 +928,17 @@ export function CandidatesTab() {
                     placeholder={t('recruitment.ct.searchPlaceholder')}
                     className="pl-10"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSearchQuery(value);
+                      /** FIX: Debounce search to prevent excessive filtering */
+                      if (searchDebounceRef.current) {
+                        clearTimeout(searchDebounceRef.current);
+                      }
+                      searchDebounceRef.current = setTimeout(() => {
+                        setDebouncedSearchQuery(value);
+                      }, 300);
+                    }}
                   />
                 </div>
 
@@ -927,13 +994,16 @@ export function CandidatesTab() {
                 )}
               </div>
 
-              {hasActiveFilters && (
+                {hasActiveFilters && (
                 <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t">
                   <span className="text-sm text-muted-foreground">{t('recruitment.ct.filtering')}</span>
                   {searchQuery && (
                     <Badge variant="secondary" className="flex items-center gap-1">
                       {t('recruitment.ct.keyword')}: "{searchQuery}"
-                      <X className="w-3 h-3 cursor-pointer" onClick={() => setSearchQuery('')} />
+                      <X className="w-3 h-3 cursor-pointer" onClick={() => {
+                        setSearchQuery('');
+                        setDebouncedSearchQuery('');
+                      }} />
                     </Badge>
                   )}
                   {sourceFilter !== 'all' && (
@@ -1281,7 +1351,14 @@ export function CandidatesTab() {
 
       <ManageActiveInterviewDialog
         open={isManageInterviewOpen}
-        onOpenChange={setIsManageInterviewOpen}
+        onOpenChange={(open) => {
+          setIsManageInterviewOpen(open);
+          /** FIX: Refresh list after managing interview to ensure data consistency */
+          if (!open) {
+            fetchCandidates();
+            setSyntheticCandidateCreated(false);
+          }
+        }}
         onSuccess={fetchCandidates}
         interviewId={manageInterviewId}
         badge={

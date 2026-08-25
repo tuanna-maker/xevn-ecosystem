@@ -313,7 +313,8 @@ export function leaveTypeOptionsFromCatalog(
 }
 
 /**
- * Department picker options — settings catalog SoT only (FR-HRM-SC-MD-02 / AC-SET-FS-01..05).
+ * Department picker options — settings catalog slice only.
+ * Form consumers: use `departmentPickerOptions` from useSettingsCatalogsOverview (HRM ∪ catalog).
  * Empty / missing key → [] (honest empty + CTA); never invent code from display name.
  */
 export function departmentOptionsFromCatalog(

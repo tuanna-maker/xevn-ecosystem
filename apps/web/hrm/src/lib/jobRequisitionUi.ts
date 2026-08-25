@@ -12,7 +12,6 @@ import type {
   HrmYctdJdPreview,
 } from '@/integrations/hrmApi';
 import {
-  departmentOptionsFromCatalog,
   type CatalogPickerOption,
 } from '@/lib/catalogSearchPicker';
 
@@ -332,13 +331,12 @@ export function buildRequisitionCreateFormDefaults(input: {
 }
 
 export function requisitionDepartmentPickerOptions(
-  catalogs: readonly CatalogRowLike[],
+  departmentOptions: readonly CatalogPickerOption[],
   existingDepartments: readonly string[],
   extraLabels: readonly string[] = [],
   templateDeptHints: readonly string[] = [],
 ): CatalogPickerOption[] {
-  const fromCatalog = departmentOptionsFromCatalog(catalogs);
-  if (fromCatalog.length > 0) return fromCatalog;
+  if (departmentOptions.length > 0) return [...departmentOptions];
   const seen = new Set<string>();
   const fallback: CatalogPickerOption[] = [];
   for (const raw of [...existingDepartments, ...extraLabels, ...templateDeptHints]) {

@@ -41,7 +41,8 @@ import {
   User,
   Settings,
   LogOut,
-  MapPin
+  MapPin,
+  Activity,
 } from 'lucide-react';
 import { Container } from '@xevn/ui';
 import { mockModuleCards, type AlertItem, type ModuleCardData } from '../../data/mockExecutiveDashboardData';
@@ -659,7 +660,7 @@ const ModuleCard: React.FC<{ card: ModuleCardData }> = ({ card }) => {
   const navigate = useTenantNavigate();
 
   const handleAccessClick = () => {
-    tenantNavigate(resolveExecModuleAccessRoute(card.id));
+    navigate(resolveExecModuleAccessRoute(card.id));
   };
 
   const getIconComponent = (iconName: string) => {
