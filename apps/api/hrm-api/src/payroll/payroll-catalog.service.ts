@@ -167,7 +167,15 @@ export class PayrollCatalogService {
       ALTER TABLE public.salary_components
       ADD COLUMN IF NOT EXISTS default_formula_definition_id UUID NULL,
       ADD COLUMN IF NOT EXISTS archived_at TIMESTAMPTZ NULL,
-      ADD COLUMN IF NOT EXISTS is_system BOOLEAN NOT NULL DEFAULT FALSE;
+      ADD COLUMN IF NOT EXISTS is_system BOOLEAN NOT NULL DEFAULT FALSE,
+      ADD COLUMN IF NOT EXISTS include_in_gross BOOLEAN NOT NULL DEFAULT TRUE;
+    `);
+    await this.db.query(`
+      UPDATE public.salary_components
+      SET include_in_gross = FALSE,
+          updated_at = NOW()
+      WHERE lower(code) IN ('luong_co_ban', 'tong_thu_nhap', 'thuc_linh')
+        AND include_in_gross = TRUE;
     `);
     await this.db.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS uq_salary_components_company_code
@@ -274,13 +282,18 @@ export class PayrollCatalogService {
   async ensureStarterSalaryComponents(companyId: string): Promise<void> {
     await this.ensureSalaryComponentSchema();
     for (const starter of PAY_SALARY_COMPONENT_STARTER_ROWS) {
+      const includeInGross =
+        'include_in_gross' in starter && starter.include_in_gross === false
+          ? false
+          : true;
       await this.db.query(
         `
           INSERT INTO public.salary_components (
             id, company_id, code, name, component_type, nature, value_type,
-            is_taxable, is_insurance_base, applied_to, is_active, sort_order, is_system
+            is_taxable, is_insurance_base, applied_to, is_active, sort_order, is_system,
+            include_in_gross
           )
-          SELECT gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, 'all', TRUE, $9, $10
+          SELECT gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, 'all', TRUE, $9, $10, $11
           WHERE NOT EXISTS (
             SELECT 1 FROM public.salary_components
             WHERE company_id = $1 AND lower(code) = lower($2) AND archived_at IS NULL
@@ -297,6 +310,7 @@ export class PayrollCatalogService {
           starter.is_insurance_base,
           starter.sort_order,
           starter.is_system,
+          includeInGross,
         ],
       );
     }

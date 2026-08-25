@@ -1915,11 +1915,14 @@ export class RecruitmentService {
       mismatchCode: 'HRM-REC-409',
     });
     try {
-      this.recruitmentWorkflowBridge.assertNotLockedOrThrow(
-        peek.rows[0]?.workflow_instance_id,
-        peek.rows[0]?.status,
-        'requisition',
-      );
+      const mappedStatus = payload.status as string | undefined;
+      if (mappedStatus !== 'open' && mappedStatus !== 'rejected') {
+        this.recruitmentWorkflowBridge.assertNotLockedOrThrow(
+          peek.rows[0]?.workflow_instance_id,
+          peek.rows[0]?.status,
+          'requisition',
+        );
+      }
     } catch (err) {
       if (err instanceof Error && err.message === 'HRM-REC-WF-LOCKED') {
         throw new ApiException(

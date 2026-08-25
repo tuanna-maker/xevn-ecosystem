@@ -4333,7 +4333,8 @@
         "active": "Đang tuyển",
         "draft": "Nháp",
         "paused": "Tạm dừng",
-        "closed": "Đã đóng"
+        "closed": "Đã đóng",
+        "pendingApproval": "Chờ duyệt"
       },
       "employmentTypes": {
         "full-time": "Toàn thời gian",

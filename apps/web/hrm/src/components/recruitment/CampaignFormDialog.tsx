@@ -58,7 +58,7 @@ const createSchema = (t: (key: string) => string) =>
     status: z.string().min(1, t('camForm.val.statusRequired')),
     start_date: z.date({ required_error: t('camForm.val.startDateRequired') }),
     end_date: z.date().optional().nullable(),
-    owner_name: z.string().optional(),
+    owner_id: z.string().optional(),
     follower_name: z.string().optional(),
     position_key: z.string().min(1, t('recruitment.form.typeRequired')),
     title: z.string().optional(),
@@ -82,6 +82,7 @@ interface Campaign {
   start_date: string;
   end_date?: string | null;
   owner_name?: string | null;
+  owner_id?: string | null;
   follower_name?: string | null;
   position?: string | null;
   position_key?: string | null;
@@ -163,13 +164,14 @@ export function CampaignFormDialog({
     defaultValues: {
       name: '', description: '', status: 'active',
       start_date: new Date(), end_date: null,
-      owner_name: '', follower_name: '', position_key: '', title: '',
+      owner_id: '', owner_name: '', follower_name: '', position_key: '', title: '',
       department_key: '', work_type: '', location: '', evaluation_criteria: '',
       salary_level: '', quantity: 1, requirements: '', degree: '', major: '',
     },
   });
 
   useEffect(() => {
+
     if (!open) return;
     if (campaign) {
       form.reset({
@@ -177,7 +179,7 @@ export function CampaignFormDialog({
         status: campaign.status,
         start_date: campaign.start_date ? new Date(campaign.start_date) : new Date(),
         end_date: campaign.end_date ? new Date(campaign.end_date) : null,
-        owner_name: campaign.owner_name || '', follower_name: campaign.follower_name || '',
+        owner_id: campaign.owner_id || '', owner_name: campaign.owner_name || '', follower_name: campaign.follower_name || '',
         position_key:
           campaign.position_key?.trim() ||
           positionOptions.find((o) => o.label.trim() === (campaign.position ?? '').trim())?.value ||
@@ -195,7 +197,7 @@ export function CampaignFormDialog({
       });
     } else {
       form.reset({
-        name: '', description: '', status: 'active',
+        name: '', description: '', status: 'draft',
         start_date: new Date(), end_date: null,
         owner_name: '', follower_name: '', position_key: '', title: '',
         department_key: '', work_type: '', location: '', evaluation_criteria: '',
@@ -237,6 +239,7 @@ export function CampaignFormDialog({
     setIsSubmitting(true);
     try {
       const payload = {
+        owner_id: data.owner_id || undefined,
         company_id: companyId,
         title: data.title?.trim() ? data.title : data.name,
         position_key: pos.position_key,
@@ -251,6 +254,14 @@ export function CampaignFormDialog({
         deadline: data.end_date ? format(data.end_date, 'yyyy-MM-dd') : undefined,
         status: data.status,
         benefits: data.evaluation_criteria || undefined,
+        // Keep rich campaign metadata in extra fields until BE model is expanded.
+        note: [
+          null,
+          data.follower_name ? `follower:${data.follower_name}` : null,
+          data.salary_level ? `salary:${data.salary_level}` : null,
+          data.degree ? `degree:${data.degree}` : null,
+          data.major ? `major:${data.major}` : null,
+        ].filter(Boolean).join(' | ') || undefined,
       };
 
       if (campaign) {
@@ -311,7 +322,7 @@ export function CampaignFormDialog({
                   <FormField control={form.control} name="status" render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('common.status.label')} *</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value} disabled={true}>
                         <FormControl><SelectTrigger><SelectValue placeholder={d('selectStatus')} /></SelectTrigger></FormControl>
                         <SelectContent>
                           {statusOptions.map((opt) => (

@@ -9,6 +9,7 @@
 import { expandPayrollAttendanceSheetCompanyIds } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import { PAY_GTCG_REGIME_CODE_DEFAULT } from './pay-gtgc.constants';
+import { normalizePayrollAsOfDate } from './pay-src-resolver';
 
 export type PayGtgcStatutoryCfgRow = {
   id: string;
@@ -85,7 +86,7 @@ export async function pickPayGtgcStatutoryCfgAtAsOf(
   input: { companyId: string; asOf: string; regimeCode?: string },
 ): Promise<PayGtgcStatutoryCfgRow | null> {
   await ensurePayGtgcStatutoryCfgSchema(db);
-  const asOf = input.asOf.slice(0, 10);
+  const asOf = normalizePayrollAsOfDate(input.asOf);
   const regime = (input.regimeCode ?? PAY_GTCG_REGIME_CODE_DEFAULT).trim();
   const companyIds = expandPayrollAttendanceSheetCompanyIds(input.companyId);
   const res = await db.query<PayGtgcStatutoryCfgRow>(

@@ -37,7 +37,7 @@ import { useEffect, useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { coerceHrmListCompanyId } from '@/lib/hrmListScope';
 import { HRM_API_MAX_PAGE_SIZE } from '@/lib/hrmDataMode';
-import { listEmployees, type HrmEmployeeRecord } from '@/integrations/hrmApi';
+import { listEmployees, type HrmEmployeeRecord, type HrmSpreadsheetScope } from '@/integrations/hrmApi';
 
 /** ADR §5.2 / W2 — picker default page (≤ Nest hard cap 100). */
 export const HRM_EMPLOYEE_PICKER_PAGE_SIZE = 50;
@@ -84,6 +84,7 @@ export async function fetchEmployeePickerPage(params: {
   page_size?: number;
   include_archived?: boolean;
   status?: string;
+  scope?: HrmSpreadsheetScope;
 }): Promise<EmployeePickerResult> {
   const pageSize = Math.min(
     Math.max(1, params.page_size ?? HRM_EMPLOYEE_PICKER_PAGE_SIZE),
@@ -96,6 +97,7 @@ export async function fetchEmployeePickerPage(params: {
     status: params.status,
     page: 1,
     page_size: pageSize,
+    scope: params.scope,
   });
   const data = res.data ?? [];
   const total = res.total ?? data.length;
@@ -122,6 +124,7 @@ export type UseEmployeePickerSearchOptions = {
   pageSize?: number;
   includeArchived?: boolean;
   status?: string;
+  scope?: HrmSpreadsheetScope | null;
 };
 
 /** React Query typeahead / capped picker — one GET per keyword/scope. */
@@ -133,6 +136,7 @@ export function useEmployeePickerSearch(options: UseEmployeePickerSearchOptions)
     pageSize = HRM_EMPLOYEE_PICKER_PAGE_SIZE,
     includeArchived = false,
     status,
+    scope,
   } = options;
 
   const filters: EmployeePickerFilters = {
@@ -143,7 +147,7 @@ export function useEmployeePickerSearch(options: UseEmployeePickerSearchOptions)
   };
 
   const query = useQuery({
-    queryKey: buildEmployeePickerQueryKey(companyId, filters),
+    queryKey: [...buildEmployeePickerQueryKey(companyId, filters), scope?.tenantId ?? null, scope?.companyId ?? null],
     queryFn: async (): Promise<EmployeePickerResult> => {
       if (!companyId) {
         return { data: [], total: 0, isCapped: false };
@@ -154,6 +158,7 @@ export function useEmployeePickerSearch(options: UseEmployeePickerSearchOptions)
         page_size: pageSize,
         include_archived: includeArchived,
         status,
+        scope: scope ?? undefined,
       });
     },
     enabled: Boolean(companyId) && enabled,

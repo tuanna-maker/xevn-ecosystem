@@ -15,6 +15,7 @@ import {
   Network,
   Upload,
   RefreshCw,
+  ListChecks,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -62,6 +63,7 @@ import {
   suggestDepartmentCode,
 } from '@/lib/companyDepartmentMutate';
 import { DepartmentImportDialog } from './DepartmentImportDialog';
+import { DepartmentPositionConfigDialog } from './DepartmentPositionConfigDialog';
 import { HrmListLoadBanner } from '@/components/hrm/HrmListLoadBanner';
 import {
   isListFetchFailureEmpty,
@@ -109,6 +111,7 @@ export function DepartmentManagement() {
   const [submitting, setSubmitting] = useState(false);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [positionConfigDept, setPositionConfigDept] = useState<Department | null>(null);
 
   const {
     data,
@@ -366,6 +369,15 @@ export function DepartmentManagement() {
               <Users className="w-4 h-4" />
               <span>{dept.employee_count}</span>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              title="Cấu hình chức danh"
+              onClick={() => setPositionConfigDept(dept)}
+            >
+              <ListChecks className="w-4 h-4" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -639,6 +651,15 @@ export function DepartmentManagement() {
         onOpenChange={setIsImportDialogOpen}
         onSuccess={handleImportSuccess}
         existingDepartments={departments.map(d => ({ id: d.id, name: d.name, code: d.code }))}
+      />
+
+      <DepartmentPositionConfigDialog
+        open={Boolean(positionConfigDept)}
+        onOpenChange={(open) => {
+          if (!open) setPositionConfigDept(null);
+        }}
+        department={positionConfigDept}
+        companyId={currentCompanyId}
       />
     </>
   );

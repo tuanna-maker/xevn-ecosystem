@@ -41,6 +41,8 @@ import {
   parseComponentCompositeExpression,
   readPayFormulaComponentTokens,
   tokensToComponentExpression,
+  expressionToComponentTokens,
+  formatPayFormulaReadableSummary,
   validateComponentCompositeExpression,
   PAY_FORMULA_HYPER_FORM,
   suggestComponentCodeFromVar,
@@ -48,6 +50,7 @@ import {
   buildPayFormulaDisplayLabelMap,
   formatSalaryFormulaDisplayText,
   parseSalaryFormulaDisplayText,
+  resolveSalaryComponentFormulaInsertToken,
 } from './payFormulaCatalog';
 
 describe('payFormulaCatalog', () => {
@@ -261,6 +264,69 @@ describe('payFormulaCatalog', () => {
     expect(validateComponentCompositeExpression('UNKNOWN', ['LUONG_CHINH'])).not.toBeNull();
   });
 
+  it('readPayFormulaComponentTokens builds chips from ui.expression when tokens missing (VP seed)', () => {
+    const labels = new Map<string, string>([
+      ['LUONG_THEO_CONG', 'Lương theo công'],
+      ['LUONG_KPI', 'Lương KPI'],
+    ]);
+    const expressionJson = {
+      form: PAY_FORMULA_EVAL_FORM,
+      lines: [
+        { component_code: 'LUONG_THEO_CONG', sign: 'earning', source: 'expr', expr: { op: 'mul', left: 'base_salary', right: 'payable_hours' } },
+        { component_code: 'LUONG_KPI', sign: 'earning', source: 'var', var: 'allowance_kpi' },
+      ],
+      ui: {
+        mode: 'component_composite',
+        expression: 'LUONG_THEO_CONG + LUONG_KPI',
+      },
+    };
+    const round = readPayFormulaComponentTokens(expressionJson, labels);
+    expect(round?.tokens).toHaveLength(3);
+    expect(expressionToComponentTokens('LUONG_THEO_CONG + LUONG_KPI', labels)).toHaveLength(3);
+    const summary = formatPayFormulaReadableSummary(expressionJson, labels);
+    expect(summary).toContain('LUONG_THEO_CONG');
+    expect(summary).toContain('Lương theo công');
+  });
+
+  it('formatPayFormulaReadableSummary renders payroll_aggregate_v1 gross expression', () => {
+    const labels = new Map<string, string>([['LUONG_THEO_CONG', 'Lương theo công']]);
+    const summary = formatPayFormulaReadableSummary(
+      {
+        form: 'payroll_aggregate_v1',
+        aggregate: 'gross',
+        ui: { label: 'Tổng thu nhập', expression: 'LUONG_THEO_CONG + LUONG_KPI' },
+      },
+      labels,
+    );
+    expect(summary).toContain('Tổng thu nhập');
+    expect(summary).toContain('Lương theo công');
+  });
+
+  it('formatPayFormulaReadableSummary renders payroll_aggregate_v1 net expression', () => {
+    const labels = new Map<string, string>([
+      ['TONG_THU_NHAP', 'Tổng thu nhập'],
+      ['KHAU_TRU_BHXH', 'BHXH/BHYT/BHTN NLĐ'],
+      ['THUE_TNCN', 'Thuế TNCN'],
+    ]);
+    const summary = formatPayFormulaReadableSummary(
+      {
+        form: 'payroll_aggregate_v1',
+        aggregate: 'net',
+        ui: {
+          label: 'Thực lĩnh',
+          expression:
+            'TONG_THU_NHAP - KHAU_TRU_BHXH - KHAU_TRU_CONG_DOAN - THUE_TNCN',
+        },
+      },
+      labels,
+    );
+    expect(summary).toContain('Thực lĩnh');
+    expect(summary).toContain('Tổng thu nhập');
+    expect(summary).toContain('BHXH/BHYT/BHTN NLĐ');
+    expect(summary).toContain('Thuế TNCN');
+    expect(summary).not.toContain('Tổng thu nhập − các khoản khấu trừ');
+  });
+
   it('formatSalaryFormulaDisplayText shows bracketed Vietnamese labels', () => {
     const labelMap = buildPayFormulaDisplayLabelMap();
     const display = formatSalaryFormulaDisplayText('=base_salary+allowance_p2', labelMap);
@@ -281,14 +347,31 @@ describe('payFormulaCatalog', () => {
       salaryComponents: [
         {
           componentCode: 'LUONG_NGAY_PHEP',
-          insertToken: 'paid_leave_hours',
+          insertToken: 'luong_ngay_phep',
           name: 'Lương ngày phép',
         },
       ],
     };
     const display = '=[Lương ngày phép] + [Lương cơ bản (hợp đồng)]';
     const source = parseSalaryFormulaDisplayText(display, labelMap, opts);
-    expect(source).toBe('=paid_leave_hours+base_salary');
+    expect(source).toBe('=luong_ngay_phep+base_salary');
     expect(formatSalaryFormulaDisplayText(source, labelMap)).toContain('[Lương cơ bản');
+  });
+
+  it('resolveSalaryComponentFormulaInsertToken uses component code not first formula var', () => {
+    expect(
+      resolveSalaryComponentFormulaInsertToken({
+        code: 'LUONG_NGAY',
+        name: 'Lương ngày',
+        formula: '=work_hours*8',
+      }),
+    ).toBe('luong_ngay');
+  });
+
+  it('formatSalaryFormulaDisplayText keeps short variable tokens', () => {
+    const labelMap = buildPayFormulaDisplayLabelMap();
+    const source = '=ot_hours+base_salary';
+    const display = formatSalaryFormulaDisplayText(source, labelMap);
+    expect(parseSalaryFormulaDisplayText(display, labelMap)).toBe(source);
   });
 });

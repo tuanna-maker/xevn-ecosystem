@@ -347,9 +347,13 @@ export class PayrollController {
     @Headers('x-company-id') companyId: string | undefined,
     @Body() body: Record<string, unknown> | undefined,
     @Query('include_terminations') includeTerminations?: string,
+    @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: queryCompanyId ?? companyId,
+    });
     const queryPayload =
       includeTerminations != null
         ? { include_terminations: includeTerminations }
@@ -361,6 +365,7 @@ export class PayrollController {
         authorization,
         body ?? null,
         queryPayload,
+        toHrmListScopeContext(tenantId),
       )
       .then((data) => ok(data, 'HRM-PAY-202', 'Payroll period processed'));
   }
@@ -474,11 +479,20 @@ export class PayrollController {
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
     @Headers('x-tenant-id') tenantId: string | undefined,
     @Headers('x-company-id') companyId: string | undefined,
+    @Query('company_id') queryCompanyId?: string,
   ) {
     this.assertBusinessAccess(authorization, internalApiKey);
-    const scope = resolveScopeContext(authorization, { tenantId, companyId });
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: queryCompanyId ?? companyId,
+    });
     return this.payrollService
-      .closePayrollPeriod(periodId, scope.companyId, authorization)
+      .closePayrollPeriod(
+        periodId,
+        scope.companyId,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-PAY-203', 'Payroll period closed'));
   }
 
@@ -502,6 +516,7 @@ export class PayrollController {
       .listTimesheetBinds(periodId, scope.companyId, authorization, {
         includeArchived: Boolean(query.include_archived),
         transferKind: query.transfer_kind,
+        scopeContext: toHrmListScopeContext(tenantId),
       })
       .then((data) => ok(data, 'HRM-PAY-INP-200', 'Timesheet binds listed'));
   }

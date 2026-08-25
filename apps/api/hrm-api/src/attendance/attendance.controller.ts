@@ -2583,6 +2583,28 @@ export class AttendanceController {
       );
   }
 
+  /** F-PAY-ATT-CLOSED-01 — read att_timesheet_line (payroll draft preview; no AGG on closed). */
+  @Get('attendance-sheets/:sheetId/lines')
+  listAttendanceSheetLines(
+    @Param('sheetId') sheetId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    const scope = resolveScopeContext(authorization, {
+      tenantId,
+      companyId: companyId ?? headerCompanyId,
+    });
+    return this.attendanceSheetSign
+      .listAttendanceSheetLines(sheetId, scope.companyId, authorization)
+      .then((data) =>
+        ok(data, 'HRM-ATT-LINE-200', 'Attendance sheet lines listed'),
+      );
+  }
+
   /** F-ATT-SHEET-AGG-01 · FR-UC-BP-ATT-10 — tổng hợp dòng giờ (att_timesheet_line). */
   @Post('attendance-sheets/:sheetId/aggregate')
   aggregateAttendanceSheet(

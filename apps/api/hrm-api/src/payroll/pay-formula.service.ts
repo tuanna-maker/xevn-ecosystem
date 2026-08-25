@@ -116,18 +116,25 @@ import {
 } from './pay-formula-evaluator';
 import { buildPayFormulaVariableBag } from './pay-formula-variable-bag';
 import { HRM_PAY_GTCG_412 } from './pay-gtgc.constants';
+import { PAYROLL_AGGREGATE_FORMULA_STARTER_ROWS } from './payroll-vp-sheet-starter.constants';
+import { sumResolvedLinesGross } from './pay-gross-rules';
 import {
   aggregateSrcPayslipTotals,
   componentCodesMatch,
   ensurePeriodInputSchema,
+  ensureSalaryComponentIncludeInGrossSchema,
+  expectedPayrollAggregateForTotalComponent,
+  isPayrollSheetTotalComponentCode,
   loadEmployeeFixedAmountForComponent,
   loadPeriodInputAmount,
+  loadReferenceDisplayAmountForComponent,
   loadSalaryComponentMeta,
   natureToSign,
   normalizePayrollAsOfDate,
   parsePeriodSnapshotColumns,
   resolveCatalogDefaultFormulaId,
   resolvePayslipLineSourceTier,
+  resolveSalaryComponentIncludeInGross,
   type PaySrcColumnDef,
   type PaySrcResolvedLine,
   type PaySrcTier,
@@ -142,6 +149,17 @@ import {
 
 function roundMoney(n: number): number {
   return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
+function withSrcLineIncludeInGross(
+  line: PaySrcResolvedLine,
+  includeInGross: boolean,
+): PaySrcResolvedLine {
+  return {
+    ...line,
+    include_in_gross:
+      line.include_in_gross ?? (line.sign === 'deduction' ? true : includeInGross),
+  };
 }
 
 export type PublishedFormulaBind = {
@@ -490,12 +508,55 @@ export class PayFormulaService {
     return row;
   }
 
+  /** Bootstrap OV-C formulas for pay-sheet total columns (open catalog L1). */
+  async ensureStarterPayrollAggregateFormulas(companyId: string): Promise<void> {
+    await this.ensureSchema();
+    const bootstrapActor = 'payroll_starter_bootstrap';
+    for (const row of PAYROLL_AGGREGATE_FORMULA_STARTER_ROWS) {
+      await this.db.query(
+        `
+          INSERT INTO public.pay_formula_definitions (
+            id, company_id, code, version, status,
+            expression_json, required_vars_json, meta_json,
+            authored_by, authored_at, published_by, published_at, updated_at
+          ) VALUES (
+            gen_random_uuid(), $1, $2, 1, 'active',
+            $3::jsonb, $4::jsonb, $5::jsonb,
+            $6, NOW(), $6, NOW(), NOW()
+          )
+          ON CONFLICT (company_id, code, version) DO UPDATE SET
+            status = 'active',
+            expression_json = EXCLUDED.expression_json,
+            required_vars_json = EXCLUDED.required_vars_json,
+            meta_json = EXCLUDED.meta_json,
+            published_by = COALESCE(pay_formula_definitions.published_by, EXCLUDED.published_by),
+            published_at = COALESCE(pay_formula_definitions.published_at, NOW()),
+            archived_at = NULL,
+            updated_at = NOW();
+        `,
+        [
+          companyId,
+          row.code,
+          JSON.stringify(row.expression_json),
+          JSON.stringify({ keys: [] }),
+          JSON.stringify(row.meta_json),
+          bootstrapActor,
+        ],
+      );
+    }
+  }
+
   async listFormulas(query: ListPayFormulasQueryDto, authorization?: string) {
     await this.ensureSchema();
     const scopeCompanyId = normalizePayrollListCompanyId(
       authorization,
       query.company_id,
     );
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      query.company_id,
+    );
+    await this.ensureStarterPayrollAggregateFormulas(persistCompanyId);
     const scope = resolveHrmListScope(authorization, scopeCompanyId);
     const filters: string[] = [];
     const values: unknown[] = [];
@@ -1510,6 +1571,125 @@ export class PayFormulaService {
   }
 
   /**
+   * Resolve payroll sheet total column (TONG_THU_NHAP / THUC_LINH) via template override formula.
+   * Requires payroll_aggregate_v1 override evaluated after peer lines are resolved.
+   */
+  private async resolveSrcPayrollTotalColumn(input: {
+    companyId: string;
+    column: PaySrcColumnDef;
+    peerLines: PaySrcResolvedLine[];
+    authorization?: string;
+  }): Promise<
+    | { ok: true; line: PaySrcResolvedLine }
+    | {
+        ok: false;
+        code: string;
+        message: string;
+        details?: Record<string, unknown>;
+      }
+  > {
+    const componentCode = input.column.component_code.trim();
+    const expectedAggregate =
+      expectedPayrollAggregateForTotalComponent(componentCode);
+    if (!expectedAggregate) {
+      return {
+        ok: false,
+        code: HRM_PAY_FORMULA_412,
+        message: 'Unknown payroll sheet total component code',
+        details: { componentCode, payroll_e2e_ready: false },
+      };
+    }
+
+    const overrideId = String(input.column.formula_definition_id ?? '').trim();
+    if (!overrideId || input.column.override_applied !== true) {
+      return {
+        ok: false,
+        code: HRM_PAY_FORMULA_412,
+        message:
+          'Payroll sheet total column requires template override formula (OV-C)',
+        details: { componentCode, payroll_e2e_ready: false },
+      };
+    }
+
+    const overrideFormula = await this.loadPublishedFormulaById({
+      formulaDefinitionId: overrideId,
+      companyId: input.companyId,
+      authorization: input.authorization,
+    });
+    if (!overrideFormula) {
+      return {
+        ok: false,
+        code: HRM_PAY_FORMULA_412,
+        message: 'Template override formula is not published/active (OV-C)',
+        details: {
+          componentCode,
+          formulaDefinitionId: overrideId,
+          payroll_e2e_ready: false,
+        },
+      };
+    }
+
+    const classified = classifyPayFormulaExpression(
+      overrideFormula.expression_json,
+    );
+    if (classified.kind !== 'payroll_aggregate_v1') {
+      return {
+        ok: false,
+        code: HRM_PAY_FORMULA_412,
+        message:
+          'Payroll sheet total override must use payroll_aggregate_v1 expression',
+        details: {
+          componentCode,
+          formulaDefinitionId: overrideId,
+          payroll_e2e_ready: false,
+        },
+      };
+    }
+    if (classified.aggregate !== expectedAggregate) {
+      return {
+        ok: false,
+        code: HRM_PAY_FORMULA_412,
+        message:
+          'Payroll sheet total override aggregate mismatches component code',
+        details: {
+          componentCode,
+          expectedAggregate,
+          formulaAggregate: classified.aggregate,
+          payroll_e2e_ready: false,
+        },
+      };
+    }
+
+    const earningCodes =
+      classified.earning_component_codes.length > 0
+        ? classified.earning_component_codes
+        : null;
+    const totals = aggregateSrcPayslipTotals(input.peerLines);
+    const amount =
+      expectedAggregate === 'gross'
+        ? sumResolvedLinesGross(input.peerLines, {
+            earningComponentCodes: earningCodes,
+          })
+        : totals.net;
+
+    return {
+      ok: true,
+      line: withSrcLineIncludeInGross(
+        {
+          component_code: componentCode,
+          sign: 'earning',
+          amount: roundMoney(amount),
+          source_tier: 'template_override',
+          source_ref: `template_override:${overrideFormula.id}:aggregate:${expectedAggregate}`,
+          formula_definition_id: overrideFormula.id,
+          sort_order: input.column.sort_order,
+        },
+        false,
+      ),
+    };
+  }
+
+  /**
    * Resolve one template/catalog column via BR-AMIS-PAY-SRC-02..05.
    */
   private async resolveSrcComponentAmount(input: {
@@ -1536,6 +1716,77 @@ export class PayFormulaService {
       componentCode,
     });
     const sign = input.column.sign ?? natureToSign(meta?.nature);
+    const includeInGross = resolveSalaryComponentIncludeInGross(
+      componentCode,
+      meta,
+    );
+
+    if (!includeInGross) {
+      const refDisplay = await loadReferenceDisplayAmountForComponent(this.db, {
+        companyId: input.companyId,
+        employeeId: input.employeeId,
+        asOfDate: input.asOfDate,
+        componentCode,
+      });
+      if (refDisplay) {
+        return {
+          ok: true,
+          line: withSrcLineIncludeInGross(
+            {
+              component_code: componentCode,
+              sign,
+              amount: roundMoney(refDisplay.amount),
+              source_tier: 'emp_cb',
+              source_ref: refDisplay.source_ref,
+              formula_definition_id: null,
+              sort_order: input.column.sort_order,
+              include_in_gross: false,
+            },
+            false,
+          ),
+        };
+      }
+      const empFixedRef = await loadEmployeeFixedAmountForComponent(this.db, {
+        companyId: input.companyId,
+        employeeId: input.employeeId,
+        asOfDate: input.asOfDate,
+        componentCode,
+      });
+      if (empFixedRef) {
+        return {
+          ok: true,
+          line: withSrcLineIncludeInGross(
+            {
+              component_code: componentCode,
+              sign,
+              amount: roundMoney(empFixedRef.amount),
+              source_tier: 'emp_cb',
+              source_ref: empFixedRef.source_ref,
+              formula_definition_id: null,
+              sort_order: input.column.sort_order,
+              include_in_gross: false,
+            },
+            false,
+          ),
+        };
+      }
+      return {
+        ok: true,
+        line: withSrcLineIncludeInGross(
+          {
+            component_code: componentCode,
+            sign,
+            amount: 0,
+            source_tier: 'emp_cb',
+            source_ref: 'reference:absent',
+            formula_definition_id: null,
+            sort_order: input.column.sort_order,
+            include_in_gross: false,
+          },
+          false,
+        ),
+      };
+    }
 
     const empFixed = await loadEmployeeFixedAmountForComponent(this.db, {
       companyId: input.companyId,
@@ -1546,15 +1797,18 @@ export class PayFormulaService {
     if (empFixed) {
       return {
         ok: true,
-        line: {
-          component_code: componentCode,
-          sign,
-          amount: roundMoney(empFixed.amount),
-          source_tier: 'emp_cb',
-          source_ref: empFixed.source_ref,
-          formula_definition_id: null,
-          sort_order: input.column.sort_order,
-        },
+        line: withSrcLineIncludeInGross(
+          {
+            component_code: componentCode,
+            sign,
+            amount: roundMoney(empFixed.amount),
+            source_tier: 'emp_cb',
+            source_ref: empFixed.source_ref,
+            formula_definition_id: null,
+            sort_order: input.column.sort_order,
+          },
+          includeInGross,
+        ),
       };
     }
 
@@ -1566,15 +1820,18 @@ export class PayFormulaService {
     if (periodInput) {
       return {
         ok: true,
-        line: {
-          component_code: componentCode,
-          sign,
-          amount: roundMoney(periodInput.amount),
-          source_tier: 'period_input',
-          source_ref: `period_input:${periodInput.id}`,
-          formula_definition_id: null,
-          sort_order: input.column.sort_order,
-        },
+        line: withSrcLineIncludeInGross(
+          {
+            component_code: componentCode,
+            sign,
+            amount: roundMoney(periodInput.amount),
+            source_tier: 'period_input',
+            source_ref: `period_input:${periodInput.id}`,
+            formula_definition_id: null,
+            sort_order: input.column.sort_order,
+          },
+          includeInGross,
+        ),
       };
     }
 
@@ -1613,15 +1870,18 @@ export class PayFormulaService {
       }
       return {
         ok: true,
-        line: {
-          component_code: componentCode,
-          sign: evalOverride.sign,
-          amount: roundMoney(evalOverride.amount),
-          source_tier: 'template_override',
-          source_ref: evalOverride.source_ref,
-          formula_definition_id: overrideFormula.id,
-          sort_order: input.column.sort_order,
-        },
+        line: withSrcLineIncludeInGross(
+          {
+            component_code: componentCode,
+            sign: evalOverride.sign,
+            amount: roundMoney(evalOverride.amount),
+            source_tier: 'template_override',
+            source_ref: evalOverride.source_ref,
+            formula_definition_id: overrideFormula.id,
+            sort_order: input.column.sort_order,
+          },
+          includeInGross,
+        ),
       };
     }
 
@@ -1649,15 +1909,18 @@ export class PayFormulaService {
         if (evalDefault.ok) {
           return {
             ok: true,
-            line: {
-              component_code: componentCode,
-              sign: evalDefault.sign,
-              amount: roundMoney(evalDefault.amount),
-              source_tier: 'formula_default',
-              source_ref: evalDefault.source_ref,
-              formula_definition_id: defaultFormula.id,
-              sort_order: input.column.sort_order,
-            },
+            line: withSrcLineIncludeInGross(
+              {
+                component_code: componentCode,
+                sign: evalDefault.sign,
+                amount: roundMoney(evalDefault.amount),
+                source_tier: 'formula_default',
+                source_ref: evalDefault.source_ref,
+                formula_definition_id: defaultFormula.id,
+                sort_order: input.column.sort_order,
+              },
+              includeInGross,
+            ),
           };
         }
         return {
@@ -1699,15 +1962,18 @@ export class PayFormulaService {
         }
         return {
           ok: true,
-          line: {
-            component_code: componentCode,
-            sign: evalCatalog.sign,
-            amount: roundMoney(evalCatalog.amount),
-            source_tier: 'formula_default',
-            source_ref: evalCatalog.source_ref,
-            formula_definition_id: catalogFormula.id,
-            sort_order: input.column.sort_order,
-          },
+          line: withSrcLineIncludeInGross(
+            {
+              component_code: componentCode,
+              sign: evalCatalog.sign,
+              amount: roundMoney(evalCatalog.amount),
+              source_tier: 'formula_default',
+              source_ref: evalCatalog.source_ref,
+              formula_definition_id: catalogFormula.id,
+              sort_order: input.column.sort_order,
+            },
+            includeInGross,
+          ),
         };
       }
     }
@@ -1715,15 +1981,18 @@ export class PayFormulaService {
     if (meta && meta.default_value > 0) {
       return {
         ok: true,
-        line: {
-          component_code: componentCode,
-          sign,
-          amount: roundMoney(meta.default_value),
-          source_tier: 'formula_default',
-          source_ref: 'catalog:default_value',
-          formula_definition_id: null,
-          sort_order: input.column.sort_order,
-        },
+        line: withSrcLineIncludeInGross(
+          {
+            component_code: componentCode,
+            sign,
+            amount: roundMoney(meta.default_value),
+            source_tier: 'formula_default',
+            source_ref: 'catalog:default_value',
+            formula_definition_id: null,
+            sort_order: input.column.sort_order,
+          },
+          includeInGross,
+        ),
       };
     }
 
@@ -1779,6 +2048,7 @@ export class PayFormulaService {
       }
   > {
     await this.ensureSchema();
+    await ensureSalaryComponentIncludeInGrossSchema(this.db);
 
     const asOfDate = normalizePayrollAsOfDate(input.asOfDate);
     const periodFrom = normalizePayrollAsOfDate(input.periodFrom) || asOfDate;
@@ -1814,8 +2084,13 @@ export class PayFormulaService {
     const resolved: PaySrcResolvedLine[] = [];
     const warnings: string[] = [];
     const sourceTiers = new Set<PaySrcTier>();
+    const totalColumns: PaySrcColumnDef[] = [];
 
     for (const column of columns) {
+      if (isPayrollSheetTotalComponentCode(column.component_code)) {
+        totalColumns.push(column);
+        continue;
+      }
       const outcome = await this.resolveSrcComponentAmount({
         companyId: input.companyId,
         periodId: input.periodId,
@@ -1824,6 +2099,29 @@ export class PayFormulaService {
         periodFrom,
         periodTo,
         column,
+        authorization: input.authorization,
+      });
+      if (!outcome.ok) {
+        return {
+          mode: 'blocked',
+          code: outcome.code,
+          message: outcome.message,
+          details: {
+            ...(outcome.details ?? {}),
+            componentCode: column.component_code,
+            payroll_e2e_ready: false,
+          },
+        };
+      }
+      resolved.push(outcome.line);
+      sourceTiers.add(outcome.line.source_tier);
+    }
+
+    for (const column of totalColumns) {
+      const outcome = await this.resolveSrcPayrollTotalColumn({
+        companyId: input.companyId,
+        column,
+        peerLines: resolved,
         authorization: input.authorization,
       });
       if (!outcome.ok) {

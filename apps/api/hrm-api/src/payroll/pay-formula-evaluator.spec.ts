@@ -27,6 +27,59 @@ describe('pay-formula-evaluator (BE-EVAL-01)', () => {
     expect(r.reason).toBe('OPAQUE_NOT_EVALUABLE');
   });
 
+  it('classifies payroll_aggregate_v1 sheet total override formulas', () => {
+    const gross = classifyPayFormulaExpression({
+      form: 'payroll_aggregate_v1',
+      aggregate: 'gross',
+      earning_component_codes: ['LUONG_THEO_CONG', 'THUONG_P4'],
+    });
+    expect(gross.kind).toBe('payroll_aggregate_v1');
+    if (gross.kind === 'payroll_aggregate_v1') {
+      expect(gross.aggregate).toBe('gross');
+      expect(gross.earning_component_codes).toEqual(['luong_theo_cong', 'thuong_p4']);
+    }
+    const net = classifyPayFormulaExpression({
+      form: 'payroll_aggregate_v1',
+      aggregate: 'net',
+    });
+    expect(net.kind).toBe('payroll_aggregate_v1');
+    if (net.kind === 'payroll_aggregate_v1') {
+      expect(net.aggregate).toBe('net');
+    }
+  });
+
+  it('rolls up gd1 gross from earning_component_codes whitelist (excludes LUONG_CO_BAN)', () => {
+    const expression = {
+      form: 'gd1_eval_v1',
+      earning_component_codes: ['LUONG_THEO_CONG', 'THUONG_P4'],
+      lines: [
+        {
+          component_code: 'LUONG_CO_BAN',
+          sign: 'earning',
+          source: 'const',
+          amount: 8_600_000,
+        },
+        {
+          component_code: 'LUONG_THEO_CONG',
+          sign: 'earning',
+          source: 'const',
+          amount: 5_000_000,
+        },
+        {
+          component_code: 'THUONG_P4',
+          sign: 'earning',
+          source: 'const',
+          amount: 1_000_000,
+        },
+      ],
+    };
+    const r = evaluatePayFormulaExpression(expression, {});
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.gross).toBe(6_000_000);
+    expect(r.net).toBe(6_000_000);
+  });
+
   it('evaluates gd1_eval_v1 var + expr lines → gross/net', () => {
     const expression = {
       form: 'gd1_eval_v1',

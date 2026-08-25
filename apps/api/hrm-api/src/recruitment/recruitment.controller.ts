@@ -425,6 +425,7 @@ export class RecruitmentController {
     @Headers('x-internal-api-key') internalApiKey: string | undefined,
     @Headers('x-tenant-id') tenantId: string | undefined,
     @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Headers('x-user-id') userId: string | undefined,
     @Body() body: CreateJobPostingDto,
   ) {
     this.assertAccess(authorization, internalApiKey);
@@ -432,8 +433,12 @@ export class RecruitmentController {
       tenantId,
       companyId: body.company_id ?? headerCompanyId,
     });
+    const submitterUserId = resolveSubmitterUserIdFromAuth(
+      authorization,
+      userId,
+    );
     return this.recruitmentCatalog
-      .createJobPosting(body, authorization)
+      .createJobPosting(body, authorization, submitterUserId)
       .then((data) => ok(data, 'HRM-REC-JP-201', 'Job posting created'));
   }
 
@@ -466,6 +471,31 @@ export class RecruitmentController {
     return this.recruitmentCatalog
       .deleteJobPosting(jobPostingId, companyId, authorization)
       .then((data) => ok(data, 'HRM-REC-JP-200', 'Job posting deleted'));
+  }
+
+  @Post('job-postings/:jobPostingId/submit-workflow')
+  submitJobPostingWorkflow(
+    @Param('jobPostingId', new ParseUUIDPipe()) jobPostingId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Headers('x-user-id') userId: string | undefined,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    const submitterUserId = resolveSubmitterUserIdFromAuth(
+      authorization,
+      userId,
+    );
+    return this.recruitmentCatalog
+      .submitJobPostingWorkflow(
+        jobPostingId,
+        companyId,
+        authorization,
+        submitterUserId,
+      )
+      .then((data) => ok(data, 'HRM-REC-WF-SUBMIT-200', 'Workflow submitted'));
   }
 
   /**

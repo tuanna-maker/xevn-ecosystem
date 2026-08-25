@@ -49,28 +49,26 @@ export const PAY_TYPES_STARTER_ROWS = [
   { code: 'cham_cong', label: 'Chấm công' },
 ] as const;
 
+import { VP_PAY_SHEET_STARTER_COMPONENT_ROWS } from './payroll-vp-sheet-starter.constants';
+
+export {
+  FORMULA_COL_TONG_THU_NHAP_CODE,
+  FORMULA_COL_THUC_LINH_CODE,
+  PAYROLL_AGGREGATE_FORMULA_STARTER_ROWS,
+} from './payroll-vp-sheet-starter.constants';
+
 /** Bootstrap examples only — tenant may add N+1 without code release (Platform L1). */
 export const PAY_SALARY_COMPONENT_STARTER_ROWS = [
-  {
-    code: 'LUONG_CO_BAN',
-    name: 'Lương cơ bản',
-    component_type: 'luong',
-    nature: 'income',
-    value_type: 'currency',
-    is_taxable: true,
-    is_insurance_base: true,
-    sort_order: 10,
-    is_system: true,
-  },
+  ...VP_PAY_SHEET_STARTER_COMPONENT_ROWS,
   {
     code: 'THUE_TNCN_HT',
-    name: 'Thuế TNCN',
+    name: 'Thuế TNCN (legacy)',
     component_type: 'thue',
     nature: 'deduction',
     value_type: 'currency',
     is_taxable: false,
     is_insurance_base: false,
-    sort_order: 20,
+    sort_order: 265,
     is_system: true,
   },
   {
@@ -81,7 +79,7 @@ export const PAY_SALARY_COMPONENT_STARTER_ROWS = [
     value_type: 'number',
     is_taxable: false,
     is_insurance_base: false,
-    sort_order: 30,
+    sort_order: 300,
     is_system: true,
   },
 ] as const;

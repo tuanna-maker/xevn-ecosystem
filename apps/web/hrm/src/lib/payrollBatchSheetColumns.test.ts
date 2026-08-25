@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildVpHanoiPaySheetLineDrafts,
+  buildAttendanceHoursByEmployee,
   derivePayrollTotalsFromComponentValues,
+  enrichDraftComponentValuesFromEmpCb,
   groupPeriodInputLinesByEmployee,
+  resolveBaseSalaryFromCompensationLines,
+  resolveLuongCoBanFromCompensationLines,
+  resolveLuongTheoCongDraftPreview,
+  injectPayrollSheetTotalComponentValues,
+  isPayrollSheetTotalComponentCode,
   isPayrollDeductionComponentCode,
   mapPayslipLinesToComponentValues,
   mergePayrollComponentValues,
@@ -78,18 +85,103 @@ describe('payrollBatchSheetColumns', () => {
     expect(totals).toEqual({ gross: 4_500_000, deduction: 500_000, net: 4_000_000 });
   });
 
+  it('excludes reference LUONG_CO_BAN from draft gross totals', () => {
+    const totals = derivePayrollTotalsFromComponentValues(
+      {
+        LUONG_CO_BAN: 8_600_000,
+        THUONG_P4: 4_000_000,
+      },
+      { excludeReferenceEarnings: true },
+    );
+    expect(totals.gross).toBe(4_000_000);
+  });
+
+  it('injects TONG_THU_NHAP and THUC_LINH sheet total columns', () => {
+    expect(isPayrollSheetTotalComponentCode('TONG_THU_NHAP')).toBe(true);
+    const values = injectPayrollSheetTotalComponentValues({
+      LUONG_CO_BAN: 8_600_000,
+      THUONG_P4: 4_000_000,
+      KHAU_TRU_BHXH: 400_000,
+    });
+    expect(values.TONG_THU_NHAP).toBe(4_000_000);
+    expect(values.THUC_LINH).toBe(3_600_000);
+  });
+
+  it('resolves LUONG_CO_BAN from compensation lines (base + P2)', () => {
+    const amount = resolveLuongCoBanFromCompensationLines([
+      { line_type: 'base', amount: 5_700_000 },
+      { line_type: 'allowance', allowance_code: 'p2', amount: 2_900_000 },
+    ]);
+    expect(amount).toBe(8_600_000);
+  });
+
+  it('resolves base salary P1 only for LUONG_THEO_CONG preview', () => {
+    expect(
+      resolveBaseSalaryFromCompensationLines([
+        { line_type: 'base', amount: 5_700_000 },
+        { line_type: 'allowance', allowance_code: 'p2', amount: 2_900_000 },
+      ]),
+    ).toBe(5_700_000);
+  });
+
+  it('computes LUONG_THEO_CONG draft preview from P1 and attendance hours', () => {
+    expect(resolveLuongTheoCongDraftPreview(5_700_000, 104, 208)).toBe(2_850_000);
+    expect(resolveLuongTheoCongDraftPreview(5_700_000, 0, 208)).toBe(0);
+  });
+
+  it('builds attendance hours map by employee (locked lines when sheet closed)', () => {
+    const map = buildAttendanceHoursByEmployee(
+      [
+        { employee_id: 'emp-1', payable_hours: 200, standard_hours: 208, line_locked: true },
+        { employee_id: 'emp-2', payable_hours: 100, standard_hours: 208, line_locked: false },
+      ],
+      { sheetClosed: true },
+    );
+    expect(map.get('emp-1')).toEqual({ payableHours: 200, standardHours: 208 });
+    expect(map.has('emp-2')).toBe(false);
+  });
+
+  it('enriches draft values from emp_cb without overwriting period input', () => {
+    const enriched = enrichDraftComponentValuesFromEmpCb(
+      { THUONG_P4: 1_000_000, LUONG_CO_BAN: 0 },
+      { LUONG_CO_BAN: 5_310_000 },
+    );
+    expect(enriched.values.LUONG_CO_BAN).toBe(5_310_000);
+    expect(enriched.previewSources.LUONG_CO_BAN).toBe('emp_cb');
+    expect(enriched.values.THUONG_P4).toBe(1_000_000);
+  });
+
   it('builds VP HN line drafts from salary component catalog', () => {
     const drafts = buildVpHanoiPaySheetLineDrafts([
       { id: 'c1', code: 'LUONG_CO_BAN' },
       { id: 'c2', code: 'THUONG_P4' },
     ]);
-    expect(drafts).toHaveLength(21);
+    expect(drafts).toHaveLength(23);
     expect(drafts[0]).toMatchObject({
       componentId: 'c1',
       displayLabel: 'Lương cơ bản (P1+P2)',
       sortOrder: 0,
     });
     expect(drafts.find((d) => d.key === 'vp-hn-THUONG_P4')?.componentId).toBe('c2');
+  });
+
+  it('wires OV-C formula override on VP total columns when formulas exist', () => {
+    const drafts = buildVpHanoiPaySheetLineDrafts(
+      [
+        { id: 'c-gross', code: 'TONG_THU_NHAP' },
+        { id: 'c-net', code: 'THUC_LINH' },
+      ],
+      [
+        { id: 'f-gross', code: 'formula_col_tong_thu_nhap' },
+        { id: 'f-net', code: 'formula_col_thuc_linh' },
+      ],
+    );
+    expect(drafts.find((d) => d.key === 'vp-hn-TONG_THU_NHAP')?.formulaOverrideDefinitionId).toBe(
+      'f-gross',
+    );
+    expect(drafts.find((d) => d.key === 'vp-hn-THUC_LINH')?.formulaOverrideDefinitionId).toBe(
+      'f-net',
+    );
   });
 
   it('uses snapshot sign for deduction styling', () => {

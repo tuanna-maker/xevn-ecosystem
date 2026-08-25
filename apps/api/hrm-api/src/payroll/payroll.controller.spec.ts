@@ -460,11 +460,13 @@ describe('PayrollController (HRM-PR-01..06)', () => {
       undefined,
       null,
       undefined,
+      { tenantId: 'xevn' },
     );
     expect(serviceMock.closePayrollPeriod).toHaveBeenCalledWith(
       'p1',
       '78b8a663-f5e5-4f4d-a020-b8f950ec2037',
       undefined,
+      { tenantId: 'xevn' },
     );
   });
 

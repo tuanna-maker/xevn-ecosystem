@@ -147,7 +147,7 @@ export const PaySalaryComponentList = () => {
     setIsDialogOpen(true);
   };
 
-  const buildPayload = (): SalaryComponentFormData => ({
+  const buildCreatePayload = (): SalaryComponentFormData => ({
     code: formData.code.trim(),
     name: formData.name_vi.trim(),
     component_type: formData.component_type,
@@ -159,7 +159,16 @@ export const PaySalaryComponentList = () => {
     default_value: 0,
     applied_to: 'all',
     is_active: true,
-    sort_order: editingItem?.sort_order ?? 0,
+    sort_order: 0,
+  });
+
+  /** PATCH chỉ các field dialog sửa — tránh ghi đè nature/value_type/… khi chỉ đổi công thức. */
+  const buildUpdatePayload = (): Partial<SalaryComponentFormData> => ({
+    name: formData.name_vi.trim(),
+    component_type: formData.component_type,
+    is_taxable: formData.is_taxable,
+    is_insurance_base: formData.in_bhxh_base,
+    formula: formData.formula.trim() || undefined,
   });
 
   const handleSave = async () => {
@@ -175,10 +184,10 @@ export const PaySalaryComponentList = () => {
     setSaving(true);
     try {
       if (editingItem) {
-        const ok = await updateComponent(editingItem.id, buildPayload());
+        const ok = await updateComponent(editingItem.id, buildUpdatePayload());
         if (ok) setIsDialogOpen(false);
       } else {
-        await createComponent(buildPayload());
+        await createComponent(buildCreatePayload());
         setIsDialogOpen(false);
       }
     } finally {

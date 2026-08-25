@@ -38,6 +38,7 @@
  * must_keep: SoftDel catalog guard; ViMoneyInput salary path (already on VPS 7c03091)
  */
 import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -79,14 +80,21 @@ import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
 import {
   jobTitleOptionsFromCatalog,
 } from '@/lib/catalogSearchPicker';
-import { HRM_EMP_DEPT_EMPTY_CATALOG_CODE, resolveEmpDeptEditValue } from '@/lib/empDeptCatalog';
+import {
+  HRM_EMP_DEPT_EMPTY_CATALOG_CODE,
+  isEmpDeptKeyInCatalog,
+  resolveEmpDeptEditValue,
+} from '@/lib/empDeptCatalog';
 import {
   HRM_WH_PICK_EMPTY_CATALOG_CODE,
   isEmpPositionKeyInCatalog,
   resolveEmpPositionEditValue,
 } from '@/lib/empPositionCatalog';
-import { resolveEmployeeDepartmentLabel } from '@/lib/employeePickerLabel';
+import {
+  resolveEmployeeDepartmentKey,
+} from '@/lib/employeePickerLabel';
 import { HRM_LIST_DEFAULT_COMPANY_ID } from '@/lib/hrmListScope';
+import { listEffectivePayPositions } from '@/integrations/hrmApi';
 import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
 import {
   CORE_CB_MAP_REDIRECT_BODY_VI,
@@ -229,15 +237,94 @@ const CATALOG_CODE_ALIASES: Record<string, string> = {
   national_id: 'id_number',
   phone_number: 'phone',
   birth_year: 'birth_date',
+  date_of_birth: 'birth_date',
   emergency_contact_name: 'emergency_contact',
   emergency_contact_phone: 'emergency_phone',
   social_insurance_code: 'social_insurance_number',
   full_name: 'full_name',
+  employee_id: 'employee_code',
+  basic_01: 'employee_code',
+  basic_02: 'full_name',
+  basic_03: 'department',
+  basic_04: 'position',
+  bo_phan: 'department',
+  bo_phan_lam_viec: 'department',
+  chuc_vu: 'position',
+  employment_status: 'status',
+  work_email: 'email',
+  work_phone: 'phone',
+  cccd: 'id_number',
+  cmnd: 'id_number',
+  soc_cccd: 'id_number',
+  so_cccd: 'id_number',
+  pers_01: 'birth_date',
+  pers_02: 'gender',
+  pers_03: 'id_number',
 };
 
+/** Nhãn đồng nghĩa spine field — lọc catalog XBOS trùng ý nghĩa khác chữ. */
+const SPINE_FIELD_LABEL_SYNONYMS: Partial<Record<string, readonly string[]>> = {
+  birth_date: ['Ngày sinh', 'Năm sinh'],
+  id_number: [
+    'CCCD',
+    'CMND',
+    'CCCD/CMND',
+    'CMND/CCCD',
+    'Số CCCD',
+    'Số CMND',
+    'Số CMND/CCCD',
+    'Số CCCD/CMND',
+    'Số CMND/TCC',
+  ],
+  gender: ['Giới tính'],
+  emergency_contact: ['Người liên hệ', 'Liên hệ khẩn cấp'],
+  emergency_phone: ['SĐT người liên hệ', 'Số điện thoại người liên hệ'],
+  permanent_address: ['Địa chỉ thường trú'],
+  temporary_address: ['Địa chỉ tạm trú', 'Địa chỉ hiện tại'],
+};
+
+function normalizeCatalogFieldCode(code: string): string {
+  return code.trim().toLowerCase();
+}
+
 function resolveCatalogFormFieldCode<T extends string>(code: string, defaults: readonly T[]): T | null {
-  const resolved = (CATALOG_CODE_ALIASES[code] ?? code) as T;
+  const key = normalizeCatalogFieldCode(code);
+  const resolved = (CATALOG_CODE_ALIASES[key] ?? key) as T;
   return defaults.includes(resolved) ? resolved : null;
+}
+
+/** Chuẩn hóa nhãn catalog để so khớp trùng field gốc (XBOS BASIC_01…). */
+export function normalizeFieldLabel(label: string): string {
+  return label
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\*/g, '')
+    .trim()
+    .toLowerCase();
+}
+
+function isSpineCatalogFieldCode(code: string): boolean {
+  const key = normalizeCatalogFieldCode(code);
+  return (
+    resolveCatalogFormFieldCode(key, DEFAULT_BASIC_FIELDS) != null ||
+    resolveCatalogFormFieldCode(key, DEFAULT_PERSONAL_FIELDS) != null ||
+    resolveCatalogFormFieldCode(key, DEFAULT_WORK_FIELDS) != null ||
+    resolveCatalogFormFieldCode(key, DEFAULT_FINANCE_FIELDS) != null
+  );
+}
+
+/** Loại custom_fields trùng spine (department free-text từ catalog XBOS). */
+export function filterSpineCustomFieldEntries(
+  fields: Record<string, string> | null | undefined,
+): Record<string, string> {
+  if (!fields) return {};
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(fields)) {
+    if (isSpineCatalogFieldCode(key)) continue;
+    out[key] = value;
+  }
+  return out;
 }
 
 function buildActiveFieldSet<T extends string>(
@@ -282,26 +369,64 @@ function parseDynamicFieldMeta(unit: string | null): { dataType: EmployeeMetadat
   return { dataType: 'text', options: [] };
 }
 
-function buildDynamicFields<T extends string>(
+export function buildDynamicFields<T extends string>(
   catalog: HrmSettingsCatalogOverviewRow | undefined,
   defaults: readonly T[],
+  knownLabels?: readonly string[],
 ): DynamicCatalogField[] {
-  const knownCodes = new Set(defaults as readonly string[]);
-  return (catalog?.effectiveItems ?? [])
-    .filter((item) => {
-      if (item.status !== 'active') return false;
-      if (resolveCatalogFormFieldCode(item.code, defaults)) return false;
-      return !knownCodes.has(item.code);
-    })
-    .map((item) => {
-      const meta = parseDynamicFieldMeta(item.unit);
-      return {
-        code: item.code,
-        label: item.label,
-        dataType: meta.dataType,
-        options: meta.options,
-      };
+  const knownCodes = new Set(defaults.map((d) => normalizeCatalogFieldCode(d)));
+  const knownLabelSet = new Set(
+    (knownLabels ?? []).map((label) => normalizeFieldLabel(label)).filter(Boolean),
+  );
+  const seenDynamicLabels = new Set<string>();
+  const out: DynamicCatalogField[] = [];
+
+  for (const item of catalog?.effectiveItems ?? []) {
+    if (item.status !== 'active') continue;
+    if (resolveCatalogFormFieldCode(item.code, defaults)) continue;
+    if (knownCodes.has(normalizeCatalogFieldCode(item.code))) continue;
+    if (knownLabelSet.size > 0 && knownLabelSet.has(normalizeFieldLabel(item.label))) continue;
+
+    const normLabel = normalizeFieldLabel(item.label);
+    if (normLabel && seenDynamicLabels.has(normLabel)) continue;
+    if (normLabel) seenDynamicLabels.add(normLabel);
+
+    const meta = parseDynamicFieldMeta(item.unit);
+    out.push({
+      code: item.code,
+      label: item.label,
+      dataType: meta.dataType,
+      options: meta.options,
     });
+  }
+  return out;
+}
+
+function collectSectionKnownLabelsForDedup<T extends string>(
+  catalog: HrmSettingsCatalogOverviewRow | undefined,
+  defaults: readonly T[],
+  activeFields: ReadonlySet<T>,
+  labelMap: ReadonlyMap<string, string>,
+  fallbacks: Record<string, string>,
+): string[] {
+  const labels = new Set<string>();
+  for (const field of activeFields) {
+    const fromMap = labelMap.get(field);
+    if (fromMap) labels.add(fromMap);
+    const fb = fallbacks[field];
+    if (fb) labels.add(fb);
+    for (const syn of SPINE_FIELD_LABEL_SYNONYMS[field] ?? []) {
+      labels.add(syn);
+    }
+  }
+  for (const item of catalog?.effectiveItems ?? []) {
+    if (item.status !== 'active') continue;
+    const mapped = resolveCatalogFormFieldCode(item.code, defaults);
+    if (mapped && activeFields.has(mapped)) {
+      labels.add(item.label);
+    }
+  }
+  return [...labels];
 }
 
 export function EmployeeFormDialog({
@@ -383,17 +508,34 @@ export function EmployeeFormDialog({
     },
   });
 
+  const watchedDepartment = form.watch('department');
+
+  const { data: effectivePositionsRes } = useQuery({
+    queryKey: ['effective-pay-positions', currentCompanyId, watchedDepartment],
+    queryFn: () =>
+      listEffectivePayPositions({
+        company_id: currentCompanyId!,
+        department_code: watchedDepartment?.trim() || undefined,
+      }),
+    enabled: Boolean(open && currentCompanyId),
+    staleTime: 30_000,
+  });
+
   useEffect(() => {
     if (!open) return;
     if (employee) {
+      const deptKey = resolveEmployeeDepartmentKey({
+        department: employee.department,
+        custom_fields: employee.custom_fields,
+      });
       form.reset({
         employee_code: employee.employee_code,
         full_name: employee.full_name,
         company_id: employee.company_id || '',
         email: employee.email || '',
         phone: employee.phone || '',
-        department: employee.department || '',
-        position: '',
+        department: deptKey || '',
+        position: employee.job_title_key?.trim() || '',
         start_date: employee.start_date || '',
         salary: employee.salary || undefined,
         status: employee.status || '',
@@ -415,7 +557,7 @@ export function EmployeeFormDialog({
         health_insurance_number: employee.health_insurance_number || '',
       });
       setAvatarUrl(employee.avatar_url || null);
-      setDynamicFieldValues(employee.custom_fields ?? {});
+      setDynamicFieldValues(filterSpineCustomFieldEntries(employee.custom_fields));
     } else {
       form.reset({
         employee_code: '',
@@ -453,11 +595,6 @@ export function EmployeeFormDialog({
 
   useEffect(() => {
     if (!open || employee) return;
-    const code = form.getValues('employee_code')?.trim();
-    if (!code) {
-      const stamp = `NV${Date.now().toString(36).slice(-5).toUpperCase()}`;
-      form.setValue('employee_code', stamp, { shouldValidate: true });
-    }
     if (!form.getValues('start_date')?.trim()) {
       form.setValue('start_date', new Date().toISOString().slice(0, 10));
     }
@@ -480,9 +617,29 @@ export function EmployeeFormDialog({
   );
   const hasBasicField = (field: EmployeeBasicFieldKey) => activeBasicFields.has(field);
   const basicLabel = (field: EmployeeBasicFieldKey, fallback: string) => basicFieldLabels.get(field) ?? fallback;
+  const basicKnownLabels = useMemo(
+    () =>
+      collectSectionKnownLabelsForDedup(
+        basicFieldsCatalog,
+        DEFAULT_BASIC_FIELDS,
+        activeBasicFields,
+        basicFieldLabels,
+        {
+        employee_code: t('employees.employeeCode'),
+        full_name: t('employees.fullName'),
+        email: t('employees.email'),
+        phone: t('employees.phone'),
+        department: t('employees.department'),
+        position: t('employees.position'),
+        start_date: t('employees.startDate'),
+        status: t('employees.status'),
+      },
+      ),
+    [basicFieldsCatalog, activeBasicFields, basicFieldLabels, t],
+  );
   const dynamicBasicFields = useMemo(
-    () => buildDynamicFields<EmployeeBasicFieldKey>(basicFieldsCatalog, DEFAULT_BASIC_FIELDS),
-    [basicFieldsCatalog],
+    () => buildDynamicFields<EmployeeBasicFieldKey>(basicFieldsCatalog, DEFAULT_BASIC_FIELDS, basicKnownLabels),
+    [basicFieldsCatalog, basicKnownLabels],
   );
 
   const personalFieldsCatalog = findCatalog(catalogs, ['hrm_employee_personal_fields', 'employee_personal_fields']);
@@ -496,9 +653,34 @@ export function EmployeeFormDialog({
   );
   const hasPersonalField = (field: EmployeePersonalFieldKey) => activePersonalFields.has(field);
   const personalLabel = (field: EmployeePersonalFieldKey, fallback: string) => personalFieldLabels.get(field) ?? fallback;
+  const personalKnownLabels = useMemo(
+    () =>
+      collectSectionKnownLabelsForDedup(
+        personalFieldsCatalog,
+        DEFAULT_PERSONAL_FIELDS,
+        activePersonalFields,
+        personalFieldLabels,
+        {
+        gender: t('employeeForm.gender'),
+        birth_date: t('employeeForm.birthDate'),
+        id_number: t('employeeForm.idNumber'),
+        id_issue_place: t('employeeForm.idIssuePlace'),
+        permanent_address: t('employeeForm.permanentAddress'),
+        temporary_address: t('employeeForm.temporaryAddress'),
+        emergency_contact: t('employeeForm.emergencyContact'),
+        emergency_phone: t('employeeForm.emergencyPhone'),
+      },
+      ),
+    [personalFieldsCatalog, activePersonalFields, personalFieldLabels, t],
+  );
   const dynamicPersonalFields = useMemo(
-    () => buildDynamicFields<EmployeePersonalFieldKey>(personalFieldsCatalog, DEFAULT_PERSONAL_FIELDS),
-    [personalFieldsCatalog],
+    () =>
+      buildDynamicFields<EmployeePersonalFieldKey>(
+        personalFieldsCatalog,
+        DEFAULT_PERSONAL_FIELDS,
+        personalKnownLabels,
+      ),
+    [personalFieldsCatalog, personalKnownLabels],
   );
 
   const workFieldsCatalog = findCatalog(catalogs, ['hrm_employee_work_fields', 'employee_work_fields']);
@@ -512,9 +694,23 @@ export function EmployeeFormDialog({
   );
   const hasWorkField = (field: EmployeeWorkFieldKey) => activeWorkFields.has(field);
   const workLabel = (field: EmployeeWorkFieldKey, fallback: string) => workFieldLabels.get(field) ?? fallback;
+  const workKnownLabels = useMemo(
+    () =>
+      collectSectionKnownLabelsForDedup(
+        workFieldsCatalog,
+        DEFAULT_WORK_FIELDS,
+        activeWorkFields,
+        workFieldLabels,
+        {
+        employment_type: t('employeeForm.employmentType'),
+        work_location: t('employeeForm.workLocation'),
+      },
+      ),
+    [workFieldsCatalog, activeWorkFields, workFieldLabels, t],
+  );
   const dynamicWorkFields = useMemo(
-    () => buildDynamicFields<EmployeeWorkFieldKey>(workFieldsCatalog, DEFAULT_WORK_FIELDS),
-    [workFieldsCatalog],
+    () => buildDynamicFields<EmployeeWorkFieldKey>(workFieldsCatalog, DEFAULT_WORK_FIELDS, workKnownLabels),
+    [workFieldsCatalog, workKnownLabels],
   );
 
   const financeFieldsCatalog = findCatalog(catalogs, ['hrm_employee_finance_fields', 'employee_finance_fields']);
@@ -530,9 +726,32 @@ export function EmployeeFormDialog({
   const hasFinanceCbFields = DEFAULT_FINANCE_FIELDS.some((field) => hasFinanceField(field));
   const hasEditableFinanceCbFields = false;
   const financeLabel = (field: EmployeeFinanceFieldKey, fallback: string) => financeFieldLabels.get(field) ?? fallback;
+  const financeKnownLabels = useMemo(
+    () =>
+      collectSectionKnownLabelsForDedup(
+        financeFieldsCatalog,
+        DEFAULT_FINANCE_FIELDS,
+        activeFinanceFields,
+        financeFieldLabels,
+        {
+        salary: t('employeeForm.salary'),
+        tax_code: t('employeeForm.taxCode'),
+        bank_name: t('employeeForm.bankName'),
+        bank_account: t('employeeForm.bankAccount'),
+        social_insurance_number: t('employeeForm.socialInsurance'),
+        health_insurance_number: t('employeeForm.healthInsurance'),
+      },
+      ),
+    [financeFieldsCatalog, activeFinanceFields, financeFieldLabels, t],
+  );
   const dynamicFinanceFields = useMemo(
-    () => buildDynamicFields<EmployeeFinanceFieldKey>(financeFieldsCatalog, DEFAULT_FINANCE_FIELDS),
-    [financeFieldsCatalog],
+    () =>
+      buildDynamicFields<EmployeeFinanceFieldKey>(
+        financeFieldsCatalog,
+        DEFAULT_FINANCE_FIELDS,
+        financeKnownLabels,
+      ),
+    [financeFieldsCatalog, financeKnownLabels],
   );
 
   const hasAnyPersonalFields = activePersonalFields.size > 0;
@@ -541,7 +760,10 @@ export function EmployeeFormDialog({
 
   useEffect(() => {
     if (!open || !employee) return;
-    const stored = resolveEmployeeDepartmentLabel(employee);
+    const stored = resolveEmployeeDepartmentKey({
+      department: employee.department,
+      custom_fields: employee.custom_fields,
+    });
     if (!stored) return;
     const resolved = resolveEmpDeptEditValue(
       departmentOptions,
@@ -551,7 +773,7 @@ export function EmployeeFormDialog({
     if (resolved && form.getValues('department') !== resolved) {
       form.setValue('department', resolved);
     }
-  }, [open, employee, departmentOptions, form]);
+  }, [open, employee, departmentOptions, departmentCatalogBound, form]);
 
   const empStatusCatalogBound = empStatusEffectiveCount > 0;
   const statusOptions = useMemo(() => {
@@ -574,10 +796,23 @@ export function EmployeeFormDialog({
     }
   }, [open, employee, statusOptions, empStatusCatalogBound, form]);
 
-  const positionOptions = useMemo(
+  const catalogPositionOptions = useMemo(
     () => jobTitleOptionsFromCatalog(catalogs ?? []),
     [catalogs],
   );
+
+  const positionOptions = useMemo(() => {
+    const effective = effectivePositionsRes?.data ?? [];
+    if (effective.length > 0) {
+      return effective.map((p) => ({
+        value: p.code,
+        label: p.label,
+        code: p.code,
+      }));
+    }
+    return catalogPositionOptions;
+  }, [effectivePositionsRes, catalogPositionOptions]);
+
   const positionCatalogBound = positionOptions.length > 0;
 
   useEffect(() => {
@@ -593,17 +828,39 @@ export function EmployeeFormDialog({
     }
   }, [open, employee?.job_title_key, positionOptions, positionCatalogBound, form]);
 
+  useEffect(() => {
+    if (!open) return;
+    const current = form.getValues('position')?.trim();
+    if (
+      current &&
+      positionCatalogBound &&
+      !positionOptions.some((p) => p.value === current)
+    ) {
+      form.setValue('position', '');
+    }
+  }, [watchedDepartment, positionOptions, positionCatalogBound, open, form]);
+
   const handleSubmit = async (values: FormValues) => {
+    if (values.department?.trim() && departmentCatalogBound) {
+      if (!isEmpDeptKeyInCatalog(departmentOptions, values.department)) {
+        toast.error(
+          'Phòng ban phải chọn mã từ danh mục phòng ban — không nhập tên hiển thị tự do.',
+        );
+        return;
+      }
+    }
     if (values.position?.trim() && positionCatalogBound) {
       if (!isEmpPositionKeyInCatalog(positionOptions, values.position)) {
         toast.error(
-          'Chức danh phải chọn mã từ danh mục job_titles — không dùng tên hiển thị tự do.',
+          'Chức danh phải chọn từ danh mục — không dùng tên hiển thị tự do.',
         );
         return;
       }
     }
     const customFields = Object.fromEntries(
-      Object.entries(dynamicFieldValues).filter(([, value]) => value != null && String(value).trim().length > 0),
+      Object.entries(filterSpineCustomFieldEntries(dynamicFieldValues)).filter(
+        ([, value]) => value != null && String(value).trim().length > 0,
+      ),
     );
     const success = await onSubmit({
       employee_code: values.employee_code,

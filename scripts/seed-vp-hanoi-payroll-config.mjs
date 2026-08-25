@@ -38,6 +38,7 @@ import {
   shouldSeedPeriodInput,
   normalizeSocialInsuranceDeduction,
   buildGd1EvalExpressionJson,
+  buildPayrollAggregateFormulaExpression,
 } from './lib/vp-hanoi-payroll-config.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -45,11 +46,19 @@ const REPO = resolve(__dirname, '..');
 const REPORT_DIR = resolve(REPO, 'scripts/seed-reports/payroll-vp-hanoi-2026-05');
 
 const FORMULA_CODE = 'formula_vp_hanoi';
+const FORMULA_COL_TONG_THU_NHAP_CODE = 'formula_col_tong_thu_nhap';
+const FORMULA_COL_THUC_LINH_CODE = 'formula_col_thuc_linh';
 const GROUP_CODE = 'pg_vp_hanoi';
 const TEMPLATE_CODE = 'tpl_vp_hanoi_2026_05';
 
 const IDS = {
   formula: stableUuid(`${VP_HANOI_SEED_TAG}:pay-formula:${FORMULA_CODE}`),
+  formulaTongThuNhap: stableUuid(
+    `${VP_HANOI_SEED_TAG}:pay-formula:${FORMULA_COL_TONG_THU_NHAP_CODE}`,
+  ),
+  formulaThucLinh: stableUuid(
+    `${VP_HANOI_SEED_TAG}:pay-formula:${FORMULA_COL_THUC_LINH_CODE}`,
+  ),
   group: stableUuid(`${VP_HANOI_SEED_TAG}:pay-group:${GROUP_CODE}`),
   template: stableUuid(`${VP_HANOI_SEED_TAG}:pay-sheet-tpl:${TEMPLATE_CODE}`),
   period: stableUuid(`${VP_HANOI_SEED_TAG}:payroll-period:2026-05`),
@@ -111,6 +120,7 @@ async function ensureSchemas(client) {
       value_type TEXT NOT NULL DEFAULT 'currency',
       is_taxable BOOLEAN NOT NULL DEFAULT FALSE,
       is_insurance_base BOOLEAN NOT NULL DEFAULT FALSE,
+      include_in_gross BOOLEAN NOT NULL DEFAULT TRUE,
       formula TEXT,
       is_active BOOLEAN NOT NULL DEFAULT TRUE,
       sort_order INTEGER NOT NULL DEFAULT 0,
@@ -298,10 +308,10 @@ async function seedSalaryComponents(client) {
     await client.query(
       `INSERT INTO public.salary_components (
          id, company_id, code, name, component_type, nature,
-         is_taxable, is_insurance_base, formula, sort_order, is_active, updated_at
+         is_taxable, is_insurance_base, include_in_gross, formula, sort_order, is_active, updated_at
        ) VALUES (
          $1::uuid, $2, $3, $4, $5, $6,
-         $7, $8, $9, $10, TRUE, NOW()
+         $7, $8, $9, $10, $11, TRUE, NOW()
        )
        ON CONFLICT (id) DO UPDATE SET
          code = EXCLUDED.code,
@@ -310,6 +320,7 @@ async function seedSalaryComponents(client) {
          nature = EXCLUDED.nature,
          is_taxable = EXCLUDED.is_taxable,
          is_insurance_base = EXCLUDED.is_insurance_base,
+         include_in_gross = EXCLUDED.include_in_gross,
          formula = EXCLUDED.formula,
          sort_order = EXCLUDED.sort_order,
          is_active = TRUE,
@@ -324,6 +335,7 @@ async function seedSalaryComponents(client) {
         row.nature,
         row.is_taxable,
         row.is_insurance_base,
+        row.include_in_gross !== false,
         row.formula,
         row.sort_order,
       ],
@@ -360,7 +372,10 @@ async function seedFormula(client) {
     ],
   };
   const meta = {
-    description_vi: 'Công thức VP Hà Nội 05/2026 — seed tự động',
+    description_vi:
+      'Công thức VP Hà Nội 05/2026 — Tổng thu nhập = 12 cột thu nhập thực (không cộng Lương CB P1+P2 tham chiếu)',
+    gross_summary_vi:
+      'LUONG_THEO_CONG + LUONG_KPI + THUONG_P4 + OT + nghỉ phép/lễ + doanh số + online + khác + PC xăng + truy lĩnh',
     seed_tag: VP_HANOI_SEED_TAG,
   };
   await client.query(
@@ -395,15 +410,73 @@ async function seedFormula(client) {
   await trackMeta(client, 'pay_formula_definitions', IDS.formula);
 }
 
+async function seedTotalColumnFormulas(client) {
+  const rows = [
+    {
+      id: IDS.formulaTongThuNhap,
+      code: FORMULA_COL_TONG_THU_NHAP_CODE,
+      expression: buildPayrollAggregateFormulaExpression('gross'),
+      description: 'Cột Tổng thu nhập — tổng hợp thu nhập trên bảng lương',
+    },
+    {
+      id: IDS.formulaThucLinh,
+      code: FORMULA_COL_THUC_LINH_CODE,
+      expression: buildPayrollAggregateFormulaExpression('net'),
+      description: 'Cột Thực lĩnh — thực lĩnh sau khấu trừ',
+    },
+  ];
+  for (const row of rows) {
+    await client.query(
+      `INSERT INTO public.pay_formula_definitions (
+         id, company_id, code, version, status,
+         expression_json, required_vars_json, meta_json,
+         published_by, published_at, updated_at
+       ) VALUES (
+         $1::uuid, $2, $3, 1, 'active',
+         $4::jsonb, $5::jsonb, $6::jsonb,
+         $7, NOW(), NOW()
+       )
+       ON CONFLICT (company_id, code, version)
+       DO UPDATE SET
+         status = 'active',
+         expression_json = EXCLUDED.expression_json,
+         required_vars_json = EXCLUDED.required_vars_json,
+         meta_json = EXCLUDED.meta_json,
+         published_by = EXCLUDED.published_by,
+         published_at = COALESCE(pay_formula_definitions.published_at, NOW()),
+         updated_at = NOW()`,
+      [
+        row.id,
+        VP_HANOI_COMPANY_ID,
+        row.code,
+        JSON.stringify(row.expression),
+        JSON.stringify({ keys: [] }),
+        JSON.stringify({
+          description_vi: row.description,
+          seed_tag: VP_HANOI_SEED_TAG,
+        }),
+        VP_HANOI_SEED_TAG,
+      ],
+    );
+    await trackMeta(client, 'pay_formula_definitions', row.id);
+  }
+}
+
 function buildSheetSnapshot(formulaId) {
+  const totalFormulaByCode = {
+    TONG_THU_NHAP: IDS.formulaTongThuNhap,
+    THUC_LINH: IDS.formulaThucLinh,
+  };
   const columns = VP_SHEET_COLUMN_ORDER.map((code, idx) => {
     const comp = VP_SALARY_COMPONENTS.find((c) => c.code === code);
+    const totalFormulaId = totalFormulaByCode[code];
+    const isTotalColumn = Boolean(totalFormulaId);
     return {
       component_code: code,
       display_label: comp?.name ?? code,
       sort_order: idx,
-      formula_definition_id: formulaId,
-      override_applied: false,
+      formula_definition_id: isTotalColumn ? totalFormulaId : formulaId,
+      override_applied: isTotalColumn,
       sign: comp?.nature === 'deduction' ? 'deduction' : 'earning',
     };
   });
@@ -473,6 +546,13 @@ async function seedSheetTemplate(client, componentIds) {
     if (!componentId) continue;
     const lineId = stableUuid(`${VP_HANOI_SEED_TAG}:sheet-tpl-line:${code}`);
     const comp = VP_SALARY_COMPONENTS.find((c) => c.code === code);
+    const isTotalColumn = code === 'TONG_THU_NHAP' || code === 'THUC_LINH';
+    const formulaOverrideId =
+      code === 'TONG_THU_NHAP'
+        ? IDS.formulaTongThuNhap
+        : code === 'THUC_LINH'
+          ? IDS.formulaThucLinh
+          : null;
     await client.query(
       `DELETE FROM public.pay_sheet_template_lines
        WHERE template_id = $1::uuid AND component_code = $2`,
@@ -481,10 +561,12 @@ async function seedSheetTemplate(client, componentIds) {
     await client.query(
       `INSERT INTO public.pay_sheet_template_lines (
          id, template_id, company_id, component_id, component_code,
-         display_label, sort_order, is_visible, updated_at
+         display_label, sort_order, is_visible, is_identity_or_total,
+         formula_override_definition_id, updated_at
        ) VALUES (
          $1::uuid, $2::uuid, $3, $4::uuid, $5,
-         $6, $7, TRUE, NOW()
+         $6, $7, TRUE, $8,
+         $9::uuid, NOW()
        )`,
       [
         lineId,
@@ -494,6 +576,8 @@ async function seedSheetTemplate(client, componentIds) {
         code,
         comp?.name ?? code,
         i,
+        isTotalColumn,
+        formulaOverrideId,
       ],
     );
     await trackMeta(client, 'pay_sheet_template_lines', lineId);
@@ -703,6 +787,7 @@ async function main() {
     const payTypes = await seedPayTypes(client);
     const componentIds = await seedSalaryComponents(client);
     await seedFormula(client);
+    await seedTotalColumnFormulas(client);
     const employees = await loadVpEmployees(client);
     if (employees.length === 0) {
       throw new Error(

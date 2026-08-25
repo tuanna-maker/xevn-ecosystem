@@ -139,6 +139,7 @@ import {
   Trash2,
   GripVertical,
   Check,
+  CheckSquare,
 } from 'lucide-react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -246,6 +247,7 @@ const CandidatesTab = lazy(() => import('@/components/recruitment/CandidatesTab'
 const InterviewsTab = lazy(() => import('@/components/recruitment/InterviewsTab').then(m => ({ default: m.InterviewsTab })));
 const RecruitmentReportsTab = lazy(() => import('@/components/recruitment/RecruitmentReportsTab').then(m => ({ default: m.RecruitmentReportsTab })));
 const HireEmployeeLinkDialog = lazy(() => import('@/components/recruitment/HireEmployeeLinkDialog').then(m => ({ default: m.HireEmployeeLinkDialog })));
+const RecruitmentApprovalsTab = lazy(() => import('@/components/recruitment/RecruitmentApprovalsTab').then(m => ({ default: m.RecruitmentApprovalsTab })));
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
 import { scheduleReleaseHrmPortalBodyLock } from '@/lib/hrmDialogPortal';
@@ -320,6 +322,7 @@ type JobPostingFormValues = z.infer<typeof jobPostingSchema>;
 const getTopNavTabs = (t: any) => [
   { id: 'dashboard', label: t('recruitment.tabs.dashboard'), icon: LayoutDashboard },
   { id: 'requisitions', label: 'Yêu cầu tuyển dụng', icon: Briefcase },
+  { id: 'approvals', label: 'Phê duyệt', icon: CheckSquare },
   { id: 'jd-library', label: 'Thư viện JD', icon: FileText },
   // { id: 'jobs', label: t('recruitment.tabs.jobs'), icon: Briefcase, hasDropdown: true }, // OUT_MVP (leftover)
   { id: 'candidates', label: t('recruitment.tabs.candidates'), icon: Users, hasDropdown: true },
@@ -1439,6 +1442,13 @@ export default function Recruitment() {
         {activeTab === 'interviews' && (
           <Suspense fallback={<RecTabSkeleton />}>
             <InterviewsTab />
+          </Suspense>
+        )}
+
+        {/* Approvals Tab */}
+        {activeTab === 'approvals' && (
+          <Suspense fallback={<RecTabSkeleton />}>
+            <RecruitmentApprovalsTab />
           </Suspense>
         )}
 

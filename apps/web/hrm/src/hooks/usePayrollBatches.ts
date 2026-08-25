@@ -5,24 +5,33 @@ import { toast } from 'sonner';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import { buildPayrollEnrollPayload } from '@/lib/payrollEnrollPayload';
 import {
-  derivePayrollTotalsFromComponentValues,
+  enrichDraftComponentValuesFromEmpCb,
+  injectPayrollSheetTotalComponentValues,
   groupPeriodInputLinesByEmployee,
   mapPayslipLinesToComponentValues,
   mergePayrollComponentValues,
+  buildAttendanceHoursByEmployee,
+  resolveBaseSalaryFromCompensationLines,
+  resolveLuongCoBanFromCompensationLines,
+  resolveLuongTheoCongDraftPreview,
+  type ComponentPreviewSource,
 } from '@/lib/payrollBatchSheetColumns';
 import { resolvePaySheetTemplateDisplayFromPeriod } from '@/lib/paySheetTemplateCatalog';
 import {
   closePayrollPeriod,
   createPayrollPeriod,
   enrollPayrollPeriod,
+  getActiveCompensationPackage,
   getPayrollEligibility,
   HrmPayrollPeriod,
   HrmPaySheetTemplatePeriodSnapshot,
   HrmPayslipRow,
+  listAttendanceSheetLines,
   listPayrollPeriodInputLines,
   listPayrollPayslipLines,
   listPayrollPeriods,
   listPayrollPayslips,
+  listPayrollPeriodTimesheetBinds,
   processPayrollPeriod,
 } from '@/integrations/hrmApi';
 import { ApiClientError, toErrorMessage } from '@/lib/apiError';
@@ -116,6 +125,8 @@ export interface PayrollRecord {
   component_values: Record<string, number> | null;
   /** True when payroll_payslip_lines exist — false means amounts may come from period input preview. */
   has_payslip_lines: boolean;
+  /** Draft preview provenance per component_code (emp_cb vs period input). */
+  component_preview_sources?: Partial<Record<string, ComponentPreviewSource>>;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -273,20 +284,23 @@ export function mapPayslipToPayrollRecord(
   batchId: string,
   row: HrmPayslipRow,
   componentValues?: Record<string, number> | null,
-  opts?: { hasPayslipLines?: boolean },
+  opts?: {
+    hasPayslipLines?: boolean;
+    componentPreviewSources?: Partial<Record<string, ComponentPreviewSource>>;
+  },
 ): PayrollRecord {
-  const values = componentValues ?? null;
+  let values =
+    componentValues != null && Object.keys(componentValues).length > 0
+      ? injectPayrollSheetTotalComponentValues(componentValues)
+      : null;
   let gross = parsePayrollAmount(row.gross_amount);
   let deduction = parsePayrollAmount(row.deduction_amount);
   let net = parsePayrollAmount(row.net_amount);
   const hasComponentValues = values != null && Object.keys(values).length > 0;
-  const useComponentTotals =
-    hasComponentValues && (row.status === 'draft' || opts?.hasPayslipLines === false);
-  if (useComponentTotals && values) {
-    const derived = derivePayrollTotalsFromComponentValues(values);
-    gross = derived.gross;
-    deduction = derived.deduction;
-    net = derived.net;
+  if (hasComponentValues && values) {
+    gross = values.TONG_THU_NHAP ?? gross;
+    net = values.THUC_LINH ?? net;
+    deduction = gross - net;
   }
   const baseSalary = values?.LUONG_CO_BAN ?? values?.LUONG_THEO_CONG ?? 0;
   return {
@@ -314,6 +328,7 @@ export function mapPayslipToPayrollRecord(
     leave_days: 0,
     component_values: values,
     has_payslip_lines: opts?.hasPayslipLines ?? false,
+    component_preview_sources: opts?.componentPreviewSources,
     notes: null,
     created_at: '',
     updated_at: '',
@@ -370,7 +385,11 @@ export const usePayrollBatches = (options?: { periodMonth?: number; periodYear?:
   });
 
   // Fetch records for a batch
-  const fetchBatchRecords = useCallback(async (batchId: string): Promise<PayrollRecord[]> => {
+  const fetchBatchRecords = useCallback(
+    async (
+      batchId: string,
+      opts?: { periodMonth?: number; periodYear?: number },
+    ): Promise<PayrollRecord[]> => {
     if (!currentCompanyId) return [];
     const payslipResponse = await listPayrollPayslips({
       company_id: currentCompanyId,
@@ -395,6 +414,33 @@ export const usePayrollBatches = (options?: { periodMonth?: number; periodYear?:
       inputLineResponses.flatMap((response) => response.items ?? []),
     );
 
+    let attendanceHoursByEmployee = new Map<
+      string,
+      { payableHours: number; standardHours: number }
+    >();
+    try {
+      const bindsResponse = await listPayrollPeriodTimesheetBinds(batchId);
+      const closedBind = (bindsResponse.items ?? []).find(
+        (bind) => String(bind.timesheetStatus ?? '').trim().toLowerCase() === 'closed',
+      );
+      if (closedBind?.timesheetHeaderId) {
+        const linesResponse = await listAttendanceSheetLines(
+          closedBind.timesheetHeaderId,
+          currentCompanyId,
+        );
+        attendanceHoursByEmployee = buildAttendanceHoursByEmployee(linesResponse.items ?? [], {
+          sheetClosed: String(linesResponse.status ?? '').trim().toLowerCase() === 'closed',
+        });
+      }
+    } catch {
+      // attendance hours preview is best-effort for draft display
+    }
+
+    const asOfDate =
+      opts?.periodYear != null && opts?.periodMonth != null
+        ? format(endOfMonth(new Date(opts.periodYear, opts.periodMonth - 1, 1)), 'yyyy-MM-dd')
+        : undefined;
+
     const records = await Promise.all(
       rows.map(async (row) => {
         const periodInputValues =
@@ -411,12 +457,66 @@ export const usePayrollBatches = (options?: { periodMonth?: number; periodYear?:
         } catch {
           payslipLineValues = {};
         }
-        const componentValues = mergePayrollComponentValues(payslipLineValues, periodInputValues);
-        return mapPayslipToPayrollRecord(batchId, row, componentValues, { hasPayslipLines });
+        let componentValues = mergePayrollComponentValues(payslipLineValues, periodInputValues);
+        let componentPreviewSources: Partial<Record<string, ComponentPreviewSource>> | undefined;
+
+        if (!hasPayslipLines && row.employee_id) {
+          try {
+            const pkg = await getActiveCompensationPackage({
+              company_id: currentCompanyId,
+              employee_id: row.employee_id,
+              as_of: asOfDate,
+            });
+            const lines = pkg?.lines ?? [];
+            const luongCoBan = lines.length
+              ? resolveLuongCoBanFromCompensationLines(lines)
+              : 0;
+            const empCbPreview: Record<string, number> = {};
+            if (luongCoBan > 0) empCbPreview.LUONG_CO_BAN = luongCoBan;
+
+            const attHours = attendanceHoursByEmployee.get(row.employee_id);
+            const baseSalary = lines.length
+              ? resolveBaseSalaryFromCompensationLines(lines)
+              : 0;
+            const luongTheoCong =
+              attHours && baseSalary > 0
+                ? resolveLuongTheoCongDraftPreview(
+                    baseSalary,
+                    attHours.payableHours,
+                    attHours.standardHours,
+                  )
+                : 0;
+
+            if (Object.keys(empCbPreview).length > 0) {
+              const enriched = enrichDraftComponentValuesFromEmpCb(
+                componentValues,
+                empCbPreview,
+              );
+              componentValues = enriched.values;
+              componentPreviewSources = enriched.previewSources;
+            }
+            if (luongTheoCong > 0 && (componentValues.LUONG_THEO_CONG ?? 0) === 0) {
+              componentValues = { ...componentValues, LUONG_THEO_CONG: luongTheoCong };
+              componentPreviewSources = {
+                ...componentPreviewSources,
+                LUONG_THEO_CONG: 'formula_preview',
+              };
+            }
+          } catch {
+            // emp_cb preview is best-effort for draft display
+          }
+        }
+
+        return mapPayslipToPayrollRecord(batchId, row, componentValues, {
+          hasPayslipLines,
+          componentPreviewSources,
+        });
       }),
     );
     return records;
-  }, [currentCompanyId]);
+  },
+    [currentCompanyId],
+  );
 
   // Create batch mutation
   const createBatchMutation = useMutation({
@@ -438,7 +538,7 @@ export const usePayrollBatches = (options?: { periodMonth?: number; periodYear?:
       toast.success('Đã tạo bảng lương');
     },
     onError: (error: unknown) => {
-      const message = toErrorMessage(error);
+      const message = toErrorMessage(error, 'Lỗi khi tạo bảng lương');
       if (error instanceof ApiClientError && error.code === 'HRM-PAY-002') {
         toast.error(
           `${message} Mở kỳ lương đã có trong danh sách (vd. Kỳ lương VP Hà Nội 05/2026) thay vì tạo mới.`,
@@ -489,9 +589,9 @@ export const usePayrollBatches = (options?: { periodMonth?: number; periodYear?:
   // Lock batch = process (required) + close (best-effort; HRM-PAY-005 may 412 after process)
   const lockBatchMutation = useMutation({
     mutationFn: async (id: string) => {
-      const processed = await processPayrollPeriod(id);
+      const processed = await processPayrollPeriod(id, currentCompanyId ?? undefined);
       try {
-        await closePayrollPeriod(id);
+        await closePayrollPeriod(id, currentCompanyId ?? undefined);
       } catch (closeError) {
         // Period already processed — keep payslip_summary for header cards; close is separate spine.
         console.warn('[payroll] close after process skipped', closeError);
@@ -508,7 +608,13 @@ export const usePayrollBatches = (options?: { periodMonth?: number; periodYear?:
         toast.error(resolvePayAtt412UserMessage(error.code, error.message));
         return;
       }
-      toast.error(toErrorMessage(error) || 'Lỗi khi khóa bảng lương');
+      if (error instanceof ApiClientError && error.code === 'HRM-PAY-409') {
+        toast.error(
+          `${toErrorMessage(error, 'Lỗi khi khóa bảng lương')} Đăng nhập đúng tenant (vd. ceo@xe.vn → xevn) và URL ?tenantId=xevn khớp JWT.`,
+        );
+        return;
+      }
+      toast.error(toErrorMessage(error, 'Lỗi khi khóa bảng lương'));
     },
   });
 

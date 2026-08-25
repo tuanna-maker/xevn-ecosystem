@@ -49,6 +49,7 @@ import {
   assertResourceInHrmScope,
   expandPayrollAttendanceSheetCompanyIds,
   expandPayrollPeriodCompanyIds,
+  type HrmListScopeContext,
   normalizePayrollListCompanyId,
   pushCompanyIdFilter,
   resolveHrmListScope,
@@ -79,6 +80,7 @@ import {
 type PayrollPeriodRow = {
   id: string;
   company_id: string;
+  tenant_id?: string | null;
   start_date: string;
   end_date: string;
   status: string;
@@ -196,19 +198,25 @@ export class PayPeriodInputPackService {
     periodId: string,
     requestedCompanyId: string,
     authorization?: string,
+    scopeContext?: HrmListScopeContext,
   ): Promise<PayrollPeriodRow> {
     await this.ensureSchema();
     const scopeCompanyId = normalizePayrollListCompanyId(
       authorization,
       requestedCompanyId,
     );
-    const scope = resolveHrmListScope(authorization, scopeCompanyId);
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
     const filters: string[] = ['id = $1::uuid'];
     const values: unknown[] = [periodId];
     pushCompanyIdFilter(filters, values, expandPayrollPeriodCompanyIds(scope));
     const res = await this.db.query<PayrollPeriodRow>(
       `
-        SELECT id::text AS id, company_id, start_date::text AS start_date,
+        SELECT id::text AS id, company_id, tenant_id,
+               start_date::text AS start_date,
                end_date::text AS end_date, status,
                sheet_template_snapshot_json
         FROM public.payroll_periods
@@ -406,9 +414,18 @@ export class PayPeriodInputPackService {
     periodId: string,
     requestedCompanyId: string,
     authorization?: string,
-    opts?: { includeArchived?: boolean; transferKind?: string },
+    opts?: {
+      includeArchived?: boolean;
+      transferKind?: string;
+      scopeContext?: HrmListScopeContext;
+    },
   ) {
-    await this.loadPeriodInScope(periodId, requestedCompanyId, authorization);
+    await this.loadPeriodInScope(
+      periodId,
+      requestedCompanyId,
+      authorization,
+      opts?.scopeContext,
+    );
     const scopeCompanyId = normalizePayrollListCompanyId(
       authorization,
       requestedCompanyId,

@@ -545,6 +545,55 @@ describe('employee restore scope parity (P1-PHASE1-BE-SCOPE-P0-S5-01)', () => {
     ).toThrow(expect.objectContaining({ code: 'HRM-SCOPE-409' }));
   });
 
+  it('assertResourceInHrmScope reads tenant_id column on payroll period rows', () => {
+    const token = signServiceJwt({
+      sub: 'ceo@xe.vn',
+      tenantId: 'xevn',
+      companyId: 'main',
+      roleCode: 'group_ceo',
+    });
+    const scope = resolveHrmListScope(`Bearer ${token}`, 'main', {
+      tenantId: 'xevn',
+    });
+    expect(() =>
+      assertResourceInHrmScope(
+        { company_id: 'main', tenant_id: 'xevn' },
+        scope,
+        { mismatchCode: 'HRM-PAY-409' },
+      ),
+    ).not.toThrow();
+  });
+
+  it('group CEO legacy rollup allows member tenant payroll period on main', () => {
+    const prevScope = process.env.HRM_TENANT_ONLY_SCOPE;
+    process.env.HRM_TENANT_ONLY_SCOPE = 'false';
+    try {
+      const token = signServiceJwt({
+        sub: 'ceo@xe.vn',
+        tenantId: 'xevn',
+        companyId: 'main',
+        roleCode: 'group_ceo',
+      });
+      const scope = resolveHrmListScope(`Bearer ${token}`, 'main', {
+        tenantId: 'xevn',
+      });
+      expect(scope.masterTenantPartition).toBe(true);
+      expect(() =>
+        assertResourceInHrmScope(
+          { company_id: 'main', tenant_id: 'xevn' },
+          scope,
+          { mismatchCode: 'HRM-PAY-409' },
+        ),
+      ).not.toThrow();
+    } finally {
+      if (prevScope === undefined) {
+        delete process.env.HRM_TENANT_ONLY_SCOPE;
+      } else {
+        process.env.HRM_TENANT_ONLY_SCOPE = prevScope;
+      }
+    }
+  });
+
   it('member CEO scope rejects master-tenant archived row even when company_id=main', () => {
     const token = signServiceJwt({
       sub: 'du-lich.ceo@xe.vn',

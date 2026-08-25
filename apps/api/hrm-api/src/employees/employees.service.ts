@@ -155,12 +155,14 @@ import {
   pushEmployeeListScopeFilters,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
+  resolveHrmSettingsCatalogCompanyId,
   resolveHrmCompanyUuidForSlug,
 } from '../common/hrm-list-scope';
 import { HrmDbService } from '../db/hrm-db.service';
 import { resolveEmployeeCompanyDisplayNameVi } from '../operating-units/hrm-company-display-name';
 import { HrmRealtimeService } from '../realtime/hrm-realtime.service';
 import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
+import { PositionsService } from '../positions/positions.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { ActivateEmployeeDto } from './dto/activate-employee.dto';
 import { EmployeeSummaryQueryDto } from './dto/employee-summary.query.dto';
@@ -243,28 +245,78 @@ export class EmployeesService implements OnModuleInit {
     @Optional()
     private readonly empDocumentChecklist?: EmpDocumentChecklistService,
     @Optional() private readonly realtime?: HrmRealtimeService,
+    @Optional() private readonly positions?: PositionsService,
   ) {}
 
+  private readEmployeeDepartmentKey(
+    customFields?: Record<string, string> | null,
+  ): string | null {
+    const raw = customFields?.department?.trim();
+    return raw || null;
+  }
+
+  private async assertEmployeeJobTitle(
+    persistCompanyId: string,
+    jobTitleKey: string | null | undefined,
+    departmentKey: string | null | undefined,
+    scopeContext?: HrmListScopeContext,
+    authorization?: string,
+    requestedCompanyId?: string,
+  ) {
+    const requested = requestedCompanyId?.trim() || persistCompanyId;
+    const payPositionCount =
+      (await this.positions?.countActivePositions(
+        authorization,
+        requested,
+        scopeContext,
+      )) ?? 0;
+
+    if (payPositionCount > 0 && this.positions) {
+      await this.positions.assertEmployeePositionAssignment({
+        persistCompanyId,
+        requestedCompanyId: requested,
+        jobTitleKey,
+        departmentKey,
+        authorization,
+        scopeContext,
+      });
+      return;
+    }
+
+    await this.assertJobTitleKeyInCatalog(
+      persistCompanyId,
+      jobTitleKey,
+      scopeContext,
+      authorization,
+      requestedCompanyId,
+    );
+  }
+
   private async assertJobTitleKeyInCatalog(
-    companyId: string,
+    persistCompanyId: string,
     jobTitleKey: string | null | undefined,
     scopeContext?: HrmListScopeContext,
+    authorization?: string,
+    requestedCompanyId?: string,
   ) {
     const code = jobTitleKey?.trim();
     if (!code || !this.settingsCatalogs) return;
-    // HrmListScopeContext = { tenantId? } from toHrmListScopeContext — not HrmListScope.
     const tenantId = scopeContext?.tenantId?.trim() || MASTER_TENANT_ID;
-    // AC-PLT-EMP-01c — EFF=0 soft skip (no seed); invent hard-block only when EFF>0 (01b).
+    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+      authorization,
+      tenantId,
+      (requestedCompanyId ?? persistCompanyId).trim(),
+    );
     const items = await this.settingsCatalogs.getEffectiveItemsForKey(
       tenantId,
-      companyId,
+      catalogCompanyId,
       'job_titles',
     );
     const activeCount = items.filter((i) => i.status === 'active').length;
     if (activeCount === 0) return;
     await this.settingsCatalogs.assertCodeInEffectiveCatalog({
       tenantId,
-      companyId,
+      companyId: catalogCompanyId,
       catalogKey: 'job_titles',
       code,
       errorCode: HRM_EMP_POSITION_KEY,
@@ -722,10 +774,13 @@ export class EmployeesService implements OnModuleInit {
       customFields.tenant_id = MASTER_TENANT_ID;
     }
 
-    await this.assertJobTitleKeyInCatalog(
+    await this.assertEmployeeJobTitle(
       companyId,
       payload.job_title_key,
+      this.readEmployeeDepartmentKey(customFields),
       scopeContext,
+      authorization,
+      payload.company_id,
     );
     // F-EMP-CF-CNS-01 — invent extension codes ∈ Settings EFF when count>0 (AC-01c); empty skip (AC-01d).
     await assertEmpCustomFieldsAgainstEffectiveCatalog({
@@ -1610,11 +1665,6 @@ export class EmployeesService implements OnModuleInit {
       values.push(payload.full_name.trim());
     }
     if (payload.job_title_key !== undefined) {
-      await this.assertJobTitleKeyInCatalog(
-        existing.company_id,
-        payload.job_title_key,
-        scopeContext,
-      );
       updates.push(`job_title_key = $${updates.length + 1}`);
       values.push(payload.job_title_key.trim());
     }
@@ -1747,6 +1797,32 @@ export class EmployeesService implements OnModuleInit {
       });
       updates.push(`manager_id = $${updates.length + 1}::uuid`);
       values.push(managerId);
+    }
+
+    const effectiveJobTitleKey =
+      payload.job_title_key !== undefined
+        ? payload.job_title_key?.trim() || null
+        : existing.job_title_key;
+    const mergedCustomFieldsForPosition =
+      nextCustomFields ??
+      (typeof existing.custom_fields === 'object' && existing.custom_fields
+        ? ({ ...(existing.custom_fields as Record<string, string>) } as Record<
+            string,
+            string
+          >)
+        : {});
+    if (
+      effectiveJobTitleKey &&
+      (payload.job_title_key !== undefined || payload.custom_fields !== undefined)
+    ) {
+      await this.assertEmployeeJobTitle(
+        existing.company_id,
+        effectiveJobTitleKey,
+        this.readEmployeeDepartmentKey(mergedCustomFieldsForPosition),
+        scopeContext,
+        authorization,
+        requestedCompanyId,
+      );
     }
 
     if (updates.length === 0) {

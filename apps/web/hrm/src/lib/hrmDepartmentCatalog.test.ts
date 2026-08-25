@@ -3,10 +3,12 @@ import { ApiClientError } from '@/lib/apiError';
 
 const listDepartments = vi.fn();
 const getSettingsCatalogsOverview = vi.fn();
+const getEmployeesSummary = vi.fn();
 
 vi.mock('@/integrations/hrmApi', () => ({
   listDepartments: (...args: unknown[]) => listDepartments(...args),
   getSettingsCatalogsOverview: (...args: unknown[]) => getSettingsCatalogsOverview(...args),
+  getEmployeesSummary: (...args: unknown[]) => getEmployeesSummary(...args),
 }));
 
 vi.mock('@/lib/hrmSpreadsheetScope', () => ({
@@ -21,6 +23,7 @@ vi.mock('@/lib/hrmSpreadsheetScope', () => ({
 import {
   departmentMergeKey,
   departmentPickerOptionsFromCompanyRows,
+  enrichDepartmentRowsWithEmployeeCounts,
   loadCompanyDepartments,
   mapHrmDepartmentRow,
   mergeDepartmentCatalogRows,
@@ -39,6 +42,7 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     vi.mocked(getPortalJwtTenantId).mockReturnValue(null);
     getSettingsCatalogsOverview.mockResolvedValue({ catalogs: [] });
     listDepartments.mockResolvedValue({ data: [] });
+    getEmployeesSummary.mockResolvedValue({ by_department: [] });
     __resetCompanyDepartmentsInflightForTests();
   });
 
@@ -279,6 +283,56 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
 
     expect(result.fetchError).toBeNull();
     expect(result.rows[0]?.name).toBe('Xưởng dịch vụ');
+  });
+
+  it('enriches department rows with employees/summary by_department headcounts', async () => {
+    listDepartments.mockResolvedValue({
+      data: [
+        {
+          id: 'd-cntt',
+          company_id: 'main',
+          name: 'Phòng CNTT',
+          code: 'phong_cntt',
+          status: 'active',
+          employee_count: 0,
+        },
+      ],
+    });
+    getEmployeesSummary.mockResolvedValue({
+      by_department: [{ department: 'phong_cntt', count: 4, avg_salary: null }],
+    });
+
+    const result = await loadCompanyDepartments('main');
+
+    expect(getEmployeesSummary).toHaveBeenCalledWith({ company_id: 'main' });
+    expect(result.rows.find((r) => r.code === 'phong_cntt')?.employee_count).toBe(4);
+  });
+});
+
+describe('enrichDepartmentRowsWithEmployeeCounts', () => {
+  it('matches department code case-insensitively', () => {
+    const enriched = enrichDepartmentRowsWithEmployeeCounts(
+      [
+        {
+          id: 'd1',
+          name: 'Phòng CNTT',
+          code: 'phong_cntt',
+          company_id: 'main',
+          parent_id: null,
+          level: 1,
+          sort_order: 0,
+          status: 'active',
+          description: null,
+          manager_name: null,
+          manager_email: null,
+          employee_count: 0,
+          created_at: '',
+          updated_at: '',
+        },
+      ],
+      [{ department: 'PHONG_CNTT', count: 2 }],
+    );
+    expect(enriched[0]?.employee_count).toBe(2);
   });
 });
 

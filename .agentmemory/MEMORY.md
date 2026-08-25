@@ -6,6 +6,22 @@ Global OS doctrine: `../../_vibe-team-os/MEMORY.md`. Bus vertical: `docs/program
 
 ---
 
+## Session rollup 2026-08-25 (Antigravity IDE — Sửa lỗi Scope Resolution & Tenant Data Leak trong Workflow Config)
+
+**Bối cảnh:** Sponsor cấu hình Quy trình tuyển dụng (Workflow Config) bằng quyền Group CEO nhưng chọn áp dụng cho công ty con (Tenant Visun). Xảy ra lỗi "lọt" phòng ban của Tập đoàn mẹ (Phòng CNTT) vào danh sách phòng ban của Visun, và sau đó là lỗi 409 crash toàn bộ trang khi cố gắng load danh sách Vị trí tuyển dụng và Nhân viên từ Catalog của Tenant.
+
+**Lesson Learned & Bug Fixes:**
+- **Kiến trúc Scope & Cross-Tenant:** API XeVN cho phép Group CEO "vượt rào" truy vấn `public.departments` và `public.employees` của chi nhánh bằng cách truyền `x-tenant-id = VISUN` (native cross-tenant). TUY NHIÊN, API **Settings Catalog** (`/api/hrm/settings-catalogs`) cấm tuyệt đối cross-tenant header và sẽ trả về `409 SCOPE_CONTEXT_MISMATCH` nếu `x-tenant-id` khác với JWT.
+- **Lỗi tràn Data (Data Leak):** Do Group CEO xài chung Master Catalog, nếu merge Master Catalog khi đang xem dữ liệu của chi nhánh, các phòng ban/chức danh toàn cục (ví dụ: Phòng CNTT, DRIVER) sẽ lọt vào danh sách dropdown của chi nhánh. Đã xử lý bằng cách ngắt merge catalog (`catalogRows = []`) khi Group CEO query nhánh (`companyId !== HRM_MASTER_TENANT_ID`).
+- **Fix `hrmSpreadsheetScope.ts`:**
+  - Hàm `resolveHrmSpreadsheetScope`: Cập nhật để trả về đúng `tenantId = currentCompanyId` cho Group CEO khi truy vấn dữ liệu thực tế (Phòng ban, Nhân sự).
+  - Hàm `resolveHrmSettingsCatalogScope`: Cập nhật để **luôn luôn** trả về `tenantId = HRM_MASTER_TENANT_ID` cho Group CEO để tránh crash `409` khi gọi Catalog API.
+- **Workflow Config Dropdowns (Lọc theo Tenant/Phòng ban):**
+  - **Phòng ban:** Đã lấy chính xác danh sách phòng ban thuộc Tenant hiện tại (thông qua API xuyên Tenant bằng `currentCompanyId`).
+  - **Vị trí tuyển dụng, Chức danh & Danh sách nhân viên của Người phụ trách:** Đảm bảo phải lọc chuẩn xác theo thứ bậc: Lọc theo Tenant -> Lọc theo Phòng ban -> Lọc theo Chức danh. Các dropdown này nay được trích xuất động từ danh sách nhân viên thực tế của chi nhánh/phòng ban (`employees.map(e => e.job_title)`), thay vì kéo mù toàn bộ từ Master Catalog.
+
+---
+
 ## Session rollup 2026-08-11 (Claude Code — PM takeover sau khi Cursor Claude terminal dừng)
 
 **Bối cảnh:** Cursor-side Claude terminal (đóng vai PM) dừng giữa chừng sau khi dispatch 1 loạt Task (PAY-09-CLUSTER-01, REC-01-BE-01, CORE-02-DATA-01 — xem `.cursor/team/AGENT_MESSAGE_BUS.md` tail) nhưng chưa có INTAKE/evidence cho các Task đó. Sponsor yêu cầu Claude Code tiếp quản vai PM.
@@ -390,3 +406,87 @@ Cột có giá trị + gạch chấm = dữ liệu đầu vào kỳ (chưa qua c
 2. **Chưa** bấm Khóa/process lại cho đến khi UI OK.
 3. Nếu cần reset DB: `node scripts/qa/repair-vp-hanoi-period-inputs.mjs`.
 4. Debug API: `node scripts/qa/debug-api-input-lines.mjs`.
+
+---
+
+## SESSION ROLLUP 2026-08-25 — Chức danh × Phòng ban (Approach A) + schema legacy `pay_position` (Cursor)
+
+**Bối cảnh:** Tab **Công ty → Phòng ban** — cấu hình chức danh theo phòng ban; form NV lọc chức danh theo PB. DB tenant `xevn` / company `main` có bảng `pay_position` **schema W3 cũ** (khác spec mới).
+
+### Kiến trúc runtime (đã implement)
+
+| Layer | SoT / hành vi |
+|-------|----------------|
+| **Danh mục chung** | `job_titles` (Settings) — nguồn chính khi `pay_position` rỗng hoặc thiếu mã |
+| **Master DB** | `pay_position` — lazy sync từ `job_titles` khi gán PB lần đầu |
+| **Per-dept** | `department_position` — chọn từ catalog chung + `local_name` / `grade_code_override` |
+| **NV form** | `GET /positions/effective` — có PB → chỉ chức danh đã cấu hình PB; không PB → toàn bộ catalog |
+
+**UI tab Phòng ban:** đã **gỡ** `PayPositionMasterPanel` (không tạo chức danh tại đây). Cấu hình qua nút ListChecks → `DepartmentPositionConfigDialog`.
+
+**BE module:** `apps/api/hrm-api/src/positions/*` — duy nhất SQL trực tiếp tới `pay_position` / `department_position`. Payroll, contracts, recruitment **không** đọc `pay_position`.
+
+### Incident chain — schema legacy `pay_position` (P0)
+
+Bảng cũ trên DB remote khác DDL mới trong `ensureSchema()`:
+
+| Cột legacy | Vấn đề | Fix |
+|------------|--------|-----|
+| `title_name` | Code query `name` → `42703 column "name" does not exist` | ADD `name` + backfill từ `title_name`; DROP `title_name` |
+| `department_id` NOT NULL | INSERT master không ghi cột → `23502 null value` | `ALTER COLUMN department_id DROP NOT NULL` |
+| Thiếu UNIQUE `(tenant_id, company_id, code)` | `ON CONFLICT` → `42P10` | `CREATE UNIQUE INDEX IF NOT EXISTS uq_pay_position_tenant_company_code` + INSERT thường + catch `23505` |
+
+Tất cả migration **additive** trong `PositionsService.ensureSchema()` — chạy lúc `onModuleInit` / mỗi request positions.
+
+### Incident — catalog biến mất sau lưu 1 chức danh vào PB (P0 logic)
+
+**Root cause:** `listPositions` dùng **hoặc / hoặc**: `pay_position` rỗng → fallback `job_titles`; sau khi provision 1 row → **chỉ** trả 1 mã, dropdown trống.
+
+**Fix:** `buildMergedMasterCatalog()` — luôn **gộp** `job_titles ∪ pay_position` (trùng code → ưu tiên `pay_position`). Áp dụng cho `GET /positions` và `GET /positions/effective` (không có PB).
+
+**JOIN:** `listDepartmentPositions` / effective-with-dept — LEFT JOIN `pay_position` theo `tenant_id + code` (bỏ bắt buộc khớp `company_id` giữa 2 bảng).
+
+### FE thay đổi chính
+
+| File | Thay đổi |
+|------|----------|
+| `DepartmentManagement.tsx` | Gỡ `PayPositionMasterPanel` |
+| `DepartmentPositionConfigDialog.tsx` | Chọn từ full catalog; empty state Cài đặt → Danh mục chức danh |
+| `EmployeeFormDialog.tsx` | `listEffectivePayPositions` theo PB; clear position khi đổi PB |
+| `PayPositionMasterPanel.tsx` | **Đã xóa** |
+
+### Quyết định thiết kế (đã thống nhất với sponsor)
+
+- **Không** dual-write `name` + `title_name` — chỉ `name` là SoT runtime; `title_name` là legacy đã drop.
+- **Không** tạo chức danh trên tab Phòng ban — tạo tại Settings (`job_titles`); PB chỉ **chọn + cấu hình riêng**.
+- `position_scope=company` (CEO) vẫn cho phép NV không cần PB khi validate BE.
+
+### must_keep
+
+- Master catalog API = **merge** `job_titles` + `pay_position` — không either/or.
+- `provisionPayPositionFromJobTitle` chạy khi `upsertDepartmentPosition` và mã chưa có trong `pay_position`.
+- Chạy **cả** `pnpm run dev:hrm-api` (28001) lẫn web — proxy `ECONNREFUSED` khi chỉ `dev:web-only`.
+- Legacy cột `department_id` trên `pay_position` **không dùng** — quan hệ PB ở `department_position`.
+
+### OPEN
+
+- Auto-sync `job_titles` → `pay_position` bulk (hiện lazy từng mã khi gán PB).
+- DROP hẳn cột `department_id` trên `pay_position` sau khi xác nhận không còn consumer ngoài repo.
+- FE toast mã lỗi `HRM-EMP-POSITION-DEPT-REQUIRED` / `HRM-EMP-POSITION-DEPT-MISMATCH`.
+- `countActivePositions()` vẫn chỉ đếm `pay_position` — employee assert fallback `job_titles` khi count=0; cần align nếu muốn enforce `pay_position` sớm hơn.
+
+### Resume checklist (positions × departments)
+
+1. API chạy: `pnpm run dev:hrm-api` — log không `column does not exist` / `null value` / `ON CONFLICT`.
+2. Tab Phòng ban → ListChecks → dropdown đủ `job_titles`; thêm PB → "Đã cấu hình" hiện đúng; dropdown vẫn còn mã chưa gán.
+3. Form NV: chọn PB → chức danh lọc theo PB; bỏ PB → full catalog.
+4. Unit: `pnpm test -- src/positions/positions.service.spec.ts` (5 tests).
+
+### Traceability
+
+| Loại | Path |
+|------|------|
+| BE | `apps/api/hrm-api/src/positions/positions.service.ts` |
+| FE | `DepartmentPositionConfigDialog.tsx`, `DepartmentManagement.tsx`, `EmployeeFormDialog.tsx` |
+| Spec thiết kế | `docs/program/deltas/BA_HRM_POSITION_DEPARTMENT_DB_DESIGN_01_20260813.md` |
+| Program | `docs/program/PO_HRM_CNTT_PAYROLL_CATALOG_PROGRAM.md` (W3 positions — runtime mới bật) |

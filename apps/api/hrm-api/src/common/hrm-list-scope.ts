@@ -1115,10 +1115,16 @@ export function resolveHrmSettingsCatalogCompanyId(
 
 function readResourceTenantId(
   resource:
-    | { custom_fields?: Record<string, unknown> | null }
+    | {
+        tenant_id?: string | null;
+        custom_fields?: Record<string, unknown> | null;
+      }
     | null
     | undefined,
 ): string {
+  const direct =
+    typeof resource?.tenant_id === 'string' ? resource.tenant_id.trim() : '';
+  if (direct) return direct;
   const raw = resource?.custom_fields?.tenant_id;
   return typeof raw === 'string' ? raw.trim() : '';
 }
@@ -1191,6 +1197,7 @@ export function assertResourceInHrmScope(
   const rowTenant =
     readResourceTenantId(resource) ||
     (typeof resource?.tenant_id === 'string' ? resource.tenant_id.trim() : '');
+  const rowTenantNorm = rowTenant.trim().toLowerCase();
 
   if (scope.tenantOnlyMode && scope.tenantIds?.length) {
     const allowedTenants = new Set(
@@ -1203,7 +1210,7 @@ export function assertResourceInHrmScope(
           ),
         )
       : new Set<string>();
-    const effectiveTenant = rowTenant || MASTER_TENANT_ID;
+    const effectiveTenant = rowTenantNorm || MASTER_TENANT_ID;
     const migratedMatch =
       allowedTenants.has(effectiveTenant) &&
       isMasterTenantPartitionCompanyId(companyId, scope);
@@ -1232,7 +1239,8 @@ export function assertResourceInHrmScope(
   }
 
   if (scope.memberTenantId) {
-    if (!rowTenant || rowTenant !== scope.memberTenantId) {
+    const memberTenantNorm = scope.memberTenantId.trim().toLowerCase();
+    if (!rowTenantNorm || rowTenantNorm !== memberTenantNorm) {
       throw new ApiException(
         mismatchCode,
         'Resource tenant_id is outside token scope',
@@ -1242,13 +1250,21 @@ export function assertResourceInHrmScope(
     return;
   }
   if (scope.masterTenantPartition) {
-    const effectiveTenant = rowTenant || MASTER_TENANT_ID;
+    const effectiveTenant = rowTenantNorm || MASTER_TENANT_ID;
     if (effectiveTenant !== MASTER_TENANT_ID) {
-      throw new ApiException(
-        mismatchCode,
-        'Resource tenant_id is outside token scope',
-        HttpStatus.CONFLICT,
+      const memberRollup = new Set(
+        HRM_GROUP_ROLLUP_TENANT_IDS.map((id) => id.trim().toLowerCase()),
       );
+      const isMemberRollupOnMain =
+        memberRollup.has(effectiveTenant) &&
+        isMasterTenantPartitionCompanyId(companyId, scope);
+      if (!isMemberRollupOnMain) {
+        throw new ApiException(
+          mismatchCode,
+          'Resource tenant_id is outside token scope',
+          HttpStatus.CONFLICT,
+        );
+      }
     }
   }
 }

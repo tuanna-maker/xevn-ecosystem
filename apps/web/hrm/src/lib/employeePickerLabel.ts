@@ -60,7 +60,17 @@ export function looksLikeJobTitleCatalogCode(raw: string): boolean {
   return /[_-]/.test(s);
 }
 
-/** Phòng ban: top-level hoặc custom_fields.department (Nest list không có cột dept). */
+/** Mã phòng ban (catalog key) — SoT custom_fields.department; không dùng nhãn hiển thị. */
+export function resolveEmployeeDepartmentKey(source: EmployeePickerLabelSource): string | null {
+  const fromCustom = trimOrNull(source.custom_fields?.department);
+  if (fromCustom) return fromCustom;
+  const top = trimOrNull(source.department);
+  if (!top) return null;
+  if (looksLikeJobTitleCatalogCode(top)) return top;
+  return top;
+}
+
+/** Phòng ban hiển thị: nhãn denorm hoặc fallback mã (picker resolve label sau). */
 export function resolveEmployeeDepartmentLabel(source: EmployeePickerLabelSource): string | null {
   return (
     trimOrNull(source.department) ??

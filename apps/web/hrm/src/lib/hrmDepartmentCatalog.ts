@@ -12,6 +12,7 @@
  */
 import {
   getSettingsCatalogsOverview,
+  getEmployeesSummary,
   listDepartments,
   type HrmSettingsCatalogOverviewRow,
   type HrmSpreadsheetScope,
@@ -179,6 +180,35 @@ export function mergeDepartmentCatalogRows(
   );
 }
 
+/** Bind department card headcount from employees/summary.by_department (custom_fields.department). */
+export function enrichDepartmentRowsWithEmployeeCounts(
+  rows: readonly CatalogDepartmentRow[],
+  byDepartment: ReadonlyArray<{ department: string; count: number }>,
+): CatalogDepartmentRow[] {
+  const countByKey = new Map<string, number>();
+  for (const item of byDepartment) {
+    const key = item.department?.trim().toLowerCase();
+    if (!key) continue;
+    countByKey.set(key, (countByKey.get(key) ?? 0) + Number(item.count ?? 0));
+  }
+
+  return rows.map((row) => {
+    const keys = [
+      row.code?.trim().toLowerCase(),
+      row.id?.trim().toLowerCase(),
+      row.name?.trim().toLowerCase(),
+    ].filter((key): key is string => Boolean(key));
+    let count = 0;
+    for (const key of keys) {
+      if (countByKey.has(key)) {
+        count = countByKey.get(key)!;
+        break;
+      }
+    }
+    return { ...row, employee_count: count };
+  });
+}
+
 /**
  * Company Phòng ban tab — HRM `/departments` when populated; else XBOS-synced settings catalog (org DM §1–6).
  * Non-2xx never coerces to silent empty (P1-HRM-MENU-COMPANY-DEPT-STUB).
@@ -219,12 +249,18 @@ async function loadCompanyDepartmentsOnce(companyId: string): Promise<LoadCompan
   }
 
   try {
-    if (isGroupCeoDepartmentRollupContext()) {
+    if (isGroupCeoDepartmentRollupContext() && companyId === HRM_MASTER_TENANT_ID) {
       catalogRows = await listDepartmentsFromSettingsCatalogRollup();
-    } else if (scope) {
-      catalogRows = await listDepartmentsFromSettingsCatalogForScope(scope);
+    } else if (isGroupCeoDepartmentRollupContext() && companyId !== HRM_MASTER_TENANT_ID) {
+      // Branch query by Group CEO: skip master catalog to prevent bleeding master departments into branch list
+      catalogRows = [];
     } else {
-      catalogRows = await listDepartmentsFromSettingsCatalog(companyId);
+      const catalogScope = resolveHrmSettingsCatalogScope(companyId);
+      if (catalogScope) {
+        catalogRows = await listDepartmentsFromSettingsCatalogForScope(catalogScope);
+      } else {
+        catalogRows = await listDepartmentsFromSettingsCatalog(companyId);
+      }
     }
   } catch (error) {
     catalogError = toErrorMessage(
@@ -233,9 +269,19 @@ async function loadCompanyDepartmentsOnce(companyId: string): Promise<LoadCompan
     );
   }
 
-  const rollupByTenant = isGroupCeoDepartmentRollupContext();
-  const merged = mergeDepartmentCatalogRows(hrmRows, catalogRows, rollupByTenant);
+  const rollupByTenant = isGroupCeoDepartmentRollupContext() && companyId === HRM_MASTER_TENANT_ID;
+  let merged = mergeDepartmentCatalogRows(hrmRows, catalogRows, rollupByTenant);
+
   if (merged.length > 0) {
+    try {
+      const summary = await getEmployeesSummary({ company_id: companyId });
+      merged = enrichDepartmentRowsWithEmployeeCounts(
+        merged,
+        summary.by_department ?? [],
+      );
+    } catch (error) {
+      console.warn('[hrmDepartmentCatalog] employee headcount enrich skipped', error);
+    }
     return { rows: merged, fetchError: null };
   }
   return { rows: [], fetchError: hrmError ?? catalogError };
