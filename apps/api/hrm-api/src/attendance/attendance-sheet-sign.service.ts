@@ -45,7 +45,10 @@ import {
 } from './attendance-sheet-scope';
 import { CreateAttendanceSheetSignatureDto } from './dto/create-attendance-sheet-signature.dto';
 import { ReopenAttendanceSheetDto } from './dto/reopen-attendance-sheet.dto';
-import { ensureAttendanceSheetSchema } from './attendance-sheet-schema.bootstrap';
+import {
+  ensureAttendanceSheetSchema,
+  ensureAttTimesheetLineSchema,
+} from './attendance-sheet-schema.bootstrap';
 import {
   aggregateAttendanceSheetLines,
   archiveAttTimesheetLinesForSheet,
@@ -448,6 +451,87 @@ export class AttendanceSheetSignService {
       sheet_id: res.rows[0]?.id ?? sheetId,
       status: res.rows[0]?.status ?? 'submitted',
       lines_archived: archivedLines,
+    };
+  }
+
+  /**
+   * F-PAY-ATT-CLOSED-01 — read-only att_timesheet_line for payroll draft preview (no AGG rewrite).
+   */
+  async listAttendanceSheetLines(
+    sheetId: string,
+    companyId: string,
+    authorization?: string,
+  ): Promise<{
+    sheet_id: string;
+    status: string;
+    items: Array<{
+      employee_id: string;
+      standard_hours: number;
+      ot_hours_weighted: number;
+      paid_leave_hours: number;
+      unpaid_leave_hours: number;
+      payable_hours: number;
+      work_days: number | null;
+      line_locked: boolean;
+    }>;
+  }> {
+    const header = await this.assertHeaderInScope(
+      sheetId,
+      companyId,
+      authorization,
+    );
+    await this.ensureAttendanceSheetSchemaLocal();
+    await ensureAttTimesheetLineSchema(this.db);
+
+    const res = await this.db.query<{
+      employee_id: string;
+      standard_hours: string;
+      ot_hours_weighted: string;
+      paid_leave_hours: string;
+      unpaid_leave_hours: string;
+      payable_hours: string;
+      work_days: string | null;
+      line_locked: boolean;
+    }>(
+      `
+        SELECT
+          employee_id::text AS employee_id,
+          standard_hours::text AS standard_hours,
+          ot_hours_weighted::text AS ot_hours_weighted,
+          paid_leave_hours::text AS paid_leave_hours,
+          unpaid_leave_hours::text AS unpaid_leave_hours,
+          payable_hours::text AS payable_hours,
+          work_days::text AS work_days,
+          line_locked
+        FROM public.att_timesheet_line
+        WHERE header_id = $1::uuid
+          AND archived_at IS NULL
+        ORDER BY employee_id ASC;
+      `,
+      [sheetId],
+    );
+
+    const toHours = (value: string | null | undefined): number => {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    return {
+      sheet_id: sheetId,
+      status: String(header.status ?? ''),
+      items: res.rows.map((row) => ({
+        employee_id: row.employee_id,
+        standard_hours: toHours(row.standard_hours),
+        ot_hours_weighted: toHours(row.ot_hours_weighted),
+        paid_leave_hours: toHours(row.paid_leave_hours),
+        unpaid_leave_hours: toHours(row.unpaid_leave_hours),
+        payable_hours: toHours(row.payable_hours),
+        work_days:
+          row.work_days != null && row.work_days !== ''
+            ? toHours(row.work_days)
+            : null,
+        line_locked: Boolean(row.line_locked),
+      })),
     };
   }
 }

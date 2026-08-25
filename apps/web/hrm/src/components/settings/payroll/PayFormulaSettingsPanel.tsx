@@ -23,6 +23,7 @@ import { isAbortLikeError, toErrorMessage } from '@/lib/apiError';
 import {
   buildHyperFormulaFromComponentComposite,
   extractVarKeysFromHyperFormulaLines,
+  formatPayFormulaReadableSummary,
   isValidPayFormulaCodeFormat,
   normalizePayFormulaCode,
   payFormulaStatusLabel,
@@ -55,6 +56,7 @@ type FormulaRow = {
   status: string;
   tokens: PayFormulaComponentToken[];
   expression: string;
+  readableSummary: string;
   isLegacyOpaque: boolean;
   legacyText: string;
   updatedAt: string;
@@ -132,6 +134,11 @@ export const PayFormulaSettingsPanel = () => {
       const composite = readPayFormulaComponentTokens(row.expressionJson, componentLabelMap);
       const opaque = readOpaqueExpressionText(row.expressionJson);
       const isLegacyOpaque = !composite && Boolean(opaque.expressionText.trim());
+      const readableSummary = formatPayFormulaReadableSummary(
+        row.expressionJson,
+        componentLabelMap,
+        componentFormulaMap,
+      );
 
       return {
         id: row.id,
@@ -140,12 +147,13 @@ export const PayFormulaSettingsPanel = () => {
         status: String(row.status ?? 'draft'),
         tokens: composite?.tokens ?? [],
         expression: composite?.expression ?? opaque.expressionText,
+        readableSummary,
         isLegacyOpaque,
         legacyText: opaque.expressionText.trim(),
         updatedAt: row.updatedAt?.slice(0, 10) ?? row.createdAt?.slice(0, 10) ?? '—',
       };
     },
-    [componentLabelMap],
+    [componentLabelMap, componentFormulaMap],
   );
 
   const formulas = useMemo(
@@ -205,7 +213,9 @@ export const PayFormulaSettingsPanel = () => {
       id: f.id,
       name: f.name,
       description: f.description,
-      tokens: f.tokens.length > 0 ? f.tokens : undefined,
+      tokens: f.tokens,
+      storedExpression: f.expression,
+      readableSummary: f.readableSummary || f.legacyText,
       status: f.status,
     });
     setIsDialogOpen(true);

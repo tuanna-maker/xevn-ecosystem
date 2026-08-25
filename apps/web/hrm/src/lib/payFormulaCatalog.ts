@@ -134,19 +134,9 @@ export function buildSalaryComponentVarLabelMap(
   const map = new Map<string, string>();
   for (const row of components) {
     const name = String(row.name ?? '').trim();
-    const formula = String((row as { formula?: string }).formula ?? '').trim();
-    if (!name || !formula.startsWith('=')) continue;
-    const body = formula.slice(1).trim();
-    const singleVar = body.match(/^([a-z][a-z0-9_]*)$/i);
-    if (singleVar) {
-      map.set(singleVar[1].toLowerCase(), name);
-      continue;
-    }
-    const vars = body.match(/[a-z][a-z0-9_]*/gi) ?? [];
-    for (const v of vars) {
-      const key = v.toLowerCase();
-      if (key === 'base' || key === 'salary') continue;
-      if (!map.has(key)) map.set(key, name);
+    const code = String(row.code ?? '').trim().toLowerCase();
+    if (code && name) {
+      map.set(code, name);
     }
   }
   return map;
@@ -166,15 +156,15 @@ export function salaryComponentVarHintsForFormulaInput(
 export function resolveSalaryComponentFormulaInsertToken(
   row: NestSalaryComponentLike,
 ): string {
+  const code = String(row.code ?? '').trim().toLowerCase();
+  if (code) return code;
   const formula = String((row as { formula?: string }).formula ?? '').trim();
   if (formula.startsWith('=')) {
     const body = formula.slice(1).trim();
     const singleVar = body.match(/^([a-z][a-z0-9_]*)$/i);
     if (singleVar) return singleVar[1].toLowerCase();
-    const firstVar = body.match(/[a-z][a-z0-9_]*/i);
-    if (firstVar) return firstVar[0].toLowerCase();
   }
-  return String(row.code ?? '').trim().toLowerCase();
+  return '';
 }
 
 /** Thành phần lương Nest — tìm theo tên/mã trong picker công thức. */
@@ -827,8 +817,6 @@ export function formatSalaryFormulaDisplayText(
       }
       if (isNumberToken(tok)) return tok;
       if (isVarToken(tok)) {
-        const key = tok.toLowerCase();
-        if (tok.length <= 2 && !labelMap.has(key)) return '';
         return bracketLabelForFormulaField(resolveFormulaVarLabel(tok, labelMap));
       }
       return tok;
@@ -1099,6 +1087,120 @@ export type PayFormulaComponentCompositeUi = {
 
 const PAY_FORMULA_COMPOSITE_UI_KEY = 'ui';
 
+export function parsedComponentTermsToTokens(
+  terms: ParsedComponentTerm[],
+  componentLabels?: ReadonlyMap<string, string>,
+): PayFormulaComponentToken[] {
+  const tokens: PayFormulaComponentToken[] = [];
+  for (let i = 0; i < terms.length; i++) {
+    const term = terms[i];
+    if (i > 0) {
+      tokens.push({
+        type: 'op',
+        label: term.sign === 'deduction' ? '−' : '+',
+        value: term.sign === 'deduction' ? '-' : '+',
+      });
+    } else if (term.sign === 'deduction') {
+      tokens.push({ type: 'op', label: '−', value: '-' });
+    }
+    const code = term.componentCode;
+    const name = componentLabels?.get(code.toUpperCase()) ?? componentLabels?.get(code) ?? code;
+    tokens.push({ type: 'var', label: `[${name}]`, value: code });
+  }
+  return tokens;
+}
+
+export function expressionToComponentTokens(
+  expression: string,
+  componentLabels?: ReadonlyMap<string, string>,
+): PayFormulaComponentToken[] {
+  return parsedComponentTermsToTokens(parseComponentCompositeExpression(expression), componentLabels);
+}
+
+/** Nội dung công thức đọc được (gd1 / aggregate / legacy) — hiển thị khi sửa. */
+export function formatPayFormulaReadableSummary(
+  expressionJson: unknown,
+  componentLabels?: ReadonlyMap<string, string>,
+  componentFormulas?: ReadonlyMap<string, string>,
+): string {
+  if (!expressionJson || typeof expressionJson !== 'object' || Array.isArray(expressionJson)) {
+    return '';
+  }
+  const obj = expressionJson as Record<string, unknown>;
+  const form = typeof obj.form === 'string' ? obj.form.trim().toLowerCase() : '';
+
+  if (form === 'payroll_aggregate_v1') {
+    const ui =
+      obj.ui && typeof obj.ui === 'object' && !Array.isArray(obj.ui)
+        ? (obj.ui as Record<string, unknown>)
+        : {};
+    const label = typeof ui.label === 'string' ? ui.label.trim() : '';
+    const aggregate = String(obj.aggregate ?? '').trim().toLowerCase();
+    const expr = typeof ui.expression === 'string' ? ui.expression.trim() : '';
+    const codes = Array.isArray(obj.earning_component_codes)
+      ? obj.earning_component_codes.map((c) => String(c).trim().toUpperCase()).filter(Boolean)
+      : [];
+    const lines: string[] = [];
+    if (label) lines.push(label);
+    lines.push(
+      aggregate === 'gross'
+        ? 'Tổng hợp thu nhập (gross)'
+        : aggregate === 'net'
+          ? 'Thực lĩnh sau khấu trừ (net)'
+          : 'Cột tổng bảng lương',
+    );
+    if (expr) {
+      lines.push('');
+      lines.push('Biểu thức gộp thành phần:');
+      const terms = parseComponentCompositeExpression(expr);
+      if (terms.length > 0) {
+        for (const term of terms) {
+          const name =
+            componentLabels?.get(term.componentCode) ??
+            componentLabels?.get(term.componentCode.toUpperCase()) ??
+            term.componentCode;
+          const sign = term.sign === 'deduction' ? '−' : '+';
+          lines.push(`  ${sign} ${name} (${term.componentCode})`);
+        }
+      } else {
+        lines.push(`  ${expr}`);
+      }
+    } else if (codes.length > 0) {
+      lines.push('');
+      lines.push('Thành phần thu nhập:');
+      for (const code of codes) {
+        const name = componentLabels?.get(code) ?? code;
+        lines.push(`  + ${name} (${code})`);
+      }
+    } else if (aggregate === 'net') {
+      lines.push('');
+      lines.push('= Tổng thu nhập − các khoản khấu trừ');
+    }
+    return lines.join('\n').trim();
+  }
+
+  const readableLines = readPayFormulaReadableLines(
+    expressionJson,
+    componentLabels,
+    componentFormulas,
+  );
+  if (readableLines.length > 0) {
+    return readableLines
+      .map((row) => {
+        const sign = row.sign === 'deduction' ? '−' : '+';
+        return `${sign} ${row.componentLabel} (${row.componentCode}): ${row.readableFormula}`;
+      })
+      .join('\n');
+  }
+
+  const composite = readPayFormulaComponentTokens(expressionJson, componentLabels);
+  if (composite?.expression) {
+    return composite.expression;
+  }
+
+  return readOpaqueExpressionText(expressionJson).expressionText.trim();
+}
+
 /** Đọc token UI đã lưu; fallback gợi ý từ lines HF (mỗi component_code = 1 chip). */
 export function readPayFormulaComponentTokens(
   expressionJson: unknown,
@@ -1123,7 +1225,17 @@ export function readPayFormulaComponentTokens(
       if (!value) continue;
       tokens.push({ type, label, value });
     }
-    if (tokens.length > 0 || expression) {
+    if (tokens.length === 0 && expression) {
+      const parsed = expressionToComponentTokens(expression, componentLabels);
+      if (parsed.length > 0) {
+        return {
+          mode: 'component_composite',
+          expression,
+          tokens: parsed,
+        };
+      }
+    }
+    if (tokens.length > 0) {
       return {
         mode: 'component_composite',
         expression: expression || tokensToComponentExpression(tokens),

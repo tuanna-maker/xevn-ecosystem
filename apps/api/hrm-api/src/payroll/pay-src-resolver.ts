@@ -42,6 +42,7 @@
 import { expandPayrollAttendanceSheetCompanyIds } from '../common/hrm-list-scope';
 import { toLeaveDayKey } from '../attendance/leave-attendance-funnel.service';
 import { HrmDbService } from '../db/hrm-db.service';
+import { sumResolvedLinesGross } from './pay-gross-rules';
 import type { PayFormulaEvalSign } from './pay-formula-evaluator';
 import { resolveEffectiveCompensationPackage } from './pay-formula-variable-bag';
 import type { SheetTemplateSnapshotColumn } from './pay-sheet-template.service';
@@ -115,7 +116,47 @@ export type PaySrcResolvedLine = {
   source_ref: string;
   formula_definition_id: string | null;
   sort_order: number;
+  /** Display-only reference columns (e.g. LUONG_CO_BAN P1+P2) — excluded from gross. */
+  include_in_gross?: boolean;
 };
+
+/** VP / Excel — cột tham chiếu hiển thị, không cộng vào tổng thu nhập. */
+export const PAYROLL_REFERENCE_EARNING_CODES = new Set(['luong_co_ban']);
+
+/** Cột tổng trên mẫu bảng lương — tính sau peer lines, không cộng vào gross. */
+export const PAYROLL_SHEET_TOTAL_COMPONENT_CODES = new Set([
+  'tong_thu_nhap',
+  'thuc_linh',
+]);
+
+export function isPayrollReferenceEarningCode(componentCode: string): boolean {
+  return PAYROLL_REFERENCE_EARNING_CODES.has(normalizeComponentCode(componentCode));
+}
+
+export function isPayrollSheetTotalComponentCode(componentCode: string): boolean {
+  return PAYROLL_SHEET_TOTAL_COMPONENT_CODES.has(
+    normalizeComponentCode(componentCode),
+  );
+}
+
+export function expectedPayrollAggregateForTotalComponent(
+  componentCode: string,
+): 'gross' | 'net' | null {
+  const code = normalizeComponentCode(componentCode);
+  if (code === 'tong_thu_nhap') return 'gross';
+  if (code === 'thuc_linh') return 'net';
+  return null;
+}
+
+export function resolveSalaryComponentIncludeInGross(
+  componentCode: string,
+  meta?: { include_in_gross?: boolean | null } | null,
+): boolean {
+  if (isPayrollSheetTotalComponentCode(componentCode)) return false;
+  if (meta?.include_in_gross === false) return false;
+  if (meta?.include_in_gross === true) return true;
+  return !isPayrollReferenceEarningCode(componentCode);
+}
 
 export type PaySrcSnapshotJson = {
   template_id?: string;
@@ -319,16 +360,93 @@ export function aggregateSrcPayslipTotals(lines: PaySrcResolvedLine[]): {
   deduction: number;
   net: number;
 } {
-  let gross = 0;
   let deduction = 0;
   for (const line of lines) {
     if (line.sign === 'deduction') {
       deduction = roundMoney(deduction + line.amount);
-    } else {
-      gross = roundMoney(gross + line.amount);
     }
   }
+  const gross = sumResolvedLinesGross(lines);
   return { gross, deduction, net: roundMoney(gross - deduction) };
+}
+
+export async function ensureSalaryComponentIncludeInGrossSchema(
+  db: HrmDbService,
+): Promise<void> {
+  await db.query(`
+    ALTER TABLE public.salary_components
+      ADD COLUMN IF NOT EXISTS include_in_gross BOOLEAN NOT NULL DEFAULT TRUE;
+  `);
+  await db.query(`
+    UPDATE public.salary_components
+    SET include_in_gross = FALSE,
+        updated_at = NOW()
+    WHERE lower(code) = 'luong_co_ban'
+      AND include_in_gross = TRUE;
+  `);
+}
+
+/**
+ * Reference display amount from DB sources (not sibling sheet columns).
+ * LUONG_CO_BAN → P1 + P2 from active compensation package.
+ */
+export async function loadReferenceDisplayAmountForComponent(
+  db: HrmDbService,
+  input: {
+    companyId: string;
+    employeeId: string;
+    asOfDate: string | Date;
+    componentCode: string;
+  },
+): Promise<EmpCbFixedAmount | null> {
+  const code = normalizeComponentCode(input.componentCode);
+  if (code !== 'luong_co_ban') {
+    return null;
+  }
+  const asOfDate = normalizePayrollAsOfDate(input.asOfDate);
+  try {
+    await ensureCompensationComponentCodeForSrc(db);
+    const resolved = await resolveEffectiveCompensationPackage(db, {
+      companyId: input.companyId,
+      employeeId: input.employeeId,
+      asOfDate,
+    });
+    if (!resolved) {
+      return null;
+    }
+    const lines = await loadPackageLinesForSrc(db, resolved.packageId);
+    let base = 0;
+    let allowanceP2 = 0;
+    for (const row of lines) {
+      const lineType = String(row.line_type ?? '')
+        .trim()
+        .toLowerCase();
+      const allowanceCode = String(row.allowance_code ?? '')
+        .trim()
+        .toLowerCase();
+      const amount = Number(row.amount);
+      if (!Number.isFinite(amount)) continue;
+      if (lineType === 'base') {
+        base = amount;
+      } else if (
+        lineType === 'allowance' &&
+        (allowanceCode === 'p2' || allowanceCode === 'allowance_p2')
+      ) {
+        allowanceP2 = amount;
+      }
+    }
+    const total = roundMoney(base + allowanceP2);
+    if (total <= 0) {
+      return null;
+    }
+    return {
+      amount: total,
+      source_ref: `emp_cb:package:${resolved.packageId}:reference:luong_co_ban`,
+      warnings: resolved.warnings,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function probePeriodInputTable(
@@ -527,7 +645,9 @@ export async function loadSalaryComponentMeta(
   nature: string;
   default_value: number;
   value_type: string | null;
+  include_in_gross: boolean;
 } | null> {
+  await ensureSalaryComponentIncludeInGrossSchema(db);
   const companyIds = expandPayrollAttendanceSheetCompanyIds(input.companyId);
   try {
     const res = await db.query<{
@@ -535,9 +655,11 @@ export async function loadSalaryComponentMeta(
       nature: string;
       default_value: string;
       value_type: string | null;
+      include_in_gross: boolean;
     }>(
       `
-        SELECT id::text AS id, nature, default_value::text, value_type
+        SELECT id::text AS id, nature, default_value::text, value_type,
+               include_in_gross
         FROM public.salary_components
         WHERE company_id = ANY($1::text[])
           AND lower(code) = lower($2::text)
@@ -553,6 +675,10 @@ export async function loadSalaryComponentMeta(
       nature: row.nature,
       default_value: Number(row.default_value ?? 0),
       value_type: row.value_type,
+      include_in_gross: resolveSalaryComponentIncludeInGross(
+        input.componentCode,
+        row,
+      ),
     };
   } catch {
     return null;

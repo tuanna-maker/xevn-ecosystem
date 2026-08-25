@@ -18,6 +18,7 @@ import {
   assertResourceInHrmScope,
   expandPayrollAttendanceSheetCompanyIds,
   expandPayrollPeriodCompanyIds,
+  type HrmListScopeContext,
   normalizePayrollListCompanyId,
   pushCompanyIdFilter,
   pushEmployeeListScopeFilters,
@@ -465,12 +466,18 @@ export class PayPayrollGroupService {
     companyId: string,
     attrs: EmployeePayrollGroupAttrs,
     scope: ReturnType<typeof resolveHrmListScope>,
+    authorization?: string,
+    scopeContext?: HrmListScopeContext,
   ): Promise<{
     winner_id: string | null;
     ambiguous: boolean;
     group_ids?: string[];
   }> {
-    const persistCompany = resolveHrmPersistCompanyIdText(undefined, companyId);
+    const persistCompany = resolveHrmPersistCompanyIdText(
+      authorization,
+      companyId,
+      scopeContext,
+    );
     const groups = await this.loadActiveGroupsForCompany(persistCompany);
     if (groups.length === 0) {
       return { winner_id: null, ambiguous: false };

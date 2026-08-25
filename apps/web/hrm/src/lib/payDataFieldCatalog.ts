@@ -71,6 +71,7 @@ export const PAY_FORMULA_QUICK_INSERTS: PayFormulaQuickInsert[] = [
 
 export const PAY_DATA_FIELD_POPULAR_KEYS = [
   'base_salary',
+  'allowance_p2',
   'payable_hours',
   'standard_hours',
   'paid_leave_hours',
@@ -188,7 +189,7 @@ const INPUT_PACK_FIELDS: PayDataFieldItem[] = [
 const ALLOWANCE_FIELDS: PayDataFieldItem[] = [
   { id: 'al1', key: 'allowance_meal', label: 'Phụ cấp ăn ca / ăn trưa', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Gói C&B nhân viên' },
   { id: 'al2', key: 'allowance_phone', label: 'Phụ cấp điện thoại', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Gói C&B nhân viên' },
-  { id: 'al3', key: 'allowance_p2', label: 'Phụ cấp P2 / thu nhập bổ sung', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Gói C&B nhân viên' },
+  { id: 'al3', key: 'allowance_p2', label: 'Phụ cấp P2 / thu nhập bổ sung', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Gói C&B nhân viên', keywords: ['p2', 'phụ cấp p2', 'thu nhập bổ sung', 'lương p2', 'thu nhap bo sung'] },
   { id: 'al4', key: 'allowance_shift3', label: 'Phụ cấp ca 3 / điều kiện', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Ca đêm / điều kiện' },
   { id: 'al5', key: 'allowance_heavy', label: 'Phụ cấp điều kiện nặng nhọc', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Lái xe / vận hành' },
   { id: 'al6', key: 'allowance_bonus', label: 'Phụ cấp / thưởng an toàn', group: 'allowance', groupLabel: PAY_DATA_FIELD_GROUP_LABELS.allowance, sourceHint: 'Theo chính sách' },
@@ -236,26 +237,44 @@ export const PAY_DATA_FIELD_CATALOG: PayDataFieldItem[] = [
   ...DEDUCTION_FIELDS,
 ];
 
+/** Bỏ dấu tiếng Việt — «luong co ban» khớp «Lương cơ bản», «phu cap» khớp «Phụ cấp». */
+export function foldPayFormulaSearchText(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/đ/g, 'd')
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/\s+/g, ' ');
+}
+
 function scorePayDataFieldItem(f: PayDataFieldItem, q: string): number {
   let score = 0;
+  const qRaw = q.trim().toLowerCase();
+  const qFold = foldPayFormulaSearchText(q);
   const label = f.label.toLowerCase();
+  const labelFold = foldPayFormulaSearchText(f.label);
   const key = f.key.toLowerCase();
-  if (label === q) score += 100;
-  else if (label.startsWith(q)) score += 80;
-  else if (label.includes(q)) score += 60;
-  if (key.includes(q)) score += 40;
-  if (f.sourceHint.toLowerCase().includes(q)) score += 20;
+  const keyFold = foldPayFormulaSearchText(f.key);
+  const hintFold = foldPayFormulaSearchText(f.sourceHint);
+
+  if (label === qRaw || labelFold === qFold) score += 100;
+  else if (label.startsWith(qRaw) || labelFold.startsWith(qFold)) score += 80;
+  else if (label.includes(qRaw) || labelFold.includes(qFold)) score += 60;
+  if (key.includes(qRaw) || keyFold.includes(qFold)) score += 40;
+  if (f.sourceHint.toLowerCase().includes(qRaw) || hintFold.includes(qFold)) score += 20;
   for (const kw of f.keywords ?? []) {
     const k = kw.toLowerCase();
-    if (k === q) score += 95;
-    else if (k.startsWith(q)) score += 85;
-    else if (k.includes(q) || q.includes(k)) score += 50;
+    const kFold = foldPayFormulaSearchText(kw);
+    if (k === qRaw || kFold === qFold) score += 95;
+    else if (k.startsWith(qRaw) || kFold.startsWith(qFold)) score += 85;
+    else if (k.includes(qRaw) || kFold.includes(qFold) || qFold.includes(kFold)) score += 50;
   }
-  for (const part of q.split(/\s+/).filter((p) => p.length > 1)) {
-    if (label.includes(part)) score += 25;
-    if (key.includes(part)) score += 15;
+  for (const part of qFold.split(/\s+/).filter((p) => p.length > 1)) {
+    if (labelFold.includes(part)) score += 25;
+    if (keyFold.includes(part)) score += 15;
     for (const kw of f.keywords ?? []) {
-      if (kw.toLowerCase().includes(part)) score += 35;
+      if (foldPayFormulaSearchText(kw).includes(part)) score += 35;
     }
   }
   return score;
@@ -304,7 +323,7 @@ export function searchPayFormulaPickerFields(
   limit = 999,
   opts?: PayFormulaPickerSearchOpts,
 ): PayDataFieldItem[] {
-  const q = query.trim().toLowerCase();
+  const qFold = foldPayFormulaSearchText(query);
   const seenKeys = new Set(PAY_DATA_FIELD_CATALOG.map((f) => f.key));
   const salaryFields = (opts?.salaryComponents ?? []).map(salaryComponentHintToField);
   const extraFields = extraVarHintsToFields(opts?.extraVarHints ?? [], seenKeys);
@@ -314,16 +333,16 @@ export function searchPayFormulaPickerFields(
     mergedCatalog.find((f) => f.key === key),
   ).filter((f): f is PayDataFieldItem => Boolean(f));
 
-  if (!q) {
+  if (!qFold) {
     return popular.slice(0, limit);
   }
 
-  if (q.length < 2) {
+  if (qFold.length < 2) {
     return popular.slice(0, limit);
   }
 
   const scored = mergedCatalog
-    .map((f) => ({ f, score: scorePayDataFieldItem(f, q) }))
+    .map((f) => ({ f, score: scorePayDataFieldItem(f, query) }))
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score);
 
@@ -331,17 +350,16 @@ export function searchPayFormulaPickerFields(
 }
 
 export function searchPayDataFields(query: string, limit = 999): PayDataFieldItem[] {
-  const q = query.trim().toLowerCase();
+  const qFold = foldPayFormulaSearchText(query);
   const popular = PAY_DATA_FIELD_POPULAR_KEYS.map((key) =>
     PAY_DATA_FIELD_CATALOG.find((f) => f.key === key),
   ).filter((f): f is PayDataFieldItem => Boolean(f));
 
-  if (!q) {
+  if (!qFold) {
     return popular.slice(0, limit);
   }
 
-  // Chưa đủ ký tự — giữ gợi ý hay dùng, tránh picker nhảy layout khi gõ từng chữ.
-  if (q.length < 2) {
+  if (qFold.length < 2) {
     return popular.slice(0, limit);
   }
 

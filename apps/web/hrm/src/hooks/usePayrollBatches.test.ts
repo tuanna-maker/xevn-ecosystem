@@ -162,7 +162,10 @@ describe('usePayrollBatches mapping helpers', () => {
     );
     expect(mapped.base_salary).toBe(6_200_000);
     expect(mapped.bonus).toBe(14_000_000);
-    expect(mapped.gross_salary).toBe(20_000_000);
+    expect(mapped.gross_salary).toBe(20_200_000);
+    expect(mapped.net_salary).toBe(18_200_000);
+    expect(mapped.component_values?.TONG_THU_NHAP).toBe(20_200_000);
+    expect(mapped.component_values?.THUC_LINH).toBe(18_200_000);
     expect(mapped.component_values?.LUONG_THEO_CONG).toBe(6_200_000);
     expect(mapped.has_payslip_lines).toBe(true);
   });
@@ -212,6 +215,32 @@ describe('usePayrollBatches mapping helpers', () => {
     );
     expect(mapped.gross_salary).toBe(4_640_624);
     expect(mapped.net_salary).toBe(4_118_869);
+  });
+
+  it('shows LUONG_CO_BAN from emp_cb in column but excludes from draft gross', () => {
+    const payslip: HrmPayslipRow = {
+      id: 'slip-5',
+      employee_id: 'emp-5',
+      employee_code: 'XE00250',
+      employee_name: 'Le T K',
+      gross_amount: '0',
+      deduction_amount: '0',
+      net_amount: '0',
+      status: 'draft',
+      period_label: '05/2026',
+    };
+    const mapped = mapPayslipToPayrollRecord(
+      'period-1',
+      payslip,
+      {
+        THUONG_P4: 14_000_000,
+        LUONG_CO_BAN: 8_600_000,
+      },
+      { hasPayslipLines: false, componentPreviewSources: { LUONG_CO_BAN: 'emp_cb' } },
+    );
+    expect(mapped.component_values?.LUONG_CO_BAN).toBe(8_600_000);
+    expect(mapped.gross_salary).toBe(14_000_000);
+    expect(mapped.component_preview_sources?.LUONG_CO_BAN).toBe('emp_cb');
   });
 
   it('parses invalid payroll amounts to zero', () => {

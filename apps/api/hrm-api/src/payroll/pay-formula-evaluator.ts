@@ -24,6 +24,10 @@
  */
 
 import { HyperFormula } from 'hyperformula';
+import {
+  parseGrossEarningComponentCodes,
+  sumEvalLinesGross,
+} from './pay-gross-rules';
 
 /** Documented staged subset — NOT a full AST taxonomy invent. */
 export const PAY_FORMULA_EVAL_FORM = 'gd1_eval_v1' as const;
@@ -139,6 +143,13 @@ export type ClassifiedPayFormula =
       gd1Lines?: PayFormulaEvalLineInput[];
     }
   | {
+      kind: 'payroll_aggregate_v1';
+      aggregate: 'gross' | 'net';
+      earning_component_codes: string[];
+      warnings: string[];
+      gd1Lines?: PayFormulaEvalLineInput[];
+    }
+  | {
       kind: 'opaque_gd1';
       lines: never[];
       warnings: string[];
@@ -205,6 +216,24 @@ export function classifyPayFormulaExpression(
       });
     }
     return { kind: 'gd1_eval_v1', lines, warnings };
+  }
+
+  if (form === 'payroll_aggregate_v1') {
+    const aggregateRaw = String(obj.aggregate ?? '')
+      .trim()
+      .toLowerCase();
+    if (aggregateRaw === 'gross' || aggregateRaw === 'net') {
+      const earningCodes =
+        parseGrossEarningComponentCodes(expressionJson) ?? [];
+      return {
+        kind: 'payroll_aggregate_v1',
+        aggregate: aggregateRaw,
+        earning_component_codes: earningCodes,
+        warnings,
+      };
+    }
+    warnings.push('INVALID_PAYROLL_AGGREGATE');
+    return { kind: 'unknown', lines: [], warnings };
   }
 
   if (form === 'hyperformula_v1') {
@@ -464,6 +493,8 @@ export function evaluatePayFormulaExpression(
     };
   }
 
+  const grossEarningCodes = parseGrossEarningComponentCodes(expressionJson);
+
   const out: PayFormulaEvalResultLine[] = [];
   const warnings = [...classified.warnings];
   let gross = 0;
@@ -551,7 +582,7 @@ export function evaluatePayFormulaExpression(
     amount = roundMoney(amount);
     if (line.sign === 'deduction') {
       deduction = roundMoney(deduction + amount);
-    } else {
+    } else if (!grossEarningCodes) {
       gross = roundMoney(gross + amount);
     }
     out.push({
@@ -560,6 +591,12 @@ export function evaluatePayFormulaExpression(
       amount,
       source_ref: sourceRef,
       sort_order: sort++,
+    });
+  }
+
+  if (grossEarningCodes) {
+    gross = sumEvalLinesGross(out, {
+      earningComponentCodes: grossEarningCodes,
     });
   }
 

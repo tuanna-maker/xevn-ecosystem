@@ -289,6 +289,7 @@ const ESS_EMPLOYEE_ID_RE =
 type PayrollPeriodRow = {
   id: string;
   company_id: string;
+  tenant_id?: string | null;
   period_label: string;
   start_date: string;
   end_date: string;
@@ -529,8 +530,7 @@ export class PayrollService {
         currency TEXT NOT NULL DEFAULT 'VND',
         status TEXT NOT NULL DEFAULT 'processed',
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        CONSTRAINT chk_payslip_status CHECK (status IN ('draft', 'processed', 'paid'))
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
     `);
     await this.db.query(`
@@ -675,19 +675,25 @@ export class PayrollService {
     periodId: string,
     requestedCompanyId: string,
     authorization?: string,
+    scopeContext?: HrmListScopeContext,
   ): Promise<PayrollPeriodRow | undefined> {
     const scopeCompanyId = normalizePayrollListCompanyId(
       authorization,
       requestedCompanyId,
     );
-    const scope = resolveHrmListScope(authorization, scopeCompanyId);
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
     const filters: string[] = ['payroll_periods.id = $1::uuid'];
     const values: unknown[] = [periodId];
     this.pushPayrollPeriodScopeFilter(filters, values, scope);
     const res = await this.db.query<PayrollPeriodRow>(
       `
         SELECT
-          payroll_periods.id, payroll_periods.company_id, payroll_periods.period_label,
+          payroll_periods.id, payroll_periods.company_id, payroll_periods.tenant_id,
+          payroll_periods.period_label,
           payroll_periods.start_date, payroll_periods.end_date, payroll_periods.status,
           payroll_periods.payroll_locked,
           payroll_periods.created_by, payroll_periods.processed_at, payroll_periods.closed_at,
@@ -979,6 +985,7 @@ export class PayrollService {
     authorization?: string,
     mutateBody?: Record<string, unknown> | null,
     mutateQuery?: Record<string, unknown> | null,
+    scopeContext?: HrmListScopeContext,
   ) {
     assertPayrollAttHourBoundaryLocked();
     assertNoPayGtgcOverrideInBody(mutateBody);
@@ -995,11 +1002,16 @@ export class PayrollService {
       authorization,
       requestedCompanyId,
     );
-    const scope = resolveHrmListScope(authorization, scopeCompanyId);
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
     const current = await this.queryPeriodInScope(
       periodId,
       requestedCompanyId,
       authorization,
+      scopeContext,
     );
     if (!current) {
       throw new ApiException(
@@ -1236,6 +1248,8 @@ export class PayrollService {
             current.company_id,
             empAttrs,
             scope,
+            authorization,
+            scopeContext,
           );
         if (
           current.payroll_group_id &&
@@ -1836,17 +1850,23 @@ export class PayrollService {
     periodId: string,
     requestedCompanyId: string,
     authorization?: string,
+    scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
     const scopeCompanyId = normalizePayrollListCompanyId(
       authorization,
       requestedCompanyId,
     );
-    const scope = resolveHrmListScope(authorization, scopeCompanyId);
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
     const current = await this.queryPeriodInScope(
       periodId,
       requestedCompanyId,
       authorization,
+      scopeContext,
     );
     if (!current) {
       throw new ApiException(

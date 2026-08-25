@@ -169,6 +169,83 @@ describe('EmployeesService invent job_title_key → HRM-EMP-POSITION-KEY (EFF>0)
     expect(assertCode).toHaveBeenCalled();
   });
 
+  it('create assert uses settings catalog partition (main→holding) parity picker GET', async () => {
+    getEffectiveItemsForKey.mockClear();
+    assertCode.mockClear();
+    assertCode.mockResolvedValueOnce({
+      code: 'IT_ADMIN',
+      label: 'IT Admin',
+      status: 'active',
+    });
+
+    db.query.mockImplementation(async (sql: string) => {
+      const s = String(sql);
+      if (s.includes('INSERT INTO public.employees')) {
+        return {
+          rows: [
+            {
+              id: 'e-new',
+              company_id: 'holding',
+              employee_code: 'NVIT01',
+              email: 'it@xe.vn',
+              full_name: 'IT User',
+              job_title_key: 'IT_ADMIN',
+              manager_id: null,
+              status: 'active',
+              hired_at: null,
+              archived_at: null,
+              avatar_url: null,
+              custom_fields: {},
+              created_at: '2026-08-01T00:00:00.000Z',
+              updated_at: '2026-08-01T00:00:00.000Z',
+            },
+          ],
+        };
+      }
+      if (s.includes('hrm_catalog_extension_items')) {
+        if (s.includes('COUNT')) return { rows: [{ c: '0' }] };
+        return { rows: [] };
+      }
+      return { rows: [] };
+    });
+
+    const token = [
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      Buffer.from(
+        JSON.stringify({
+          tenantId: 'xevn',
+          companyId: 'main',
+          roleCode: 'group_ceo',
+        }),
+      ).toString('base64url'),
+      'sig',
+    ].join('.');
+
+    await service.createEmployee(
+      {
+        company_id: 'main',
+        employee_code: 'NVIT01',
+        email: 'it@xe.vn',
+        full_name: 'IT User',
+        job_title_key: 'IT_ADMIN',
+      },
+      `Bearer ${token}`,
+      { tenantId: 'xevn' },
+    );
+
+    expect(getEffectiveItemsForKey).toHaveBeenCalledWith(
+      'xevn',
+      'holding',
+      'job_titles',
+    );
+    expect(assertCode).toHaveBeenCalledWith(
+      expect.objectContaining({
+        companyId: 'holding',
+        code: 'IT_ADMIN',
+      }),
+    );
+  });
+
   it('AC-PLT-EMP-01c: EFF=0 soft skip invent (no seed · no KEY)', async () => {
     getEffectiveItemsForKey.mockResolvedValueOnce([]);
     const existing = {

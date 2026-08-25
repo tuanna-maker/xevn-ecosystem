@@ -788,9 +788,14 @@ export async function getPayrollGroupMembers(groupId: string, periodId: string) 
   );
 }
 
-export async function processPayrollPeriod(periodId: string) {
+export async function processPayrollPeriod(periodId: string, companyId?: string) {
+  const search = new URLSearchParams();
+  if (companyId?.trim()) {
+    search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  }
+  const qs = search.toString();
   return requestHrm<HrmPayrollPeriod>(
-    `/api/hrm/payroll/periods/${periodId}/process`,
+    `/api/hrm/payroll/periods/${periodId}/process${qs ? `?${qs}` : ""}`,
     { method: "POST" },
     { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
   );
@@ -952,9 +957,14 @@ export async function createPayrollPeriodTimesheetBind(
   );
 }
 
-export async function closePayrollPeriod(periodId: string) {
+export async function closePayrollPeriod(periodId: string, companyId?: string) {
+  const search = new URLSearchParams();
+  if (companyId?.trim()) {
+    search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  }
+  const qs = search.toString();
   return requestHrm<HrmPayrollPeriod>(
-    `/api/hrm/payroll/periods/${periodId}/close`,
+    `/api/hrm/payroll/periods/${periodId}/close${qs ? `?${qs}` : ""}`,
     { method: "POST" },
     { timeoutMs: PAYROLL_HRM_TIMEOUT_MS },
   );
@@ -7700,6 +7710,22 @@ export type HrmAttendanceSheetAggLine = {
   line_locked?: boolean;
 };
 
+export type HrmAttendanceSheetLinesResponse = {
+  sheet_id: string;
+  status: string;
+  items: HrmAttendanceSheetAggLine[];
+};
+
+/** F-PAY-ATT-CLOSED-01 — read-only att_timesheet_line (payroll draft LUONG_THEO_CONG preview). */
+export async function listAttendanceSheetLines(sheetId: string, companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  return requestHrm<HrmAttendanceSheetLinesResponse>(
+    `/api/hrm/attendance/attendance-sheets/${sheetId}/lines?${search.toString()}`,
+    { method: "GET" },
+  );
+}
+
 export type HrmAttendanceSheetAggResult = {
   sheet_id: string;
   status: string;
@@ -8659,6 +8685,128 @@ export async function listDepartments(
   return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
     `/api/hrm/departments?${search.toString()}`,
     { method: "GET", scope },
+  );
+}
+
+export type HrmPayPositionRecord = {
+  id: string;
+  company_id: string;
+  code: string;
+  name: string;
+  grade_code: string;
+  position_scope: 'company' | 'department';
+  historical_note: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type HrmDepartmentPositionRecord = {
+  id: string;
+  department_id: string;
+  position_code: string;
+  local_name: string | null;
+  grade_code_override: string | null;
+  effective_name: string;
+  effective_grade_code: string;
+  position_scope: 'company' | 'department';
+  sort_order: number;
+  status: string;
+};
+
+export type HrmEffectivePositionOption = {
+  code: string;
+  label: string;
+  grade_code: string;
+  position_scope: 'company' | 'department';
+};
+
+export async function listPayPositions(params: {
+  company_id: string;
+  status?: string;
+  q?: string;
+  position_scope?: 'company' | 'department';
+}) {
+  const search = buildListSearchParams(params);
+  return requestHrm<{ total: number; data: HrmPayPositionRecord[] }>(
+    `/api/hrm/positions?${search.toString()}`,
+    { method: 'GET' },
+  );
+}
+
+export async function createPayPosition(payload: {
+  company_id: string;
+  code: string;
+  name: string;
+  grade_code: string;
+  position_scope?: 'company' | 'department';
+  historical_note?: string | null;
+}) {
+  return requestHrm<HrmPayPositionRecord>('/api/hrm/positions', {
+    method: 'POST',
+    body: JSON.stringify({
+      ...payload,
+      company_id: normalizeHrmApiListCompanyId(payload.company_id),
+    }),
+  });
+}
+
+export async function listEffectivePayPositions(params: {
+  company_id: string;
+  department_id?: string;
+  department_code?: string;
+}) {
+  const search = buildListSearchParams(params);
+  return requestHrm<{ data: HrmEffectivePositionOption[] }>(
+    `/api/hrm/positions/effective?${search.toString()}`,
+    { method: 'GET' },
+  );
+}
+
+export async function listDepartmentPositions(
+  departmentId: string,
+  params: { company_id: string },
+) {
+  const search = buildListSearchParams(params);
+  return requestHrm<{ total: number; data: HrmDepartmentPositionRecord[] }>(
+    `/api/hrm/positions/by-department/${departmentId}?${search.toString()}`,
+    { method: 'GET' },
+  );
+}
+
+export async function upsertDepartmentPosition(
+  departmentId: string,
+  payload: {
+    company_id: string;
+    position_code: string;
+    local_name?: string | null;
+    grade_code_override?: string | null;
+    sort_order?: number;
+    status?: string;
+  },
+) {
+  return requestHrm<HrmDepartmentPositionRecord>(
+    `/api/hrm/positions/by-department/${departmentId}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        ...payload,
+        company_id: normalizeHrmApiListCompanyId(payload.company_id),
+      }),
+    },
+  );
+}
+
+export async function removeDepartmentPosition(
+  departmentId: string,
+  positionCode: string,
+  companyId: string,
+) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<{ department_id: string; position_code: string }>(
+    `/api/hrm/positions/by-department/${departmentId}/${encodeURIComponent(positionCode)}?${search.toString()}`,
+    { method: 'DELETE' },
   );
 }
 

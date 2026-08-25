@@ -8,7 +8,7 @@
  * Callers:    PayFormulaSettingsPanel
  * must_keep:  payroll_e2e_ready=false; vars từ useSalaryComponentsEffective
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import {
   Dialog,
@@ -34,12 +34,15 @@ import {
   payFormulaStatusLabel,
   tokensToComponentExpression,
 } from '@/lib/payFormulaCatalog';
+import { useRadixDialogSearchInput } from '@/hooks/useRadixDialogSearchInput';
 
 export type FormulaEditorInitial = {
   id?: string;
   name?: string;
   description?: string;
   tokens?: PayFormulaComponentToken[];
+  storedExpression?: string;
+  readableSummary?: string;
   status?: string;
 };
 
@@ -101,7 +104,17 @@ export function PayFormulaEditorDialog({
   const [description, setDescription] = useState('');
   const [tokens, setTokens] = useState<PayFormulaComponentToken[]>([]);
   const [targetStatus, setTargetStatus] = useState<PayFormulaTargetStatus>('draft');
+  const [storedExpression, setStoredExpression] = useState('');
+  const [readableSummary, setReadableSummary] = useState('');
   const [componentQuery, setComponentQuery] = useState('');
+  const {
+    inputRef: componentSearchRef,
+    panelRef: componentSearchPanelRef,
+    onSearchFocus,
+    onSearchBlur,
+    captureSearchChange,
+    restoreSearchFocus,
+  } = useRadixDialogSearchInput();
 
   const currentStatus = initialData?.status ? String(initialData.status).toLowerCase() : 'draft';
   const statusLocked = currentStatus === 'active' || currentStatus === 'retired';
@@ -111,6 +124,8 @@ export function PayFormulaEditorDialog({
     setName(initialData?.name || '');
     setDescription(initialData?.description || '');
     setTokens(initialData?.tokens ? [...initialData.tokens] : []);
+    setStoredExpression(initialData?.storedExpression?.trim() ?? '');
+    setReadableSummary(initialData?.readableSummary?.trim() ?? '');
     setTargetStatus(normalizeTargetStatus(initialData?.status));
     setComponentQuery('');
   }, [open, initialData]);
@@ -120,7 +135,14 @@ export function PayFormulaEditorDialog({
     [componentOptions, componentQuery],
   );
 
-  const expressionPreview = tokens.length > 0 ? tokensToComponentExpression(tokens) : '—';
+  useLayoutEffect(() => {
+    restoreSearchFocus();
+  }, [componentQuery, filteredComponents.length, restoreSearchFocus]);
+
+  const expressionPreview =
+    tokens.length > 0
+      ? tokensToComponentExpression(tokens)
+      : storedExpression || readableSummary || '—';
 
   const insertVar = (opt: ComponentOption) => {
     setTokens((prev) => [
@@ -241,10 +263,24 @@ export function PayFormulaEditorDialog({
               </p>
             </div>
 
-            <div className="min-h-[72px] p-3 bg-white border border-gray-200 rounded-md flex flex-wrap gap-2 items-start text-sm leading-relaxed shadow-inner">
+            {readableSummary ? (
+              <div className="flex flex-col gap-1">
+                <p className="text-[11px] font-medium text-gray-600">Nội dung công thức</p>
+                <pre
+                  className="max-h-48 overflow-y-auto overflow-x-auto p-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-800 font-mono whitespace-pre-wrap break-words leading-relaxed"
+                  data-testid="pay-formula-readable-summary"
+                >
+                  {readableSummary}
+                </pre>
+              </div>
+            ) : null}
+
+            <div className="min-h-[72px] max-h-40 overflow-y-auto p-3 bg-white border border-gray-200 rounded-md flex flex-wrap gap-2 items-start text-sm leading-relaxed shadow-inner">
               {tokens.length === 0 ? (
                 <span className="text-gray-400 italic text-xs">
-                  Chưa có thành phần. Tìm và chọn bên dưới…
+                  {readableSummary
+                    ? 'Biểu thức gộp (chỉ xem) — thêm thành phần bên dưới để chỉnh sửa.'
+                    : 'Chưa có thành phần. Tìm và chọn bên dưới…'}
                 </span>
               ) : (
                 tokens.map((t, idx) => (
@@ -263,9 +299,14 @@ export function PayFormulaEditorDialog({
               )}
             </div>
 
-            <p className="text-[10px] text-gray-500 font-mono truncate" title={expressionPreview}>
-              Mã lưu: {expressionPreview}
-            </p>
+            <div
+              className="max-h-24 overflow-y-auto overflow-x-auto rounded border border-gray-100 bg-gray-50/80 px-2 py-1"
+              title={expressionPreview}
+            >
+              <p className="text-[10px] text-gray-500 font-mono whitespace-pre-wrap break-all">
+                Mã lưu: {expressionPreview}
+              </p>
+            </div>
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={removeLast} disabled={tokens.length === 0}>
@@ -282,37 +323,41 @@ export function PayFormulaEditorDialog({
               </Button>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative flex-1 min-w-[180px]">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
-                <Input
-                  type="text"
-                  value={componentQuery}
-                  onChange={(e) => setComponentQuery(e.target.value)}
-                  placeholder="Tìm: lương cơ bản, LUONG_CO_BAN…"
-                  className="pl-9 h-9 text-sm"
-                  aria-label="Tìm thành phần lương"
-                  autoComplete="off"
-                  spellCheck={false}
-                  data-testid="pay-formula-component-search"
-                />
+            <div ref={componentSearchPanelRef}>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="relative flex-1 min-w-[180px]">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Input
+                    ref={componentSearchRef}
+                    type="text"
+                    value={componentQuery}
+                    onChange={(e) => setComponentQuery(captureSearchChange(e))}
+                    onFocus={onSearchFocus}
+                    onBlur={onSearchBlur}
+                    placeholder="Tìm tiếng Việt: luong co ban, LUONG_CO_BAN…"
+                    className="pl-9 h-9 text-sm"
+                    aria-label="Tìm thành phần lương"
+                    autoComplete="off"
+                    spellCheck={false}
+                    data-testid="pay-formula-component-search"
+                  />
+                </div>
+                <div className="flex flex-wrap items-center gap-1 shrink-0">
+                  {OPERATORS.map((op) => (
+                    <button
+                      key={op}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => insertOp(op)}
+                      className="h-7 w-7 rounded border bg-white font-bold text-xs hover:bg-gray-100"
+                    >
+                      {op}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-wrap items-center gap-1 shrink-0">
-                {OPERATORS.map((op) => (
-                  <button
-                    key={op}
-                    type="button"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => insertOp(op)}
-                    className="h-7 w-7 rounded border bg-white font-bold text-xs hover:bg-gray-100"
-                  >
-                    {op}
-                  </button>
-                ))}
-              </div>
-            </div>
 
-            <div className="rounded-md border border-gray-200 bg-gray-50/80 p-2 max-h-[7.5rem] overflow-y-auto">
+              <div className="rounded-md border border-gray-200 bg-gray-50/80 p-2 max-h-[7.5rem] overflow-y-auto mt-2">
               {componentOptions.length === 0 ? (
                 <p className="text-xs text-amber-700 px-1">
                   Chưa có TP trong Nest — thêm tại tab Thành phần lương trước.
@@ -350,6 +395,7 @@ export function PayFormulaEditorDialog({
                   ) : null}
                 </div>
               )}
+            </div>
             </div>
           </div>
         </div>

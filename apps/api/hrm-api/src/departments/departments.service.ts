@@ -5,10 +5,12 @@ import {
   assertResourceInHrmScope,
   pushCompanyIdFilter,
   pushDepartmentTableScopeFilters,
+  pushEmployeeListScopeFilters,
   pushHrmTableScopeFilters,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
   resolveHrmPersistTenantId,
+  type HrmListScope,
 } from '../common/hrm-list-scope';
 import { ensureHrmTenantIdColumns } from '../common/hrm-tenant-scope-schema';
 import { HrmDbService } from '../db/hrm-db.service';
@@ -73,6 +75,54 @@ export class DepartmentsService {
     };
   }
 
+  /** Count active employees by custom_fields.department ↔ department code (not stored column). */
+  private async attachLiveEmployeeCounts(
+    departments: DepartmentRow[],
+    scope: HrmListScope,
+  ): Promise<DepartmentRow[]> {
+    if (!departments.length) return departments;
+
+    const empFilters: string[] = ['archived_at IS NULL'];
+    const empValues: unknown[] = [];
+    pushEmployeeListScopeFilters(empFilters, empValues, scope);
+
+    const res = await this.db.query<{
+      company_id: string;
+      dept_key: string;
+      headcount: number;
+    }>(
+      `SELECT
+         company_id,
+         LOWER(TRIM(custom_fields->>'department')) AS dept_key,
+         COUNT(*)::int AS headcount
+       FROM public.employees
+       WHERE ${empFilters.join(' AND ')}
+         AND NULLIF(TRIM(custom_fields->>'department'), '') IS NOT NULL
+       GROUP BY company_id, dept_key`,
+      empValues,
+    );
+
+    const countMap = new Map<string, number>();
+    for (const row of res.rows) {
+      const companyId = row.company_id?.trim().toLowerCase() ?? '';
+      const deptKey = row.dept_key?.trim().toLowerCase() ?? '';
+      if (!companyId || !deptKey) continue;
+      countMap.set(`${companyId}::${deptKey}`, Number(row.headcount ?? 0));
+    }
+
+    return departments.map((dept) => {
+      const companyId = dept.company_id?.trim().toLowerCase() ?? '';
+      const lookup = (key: string | undefined) =>
+        key ? countMap.get(`${companyId}::${key}`) : undefined;
+      const codeKey = dept.code?.trim().toLowerCase();
+      const idKey = dept.id?.trim().toLowerCase();
+      const nameKey = dept.name?.trim().toLowerCase();
+      const count =
+        lookup(codeKey) ?? lookup(idKey) ?? lookup(nameKey) ?? 0;
+      return { ...dept, employee_count: count };
+    });
+  }
+
   private selectColumns = `
     id, company_id, tenant_id, parent_id, name, code, description, manager_name, manager_email,
     employee_count, level, sort_order, status, created_at, updated_at
@@ -100,7 +150,10 @@ export class DepartmentsService {
        ORDER BY sort_order ASC, name ASC;`,
       values,
     );
-    const data = res.rows.map((row) => this.mapRow(row));
+    const data = await this.attachLiveEmployeeCounts(
+      res.rows.map((row) => this.mapRow(row)),
+      scope,
+    );
     return { total: data.length, data };
   }
 
@@ -129,7 +182,9 @@ export class DepartmentsService {
         HttpStatus.NOT_FOUND,
       );
     }
-    return this.mapRow(row);
+    const mapped = this.mapRow(row);
+    const [enriched] = await this.attachLiveEmployeeCounts([mapped], scope);
+    return enriched;
   }
 
   async createDepartment(payload: CreateDepartmentDto, authorization?: string) {

@@ -3,6 +3,8 @@ import {
   aggregateSrcPayslipTotals,
   catalogFormulaCodeCandidates,
   componentCodesMatch,
+  expectedPayrollAggregateForTotalComponent,
+  isPayrollSheetTotalComponentCode,
   loadEmployeeFixedAmountForComponent,
   loadPeriodInputAmount,
   normalizePayrollAsOfDate,
@@ -11,6 +13,7 @@ import {
   resolveCatalogDefaultFormulaId,
   resolveLineComponentCode,
   resolvePayslipLineSourceTier,
+  resolveSalaryComponentIncludeInGross,
 } from './pay-src-resolver';
 
 describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
@@ -187,6 +190,62 @@ describe('pay-src-resolver (PO-HRM-AMIS-PARITY-PAY-SRC-BE-01)', () => {
         deduction: 1_000_000,
         net: 9_000_000,
       });
+    });
+
+    it('excludes reference earning lines (LUONG_CO_BAN) from gross', () => {
+      const totals = aggregateSrcPayslipTotals([
+        {
+          component_code: 'LUONG_CO_BAN',
+          sign: 'earning',
+          amount: 8_600_000,
+          source_tier: 'emp_cb',
+          source_ref: 'emp_cb:reference:luong_co_ban',
+          formula_definition_id: null,
+          sort_order: 0,
+          include_in_gross: false,
+        },
+        {
+          component_code: 'LUONG_THEO_CONG',
+          sign: 'earning',
+          amount: 5_761_915,
+          source_tier: 'formula_default',
+          source_ref: 'expr:mul',
+          formula_definition_id: 'f1',
+          sort_order: 1,
+          include_in_gross: true,
+        },
+      ]);
+      expect(totals.gross).toBe(5_761_915);
+      expect(totals.net).toBe(5_761_915);
+    });
+  });
+
+  describe('resolveSalaryComponentIncludeInGross', () => {
+    it('defaults LUONG_CO_BAN to display-only', () => {
+      expect(resolveSalaryComponentIncludeInGross('LUONG_CO_BAN', null)).toBe(
+        false,
+      );
+    });
+
+    it('respects catalog include_in_gross flag', () => {
+      expect(
+        resolveSalaryComponentIncludeInGross('LUONG_THEO_CONG', {
+          include_in_gross: true,
+        }),
+      ).toBe(true);
+      expect(
+        resolveSalaryComponentIncludeInGross('LUONG_THEO_CONG', {
+          include_in_gross: false,
+        }),
+      ).toBe(false);
+    });
+
+    it('excludes sheet total columns from gross aggregation', () => {
+      expect(isPayrollSheetTotalComponentCode('TONG_THU_NHAP')).toBe(true);
+      expect(expectedPayrollAggregateForTotalComponent('THUC_LINH')).toBe('net');
+      expect(resolveSalaryComponentIncludeInGross('TONG_THU_NHAP', null)).toBe(
+        false,
+      );
     });
   });
 

@@ -2,7 +2,7 @@
  * Công thức thành phần lương — chọn trường dữ liệu bằng tiếng Việt (không cần biết mã DB).
  *
  * Ghi chú kỹ thuật (DEF-PAY-FIELD-SEARCH-FOCUS-01):
- * Radix FocusScope refocus khi picker thêm `<button>` — chip dùng div; khôi phục focus search.
+ * Radix FocusScope cướp focus khi chip list re-render — dùng useRadixDialogSearchInput (hook chung).
  */
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,7 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FormulaInput } from '@/components/payroll/FormulaInput';
+import { useRadixDialogSearchInput } from '@/hooks/useRadixDialogSearchInput';
 import {
   payDataFieldsForFormulaInput,
   searchPayFormulaPickerFields,
@@ -172,8 +173,14 @@ const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
   pickerSearchOpts?: PayFormulaPickerSearchOpts;
 }) {
   const [query, setQuery] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-  const searchFocusedRef = useRef(false);
+  const {
+    inputRef,
+    panelRef,
+    onSearchFocus,
+    onSearchBlur,
+    captureSearchChange,
+    restoreSearchFocus,
+  } = useRadixDialogSearchInput();
   const fieldLimit = isSidebar ? 10 : 999;
 
   const filtered = useMemo(
@@ -185,18 +192,13 @@ const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
     [query, attendanceUnit, isSidebar],
   );
 
-  /** Sau khi picker cập nhật, Radix có thể cướp focus — khôi phục nếu user đang gõ search. */
+  /** Radix Dialog FocusScope — khôi phục focus + vị trí con trỏ sau khi chip list đổi. */
   useLayoutEffect(() => {
-    if (!searchFocusedRef.current || !inputRef.current) return;
-    const el = inputRef.current;
-    if (document.activeElement === el) return;
-    el.focus();
-    const pos = el.value.length;
-    el.setSelectionRange(pos, pos);
-  }, [query, filtered.length, quickInserts.length]);
+    restoreSearchFocus();
+  }, [query, filtered.length, quickInserts.length, restoreSearchFocus]);
 
   return (
-    <>
+    <div ref={panelRef}>
       <div className={cn(isSidebar ? 'flex flex-wrap items-center gap-2' : 'space-y-3')}>
         <div className={cn('relative flex-1 min-w-[180px]', searchClassName)}>
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -204,14 +206,10 @@ const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => {
-              searchFocusedRef.current = true;
-            }}
-            onBlur={() => {
-              searchFocusedRef.current = false;
-            }}
-            placeholder="Tìm: giờ công, lương cơ bản, LUONG_CO_BAN…"
+            onChange={(e) => setQuery(captureSearchChange(e))}
+            onFocus={onSearchFocus}
+            onBlur={onSearchBlur}
+            placeholder="Tìm tiếng Việt: luong co ban, phu cap p2, gio cong…"
             className="pl-9 h-9 text-sm"
             aria-label="Tìm trường dữ liệu"
             autoComplete="off"
@@ -257,7 +255,7 @@ const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
 
         {filtered.length === 0 ? (
           <p className="text-xs text-muted-foreground italic px-1">
-            Không tìm thấy — thử &quot;giờ công&quot;, &quot;lương cơ bản&quot;, &quot;LUONG_CO_BAN&quot;…
+            Không tìm thấy — thử gõ tiếng Việt không dấu: &quot;luong co ban&quot;, &quot;phu cap&quot;, &quot;gio cong&quot;…
           </p>
         ) : (
           <div>
@@ -274,13 +272,13 @@ const PayFieldSearchPanel = memo(function PayFieldSearchPanel({
             </div>
             {isSidebar && !query.trim() ? (
               <p className="text-[10px] text-muted-foreground mt-1.5">
-                Gõ tên thành phần lương hoặc trường dữ liệu (vd. lương cơ bản, nghỉ phép…)
+                Gõ tiếng Việt (có hoặc không dấu): luong co ban, phu cap p2, nghi phep…
               </p>
             ) : null}
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 });
 

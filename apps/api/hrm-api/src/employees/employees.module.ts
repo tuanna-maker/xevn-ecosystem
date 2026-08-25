@@ -40,6 +40,7 @@
  * must_keep: CORE-03 CHK · soft≠CORE-06 DONE · OUT invent ATT enroll · U65
  */
 import { Module } from '@nestjs/common';
+import { PositionsModule } from '../positions/positions.module';
 import { SettingsCatalogsModule } from '../settings-catalogs/settings-catalogs.module';
 import { EmpDocumentChecklistService } from './emp-document-checklist.service';
 import { EmpDocumentTypeService } from './emp-document-type.service';
@@ -53,7 +54,7 @@ import { EmployeesController } from './employees.controller';
 import { EmployeesService } from './employees.service';
 
 @Module({
-  imports: [SettingsCatalogsModule],
+  imports: [SettingsCatalogsModule, PositionsModule],
   controllers: [EmployeesController],
   providers: [
     EmployeesService,
