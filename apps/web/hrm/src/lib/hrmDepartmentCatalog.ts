@@ -86,7 +86,7 @@ export function mapHrmDepartmentRow(item: Record<string, unknown>): CatalogDepar
 
 export type LoadCompanyDepartmentsOptions = {
   scope?: import('@/integrations/hrmApi').HrmSpreadsheetScope | null;
-  /** Group CEO tab Phòng ban — union member tenants. Form pickers must keep false. */
+  /** Group CEO — union member tenants. Default: auto from JWT role. */
   rollupTenants?: boolean;
 };
 
@@ -99,11 +99,13 @@ export function companyDepartmentsLoadKey(
   companyId: string,
   opts?: LoadCompanyDepartmentsOptions,
 ) {
+  const rollupTenants =
+    opts?.rollupTenants ?? isGroupCeoDepartmentRollupContext();
   return [
     companyId,
     opts?.scope?.tenantId ?? null,
     opts?.scope?.companyId ?? null,
-    opts?.rollupTenants === true,
+    rollupTenants,
   ] as const;
 }
 
@@ -294,7 +296,8 @@ async function loadCompanyDepartmentsOnce(
 ): Promise<LoadCompanyDepartmentsResult> {
   const scope =
     opts?.scope ?? resolveHrmSpreadsheetScope(companyId);
-  const rollupTenants = opts?.rollupTenants === true;
+  const rollupTenants =
+    opts?.rollupTenants ?? isGroupCeoDepartmentRollupContext();
 
   try {
     const response = await listDepartments(
@@ -318,10 +321,9 @@ async function loadCompanyDepartmentsOnce(
       } catch (error) {
         console.warn('[hrmDepartmentCatalog] employee headcount enrich skipped', error);
       }
-      return { rows, fetchError: null };
     }
 
-    return { rows: [], fetchError: null };
+    return { rows, fetchError: null };
   } catch (error) {
     return {
       rows: [],

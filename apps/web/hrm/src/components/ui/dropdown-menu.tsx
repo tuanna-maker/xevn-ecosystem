@@ -87,7 +87,7 @@ type DropdownMenuContentProps = React.ComponentPropsWithoutRef<
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   DropdownMenuContentProps
->(({ className, sideOffset = 4, portalScope, ...props }, ref) => {
+>(({ className, sideOffset = 4, portalScope, onCloseAutoFocus, ...props }, ref) => {
   const overlayScope = useHrmOverlayPortalScope();
   const { mount, floatingZClass } = prepareHrmFloatingPortal(portalScope, overlayScope);
   return (
@@ -95,6 +95,12 @@ const DropdownMenuContent = React.forwardRef<
     <DropdownMenuPrimitive.Content
       ref={ref}
       sideOffset={sideOffset}
+      onCloseAutoFocus={(event) => {
+        // Default: do not restore focus to trigger (table row menus + Dialog-from-menu).
+        // Callers may still run custom handlers; preventDefault stops focus fight with Dialog.
+        onCloseAutoFocus?.(event);
+        if (!event.defaultPrevented) event.preventDefault();
+      }}
       className={cn(
         "min-w-[8rem] overflow-hidden rounded-card border border-xevn-border bg-popover p-1 text-popover-foreground shadow-soft data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         floatingZClass,

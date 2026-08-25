@@ -19,11 +19,16 @@ import {
   hrmRateLimitMiddleware,
   registerHrmPlatformMiddleware,
 } from './platform/platform-runtime';
+import { describeHrmMailProviderForLog } from './recruitment/recruitment-mail-delivery';
 
 async function bootstrap() {
   await startPlatformTracing('hrm-api');
   assertProductionEnvOrExit('hrm-api');
 
+  // eslint-disable-next-line no-console
+  console.log(
+    `[hrm-api] REC mail provider: ${describeHrmMailProviderForLog()}`,
+  );
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   // PAY-09: ensure pay_payroll_group + payroll_group_id FK columns exist before any
   // group query runs. Idempotent (IF NOT EXISTS / ADD COLUMN IF NOT EXISTS). Never

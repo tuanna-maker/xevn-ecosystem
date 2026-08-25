@@ -29,6 +29,7 @@ import {
   type HrmPayPositionRecord,
 } from '@/integrations/hrmApi';
 import { isDepartmentUuid } from '@/lib/companyDepartmentMutate';
+import { isGroupCeoDepartmentRollupContext } from '@/lib/hrmDepartmentCatalog';
 import type { CatalogDepartmentRow } from '@/lib/hrmDepartmentCatalog';
 
 type Props = {
@@ -36,6 +37,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   department: CatalogDepartmentRow | null;
   companyId: string | null;
+  rollupTenants?: boolean;
 };
 
 export function DepartmentPositionConfigDialog({
@@ -43,6 +45,7 @@ export function DepartmentPositionConfigDialog({
   onOpenChange,
   department,
   companyId,
+  rollupTenants = isGroupCeoDepartmentRollupContext(),
 }: Props) {
   const [rows, setRows] = useState<HrmDepartmentPositionRecord[]>([]);
   const [master, setMaster] = useState<HrmPayPositionRecord[]>([]);
@@ -71,7 +74,11 @@ export function DepartmentPositionConfigDialog({
     try {
       const [deptRes, masterRes] = await Promise.all([
         listDepartmentPositions(department.id, { company_id: companyId }),
-        listPayPositions({ company_id: companyId, status: 'active' }),
+        listPayPositions({
+          company_id: companyId,
+          status: 'active',
+          rollup_tenants: rollupTenants,
+        }),
       ]);
       setRows(deptRes.data ?? []);
       setMaster(masterRes.data ?? []);
@@ -80,7 +87,7 @@ export function DepartmentPositionConfigDialog({
     } finally {
       setLoading(false);
     }
-  }, [canConfigure, companyId, department]);
+  }, [canConfigure, companyId, department, rollupTenants]);
 
   useEffect(() => {
     if (open) {

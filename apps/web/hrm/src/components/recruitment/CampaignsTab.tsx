@@ -60,8 +60,10 @@ interface Campaign {
   owner_name?: string | null;
   follower_name?: string | null;
   position?: string | null;
+  position_key?: string | null;
   title?: string | null;
   department?: string | null;
+  department_key?: string | null;
   work_type?: string | null;
   location?: string | null;
   evaluation_criteria?: string | null;
@@ -82,11 +84,13 @@ const mapJobPostingToCampaign = (row: HrmJobPostingRow): Campaign => ({
   status: row.status,
   start_date: row.created_at,
   end_date: row.deadline,
-  owner_name: null,
+  owner_name: row.owner_name || null,
   follower_name: null,
   position: row.position,
+  position_key: row.position_key ?? null,
   title: row.title,
   department: row.department,
+  department_key: row.department_key ?? null,
   work_type: row.employment_type,
   location: row.work_location,
   evaluation_criteria: null,
@@ -393,6 +397,16 @@ export function CampaignsTab() {
                         <p className="text-sm text-muted-foreground">{t('recruitment.cam.evalCriteria')}</p>
                         <p className="font-medium">{selectedCampaign.evaluation_criteria || '-'}</p>
                       </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Người phụ trách</p>
+                        <p className="font-medium">{selectedCampaign.owner_name || '-'}</p>
+                      </div>
+                      {selectedCampaign.follower_name && (
+                        <div>
+                          <p className="text-sm text-muted-foreground">Người theo dõi</p>
+                          <p className="font-medium">{selectedCampaign.follower_name || '-'}</p>
+                        </div>
+                      )}
                     </div>
 
                     {selectedCampaign.requirements && (

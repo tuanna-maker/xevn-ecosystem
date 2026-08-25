@@ -1,5 +1,6 @@
 import { IsBoolean, IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { toOptionalQueryBoolean } from '../../common/query-boolean';
 
 export class ListDepartmentsQueryDto {
   @IsString()
@@ -13,7 +14,7 @@ export class ListDepartmentsQueryDto {
 
   /** Group CEO department tab — union catalogs across member tenants. Default: JWT tenant only. */
   @IsOptional()
-  @Transform(({ value }) => value === true || value === 'true' || value === '1')
+  @Transform(({ value }) => toOptionalQueryBoolean(value))
   @IsBoolean()
   rollup_tenants?: boolean;
 }

@@ -16,6 +16,12 @@
  * What: O5 — deprecate dual persist; CTA redirect «Tạo YCTD ngoài ĐB» only
  * Why: BA O5 HOLD proposals ≠ YCTD SoT · DENY dual-write
  * must_keep: list read OK · JobRequisitions out_of_plan fork · U65 · honesty false
+ *
+ * @CODE-MEMORY-CHANGE 2026-08-25 REC-HCP-CREATE-ON-TAB-FE-01
+ * change_mode: FIX
+ * What: Restore create/edit dialog + POST headcount-proposals on Đề xuất tab (no tab switch)
+ * Why: UX — tạo đề xuất ngoài ĐB tại chỗ; convert→YCTD chỉ khi đã duyệt
+ * must_keep: department_key/position_key picker · requested_by default · U65
  */
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -109,13 +115,14 @@ import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterCont
 import {
   createHeadcountProposal,
   listHeadcountProposals,
+  updateHeadcountProposal,
   updateHeadcountProposalStatus,
 } from '@/integrations/hrmApi';
 import { isAbortLikeError, toErrorMessage } from '@/lib/apiError';
 import {
-  YCTD_PROPOSALS_DEPRECATE_VI,
-  YCTD_PROPOSALS_REDIRECT_CTA_VI,
-} from '@/lib/jobRequisitionYctdWave2';
+  deferOpenFromMenu,
+  scheduleReleaseHrmPortalBodyLock,
+} from '@/lib/hrmDialogPortal';
 
 interface HeadcountProposal {
   id: string;
@@ -181,7 +188,7 @@ function normalizeHeadcountProposalRows(
 }
 
 export type HeadcountProposalTabProps = {
-  /** O5 — redirect to YCTD out_of_plan create (DENY dual persist). */
+  /** Optional — after approved proposal, open YCTD out_of_plan create with context. */
   onCreateOutOfPlanYctd?: (proposal?: HeadcountProposal) => void;
 };
 
@@ -350,6 +357,7 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingProposal, setEditingProposal] = useState<HeadcountProposal | null>(null);
   const [viewingProposal, setViewingProposal] = useState<HeadcountProposal | null>(null);
   const {
@@ -461,15 +469,49 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
 
   const loading = proposalsQuery.isLoading;
 
+  const emptyFormValues = useMemo(
+    (): ProposalFormValues => ({
+      title: '',
+      department_key: '',
+      position_key: '',
+      current_headcount: 0,
+      requested_headcount: 1,
+      proposal_type: 'new',
+      priority: 'medium',
+      justification: '',
+      requested_by: defaultRequestedBy,
+      job_template_id: '',
+      notes: '',
+      expected_start_date: undefined,
+      salary_budget_min: undefined,
+      salary_budget_max: undefined,
+    }),
+    [defaultRequestedBy],
+  );
+
+  const closeProposalDialog = useCallback(() => {
+    setIsDialogOpen(false);
+    setEditingProposal(null);
+    form.reset(emptyFormValues);
+    scheduleReleaseHrmPortalBodyLock();
+  }, [form, emptyFormValues]);
+
+  const openProposalDialogDeferred = useCallback((open: () => void) => {
+    deferOpenFromMenu(open);
+  }, []);
+
   const refetchProposals = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: ['headcount-proposals', effectiveCompanyId] });
+    await queryClient.refetchQueries({ queryKey: ['headcount-proposals', effectiveCompanyId] });
   }, [queryClient, effectiveCompanyId]);
 
   const filteredProposals = proposals.filter((proposal) => {
+    const q = searchTerm.toLowerCase();
     const matchesSearch =
-      proposal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      proposal.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      proposal.position_name.toLowerCase().includes(searchTerm.toLowerCase());
+      !q ||
+      (proposal.title ?? '').toLowerCase().includes(q) ||
+      (proposal.department ?? '').toLowerCase().includes(q) ||
+      (proposal.position_name ?? '').toLowerCase().includes(q);
     const matchesStatus = statusFilter === 'all' || proposal.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -599,21 +641,34 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
   };
 
   const handleAddProposal = () => {
-    /** O5 HOLD — DENY dual persist proposals as YCTD SoT. */
-    if (onCreateOutOfPlanYctd) {
-      onCreateOutOfPlanYctd();
-      return;
-    }
-    toast({
-      title: 'Đã ngừng tạo đề xuất tại đây',
-      description: YCTD_PROPOSALS_DEPRECATE_VI,
-      variant: 'destructive',
-    });
+    setEditingProposal(null);
+    form.reset(emptyFormValues);
+    setIsDialogOpen(true);
   };
 
-  const handleEditProposal = (_proposal: HeadcountProposal) => {
-    /** O5 — mutate redirects to YCTD out_of_plan (DENY dual persist). */
-    handleAddProposal();
+  const handleEditProposal = (proposal: HeadcountProposal) => {
+    setEditingProposal(proposal);
+    form.reset({
+      title: proposal.title,
+      department_key: (proposal.department_key ?? '').trim(),
+      position_key: (proposal.position_key ?? '').trim(),
+      current_headcount: proposal.current_headcount,
+      requested_headcount: proposal.requested_headcount,
+      proposal_type: proposal.proposal_type,
+      priority: proposal.priority,
+      justification: proposal.justification || '',
+      expected_start_date: proposal.expected_start_date
+        ? new Date(proposal.expected_start_date)
+        : undefined,
+      salary_budget_min:
+        proposal.salary_budget_min != null ? Number(proposal.salary_budget_min) || undefined : undefined,
+      salary_budget_max:
+        proposal.salary_budget_max != null ? Number(proposal.salary_budget_max) || undefined : undefined,
+      requested_by: proposal.requested_by || defaultRequestedBy,
+      job_template_id: proposal.job_template_id || '',
+      notes: proposal.notes || '',
+    });
+    setIsDialogOpen(true);
   };
 
   const handleViewProposal = (proposal: HeadcountProposal) => {
@@ -676,35 +731,81 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
     }
   };
 
-  const onSubmit = async (_values: ProposalFormValues) => {
-    /** O5 — DENY dual persist proposals + YCTD. */
-    toast({
-      title: 'Đã ngừng lưu đề xuất tại đây',
-      description: YCTD_PROPOSALS_DEPRECATE_VI,
-      variant: 'destructive',
-    });
-    setIsDialogOpen(false);
-    handleAddProposal();
+  const onSubmit = async (values: ProposalFormValues) => {
+    if (!effectiveCompanyId) {
+      toast({
+        title: 'Lỗi',
+        description: 'Chưa xác định phạm vi công ty.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    const dept = buildDepartmentKeyFields(values.department_key, departmentOptions);
+    if (!dept) {
+      form.setError('department_key', { message: hp('validation.departmentRequired') });
+      return;
+    }
+    const pos = buildPositionKeyFields(values.position_key, positionOptions);
+    if (!pos) {
+      form.setError('position_key', { message: hp('validation.positionRequired') });
+      return;
+    }
+    setIsSubmitting(true);
+    const body = {
+      company_id: effectiveCompanyId,
+      title: values.title.trim(),
+      department: dept.department,
+      department_key: dept.department_key,
+      position_name: pos.position,
+      position_key: pos.position_key,
+      current_headcount: values.current_headcount,
+      requested_headcount: values.requested_headcount,
+      proposal_type: values.proposal_type,
+      priority: values.priority,
+      justification: values.justification?.trim() || null,
+      expected_start_date: values.expected_start_date
+        ? format(values.expected_start_date, 'yyyy-MM-dd')
+        : null,
+      salary_budget_min: values.salary_budget_min ?? null,
+      salary_budget_max: values.salary_budget_max ?? null,
+      job_template_id: values.job_template_id?.trim() || null,
+      requested_by: values.requested_by.trim() || defaultRequestedBy,
+      notes: values.notes?.trim() || null,
+    };
+    try {
+      if (editingProposal) {
+        await updateHeadcountProposal(editingProposal.id, effectiveCompanyId, body);
+        toast({
+          title: 'Thành công',
+          description: 'Đã cập nhật đề xuất ngoài định biên',
+        });
+      } else {
+        await createHeadcountProposal({
+          ...body,
+          status: 'pending',
+        });
+        toast({
+          title: 'Thành công',
+          description: 'Đã tạo đề xuất ngoài định biên',
+        });
+      }
+      // Close + unlock body BEFORE list refetch (refetch re-render must not race Dialog Presence).
+      closeProposalDialog();
+      await refetchProposals();
+    } catch (error) {
+      console.error('Error saving proposal:', error);
+      toast({
+        title: 'Lỗi',
+        description: toErrorMessage(error, 'Không thể lưu đề xuất'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div
-        className="rounded-lg border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning"
-        data-testid="yctd-proposals-deprecate-banner"
-      >
-        <p>{YCTD_PROPOSALS_DEPRECATE_VI}</p>
-        <Button
-          type="button"
-          size="sm"
-          className="mt-2"
-          variant="secondary"
-          data-testid="yctd-proposals-redirect-cta"
-          onClick={handleAddProposal}
-        >
-          {YCTD_PROPOSALS_REDIRECT_CTA_VI}
-        </Button>
-      </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>
@@ -790,11 +891,11 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
               <Button
                 size="sm"
                 className="gap-2"
-                data-testid="yctd-proposals-redirect-cta-header"
+                data-testid="hcp-create-btn"
                 onClick={handleAddProposal}
               >
                 <Plus className="w-4 h-4" />
-                {YCTD_PROPOSALS_REDIRECT_CTA_VI}
+                {hp('actions.createProposal')}
               </Button>
             </div>
           </div>
@@ -856,7 +957,10 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
                   </TableRow>
                 ) : (
                   filteredProposals.map((proposal) => {
-                    const StatusIcon = statusConfig[proposal.status].icon;
+                    const statusMeta = statusConfig[proposal.status] ?? statusConfig.pending;
+                    const typeMeta = proposalTypeConfig[proposal.proposal_type] ?? proposalTypeConfig.new;
+                    const priorityMeta = priorityConfig[proposal.priority] ?? priorityConfig.medium;
+                    const StatusIcon = statusMeta.icon;
                     return (
                       <TableRow key={proposal.id}>
                         <TableCell>
@@ -891,13 +995,13 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge className={cn('text-xs', proposalTypeConfig[proposal.proposal_type].color)}>
-                            {hp(proposalTypeConfig[proposal.proposal_type].labelKey)}
+                          <Badge className={cn('text-xs', typeMeta.color)}>
+                            {hp(typeMeta.labelKey)}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge className={cn('text-xs', priorityConfig[proposal.priority].color)}>
-                            {hp(priorityConfig[proposal.priority].labelKey)}
+                          <Badge className={cn('text-xs', priorityMeta.color)}>
+                            {hp(priorityMeta.labelKey)}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -907,8 +1011,8 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
                               proposal.status === 'rejected' ? 'text-red-600' :
                               proposal.status === 'pending' ? 'text-yellow-600' : 'text-gray-500'
                             )} />
-                            <Badge className={cn('text-xs', statusConfig[proposal.status].color)}>
-                              {hp(statusConfig[proposal.status].labelKey)}
+                            <Badge className={cn('text-xs', statusMeta.color)}>
+                              {hp(statusMeta.labelKey)}
                             </Badge>
                           </div>
                         </TableCell>
@@ -945,35 +1049,48 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleViewProposal(proposal)}>
+                            <DropdownMenuContent
+                              align="end"
+                              onCloseAutoFocus={(e) => e.preventDefault()}
+                            >
+                              <DropdownMenuItem
+                                onSelect={(e) => {
+                                  e.preventDefault();
+                                  openProposalDialogDeferred(() => handleViewProposal(proposal));
+                                }}
+                              >
                                 <Eye className="w-4 h-4 mr-2" />
                                 Xem chi tiết
                               </DropdownMenuItem>
                               {proposal.status === 'pending' && (
                                 <>
-                                  <DropdownMenuItem onClick={() => handleEditProposal(proposal)}>
+                                  <DropdownMenuItem
+                                    onSelect={(e) => {
+                                      e.preventDefault();
+                                      openProposalDialogDeferred(() => handleEditProposal(proposal));
+                                    }}
+                                  >
                                     <Edit className="w-4 h-4 mr-2" />
                                     Chỉnh sửa
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleApproveProposal(proposal.id)}>
+                                  <DropdownMenuItem onSelect={() => void handleApproveProposal(proposal.id)}>
                                     <CheckCircle className="w-4 h-4 mr-2 text-green-600" />
                                     Phê duyệt
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleRejectProposal(proposal.id)}>
+                                  <DropdownMenuItem onSelect={() => void handleRejectProposal(proposal.id)}>
                                     <XCircle className="w-4 h-4 mr-2 text-red-600" />
                                     Từ chối
                                   </DropdownMenuItem>
                                 </>
                               )}
                                 {proposal.status === 'approved' && !linkedJobPostings[proposal.id] && (
-                                  <DropdownMenuItem onClick={() => handleConvertToRequisition(proposal)}>
+                                  <DropdownMenuItem onSelect={() => handleConvertToRequisition(proposal)}>
                                     <Briefcase className="w-4 h-4 mr-2 text-blue-600" />
                                     Tạo yêu cầu tuyển dụng (YCTD)
                                   </DropdownMenuItem>
                                 )}
                               <DropdownMenuItem 
-                                onClick={() => handleDeleteProposal(proposal.id)}
+                                onSelect={() => void handleDeleteProposal(proposal.id)}
                                 className="text-red-600"
                               >
                                 <Trash2 className="w-4 h-4 mr-2" />
@@ -993,7 +1110,16 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
       </Card>
 
       {/* Add/Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeProposalDialog();
+            return;
+          }
+          setIsDialogOpen(true);
+        }}
+      >
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
@@ -1309,11 +1435,20 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => closeProposalDialog()}
+                  disabled={isSubmitting}
+                >
                   Hủy
                 </Button>
-                <Button type="submit" data-testid="hcp-submit">
-                  {editingProposal ? 'Cập nhật' : 'Tạo đề xuất'}
+                <Button type="submit" data-testid="hcp-submit" disabled={isSubmitting}>
+                  {isSubmitting
+                    ? 'Đang lưu…'
+                    : editingProposal
+                      ? 'Cập nhật'
+                      : 'Tạo đề xuất'}
                 </Button>
               </DialogFooter>
             </form>
@@ -1322,7 +1457,16 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
       </Dialog>
 
       {/* View Detail Dialog */}
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+      <Dialog
+        open={isViewDialogOpen}
+        onOpenChange={(open) => {
+          setIsViewDialogOpen(open);
+          if (!open) {
+            setViewingProposal(null);
+            scheduleReleaseHrmPortalBodyLock();
+          }
+        }}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Chi tiết đề xuất định biên</DialogTitle>

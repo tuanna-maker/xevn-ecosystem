@@ -13,7 +13,8 @@ export function buildJobRequisitionsQuery(companyId: string) {
   };
 }
 
-export function useJobRequisitions() {
+export function useJobRequisitions(options?: { enabled?: boolean }) {
+  const enabled = options?.enabled !== false;
   const { currentCompanyId } = useAuth();
   const { listCompanyId } = useHrmOperatingUnitFilter();
   const effectiveCompanyId = listCompanyId || currentCompanyId;
@@ -23,10 +24,11 @@ export function useJobRequisitions() {
   const useApi = shouldSkipSupabaseDataFetches();
 
   const fetchRequisitions = useCallback(async (): Promise<HrmJobRequisition[]> => {
-    if (!effectiveCompanyId || !useApi) {
+    if (!enabled || !effectiveCompanyId || !useApi) {
+      setIsLoading(false);
+      if (!enabled) return [];
       setRequisitions([]);
       setFetchError(null);
-      setIsLoading(false);
       return [];
     }
 
@@ -45,11 +47,15 @@ export function useJobRequisitions() {
     } finally {
       setIsLoading(false);
     }
-  }, [effectiveCompanyId, useApi]);
+  }, [effectiveCompanyId, useApi, enabled]);
 
   useEffect(() => {
+    if (!enabled) {
+      setIsLoading(false);
+      return;
+    }
     void fetchRequisitions();
-  }, [fetchRequisitions]);
+  }, [fetchRequisitions, enabled]);
 
   return { requisitions, isLoading, fetchError, refetch: fetchRequisitions, useApiMode: useApi };
 }

@@ -667,6 +667,7 @@ export function DepartmentManagement() {
         }}
         department={positionConfigDept}
         companyId={currentCompanyId}
+        rollupTenants={departmentRollupTenants}
       />
     </>
   );

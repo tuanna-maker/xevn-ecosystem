@@ -128,9 +128,7 @@ export function useJobTemplates(enabled = true) {
       setError(null);
       try {
         const res = await listJobDescriptionTemplates({ company_id: scopeCompanyId });
-        console.log('=== LIST JD TEMPLATES RES ===', res);
         const rows = unwrapJobDescriptionTemplateRows<HrmJobDescriptionTemplate>(res);
-        console.log('=== UNWRAPPED ROWS ===', rows);
         setTemplates([...rows]);
         templatesRef.current = [...rows];
         return [...rows];

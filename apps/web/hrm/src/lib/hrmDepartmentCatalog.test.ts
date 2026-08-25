@@ -162,6 +162,10 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
 
     const result = await loadCompanyDepartments('main');
 
+    expect(listDepartments).toHaveBeenCalledWith(
+      expect.objectContaining({ company_id: 'main', rollup_tenants: true }),
+      expect.anything(),
+    );
     expect(result.fetchError).toBeNull();
     expect(result.rows.map((r) => r.name)).toEqual(['Phòng Tập đoàn']);
     expect(getSettingsCatalogsOverview).not.toHaveBeenCalled();

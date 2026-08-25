@@ -110,7 +110,6 @@ export function useSettingsCatalogsOverview(opts?: {
   const departmentsQuery = useQuery({
     queryKey: companyDepartmentsQueryKey(departmentCompanyId, {
       scope: scope ?? undefined,
-      rollupTenants: false,
     }),
     queryFn: async () => {
       if (!departmentCompanyId) {
@@ -118,7 +117,6 @@ export function useSettingsCatalogsOverview(opts?: {
       }
       return loadCompanyDepartments(departmentCompanyId, {
         scope: scope ?? undefined,
-        rollupTenants: false,
       });
     },
     enabled: enabled && !!departmentCompanyId,

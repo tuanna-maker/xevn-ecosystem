@@ -465,16 +465,22 @@ export class PayrollCatalogService {
     companyId: string,
     authorization?: string,
     query?: ListSalaryComponentsQueryDto,
+    scopeContext?: { tenantId?: string },
   ) {
     await this.ensureSalaryComponentSchema();
     const scopeCompanyId = normalizePayrollListCompanyId(
       authorization,
       companyId,
     );
-    const scope = resolveHrmListScope(authorization, scopeCompanyId);
+    const scope = resolveHrmListScope(
+      authorization,
+      scopeCompanyId,
+      scopeContext,
+    );
     const persistCompanyId = resolveHrmPersistCompanyIdText(
       authorization,
       companyId,
+      scopeContext,
     );
     await this.ensureStarterPayTypes(persistCompanyId, authorization);
     await this.ensureStarterSalaryComponents(persistCompanyId);

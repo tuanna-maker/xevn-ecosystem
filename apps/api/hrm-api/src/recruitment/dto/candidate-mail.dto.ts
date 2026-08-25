@@ -47,6 +47,18 @@ export class EnqueueCandidateMailDto {
   @IsObject()
   payload?: Record<string, unknown>;
 
+  /** Optional override — defaults from CFG template + UV placeholders. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  subject?: string;
+
+  /** Optional override — plain text body; defaults from template catalog. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(20000)
+  body?: string;
+
   @IsOptional()
   @IsUUID()
   application_id?: string;

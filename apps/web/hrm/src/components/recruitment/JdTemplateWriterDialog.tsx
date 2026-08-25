@@ -469,7 +469,7 @@ export function JdTemplateWriterDialog({
       job_description: responsibilities || undefined,
       requirements: requirements || undefined,
       notes: notes.trim() || undefined,
-      values_json: { ...values, title },
+      values_json: { ...values, title, code: code.trim() },
       layout_snapshot: snap,
       layout_version: 2,
     });

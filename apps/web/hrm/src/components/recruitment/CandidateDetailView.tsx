@@ -33,6 +33,7 @@ import { resolveMaritalStatusDisplay } from '@/lib/labelMaps';
 import { isRecruitmentWorkflowLocked, RECRUITMENT_WF_LOCKED_HINT_VI } from '@/lib/recruitmentWorkflowUi';
 import {
   hasCandidateYctdLink,
+  resolveCandidatePipelineStage,
   resolveCandidatePositionLabel,
   resolveCandidateYctdLabel,
 } from '@/lib/candidateUvYctdUi';
@@ -256,13 +257,15 @@ export function CandidateDetailView({
     skill: item.subject,
     value: Math.round((item.actual / item.fullMark) * 100),
   }));
-  const funnelStage = mapRecruitmentFunnelStage(candidate.stage);
-  const currentStageIndex = stageToIndex[candidate.stage || 'applied'] ?? stageToIndex[funnelStage] ?? 0;
+  const pipelineStage = resolveCandidatePipelineStage(candidate);
+  const funnelStage = mapRecruitmentFunnelStage(pipelineStage);
+  const currentStageIndex =
+    stageToIndex[pipelineStage] ?? stageToIndex[funnelStage] ?? 0;
   const stageConfig = getStageConfig(r);
   const interviewStatusConfig = getInterviewStatusConfig(r);
   const wfLocked = isRecruitmentWorkflowLocked(
     candidate.workflow_instance_id,
-    candidate.stage,
+    pipelineStage,
     'candidate',
   );
 
@@ -603,8 +606,8 @@ export function CandidateDetailView({
                   <p className="text-sm text-muted-foreground mb-2">
                     {positionLabel !== '—' ? positionLabel : r('noPosition')}
                   </p>
-                  <Badge className={stageConfig[candidate.stage || 'applied']?.color}>
-                    {stageConfig[candidate.stage || 'applied']?.label}
+                  <Badge className={stageConfig[pipelineStage]?.color ?? stageConfig.applied.color}>
+                    {stageConfig[pipelineStage]?.label ?? stageConfig.applied.label}
                   </Badge>
                   <div className="mt-3">
                     {renderStars(candidate.rating)}

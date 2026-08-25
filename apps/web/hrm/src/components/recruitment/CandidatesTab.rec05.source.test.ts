@@ -31,7 +31,7 @@ describe('CandidateStageTransitionDialog physical path lock', () => {
   it('POSTs /recruitment/candidates transitions via hrmApi helper', () => {
     expect(dialogSrc).toContain('postRecruitmentCandidateTransition');
     expect(dialogSrc).toContain('rec-stage-reject-note');
-    expect(dialogSrc).toContain('rec-stage-transition-empty-cta');
+    expect(dialogSrc).toContain('catalogCount <= 0');
     expect(dialogSrc).not.toMatch(/\/api\/hrm\/rec\//);
   });
 });

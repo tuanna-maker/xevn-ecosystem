@@ -1325,6 +1325,161 @@ export class AttendanceController {
       .then((data) => ok(data, 'HRM-ATT-RULES-200', 'Attendance rules loaded'));
   }
 
+  /** Settings catalog «Quy tắc tính công» — separate from CFG /attendance/rules object. */
+  @Get(['work-rules', 'att-rules'])
+  listWorkRulesCatalog(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Query('q') q?: string,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.attRuleService
+      .listRules(companyId || 'main', q)
+      .then((items) =>
+        ok(
+          { total: items.length, items, data: items },
+          'HRM-ATT-WORK-RULES-200',
+          'Work rules listed',
+        ),
+      );
+  }
+
+  @Post(['work-rules', 'att-rules'])
+  upsertWorkRuleCatalog(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body()
+    body: {
+      company_id?: string;
+      companyId?: string;
+      code: string;
+      name_vi?: string;
+      nameVi?: string;
+      rule_type?: string;
+      ruleType?: string;
+      formula_desc?: string | null;
+      formulaDesc?: string | null;
+      apply_to?: string | null;
+      applyTo?: string | null;
+      description?: string | null;
+      status?: string;
+    },
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    const companyId = body.company_id || body.companyId || 'main';
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.attRuleService
+      .upsertRule({
+        companyId,
+        code: body.code,
+        nameVi: body.name_vi || body.nameVi || '',
+        ruleType: body.rule_type || body.ruleType || 'STANDARD_WORK',
+        formulaDesc: body.formula_desc ?? body.formulaDesc,
+        applyTo: body.apply_to ?? body.applyTo,
+        description: body.description,
+        status: body.status,
+      })
+      .then((data) => ok(data, 'HRM-ATT-WORK-RULES-200', 'Work rule saved'));
+  }
+
+  @Post(['work-rules/:id/retire', 'att-rules/:id/retire'])
+  retireWorkRuleCatalog(
+    @Param('id') id: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.attRuleService
+      .retireRule(companyId || 'main', id)
+      .then(() => ok({ retired: true }, 'HRM-ATT-WORK-RULES-200', 'Work rule retired'));
+  }
+
+  @Get(['schedules', 'schedule-groups'])
+  listScheduleGroupsCatalog(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+    @Query('q') q?: string,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.attScheduleService
+      .listSchedules(companyId || 'main', q)
+      .then((items) =>
+        ok(
+          { total: items.length, items, data: items },
+          'HRM-ATT-SCHEDULE-200',
+          'Schedule groups listed',
+        ),
+      );
+  }
+
+  @Post(['schedules', 'schedule-groups'])
+  upsertScheduleGroupCatalog(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Body()
+    body: {
+      company_id?: string;
+      companyId?: string;
+      code: string;
+      name_vi?: string;
+      nameVi?: string;
+      default_shift_code?: string | null;
+      defaultShiftCode?: string | null;
+      working_days?: string | null;
+      workingDays?: string | null;
+      apply_to?: string | null;
+      applyTo?: string | null;
+      description?: string | null;
+      status?: string;
+    },
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    const companyId = body.company_id || body.companyId || 'main';
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.attScheduleService
+      .upsertSchedule({
+        companyId,
+        code: body.code,
+        nameVi: body.name_vi || body.nameVi || '',
+        defaultShiftCode: body.default_shift_code ?? body.defaultShiftCode,
+        workingDays: body.working_days ?? body.workingDays,
+        applyTo: body.apply_to ?? body.applyTo,
+        description: body.description,
+        status: body.status,
+      })
+      .then((data) =>
+        ok(data, 'HRM-ATT-SCHEDULE-200', 'Schedule group saved'),
+      );
+  }
+
+  @Post(['schedules/:id/retire', 'schedule-groups/:id/retire'])
+  retireScheduleGroupCatalog(
+    @Param('id') id: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Query('company_id') companyId: string,
+  ) {
+    this.assertBusinessAccess(authorization, internalApiKey);
+    resolveScopeContext(authorization, { tenantId, companyId });
+    return this.attScheduleService
+      .retireSchedule(companyId || 'main', id)
+      .then(() =>
+        ok({ retired: true }, 'HRM-ATT-SCHEDULE-200', 'Schedule group retired'),
+      );
+  }
+
   @Patch('rules')
   patchAttendanceRules(
     @Headers('authorization') authorization: string | undefined,

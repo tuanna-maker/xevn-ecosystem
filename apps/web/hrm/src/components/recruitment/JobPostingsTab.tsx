@@ -127,6 +127,7 @@ import {
   UserPlus,
   X,
   FileText,
+  Send,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -240,7 +241,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
   const statusOptions = [
     { value: 'all', label: t('recruitment.jt.statuses.all') },
     { value: 'active', label: t('recruitment.jt.statuses.active') },
-    { value: 'pending_approval', label: t('recruitment.jt.statuses.pendingApproval') || 'Chờ duyệt' },
+    { value: 'pending_approval', label: t('recruitment.jt.statuses.pendingApproval', 'Chờ duyệt') },
     { value: 'draft', label: t('recruitment.jt.statuses.draft') },
     { value: 'paused', label: t('recruitment.jt.statuses.paused') },
     { value: 'closed', label: t('recruitment.jt.statuses.closed') },
@@ -268,7 +269,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
       case 'draft':
         return <Badge className="border-0 bg-xevn-neutral/15 text-xevn-textSecondary hover:bg-xevn-neutral/15">{t('recruitment.jt.statuses.draft')}</Badge>;
       case 'pending_approval':
-        return <Badge className="border-0 bg-warning/15 text-warning hover:bg-warning/15">{t('recruitment.jt.statuses.pendingApproval') || 'Chờ duyệt'}</Badge>;
+        return <Badge className="border-0 bg-warning/15 text-warning hover:bg-warning/15">{t('recruitment.jt.statuses.pendingApproval', 'Chờ duyệt')}</Badge>;
       case 'paused':
         return <Badge className="border-0 bg-warning/15 text-warning hover:bg-warning/15">{t('recruitment.jt.statuses.paused')}</Badge>;
       case 'closed':
@@ -517,15 +518,15 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
     },
   });
 
-  // Delete mutation
-  const approveMutation = useMutation({
+  // Send for approval mutation
+  const sendApprovalMutation = useMutation({
     mutationFn: async (id: string) => {
       if (!currentCompanyId) throw new Error('Missing company scope');
-      await updateJobPosting(id, currentCompanyId, { status: 'active' });
+      await updateJobPosting(id, currentCompanyId, { status: 'pending_approval' });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['job-postings'] });
-      toast.success(t('recruitment.jt.updateSuccess') || 'Duyệt thành công');
+      queryClient.invalidateQueries({ queryKey: ['job_postings'] });
+      toast.success('Đã gửi yêu cầu xét duyệt');
     },
     onError: (error) => {
       toast.error(t('common.error') + ': ' + error.message);
@@ -665,10 +666,10 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
     setIsDeleteOpen(true);
   };
 
-  const handleApprove = (job: JobPosting, e: React.MouseEvent) => {
+  const handleSendApproval = (job: JobPosting, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm('Xác nhận duyệt tin tuyển dụng này?')) {
-      approveMutation.mutate(job.id);
+    if (window.confirm('Xác nhận gửi duyệt tin tuyển dụng này?')) {
+      sendApprovalMutation.mutate(job.id);
     }
   };
 
@@ -912,9 +913,9 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
                     <TableCell>{getStatusBadge(job.status)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        {job.status === 'pending_approval' && (
-                          <Button variant="ghost" size="icon" onClick={(e) => handleApprove(job, e)} title="Duyệt">
-                            <Check className="w-4 h-4 text-success" />
+                        {job.status === 'draft' && (
+                          <Button variant="ghost" size="icon" onClick={(e) => handleSendApproval(job, e)} title="Gửi duyệt">
+                            <Send className="w-4 h-4 text-blue-500" />
                           </Button>
                         )}
                         <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleOpenCandidates(job); }} title={t('recruitment.jt.viewCandidates')}>
@@ -1308,7 +1309,7 @@ export function JobPostingsTab({ autoOpenCreate = false }: { autoOpenCreate?: bo
                             </FormControl>
                             <SelectContent>
                               <SelectItem value="draft">{t('recruitment.jt.statuses.draft')}</SelectItem>
-                              <SelectItem value="pending_approval">{t('recruitment.jt.statuses.pendingApproval') || 'Chờ duyệt'}</SelectItem>
+                              <SelectItem value="pending_approval">{t('recruitment.jt.statuses.pendingApproval', 'Chờ duyệt')}</SelectItem>
                               <SelectItem value="active">{t('recruitment.jt.statuses.active')}</SelectItem>
                               <SelectItem value="paused">{t('recruitment.jt.statuses.paused')}</SelectItem>
                               <SelectItem value="closed">{t('recruitment.jt.statuses.closed')}</SelectItem>

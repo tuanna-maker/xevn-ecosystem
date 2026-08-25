@@ -21,13 +21,24 @@ import { X } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { getDialogPortalContainer, syncHrmStylesheetsToParentForPortalDialogs } from "@/lib/hrmDialogPortal";
+import { getDialogPortalContainer, scheduleReleaseHrmPortalBodyLock, syncHrmStylesheetsToParentForPortalDialogs } from "@/lib/hrmDialogPortal";
 import {
   HrmOverlayPortalScopeContext,
   type HrmOverlayPortalScope,
 } from "@/lib/hrmOverlayPortalScope";
 
-const Sheet = SheetPrimitive.Root;
+const Sheet = ({
+  onOpenChange,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof SheetPrimitive.Root>) => (
+  <SheetPrimitive.Root
+    {...props}
+    onOpenChange={(open) => {
+      onOpenChange?.(open);
+      if (!open) scheduleReleaseHrmPortalBodyLock();
+    }}
+  />
+);
 
 const SheetTrigger = SheetPrimitive.Trigger;
 

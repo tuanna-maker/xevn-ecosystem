@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { ApiException } from '../common/api.exception';
 import {
   MASTER_TENANT_ID,
-  pushCompanyIdFilter,
+  pushDepartmentTableScopeFilters,
   pushHrmTableScopeFilters,
   resolveHrmListScope,
   resolveHrmPersistCompanyIdText,
@@ -12,6 +12,11 @@ import {
   type HrmListScope,
   type HrmListScopeContext,
 } from '../common/hrm-list-scope';
+import {
+  narrowHrmScopeToRequestTenant,
+  resolveCatalogTenantIdsForRollup,
+  shouldHrmGroupCeoTenantRollup,
+} from '../common/hrm-tenant-rollup';
 import { ensureHrmTenantIdColumns } from '../common/hrm-tenant-scope-schema';
 import { HrmDbService } from '../db/hrm-db.service';
 import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
@@ -254,24 +259,75 @@ export class PositionsService implements OnModuleInit {
     filters.push(`archived_at IS NULL`);
   }
 
+  private resolvePositionsListScope(
+    authorization: string | undefined,
+    requestedCompanyId: string,
+    rollupTenants: boolean | undefined,
+    scopeContext?: HrmListScopeContext,
+  ): { scope: HrmListScope; rollupByTenant: boolean } {
+    const listScope = resolveHrmListScope(
+      authorization,
+      requestedCompanyId,
+      scopeContext,
+    );
+    const rollupByTenant = shouldHrmGroupCeoTenantRollup(
+      authorization,
+      listScope,
+      rollupTenants !== false,
+    );
+    const scope = rollupByTenant
+      ? listScope
+      : narrowHrmScopeToRequestTenant(
+          listScope,
+          authorization,
+          requestedCompanyId,
+          scopeContext,
+        );
+    return { scope, rollupByTenant };
+  }
+
   private async getActiveJobTitleItems(
     authorization: string | undefined,
     requestedCompanyId: string,
     scopeContext?: HrmListScopeContext,
+    scope?: HrmListScope,
+    rollupByTenant = false,
   ) {
     if (!this.settingsCatalogs) return [];
-    const tenantId = scopeContext?.tenantId?.trim() || MASTER_TENANT_ID;
-    const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
-      authorization,
-      tenantId,
-      requestedCompanyId.trim(),
-    );
-    const items = await this.settingsCatalogs.getEffectiveItemsForKey(
-      tenantId,
-      catalogCompanyId,
-      'job_titles',
-    );
-    return items.filter((item) => item.status === 'active');
+    const tenantIds = scope
+      ? resolveCatalogTenantIdsForRollup(
+          authorization,
+          requestedCompanyId,
+          scope,
+          rollupByTenant,
+          scopeContext,
+        )
+      : [
+          scopeContext?.tenantId?.trim() ||
+            resolveHrmPersistTenantId(
+              authorization,
+              requestedCompanyId,
+              scopeContext,
+            ) ||
+            MASTER_TENANT_ID,
+        ];
+    const byCode = new Map<string, { code: string; label: string }>();
+    for (const tenantId of tenantIds) {
+      const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+        authorization,
+        tenantId,
+        requestedCompanyId.trim(),
+      );
+      const items = await this.settingsCatalogs.getEffectiveItemsForKey(
+        tenantId,
+        catalogCompanyId,
+        'job_titles',
+      );
+      for (const item of items.filter((row) => row.status === 'active')) {
+        byCode.set(item.code.toLowerCase(), item);
+      }
+    }
+    return [...byCode.values()];
   }
 
   private jobTitleLabelByCode(
@@ -312,6 +368,7 @@ export class PositionsService implements OnModuleInit {
       status?: string;
       position_scope?: PayPositionScope;
       q?: string;
+      rollupByTenant?: boolean;
     },
   ): Promise<PayPositionDisplay[]> {
     const filters: string[] = [];
@@ -350,6 +407,8 @@ export class PositionsService implements OnModuleInit {
       authorization,
       requestedCompanyId,
       scopeContext,
+      scope,
+      options?.rollupByTenant ?? false,
     );
 
     const byCode = new Map<string, PayPositionDisplay>();
@@ -497,12 +556,18 @@ export class PositionsService implements OnModuleInit {
       status?: string;
       q?: string;
       position_scope?: PayPositionScope;
+      rollup_tenants?: boolean;
     },
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const { scope, rollupByTenant } = this.resolvePositionsListScope(
+      authorization,
+      query.company_id,
+      query.rollup_tenants,
+      scopeContext,
+    );
     const data = await this.buildMergedMasterCatalog(
       authorization,
       query.company_id,
@@ -512,6 +577,7 @@ export class PositionsService implements OnModuleInit {
         status: query.status,
         position_scope: query.position_scope,
         q: query.q,
+        rollupByTenant,
       },
     );
     return { total: data.length, data };
@@ -687,14 +753,16 @@ export class PositionsService implements OnModuleInit {
     departmentCode?: string | null,
     authorization?: string,
     scopeContext?: HrmListScopeContext,
+    scope?: HrmListScope,
   ): Promise<string | null> {
     if (departmentId?.trim()) return departmentId.trim();
     const code = departmentCode?.trim();
     if (!code) return null;
-    const scope = resolveHrmListScope(authorization, companyId, scopeContext);
+    const effectiveScope =
+      scope ?? resolveHrmListScope(authorization, companyId, scopeContext);
     const filters: string[] = [`status = 'active'`];
     const values: unknown[] = [];
-    pushCompanyIdFilter(filters, values, scope.companyIds);
+    pushDepartmentTableScopeFilters(filters, values, effectiveScope);
     values.push(code);
     const codeParam = values.length;
     filters.push(
@@ -895,12 +963,18 @@ export class PositionsService implements OnModuleInit {
       company_id: string;
       department_id?: string;
       department_code?: string;
+      rollup_tenants?: boolean;
     },
     authorization?: string,
     scopeContext?: HrmListScopeContext,
   ): Promise<{ data: EffectivePositionOption[] }> {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, query.company_id, scopeContext);
+    const { scope, rollupByTenant } = this.resolvePositionsListScope(
+      authorization,
+      query.company_id,
+      query.rollup_tenants,
+      scopeContext,
+    );
 
     const departmentId = await this.resolveDepartmentId(
       query.company_id,
@@ -908,6 +982,7 @@ export class PositionsService implements OnModuleInit {
       query.department_code,
       authorization,
       scopeContext,
+      scope,
     );
 
     if (!departmentId) {
@@ -916,6 +991,7 @@ export class PositionsService implements OnModuleInit {
         query.company_id,
         scopeContext,
         scope,
+        { rollupByTenant },
       );
       return {
         data: merged.map((row) => ({
@@ -962,6 +1038,8 @@ export class PositionsService implements OnModuleInit {
       authorization,
       query.company_id,
       scopeContext,
+      scope,
+      rollupByTenant,
     );
     return {
       data: res.rows.map((row) => ({
