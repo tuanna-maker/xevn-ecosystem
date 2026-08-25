@@ -217,11 +217,16 @@ async function requestHrmOnce<T>(
   }
 }
 
-async function requestHrm<T>(path: string, init: RequestInit, opts?: RequestHrmOptions): Promise<T> {
+async function requestHrm<T>(
+  path: string,
+  init?: RequestInit,
+  opts?: RequestHrmOptions,
+): Promise<T> {
   const baseTimeout = opts?.timeoutMs ?? DEFAULT_HRM_FETCH_MS;
-  const method = (init.method ?? "GET").toUpperCase();
+  const method = (init?.method ?? "GET").toUpperCase();
+  const safeInit = init ?? {};
   try {
-    return await requestHrmOnce<T>(path, init, opts, baseTimeout);
+    return await requestHrmOnce<T>(path, safeInit, opts, baseTimeout);
   } catch (error) {
     const canRetryGet =
       method === "GET" &&
@@ -229,7 +234,7 @@ async function requestHrm<T>(path: string, init: RequestInit, opts?: RequestHrmO
       error.code === "HRM-TIMEOUT" &&
       baseTimeout < PAYROLL_HRM_TIMEOUT_MS;
     if (canRetryGet) {
-      return await requestHrmOnce<T>(path, init, opts, PAYROLL_HRM_TIMEOUT_MS);
+      return await requestHrmOnce<T>(path, safeInit, opts, PAYROLL_HRM_TIMEOUT_MS);
     }
     throw error;
   }
@@ -8472,6 +8477,25 @@ export async function createHeadcountProposal(payload: Record<string, unknown>) 
   });
 }
 
+export async function updateHeadcountProposal(
+  proposalId: string,
+  companyId: string,
+  payload: Record<string, unknown>,
+) {
+  const search = new URLSearchParams();
+  setListCompanyId(search, companyId);
+  return requestHrm<Record<string, unknown>>(
+    `/api/hrm/recruitment/headcount-proposals/${proposalId}?${search.toString()}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({
+        ...payload,
+        company_id: normalizeHrmApiListCompanyId(String(payload.company_id ?? companyId)),
+      }),
+    },
+  );
+}
+
 export async function updateHeadcountProposalStatus(
   proposalId: string,
   companyId: string,
@@ -8517,8 +8541,81 @@ export type HrmRecMailOutboxRow = {
   error_message?: string | null;
   to?: string[];
   cc_interviewers?: string[];
+  /** local = stub (không vào inbox); smtp = Gmail thật */
+  delivery_mode?: "local" | "smtp" | null;
+  provider_ref?: string | null;
   log?: HrmRecMailLogItem[];
 };
+
+export type HrmRecMailTemplateItem = {
+  code: string;
+  label_vi: string;
+  subject: string;
+  body: string;
+  active: boolean;
+};
+
+/** GET /recruitment/mail-templates — effective catalog (defaults ∪ company CFG). */
+export async function listRecruitmentMailTemplates(companyId: string) {
+  const search = new URLSearchParams();
+  search.set("company_id", normalizeHrmApiListCompanyId(companyId));
+  const res = await requestHrm<{
+    company_id?: string;
+    total?: number;
+    data?: HrmRecMailTemplateItem[];
+    items?: HrmRecMailTemplateItem[];
+    active_codes?: string[];
+  }>(`/api/hrm/recruitment/mail-templates?${search.toString()}`, {
+    method: "GET",
+  });
+  const raw = res as unknown;
+  let items: HrmRecMailTemplateItem[] = [];
+  if (Array.isArray(raw)) {
+    items = raw as HrmRecMailTemplateItem[];
+  } else if (res && typeof res === "object") {
+    if (Array.isArray(res.data)) items = res.data;
+    else if (Array.isArray(res.items)) items = res.items;
+  }
+  return {
+    company_id:
+      res && typeof res === "object" && !Array.isArray(res) && typeof res.company_id === "string"
+        ? res.company_id
+        : companyId,
+    items,
+    active_codes:
+      res &&
+      typeof res === "object" &&
+      !Array.isArray(res) &&
+      Array.isArray(res.active_codes)
+        ? res.active_codes
+        : items.filter((t) => t.active).map((t) => t.code),
+  };
+}
+
+/** PUT /recruitment/mail-templates — save company catalog + sync active codes. */
+export async function putRecruitmentMailTemplates(
+  companyId: string,
+  templates: HrmRecMailTemplateItem[],
+) {
+  return requestHrm<{
+    company_id?: string;
+    total?: number;
+    data?: HrmRecMailTemplateItem[];
+    active_codes?: string[];
+  }>("/api/hrm/recruitment/mail-templates", {
+    method: "PUT",
+    body: JSON.stringify({
+      company_id: normalizeHrmApiListCompanyId(companyId),
+      templates: templates.map((t) => ({
+        code: t.code,
+        label_vi: t.label_vi,
+        subject: t.subject,
+        body: t.body,
+        active: Boolean(t.active),
+      })),
+    }),
+  });
+}
 
 /** F-REC-MAIL-01 — POST /recruitment/candidates/:id/mail (Lane A YCTD-bound). */
 export async function sendRecruitmentCandidateMail(
@@ -8528,6 +8625,8 @@ export async function sendRecruitmentCandidateMail(
     template_code: string;
     to: string[];
     cc_interviewers?: string[];
+    subject?: string;
+    body?: string;
     payload?: Record<string, unknown>;
     application_id?: string;
   },
@@ -8540,6 +8639,12 @@ export async function sendRecruitmentCandidateMail(
   };
   if (body.cc_interviewers && body.cc_interviewers.length > 0) {
     payload.cc_interviewers = body.cc_interviewers;
+  }
+  if (typeof body.subject === "string" && body.subject.trim()) {
+    payload.subject = body.subject.trim();
+  }
+  if (typeof body.body === "string" && body.body.trim()) {
+    payload.body = body.body.trim();
   }
   if (body.payload && typeof body.payload === "object") {
     payload.payload = body.payload;
@@ -8656,7 +8761,8 @@ export async function listDepartments(
   setListCompanyId(search, params.company_id);
   return requestHrm<{ total: number; data: Record<string, unknown>[] }>(
     `/api/hrm/departments?${search.toString()}`,
-    { method: "GET", scope },
+    { method: "GET" },
+    scope ? { scope } : undefined,
   );
 }
 

@@ -2751,6 +2751,10 @@ export class RecruitmentCatalogService {
       authorization,
       String(payload.company_id ?? ''),
     );
+    const tenantId = resolveHrmPersistTenantId(
+      authorization,
+      String(payload.company_id ?? companyId),
+    );
     const pos = await this.assertConsumerPositionKey({
       companyId,
       positionKey: payload.position_key,
@@ -2766,14 +2770,14 @@ export class RecruitmentCatalogService {
         ? payload.department_key.trim() || null
         : null;
     if (departmentKey && this.settingsCatalogs) {
-      const tenantId = this.resolveCatalogTenantId();
+      const catalogTenantId = this.resolveCatalogTenantId();
       const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
         authorization,
-        tenantId,
+        catalogTenantId,
         companyId,
       );
       await this.settingsCatalogs.assertCodeInEffectiveCatalog({
-        tenantId,
+        tenantId: catalogTenantId,
         companyId: catalogCompanyId,
         catalogKey: 'departments',
         code: departmentKey,
@@ -2783,15 +2787,16 @@ export class RecruitmentCatalogService {
     }
     const res = await this.db.query(
       `INSERT INTO public.headcount_proposals (
-        id, company_id, title, department, department_key, position_name, position_key,
+        id, tenant_id, company_id, title, department, department_key, position_name, position_key,
         current_headcount, requested_headcount,
         proposal_type, priority, status, justification, expected_start_date,
         salary_budget_min, salary_budget_max, job_description, requirements, requested_by, notes
       ) VALUES (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14::date,$15,$16,$17,$18,$19,$20
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15::date,$16,$17,$18,$19,$20,$21
       ) RETURNING *;`,
       [
         randomUUID(),
+        tenantId,
         companyId,
         payload.title,
         payload.department,
@@ -2813,6 +2818,122 @@ export class RecruitmentCatalogService {
         payload.notes ?? null,
       ],
     );
+    return res.rows[0];
+  }
+
+  async updateHeadcountProposal(
+    proposalId: string,
+    payload: Record<string, unknown>,
+    companyId: string,
+    authorization?: string,
+  ) {
+    await this.ensureWave2Schema();
+    const existingRes = await this.db.query(
+      `SELECT * FROM public.headcount_proposals WHERE id = $1::uuid LIMIT 1;`,
+      [proposalId],
+    );
+    const existing = existingRes.rows[0] as
+      | { company_id: string; status: string }
+      | undefined;
+    if (!existing) {
+      throw new ApiException(
+        'HRM-REC-HC-404',
+        'Headcount proposal not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const scope = resolveHrmListScope(authorization, companyId);
+    assertResourceInHrmScope(existing, scope, {
+      notFoundCode: 'HRM-REC-HC-404',
+      mismatchCode: 'HRM-REC-HC-409',
+    });
+    if (String(existing.status ?? '') !== 'pending') {
+      throw new ApiException(
+        'HRM-REC-HC-409',
+        'Only pending headcount proposals can be edited',
+        HttpStatus.CONFLICT,
+      );
+    }
+    const persistCompanyId = resolveHrmPersistCompanyIdText(
+      authorization,
+      String(payload.company_id ?? existing.company_id),
+    );
+    const pos = await this.assertConsumerPositionKey({
+      companyId: persistCompanyId,
+      positionKey: payload.position_key,
+      errorCode: HRM_HCP_POS_KEY,
+      authorization,
+    });
+    const positionName =
+      typeof payload.position_name === 'string' && payload.position_name.trim()
+        ? payload.position_name.trim()
+        : pos.label;
+    const departmentKey =
+      typeof payload.department_key === 'string'
+        ? payload.department_key.trim() || null
+        : null;
+    if (departmentKey && this.settingsCatalogs) {
+      const catalogTenantId = this.resolveCatalogTenantId();
+      const catalogCompanyId = resolveHrmSettingsCatalogCompanyId(
+        authorization,
+        catalogTenantId,
+        persistCompanyId,
+      );
+      await this.settingsCatalogs.assertCodeInEffectiveCatalog({
+        tenantId: catalogTenantId,
+        companyId: catalogCompanyId,
+        catalogKey: 'departments',
+        code: departmentKey,
+        errorCode: HRM_HCP_POS_KEY,
+        errorMessage: `department_key '${departmentKey}' is not in departments catalog`,
+      });
+    }
+    const res = await this.db.query(
+      `UPDATE public.headcount_proposals SET
+        title = $2,
+        department = $3,
+        department_key = $4,
+        position_name = $5,
+        position_key = $6,
+        current_headcount = $7,
+        requested_headcount = $8,
+        proposal_type = $9,
+        priority = $10,
+        justification = $11,
+        expected_start_date = $12::date,
+        salary_budget_min = $13,
+        salary_budget_max = $14,
+        requested_by = $15,
+        notes = $16,
+        updated_at = NOW()
+       WHERE id = $1::uuid
+       RETURNING *;`,
+      [
+        proposalId,
+        payload.title,
+        payload.department,
+        departmentKey,
+        positionName,
+        pos.code,
+        payload.current_headcount ?? 0,
+        payload.requested_headcount ?? 1,
+        payload.proposal_type ?? 'new',
+        payload.priority ?? 'medium',
+        payload.justification ?? null,
+        payload.expected_start_date ?? null,
+        payload.salary_budget_min ?? null,
+        payload.salary_budget_max ?? null,
+        payload.requested_by ?? 'HR',
+        payload.notes ?? null,
+      ],
+    );
+    if (!res.rows[0]) {
+      throw new ApiException(
+        'HRM-REC-HC-404',
+        'Headcount proposal not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
     return res.rows[0];
   }
 

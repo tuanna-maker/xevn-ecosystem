@@ -121,10 +121,12 @@ import { ManageActiveInterviewDialog } from './ManageActiveInterviewDialog';
 import { getCandidateActiveInterviewBadge } from './candidateActiveInterview';
 import { useToast } from '@/hooks/use-toast';
 import { toErrorMessage } from '@/lib/apiError';
+import { deferOpenFromMenu } from '@/lib/hrmDialogPortal';
 import { useCandidateEvaluations } from '@/hooks/useCandidateEvaluations';
 import { useJobRequisitions } from '@/hooks/useJobRequisitions';
 import { normalizeRequisitionId } from '@/lib/candidateUvYctdUi';
 import {
+  listCandidateEvaluations,
   listRecruitmentCandidates,
   listRecruitmentInterviews,
   scheduleRecruitmentInterview,
@@ -205,10 +207,71 @@ function mapLaneAInterview(row: HrmRecruitmentInterview): Interview {
   };
 }
 
+type EvalResultRow = {
+  interview_id: string | null;
+  recruitment_candidate_id: string | null;
+  candidate_id: string | null;
+  result: string | null;
+  overall_feedback: string | null;
+  created_at: string;
+};
+
+/**
+ * Kết quả SoT = candidate_evaluations (FR-06), không phải cột trên recruitment_interviews.
+ * Ưu tiên khớp interview_id; TERMINAL mới fallback theo candidate neo.
+ */
+function resolveEvalOutcomeForInterview(
+  interview: Pick<Interview, 'id' | 'candidate_id' | 'status'>,
+  evaluations: EvalResultRow[],
+): { result: string | null; feedback: string | null } {
+  const byInterview = evaluations
+    .filter((e) => e.interview_id && e.interview_id === interview.id)
+    .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))[0];
+  if (byInterview) {
+    return {
+      result: byInterview.result ?? null,
+      feedback: byInterview.overall_feedback ?? null,
+    };
+  }
+  if (!isLaneATerminalInterviewStatus(interview.status)) {
+    return { result: null, feedback: null };
+  }
+  const candId = (interview.candidate_id ?? '').trim();
+  if (!candId) return { result: null, feedback: null };
+  const byCandidate = evaluations
+    .filter((e) => {
+      const neo = (e.recruitment_candidate_id ?? '').trim();
+      const pool = (e.candidate_id ?? '').trim();
+      return neo === candId || pool === candId;
+    })
+    .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))[0];
+  return {
+    result: byCandidate?.result ?? null,
+    feedback: byCandidate?.overall_feedback ?? null,
+  };
+}
+
 interface Candidate {
   id: string;
   full_name: string;
   email: string;
+}
+
+const LANE_A_ACTIVE_STATUSES = new Set(['scheduled', 'confirmed']);
+const LANE_A_TERMINAL_STATUSES = new Set([
+  'cancelled',
+  'completed',
+  'no_show',
+  'passed',
+  'failed',
+]);
+
+function isLaneAActiveInterviewStatus(status: string | null | undefined): boolean {
+  return LANE_A_ACTIVE_STATUSES.has(String(status ?? '').trim());
+}
+
+function isLaneATerminalInterviewStatus(status: string | null | undefined): boolean {
+  return LANE_A_TERMINAL_STATUSES.has(String(status ?? '').trim());
 }
 
 const getStatusConfig = (t: any) => ({
@@ -346,15 +409,36 @@ export function InterviewsTab() {
 
     setLoading(true);
     try {
-      const [interviewsRes, candidatesRes] = await Promise.all([
+      const [interviewsRes, candidatesRes, evaluationsRes] = await Promise.all([
         listRecruitmentInterviews({ company_id: effectiveCompanyId }),
         listRecruitmentCandidates({
           company_id: effectiveCompanyId,
           page: 1,
           page_size: 500,
         }),
+        listCandidateEvaluations({ company_id: effectiveCompanyId }),
       ]);
-      setInterviews((interviewsRes.data ?? []).map(mapLaneAInterview));
+      const evalRows: EvalResultRow[] = (evaluationsRes.data ?? []).map((row) => ({
+        interview_id: row.interview_id ? String(row.interview_id) : null,
+        recruitment_candidate_id: row.recruitment_candidate_id
+          ? String(row.recruitment_candidate_id)
+          : null,
+        candidate_id: row.candidate_id ? String(row.candidate_id) : null,
+        result: row.result != null ? String(row.result) : null,
+        overall_feedback: row.overall_feedback ? String(row.overall_feedback) : null,
+        created_at: String(row.created_at ?? ''),
+      }));
+      setInterviews(
+        (interviewsRes.data ?? []).map((row) => {
+          const mapped = mapLaneAInterview(row);
+          const outcome = resolveEvalOutcomeForInterview(mapped, evalRows);
+          return {
+            ...mapped,
+            result: outcome.result,
+            feedback: outcome.feedback,
+          };
+        }),
+      );
       setCandidates(
         (candidatesRes.data ?? []).map((c) => ({
           id: c.id,
@@ -387,15 +471,14 @@ export function InterviewsTab() {
       interview.interviewer_name?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || interview.status === statusFilter;
-    // Lane A SoT chưa có interview_type / result — filter type/result chỉ áp khi field có giá trị
+    // Lane A SoT chưa có interview_type — filter type chỉ áp khi field có giá trị
     const matchesType =
       typeFilter === 'all' ||
       !interview.interview_type ||
       interview.interview_type === typeFilter;
-    const matchesResult =
-      resultFilter === 'all' ||
-      !interview.result ||
-      interview.result === resultFilter;
+    // Kết quả từ candidate_evaluations — null = Chờ kết quả (pending)
+    const effectiveResult = interview.result || 'pending';
+    const matchesResult = resultFilter === 'all' || effectiveResult === resultFilter;
     
     return matchesSearch && matchesStatus && matchesType && matchesResult;
   });
@@ -413,20 +496,29 @@ export function InterviewsTab() {
   };
 
   const handleOpenUpdate = (interview: Interview) => {
-    if (interview.status === 'scheduled' || interview.status === 'confirmed') {
+    // Lane A SoT (F-REC-IV-02): only ACTIVE may change status / reschedule.
+    // TERMINAL → HRM-REC-IV-400-INVALID-TRANSITION if FE still PATCHes /status.
+    if (isLaneAActiveInterviewStatus(interview.status)) {
       setManageInterview(interview);
       return;
     }
-    setSelectedInterview(interview);
-    form.reset({
-      status: interview.status || 'scheduled',
-      rating: ratingFormValue(interview.rating),
-      feedback: interview.feedback || '',
-      result: interview.result || 'pending',
-      next_steps: interview.next_steps || '',
-      interview_round: interview.interview_round || 1,
+    if (isLaneATerminalInterviewStatus(interview.status)) {
+      toast({
+        title: t('common.error'),
+        description:
+          'Lịch này đã kết thúc (hoàn tất / hủy / không đến). Không đổi trạng thái được — dùng «Đánh giá ứng viên» nếu cần ghi nhận kết quả.',
+        variant: 'destructive',
+      });
+      if (interview.candidate_id) {
+        deferOpenFromMenu(() => handleOpenEvaluation(interview));
+      }
+      return;
+    }
+    toast({
+      title: t('common.error'),
+      description: `Trạng thái lịch «${interview.status || '—'}» không hỗ trợ cập nhật trên Lane A.`,
+      variant: 'destructive',
     });
-    setIsUpdateDialogOpen(true);
   };
 
   const handleDeleteConfirm = (interview: Interview) => {
@@ -504,6 +596,26 @@ export function InterviewsTab() {
 
   const onSubmitUpdate = async (data: UpdateInterviewFormValues) => {
     if (!selectedInterview || !effectiveCompanyId) return;
+
+    // Hard gate: legacy form must never PATCH terminal / same-status (HRM-REC-IV-400-INVALID-TRANSITION).
+    if (!isLaneAActiveInterviewStatus(selectedInterview.status)) {
+      toast({
+        title: t('common.error'),
+        description:
+          'Không thể đổi trạng thái lịch đã kết thúc. Đóng hộp thoại và dùng «Quản lý lịch» trên bản ghi Đã lên lịch / Đã xác nhận.',
+        variant: 'destructive',
+      });
+      setIsUpdateDialogOpen(false);
+      return;
+    }
+    if (data.status === selectedInterview.status) {
+      toast({
+        title: t('common.error'),
+        description: 'Trạng thái không đổi. Chọn trạng thái đích khác (ví dụ Hoàn thành / Hủy).',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     const isCompletingInterview = data.status === 'completed' && selectedInterview.status !== 'completed';
     const nextStatus = data.status as HrmRecruitmentInterviewStatus;
@@ -927,28 +1039,52 @@ export function InterviewsTab() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleViewDetail(interview)}>
+                          <DropdownMenuItem
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              deferOpenFromMenu(() => handleViewDetail(interview));
+                            }}
+                          >
                             <Eye className="w-4 h-4 mr-2" />
                             {t('recruitment.it.viewDetail')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleOpenUpdate(interview)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            {t('recruitment.it.update')}
-                          </DropdownMenuItem>
+                          {isLaneAActiveInterviewStatus(interview.status) && (
+                            <DropdownMenuItem
+                              onSelect={(e) => {
+                                e.preventDefault();
+                                deferOpenFromMenu(() => handleOpenUpdate(interview));
+                              }}
+                            >
+                              <Edit className="w-4 h-4 mr-2" />
+                              {t('recruitment.it.update')}
+                            </DropdownMenuItem>
+                          )}
                           {interview.candidate_id && (
-                            <DropdownMenuItem onClick={() => handleOpenEvaluation(interview)}>
+                            <DropdownMenuItem
+                              onSelect={(e) => {
+                                e.preventDefault();
+                                deferOpenFromMenu(() => handleOpenEvaluation(interview));
+                              }}
+                            >
                               <ClipboardList className="w-4 h-4 mr-2" />
                               {t('recruitment.it.evaluateCandidate')}
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem 
-                            onClick={() => handleDeleteConfirm(interview)}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            {t('recruitment.it.deleteBtn')}
-                          </DropdownMenuItem>
+                          {isLaneAActiveInterviewStatus(interview.status) && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                onSelect={(e) => {
+                                  e.preventDefault();
+                                  deferOpenFromMenu(() => handleDeleteConfirm(interview));
+                                }}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                {t('recruitment.it.deleteBtn')}
+                              </DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -1081,13 +1217,25 @@ export function InterviewsTab() {
                 <Button variant="outline" onClick={() => setIsDetailDialogOpen(false)}>
                   {t('recruitment.it.close')}
                 </Button>
-                <Button onClick={() => {
-                  setIsDetailDialogOpen(false);
-                  handleOpenUpdate(selectedInterview);
-                }}>
-                  <Edit className="w-4 h-4 mr-2" />
-                  {t('recruitment.it.update')}
-                </Button>
+                {isLaneAActiveInterviewStatus(selectedInterview.status) && (
+                  <Button onClick={() => {
+                    setIsDetailDialogOpen(false);
+                    deferOpenFromMenu(() => handleOpenUpdate(selectedInterview));
+                  }}>
+                    <Edit className="w-4 h-4 mr-2" />
+                    {t('recruitment.it.update')}
+                  </Button>
+                )}
+                {selectedInterview.candidate_id &&
+                  isLaneATerminalInterviewStatus(selectedInterview.status) && (
+                  <Button onClick={() => {
+                    setIsDetailDialogOpen(false);
+                    deferOpenFromMenu(() => handleOpenEvaluation(selectedInterview));
+                  }}>
+                    <ClipboardList className="w-4 h-4 mr-2" />
+                    {t('recruitment.it.evaluateCandidate')}
+                  </Button>
+                )}
               </div>
             </div>
           )}
@@ -1367,7 +1515,7 @@ export function InterviewsTab() {
       />
 
       {manageInterview?.candidate_id &&
-      (manageInterview.status === 'scheduled' || manageInterview.status === 'confirmed') ? (
+      isLaneAActiveInterviewStatus(manageInterview.status) ? (
         <ManageActiveInterviewDialog
           open={!!manageInterview}
           onOpenChange={(open) => {

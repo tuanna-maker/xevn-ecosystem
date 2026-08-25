@@ -43,6 +43,7 @@ import {
   isRecStageRejectOutcome,
   isRecStageReverseTransition,
   REC_STAGE_REJECT_REASON_REQUIRED_VI,
+  REC_STAGE_TRANSITION_EMPTY_CTA_VI,
   REC_STAGE_TRANSITION_SUCCESS_VI,
   resolveLaneACandidateIdForTransition,
   type RecStageTransitionCandidate,
@@ -178,7 +179,14 @@ export function CandidateStageTransitionDialog({
               <Loader2 className="h-4 w-4 animate-spin" />
               Đang tải danh mục giai đoạn…
             </div>
-          ) : catalogCount <= 0 ? null : (
+          ) : catalogCount <= 0 ? (
+            <p
+              className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100"
+              data-testid="rec-stage-transition-empty-cta"
+            >
+              {REC_STAGE_TRANSITION_EMPTY_CTA_VI}
+            </p>
+          ) : (
             <div className="space-y-2">
               <Label htmlFor="rec-stage-to">Trạng thái mới</Label>
               <Select

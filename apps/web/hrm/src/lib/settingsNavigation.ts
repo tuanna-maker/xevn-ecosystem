@@ -28,6 +28,7 @@ import {
   Image,
   Key,
   Layers,
+  Mail,
   ScrollText,
   Settings as SettingsIcon,
   Shield,
@@ -66,6 +67,7 @@ export type SettingsTabId =
   | 'si-insurance-types'
   | 'si-insurers'
   | 'rec-pipeline-stages'
+  | 'rec-mail-templates'
   | 'settings-defaults'
   | 'catalog-leave-types'
   | 'payroll-insurance-rates'
@@ -159,6 +161,7 @@ const ALL_SETTINGS_TAB_IDS = new Set<SettingsTabId>([
   'si-insurance-types',
   'si-insurers',
   'rec-pipeline-stages',
+  'rec-mail-templates',
   'settings-defaults',
   'catalog-leave-types',
   'payroll-insurance-rates',
@@ -216,6 +219,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
       { id: 'jd-master-library', label: 'Thư viện JD', icon: FileText, testId: 'settings-tab-jd-master-library' },
       { id: 'jd-dynamic', label: 'Trường JD linh hoạt', icon: FileText, testId: 'settings-tab-jd-dynamic' },
       { id: 'rec-pipeline-stages', label: 'Giai đoạn tuyển dụng', icon: GitBranch, testId: 'settings-tab-rec-pipeline-stages' },
+      { id: 'rec-mail-templates', label: 'Mẫu thư tuyển', icon: Mail, testId: 'settings-tab-rec-mail-templates' },
       { id: 'rec-sources', label: 'Nguồn tuyển dụng', icon: Globe, testId: 'settings-tab-rec-sources' },
       { id: 'rec-interview-types', label: 'Loại phỏng vấn', icon: ClipboardCheck, testId: 'settings-tab-rec-interview-types' },
       { id: 'rec-rejection-reasons', label: 'Lý do từ chối', icon: FileText, testId: 'settings-tab-rec-rejection-reasons' },

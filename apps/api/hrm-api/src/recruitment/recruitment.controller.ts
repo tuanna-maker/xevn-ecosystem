@@ -163,6 +163,7 @@ import {
   EnqueueCandidateMailDto,
   ListCandidateMailQueryDto,
 } from './dto/candidate-mail.dto';
+import { UpsertMailTemplatesDto } from './dto/mail-templates.dto';
 import { AcceptOfferDto } from './dto/accept-offer.dto';
 import { requireUvYctdRequisitionId } from './uv-yctd-bind';
 import { UpdateCandidatePoolDto } from './dto/update-candidate-pool.dto';
@@ -717,6 +718,20 @@ export class RecruitmentController {
     return this.recruitmentCatalog
       .createHeadcountProposal(body, authorization)
       .then((data) => ok(data, 'HRM-REC-HC-201', 'Headcount proposal created'));
+  }
+
+  @Patch('headcount-proposals/:proposalId')
+  updateHeadcountProposal(
+    @Param('proposalId', new ParseUUIDPipe()) proposalId: string,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Query('company_id') companyId: string,
+    @Body() body: Record<string, unknown>,
+  ) {
+    this.assertAccess(authorization, internalApiKey);
+    return this.recruitmentCatalog
+      .updateHeadcountProposal(proposalId, body, companyId, authorization)
+      .then((data) => ok(data, 'HRM-REC-HC-200', 'Headcount proposal updated'));
   }
 
   @Patch('headcount-proposals/:proposalId/status')
@@ -2102,6 +2117,62 @@ export class RecruitmentController {
       )
       .then((data) =>
         ok(data, 'HRM-REC-200', 'Candidate stage history listed'),
+      );
+  }
+
+  /**
+   * @CODE-MEMORY method · GET …/mail-templates — effective catalog for Settings + dialog
+   */
+  @Get('mail-templates')
+  listMailTemplates(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Query('company_id') companyId: string | undefined,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const scopeCompany = companyId ?? headerCompanyId ?? 'main';
+    resolveScopeContext(authHeader, { tenantId, companyId: scopeCompany });
+    return this.recruitmentService
+      .listMailTemplatesEffective(
+        scopeCompany,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) =>
+        ok(data, 'HRM-REC-MAIL-200', 'Recruitment mail templates listed'),
+      );
+  }
+
+  /**
+   * @CODE-MEMORY method · PUT …/mail-templates — save company catalog
+   */
+  @Put('mail-templates')
+  upsertMailTemplates(
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-internal-api-key') internalApiKey: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-company-id') headerCompanyId: string | undefined,
+    @Body() body: UpsertMailTemplatesDto,
+    @Headers() headers: Record<string, unknown> = {},
+  ) {
+    const authHeader = resolveAuthorizationHeader(authorization, headers);
+    this.assertAccess(authHeader, internalApiKey);
+    const scopeCompany =
+      body.company_id?.trim() || headerCompanyId || 'main';
+    resolveScopeContext(authHeader, { tenantId, companyId: scopeCompany });
+    return this.recruitmentService
+      .upsertMailTemplates(
+        scopeCompany,
+        body.templates,
+        authHeader,
+        toHrmListScopeContext(tenantId),
+      )
+      .then((data) =>
+        ok(data, 'HRM-REC-MAIL-200', 'Recruitment mail templates saved'),
       );
   }
 

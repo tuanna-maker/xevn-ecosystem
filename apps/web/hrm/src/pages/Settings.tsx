@@ -129,6 +129,7 @@ import { CatalogJobTitlesSettingsPanel } from '@/components/settings/CatalogJobT
 import { SiInsurerSettingsPanel } from '@/components/settings/SiInsurerSettingsPanel';
 import { InsuranceRateSetupScreen } from '@/components/settings/InsuranceRateSetupScreen';
 import { RecPipelineStageSettingsPanel } from '@/components/settings/RecPipelineStageSettingsPanel';
+import { RecMailTemplatesSettingsPanel } from '@/components/settings/RecMailTemplatesSettingsPanel';
 import { RecCandidateSourceSettingsPanel } from '@/components/settings/RecCandidateSourceSettingsPanel';
 import { RecInterviewTypeSettingsPanel } from '@/components/settings/RecInterviewTypeSettingsPanel';
 import { AttLeaveTypeSettingsPanel } from '@/components/settings/AttLeaveTypeSettingsPanel';
@@ -588,6 +589,12 @@ export default function Settings() {
         {settingsTab === 'rec-pipeline-stages' && (<div className="space-y-4">
           <RecPipelineStageSettingsPanel />
         </div>)}
+
+        {settingsTab === 'rec-mail-templates' && (
+          <div className="space-y-4">
+            <RecMailTemplatesSettingsPanel />
+          </div>
+        )}
 
         {settingsTab === 'settings-defaults' && (<div className="space-y-4">
           <SettingsDefaultsPanel />

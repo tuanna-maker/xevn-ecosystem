@@ -64,7 +64,7 @@ import * as React from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 
 import { cn } from "@/lib/utils";
-import { getDialogPortalContainer, syncHrmStylesheetsToParentForPortalDialogs } from "@/lib/hrmDialogPortal";
+import { getDialogPortalContainer, scheduleReleaseHrmPortalBodyLock, syncHrmStylesheetsToParentForPortalDialogs } from "@/lib/hrmDialogPortal";
 import { attachPortalDialogA11yMirror } from "@/lib/hrmDialogPortalA11y";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -72,7 +72,18 @@ type AlertDialogHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
   brandChrome?: boolean;
 };
 
-const AlertDialog = AlertDialogPrimitive.Root;
+const AlertDialog = ({
+  onOpenChange,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Root>) => (
+  <AlertDialogPrimitive.Root
+    {...props}
+    onOpenChange={(open) => {
+      onOpenChange?.(open);
+      if (!open) scheduleReleaseHrmPortalBodyLock();
+    }}
+  />
+);
 
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
 

@@ -184,6 +184,7 @@ import {
   resolveCandidateSourceDisplayLabel,
 } from '@/lib/candidateRecruitmentChannelUi';
 import {
+  REC_STAGE_TRANSITION_EMPTY_CTA_VI,
   shouldUseLaneAStageTransition,
 } from '@/lib/recCandidateStageTransition';
 import { shouldShowAcceptOfferCta } from '@/lib/recCandidateAcceptOffer';
@@ -636,8 +637,13 @@ export function CandidatesTab() {
       });
       return;
     }
+    // EFF=0: vẫn mở dialog để hiện CTA Cài đặt (không nuốt click Đổi trạng thái).
     if (catalogCount <= 0) {
-      return;
+      toast({
+        title: t('common.error'),
+        description: REC_STAGE_TRANSITION_EMPTY_CTA_VI,
+        variant: 'destructive',
+      });
     }
     setStageTransitionCandidate(candidate);
     setStageTransitionInitial(

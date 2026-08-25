@@ -137,3 +137,71 @@ export function syncHrmStylesheetsToParentForPortalDialogs(): void {
     head.appendChild(clone);
   });
 }
+
+/**
+ * Radix Dialog + DropdownMenu (parent-portal CC embed) can leave
+ * `pointer-events: none` / RemoveScroll styles on iframe or parent body after
+ * the overlay closes — UI looks frozen until full reload.
+ */
+export function releaseHrmPortalBodyLock(): void {
+  const clear = (doc: Document | null | undefined) => {
+    if (!doc) return;
+    const body = doc.body;
+    const root = doc.documentElement;
+    if (body) {
+      if (body.style.pointerEvents === 'none') {
+        body.style.pointerEvents = '';
+      }
+      body.style.removeProperty('pointer-events');
+      if (body.style.overflow === 'hidden') {
+        body.style.removeProperty('overflow');
+      }
+      body.style.removeProperty('padding-right');
+      body.style.removeProperty('margin-right');
+      body.removeAttribute('data-scroll-locked');
+      body.removeAttribute('data-aria-hidden');
+      if (body.hasAttribute('inert')) body.removeAttribute('inert');
+      if (body.getAttribute('aria-hidden') === 'true') {
+        body.removeAttribute('aria-hidden');
+      }
+    }
+    if (root) {
+      root.style.removeProperty('pointer-events');
+      if (root.style.overflow === 'hidden') {
+        root.style.removeProperty('overflow');
+      }
+    }
+  };
+
+  if (typeof document !== 'undefined') {
+    clear(document);
+  }
+  try {
+    if (typeof window !== 'undefined' && window.parent !== window) {
+      clear(window.parent.document);
+    }
+  } catch {
+    // cross-origin parent — ignore
+  }
+}
+
+/** Call after Dialog/AlertDialog/Sheet closes — Radix Presence may restore lock briefly. */
+export function scheduleReleaseHrmPortalBodyLock(): void {
+  if (typeof window === 'undefined') return;
+  queueMicrotask(() => releaseHrmPortalBodyLock());
+  window.setTimeout(() => releaseHrmPortalBodyLock(), 0);
+  window.setTimeout(() => releaseHrmPortalBodyLock(), 50);
+  window.setTimeout(() => releaseHrmPortalBodyLock(), 320);
+}
+
+/**
+ * Open a Dialog from a DropdownMenu item only after the menu has closed.
+ * Prevents nested DismissableLayer leaving body `pointer-events: none`.
+ */
+export function deferOpenFromMenu(open: () => void): void {
+  if (typeof window === 'undefined') {
+    open();
+    return;
+  }
+  window.setTimeout(open, 0);
+}

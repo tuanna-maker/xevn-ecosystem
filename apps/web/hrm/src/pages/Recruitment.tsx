@@ -248,6 +248,7 @@ const RecruitmentReportsTab = lazy(() => import('@/components/recruitment/Recrui
 const HireEmployeeLinkDialog = lazy(() => import('@/components/recruitment/HireEmployeeLinkDialog').then(m => ({ default: m.HireEmployeeLinkDialog })));
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { getHrmPortalMode } from '@/lib/hrmPortalMode';
+import { scheduleReleaseHrmPortalBodyLock } from '@/lib/hrmDialogPortal';
 import { resolveRecruitmentTabFromSearch } from '@/lib/recruitmentEmbedDeepLink';
 import { isRecruitmentWorkflowLocked, RECRUITMENT_WF_LOCKED_HINT_VI } from '@/lib/recruitmentWorkflowUi';
 import {
@@ -571,6 +572,12 @@ export default function Recruitment() {
     const tab = resolveRecruitmentTabFromSearch(location.search);
     if (tab) setActiveTab(tab);
   }, [location.search]);
+
+  // Recover from leftover Radix portal body lock (DropdownMenu→Dialog in CC embed).
+  useEffect(() => {
+    scheduleReleaseHrmPortalBodyLock();
+  }, [activeTab]);
+
   const [selectedCandidate, setSelectedCandidate] = useState<KanbanCandidate | null>(null);
   const [selectedProposal, setSelectedProposal] = useState<typeof staffingProposals[0] | null>(null);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
@@ -1409,7 +1416,7 @@ export default function Recruitment() {
           </Suspense>
         )}
 
-        {/* Proposals Tab — O5 HOLD ≠ YCTD SoT; CTA redirect only */}
+        {/* Proposals Tab — create đề xuất ngoài ĐB tại chỗ; convert→YCTD khi đã duyệt */}
         {activeTab === 'proposals' && (
           <Suspense fallback={<RecTabSkeleton />}>
             <HeadcountProposalTab

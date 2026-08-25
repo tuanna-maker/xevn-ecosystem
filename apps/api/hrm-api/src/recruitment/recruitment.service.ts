@@ -209,6 +209,12 @@ import {
   EnqueueCandidateMailDto,
   ListCandidateMailQueryDto,
 } from './dto/candidate-mail.dto';
+import { deliverRecruitmentMail } from './recruitment-mail-delivery';
+import {
+  mergeRecMailTemplateCatalog,
+  resolveRecMailTemplateContent,
+  type RecMailTemplateCatalogItem,
+} from './recruitment-mail-templates';
 import { AcceptOfferDto } from './dto/accept-offer.dto';
 import {
   RecPipelineStageService,
@@ -225,6 +231,7 @@ import {
 } from './rec-pipeline-stage.constants';
 import {
   CFG_MAIL_TEMPLATE_CODES,
+  CFG_MAIL_TEMPLATES,
   DEFAULT_MAIL_TEMPLATE_CODES,
   HRM_REC_MAIL_404,
   HRM_REC_MAIL_CC_REQUIRED,
@@ -3236,10 +3243,17 @@ export class RecruitmentService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    await this.assertMailTemplateActiveOrThrow(
+    const catalog = await this.loadMailTemplateCatalog(
       candidate.company_id,
-      templateCode,
     );
+    const catalogHit = catalog.find((t) => t.code === templateCode);
+    if (!catalogHit || !catalogHit.active) {
+      throw new ApiException(
+        HRM_REC_MAIL_TEMPLATE_INACTIVE,
+        `Mẫu thư '${templateCode}' không hiệu lực / không tồn tại`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     const toEmails = this.normalizeEmailList(body.to);
     if (toEmails.length === 0) {
@@ -3270,33 +3284,101 @@ export class RecruitmentService {
       );
     }
 
+    const payloadObj =
+      body.payload && typeof body.payload === 'object' ? body.payload : {};
+    const subjectFromPayload =
+      typeof payloadObj.subject === 'string' ? payloadObj.subject : undefined;
+    const bodyFromPayload =
+      typeof payloadObj.body === 'string' ? payloadObj.body : undefined;
+
+    let positionTitle = '';
+    if (candidate.requisition_id) {
+      const reqRes = await this.db.query<{ title: string | null }>(
+        `SELECT nullif(btrim(title), '') AS title
+         FROM public.job_requisitions WHERE id = $1::uuid LIMIT 1;`,
+        [candidate.requisition_id],
+      );
+      positionTitle = (reqRes.rows[0]?.title ?? '').trim();
+    }
+
+    const mailContent = resolveRecMailTemplateContent({
+      templateCode,
+      subject: body.subject ?? subjectFromPayload,
+      body: body.body ?? bodyFromPayload,
+      catalogSubject: catalogHit.subject,
+      catalogBody: catalogHit.body,
+      vars: {
+        candidate_name: (candidate.full_name ?? '').trim() || 'Ứng viên',
+        position: positionTitle || 'Vị trí tuyển dụng',
+        company: (candidate.company_id ?? '').trim() || 'Công ty',
+      },
+    });
+
+    const payloadJson = {
+      ...payloadObj,
+      subject: mailContent.subject,
+      body: mailContent.body,
+    };
+
     const outboxId = randomUUID();
     const logId = randomUUID();
     const simulateFail = body.simulate_provider_fail === true;
-    const attemptResult: 'sent' | 'failed' = simulateFail ? 'failed' : 'sent';
-    const outboxStatus: 'sent' | 'failed' = attemptResult;
-    const errorMessage = simulateFail
-      ? 'Simulated provider failure (GĐ1)'
-      : null;
-    const providerRef = simulateFail ? null : `local-${outboxId.slice(0, 8)}`;
     const stageBefore = candidate.status;
 
+    type OutboxRow = {
+      id: string;
+      company_id: string;
+      recruitment_candidate_id: string | null;
+      application_id: string | null;
+      requisition_id: string | null;
+      template_code: string;
+      to_emails_json: unknown;
+      cc_emails_json: unknown;
+      payload_json: unknown;
+      status: string;
+      queued_at: string;
+      sent_at: string | null;
+      error_message: string | null;
+    };
+
+    let attemptResult: 'sent' | 'failed' = 'failed';
+    let errorMessage: string | null = null;
+    let providerRef: string | null = null;
+    let deliveryMode: 'local' | 'smtp' | null = null;
+
+    if (simulateFail) {
+      attemptResult = 'failed';
+      errorMessage = 'Simulated provider failure (GĐ1)';
+      providerRef = null;
+    } else {
+      try {
+        const delivered = await deliverRecruitmentMail(
+          {
+            to: toEmails,
+            cc: ccEmails.length > 0 ? ccEmails : undefined,
+            subject: mailContent.subject,
+            text: mailContent.body,
+          },
+          { outboxId },
+        );
+        attemptResult = 'sent';
+        providerRef = delivered.providerRef;
+        errorMessage = null;
+        deliveryMode = delivered.mode;
+      } catch (err) {
+        attemptResult = 'failed';
+        providerRef = null;
+        errorMessage =
+          err instanceof Error && err.message.trim()
+            ? err.message.trim().slice(0, 500)
+            : 'SMTP provider failure';
+      }
+    }
+
+    const outboxStatus: 'sent' | 'failed' = attemptResult;
+
     const outboxRow = await this.db.withTransaction(async (query) => {
-      const inserted = await query<{
-        id: string;
-        company_id: string;
-        recruitment_candidate_id: string | null;
-        application_id: string | null;
-        requisition_id: string | null;
-        template_code: string;
-        to_emails_json: unknown;
-        cc_emails_json: unknown;
-        payload_json: unknown;
-        status: string;
-        queued_at: string;
-        sent_at: string | null;
-        error_message: string | null;
-      }>(
+      const inserted = await query<OutboxRow>(
         `INSERT INTO public.rec_mail_outbox (
            id, company_id, recruitment_candidate_id, application_id, requisition_id,
            template_code, to_emails_json, cc_emails_json, payload_json,
@@ -3318,7 +3400,7 @@ export class RecruitmentService {
           templateCode,
           JSON.stringify(toEmails),
           ccEmails.length > 0 ? JSON.stringify(ccEmails) : null,
-          body.payload ? JSON.stringify(body.payload) : null,
+          JSON.stringify(payloadJson),
           outboxStatus,
           attemptResult === 'sent' ? new Date().toISOString() : null,
           errorMessage,
@@ -3354,11 +3436,16 @@ export class RecruitmentService {
     }
 
     const logRows = await this.loadMailLogs(outboxId);
-    const dto = this.mapMailOutboxDto(outboxRow, logRows);
-    if (simulateFail) {
+    const dto = {
+      ...this.mapMailOutboxDto(outboxRow, logRows),
+      delivery_mode: deliveryMode,
+      provider_ref: providerRef,
+    };
+    if (attemptResult === 'failed') {
       throw new ApiException(
         HRM_REC_MAIL_PROVIDER_FAIL,
-        'Gửi thất bại — giữ trạng thái failed · không đổi giai đoạn',
+        errorMessage ??
+          'Gửi thất bại — giữ trạng thái failed · không đổi giai đoạn',
         HttpStatus.BAD_REQUEST,
         { outbox: dto },
       );
@@ -3499,11 +3586,121 @@ export class RecruitmentService {
     return out;
   }
 
-  private async assertMailTemplateActiveOrThrow(
+  /**
+   * Effective REC mail template catalog (defaults ∪ company KV).
+   */
+  async listMailTemplatesEffective(
     companyId: string,
-    templateCode: string,
+    authorization?: string,
+    scopeContext?: HrmListScopeContext,
+  ) {
+    await this.ensureSchema();
+    const scope = resolveHrmListScope(
+      authorization,
+      companyId ?? '',
+      scopeContext,
+    );
+    const co =
+      (companyId ?? '').trim() ||
+      scope.companyIds[0]?.trim() ||
+      'main';
+    const items = await this.loadMailTemplateCatalog(co);
+    return {
+      company_id: co,
+      total: items.length,
+      data: items,
+      active_codes: items.filter((t) => t.active).map((t) => t.code),
+    };
+  }
+
+  async upsertMailTemplates(
+    companyId: string,
+    templates: Array<{
+      code: string;
+      label_vi: string;
+      subject: string;
+      body: string;
+      active: boolean;
+    }>,
+    authorization?: string,
+    scopeContext?: HrmListScopeContext,
+  ) {
+    await this.ensureSchema();
+    const scope = resolveHrmListScope(
+      authorization,
+      companyId ?? '',
+      scopeContext,
+    );
+    const co =
+      (companyId ?? '').trim() ||
+      scope.companyIds[0]?.trim() ||
+      'main';
+    assertResourceInHrmScope({ company_id: co }, scope, {
+      notFoundCode: 'HRM-REC-404',
+      mismatchCode: 'HRM-REC-409',
+    });
+
+    const merged = mergeRecMailTemplateCatalog(templates);
+    const activeCodes = merged.filter((t) => t.active).map((t) => t.code);
+    const tenant = this.resolveCatalogTenantId();
+
+    await this.upsertCompanySettingKv(
+      tenant,
+      co,
+      CFG_MAIL_TEMPLATES,
+      merged,
+    );
+    await this.upsertCompanySettingKv(
+      tenant,
+      co,
+      CFG_MAIL_TEMPLATE_CODES,
+      activeCodes,
+    );
+
+    return {
+      company_id: co,
+      total: merged.length,
+      data: merged,
+      active_codes: activeCodes,
+    };
+  }
+
+  private async upsertCompanySettingKv(
+    tenantId: string,
+    companyId: string,
+    settingKey: string,
+    value: unknown,
   ): Promise<void> {
-    let active = [...DEFAULT_MAIL_TEMPLATE_CODES] as string[];
+    const existing = await this.db.query<{ id: string }>(
+      `SELECT id FROM public.hrm_company_settings
+       WHERE company_id = $1::text
+         AND setting_key = $2
+         AND archived_at IS NULL
+       ORDER BY updated_at DESC
+       LIMIT 1;`,
+      [companyId, settingKey],
+    );
+    if (existing.rows[0]) {
+      await this.db.query(
+        `UPDATE public.hrm_company_settings
+         SET value_json = $1::jsonb, updated_at = NOW()
+         WHERE id = $2::uuid;`,
+        [JSON.stringify(value), existing.rows[0].id],
+      );
+      return;
+    }
+    await this.db.query(
+      `INSERT INTO public.hrm_company_settings
+        (id, tenant_id, company_id, setting_key, value_json)
+       VALUES ($1::uuid, $2, $3, $4, $5::jsonb);`,
+      [randomUUID(), tenantId, companyId, settingKey, JSON.stringify(value)],
+    );
+  }
+
+  private async loadMailTemplateCatalog(
+    companyId: string,
+  ): Promise<RecMailTemplateCatalogItem[]> {
+    let stored: unknown = null;
     try {
       const res = await this.db.query<{ value_json: unknown }>(
         `SELECT value_json
@@ -3513,21 +3710,58 @@ export class RecruitmentService {
            AND archived_at IS NULL
          ORDER BY updated_at DESC
          LIMIT 1;`,
-        [companyId, CFG_MAIL_TEMPLATE_CODES],
+        [companyId, CFG_MAIL_TEMPLATES],
       );
-      const raw = res.rows[0]?.value_json;
-      if (Array.isArray(raw)) {
-        active = raw.map((x) => String(x).trim()).filter(Boolean);
-      } else if (raw && typeof raw === 'object') {
-        const codes = (raw as { codes?: unknown }).codes;
-        if (Array.isArray(codes)) {
-          active = codes.map((x) => String(x).trim()).filter(Boolean);
-        }
-      }
+      stored = res.rows[0]?.value_json ?? null;
     } catch {
-      // soft-fail → defaults
+      stored = null;
     }
-    if (!active.includes(templateCode)) {
+    // Legacy: only codes array → apply active flags onto defaults
+    if (stored == null) {
+      try {
+        const codesRes = await this.db.query<{ value_json: unknown }>(
+          `SELECT value_json
+           FROM public.hrm_company_settings
+           WHERE company_id = $1::text
+             AND setting_key = $2
+             AND archived_at IS NULL
+           ORDER BY updated_at DESC
+           LIMIT 1;`,
+          [companyId, CFG_MAIL_TEMPLATE_CODES],
+        );
+        const raw = codesRes.rows[0]?.value_json;
+        let codes: string[] | null = null;
+        if (Array.isArray(raw)) {
+          codes = raw.map((x) => String(x).trim()).filter(Boolean);
+        } else if (raw && typeof raw === 'object') {
+          const c = (raw as { codes?: unknown }).codes;
+          if (Array.isArray(c)) {
+            codes = c.map((x) => String(x).trim()).filter(Boolean);
+          }
+        }
+        if (codes) {
+          const activeSet = new Set(codes.map((c) => c.toLowerCase()));
+          return mergeRecMailTemplateCatalog(
+            DEFAULT_MAIL_TEMPLATE_CODES.map((code) => ({
+              code,
+              active: activeSet.has(code),
+            })),
+          );
+        }
+      } catch {
+        // soft-fail → full defaults
+      }
+    }
+    return mergeRecMailTemplateCatalog(stored);
+  }
+
+  private async assertMailTemplateActiveOrThrow(
+    companyId: string,
+    templateCode: string,
+  ): Promise<void> {
+    const catalog = await this.loadMailTemplateCatalog(companyId);
+    const hit = catalog.find((t) => t.code === templateCode);
+    if (!hit || !hit.active) {
       throw new ApiException(
         HRM_REC_MAIL_TEMPLATE_INACTIVE,
         `Mẫu thư '${templateCode}' không hiệu lực / không tồn tại`,

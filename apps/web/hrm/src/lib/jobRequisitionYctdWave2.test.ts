@@ -330,14 +330,16 @@ describe('jobRequisitionYctdWave2 (PO-HRM-MVP-GD1-REC-02-CLUSTER-FE-01)', () => 
     expect(tabSrc).toMatch(/yctd-detail-rejected-reason/);
   });
 
-  it('HeadcountProposalTab O5 redirect CTA (source)', () => {
+  it('HeadcountProposalTab creates on-tab (source)', () => {
     const src = readFileSync(
       join(__dirname, '../components/recruitment/HeadcountProposalTab.tsx'),
       'utf8',
     );
-    expect(src).toMatch(/YCTD_PROPOSALS_DEPRECATE_VI/);
-    expect(src).toMatch(/onCreateOutOfPlanYctd/);
-    expect(src).toMatch(/DENY dual persist/);
+    expect(src).toMatch(/createHeadcountProposal/);
+    expect(src).toMatch(/setIsDialogOpen\(true\)/);
+    expect(src).toMatch(/data-testid="hcp-create-btn"/);
+    expect(src).toMatch(/data-testid="hcp-submit"/);
+    expect(src).not.toMatch(/YCTD_PROPOSALS_REDIRECT_CTA_VI/);
   });
 
   it('hrmApi exposes transitions + pipeline-flags physical paths', () => {

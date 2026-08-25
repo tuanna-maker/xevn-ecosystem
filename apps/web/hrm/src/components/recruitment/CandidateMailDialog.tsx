@@ -3,18 +3,12 @@
  * Screen:     /hr/recruitment — Dialog gửi thư tuyển theo mẫu (UV–YCTD)
  * UC:         UC-BP-REC-06 · AC-REC-06-01/02 · EX-01/02 · ALT-02/03
  * BR:         BR-BP-MAIL-01 · BR-REC-ME-PATH/MAIL-ONE/FAIL-NO-FAKE · O1/O3/O7/O8/O12
- * SRS:        FR-UC-BP-REC-06 Diễn biến #1 · special gửi thất bại
- * TechSpec:   docs/program/specs/PO-HRM-MVP-GD1-REC-06-CLUSTER-API-01.md F-REC-MAIL-01
- * Purpose:    Chọn template_code CFG · CC khi interview_invite · POST …/candidates/:id/mail;
- *             GET outbox+log F5; Network /recruitment/ only; không ghi stage.
- * WorkItem:   PO-HRM-MVP-GD1-REC-06-CLUSTER-FE-01
- * Coded:      2026-08-09
- * Callers:    CandidatesTab · CandidateDetailView (via parent)
- * Callees:    sendRecruitmentCandidateMail · listRecruitmentCandidateMail · recCandidateMailEval
+ * Purpose:    Chọn mẫu active từ CFG · sửa subject/body · POST …/mail; không ghi stage.
+ * WorkItem:   PO-HRM-MVP-GD1-REC-06-CLUSTER-FE-01 · PO-HRM-REC-MAIL-TEMPLATES-CFG-01
  * must_keep:  no Nest /rec · no Campaign · no stage mutate · U65 · honesty false · C-SLICE
- * LastVerified: docs/qa/evidence/po-hrm-mvp-gd1-rec-06-cluster-fe-01.md
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Loader2, Mail, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -35,25 +30,32 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
+import { useHrmOperatingUnitFilter } from '@/contexts/HrmOperatingUnitFilterContext';
 import { useToast } from '@/hooks/use-toast';
 import {
   listRecruitmentCandidateMail,
+  listRecruitmentMailTemplates,
   sendRecruitmentCandidateMail,
   type HrmRecMailOutboxRow,
+  type HrmRecMailTemplateItem,
 } from '@/integrations/hrmApi';
-import { toErrorMessage } from '@/lib/apiError';
+import { ApiClientError, toErrorMessage } from '@/lib/apiError';
+import { hrmPathWithEmbedSearch } from '@/lib/hrmEmbedNavigation';
 import {
+  fillRecMailPlaceholders,
   formatRecMailQueuedAtVi,
   formatRecMailStatusVi,
+  isDeliverableEmailAddress,
   isRecMailInviteTemplate,
   parseEmailList,
-  REC_MAIL_SUCCESS_TOAST_VI,
-  REC_MAIL_TEMPLATE_CODES,
-  REC_MAIL_TEMPLATE_LABEL_VI,
+  REC_MAIL_CC_HINT_VI,
+  REC_MAIL_LOCAL_STUB_TOAST_VI,
+  REC_MAIL_PROVIDER_FAIL_TOAST_VI,
+  REC_MAIL_SMTP_SENT_TOAST_VI,
+  REC_MAIL_TO_UNDELIVERABLE_VI,
   resolveLaneACandidateIdForMailEval,
   validateRecMailForm,
   type RecMailEvalCandidate,
-  type RecMailTemplateCode,
 } from '@/lib/recCandidateMailEval';
 
 export type CandidateMailDialogProps = {
@@ -63,6 +65,26 @@ export type CandidateMailDialogProps = {
   onSuccess?: () => void | Promise<void>;
 };
 
+function resolveMailTemplateVars(
+  candidate: RecMailEvalCandidate | null,
+  companyId: string | null | undefined,
+) {
+  const position =
+    (candidate?.yctd_title ?? '').trim() ||
+    (candidate?.position_name ?? '').trim() ||
+    (candidate?.position ?? '').trim() ||
+    'Vị trí tuyển dụng';
+  const company =
+    (candidate?.company_id ?? '').trim() ||
+    (companyId ?? '').trim() ||
+    'Công ty';
+  return {
+    candidate_name: (candidate?.full_name ?? '').trim() || 'Ứng viên',
+    position,
+    company,
+  };
+}
+
 export function CandidateMailDialog({
   open,
   onOpenChange,
@@ -70,24 +92,36 @@ export function CandidateMailDialog({
   onSuccess,
 }: CandidateMailDialogProps) {
   const { currentCompanyId } = useAuth();
+  const { listCompanyId } = useHrmOperatingUnitFilter();
+  const companyId = (listCompanyId || currentCompanyId || 'main').trim();
   const { toast } = useToast();
   const laneAId = candidate ? resolveLaneACandidateIdForMailEval(candidate) : null;
+  const settingsHref = hrmPathWithEmbedSearch('/settings?tab=rec-mail-templates');
 
-  const [templateCode, setTemplateCode] = useState<RecMailTemplateCode>('fail_cv');
+  const [templates, setTemplates] = useState<HrmRecMailTemplateItem[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [templateCode, setTemplateCode] = useState('');
   const [toRaw, setToRaw] = useState('');
   const [ccRaw, setCcRaw] = useState('');
+  const [subject, setSubject] = useState('');
+  const [bodyText, setBodyText] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [loadingOutbox, setLoadingOutbox] = useState(false);
   const [outbox, setOutbox] = useState<HrmRecMailOutboxRow[]>([]);
 
+  const activeTemplates = useMemo(
+    () => templates.filter((t) => t.active),
+    [templates],
+  );
+
   const loadOutbox = useCallback(async () => {
-    if (!open || !laneAId || !currentCompanyId) {
+    if (!open || !laneAId || !companyId) {
       setOutbox([]);
       return;
     }
     setLoadingOutbox(true);
     try {
-      const res = await listRecruitmentCandidateMail(laneAId, currentCompanyId, { limit: 20 });
+      const res = await listRecruitmentCandidateMail(laneAId, companyId, { limit: 20 });
       setOutbox(res.items);
     } catch (error) {
       setOutbox([]);
@@ -97,23 +131,87 @@ export function CandidateMailDialog({
     } finally {
       setLoadingOutbox(false);
     }
-  }, [open, laneAId, currentCompanyId]);
+  }, [open, laneAId, companyId]);
+
+  const applyCatalogTemplate = useCallback(
+    (tpl: HrmRecMailTemplateItem) => {
+      const vars = resolveMailTemplateVars(candidate, companyId);
+      setSubject(fillRecMailPlaceholders(tpl.subject, vars));
+      setBodyText(fillRecMailPlaceholders(tpl.body, vars));
+    },
+    [candidate, companyId],
+  );
+
+  const loadTemplates = useCallback(async () => {
+    if (!open || !companyId) {
+      setTemplates([]);
+      return;
+    }
+    setLoadingTemplates(true);
+    try {
+      const res = await listRecruitmentMailTemplates(companyId);
+      const items = Array.isArray(res.items) ? res.items : [];
+      setTemplates(items);
+      const activeList = items.filter((t) => t.active === true);
+      const preferred =
+        activeList.find((t) => t.code === 'interview_invite') ??
+        activeList[0] ??
+        null;
+      if (preferred) {
+        setTemplateCode(preferred.code);
+        applyCatalogTemplate(preferred);
+      } else {
+        setTemplateCode('');
+        setSubject('');
+        setBodyText('');
+      }
+    } catch (error) {
+      setTemplates([]);
+      setTemplateCode('');
+      setSubject('');
+      setBodyText('');
+      toast({
+        title: 'Không tải được mẫu thư',
+        description: toErrorMessage(error, 'Kiểm tra Cài đặt → Mẫu thư tuyển hoặc thử lại.'),
+        variant: 'destructive',
+      });
+      if (import.meta.env.DEV) {
+        console.warn('[CandidateMailDialog] list mail templates', error);
+      }
+    } finally {
+      setLoadingTemplates(false);
+    }
+  }, [open, companyId, applyCatalogTemplate, toast]);
 
   useEffect(() => {
     if (!open || !candidate) return;
-    setTemplateCode('fail_cv');
     setToRaw((candidate.email ?? '').trim());
     setCcRaw('');
+    void loadTemplates();
     void loadOutbox();
-  }, [open, candidate?.id, candidate?.email, loadOutbox]);
+  }, [open, candidate?.id, candidate?.email, loadTemplates, loadOutbox]);
 
   const inviteNeedsCc = isRecMailInviteTemplate(templateCode);
 
+  const handleTemplateChange = (value: string) => {
+    setTemplateCode(value);
+    const tpl = activeTemplates.find((t) => t.code === value);
+    if (tpl) applyCatalogTemplate(tpl);
+  };
+
   const handleSubmit = async () => {
-    if (!candidate || !laneAId || !currentCompanyId) {
+    if (!candidate || !laneAId || !companyId) {
       toast({
         title: 'Không gửi được thư',
         description: 'Thiếu liên kết UV–YCTD (Lane A).',
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (!templateCode.trim() || activeTemplates.length === 0) {
+      toast({
+        title: 'Chưa có mẫu thư',
+        description: 'Bật ít nhất một mẫu tại Cài đặt → Mẫu thư tuyển.',
         variant: 'destructive',
       });
       return;
@@ -126,10 +224,18 @@ export function CandidateMailDialog({
       to,
       ccInterviewers: cc,
     });
-    if (!gate.ok) {
+    if (gate.ok !== true) {
       toast({
         title: 'Thiếu thông tin thư',
-        description: gate.message,
+        description: 'message' in gate ? gate.message : 'Thiếu thông tin thư.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (!subject.trim() || !bodyText.trim()) {
+      toast({
+        title: 'Thiếu nội dung thư',
+        description: 'Nhập tiêu đề và nội dung trước khi gửi.',
         variant: 'destructive',
       });
       return;
@@ -137,23 +243,47 @@ export function CandidateMailDialog({
 
     setSubmitting(true);
     try {
-      const result = await sendRecruitmentCandidateMail(laneAId, currentCompanyId, {
+      const result = await sendRecruitmentCandidateMail(laneAId, companyId, {
         template_code: templateCode,
         to,
         cc_interviewers: inviteNeedsCc ? cc : cc.length > 0 ? cc : undefined,
+        subject: subject.trim(),
+        body: bodyText.trim(),
         application_id: candidate.application_id ?? undefined,
       });
       const statusLabel = formatRecMailStatusVi(result.status);
-      toast({
-        title: 'Đã gửi / xếp hàng thư',
-        description: `${REC_MAIL_SUCCESS_TOAST_VI} · ${statusLabel}`,
-      });
+      const providerRef =
+        result.provider_ref ||
+        result.log?.find((l) => l.provider_ref)?.provider_ref ||
+        '';
+      const isLocalStub =
+        result.delivery_mode === 'local' ||
+        String(providerRef).startsWith('local-');
+      const toLabel = to.join(', ');
+      if (isLocalStub) {
+        toast({
+          title: 'Chưa gửi Gmail thật',
+          description: REC_MAIL_LOCAL_STUB_TOAST_VI,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Đã gửi thư (SMTP)',
+          description: `Tới: ${toLabel} · ${REC_MAIL_SMTP_SENT_TOAST_VI} · ${statusLabel}${
+            providerRef ? ` · ${providerRef}` : ''
+          }`,
+        });
+      }
       await loadOutbox();
       await onSuccess?.();
     } catch (error) {
+      const providerFail =
+        error instanceof ApiClientError && error.code === 'HRM-REC-MAIL-PROVIDER-FAIL';
       toast({
         title: 'Gửi thư thất bại',
-        description: toErrorMessage(error, 'Không xếp hàng được thư. Kiểm tra mẫu / CC / phạm vi.'),
+        description: providerFail
+          ? toErrorMessage(error, REC_MAIL_PROVIDER_FAIL_TOAST_VI)
+          : toErrorMessage(error, 'Không xếp hàng được thư. Kiểm tra mẫu / CC / phạm vi.'),
         variant: 'destructive',
       });
       await loadOutbox();
@@ -181,26 +311,59 @@ export function CandidateMailDialog({
             <p className="text-xs text-muted-foreground">
               {candidate?.full_name ?? 'UV'} · Lane A{' '}
               <code className="text-[10px]">{laneAId.slice(0, 8)}…</code>
-              {' · '}Network chỉ <code className="text-[10px]">/recruitment/…/mail</code>
+              {' · '}
+              <Link
+                to={settingsHref}
+                className="underline underline-offset-2"
+                data-testid="rec-mail-open-settings"
+              >
+                Cấu hình mẫu thư
+              </Link>
             </p>
+            {(() => {
+              const latest = outbox[0];
+              const latestLocal = latest?.log?.some((l) =>
+                String(l.provider_ref ?? '').startsWith('local-'),
+              );
+              if (!latestLocal) return null;
+              return (
+                <p
+                  className="text-xs rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-amber-900 dark:text-amber-100"
+                  data-testid="rec-mail-local-stub-banner"
+                >
+                  Lần gửi gần nhất là stub <code>local-…</code> (chưa SMTP). Cấu hình{' '}
+                  <code>HRM_SMTP_*</code> + App Password rồi restart hrm-api.
+                </p>
+              );
+            })()}
 
             <div className="space-y-2">
-              <Label htmlFor="rec-mail-template">Mẫu thư (template_code)</Label>
-              <Select
-                value={templateCode}
-                onValueChange={(v) => setTemplateCode(v as RecMailTemplateCode)}
-              >
-                <SelectTrigger id="rec-mail-template" data-testid="rec-mail-template">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {REC_MAIL_TEMPLATE_CODES.map((code) => (
-                    <SelectItem key={code} value={code}>
-                      {REC_MAIL_TEMPLATE_LABEL_VI[code]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="rec-mail-template">Mẫu thư đã cấu hình</Label>
+              {loadingTemplates ? (
+                <p className="text-xs text-muted-foreground flex items-center gap-2">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" /> Đang tải mẫu…
+                </p>
+              ) : activeTemplates.length === 0 ? (
+                <p className="text-sm text-destructive" data-testid="rec-mail-templates-empty">
+                  Chưa có mẫu đang bật.{' '}
+                  <Link to={settingsHref} className="underline underline-offset-2">
+                    Mở Cài đặt → Mẫu thư tuyển
+                  </Link>
+                </p>
+              ) : (
+                <Select value={templateCode} onValueChange={handleTemplateChange}>
+                  <SelectTrigger id="rec-mail-template" data-testid="rec-mail-template">
+                    <SelectValue placeholder="Chọn mẫu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activeTemplates.map((tpl) => (
+                      <SelectItem key={tpl.code} value={tpl.code}>
+                        {tpl.label_vi || tpl.code}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -210,9 +373,21 @@ export function CandidateMailDialog({
                 data-testid="rec-mail-to"
                 value={toRaw}
                 onChange={(e) => setToRaw(e.target.value)}
-                placeholder="email@xe.vn"
+                placeholder="email@gmail.com"
                 type="email"
               />
+              {parseEmailList(toRaw).some((e) => e && !isDeliverableEmailAddress(e)) ? (
+                <p
+                  className="text-xs text-destructive"
+                  data-testid="rec-mail-to-undeliverable"
+                >
+                  {REC_MAIL_TO_UNDELIVERABLE_VI}
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Phải là Gmail/Outlook thật — không dùng email giả như @dev.local.
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -227,10 +402,35 @@ export function CandidateMailDialog({
                 placeholder="pv1@xe.vn, pv2@xe.vn"
               />
               {inviteNeedsCc ? (
-                <p className="text-xs text-muted-foreground">
-                  BR-BP-MAIL-01 — thiếu CC → 400 HRM-REC-MAIL-CC-REQUIRED · không đổi stage.
-                </p>
+                <p className="text-xs text-muted-foreground">{REC_MAIL_CC_HINT_VI}</p>
               ) : null}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rec-mail-subject">Tiêu đề</Label>
+              <Input
+                id="rec-mail-subject"
+                data-testid="rec-mail-subject"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Tiêu đề thư"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rec-mail-body">Nội dung</Label>
+              <Textarea
+                id="rec-mail-body"
+                data-testid="rec-mail-body"
+                value={bodyText}
+                onChange={(e) => setBodyText(e.target.value)}
+                placeholder="Nội dung thư (có thể sửa trước khi gửi)"
+                rows={10}
+                className="min-h-[12rem] font-sans text-sm"
+              />
+              <p className="text-xs text-muted-foreground">
+                Đổi mẫu sẽ nạp lại nội dung đã cấu hình (ghi đè chỉnh sửa hiện tại).
+              </p>
             </div>
 
             <div className="rounded-md border p-3 space-y-2" data-testid="rec-mail-outbox-panel">
@@ -258,6 +458,7 @@ export function CandidateMailDialog({
                   {outbox.map((row, idx) => {
                     const id = row.outbox_id || row.id || `row-${idx}`;
                     const logCount = Array.isArray(row.log) ? row.log.length : 0;
+                    const providerRef = row.log?.find((l) => l.provider_ref)?.provider_ref;
                     return (
                       <li
                         key={id}
@@ -271,6 +472,14 @@ export function CandidateMailDialog({
                         </span>
                         {logCount > 0 ? (
                           <span className="text-muted-foreground">log×{logCount}</span>
+                        ) : null}
+                        {providerRef ? (
+                          <span
+                            className="text-muted-foreground truncate max-w-[10rem]"
+                            title={providerRef}
+                          >
+                            ref:{providerRef}
+                          </span>
                         ) : null}
                         {row.error_message ? (
                           <span className="text-destructive truncate max-w-[12rem]">
@@ -293,7 +502,7 @@ export function CandidateMailDialog({
           <Button
             type="button"
             data-testid="rec-mail-submit"
-            disabled={!laneAId || submitting}
+            disabled={!laneAId || submitting || activeTemplates.length === 0 || !templateCode}
             onClick={() => void handleSubmit()}
           >
             {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
