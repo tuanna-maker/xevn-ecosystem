@@ -1,7 +1,0 @@
-const { Client } = require('pg');
-const client = new Client('postgresql://app1:5^S0CEpvYwC1(%23YN1UoJ@113.20.107.184:6432/xevn_hrm');
-client.connect()
-  .then(() => client.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'pay_payroll_group'`))
-  .then(res => console.log(res.rows.map(r => r.column_name)))
-  .then(() => client.end())
-  .catch(console.error);

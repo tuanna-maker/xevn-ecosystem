@@ -142,12 +142,11 @@ export class InternalNewsService {
       values.push(query.category);
     }
 
-    // Status filter
+    // Status filter — admin list may include drafts via include_drafts=true
     if (query.status) {
       filters.push(`status = $${values.length + 1}`);
       values.push(query.status);
-    } else if (query.include_drafts !== 'true') {
-      // Default: only show published news
+    } else if (!query.include_drafts) {
       filters.push(`status = 'published'`);
     }
 

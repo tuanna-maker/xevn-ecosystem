@@ -180,7 +180,10 @@ import {
   resolveHrmSettingsCatalogCompanyId,
 } from '../common/hrm-list-scope';
 import { masterTenantIdFromEnv } from '../common/tenant-scope-env';
-import { ensureHrmTenantIdColumns } from '../common/hrm-tenant-scope-schema';
+import {
+  backfillRecruitmentMainPartitionTenantId,
+  ensureHrmTenantIdColumns,
+} from '../common/hrm-tenant-scope-schema';
 import type { HrmDbQueryFn } from '../db/hrm-db.service';
 import { HrmDbService } from '../db/hrm-db.service';
 import { SettingsCatalogsService } from '../settings-catalogs/settings-catalogs.service';
@@ -425,6 +428,10 @@ export const HRM_REC_GRADE_KEY = 'HRM-REC-GRADE-KEY';
 
 @Injectable()
 export class RecruitmentService {
+  /** REC-PERF: skip ~65 DDL round-trips after first successful ensure (remote DB). */
+  private schemaReady = false;
+  private schemaEnsurePromise: Promise<void> | null = null;
+
   constructor(
     private readonly db: HrmDbService,
     private readonly recruitmentWorkflowBridge: RecruitmentWorkflowBridge,
@@ -493,6 +500,14 @@ export class RecruitmentService {
   }
 
   private async ensureSchema() {
+    if (this.schemaReady) return;
+    if (this.schemaEnsurePromise) return this.schemaEnsurePromise;
+    this.schemaEnsurePromise = this.runEnsureSchema();
+    return this.schemaEnsurePromise;
+  }
+
+  private async runEnsureSchema() {
+    try {
     await this.db.query(`
       CREATE TABLE IF NOT EXISTS public.job_requisitions (
         id UUID PRIMARY KEY,
@@ -944,6 +959,14 @@ export class RecruitmentService {
     `);
     await this.recruitmentWorkflowBridge.ensureSchema();
     await ensureHrmTenantIdColumns((sql) => this.db.query(sql));
+    await backfillRecruitmentMainPartitionTenantId(
+      (sql, params) => this.db.query(sql, params),
+      masterTenantIdFromEnv(),
+    );
+    this.schemaReady = true;
+    } finally {
+      this.schemaEnsurePromise = null;
+    }
   }
 
   private toViVnDateTime(value: string | null): string {
@@ -2588,9 +2611,17 @@ export class RecruitmentService {
    * @CODE-MEMORY-CHANGE 2026-08-06 PO-HRM-REC-UV-YCTD-BE-01
    * F-REC-UV-YCTD-03: REQUIRED/STATUS/NOT-FOUND/MISMATCH · alias · position derive · no job_postings.
    */
-  async createCandidate(payload: CreateCandidateDto, authorization?: string) {
+  async createCandidate(
+    payload: CreateCandidateDto,
+    authorization?: string,
+    scopeContext?: HrmListScopeContext,
+  ) {
     await this.ensureSchema();
-    const scope = resolveHrmListScope(authorization, payload.company_id);
+    const scope = resolveHrmListScope(
+      authorization,
+      payload.company_id,
+      scopeContext,
+    );
     const requisitionId = requireUvYctdRequisitionId(payload);
     const reqFilters: string[] = ['r.id = $1::uuid'];
     const reqValues: unknown[] = [requisitionId];
@@ -2609,13 +2640,19 @@ export class RecruitmentService {
       yctd,
       payload.position_key,
     );
+    const tenantId = resolveHrmPersistTenantId(
+      authorization,
+      payload.company_id,
+      scopeContext,
+    );
     const res = await this.db.query<CandidateRow>(
       `INSERT INTO public.recruitment_candidates
-        (id, company_id, requisition_id, full_name, email, source, status)
-       VALUES ($1, $2::text, $3::uuid, $4, $5, $6, 'new')
+        (id, tenant_id, company_id, requisition_id, full_name, email, source, status)
+       VALUES ($1, $2::text, $3::text, $4::uuid, $5, $6, $7, 'new')
        RETURNING id, company_id, requisition_id, full_name, email, source, status, created_at, updated_at;`,
       [
         randomUUID(),
+        tenantId,
         yctd.company_id,
         requisitionId,
         payload.full_name.trim(),
@@ -4755,9 +4792,10 @@ export class RecruitmentService {
     const candRes = await this.db.query<{
       id: string;
       company_id: string;
+      tenant_id: string | null;
       status: string | null;
     }>(
-      `SELECT id, company_id, status::text AS status
+      `SELECT id, company_id, NULLIF(TRIM(tenant_id), '') AS tenant_id, status::text AS status
        FROM public.recruitment_candidates WHERE ${candFilters.join(' AND ')} LIMIT 1;`,
       candValues,
     );
@@ -4769,6 +4807,10 @@ export class RecruitmentService {
       );
     }
     const companyId = candRes.rows[0].company_id;
+    const tenantId =
+      candRes.rows[0].tenant_id?.trim() ||
+      resolveHrmPersistTenantId(authorization, payload.company_id) ||
+      masterTenantIdFromEnv();
     // VAL-REC-CNS-05 — soft-gate by current status ∈ EFF allows_interview_schedule (≠ one-active).
     const stageKey = candRes.rows[0].status?.trim();
     if (stageKey) {
@@ -4802,11 +4844,12 @@ export class RecruitmentService {
     try {
       const res = await this.db.query<InterviewRow>(
         `INSERT INTO public.recruitment_interviews
-          (id, company_id, candidate_id, scheduled_at, interviewer, status)
-         VALUES ($1, $2::text, $3::uuid, $4::timestamptz, $5, 'scheduled')
+          (id, tenant_id, company_id, candidate_id, scheduled_at, interviewer, status)
+         VALUES ($1, $2::text, $3::text, $4::uuid, $5::timestamptz, $6, 'scheduled')
          RETURNING ${INTERVIEW_RETURNING};`,
         [
           randomUUID(),
+          tenantId,
           companyId,
           payload.candidate_id,
           payload.scheduled_at,
@@ -4908,8 +4951,6 @@ export class RecruitmentService {
       persistCancelReason,
       interviewId,
     ];
-    const filters: string[] = ['id = $3::uuid'];
-    pushCompanyIdFilter(filters, values, scope);
     let res;
     try {
       res = await this.db.query<InterviewRow>(
@@ -4917,7 +4958,7 @@ export class RecruitmentService {
          SET status = $1,
              cancel_reason = CASE WHEN $1 = 'cancelled' THEN $2 ELSE cancel_reason END,
              updated_at = NOW()
-         WHERE ${filters.join(' AND ')}
+         WHERE id = $3::uuid
          RETURNING ${INTERVIEW_RETURNING};`,
         values,
       );
@@ -4997,14 +5038,12 @@ export class RecruitmentService {
         ? payload.interviewer.trim()
         : row.interviewer;
     const values: unknown[] = [payload.scheduled_at, interviewer, interviewId];
-    const filters: string[] = ['id = $3::uuid'];
-    pushCompanyIdFilter(filters, values, scope);
     const res = await this.db.query<InterviewRow>(
       `UPDATE public.recruitment_interviews
        SET scheduled_at = $1::timestamptz,
            interviewer = $2,
            updated_at = NOW()
-       WHERE ${filters.join(' AND ')}
+       WHERE id = $3::uuid
          AND status IN ('scheduled', 'confirmed')
        RETURNING ${INTERVIEW_RETURNING};`,
       values,

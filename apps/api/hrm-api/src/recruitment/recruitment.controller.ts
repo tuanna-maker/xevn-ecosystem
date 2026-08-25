@@ -573,7 +573,11 @@ export class RecruitmentController {
       companyId: query.company_id ?? headerCompanyId,
     });
     return this.recruitmentCatalog
-      .listCandidatesTable(query, authorization)
+      .listCandidatesTable(
+        query,
+        authorization,
+        toHrmListScopeContext(tenantId),
+      )
       .then((data) => ok(data, 'HRM-REC-CP-200', 'Candidates pool listed'));
   }
 
@@ -1774,7 +1778,7 @@ export class RecruitmentController {
     // FR-05a #5 — thiếu YCTD → REQUIRED (không fallback pool HRM-REC-CP-201).
     requireUvYctdRequisitionId(body);
     return this.recruitmentService
-      .createCandidate(body, authorization)
+      .createCandidate(body, authorization, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-REC-202', 'Candidate created'));
   }
 
@@ -1796,7 +1800,7 @@ export class RecruitmentController {
       companyId: body.company_id ?? headerCompanyId,
     });
     return this.recruitmentCatalog
-      .createCandidatePool(body, authorization)
+      .createCandidatePool(body, authorization, toHrmListScopeContext(tenantId))
       .then((data) => ok(data, 'HRM-REC-CP-201', 'Candidate pool row created'));
   }
 

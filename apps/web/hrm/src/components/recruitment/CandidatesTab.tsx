@@ -183,7 +183,6 @@ import {
   candidateSourceFilterValues,
   resolveCandidateSourceDisplayLabel,
 } from '@/lib/candidateRecruitmentChannelUi';
-import { REC_PIPELINE_STAGE_EMPTY_CTA_VI } from '@/lib/recPipelineStageCatalog';
 import {
   shouldUseLaneAStageTransition,
 } from '@/lib/recCandidateStageTransition';
@@ -638,11 +637,6 @@ export function CandidatesTab() {
       return;
     }
     if (catalogCount <= 0) {
-      toast({
-        title: 'Chưa có danh mục giai đoạn',
-        description: REC_PIPELINE_STAGE_EMPTY_CTA_VI,
-        variant: 'destructive',
-      });
       return;
     }
     setStageTransitionCandidate(candidate);
@@ -1146,11 +1140,6 @@ export function CandidatesTab() {
                                   )}
                                 </Badge>
                               </Button>
-                              {catalogCount <= 0 ? (
-                                <p className="max-w-[10rem] text-[10px] leading-tight text-muted-foreground">
-                                  {REC_PIPELINE_STAGE_EMPTY_CTA_VI}
-                                </p>
-                              ) : null}
                             </div>
                           ) : isSpineOnlyListRow(candidate) ? (
                             <div className="space-y-1">

@@ -12,6 +12,7 @@ import { join } from 'node:path';
 import {
   canMutateYctdPipelineFlags,
   collectApprovedNeedHireCellOptions,
+  diagnoseApprovedNeedHireCellPickerEmpty,
   ensureHeadcountCellOptionPresent,
   isYctdClassificationRequired,
   normalizeYctdHeadcountMode,
@@ -297,6 +298,11 @@ describe('jobRequisitionYctdWave2 (PO-HRM-MVP-GD1-REC-02-CLUSTER-FE-01)', () => 
     expect(opts[0].value).toBe('aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee');
     expect(opts[0].label).toMatch(/Kinh doanh/);
     expect(opts[0].label).toMatch(/T3\/2026/);
+
+    expect(diagnoseApprovedNeedHireCellPickerEmpty([])).toMatch(/Chưa có kế hoạch/);
+    expect(
+      diagnoseApprovedNeedHireCellPickerEmpty([{ status: 'draft' }, { status: 'draft' }]),
+    ).toMatch(/chưa ở trạng thái Đã duyệt/);
 
     const withDeepLink = ensureHeadcountCellOptionPresent(opts, 'deep-link-cell');
     expect(withDeepLink.some((o) => o.value === 'deep-link-cell')).toBe(true);

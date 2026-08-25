@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,6 +6,15 @@ import { z } from 'zod';
 import { format } from 'date-fns';
 import { vi, enUS, zhCN } from 'date-fns/locale';
 import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CatalogSearchPicker } from '@/components/common/CatalogSearchPicker';
+import { useSettingsCatalogsOverview } from '@/hooks/useSettingsCatalogsOverview';
+import {
+  buildDepartmentKeyFields,
+  buildPositionKeyFields,
+  departmentOptionsFromCatalog,
+  isCatalogPickerValueAllowed,
+  jobTitleOptionsFromCatalog,
+} from '@/lib/catalogSearchPicker';
 import {
   Dialog,
   DialogContent,
@@ -37,7 +46,6 @@ import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   createJobPosting,
-  listDepartments,
   updateJobPosting,
 } from '@/integrations/hrmApi';
 
@@ -52,9 +60,9 @@ const createSchema = (t: (key: string) => string) =>
     end_date: z.date().optional().nullable(),
     owner_name: z.string().optional(),
     follower_name: z.string().optional(),
-    position: z.string().optional(),
+    position_key: z.string().min(1, t('recruitment.form.typeRequired')),
     title: z.string().optional(),
-    department: z.string().optional(),
+    department_key: z.string().optional(),
     work_type: z.string().optional(),
     location: z.string().optional(),
     evaluation_criteria: z.string().optional(),
@@ -76,8 +84,10 @@ interface Campaign {
   owner_name?: string | null;
   follower_name?: string | null;
   position?: string | null;
+  position_key?: string | null;
   title?: string | null;
   department?: string | null;
+  department_key?: string | null;
   work_type?: string | null;
   location?: string | null;
   evaluation_criteria?: string | null;
@@ -106,7 +116,19 @@ export function CampaignFormDialog({
   const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
+  const {
+    catalogs,
+    isLoading: catalogsLoading,
+    isError: catalogsError,
+  } = useSettingsCatalogsOverview({ enabled: open });
+  const positionOptions = useMemo(
+    () => jobTitleOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
+  const departmentOptions = useMemo(
+    () => departmentOptionsFromCatalog(catalogs ?? []),
+    [catalogs],
+  );
 
   const d = (key: string) => String(t(`camForm.${key}`));
   const calLocale = i18n.language === 'vi' ? vi : i18n.language === 'zh' ? zhCN : enUS;
@@ -137,31 +159,15 @@ export function CampaignFormDialog({
 
   const form = useForm<CampaignFormValues>({
     resolver: zodResolver(schema),
+    mode: 'onChange',
     defaultValues: {
       name: '', description: '', status: 'active',
       start_date: new Date(), end_date: null,
-      owner_name: '', follower_name: '', position: '', title: '',
-      department: '', work_type: '', location: '', evaluation_criteria: '',
+      owner_name: '', follower_name: '', position_key: '', title: '',
+      department_key: '', work_type: '', location: '', evaluation_criteria: '',
       salary_level: '', quantity: 1, requirements: '', degree: '', major: '',
     },
   });
-
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      if (!companyId) return;
-      try {
-        const response = await listDepartments({ company_id: companyId });
-        const mappedDepartments = (response.data ?? []).map((item) => ({
-          id: String(item.id ?? ''),
-          name: String(item.name ?? ''),
-        })).filter((item) => item.id && item.name);
-        setDepartments(mappedDepartments);
-      } catch (error) {
-        console.error('Error fetching departments:', error);
-      }
-    };
-    fetchDepartments();
-  }, [companyId]);
 
   useEffect(() => {
     if (!open) return;
@@ -172,8 +178,16 @@ export function CampaignFormDialog({
         start_date: campaign.start_date ? new Date(campaign.start_date) : new Date(),
         end_date: campaign.end_date ? new Date(campaign.end_date) : null,
         owner_name: campaign.owner_name || '', follower_name: campaign.follower_name || '',
-        position: campaign.position || '', title: campaign.title || '',
-        department: campaign.department || '', work_type: campaign.work_type || '',
+        position_key:
+          campaign.position_key?.trim() ||
+          positionOptions.find((o) => o.label.trim() === (campaign.position ?? '').trim())?.value ||
+          '',
+        title: campaign.title || '',
+        department_key:
+          campaign.department_key?.trim() ||
+          departmentOptions.find((o) => o.label.trim() === (campaign.department ?? '').trim())?.value ||
+          '',
+        work_type: campaign.work_type || '',
         location: campaign.location || '', evaluation_criteria: campaign.evaluation_criteria || '',
         salary_level: campaign.salary_level || '', quantity: campaign.quantity || 1,
         requirements: campaign.requirements || '', degree: campaign.degree || '',
@@ -183,22 +197,52 @@ export function CampaignFormDialog({
       form.reset({
         name: '', description: '', status: 'active',
         start_date: new Date(), end_date: null,
-        owner_name: '', follower_name: '', position: '', title: '',
-        department: '', work_type: '', location: '', evaluation_criteria: '',
+        owner_name: '', follower_name: '', position_key: '', title: '',
+        department_key: '', work_type: '', location: '', evaluation_criteria: '',
         salary_level: '', quantity: 1, requirements: '', degree: '', major: '',
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- open/id only; cấm deps `form` (Textarea 1 ký tự)
-  }, [open, campaign?.id]);
+  }, [open, campaign?.id, positionOptions, departmentOptions]);
+
+  const selectedPositionKey = form.watch('position_key');
+  const canSubmitPosition =
+    !catalogsLoading &&
+    !catalogsError &&
+    positionOptions.length > 0 &&
+    isCatalogPickerValueAllowed(positionOptions, selectedPositionKey, { allowEmpty: false });
 
   const onSubmit = async (data: CampaignFormValues) => {
+    const pos = buildPositionKeyFields(data.position_key, positionOptions);
+    if (!pos) {
+      toast({
+        title: t('common.error'),
+        description: t('recruitment.form.typeRequired'),
+        variant: 'destructive',
+      });
+      return;
+    }
+    const dept = data.department_key?.trim()
+      ? buildDepartmentKeyFields(data.department_key, departmentOptions)
+      : null;
+    if (data.department_key?.trim() && !dept) {
+      toast({
+        title: t('common.error'),
+        description: t('payroll.departmentRequired', 'Chọn phòng ban từ danh mục'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const campaignData = {
+      const payload = {
         company_id: companyId,
         title: data.title?.trim() ? data.title : data.name,
-        position: data.position?.trim() ? data.position : data.name,
-        department: data.department || undefined,
+        position_key: pos.position_key,
+        position: pos.position,
+        department_key: dept?.department_key,
+        department: dept?.department,
         employment_type: data.work_type || undefined,
         work_location: data.location || undefined,
         description: data.description || undefined,
@@ -207,34 +251,13 @@ export function CampaignFormDialog({
         deadline: data.end_date ? format(data.end_date, 'yyyy-MM-dd') : undefined,
         status: data.status,
         benefits: data.evaluation_criteria || undefined,
-        // Keep rich campaign metadata in extra fields until BE model is expanded.
-        note: [
-          data.owner_name ? `owner:${data.owner_name}` : null,
-          data.follower_name ? `follower:${data.follower_name}` : null,
-          data.salary_level ? `salary:${data.salary_level}` : null,
-          data.degree ? `degree:${data.degree}` : null,
-          data.major ? `major:${data.major}` : null,
-        ].filter(Boolean).join(' | ') || undefined,
-      } as Record<string, unknown>;
+      };
 
       if (campaign) {
-        await updateJobPosting(campaign.id, companyId, campaignData);
+        await updateJobPosting(campaign.id, companyId, payload);
         toast({ title: t('common.success'), description: d('updateSuccess') });
       } else {
-        await createJobPosting({
-          company_id: companyId,
-          title: String(campaignData.title ?? data.name),
-          position: String(campaignData.position ?? data.name),
-          department: campaignData.department as string | undefined,
-          employment_type: campaignData.employment_type as string | undefined,
-          work_location: campaignData.work_location as string | undefined,
-          description: campaignData.description as string | undefined,
-          requirements: campaignData.requirements as string | undefined,
-          benefits: campaignData.benefits as string | undefined,
-          headcount: campaignData.headcount as number | undefined,
-          deadline: campaignData.deadline as string | undefined,
-          status: campaignData.status as string | undefined,
-        });
+        await createJobPosting(payload);
         toast({ title: t('common.success'), description: d('createSuccess') });
       }
 
@@ -364,10 +387,25 @@ export function CampaignFormDialog({
                 <h3 className="font-medium text-sm text-muted-foreground">{d('sectionPosition')}</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <FormField control={form.control} name="position" render={({ field }) => (
+                  <FormField control={form.control} name="position_key" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{d('position')}</FormLabel>
-                      <FormControl><Input placeholder={d('positionPlaceholder')} {...field} /></FormControl>
+                      <FormLabel>{d('position')} *</FormLabel>
+                      <FormControl>
+                        <CatalogSearchPicker
+                          data-testid="cam-form-position-picker"
+                          options={positionOptions}
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder={d('positionPlaceholder')}
+                          loading={catalogsLoading}
+                          errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                          emptyHint={
+                            <a href="/settings" className="text-primary underline text-xs font-medium">
+                              {t('settings.catalogs.openSettingsCta', 'Mở Cài đặt → Danh mục nghiệp vụ')}
+                            </a>
+                          }
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -381,17 +419,24 @@ export function CampaignFormDialog({
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <FormField control={form.control} name="department" render={({ field }) => (
+                  <FormField control={form.control} name="department_key" render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('payroll.department')}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl><SelectTrigger><SelectValue placeholder={d('selectDepartment')} /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          {departments.map((dept) => (
-                            <SelectItem key={dept.id} value={dept.name}>{dept.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <CatalogSearchPicker
+                          options={departmentOptions}
+                          value={field.value ?? ''}
+                          onValueChange={field.onChange}
+                          placeholder={d('selectDepartment')}
+                          loading={catalogsLoading}
+                          errorText={catalogsError ? t('settings.catalogs.loadError') : undefined}
+                          emptyHint={
+                            <a href="/settings" className="text-primary underline text-xs font-medium">
+                              {t('settings.catalogs.openSettingsCta', 'Mở Cài đặt → Danh mục nghiệp vụ')}
+                            </a>
+                          }
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -485,7 +530,7 @@ export function CampaignFormDialog({
                 <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
                   {t('common.cancel')}
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting || !canSubmitPosition}>
                   {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                   {campaign ? t('common.update') : d('createBtn')}
                 </Button>

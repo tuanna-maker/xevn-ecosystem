@@ -693,22 +693,6 @@ export function HeadcountProposalTab({ onCreateOutOfPlanYctd }: HeadcountProposa
 
   return (
     <div className="space-y-6">
-      <div
-        className="rounded-lg border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning"
-        data-testid="yctd-proposals-deprecate-banner"
-      >
-        <p>{YCTD_PROPOSALS_DEPRECATE_VI}</p>
-        <Button
-          type="button"
-          size="sm"
-          className="mt-2"
-          variant="secondary"
-          data-testid="yctd-proposals-redirect-cta"
-          onClick={handleAddProposal}
-        >
-          {YCTD_PROPOSALS_REDIRECT_CTA_VI}
-        </Button>
-      </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>

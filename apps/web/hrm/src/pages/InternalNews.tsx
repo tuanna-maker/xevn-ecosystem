@@ -93,7 +93,8 @@ const VISIBILITY_OPTIONS = [
 export default function InternalNews() {
   const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [includeDrafts, setIncludeDrafts] = useState(false);
+  /** Admin quản trị tin — mặc định hiện draft (DB hiện có toàn draft). */
+  const [includeDrafts, setIncludeDrafts] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);

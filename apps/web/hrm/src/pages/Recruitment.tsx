@@ -256,10 +256,7 @@ import {
   resolveHireTargetStage,
 } from '@/lib/recruitmentHireLink';
 import { useRecPipelineStagesEffective } from '@/hooks/useRecPipelineStagesEffective';
-import {
-  buildRecPipelineKanbanColumns,
-  REC_PIPELINE_STAGE_EMPTY_CTA_VI,
-} from '@/lib/recPipelineStageCatalog';
+import { buildRecPipelineKanbanColumns } from '@/lib/recPipelineStageCatalog';
 
 // Recruitment plan form schema
 const recruitmentPlanSchema = z.object({
@@ -564,14 +561,21 @@ export default function Recruitment() {
   const [activeJobsType, setActiveJobsType] = useState('all');
   const [activeCandidatesType, setActiveCandidatesType] = useState('all');
   const [activeInterviewsType, setActiveInterviewsType] = useState('scheduled');
-  const recruitmentJobTemplatesState = useJobTemplates(true);
+  const jobTemplatesEnabled = activeTab === 'requisitions' || activeTab === 'jd-library';
+  const recruitmentJobTemplatesState = useJobTemplates(jobTemplatesEnabled);
 
-  /** D-HDSD-MUTATE-FE-13/FE-14 — sync page-level templates when entering jd-library or requisitions. */
+  /** Only refetch when tab needs templates and cache is empty (avoid duplicate ~1.4s GET). */
   useEffect(() => {
-    if (activeTab === 'requisitions' || activeTab === 'jd-library') {
-      void recruitmentJobTemplatesState.refetch();
-    }
-  }, [activeTab, recruitmentJobTemplatesState.refetch]);
+    if (!jobTemplatesEnabled) return;
+    if (recruitmentJobTemplatesState.loading) return;
+    if (recruitmentJobTemplatesState.templates.length > 0) return;
+    void recruitmentJobTemplatesState.refetch();
+  }, [
+    jobTemplatesEnabled,
+    recruitmentJobTemplatesState.loading,
+    recruitmentJobTemplatesState.templates.length,
+    recruitmentJobTemplatesState.refetch,
+  ]);
 
   useEffect(() => {
     const tab = resolveRecruitmentTabFromSearch(location.search);
@@ -649,7 +653,7 @@ export default function Recruitment() {
     updatePlanStatus,
     submitPlanWorkflow,
     spawnPlanRequests,
-  } = useRecruitmentPlans();
+  } = useRecruitmentPlans(activeTab === 'plans' || isPlanDialogOpen);
 
   useEffect(() => {
     if (!selectedPlan) return;
@@ -666,7 +670,7 @@ export default function Recruitment() {
   } = useCandidateEvaluations(evaluationsTabEnabled || isComparisonDialogOpen);
 
   const { requisitions: compareSeedRequisitions, refetch: refreshCompareRequisitions } =
-    useJobRequisitions();
+    useJobRequisitions({ enabled: isComparisonDialogOpen });
 
   const openCompareForYctd = useCallback(
     (requisitionId: string | null | undefined, candidateId?: string | null) => {
@@ -1285,19 +1289,7 @@ export default function Recruitment() {
                     Đang tải danh mục giai đoạn pipeline…
                   </p>
                 ) : kanbanSoftEmpty ? (
-                  <div
-                    className="rounded-card border border-dashed border-xevn-border bg-muted/30 px-4 py-8 text-center space-y-3"
-                    data-testid="rec-kanban-stages-empty"
-                  >
-                    <p className="text-sm text-xevn-textSecondary">{REC_PIPELINE_STAGE_EMPTY_CTA_VI}</p>
-                    <Link
-                      to="/settings"
-                      className="inline-block text-sm font-medium text-primary underline"
-                      data-testid="rec-kanban-stages-empty-cta"
-                    >
-                      Mở Cài đặt → Giai đoạn REC
-                    </Link>
-                  </div>
+                  <div className="min-h-[200px]" data-testid="rec-kanban-stages-empty" aria-hidden />
                 ) : (
                   <DragDropContext onDragEnd={handleDragEnd}>
                     <div

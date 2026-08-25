@@ -43,7 +43,6 @@ import {
   isRecStageRejectOutcome,
   isRecStageReverseTransition,
   REC_STAGE_REJECT_REASON_REQUIRED_VI,
-  REC_STAGE_TRANSITION_EMPTY_CTA_VI,
   REC_STAGE_TRANSITION_SUCCESS_VI,
   resolveLaneACandidateIdForTransition,
   type RecStageTransitionCandidate,
@@ -110,11 +109,6 @@ export function CandidateStageTransitionDialog({
     const stage = toStage.trim();
     if (!stage) return;
     if (catalogCount <= 0) {
-      toast({
-        title: 'Chưa có danh mục giai đoạn',
-        description: REC_STAGE_TRANSITION_EMPTY_CTA_VI,
-        variant: 'destructive',
-      });
       return;
     }
     if (rejectRequired && !note.trim()) {
@@ -184,14 +178,7 @@ export function CandidateStageTransitionDialog({
               <Loader2 className="h-4 w-4 animate-spin" />
               Đang tải danh mục giai đoạn…
             </div>
-          ) : catalogCount <= 0 ? (
-            <div
-              className="rounded-lg border border-dashed border-xevn-border bg-muted/30 p-3 text-sm text-muted-foreground"
-              data-testid="rec-stage-transition-empty-cta"
-            >
-              {REC_STAGE_TRANSITION_EMPTY_CTA_VI}
-            </div>
-          ) : (
+          ) : catalogCount <= 0 ? null : (
             <div className="space-y-2">
               <Label htmlFor="rec-stage-to">Trạng thái mới</Label>
               <Select

@@ -36,10 +36,11 @@ export class CreateJobPostingDto {
   @MaxLength(256)
   position?: string;
 
-  /** Catalog SoT (job_titles.code). */
+  /** Catalog SoT (job_titles.code). Required at service layer — free-text position alone forbidden. */
+  @IsOptional()
   @IsString()
   @MaxLength(128)
-  position_key!: string;
+  position_key?: string;
 
   @IsOptional()
   @IsString()

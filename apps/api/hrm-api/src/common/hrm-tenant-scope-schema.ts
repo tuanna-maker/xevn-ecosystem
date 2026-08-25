@@ -28,7 +28,7 @@ export const HRM_TENANT_SCOPED_TABLES = [
   'rec_pipeline_stage',
 ] as const;
 
-type QueryFn = (text: string) => Promise<unknown>;
+type QueryFn = (text: string, params?: unknown[]) => Promise<unknown>;
 
 export async function ensureHrmTenantIdColumns(query: QueryFn): Promise<void> {
   for (const table of HRM_TENANT_SCOPED_TABLES) {
@@ -39,4 +39,53 @@ export async function ensureHrmTenantIdColumns(query: QueryFn): Promise<void> {
       `CREATE INDEX IF NOT EXISTS idx_${table}_tenant_company ON public.${table} (tenant_id, company_id)`,
     );
   }
+}
+
+/**
+ * Backfill null tenant_id on main-partition recruitment rows created before tenant-only scope.
+ * Derives tenant from linked YCTD when present; otherwise uses master tenant (xevn).
+ */
+export async function backfillRecruitmentMainPartitionTenantId(
+  query: QueryFn,
+  masterTenantId: string,
+): Promise<void> {
+  await query(
+    `UPDATE public.recruitment_candidates c
+     SET tenant_id = COALESCE(NULLIF(TRIM(r.tenant_id), ''), $1)
+     FROM public.job_requisitions r
+     WHERE c.requisition_id = r.id
+       AND c.company_id = 'main'
+       AND (c.tenant_id IS NULL OR TRIM(c.tenant_id) = '')`,
+    [masterTenantId],
+  );
+  await query(
+    `UPDATE public.candidates c
+     SET tenant_id = $1
+     WHERE c.company_id = 'main'
+       AND (c.tenant_id IS NULL OR TRIM(c.tenant_id) = '')`,
+    [masterTenantId],
+  );
+  await query(
+    `UPDATE public.recruitment_interviews i
+     SET tenant_id = COALESCE(NULLIF(TRIM(c.tenant_id), ''), $1)
+     FROM public.recruitment_candidates c
+     WHERE i.candidate_id = c.id
+       AND i.company_id = 'main'
+       AND (i.tenant_id IS NULL OR TRIM(i.tenant_id) = '')`,
+    [masterTenantId],
+  );
+  await query(
+    `UPDATE public.recruitment_plans
+     SET tenant_id = $1
+     WHERE company_id = 'main'
+       AND (tenant_id IS NULL OR TRIM(tenant_id) = '')`,
+    [masterTenantId],
+  );
+  await query(
+    `UPDATE public.headcount_proposals
+     SET tenant_id = $1
+     WHERE company_id = 'main'
+       AND (tenant_id IS NULL OR TRIM(tenant_id) = '')`,
+    [masterTenantId],
+  );
 }

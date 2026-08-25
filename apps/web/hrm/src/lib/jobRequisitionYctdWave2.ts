@@ -111,9 +111,25 @@ export const YCTD_BOD_BLOCKED_CV_VI =
   'Ngoài định biên: chưa BOD duyệt — chặn nhận hồ sơ / đăng tin đến khi trạng thái Mở nhận hồ sơ.';
 
 export const YCTD_CELL_PICKER_EMPTY_VI =
-  'Chưa có ô Cần tuyển đã duyệt trên định biên. Duyệt kế hoạch Định biên (REC-01) hoặc dùng deep-link spawn.';
+  'Chưa có ô Cần tuyển đã duyệt. Cần: (1) trên Định biên nhập SL Cần tuyển ≥ 1, (2) Duyệt kế hoạch → ô khóa need_hire_approved, hoặc dùng deep-link spawn.';
 
 export const YCTD_CELL_PICKER_LABEL_VI = 'Ô Cần tuyển đã duyệt *';
+
+/** Diagnose why CELL-PICKER is empty — plans exist but none approved / no need_hire. */
+export function diagnoseApprovedNeedHireCellPickerEmpty(
+  plans: ReadonlyArray<{ status?: string | null }>,
+): string {
+  if (!plans.length) {
+    return 'Chưa có kế hoạch Định biên trong phạm vi. Tạo/duyệt kế hoạch trên tab Định biên trước.';
+  }
+  const hasApproved = plans.some(
+    (p) => String(p.status ?? '').trim().toLowerCase() === 'approved',
+  );
+  if (!hasApproved) {
+    return `Có ${plans.length} kế hoạch Định biên nhưng chưa ở trạng thái Đã duyệt — ô Cần tuyển chưa khóa để chọn trên YCTD.`;
+  }
+  return YCTD_CELL_PICKER_EMPTY_VI;
+}
 
 export type YctdMatrixFamily = 'SHORT' | 'LONG' | 'UNKNOWN';
 

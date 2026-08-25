@@ -5929,7 +5929,7 @@
     "follower": "Follower",
     "followerPlaceholder": "Name of follower",
     "position": "Position",
-    "positionPlaceholder": "E.g.: Team Leader",
+    "positionPlaceholder": "Select position from catalog",
     "jobTitle": "Job Title",
     "jobTitlePlaceholder": "E.g.: Specialist",
     "selectDepartment": "Select department",

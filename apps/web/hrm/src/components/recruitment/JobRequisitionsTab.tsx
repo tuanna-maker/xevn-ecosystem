@@ -120,7 +120,6 @@ import {
   resolveYctdCellLabel,
   resolveYctdReplaceEmployeeDisplay,
   validateYctdCreateForm,
-  YCTD_BOD_BLOCKED_CV_VI,
   YCTD_CELL_PICKER_EMPTY_VI,
   YCTD_CELL_PICKER_LABEL_VI,
   YCTD_CELL_QTY_HINT_VI,
@@ -2536,11 +2535,6 @@ export function JobRequisitionsTab({
                       {detailApprovalChain.nextApproverHintVi}
                     </p>
                   ) : null}
-                  {detailApprovalChain.bodStepPending && detailApprovalChain.blockedFromCv ? (
-                    <p className="text-xs font-medium text-warning" data-testid="yctd-bod-blocked-cv">
-                      {YCTD_BOD_BLOCKED_CV_VI}
-                    </p>
-                  ) : null}
                 </div>
               ) : null}
               {detailRow.workflow_instance_id ? (
@@ -2557,9 +2551,6 @@ export function JobRequisitionsTab({
                   <p className="text-xs text-muted-foreground">Lý do từ chối</p>
                   <p className="text-sm font-medium text-destructive">{detailRow.rejected_reason}</p>
                 </div>
-              ) : null}
-              {requisitionLocked(detailRow) ? (
-                <p className="text-xs font-medium text-warning">{RECRUITMENT_WF_LOCKED_HINT_VI}</p>
               ) : null}
 
               {detailApprovalChain?.showTransitionActions ? (
@@ -2636,13 +2627,7 @@ export function JobRequisitionsTab({
                   }
                   return null;
                 })()}
-                {!canMutateYctdPipelineFlags(detailRow) ? (
-                  <p className="text-xs text-warning">
-                    {isYctdClassificationRequired(detailRow)
-                      ? YCTD_CLASSIFY_BANNER_VI
-                      : YCTD_NOT_RECEIVABLE_HINT_VI}
-                  </p>
-                ) : (
+                {canMutateYctdPipelineFlags(detailRow) ? (
                   <PermissionGate module="recruitment" action="update">
                     <Button
                       type="button"
@@ -2655,20 +2640,12 @@ export function JobRequisitionsTab({
                       Mở quét kho
                     </Button>
                   </PermissionGate>
-                )}
+                ) : null}
               </div>
 
               <div className="space-y-2 rounded-lg border border-xevn-border p-2" data-testid="yctd-pipeline-flags">
                 <p className="text-xs font-medium text-xevn-text">Cờ pipeline trên YCTD (không Campaign)</p>
-                {!canMutateYctdPipelineFlags(detailRow) ? (
-                  <p className="text-xs text-warning" data-testid="yctd-pipeline-blocked-hint">
-                    {isYctdClassificationRequired(detailRow)
-                      ? YCTD_CLASSIFY_BANNER_VI
-                      : detailApprovalChain?.bodStepPending
-                        ? YCTD_BOD_BLOCKED_CV_VI
-                        : YCTD_NOT_RECEIVABLE_HINT_VI}
-                  </p>
-                ) : (
+                {canMutateYctdPipelineFlags(detailRow) ? (
                   <>
                     {!canSetYctdPostedFromScan(resolvePipelineFlags(detailRow)) ? (
                       <p className="text-xs text-warning" data-testid="yctd-posted-scan-gate-hint">
@@ -2718,7 +2695,7 @@ export function JobRequisitionsTab({
                       </Button>
                     </PermissionGate>
                   </>
-                )}
+                ) : null}
               </div>
               </div>
 
