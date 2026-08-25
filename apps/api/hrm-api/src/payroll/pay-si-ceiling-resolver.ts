@@ -11,6 +11,7 @@ import { ApiException } from '../common/api.exception';
 import { HrmDbService } from '../db/hrm-db.service';
 import { HRM_SET_SI_412_MISSING } from '../settings/settings-defaults.constants';
 import { expandCbReadCompanyIds } from './pay-formula-variable-bag';
+import { normalizePayrollAsOfDate } from './pay-src-resolver';
 import type { PaySrcResolvedLine } from './pay-src-resolver';
 
 export type PaySiCeilingOk = {
@@ -109,7 +110,7 @@ export async function listActiveEnrolledInsuranceTypeKeys(
   db: HrmDbService,
   input: { employeeId: string; asOf: string },
 ): Promise<string[]> {
-  const asOf = input.asOf.slice(0, 10);
+  const asOf = normalizePayrollAsOfDate(input.asOf);
   const res = await db.query<{ type_key: string }>(
     `
       SELECT DISTINCT lower(trim(COALESCE(NULLIF(trim(type), ''), provider))) AS type_key
@@ -135,8 +136,8 @@ async function pickInsuranceRateCfgAtPeriodEnd(
     periodEnd: string;
   },
 ): Promise<RateCfgRow | null> {
-  const start = input.periodStart.slice(0, 10);
-  const end = input.periodEnd.slice(0, 10);
+  const start = normalizePayrollAsOfDate(input.periodStart);
+  const end = normalizePayrollAsOfDate(input.periodEnd);
   const companyIds = expandCbReadCompanyIds(input.companyId, null);
   for (const co of companyIds) {
     const res = await db.query<RateCfgRow>(
@@ -173,7 +174,7 @@ export async function applyPaySiCeilingForEmployee(
     failOnMissingCfg?: boolean;
   },
 ): Promise<PaySiCeilingOk | PaySiCeilingBlocked> {
-  const periodEnd = input.periodEnd.slice(0, 10);
+  const periodEnd = normalizePayrollAsOfDate(input.periodEnd);
   const mergedBase = await sumMergedInsuranceBaseFromLines(db, {
     companyId: input.periodCompanyId,
     lines: input.lines,

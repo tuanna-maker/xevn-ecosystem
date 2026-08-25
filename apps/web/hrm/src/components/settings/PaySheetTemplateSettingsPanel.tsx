@@ -404,7 +404,7 @@ export function PaySheetTemplateSettingsPanel() {
   const applyVpHanoiPreset = () => {
     if (
       !window.confirm(
-        'Thay thế các cột hiện tại bằng bộ 21 cột VP Hà Nội (theo Excel bảng lương)?',
+        'Thay thế các cột hiện tại bằng bộ 23 cột VP Hà Nội (theo Excel bảng lương)?',
       )
     ) {
       return;
@@ -413,11 +413,11 @@ export function PaySheetTemplateSettingsPanel() {
     if (missing.length > 0) {
       toast({
         title: 'Thiếu thành phần lương trong catalog',
-        description: `Chưa có mã: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '…' : ''}. Cột vẫn được thêm — chọn TP sau khi seed catalog.`,
+        description: `Chưa có mã: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? '…' : ''}. Tải lại trang hoặc mở Lương → Thành phần lương để bootstrap catalog.`,
         variant: 'destructive',
       });
     }
-    setLineDrafts(buildVpHanoiPaySheetLineDrafts(components));
+    setLineDrafts(buildVpHanoiPaySheetLineDrafts(components, formulas));
   };
 
   const honestySlot = (

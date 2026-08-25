@@ -10,6 +10,7 @@ import { HttpStatus } from '@nestjs/common';
 import { ApiException } from '../common/api.exception';
 import { HrmDbService } from '../db/hrm-db.service';
 import { expandCbReadCompanyIds } from './pay-formula-variable-bag';
+import { normalizePayrollAsOfDate } from './pay-src-resolver';
 import { HRM_PAY_GTCG_412 } from './pay-gtgc.constants';
 import {
   ensurePayGtgcStatutoryCfgSchema,
@@ -46,7 +47,7 @@ export async function countEligibleTaxDependents(
   db: HrmDbService,
   input: { employeeId: string; employeeCompanyId: string; asOf: string },
 ): Promise<number> {
-  const asOf = input.asOf.slice(0, 10);
+  const asOf = normalizePayrollAsOfDate(input.asOf);
   const res = await db.query<{ count: string }>(
     `
       SELECT COUNT(*)::text AS count
@@ -99,7 +100,7 @@ export async function resolvePayGtgcForEmployee(
   },
 ): Promise<PayGtgcResolveOk | PayGtgcResolveBlocked> {
   await ensurePayGtgcStatutoryCfgSchema(db);
-  const asOf = input.asOf.slice(0, 10);
+  const asOf = normalizePayrollAsOfDate(input.asOf);
   const employeeCompanyId = await resolveEmployeeCompanyId(
     db,
     input.employeeId,

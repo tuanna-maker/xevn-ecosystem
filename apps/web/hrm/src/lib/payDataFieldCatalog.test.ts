@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  foldPayFormulaSearchText,
   isPayFormulaShiftUnitEnabled,
   payDataFieldLabel,
   PAY_DATA_FIELD_CATALOG,
@@ -33,9 +34,34 @@ describe('payDataFieldCatalog', () => {
   });
 
   it('empty search returns popular fields only', () => {
-    const hits = searchPayDataFields('', 8);
-    expect(hits.length).toBeLessThanOrEqual(8);
+    const hits = searchPayDataFields('', 10);
+    expect(hits.length).toBeLessThanOrEqual(10);
     expect(hits.some((h) => h.key === 'base_salary')).toBe(true);
+    expect(hits.some((h) => h.key === 'allowance_p2')).toBe(true);
+  });
+
+  it('search p2 finds allowance_p2 for LUONG_CO_BAN formula', () => {
+    const hits = searchPayDataFields('p2', 10);
+    expect(hits.some((h) => h.key === 'allowance_p2')).toBe(true);
+  });
+
+  it('foldPayFormulaSearchText strips Vietnamese diacritics', () => {
+    expect(foldPayFormulaSearchText('Lương cơ bản')).toBe('luong co ban');
+    expect(foldPayFormulaSearchText('Phụ cấp P2')).toBe('phu cap p2');
+  });
+
+  it('search without diacritics matches Vietnamese labels', () => {
+    expect(searchPayDataFields('luong co ban', 10).some((h) => h.key === 'base_salary')).toBe(
+      true,
+    );
+    expect(searchPayDataFields('phu cap', 10).some((h) => h.key === 'allowance_p2')).toBe(true);
+    expect(searchPayDataFields('thu nhap bo sung', 10).some((h) => h.key === 'allowance_p2')).toBe(
+      true,
+    );
+    expect(searchPayDataFields('gio cong', 10).some((h) => h.key === 'payable_hours')).toBe(true);
+    expect(searchPayDataFields('nghi phep', 10).some((h) => h.key === 'paid_leave_hours')).toBe(
+      true,
+    );
   });
 
   it('payDataFieldLabel resolves known keys', () => {

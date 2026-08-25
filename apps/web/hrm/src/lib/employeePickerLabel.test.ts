@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   formatEmployeePickerLabel,
   looksLikeJobTitleCatalogCode,
+  resolveEmployeeDepartmentKey,
   resolveEmployeeDepartmentLabel,
   resolveEmployeePositionLabel,
 } from '@/lib/employeePickerLabel';
@@ -43,6 +44,18 @@ describe('BM-FE-HIRE-TITLE-01 / D-HRM-U72-LABEL-FE-02 — employeePickerLabel', 
         [{ value: 'LEGAL_SPECIALIST', label: 'Chuyên viên Pháp chế' }],
       ),
     ).toBe('Chuyên viên Pháp chế');
+  });
+
+  it('resolveEmployeeDepartmentKey prefers custom_fields.department catalog code', () => {
+    expect(
+      resolveEmployeeDepartmentKey({
+        department: 'Phòng HCNS',
+        custom_fields: { department: 'PHONG_HCNS' },
+      }),
+    ).toBe('PHONG_HCNS');
+    expect(resolveEmployeeDepartmentKey({ custom_fields: { department: 'PHONG_HCNS' } })).toBe(
+      'PHONG_HCNS',
+    );
   });
 
   it('resolveEmployeeDepartmentLabel does not fall back to job_title_key', () => {

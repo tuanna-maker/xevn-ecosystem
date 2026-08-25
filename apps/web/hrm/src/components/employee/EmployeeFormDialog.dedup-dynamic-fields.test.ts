@@ -42,7 +42,7 @@ function makeCatalog(items: HrmSettingsCatalogItem[]): HrmSettingsCatalogOvervie
 
 const BASIC_DEFAULTS: BasicKey[] = ['employee_code', 'full_name', 'department', 'position'];
 
-describe.skip('normalizeFieldLabel', () => {
+describe('normalizeFieldLabel', () => {
   it('strips Vietnamese diacritics and lowercases', () => {
     expect(normalizeFieldLabel('Mã NV')).toBe('ma nv');
     expect(normalizeFieldLabel('MÃ NV')).toBe('ma nv');
@@ -103,27 +103,75 @@ describe('buildDynamicFields — label-based dedup (D-HRM-FE-EMPLOYEE-FORM-DEDUP
 
   it('mixed catalog: duplicate-label items dropped, non-duplicate custom field kept', () => {
     const catalog = makeCatalog([
-      makeItem({ code: 'PERS_01', label: 'Năm sinh' }), // dup of "Ngày sinh"? no — distinct label on purpose below
-      makeItem({ code: 'PERS_02', label: 'Giới tính' }), // exact dup
-      makeItem({ code: 'PERS_03', label: 'CCCD' }), // distinct label, not a dup by exact/normalized match
-      makeItem({ code: 'PERS_04', label: 'Dân tộc' }), // valid new field — must survive
+      makeItem({ code: 'PERS_01', label: 'Năm sinh' }),
+      makeItem({ code: 'PERS_02', label: 'Giới tính' }),
+      makeItem({ code: 'PERS_03', label: 'CCCD' }),
+      makeItem({ code: 'PERS_04', label: 'Dân tộc' }),
     ]);
-    const knownLabels = ['Ngày sinh', 'Giới tính', 'Số CMND/CCCD'];
+    const knownLabels = [
+      'Ngày sinh',
+      'Năm sinh',
+      'Giới tính',
+      'Số CMND/CCCD',
+      'CCCD',
+      'CMND',
+      'CCCD/CMND',
+    ];
 
     const result = buildDynamicFields(catalog, [] as string[], knownLabels);
     const codes = result.map((r) => r.code).sort();
 
-    // Only exact/normalized-label matches are dropped ("Giới tính"); everything else survives,
-    // including "Dân tộc" (must_keep) and any label that doesn't textually match a built-in.
-    expect(codes).toEqual(['PERS_01', 'PERS_03', 'PERS_04']);
+    expect(codes).toEqual(['PERS_04']);
+    expect(codes).not.toContain('PERS_01');
     expect(codes).not.toContain('PERS_02');
+    expect(codes).not.toContain('PERS_03');
   });
 
-  it('backward compatible: omitting knownLabels behaves exactly like before (code-based only)', () => {
+  it('dedupes duplicate dynamic labels (two catalog rows both "Dân tộc")', () => {
+    const catalog = makeCatalog([
+      makeItem({ code: 'ethnicity', label: 'Dân tộc' }),
+      makeItem({ code: 'PERS_04', label: 'Dân tộc' }),
+      makeItem({ code: 'religion', label: 'Tôn giáo' }),
+    ]);
+    const result = buildDynamicFields(catalog, [] as string[], []);
+    expect(result.map((r) => r.code)).toEqual(['ethnicity', 'religion']);
+  });
+
+  it('drops CCCD when id_number spine is active via catalog alias', () => {
+    type PersonalKey = 'gender' | 'birth_date' | 'id_number';
+    const catalog = makeCatalog([
+      makeItem({ code: 'gender', label: 'Giới tính' }),
+      makeItem({ code: 'birth_year', label: 'Năm sinh' }),
+      makeItem({ code: 'national_id', label: 'CCCD/CMND' }),
+      makeItem({ code: 'PERS_03', label: 'CCCD' }),
+      makeItem({ code: 'ethnicity', label: 'Dân tộc' }),
+      makeItem({ code: 'religion', label: 'Tôn giáo' }),
+    ]);
+    const defaults: PersonalKey[] = ['gender', 'birth_date', 'id_number'];
+    const knownLabels = [
+      'Giới tính',
+      'Năm sinh',
+      'Ngày sinh',
+      'CCCD/CMND',
+      'CCCD',
+      'CMND',
+      'Số CMND/CCCD',
+    ];
+    const result = buildDynamicFields<PersonalKey>(catalog, defaults, knownLabels);
+    expect(result.map((r) => r.code).sort()).toEqual(['ethnicity', 'religion']);
+  });
+
+  it('XBOS alias BASIC_01 maps to employee_code — excluded even without knownLabels', () => {
     const catalog = makeCatalog([makeItem({ code: 'BASIC_01', label: 'Mã NV' })]);
     const result = buildDynamicFields<BasicKey>(catalog, BASIC_DEFAULTS);
+    expect(result).toEqual([]);
+  });
+
+  it('unknown code without spine alias still surfaces when knownLabels omitted', () => {
+    const catalog = makeCatalog([makeItem({ code: 'CUSTOM_X', label: 'Mã thẻ nội bộ' })]);
+    const result = buildDynamicFields<BasicKey>(catalog, BASIC_DEFAULTS);
     expect(result).toHaveLength(1);
-    expect(result[0].code).toBe('BASIC_01');
+    expect(result[0].code).toBe('CUSTOM_X');
   });
 
   it('inactive items are still excluded regardless of label', () => {

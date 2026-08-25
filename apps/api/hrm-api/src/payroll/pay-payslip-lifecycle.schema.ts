@@ -1,9 +1,65 @@
 import type { HrmDbService } from '../db/hrm-db.service';
 
+let payPayslipLifecycleSchemaReady = false;
+let ensurePayPayslipLifecycleSchemaPromise: Promise<void> | null = null;
+
+/** ADD CONSTRAINT only when missing — safe under concurrent ensureSchema (list payslips + lines). */
+const ADD_CHK_PAYSLIP_STATUS = `
+  DO $$ BEGIN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_constraint c
+      JOIN pg_class t ON c.conrelid = t.oid
+      JOIN pg_namespace n ON t.relnamespace = n.oid
+      WHERE c.conname = 'chk_payslip_status'
+        AND t.relname = 'payroll_payslips'
+        AND n.nspname = 'public'
+    ) THEN
+      ALTER TABLE public.payroll_payslips
+        ADD CONSTRAINT chk_payslip_status CHECK (
+          status IN ('draft', 'processed', 'calculated', 'published', 'paid', 'void')
+        );
+    END IF;
+  END $$;
+`;
+
+const ADD_CHK_PAYSLIP_PAYMENT_STATUS = `
+  DO $$ BEGIN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_constraint c
+      JOIN pg_class t ON c.conrelid = t.oid
+      JOIN pg_namespace n ON t.relnamespace = n.oid
+      WHERE c.conname = 'chk_payslip_payment_status'
+        AND t.relname = 'payroll_payslips'
+        AND n.nspname = 'public'
+    ) THEN
+      ALTER TABLE public.payroll_payslips
+        ADD CONSTRAINT chk_payslip_payment_status CHECK (
+          payment_status IS NULL OR payment_status IN ('unpaid', 'partial', 'paid', 'budget_hold')
+        );
+    END IF;
+  END $$;
+`;
+
 /** DATA-01 §6.1–6.3 — PAY-08 lifecycle cols + TT audit (ensureSchema ADD). */
 export async function ensurePayPayslipLifecycleSchema(
   db: HrmDbService,
 ): Promise<void> {
+  if (payPayslipLifecycleSchemaReady) return;
+  if (!ensurePayPayslipLifecycleSchemaPromise) {
+    ensurePayPayslipLifecycleSchemaPromise = runPayPayslipLifecycleSchema(db)
+      .then(() => {
+        payPayslipLifecycleSchemaReady = true;
+      })
+      .finally(() => {
+        ensurePayPayslipLifecycleSchemaPromise = null;
+      });
+  }
+  await ensurePayPayslipLifecycleSchemaPromise;
+}
+
+async function runPayPayslipLifecycleSchema(db: HrmDbService): Promise<void> {
   await db.query(`
     ALTER TABLE public.payroll_periods
       ADD COLUMN IF NOT EXISTS payroll_locked BOOLEAN NOT NULL DEFAULT false;
@@ -18,27 +74,8 @@ export async function ensurePayPayslipLifecycleSchema(
       ADD COLUMN IF NOT EXISTS version INT NOT NULL DEFAULT 1;
   `);
 
-  await db.query(`
-    ALTER TABLE public.payroll_payslips
-      DROP CONSTRAINT IF EXISTS chk_payslip_status;
-  `);
-  await db.query(`
-    ALTER TABLE public.payroll_payslips
-      ADD CONSTRAINT chk_payslip_status CHECK (
-        status IN ('draft', 'processed', 'calculated', 'published', 'paid', 'void')
-      );
-  `);
-
-  await db.query(`
-    ALTER TABLE public.payroll_payslips
-      DROP CONSTRAINT IF EXISTS chk_payslip_payment_status;
-  `);
-  await db.query(`
-    ALTER TABLE public.payroll_payslips
-      ADD CONSTRAINT chk_payslip_payment_status CHECK (
-        payment_status IS NULL OR payment_status IN ('unpaid', 'partial', 'paid', 'budget_hold')
-      );
-  `);
+  await db.query(ADD_CHK_PAYSLIP_STATUS);
+  await db.query(ADD_CHK_PAYSLIP_PAYMENT_STATUS);
 
   await db.query(`
     CREATE TABLE IF NOT EXISTS public.pay_payslip_payment_status_audit (
@@ -60,4 +97,10 @@ export async function ensurePayPayslipLifecycleSchema(
     CREATE INDEX IF NOT EXISTS ix_pay_ps_audit_payslip
       ON public.pay_payslip_payment_status_audit (payslip_id, created_at DESC);
   `);
+}
+
+/** @internal test-only — reset module guard between unit tests. */
+export function __resetPayPayslipLifecycleSchemaForTests(): void {
+  payPayslipLifecycleSchemaReady = false;
+  ensurePayPayslipLifecycleSchemaPromise = null;
 }

@@ -33,6 +33,8 @@ export const VP_SHEET_COLUMN_ORDER = [
   'TAM_UNG_KHAC',
   'THUE_TNCN',
   'TRUY_THU',
+  'TONG_THU_NHAP',
+  'THUC_LINH',
 ];
 
 /**
@@ -47,6 +49,7 @@ export const VP_SALARY_COMPONENTS = [
     nature: 'income',
     is_taxable: true,
     is_insurance_base: true,
+    include_in_gross: false,
     formula: '=base_salary+allowance_p2',
     sort_order: 5,
   },
@@ -250,6 +253,28 @@ export const VP_SALARY_COMPONENTS = [
     formula: '=recovery',
     sort_order: 270,
   },
+  {
+    code: 'TONG_THU_NHAP',
+    name: 'Tổng thu nhập',
+    component_type: 'luong',
+    nature: 'income',
+    is_taxable: false,
+    is_insurance_base: false,
+    include_in_gross: false,
+    formula: '',
+    sort_order: 280,
+  },
+  {
+    code: 'THUC_LINH',
+    name: 'Lương Net',
+    component_type: 'luong',
+    nature: 'income',
+    is_taxable: false,
+    is_insurance_base: false,
+    include_in_gross: false,
+    formula: '',
+    sort_order: 290,
+  },
 ];
 
 /** Tỷ lệ BHXH+BHYT+BHTN phần NLĐ (chuẩn VN). */
@@ -397,6 +422,85 @@ export function buildHyperFormulaExpressionJson(components) {
   };
 }
 
+/** Các khoản khấu trừ trừ khỏi Tổng thu nhập để ra Thực lĩnh (VP Hà Nội). */
+export const VP_NET_DEDUCTION_COMPONENT_CODES = [
+  'KHAU_TRU_BHXH',
+  'KHAU_TRU_CONG_DOAN',
+  'KHAU_TRU_VPKL',
+  'KHAU_TRU_KE_TOAN',
+  'UNG_LUONG_LAN_1',
+  'TAM_UNG_KHAC',
+  'THUE_TNCN',
+  'TRUY_THU',
+];
+
+function buildNetAggregateExpression() {
+  const parts = ['TONG_THU_NHAP'];
+  for (const code of VP_NET_DEDUCTION_COMPONENT_CODES) {
+    parts.push('-', code);
+  }
+  return parts.join(' ');
+}
+
+/** Cột thu nhập thực cộng vào Tổng thu nhập (không gồm LUONG_CO_BAN tham chiếu). */
+export const VP_GROSS_EARNING_COMPONENT_CODES = [
+  'LUONG_THEO_CONG',
+  'LUONG_KPI',
+  'THUONG_P4',
+  'LUONG_OT_150',
+  'LUONG_OT_200',
+  'LUONG_NGHI_PHEP',
+  'LUONG_DOANH_SO',
+  'LUONG_ONLINE',
+  'LUONG_NGHI_LE',
+  'LUONG_KHAC',
+  'PC_XANG_XE',
+  'TRUY_LINH',
+];
+
 export function buildGd1EvalExpressionJson(components = VP_SALARY_COMPONENTS) {
-  return buildGd1EvalFromSalaryComponents(components);
+  const evalComponents = components.filter(
+    (c) => c.code !== 'TONG_THU_NHAP' && c.code !== 'THUC_LINH' && String(c.formula ?? '').trim(),
+  );
+  const expression = buildGd1EvalFromSalaryComponents(evalComponents);
+  return {
+    ...expression,
+    earning_component_codes: VP_GROSS_EARNING_COMPONENT_CODES,
+    ui: {
+      ...(expression.ui ?? {}),
+      gross_expression: VP_GROSS_EARNING_COMPONENT_CODES.join(' + '),
+    },
+  };
+}
+
+/** Công thức override cột tổng trên mẫu bảng lương (payroll_aggregate_v1). */
+export function buildPayrollAggregateFormulaExpression(aggregate) {
+  const base = {
+    form: 'payroll_aggregate_v1',
+    aggregate,
+    ui: {
+      label: aggregate === 'gross' ? 'Tổng thu nhập' : 'Thực lĩnh',
+      mode: 'sheet_total_column',
+    },
+  };
+  if (aggregate === 'gross') {
+    return {
+      ...base,
+      earning_component_codes: VP_GROSS_EARNING_COMPONENT_CODES,
+      ui: {
+        ...base.ui,
+        expression: VP_GROSS_EARNING_COMPONENT_CODES.join(' + '),
+      },
+    };
+  }
+  if (aggregate === 'net') {
+    return {
+      ...base,
+      ui: {
+        ...base.ui,
+        expression: buildNetAggregateExpression(),
+      },
+    };
+  }
+  return base;
 }

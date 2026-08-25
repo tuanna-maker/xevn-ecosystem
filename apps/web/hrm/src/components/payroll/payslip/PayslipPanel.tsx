@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @CODE-MEMORY
  * Screen:     HRM · Payslip Panel (S7 — shared component)
  * WorkItem:   HRM-POLICY-FE-S7

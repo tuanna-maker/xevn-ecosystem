@@ -390,3 +390,87 @@ Cột có giá trị + gạch chấm = dữ liệu đầu vào kỳ (chưa qua c
 2. **Chưa** bấm Khóa/process lại cho đến khi UI OK.
 3. Nếu cần reset DB: `node scripts/qa/repair-vp-hanoi-period-inputs.mjs`.
 4. Debug API: `node scripts/qa/debug-api-input-lines.mjs`.
+
+---
+
+## SESSION ROLLUP 2026-08-25 — Chức danh × Phòng ban (Approach A) + schema legacy `pay_position` (Cursor)
+
+**Bối cảnh:** Tab **Công ty → Phòng ban** — cấu hình chức danh theo phòng ban; form NV lọc chức danh theo PB. DB tenant `xevn` / company `main` có bảng `pay_position` **schema W3 cũ** (khác spec mới).
+
+### Kiến trúc runtime (đã implement)
+
+| Layer | SoT / hành vi |
+|-------|----------------|
+| **Danh mục chung** | `job_titles` (Settings) — nguồn chính khi `pay_position` rỗng hoặc thiếu mã |
+| **Master DB** | `pay_position` — lazy sync từ `job_titles` khi gán PB lần đầu |
+| **Per-dept** | `department_position` — chọn từ catalog chung + `local_name` / `grade_code_override` |
+| **NV form** | `GET /positions/effective` — có PB → chỉ chức danh đã cấu hình PB; không PB → toàn bộ catalog |
+
+**UI tab Phòng ban:** đã **gỡ** `PayPositionMasterPanel` (không tạo chức danh tại đây). Cấu hình qua nút ListChecks → `DepartmentPositionConfigDialog`.
+
+**BE module:** `apps/api/hrm-api/src/positions/*` — duy nhất SQL trực tiếp tới `pay_position` / `department_position`. Payroll, contracts, recruitment **không** đọc `pay_position`.
+
+### Incident chain — schema legacy `pay_position` (P0)
+
+Bảng cũ trên DB remote khác DDL mới trong `ensureSchema()`:
+
+| Cột legacy | Vấn đề | Fix |
+|------------|--------|-----|
+| `title_name` | Code query `name` → `42703 column "name" does not exist` | ADD `name` + backfill từ `title_name`; DROP `title_name` |
+| `department_id` NOT NULL | INSERT master không ghi cột → `23502 null value` | `ALTER COLUMN department_id DROP NOT NULL` |
+| Thiếu UNIQUE `(tenant_id, company_id, code)` | `ON CONFLICT` → `42P10` | `CREATE UNIQUE INDEX IF NOT EXISTS uq_pay_position_tenant_company_code` + INSERT thường + catch `23505` |
+
+Tất cả migration **additive** trong `PositionsService.ensureSchema()` — chạy lúc `onModuleInit` / mỗi request positions.
+
+### Incident — catalog biến mất sau lưu 1 chức danh vào PB (P0 logic)
+
+**Root cause:** `listPositions` dùng **hoặc / hoặc**: `pay_position` rỗng → fallback `job_titles`; sau khi provision 1 row → **chỉ** trả 1 mã, dropdown trống.
+
+**Fix:** `buildMergedMasterCatalog()` — luôn **gộp** `job_titles ∪ pay_position` (trùng code → ưu tiên `pay_position`). Áp dụng cho `GET /positions` và `GET /positions/effective` (không có PB).
+
+**JOIN:** `listDepartmentPositions` / effective-with-dept — LEFT JOIN `pay_position` theo `tenant_id + code` (bỏ bắt buộc khớp `company_id` giữa 2 bảng).
+
+### FE thay đổi chính
+
+| File | Thay đổi |
+|------|----------|
+| `DepartmentManagement.tsx` | Gỡ `PayPositionMasterPanel` |
+| `DepartmentPositionConfigDialog.tsx` | Chọn từ full catalog; empty state Cài đặt → Danh mục chức danh |
+| `EmployeeFormDialog.tsx` | `listEffectivePayPositions` theo PB; clear position khi đổi PB |
+| `PayPositionMasterPanel.tsx` | **Đã xóa** |
+
+### Quyết định thiết kế (đã thống nhất với sponsor)
+
+- **Không** dual-write `name` + `title_name` — chỉ `name` là SoT runtime; `title_name` là legacy đã drop.
+- **Không** tạo chức danh trên tab Phòng ban — tạo tại Settings (`job_titles`); PB chỉ **chọn + cấu hình riêng**.
+- `position_scope=company` (CEO) vẫn cho phép NV không cần PB khi validate BE.
+
+### must_keep
+
+- Master catalog API = **merge** `job_titles` + `pay_position` — không either/or.
+- `provisionPayPositionFromJobTitle` chạy khi `upsertDepartmentPosition` và mã chưa có trong `pay_position`.
+- Chạy **cả** `pnpm run dev:hrm-api` (28001) lẫn web — proxy `ECONNREFUSED` khi chỉ `dev:web-only`.
+- Legacy cột `department_id` trên `pay_position` **không dùng** — quan hệ PB ở `department_position`.
+
+### OPEN
+
+- Auto-sync `job_titles` → `pay_position` bulk (hiện lazy từng mã khi gán PB).
+- DROP hẳn cột `department_id` trên `pay_position` sau khi xác nhận không còn consumer ngoài repo.
+- FE toast mã lỗi `HRM-EMP-POSITION-DEPT-REQUIRED` / `HRM-EMP-POSITION-DEPT-MISMATCH`.
+- `countActivePositions()` vẫn chỉ đếm `pay_position` — employee assert fallback `job_titles` khi count=0; cần align nếu muốn enforce `pay_position` sớm hơn.
+
+### Resume checklist (positions × departments)
+
+1. API chạy: `pnpm run dev:hrm-api` — log không `column does not exist` / `null value` / `ON CONFLICT`.
+2. Tab Phòng ban → ListChecks → dropdown đủ `job_titles`; thêm PB → "Đã cấu hình" hiện đúng; dropdown vẫn còn mã chưa gán.
+3. Form NV: chọn PB → chức danh lọc theo PB; bỏ PB → full catalog.
+4. Unit: `pnpm test -- src/positions/positions.service.spec.ts` (5 tests).
+
+### Traceability
+
+| Loại | Path |
+|------|------|
+| BE | `apps/api/hrm-api/src/positions/positions.service.ts` |
+| FE | `DepartmentPositionConfigDialog.tsx`, `DepartmentManagement.tsx`, `EmployeeFormDialog.tsx` |
+| Spec thiết kế | `docs/program/deltas/BA_HRM_POSITION_DEPARTMENT_DB_DESIGN_01_20260813.md` |
+| Program | `docs/program/PO_HRM_CNTT_PAYROLL_CATALOG_PROGRAM.md` (W3 positions — runtime mới bật) |

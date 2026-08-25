@@ -146,6 +146,7 @@ import {
 import { PAY_SHEET_TPL_PACK_ALIAS_NOTE } from '@/lib/paySheetTemplateCatalog';
 import {
   payrollRecordComponentAmount,
+  payrollDraftColumnTitle,
   resolvePayrollSheetColumns,
 } from '@/lib/payrollBatchSheetColumns';
 import { cn } from '@/lib/utils';
@@ -356,7 +357,10 @@ export function PayrollBatchesTab() {
   // Load records when viewing batch detail
   useEffect(() => {
     if (!selectedBatch) return;
-    void fetchBatchRecords(selectedBatch.id).then((records) => {
+    void fetchBatchRecords(selectedBatch.id, {
+      periodMonth: selectedBatch.period_month,
+      periodYear: selectedBatch.period_year,
+    }).then((records) => {
       setBatchRecords(enrichPayrollRecordsFromEmployees(records, employees));
     });
   }, [selectedBatch, fetchBatchRecords, employees]);
@@ -472,7 +476,10 @@ export function PayrollBatchesTab() {
       const processed = await lockBatch(batchId);
       const refreshed = await refetch();
       setShowLockDialog(false);
-      const updatedRecords = await fetchBatchRecords(batchId);
+      const updatedRecords = await fetchBatchRecords(batchId, {
+        periodMonth: selectedBatch.period_month,
+        periodYear: selectedBatch.period_year,
+      });
       setBatchRecords(updatedRecords);
       const fromList = (refreshed.data ?? []).find((b) => b.id === batchId);
       const fromProcess = processed ? mapPayrollPeriodToBatch(processed) : null;
@@ -508,7 +515,10 @@ export function PayrollBatchesTab() {
         employeeIds: selectedEmployeesToAdd,
       });
 
-      const updatedRecords = await fetchBatchRecords(selectedBatch.id);
+      const updatedRecords = await fetchBatchRecords(selectedBatch.id, {
+        periodMonth: selectedBatch.period_month,
+        periodYear: selectedBatch.period_year,
+      });
       setBatchRecords(enrichPayrollRecordsFromEmployees(updatedRecords, employees));
       const refreshed = await refetch();
       const updated = (refreshed.data ?? []).find((b) => b.id === selectedBatch.id);
@@ -539,7 +549,7 @@ export function PayrollBatchesTab() {
       selectedBatch.sheet_template_snapshot_json,
       observedComponentCodes,
     );
-    const detailTableColSpan = 5 + sheetColumns.length + (isEditable ? 1 : 0);
+    const detailTableColSpan = 3 + sheetColumns.length + (isEditable ? 1 : 0);
 
     return (
       <div className="p-6 space-y-6">
@@ -685,14 +695,13 @@ export function PayrollBatchesTab() {
                         className={cn(
                           'text-right whitespace-nowrap min-w-[120px]',
                           col.isDeduction && 'text-destructive',
+                          col.isTotalColumn && 'font-semibold',
                         )}
                         title={col.componentCode}
                       >
                         {col.displayLabel}
                       </TableHead>
                     ))}
-                    <TableHead className="text-right whitespace-nowrap min-w-[120px]">Tổng thu nhập</TableHead>
-                    <TableHead className="text-right whitespace-nowrap min-w-[120px]">Lương Net</TableHead>
                     {isEditable && <TableHead className="w-10"></TableHead>}
                   </TableRow>
                 </TableHeader>
@@ -722,7 +731,12 @@ export function PayrollBatchesTab() {
                         <TableCell>{record.department || '-'}</TableCell>
                         {sheetColumns.map((col) => {
                           const amount = payrollRecordComponentAmount(record, col.componentCode);
+                          const previewSource = record.component_preview_sources?.[col.componentCode];
                           const isDraftPreview = !record.has_payslip_lines && amount > 0;
+                          const columnTitle = payrollDraftColumnTitle(col.componentCode, amount, {
+                            hasPayslipLines: record.has_payslip_lines,
+                            previewSource,
+                          });
                           return (
                             <TableCell
                               key={`${record.id}-${col.componentCode}`}
@@ -730,24 +744,16 @@ export function PayrollBatchesTab() {
                                 'text-right tabular-nums',
                                 col.isDeduction && amount > 0 && 'text-destructive',
                                 !col.isDeduction && amount > 0 && 'text-success',
+                                col.isTotalColumn && col.componentCode === 'TONG_THU_NHAP' && 'font-medium',
+                                col.isTotalColumn && col.componentCode === 'THUC_LINH' && 'font-bold',
                                 isDraftPreview && 'underline decoration-dotted decoration-muted-foreground/50',
                               )}
-                              title={
-                                isDraftPreview
-                                  ? 'Dữ liệu đầu vào kỳ — chưa tính qua công thức'
-                                  : col.componentCode
-                              }
+                              title={columnTitle}
                             >
                               {formatCurrency(amount)}
                             </TableCell>
                           );
                         })}
-                        <TableCell className="text-right font-medium tabular-nums">
-                          {formatCurrency(record.gross_salary)}
-                        </TableCell>
-                        <TableCell className="text-right font-bold tabular-nums">
-                          {formatCurrency(record.net_salary)}
-                        </TableCell>
                         {isEditable && (
                           <TableCell>
                             <Button

@@ -54,6 +54,8 @@ import { DecisionsService } from './decisions/decisions.service';
 import { HrDecisionTypeService } from './decisions/hr-decision-type.service';
 import { DepartmentsController } from './departments/departments.controller';
 import { DepartmentsService } from './departments/departments.service';
+import { PositionsController } from './positions/positions.controller';
+import { PositionsService } from './positions/positions.service';
 import { EmployeeBenefitsController } from './employee-benefits/employee-benefits.controller';
 import { EmployeeBenefitsService } from './employee-benefits/employee-benefits.service';
 import { EmployeeInsurancesController } from './employee-insurances/employee-insurances.controller';
@@ -140,6 +142,7 @@ import { InternalNewsService } from './internal-news/internal-news.service';
     MergeTokensController,
     DecisionsController,
     DepartmentsController,
+    PositionsController,
     EmployeeInsurancesController,
     EmployeeBenefitsController,
     EmployeeKpisController,
@@ -214,6 +217,7 @@ import { InternalNewsService } from './internal-news/internal-news.service';
     DecisionsService,
     HrDecisionTypeService,
     DepartmentsService,
+    PositionsService,
     EmployeeInsurancesService,
     EmployeeBenefitsService,
     EmployeeKpisService,
