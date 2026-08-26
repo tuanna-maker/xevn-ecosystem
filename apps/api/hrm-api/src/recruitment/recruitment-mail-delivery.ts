@@ -161,10 +161,10 @@ export async function deliverRecruitmentMail(
   });
 
   const accepted = (info.accepted ?? [])
-    .map((x) => String(x).trim().toLowerCase())
+    .map((x: unknown) => String(x).trim().toLowerCase())
     .filter(Boolean);
   const rejected = (info.rejected ?? [])
-    .map((x) => String(x).trim().toLowerCase())
+    .map((x: unknown) => String(x).trim().toLowerCase())
     .filter(Boolean);
 
   if (rejected.length > 0) {
