@@ -62,7 +62,7 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     expect(row.employee_count).toBe(12);
   });
 
-  it('merges HRM rows with settings catalog (HRM wins on duplicate code)', async () => {
+  it('returns merged department rows from GET /departments (BE union)', async () => {
     listDepartments.mockResolvedValue({
       data: [
         {
@@ -72,16 +72,19 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
           code: 'phong_moi',
           status: 'active',
         },
-      ],
-    });
-    getSettingsCatalogsOverview.mockResolvedValue({
-      catalogs: [
         {
-          catalogKey: 'departments',
-          effectiveItems: [
-            { label: 'Phòng Nhân sự', code: 'nhan_su', status: 'active' },
-            { label: 'Phòng Tài chính', code: 'tai_chinh', status: 'active' },
-          ],
+          id: 'd-hr',
+          company_id: 'main',
+          name: 'Phòng Nhân sự',
+          code: 'nhan_su',
+          status: 'active',
+        },
+        {
+          id: 'd-tc',
+          company_id: 'main',
+          name: 'Phòng Tài chính',
+          code: 'tai_chinh',
+          status: 'active',
         },
       ],
     });
@@ -93,7 +96,7 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     expect(result.rows.map((r) => r.name)).toEqual(
       expect.arrayContaining(['Phòng mới', 'Phòng Nhân sự', 'Phòng Tài chính']),
     );
-    expect(getSettingsCatalogsOverview).toHaveBeenCalled();
+    expect(getSettingsCatalogsOverview).not.toHaveBeenCalled();
   });
 
   it('mergeDepartmentCatalogRows keeps same code distinct per tenant in rollup mode', () => {
@@ -141,30 +144,31 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     expect(departmentMergeKey(merged[0]!, true)).not.toBe(departmentMergeKey(merged[1]!, true));
   });
 
-  it('group CEO loads department catalog for JWT tenant only (no cross-tenant 409)', async () => {
+  it('group CEO receives rollup rows from GET /departments only', async () => {
     vi.mocked(getPortalJwtRoleCode).mockReturnValue('group_ceo');
     vi.mocked(getPortalJwtTenantId).mockReturnValue('xevn');
-    listDepartments.mockResolvedValue({ data: [] });
-    getSettingsCatalogsOverview.mockImplementation(async (scope: { tenantId: string }) => {
-      if (scope.tenantId === 'xevn') {
-        return {
-          catalogs: [
-            {
-              catalogKey: 'departments',
-              effectiveItems: [{ label: 'Phòng Tập đoàn', code: 'xevn_dept', status: 'active' }],
-            },
-          ],
-        };
-      }
-      return { catalogs: [] };
+    listDepartments.mockResolvedValue({
+      data: [
+        {
+          id: 'xevn_dept',
+          company_id: 'main',
+          tenant_id: 'xevn',
+          name: 'Phòng Tập đoàn',
+          code: 'xevn_dept',
+          status: 'active',
+        },
+      ],
     });
 
     const result = await loadCompanyDepartments('main');
 
+    expect(listDepartments).toHaveBeenCalledWith(
+      expect.objectContaining({ company_id: 'main', rollup_tenants: true }),
+      expect.anything(),
+    );
     expect(result.fetchError).toBeNull();
     expect(result.rows.map((r) => r.name)).toEqual(['Phòng Tập đoàn']);
-    expect(getSettingsCatalogsOverview.mock.calls).toHaveLength(1);
-    expect(getSettingsCatalogsOverview.mock.calls[0]?.[0]?.tenantId).toBe('xevn');
+    expect(getSettingsCatalogsOverview).not.toHaveBeenCalled();
   });
 
   it('mergeDepartmentCatalogRows prefers HRM metadata for same code', () => {
@@ -211,6 +215,50 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     expect(departmentMergeKey(merged[0]!)).toBe('code:nhan_su');
   });
 
+  it('mergeDepartmentCatalogRows pairs HRM row without code to catalog row by name', () => {
+    const merged = mergeDepartmentCatalogRows(
+      [
+        {
+          id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+          name: 'Phòng Điều Phối Hàng Hóa',
+          code: null,
+          company_id: 'main',
+          parent_id: null,
+          level: 1,
+          sort_order: 0,
+          status: 'active',
+          description: null,
+          manager_name: null,
+          manager_email: null,
+          employee_count: 40,
+          created_at: '2026-01-01',
+          updated_at: '2026-01-01',
+        },
+      ],
+      [
+        {
+          id: 'phong_dphh',
+          name: 'Phòng Điều Phối Hàng Hóa',
+          code: 'phong_dphh',
+          company_id: 'main',
+          parent_id: null,
+          level: 1,
+          sort_order: 0,
+          status: 'active',
+          description: null,
+          manager_name: null,
+          manager_email: null,
+          employee_count: 0,
+          created_at: '2026-01-01',
+          updated_at: '2026-01-01',
+        },
+      ],
+    );
+    expect(merged).toHaveLength(1);
+    expect(merged[0]?.id).toBe('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
+    expect(merged[0]?.code).toBe('phong_dphh');
+  });
+
   it('coalesces parallel loads into one listDepartments call (R-DEPT-FETCH-X2)', async () => {
     let resolveList: (value: { data: Array<{ id: string; company_id: string; name: string; status: string }> }) => void =
       () => undefined;
@@ -236,13 +284,15 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     expect(listDepartments).toHaveBeenCalledTimes(1);
   });
 
-  it('falls back to settings catalog when HRM list is empty', async () => {
-    listDepartments.mockResolvedValue({ data: [] });
-    getSettingsCatalogsOverview.mockResolvedValue({
-      catalogs: [
+  it('returns catalog-only rows from GET /departments when HRM table is empty', async () => {
+    listDepartments.mockResolvedValue({
+      data: [
         {
-          catalogKey: 'departments',
-          effectiveItems: [{ label: 'Phòng Kế toán', code: 'KT', status: 'active' }],
+          id: 'KT',
+          company_id: 'main',
+          name: 'Phòng Kế toán',
+          code: 'KT',
+          status: 'active',
         },
       ],
     });
@@ -252,37 +302,18 @@ describe('hrmDepartmentCatalog (P1-HRM-MENU-COMPANY-DEPT-STUB)', () => {
     expect(result.fetchError).toBeNull();
     expect(result.rows).toHaveLength(1);
     expect(result.rows[0]?.name).toBe('Phòng Kế toán');
+    expect(getSettingsCatalogsOverview).not.toHaveBeenCalled();
   });
 
-  it('surfaces HRM error when both sources fail or stay empty after HRM error', async () => {
+  it('surfaces HRM error when GET /departments fails', async () => {
     listDepartments.mockRejectedValue(
       new ApiClientError({ code: 'RATE-429', message: 'Too many requests', status: 429 }),
     );
-    getSettingsCatalogsOverview.mockResolvedValue({ catalogs: [] });
 
     const result = await loadCompanyDepartments('main');
 
     expect(result.rows).toHaveLength(0);
     expect(result.fetchError).toContain('429');
-  });
-
-  it('returns catalog rows when HRM fails but catalog has data', async () => {
-    listDepartments.mockRejectedValue(
-      new ApiClientError({ code: 'HRM-DEPT-500', message: 'Server error', status: 500 }),
-    );
-    getSettingsCatalogsOverview.mockResolvedValue({
-      catalogs: [
-        {
-          catalogKey: 'department_catalog',
-          effectiveItems: [{ label: 'Xưởng dịch vụ', code: 'XD', status: 'active' }],
-        },
-      ],
-    });
-
-    const result = await loadCompanyDepartments('main');
-
-    expect(result.fetchError).toBeNull();
-    expect(result.rows[0]?.name).toBe('Xưởng dịch vụ');
   });
 
   it('enriches department rows with employees/summary by_department headcounts', async () => {

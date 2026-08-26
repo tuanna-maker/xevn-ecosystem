@@ -6,8 +6,8 @@
  *
  * @CODE-MEMORY-CHANGE 2026-08-24 PO-HRM-CTR-CREATE-CATALOG-PARITY-01
  * change_mode: EXPAND
- * What: loadCompanyDepartments + mergeDepartmentPickerOptions — dual SoT for form pickers
- * Why: Tab Phòng ban (public.departments) vs catalog departments; BE assert parity
+ * What: loadCompanyDepartments — single GET /departments (BE merges catalog ∪ HRM)
+ * Why: Direction C — merge + dual-write on BE; FE reads/writes one API
  * Spec: docs/program/specs/PO-HRM-CTR-CREATE-CATALOG-PARITY-01.md
  */
 import {
@@ -30,6 +30,7 @@ import {
   HRM_MASTER_TENANT_ID,
   HRM_ROLLUP_TENANT_IDS,
 } from '@/lib/hrmListScope';
+import { isDepartmentUuid } from '@/lib/companyDepartmentMutate';
 const DEPARTMENT_CATALOG_KEYS = ['departments', 'department_catalog', 'org_departments'] as const;
 
 export function findDepartmentCatalog(
@@ -83,10 +84,30 @@ export function mapHrmDepartmentRow(item: Record<string, unknown>): CatalogDepar
   };
 }
 
+export type LoadCompanyDepartmentsOptions = {
+  scope?: import('@/integrations/hrmApi').HrmSpreadsheetScope | null;
+  /** Group CEO — union member tenants. Default: auto from JWT role. */
+  rollupTenants?: boolean;
+};
+
 export type LoadCompanyDepartmentsResult = {
   rows: CatalogDepartmentRow[];
   fetchError: string | null;
 };
+
+export function companyDepartmentsLoadKey(
+  companyId: string,
+  opts?: LoadCompanyDepartmentsOptions,
+) {
+  const rollupTenants =
+    opts?.rollupTenants ?? isGroupCeoDepartmentRollupContext();
+  return [
+    companyId,
+    opts?.scope?.tenantId ?? null,
+    opts?.scope?.companyId ?? null,
+    rollupTenants,
+  ] as const;
+}
 
 /** Map merged HRM + catalog department rows → CatalogSearchPicker options (code SoT, id fallback). */
 export function departmentPickerOptionsFromCompanyRows(
@@ -173,6 +194,32 @@ export function mergeDepartmentCatalogRows(
     if (!row.name?.trim()) continue;
     merged.set(departmentMergeKey(row, rollupByTenant), row);
   }
+
+  // Pair catalog code rows with HRM rows that lack code but share the same name.
+  for (const catalogRow of catalogRows) {
+    if (!catalogRow.code?.trim() || !catalogRow.name?.trim()) continue;
+    const codeKey = departmentMergeKey(catalogRow, rollupByTenant);
+    const nameKey = departmentMergeKey(
+      { ...catalogRow, code: null },
+      rollupByTenant,
+    );
+    const hrmByName = merged.get(nameKey);
+    const catalogAtCode = merged.get(codeKey);
+    if (
+      hrmByName &&
+      catalogAtCode &&
+      isDepartmentUuid(hrmByName.id) &&
+      !hrmByName.code?.trim() &&
+      !isDepartmentUuid(catalogAtCode.id)
+    ) {
+      merged.delete(nameKey);
+      merged.set(codeKey, {
+        ...hrmByName,
+        code: catalogRow.code.trim(),
+      });
+    }
+  }
+
   return [...merged.values()].sort(
     (a, b) =>
       a.sort_order - b.sort_order ||
@@ -216,14 +263,25 @@ export function enrichDepartmentRowsWithEmployeeCounts(
  */
 const companyDepartmentsInflight = new Map<string, Promise<LoadCompanyDepartmentsResult>>();
 
-export async function loadCompanyDepartments(companyId: string): Promise<LoadCompanyDepartmentsResult> {
-  const existing = companyDepartmentsInflight.get(companyId);
+function inflightDepartmentsKey(
+  companyId: string,
+  opts?: LoadCompanyDepartmentsOptions,
+): string {
+  return companyDepartmentsLoadKey(companyId, opts).join('::');
+}
+
+export async function loadCompanyDepartments(
+  companyId: string,
+  opts?: LoadCompanyDepartmentsOptions,
+): Promise<LoadCompanyDepartmentsResult> {
+  const key = inflightDepartmentsKey(companyId, opts);
+  const existing = companyDepartmentsInflight.get(key);
   if (existing) return existing;
 
-  const promise = loadCompanyDepartmentsOnce(companyId).finally(() => {
-    companyDepartmentsInflight.delete(companyId);
+  const promise = loadCompanyDepartmentsOnce(companyId, opts).finally(() => {
+    companyDepartmentsInflight.delete(key);
   });
-  companyDepartmentsInflight.set(companyId, promise);
+  companyDepartmentsInflight.set(key, promise);
   return promise;
 }
 
@@ -232,59 +290,46 @@ export function __resetCompanyDepartmentsInflightForTests(): void {
   companyDepartmentsInflight.clear();
 }
 
-async function loadCompanyDepartmentsOnce(companyId: string): Promise<LoadCompanyDepartmentsResult> {
-  let hrmRows: CatalogDepartmentRow[] = [];
-  let hrmError: string | null = null;
-  let catalogRows: CatalogDepartmentRow[] = [];
-  let catalogError: string | null = null;
-  const scope = resolveHrmSpreadsheetScope(companyId);
+async function loadCompanyDepartmentsOnce(
+  companyId: string,
+  opts?: LoadCompanyDepartmentsOptions,
+): Promise<LoadCompanyDepartmentsResult> {
+  const scope =
+    opts?.scope ?? resolveHrmSpreadsheetScope(companyId);
+  const rollupTenants =
+    opts?.rollupTenants ?? isGroupCeoDepartmentRollupContext();
 
   try {
-    const response = await listDepartments({ company_id: companyId }, scope ?? undefined);
-    hrmRows = (response.data ?? [])
+    const response = await listDepartments(
+      {
+        company_id: companyId,
+        rollup_tenants: rollupTenants,
+      },
+      scope ?? undefined,
+    );
+    let rows = (response.data ?? [])
       .map((row) => mapHrmDepartmentRow(row))
       .filter((row) => row.id && row.name);
-  } catch (error) {
-    hrmError = toErrorMessage(error, 'Không tải được danh sách phòng ban.');
-  }
 
-  try {
-    if (isGroupCeoDepartmentRollupContext() && companyId === HRM_MASTER_TENANT_ID) {
-      catalogRows = await listDepartmentsFromSettingsCatalogRollup();
-    } else if (isGroupCeoDepartmentRollupContext() && companyId !== HRM_MASTER_TENANT_ID) {
-      // Branch query by Group CEO: skip master catalog to prevent bleeding master departments into branch list
-      catalogRows = [];
-    } else {
-      const catalogScope = resolveHrmSettingsCatalogScope(companyId);
-      if (catalogScope) {
-        catalogRows = await listDepartmentsFromSettingsCatalogForScope(catalogScope);
-      } else {
-        catalogRows = await listDepartmentsFromSettingsCatalog(companyId);
+    if (rows.length > 0) {
+      try {
+        const summary = await getEmployeesSummary({ company_id: companyId });
+        rows = enrichDepartmentRowsWithEmployeeCounts(
+          rows,
+          summary.by_department ?? [],
+        );
+      } catch (error) {
+        console.warn('[hrmDepartmentCatalog] employee headcount enrich skipped', error);
       }
     }
+
+    return { rows, fetchError: null };
   } catch (error) {
-    catalogError = toErrorMessage(
-      error,
-      'Không tải được danh sách phòng ban từ danh mục công ty.',
-    );
+    return {
+      rows: [],
+      fetchError: toErrorMessage(error, 'Không tải được danh sách phòng ban.'),
+    };
   }
-
-  const rollupByTenant = isGroupCeoDepartmentRollupContext() && companyId === HRM_MASTER_TENANT_ID;
-  let merged = mergeDepartmentCatalogRows(hrmRows, catalogRows, rollupByTenant);
-
-  if (merged.length > 0) {
-    try {
-      const summary = await getEmployeesSummary({ company_id: companyId });
-      merged = enrichDepartmentRowsWithEmployeeCounts(
-        merged,
-        summary.by_department ?? [],
-      );
-    } catch (error) {
-      console.warn('[hrmDepartmentCatalog] employee headcount enrich skipped', error);
-    }
-    return { rows: merged, fetchError: null };
-  }
-  return { rows: [], fetchError: hrmError ?? catalogError };
 }
 
 /** Department labels from synced XBOS settings catalog for one tenant/company scope. */

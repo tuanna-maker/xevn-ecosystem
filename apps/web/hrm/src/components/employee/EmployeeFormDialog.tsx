@@ -94,6 +94,7 @@ import {
   resolveEmployeeDepartmentKey,
 } from '@/lib/employeePickerLabel';
 import { HRM_LIST_DEFAULT_COMPANY_ID } from '@/lib/hrmListScope';
+import { isGroupCeoDepartmentRollupContext } from '@/lib/hrmDepartmentCatalog';
 import { listEffectivePayPositions } from '@/integrations/hrmApi';
 import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
 import {
@@ -471,6 +472,7 @@ export function EmployeeFormDialog({
     departmentCompanyId: currentCompanyId,
   });
   const departmentCatalogBound = departmentOptions.length > 0;
+  const positionRollupTenants = isGroupCeoDepartmentRollupContext();
   const {
     nestOptions: nestStatusOptions,
     effectiveCount: empStatusEffectiveCount,
@@ -511,11 +513,17 @@ export function EmployeeFormDialog({
   const watchedDepartment = form.watch('department');
 
   const { data: effectivePositionsRes } = useQuery({
-    queryKey: ['effective-pay-positions', currentCompanyId, watchedDepartment],
+    queryKey: [
+      'effective-pay-positions',
+      currentCompanyId,
+      watchedDepartment,
+      positionRollupTenants,
+    ],
     queryFn: () =>
       listEffectivePayPositions({
         company_id: currentCompanyId!,
         department_code: watchedDepartment?.trim() || undefined,
+        rollup_tenants: positionRollupTenants,
       }),
     enabled: Boolean(open && currentCompanyId),
     staleTime: 30_000,

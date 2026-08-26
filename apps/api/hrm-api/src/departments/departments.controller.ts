@@ -14,7 +14,7 @@ import { ApiException } from '../common/api.exception';
 import { ok } from '../common/api-response';
 import { isAuthorizedInternalRequest } from '../common/internal-auth';
 import { resolveScopeContext } from '../common/scope-context';
-import { DepartmentsService } from './departments.service';
+import { DepartmentsService, type DepartmentRow } from './departments.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { ListDepartmentsQueryDto } from './dto/list-departments.query.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
@@ -85,7 +85,7 @@ export class DepartmentsController {
     });
     return this.service
       .createDepartment(body, authorization)
-      .then((data) => ok(data, 'HRM-DEPT-201', 'Department created'));
+      .then((data: DepartmentRow) => ok(data, 'HRM-DEPT-201', 'Department created'));
   }
 
   @Patch(':departmentId')
@@ -104,7 +104,7 @@ export class DepartmentsController {
     });
     return this.service
       .updateDepartment(departmentId, body, authorization)
-      .then((data) => ok(data, 'HRM-DEPT-200', 'Department updated'));
+      .then((data: DepartmentRow) => ok(data, 'HRM-DEPT-200', 'Department updated'));
   }
 
   @Delete(':departmentId')

@@ -2,7 +2,6 @@ import {
   createDepartment,
   deleteDepartment,
   updateDepartment,
-  upsertSettingsCatalogItem,
   type HrmSpreadsheetScope,
 } from '@/integrations/hrmApi';
 import { ApiClientError } from '@/lib/apiError';
@@ -38,31 +37,29 @@ export type CompanyDepartmentInput = {
   status?: 'active' | 'draft';
 };
 
+export type CompanyDepartmentPersistOpts = {
+  departmentId?: string | null;
+  catalogCode?: string | null;
+  previousCatalogCode?: string | null;
+};
+
 export async function persistCompanyDepartment(
   scope: HrmSpreadsheetScope,
   input: CompanyDepartmentInput,
-  opts?: { departmentId?: string | null; catalogCode?: string | null },
+  opts?: CompanyDepartmentPersistOpts,
 ) {
   const companyId = scope.companyId;
   const name = input.name.trim();
   const code = (input.code?.trim() || suggestDepartmentCode(name)).toLowerCase();
-  const status = input.status ?? 'active';
+  const status = input.status === 'draft' ? 'inactive' : 'active';
+  const departmentKey =
+    opts?.departmentId?.trim() ||
+    opts?.catalogCode?.trim() ||
+    null;
 
-  await upsertSettingsCatalogItem(
-    {
-      companyId,
-      catalogKey: 'departments',
-      code,
-      label: name,
-      status,
-    },
-    scope,
-  );
-
-  const departmentId = opts?.departmentId?.trim() || null;
-  if (isDepartmentUuid(departmentId)) {
-    await updateDepartment(
-      departmentId,
+  if (departmentKey) {
+    const updated = await updateDepartment(
+      departmentKey,
       companyId,
       {
         company_id: companyId,
@@ -73,15 +70,18 @@ export async function persistCompanyDepartment(
         manager_email: input.manager_email ?? null,
         parent_id: input.parent_id ?? null,
         level: input.level,
-        status: status === 'draft' ? 'inactive' : 'active',
+        status,
+        previous_catalog_code:
+          opts?.previousCatalogCode?.trim() ||
+          opts?.catalogCode?.trim() ||
+          null,
       },
       scope,
     );
-    return { code, departmentId };
-  }
-
-  if (status === 'draft') {
-    return { code, departmentId: null };
+    return {
+      code,
+      departmentId: String(updated.id ?? departmentKey),
+    };
   }
 
   const created = await createDepartment(
@@ -94,6 +94,7 @@ export async function persistCompanyDepartment(
       manager_email: input.manager_email ?? undefined,
       parent_id: input.parent_id ?? undefined,
       level: input.level,
+      status,
     },
     scope,
   );
@@ -108,22 +109,9 @@ export async function removeCompanyDepartment(
   row: { id: string; name: string; code?: string | null },
 ) {
   const companyId = scope.companyId;
-  const code = row.code?.trim() || suggestDepartmentCode(row.name);
-
-  await upsertSettingsCatalogItem(
-    {
-      companyId,
-      catalogKey: 'departments',
-      code,
-      label: row.name,
-      status: 'draft',
-    },
-    scope,
-  );
-
-  if (isDepartmentUuid(row.id)) {
-    await deleteDepartment(row.id, companyId, scope);
-  }
+  const departmentKey = row.id?.trim() || row.code?.trim();
+  if (!departmentKey) return;
+  await deleteDepartment(departmentKey, companyId, scope);
 }
 
 export function departmentMutateErrorMessage(error: unknown, fallback: string): string {

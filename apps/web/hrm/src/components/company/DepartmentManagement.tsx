@@ -57,7 +57,6 @@ import { SETTINGS_CATALOGS_QUERY_KEY, COMPANY_DEPARTMENTS_QUERY_KEY } from '@/ho
 import { resolveHrmSettingsCatalogScope } from '@/lib/hrmSpreadsheetScope';
 import {
   departmentMutateErrorMessage,
-  isDepartmentUuid,
   persistCompanyDepartment,
   removeCompanyDepartment,
   suggestDepartmentCode,
@@ -113,18 +112,27 @@ export function DepartmentManagement() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [positionConfigDept, setPositionConfigDept] = useState<Department | null>(null);
 
+  const departmentRollupTenants = isGroupCeoDepartmentRollupContext();
+
   const {
     data,
     isLoading: loading,
     error: queryError,
     refetch,
   } = useQuery({
-    queryKey: [COMPANY_DEPARTMENTS_QUERY_KEY, currentCompanyId],
+    queryKey: [
+      COMPANY_DEPARTMENTS_QUERY_KEY,
+      currentCompanyId,
+      departmentRollupTenants,
+    ],
     queryFn: async () => {
       if (!currentCompanyId) {
         return { rows: [] as CatalogDepartmentRow[], fetchError: null as string | null };
       }
-      return loadCompanyDepartments(currentCompanyId);
+      return loadCompanyDepartments(currentCompanyId, {
+        scope: catalogScope ?? undefined,
+        rollupTenants: departmentRollupTenants,
+      });
     },
     enabled: !!currentCompanyId,
     staleTime: 60_000,
@@ -216,10 +224,9 @@ export function DepartmentManagement() {
           status: formData.status === 'inactive' ? 'draft' : 'active',
         },
         {
-          departmentId: selectedDepartment && isDepartmentUuid(selectedDepartment.id)
-            ? selectedDepartment.id
-            : null,
+          departmentId: selectedDepartment?.id ?? null,
           catalogCode: selectedDepartment?.code ?? code,
+          previousCatalogCode: selectedDepartment?.code ?? null,
         },
       );
 
@@ -660,6 +667,7 @@ export function DepartmentManagement() {
         }}
         department={positionConfigDept}
         companyId={currentCompanyId}
+        rollupTenants={departmentRollupTenants}
       />
     </>
   );

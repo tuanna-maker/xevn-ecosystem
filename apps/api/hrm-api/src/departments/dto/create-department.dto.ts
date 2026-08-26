@@ -1,4 +1,5 @@
 import {
+  IsIn,
   IsInt,
   IsOptional,
   IsString,
@@ -46,4 +47,9 @@ export class CreateDepartmentDto {
   @IsInt()
   @Min(0)
   sort_order?: number;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['active', 'inactive'])
+  status?: string;
 }

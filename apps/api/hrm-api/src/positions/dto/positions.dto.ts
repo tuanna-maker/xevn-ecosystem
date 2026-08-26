@@ -1,4 +1,6 @@
-import { IsIn, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsIn, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import { toOptionalQueryBoolean } from '../../common/query-boolean';
 import { PAY_POSITION_SCOPES } from '../positions.constants';
 
 export class ListPayPositionsQueryDto {
@@ -16,6 +18,12 @@ export class ListPayPositionsQueryDto {
   @IsOptional()
   @IsIn([...PAY_POSITION_SCOPES])
   position_scope?: (typeof PAY_POSITION_SCOPES)[number];
+
+  /** Group CEO — union positions across member tenants. Omit/false = JWT tenant only. */
+  @IsOptional()
+  @Transform(({ value }) => toOptionalQueryBoolean(value))
+  @IsBoolean()
+  rollup_tenants?: boolean;
 }
 
 export class CreatePayPositionDto {
@@ -108,4 +116,10 @@ export class EffectivePositionsQueryDto {
   @IsOptional()
   @IsString()
   department_code?: string;
+
+  /** Group CEO — union master catalog across member tenants. */
+  @IsOptional()
+  @Transform(({ value }) => toOptionalQueryBoolean(value))
+  @IsBoolean()
+  rollup_tenants?: boolean;
 }
